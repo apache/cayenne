@@ -28,6 +28,7 @@ import org.apache.cayenne.util.XMLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @since 4.0
@@ -175,10 +176,9 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             selectQuery.addOrderings(orderings);
         }
 
-        HashMap<String, Integer> prefetchesMap = this.getPrefetchesMap();
-        if(prefetchesMap != null && !prefetchesMap.isEmpty()) {
-            for(String prefetch : prefetchesMap.keySet()) {
-                selectQuery.addPrefetch(PrefetchTreeNode.withPath(prefetch, prefetchesMap.get(prefetch)));
+        if (prefetchesMap != null) {
+            for (Map.Entry<String, Integer> entry : prefetchesMap.entrySet()) {
+                selectQuery.addPrefetch(PrefetchTreeNode.withPath(entry.getKey(), entry.getValue()));
             }
         }
 

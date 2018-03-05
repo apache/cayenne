@@ -107,12 +107,9 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
             template.setRoot(root);
         }
 
-
-
-        HashMap<String, Integer> prefetches = this.getPrefetchesMap();
-        if (prefetches != null && !prefetches.isEmpty()) {
-            for (String prefetch : prefetches.keySet()) {
-                template.addPrefetch(PrefetchTreeNode.withPath(prefetch, prefetchesMap.get(prefetch)));
+        if (prefetchesMap != null) {
+            for (Map.Entry<String, Integer> entry : prefetchesMap.entrySet()) {
+                template.addPrefetch(PrefetchTreeNode.withPath(entry.getKey(), entry.getValue()));
             }
         }
 

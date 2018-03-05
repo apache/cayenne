@@ -63,8 +63,6 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -79,11 +77,11 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     private static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
     private static final String UNDEFINED_SEMANTICS = "Undefined semantics";
 
-    static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
-    static final Dimension TABLE_DIM = new Dimension(460, 60);
+    private static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
+    private static final Dimension TABLE_DIM = new Dimension(460, 60);
 
-    static final String REAL_PANEL = "real";
-    static final String PLACEHOLDER_PANEL = "placeholder";
+    private static final String REAL_PANEL = "real";
+    private static final String PLACEHOLDER_PANEL = "placeholder";
 
     protected ProjectController mediator;
     protected SQLTemplateDescriptor sqlTemplate;
@@ -169,7 +167,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
     protected void setUpPrefetchBox(TableColumn column) {
 
-        JComboBox prefetchBox = new JComboBox();
+        JComboBox<String> prefetchBox = new JComboBox<>();
         prefetchBox.addItem(JOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
@@ -344,12 +342,10 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
             Object object = exp.evaluate(root);
             if (object instanceof Relationship) {
                 return ((Relationship) object).isToMany();
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        catch (ExpressionException e) {
+        } catch (ExpressionException e) {
             return false;
         }
     }
@@ -404,22 +400,21 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
         PrefetchModel() {
             if (sqlTemplate != null) {
-                prefetches = new String[sqlTemplate.getPrefetchesMap().size()];
-                List<String> list = new ArrayList<>(sqlTemplate.getPrefetchesMap().keySet());
-                for(int i = 0; i < list.size(); i++){
-                    prefetches[i] = list.get(i);
-                }
+                prefetches = sqlTemplate.getPrefetchesMap().keySet().toArray(new String[0]);
             }
         }
 
+        @Override
         public int getColumnCount() {
             return 3;
         }
 
+        @Override
         public int getRowCount() {
             return (prefetches != null) ? prefetches.length : 0;
         }
 
+        @Override
         public Object getValueAt(int row, int column) {
             switch (column) {
                 case 0:
@@ -433,6 +428,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
             }
         }
 
+        @Override
         public Class getColumnClass(int column) {
             switch (column) {
                 case 0:
@@ -446,6 +442,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
             }
         }
 
+        @Override
         public String getColumnName(int column) {
             switch (column) {
                 case 0:
@@ -459,14 +456,16 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
             }
         }
 
+        @Override
         public boolean isCellEditable(int row, int column) {
-            return column == 2 ? true : false;
+            return column == 2;
         }
 
+        @Override
         public void setValueAt(Object value, int row, int column) {
             switch (column) {
                 case 2:
-                    sqlTemplate.addPrefetch(prefetches[row],getPrefetchType((String)value));
+                    sqlTemplate.addPrefetch(prefetches[row], getPrefetchType((String)value));
                     break;
             }
         }

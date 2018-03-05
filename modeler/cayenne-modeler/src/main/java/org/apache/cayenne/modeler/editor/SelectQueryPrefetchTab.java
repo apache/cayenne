@@ -47,8 +47,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Subclass of the SelectQueryOrderingTab configured to work with prefetches.
@@ -72,7 +70,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
     protected void setUpPrefetchBox(TableColumn column) {
 
-        JComboBox prefetchBox = new JComboBox();
+        JComboBox<String> prefetchBox = new JComboBox<>();
         prefetchBox.addItem(JOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(DISJOINT_PREFETCH_SEMANTICS);
         prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
@@ -192,12 +190,10 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
             Object object = exp.evaluate(root);
             if (object instanceof Relationship) {
                 return ((Relationship) object).isToMany();
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        catch (ExpressionException e) {
+        } catch (ExpressionException e) {
             return false;
         }
     }
@@ -235,22 +231,21 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
         PrefetchModel() {
             if (selectQuery != null) {
-                prefetches = new String[selectQuery.getPrefetchesMap().size()];
-                List<String> list = new ArrayList<>(selectQuery.getPrefetchesMap().keySet());
-                for(int i = 0; i < list.size(); i++) {
-                    prefetches[i] = list.get(i);
-                }
+                prefetches = selectQuery.getPrefetchesMap().keySet().toArray(new String[0]);
             }
         }
 
+        @Override
         public int getColumnCount() {
             return 3;
         }
 
+        @Override
         public int getRowCount() {
             return (prefetches != null) ? prefetches.length : 0;
         }
 
+        @Override
         public Object getValueAt(int row, int column) {
             switch (column) {
                 case 0:
@@ -264,6 +259,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
             }
         }
 
+        @Override
         public Class getColumnClass(int column) {
             switch (column) {
                 case 0:
@@ -277,6 +273,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
             }
         }
 
+        @Override
         public String getColumnName(int column) {
             switch (column) {
                 case 0:
@@ -286,14 +283,17 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
                 case 2:
                     return "Prefetch Type";
                 default:
-                    throw new IndexOutOfBoundsException("Invalid columnw: " + column);
+                    throw new IndexOutOfBoundsException("Invalid column: " + column);
             }
         }
 
+        @Override
         public boolean isCellEditable(int row, int column) {
-            return column == 2 ? true : false;
+            return column == 2;
         }
-        public void setValueAt(Object value, int row, int column){
+
+        @Override
+        public void setValueAt(Object value, int row, int column) {
             switch (column) {
                 case 2:
                     selectQuery.addPrefetch(prefetches[row], getPrefetchType((String)value));
