@@ -20,9 +20,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -53,7 +50,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -72,10 +68,6 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
     // property for split pane divider size
     private static final String SPLIT_DIVIDER_LOCATION_PROPERTY = "query.orderings.divider.location";
-
-    private static final String JOINT_PREFETCH_SEMANTICS = "Joint";
-    private static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
-    private static final String UNDEFINED_SEMANTICS = "Undefined semantics";
 
     private static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
     private static final Dimension TABLE_DIM = new Dimension(460, 60);
@@ -168,8 +160,8 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     protected void setUpPrefetchBox(TableColumn column) {
 
         JComboBox<String> prefetchBox = new JComboBox<>();
-        prefetchBox.addItem(JOINT_PREFETCH_SEMANTICS);
-        prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        prefetchBox.addItem(SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS);
+        prefetchBox.addItem(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
         prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getEditorView().getEventController().setDirty(true));
 
@@ -240,7 +232,6 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);
         remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
-
         remove.addActionListener(e -> {
             int selection = table.getSelectedRow();
             if (selection < 0) {
@@ -299,7 +290,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     }
 
     protected TableModel createTableModel() {
-        return new PrefetchModel();
+        return new PrefetchModel(sqlTemplate.getPrefetchesMap(), sqlTemplate.getRoot());
     }
 
     public void addPrefetch(String prefetch) {
@@ -310,7 +301,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         }
 
         //default value is joint
-        sqlTemplate.addPrefetch(prefetch, getPrefetchType(DISJOINT_BY_ID_PREFETCH_SEMANTICS));
+        sqlTemplate.addPrefetch(prefetch, PrefetchModel.getPrefetchType(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS));
 
         // reset the model, since it is immutable
         table.setModel(createTableModel());
@@ -327,27 +318,6 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
         mediator.fireQueryEvent(new QueryEvent(this, sqlTemplate));
-    }
-
-    boolean isToMany(String prefetch) {
-        if (sqlTemplate == null) {
-            return false;
-        }
-
-        Object root = sqlTemplate.getRoot();
-
-        // totally invalid path would result in ExpressionException
-        try {
-            Expression exp = ExpressionFactory.exp(prefetch);
-            Object object = exp.evaluate(root);
-            if (object instanceof Relationship) {
-                return ((Relationship) object).isToMany();
-            } else {
-                return false;
-            }
-        } catch (ExpressionException e) {
-            return false;
-        }
     }
 
     /**
@@ -369,105 +339,4 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         return SPLIT_DIVIDER_LOCATION_PROPERTY;
     }
 
-    protected int getPrefetchType(String semantics) {
-
-        //case 2: disjoint isn't use for SQLTemplate prefetch
-        switch (semantics){
-            case "Joint" :
-                return 1;
-            case "Disjoint by id":
-                return 3;
-            default: return 0;
-        }
-    }
-
-    protected String getPrefetchTypeString(int semantics) {
-        switch (semantics){
-            case 1 :
-                return JOINT_PREFETCH_SEMANTICS;
-            case 3:
-                return DISJOINT_BY_ID_PREFETCH_SEMANTICS;
-            default: return UNDEFINED_SEMANTICS;
-        }
-    }
-
-    /**
-     * A table model for the Prefetch table.
-     */
-    final class PrefetchModel extends AbstractTableModel {
-
-        String[] prefetches;
-
-        PrefetchModel() {
-            if (sqlTemplate != null) {
-                prefetches = sqlTemplate.getPrefetchesMap().keySet().toArray(new String[0]);
-            }
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 3;
-        }
-
-        @Override
-        public int getRowCount() {
-            return (prefetches != null) ? prefetches.length : 0;
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            switch (column) {
-                case 0:
-                    return prefetches[row];
-                case 1:
-                    return isToMany(prefetches[row]) ? Boolean.TRUE : Boolean.FALSE;
-                case 2:
-                    return getPrefetchTypeString(sqlTemplate.getPrefetchesMap().get(prefetches[row]));
-                default:
-                    throw new IndexOutOfBoundsException("Invalid column: " + column);
-            }
-        }
-
-        @Override
-        public Class getColumnClass(int column) {
-            switch (column) {
-                case 0:
-                    return String.class;
-                case 1:
-                    return Boolean.class;
-                case 2:
-                    return String.class;
-                default:
-                    throw new IndexOutOfBoundsException("Invalid column: " + column);
-            }
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch (column) {
-                case 0:
-                    return "Prefetch Path";
-                case 1:
-                    return "To Many";
-                case 2:
-                    return "Prefetch Type";
-                default:
-                    throw new IndexOutOfBoundsException("Invalid column: " + column);
-            }
-        }
-
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return column == 2;
-        }
-
-        @Override
-        public void setValueAt(Object value, int row, int column) {
-            switch (column) {
-                case 2:
-                    sqlTemplate.addPrefetch(prefetches[row], getPrefetchType((String)value));
-                    break;
-            }
-        }
-    }
 }

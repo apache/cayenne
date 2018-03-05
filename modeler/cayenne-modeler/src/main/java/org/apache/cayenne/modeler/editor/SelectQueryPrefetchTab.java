@@ -20,9 +20,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
@@ -42,7 +39,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JToolBar;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
@@ -54,10 +50,10 @@ import javax.swing.tree.TreeModel;
  */
 public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
-    private static final String JOINT_PREFETCH_SEMANTICS = "Joint";
-    private static final String DISJOINT_PREFETCH_SEMANTICS = "Disjoint";
-    private static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
-    private static final String UNDEFINED_SEMANTICS = "Undefined semantics";
+    static final String JOINT_PREFETCH_SEMANTICS = "Joint";
+    static final String DISJOINT_PREFETCH_SEMANTICS = "Disjoint";
+    static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
+    static final String UNDEFINED_SEMANTICS = "Undefined semantics";
 
     public SelectQueryPrefetchTab(ProjectController mediator) {
         super(mediator);
@@ -110,7 +106,6 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);
         remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
-        
         remove.addActionListener(e -> {
             int selection = table.getSelectedRow();
 
@@ -147,7 +142,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
     }
 
     protected TableModel createTableModel() {
-        return new PrefetchModel();
+        return new PrefetchModel(selectQuery.getPrefetchesMap(), selectQuery.getRoot());
     }
 
     public void addPrefetch(String prefetch) {
@@ -158,7 +153,7 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         }
 
         //default value id disjoint
-        selectQuery.addPrefetch(prefetch, getPrefetchType(DISJOINT_PREFETCH_SEMANTICS));
+        selectQuery.addPrefetch(prefetch, PrefetchModel.getPrefetchType(DISJOINT_PREFETCH_SEMANTICS));
        
         // reset the model, since it is immutable
         table.setModel(createTableModel());
@@ -177,128 +172,4 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         mediator.fireQueryEvent(new QueryEvent(this, selectQuery));
     }
 
-    boolean isToMany(String prefetch) {
-        if (selectQuery == null) {
-            return false;
-        }
-
-        Object root = selectQuery.getRoot();
-
-        // totally invalid path would result in ExpressionException
-        try {
-            Expression exp = ExpressionFactory.exp(prefetch);
-            Object object = exp.evaluate(root);
-            if (object instanceof Relationship) {
-                return ((Relationship) object).isToMany();
-            } else {
-                return false;
-            }
-        } catch (ExpressionException e) {
-            return false;
-        }
-    }
-
-    protected int getPrefetchType(String semantics) {
-        switch (semantics){
-            case "Joint" :
-                return 1;
-            case "Disjoint":
-                return 2;
-            case "Disjoint by id":
-                return 3;
-            default: return 0;
-        }
-    }
-
-    protected String getPrefetchTypeString(int semantics) {
-        switch (semantics){
-            case 1 :
-                return JOINT_PREFETCH_SEMANTICS;
-            case 2:
-                return DISJOINT_PREFETCH_SEMANTICS;
-            case 3:
-                return DISJOINT_BY_ID_PREFETCH_SEMANTICS;
-            default: return UNDEFINED_SEMANTICS;
-        }
-    }
-
-    /**
-     * A table model for the Prefetch table.
-     */
-    final class PrefetchModel extends AbstractTableModel {
-
-        String[] prefetches;
-
-        PrefetchModel() {
-            if (selectQuery != null) {
-                prefetches = selectQuery.getPrefetchesMap().keySet().toArray(new String[0]);
-            }
-        }
-
-        @Override
-        public int getColumnCount() {
-            return 3;
-        }
-
-        @Override
-        public int getRowCount() {
-            return (prefetches != null) ? prefetches.length : 0;
-        }
-
-        @Override
-        public Object getValueAt(int row, int column) {
-            switch (column) {
-                case 0:
-                    return prefetches[row];
-                case 1:
-                    return isToMany(prefetches[row]) ? Boolean.TRUE : Boolean.FALSE;
-                case 2:
-                    return getPrefetchTypeString(selectQuery.getPrefetchesMap().get(prefetches[row]));
-                default:
-                    throw new IndexOutOfBoundsException("Invalid column: " + column);
-            }
-        }
-
-        @Override
-        public Class getColumnClass(int column) {
-            switch (column) {
-                case 0:
-                    return String.class;
-                case 1:
-                    return Boolean.class;
-                case 2:
-                    return String.class;
-                default:
-                    throw new IndexOutOfBoundsException("Invalid column: " + column);
-            }
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            switch (column) {
-                case 0:
-                    return "Prefetch Path";
-                case 1:
-                    return "To Many";
-                case 2:
-                    return "Prefetch Type";
-                default:
-                    throw new IndexOutOfBoundsException("Invalid column: " + column);
-            }
-        }
-
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return column == 2;
-        }
-
-        @Override
-        public void setValueAt(Object value, int row, int column) {
-            switch (column) {
-                case 2:
-                    selectQuery.addPrefetch(prefetches[row], getPrefetchType((String)value));
-                    break;
-            }
-        }
-    }
 }
