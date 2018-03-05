@@ -20,10 +20,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Arrays;
@@ -31,8 +27,6 @@ import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.cayenne.configuration.event.QueryEvent;
@@ -44,18 +38,14 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ExpressionConvertor;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.util.ValidatorTextAdapter;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.query.*;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
@@ -68,20 +58,17 @@ import com.jgoodies.forms.layout.FormLayout;
  * A tabbed pane that contains editors for various SelectQuery parts.
  * 
  */
-public class SelectQueryMainTab extends JPanel {
+public class SelectQueryMainTab extends BaseQueryMainTab {
 
-    protected ProjectController mediator;
-
-    protected TextAdapter name;
     protected TextAdapter comment;
-    protected JComboBox<ObjEntity> queryRoot;
     protected TextAdapter qualifier;
     protected JCheckBox distinct;
     protected ObjectQueryPropertiesPanel properties;
 
     public SelectQueryMainTab(ProjectController mediator) {
-        this.mediator = mediator;
+        super(mediator);
 
+        initQueryRoot();
         initView();
         initController();
     }
@@ -95,10 +82,6 @@ public class SelectQueryMainTab extends JPanel {
                 setQueryName(text);
             }
         };
-
-        queryRoot = Application.getWidgetFactory().createComboBox();
-        AutoCompletion.enable(queryRoot);
-        queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
 
         qualifier = new ValidatorTextAdapter(new JTextField()) {
 
@@ -150,11 +133,6 @@ public class SelectQueryMainTab extends JPanel {
     }
 
     private void initController() {
-        RootSelectionHandler rootHandler = new RootSelectionHandler();
-
-        queryRoot.addActionListener(rootHandler);
-        queryRoot.addFocusListener(rootHandler);
-        queryRoot.getEditor().getEditorComponent().addFocusListener(rootHandler);
 
         distinct.addItemListener(new ItemListener() {
 
@@ -215,6 +193,7 @@ public class SelectQueryMainTab extends JPanel {
         setVisible(true);
     }
 
+    @Override
     protected SelectQueryDescriptor getQuery() {
         if(mediator.getCurrentQuery() == null) {
             return null;
@@ -277,45 +256,6 @@ public class SelectQueryMainTab extends JPanel {
     }
 
     /**
-     * Initializes Query name from string.
-     */
-    void setQueryName(String newName) {
-        if (newName != null && newName.trim().length() == 0) {
-            newName = null;
-        }
-
-        QueryDescriptor query = getQuery();
-
-        if (query == null) {
-            return;
-        }
-
-        if (Util.nullSafeEquals(newName, query.getName())) {
-            return;
-        }
-
-        if (newName == null) {
-            throw new ValidationException("SelectQuery name is required.");
-        }
-
-        DataMap map = mediator.getCurrentDataMap();
-        QueryDescriptor matchingQuery = map.getQueryDescriptor(newName);
-
-        if (matchingQuery == null) {
-            // completely new name, set new name for entity
-            QueryEvent e = new QueryEvent(this, query, query.getName());
-            ProjectUtil.setQueryName(map, query, newName);
-            mediator.fireQueryEvent(e);
-        }
-        else if (matchingQuery != query) {
-            // there is a query with the same name
-            throw new ValidationException("There is another query named '"
-                    + newName
-                    + "'. Use a different name.");
-        }
-    }
-
-    /**
      * Advanced checking of an expression, needed because Expression.fromString()
      * might terminate normally, but returned Expression will not be appliable
      * for real Entities.
@@ -349,76 +289,6 @@ public class SelectQueryMainTab extends JPanel {
         }
         catch (ExpressionException eex) {
             throw new ValidationException(eex.getUnlabeledMessage());
-        }
-    }
-    
-    /**
-     * Handler to user's actions with root selection combobox
-     */
-    class RootSelectionHandler implements FocusListener, ActionListener {
-        String newName = null;
-        boolean needChangeName;
-
-        public void actionPerformed(ActionEvent ae) {
-            QueryDescriptor query = getQuery();
-            if (query != null) {
-                Entity root = (Entity) queryRoot.getModel().getSelectedItem();
-
-                if (root != null) {
-                    query.setRoot(root);
-                    
-                    if (needChangeName) { //not changed by user
-                        /*
-                         * Doing auto name change, following CAY-888 #2
-                         */
-                        String newPrefix = root.getName() + "Query";
-                        newName = newPrefix;
-                        
-                        DataMap map = mediator.getCurrentDataMap();
-                        long postfix = 1;
-                        
-                        while (map.getQueryDescriptor(newName) != null) {
-                            newName = newPrefix + (postfix++);
-                        }
-                        
-                        name.setText(newName);
-                    }
-                }
-            }
-        }
-
-        public void focusGained(FocusEvent e) {
-            //reset new name tracking
-            newName = null;
-            
-            QueryDescriptor query = getQuery();
-            if (query != null) {
-                needChangeName = hasDefaultName(query);
-            } else {
-                needChangeName = false;
-            }
-        }
-
-        public void focusLost(FocusEvent e) {
-            if (newName != null) {
-                setQueryName(newName);
-            }
-            
-            newName = null;
-            needChangeName = false;
-        }
-
-        /**
-         * @return whether specified's query name is 'default' i.e. Cayenne generated
-         * A query's name is 'default' if it starts with 'UntitledQuery' or with root name.
-         * 
-         * We cannot follow user input because tab might be opened many times
-         */
-        boolean hasDefaultName(QueryDescriptor query) {
-            String prefix = query.getRoot() == null ? "UntitledQuery" :
-                CellRenderers.asString(query.getRoot()) + "Query";
-            
-            return name.getComponent().getText().startsWith(prefix);
         }
     }
 

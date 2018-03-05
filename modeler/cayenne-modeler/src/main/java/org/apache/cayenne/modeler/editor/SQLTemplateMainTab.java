@@ -25,34 +25,23 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
-import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +50,7 @@ import java.util.Map;
  * A main panel for editing a SQLTemplate.
  * 
  */
-public class SQLTemplateMainTab extends JPanel {
+public class SQLTemplateMainTab extends BaseQueryMainTab {
 
     private static final String DEFAULT_CAPS_LABEL = "Database Default";
     private static final String LOWER_CAPS_LABEL = "Force Lower Case";
@@ -79,17 +68,14 @@ public class SQLTemplateMainTab extends JPanel {
         labelCapsLabels.put(CapsStrategy.UPPER, UPPER_CAPS_LABEL);
     }
 
-    protected ProjectController mediator;
-    protected TextAdapter name;
     protected TextAdapter comment;
-    protected JComboBox<ObjEntity> queryRoot;
     protected SelectPropertiesPanel properties;
 
     public SQLTemplateMainTab(ProjectController mediator) {
-        this.mediator = mediator;
+        super(mediator);
 
+        initQueryRoot();
         initView();
-        initController();
     }
 
     private void initView() {
@@ -107,10 +93,6 @@ public class SQLTemplateMainTab extends JPanel {
                 setQueryComment(text);
             }
         };
-
-        queryRoot = Application.getWidgetFactory().createComboBox();
-        AutoCompletion.enable(queryRoot);
-        queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
 
         properties = new SQLTemplateQueryPropertiesPanel(mediator);
 
@@ -133,14 +115,6 @@ public class SQLTemplateMainTab extends JPanel {
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.NORTH);
         this.add(properties, BorderLayout.CENTER);
-    }
-
-    private void initController() {
-        RootSelectionHandler rootHandler = new RootSelectionHandler();
-
-        queryRoot.addActionListener(rootHandler);
-        queryRoot.addFocusListener(rootHandler);
-        queryRoot.getEditor().getEditorComponent().addFocusListener(rootHandler);
     }
 
     /**
@@ -173,117 +147,10 @@ public class SQLTemplateMainTab extends JPanel {
         setVisible(true);
     }
 
+    @Override
     protected QueryDescriptor getQuery() {
         QueryDescriptor query = mediator.getCurrentQuery();
         return (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) ? query : null;
-    }
-
-    /**
-     * Initializes Query name from string.
-     */
-    void setQueryName(String newName) {
-        if (newName != null && newName.trim().length() == 0) {
-            newName = null;
-        }
-
-        QueryDescriptor query = getQuery();
-
-        if (query == null) {
-            return;
-        }
-
-        if (Util.nullSafeEquals(newName, query.getName())) {
-            return;
-        }
-
-        if (newName == null) {
-            throw new ValidationException("Query name is required.");
-        }
-
-        DataMap map = mediator.getCurrentDataMap();
-
-        if (map.getQueryDescriptor(newName) == null) {
-            // completely new name, set new name for entity
-            QueryEvent e = new QueryEvent(this, query, query.getName());
-            ProjectUtil.setQueryName(map, query, newName);
-            mediator.fireQueryEvent(e);
-        }
-        else {
-            // there is a query with the same name
-            throw new ValidationException("There is another query named '"
-                    + newName
-                    + "'. Use a different name.");
-        }
-    }
-
-    /**
-     * Handler to user's actions with root selection combobox
-     */
-    class RootSelectionHandler implements FocusListener, ActionListener {
-        String newName = null;
-        boolean needChangeName;
-
-        public void actionPerformed(ActionEvent ae) {
-            QueryDescriptor query = getQuery();
-            if (query != null) {
-                Entity root = (Entity) queryRoot.getModel().getSelectedItem();
-
-                if (root != null) {
-                    query.setRoot(root);
-
-                    if (needChangeName) { //not changed by user
-                        /*
-                         * Doing auto name change, following CAY-888 #2
-                         */
-                        String newPrefix = root.getName() + "Query";
-                        newName = newPrefix;
-
-                        DataMap map = mediator.getCurrentDataMap();
-                        long postfix = 1;
-
-                        while (map.getQueryDescriptor(newName) != null) {
-                            newName = newPrefix + (postfix++);
-                        }
-
-                        name.setText(newName);
-                    }
-                }
-            }
-        }
-
-        public void focusGained(FocusEvent e) {
-            //reset new name tracking
-            newName = null;
-
-            QueryDescriptor query = getQuery();
-            if (query != null) {
-                needChangeName = hasDefaultName(query);
-            } else {
-                needChangeName = false;
-            }
-        }
-
-        public void focusLost(FocusEvent e) {
-            if (newName != null) {
-                setQueryName(newName);
-            }
-
-            newName = null;
-            needChangeName = false;
-        }
-
-        /**
-         * @return whether specified's query name is 'default' i.e. Cayenne generated
-         * A query's name is 'default' if it starts with 'UntitledQuery' or with root name.
-         *
-         * We cannot follow user input because tab might be opened many times
-         */
-        boolean hasDefaultName(QueryDescriptor query) {
-            String prefix = query.getRoot() == null ? "UntitledQuery" :
-                    CellRenderers.asString(query.getRoot()) + "Query";
-
-            return name.getComponent().getText().startsWith(prefix);
-        }
     }
 
     /**
@@ -319,7 +186,7 @@ public class SQLTemplateMainTab extends JPanel {
     }
 
     final class LabelCapsRenderer extends DefaultListCellRenderer {
-
+        @Override
         public Component getListCellRendererComponent(
                 JList list,
                 Object object,
@@ -333,22 +200,20 @@ public class SQLTemplateMainTab extends JPanel {
 
     final class SQLTemplateQueryPropertiesPanel extends RawQueryPropertiesPanel {
 
-        private JComboBox labelCase;
+        private JComboBox<CapsStrategy> labelCase;
 
         SQLTemplateQueryPropertiesPanel(ProjectController mediator) {
             super(mediator);
         }
 
+        @Override
         protected PanelBuilder createPanelBuilder() {
             labelCase = Application.getWidgetFactory().createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
 
-            labelCase.addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent event) {
-                    CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
-                    setQueryProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY, value.name());
-                }
+            labelCase.addActionListener(event -> {
+                CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
+                setQueryProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY, value.name());
             });
 
             PanelBuilder builder = super.createPanelBuilder();
@@ -365,25 +230,27 @@ public class SQLTemplateMainTab extends JPanel {
             return builder;
         }
 
+        @Override
         public void initFromModel(QueryDescriptor query) {
             super.initFromModel(query);
 
             if (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
-                DefaultComboBoxModel labelCaseModel = new DefaultComboBoxModel(
-                        LABEL_CAPITALIZATION);
-
+                DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
                 String columnNameCapitalization = query.getProperty(SQLTemplate.COLUMN_NAME_CAPITALIZATION_PROPERTY);
 
-                labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
-                        CapsStrategy.valueOf(columnNameCapitalization) : CapsStrategy.DEFAULT);
+                labelCaseModel.setSelectedItem(columnNameCapitalization != null
+                        ? CapsStrategy.valueOf(columnNameCapitalization)
+                        : CapsStrategy.DEFAULT);
                 labelCase.setModel(labelCaseModel);
             }
         }
 
+        @Override
         protected void setEntity(ObjEntity entity) {
             SQLTemplateMainTab.this.setEntity(entity);
         }
 
+        @Override
         public ObjEntity getEntity(QueryDescriptor query) {
             if (query != null && QueryDescriptor.SQL_TEMPLATE.equals(query.getType())) {
                 return SQLTemplateMainTab.this.getEntity(query);
@@ -399,5 +266,5 @@ public class SQLTemplateMainTab extends JPanel {
                 setEntity(null);
             }
         }
-    };
+    }
 }
