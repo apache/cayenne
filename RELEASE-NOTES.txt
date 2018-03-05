@@ -24,6 +24,7 @@ CAY-2396 Upgrade maven-assembly-plugin to 3.1.0
 CAY-2403 Extract eventbridges to top level
 CAY-2404 Move itests to maven-plugins
 CAY-2406 Add prefetch-related API to SQLSelect
+CAY-2407 Modeler: add prefetch support for the SQLTemplate query
 
 Bug Fixes:
 

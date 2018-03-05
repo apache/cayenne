@@ -75,6 +75,7 @@ public class QueryDescriptorLoader {
                 break;
             case QueryDescriptor.SQL_TEMPLATE:
                 ((SQLTemplateDescriptor) descriptor).setSql(sql);
+                ((SQLTemplateDescriptor) descriptor).setPrefetches(prefetches);
                 ((SQLTemplateDescriptor) descriptor).setAdapterSql(adapterSql);
                 break;
             case QueryDescriptor.EJBQL_QUERY:

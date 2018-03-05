@@ -25,22 +25,35 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,12 +82,14 @@ public class SQLTemplateMainTab extends JPanel {
     protected ProjectController mediator;
     protected TextAdapter name;
     protected TextAdapter comment;
+    protected JComboBox<ObjEntity> queryRoot;
     protected SelectPropertiesPanel properties;
 
     public SQLTemplateMainTab(ProjectController mediator) {
         this.mediator = mediator;
 
         initView();
+        initController();
     }
 
     private void initView() {
@@ -93,13 +108,17 @@ public class SQLTemplateMainTab extends JPanel {
             }
         };
 
+        queryRoot = Application.getWidgetFactory().createComboBox();
+        AutoCompletion.enable(queryRoot);
+        queryRoot.setRenderer(CellRenderers.listRendererWithIcons());
+
         properties = new SQLTemplateQueryPropertiesPanel(mediator);
 
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
                 "right:max(80dlu;pref), 3dlu, fill:max(200dlu;pref)",
-                "p, 3dlu, p, 3dlu, p");
+                "p, 3dlu, p, 3dlu, p, 3dlu, p");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
@@ -108,10 +127,20 @@ public class SQLTemplateMainTab extends JPanel {
         builder.add(name.getComponent(), cc.xy(3, 3));
         builder.addLabel("Comment:", cc.xy(1, 5));
         builder.add(comment.getComponent(), cc.xy(3, 5));
+        builder.addLabel("Query Root:", cc.xy(1, 7));
+        builder.add(queryRoot, cc.xy(3, 7));
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.NORTH);
         this.add(properties, BorderLayout.CENTER);
+    }
+
+    private void initController() {
+        RootSelectionHandler rootHandler = new RootSelectionHandler();
+
+        queryRoot.addActionListener(rootHandler);
+        queryRoot.addFocusListener(rootHandler);
+        queryRoot.getEditor().getEditorComponent().addFocusListener(rootHandler);
     }
 
     /**
@@ -129,6 +158,17 @@ public class SQLTemplateMainTab extends JPanel {
         name.setText(query.getName());
         properties.initFromModel(query);
         comment.setText(getQueryComment(query));
+
+        DataMap map = mediator.getCurrentDataMap();
+        ObjEntity[] roots = map.getObjEntities().toArray(new ObjEntity[0]);
+
+        if (roots.length > 1) {
+            Arrays.sort(roots, Comparators.getDataMapChildrenComparator());
+        }
+
+        DefaultComboBoxModel<ObjEntity> model = new DefaultComboBoxModel<>(roots);
+        model.setSelectedItem(query.getRoot());
+        queryRoot.setModel(model);
 
         setVisible(true);
     }
@@ -173,6 +213,76 @@ public class SQLTemplateMainTab extends JPanel {
             throw new ValidationException("There is another query named '"
                     + newName
                     + "'. Use a different name.");
+        }
+    }
+
+    /**
+     * Handler to user's actions with root selection combobox
+     */
+    class RootSelectionHandler implements FocusListener, ActionListener {
+        String newName = null;
+        boolean needChangeName;
+
+        public void actionPerformed(ActionEvent ae) {
+            QueryDescriptor query = getQuery();
+            if (query != null) {
+                Entity root = (Entity) queryRoot.getModel().getSelectedItem();
+
+                if (root != null) {
+                    query.setRoot(root);
+
+                    if (needChangeName) { //not changed by user
+                        /*
+                         * Doing auto name change, following CAY-888 #2
+                         */
+                        String newPrefix = root.getName() + "Query";
+                        newName = newPrefix;
+
+                        DataMap map = mediator.getCurrentDataMap();
+                        long postfix = 1;
+
+                        while (map.getQueryDescriptor(newName) != null) {
+                            newName = newPrefix + (postfix++);
+                        }
+
+                        name.setText(newName);
+                    }
+                }
+            }
+        }
+
+        public void focusGained(FocusEvent e) {
+            //reset new name tracking
+            newName = null;
+
+            QueryDescriptor query = getQuery();
+            if (query != null) {
+                needChangeName = hasDefaultName(query);
+            } else {
+                needChangeName = false;
+            }
+        }
+
+        public void focusLost(FocusEvent e) {
+            if (newName != null) {
+                setQueryName(newName);
+            }
+
+            newName = null;
+            needChangeName = false;
+        }
+
+        /**
+         * @return whether specified's query name is 'default' i.e. Cayenne generated
+         * A query's name is 'default' if it starts with 'UntitledQuery' or with root name.
+         *
+         * We cannot follow user input because tab might be opened many times
+         */
+        boolean hasDefaultName(QueryDescriptor query) {
+            String prefix = query.getRoot() == null ? "UntitledQuery" :
+                    CellRenderers.asString(query.getRoot()) + "Query";
+
+            return name.getComponent().getText().startsWith(prefix);
         }
     }
 
