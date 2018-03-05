@@ -41,8 +41,10 @@ import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -51,31 +53,34 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
+/**
+ * Class configured to work with prefetches.
+ */
 public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeListener {
 
     // property for split pane divider size
     private static final String SPLIT_DIVIDER_LOCATION_PROPERTY = "query.orderings.divider.location";
 
+    private static final String JOINT_PREFETCH_SEMANTICS = "Joint";
+    private static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
+    private static final String UNDEFINED_SEMANTICS = "Undefined semantics";
+
     static final Dimension BROWSER_CELL_DIM = new Dimension(150, 100);
     static final Dimension TABLE_DIM = new Dimension(460, 60);
-
-    static final String PATH_HEADER = "Path";
-    static final String ASCENDING_HEADER = "Ascending";
-    static final String IGNORE_CASE_HEADER = "Ignore Case";
 
     static final String REAL_PANEL = "real";
     static final String PLACEHOLDER_PANEL = "placeholder";
@@ -97,7 +102,6 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     }
 
     protected void initView() {
-
         messagePanel = new JPanel(new BorderLayout());
         cardLayout = new CardLayout();
 
@@ -122,14 +126,10 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     }
 
     protected void initController() {
-
         // scroll to selected row whenever a selection even occurs
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    UIUtil.scrollToSelectedRow(table);
-                }
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                UIUtil.scrollToSelectedRow(table);
             }
         });
     }
@@ -149,7 +149,9 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
         this.sqlTemplate = (SQLTemplateDescriptor) query;
         browser.setModel(createBrowserModel((Entity) sqlTemplate.getRoot()));
+
         table.setModel(createTableModel());
+        setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
         // init column sizes
         table.getColumnModel().getColumn(0).setPreferredWidth(250);
@@ -163,6 +165,22 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         messagePanel.removeAll();
         messagePanel.add(messageLabel, BorderLayout.CENTER);
         cardLayout.show(this, PLACEHOLDER_PANEL);
+    }
+
+    protected void setUpPrefetchBox(TableColumn column) {
+
+        JComboBox prefetchBox = new JComboBox();
+        prefetchBox.addItem(JOINT_PREFETCH_SEMANTICS);
+        prefetchBox.addItem(DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+
+        prefetchBox.addActionListener(e -> Application.getInstance().getFrameController().getEditorView().getEventController().setDirty(true));
+
+        column.setCellEditor(new DefaultCellEditor(prefetchBox));
+
+        DefaultTableCellRenderer renderer =
+                new DefaultTableCellRenderer();
+        renderer.setToolTipText("Click for combo box");
+        column.setCellRenderer(renderer);
     }
 
     protected JPanel createEditorPanel() {
@@ -180,6 +198,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     }
 
     protected JPanel createSelectorPanel() {
+
         browser = new MultiColumnBrowser();
         browser.setPreferredColumnSize(BROWSER_CELL_DIM);
         browser.setDefaultRenderer();
@@ -206,19 +225,16 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         add.setIcon(addIcon);
         add.setDisabledIcon(FilteredIconFactory.createDisabledIcon(addIcon));
 
-        add.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String prefetch = getSelectedPath();
+        add.addActionListener(e -> {
+            String prefetch = getSelectedPath();
 
-                if (prefetch == null) {
-                    return;
-                }
-
-                addPrefetch(prefetch);
-
-                Application.getInstance().getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
+            if (prefetch == null) {
+                return;
             }
 
+            addPrefetch(prefetch);
+
+            Application.getInstance().getUndoManager().addEdit(new AddPrefetchUndoableEditForSqlTemplate(prefetch, SQLTemplatePrefetchTab.this));
         });
 
         JButton remove = new CayenneAction.CayenneToolbarButton(null, 3);
@@ -227,20 +243,13 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         remove.setIcon(removeIcon);
         remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
 
-        remove.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                int selection = table.getSelectedRow();
-
-                if (selection < 0) {
-                    return;
-                }
-
-                String prefetch = (String) table.getModel().getValueAt(selection, 0);
-
-                removePrefetch(prefetch);
+        remove.addActionListener(e -> {
+            int selection = table.getSelectedRow();
+            if (selection < 0) {
+                return;
             }
-
+            String prefetch = (String) table.getModel().getValueAt(selection, 0);
+            removePrefetch(prefetch);
         });
 
         JToolBar toolBar = new JToolBar();
@@ -252,6 +261,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     }
 
     protected String getSelectedPath() {
+
         Object[] path = browser.getSelectionPath().getPath();
 
         // first item in the path is Entity, so we must have
@@ -275,6 +285,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     }
 
     protected TreeModel createBrowserModel(Entity entity) {
+
         EntityTreeModel treeModel = new EntityTreeModel(entity);
         treeModel.setFilter(
                 new EntityTreeFilter() {
@@ -296,14 +307,16 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
     public void addPrefetch(String prefetch) {
 
         // check if such prefetch already exists
-        if (!sqlTemplate.getPrefetches().isEmpty() && sqlTemplate.getPrefetches().contains(prefetch)) {
+        if (!sqlTemplate.getPrefetchesMap().isEmpty() && sqlTemplate.getPrefetchesMap().containsKey(prefetch)) {
             return;
         }
 
-        sqlTemplate.addPrefetch(prefetch);
+        //default value is joint
+        sqlTemplate.addPrefetch(prefetch, getPrefetchType(DISJOINT_BY_ID_PREFETCH_SEMANTICS));
 
         // reset the model, since it is immutable
         table.setModel(createTableModel());
+        setUpPrefetchBox(table.getColumnModel().getColumn(2));
 
         mediator.fireQueryEvent(new QueryEvent(this, sqlTemplate));
     }
@@ -313,6 +326,8 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
         // reset the model, since it is immutable
         table.setModel(createTableModel());
+        setUpPrefetchBox(table.getColumnModel().getColumn(2));
+
         mediator.fireQueryEvent(new QueryEvent(this, sqlTemplate));
     }
 
@@ -358,8 +373,30 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         return SPLIT_DIVIDER_LOCATION_PROPERTY;
     }
 
+    protected int getPrefetchType(String semantics) {
+
+        //case 2: disjoint isn't use for SQLTemplate prefetch
+        switch (semantics){
+            case "Joint" :
+                return 1;
+            case "Disjoint by id":
+                return 3;
+            default: return 0;
+        }
+    }
+
+    protected String getPrefetchTypeString(int semantics) {
+        switch (semantics){
+            case 1 :
+                return JOINT_PREFETCH_SEMANTICS;
+            case 3:
+                return DISJOINT_BY_ID_PREFETCH_SEMANTICS;
+            default: return UNDEFINED_SEMANTICS;
+        }
+    }
+
     /**
-     * A table model for the Ordering editing table.
+     * A table model for the Prefetch table.
      */
     final class PrefetchModel extends AbstractTableModel {
 
@@ -367,16 +404,16 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
 
         PrefetchModel() {
             if (sqlTemplate != null) {
-                prefetches = new String[sqlTemplate.getPrefetches().size()];
-
-                for (int i = 0; i < prefetches.length; i++) {
-                    prefetches[i] = sqlTemplate.getPrefetches().get(i);
+                prefetches = new String[sqlTemplate.getPrefetchesMap().size()];
+                List<String> list = new ArrayList<>(sqlTemplate.getPrefetchesMap().keySet());
+                for(int i = 0; i < list.size(); i++){
+                    prefetches[i] = list.get(i);
                 }
             }
         }
 
         public int getColumnCount() {
-            return 2;
+            return 3;
         }
 
         public int getRowCount() {
@@ -389,6 +426,8 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
                     return prefetches[row];
                 case 1:
                     return isToMany(prefetches[row]) ? Boolean.TRUE : Boolean.FALSE;
+                case 2:
+                    return getPrefetchTypeString(sqlTemplate.getPrefetchesMap().get(prefetches[row]));
                 default:
                     throw new IndexOutOfBoundsException("Invalid column: " + column);
             }
@@ -400,6 +439,8 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
                     return String.class;
                 case 1:
                     return Boolean.class;
+                case 2:
+                    return String.class;
                 default:
                     throw new IndexOutOfBoundsException("Invalid column: " + column);
             }
@@ -411,13 +452,23 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
                     return "Prefetch Path";
                 case 1:
                     return "To Many";
+                case 2:
+                    return "Prefetch Type";
                 default:
                     throw new IndexOutOfBoundsException("Invalid column: " + column);
             }
         }
 
         public boolean isCellEditable(int row, int column) {
-            return false;
+            return column == 2 ? true : false;
+        }
+
+        public void setValueAt(Object value, int row, int column) {
+            switch (column) {
+                case 2:
+                    sqlTemplate.addPrefetch(prefetches[row],getPrefetchType((String)value));
+                    break;
+            }
         }
     }
 }
