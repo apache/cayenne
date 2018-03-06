@@ -42,6 +42,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.PathComponent;
+import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
@@ -55,6 +56,8 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -71,6 +74,8 @@ import java.util.Set;
  * @since 4.0
  */
 public class DefaultSelectTranslator extends QueryAssembler implements SelectTranslator {
+
+	private static final Logger logger = LoggerFactory.getLogger(SelectTranslator.class);
 
 	protected static final int[] UNSUPPORTED_DISTINCT_TYPES = { Types.BLOB, Types.CLOB, Types.NCLOB,
 			Types.LONGVARBINARY, Types.LONGVARCHAR, Types.LONGNVARCHAR };
@@ -110,6 +115,8 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	 */
 	AddJoinListener joinListener;
 
+	JointPrefetchChecker jointPrefetchChecker = new JointPrefetchChecker();
+
 
 	public DefaultSelectTranslator(Query query, DbAdapter adapter, EntityResolver entityResolver) {
 		super(query, adapter, entityResolver);
@@ -128,6 +135,8 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 	@Override
 	protected void doTranslate() {
+
+		checkLimitAndJointPrefetch();
 
 		DataMap dataMap = queryMetadata.getDataMap();
 		JoinStack joins = getJoinStack();
@@ -246,6 +255,22 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		}
 
 		this.sql = queryBuf.toString();
+	}
+
+	/**
+	 * Warn user in case query uses both limit and joint prefetch, as we don't support this combination.
+	 */
+	private void checkLimitAndJointPrefetch() {
+		if(queryMetadata.getFetchLimit() == 0 && queryMetadata.getFetchOffset() == 0) {
+			return;
+		}
+
+		if(!jointPrefetchChecker.haveJointNode(queryMetadata.getPrefetchTree())) {
+			return;
+		}
+
+		logger.warn("Query uses both limit and joint prefetch, this most probably will lead to incorrect result. " +
+				"Either use disjointById prefetch or get full result set.");
 	}
 
 	/**
@@ -924,5 +949,48 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 	interface AddJoinListener {
 		void joinAdded();
+	}
+
+	private static class JointPrefetchChecker implements PrefetchProcessor {
+		private boolean haveJointNode;
+
+		public JointPrefetchChecker() {
+		}
+
+		public boolean haveJointNode(PrefetchTreeNode prefetchTree) {
+			haveJointNode = false;
+			prefetchTree.traverse(this);
+			return haveJointNode;
+		}
+
+		@Override
+        public boolean startPhantomPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+		@Override
+        public boolean startDisjointPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+		@Override
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode prefetchTreeNode) {
+            return true;
+        }
+
+		@Override
+        public boolean startJointPrefetch(PrefetchTreeNode node) {
+            haveJointNode = true;
+            return false;
+        }
+
+		@Override
+        public boolean startUnknownPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+		@Override
+        public void finishPrefetch(PrefetchTreeNode node) {
+        }
 	}
 }
