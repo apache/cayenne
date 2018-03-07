@@ -39,28 +39,25 @@ class CallbackNameBuilder extends NameBuilder {
                 ? this.baseName
                 : "onEvent";
 
-        return new DeduplicationVisitor(parent, baseName, dupesPattern).resolve(new DeduplicationVisitor.Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
+        return new DeduplicationVisitor(parent, baseName, dupesPattern).resolve(name -> {
 
-                ObjEntity entity = (ObjEntity) parent;
+            ObjEntity entity = (ObjEntity) parent;
 
-                if (entity.getCallbackMethods().contains(name)) {
+            if (entity.getCallbackMethods().contains(name)) {
+                return true;
+            }
+
+            if (name.startsWith("get")) {
+                String conflictingProperty = NameUtil.uncapitalize(name.substring(3));
+
+                // check if either attribute or relationship name matches...
+                if (entity.getAttribute(conflictingProperty) != null
+                        || entity.getRelationship(conflictingProperty) != null) {
                     return true;
                 }
-
-                if (name.startsWith("get")) {
-                    String conflictingProperty = NameUtil.uncapitalize(name.substring(3));
-
-                    // check if either attribute or relationship name matches...
-                    if (entity.getAttribute(conflictingProperty) != null
-                            || entity.getRelationship(conflictingProperty) != null) {
-                        return true;
-                    }
-                }
-
-                return false;
             }
+
+            return false;
         });
     }
 

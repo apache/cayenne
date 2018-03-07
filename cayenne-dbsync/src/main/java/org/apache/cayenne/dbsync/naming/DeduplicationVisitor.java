@@ -36,11 +36,11 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * @since 4.0
  */
-// TODO: swap inner classes for lambdas when we are on java 8
 class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
 
     private ConfigurationNode parent;
@@ -61,85 +61,56 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
 
     @Override
     public String visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-
-                DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) parent;
-                for (DataNodeDescriptor dataNodeDescriptor : dataChannelDescriptor.getNodeDescriptors()) {
-                    if (dataNodeDescriptor.getName().equals(name)) {
-                        return true;
-                    }
+        return resolve(name -> {
+            DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) parent;
+            for (DataNodeDescriptor dataNodeDescriptor : dataChannelDescriptor.getNodeDescriptors()) {
+                if (dataNodeDescriptor.getName().equals(name)) {
+                    return true;
                 }
-
-                return false;
             }
+
+            return false;
         });
     }
 
     @Override
     public String visitDataMap(DataMap dataMap) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-
-                // null context is a situation when DataMap is a
-                // top level object of the project
-                if (parent == null) {
-                    return false;
-                }
-
-                if (parent instanceof DataChannelDescriptor) {
-                    DataChannelDescriptor domain = (DataChannelDescriptor) parent;
-                    return domain.getDataMap(name) != null;
-                }
+        return resolve(name -> {
+            // null context is a situation when DataMap is a
+            // top level object of the project
+            if (parent == null) {
                 return false;
             }
+
+            if (parent instanceof DataChannelDescriptor) {
+                DataChannelDescriptor domain = (DataChannelDescriptor) parent;
+                return domain.getDataMap(name) != null;
+            }
+            return false;
         });
     }
 
     @Override
     public String visitObjEntity(ObjEntity entity) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) parent;
-                return map.getObjEntity(name) != null;
-            }
-        });
+        return resolve(name -> ((DataMap) parent).getObjEntity(name) != null);
     }
 
     @Override
     public String visitDbEntity(DbEntity entity) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) parent;
-                return map.getDbEntity(name) != null;
-            }
-        });
+        return resolve(name -> ((DataMap) parent).getDbEntity(name) != null);
     }
 
     @Override
     public String visitEmbeddable(Embeddable embeddable) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) parent;
-                return map.getEmbeddable(map.getNameWithDefaultPackage(name)) != null;
-            }
+        return resolve(name -> {
+            DataMap map = (DataMap) parent;
+            return map.getEmbeddable(map.getNameWithDefaultPackage(name)) != null;
         });
     }
 
     @Override
     public String visitEmbeddableAttribute(EmbeddableAttribute attribute) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-                Embeddable emb = (Embeddable) parent;
-                return emb.getAttribute(name) != null;
-            }
-        });
+        return resolve(name -> ((Embeddable) parent).getAttribute(name) != null);
     }
 
     @Override
@@ -164,51 +135,36 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
 
     @Override
     public String visitProcedure(Procedure procedure) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) parent;
-                return map.getProcedure(name) != null;
-            }
-        });
+        return resolve(name -> ((DataMap) parent).getProcedure(name) != null);
     }
 
     @Override
     public String visitProcedureParameter(ProcedureParameter parameter) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
+        return resolve(name -> {
 
-                // it doesn't matter if we create a parameter with a duplicate name.. parameters are positional anyway..
-                // still try to use unique names for visual consistency
+            // it doesn't matter if we create a parameter with a duplicate name.. parameters are positional anyway..
+            // still try to use unique names for visual consistency
 
-                Procedure procedure = (Procedure) parent;
-                for (ProcedureParameter parameter : procedure.getCallParameters()) {
-                    if (name.equals(parameter.getName())) {
-                        return true;
-                    }
+            Procedure procedure = (Procedure) parent;
+            for (ProcedureParameter parameter1 : procedure.getCallParameters()) {
+                if (name.equals(parameter1.getName())) {
+                    return true;
                 }
-
-                return false;
             }
+
+            return false;
         });
     }
 
     @Override
     public String visitQuery(QueryDescriptor query) {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-                DataMap map = (DataMap) parent;
-                return map.getQueryDescriptor(name) != null;
-            }
-        });
+        return resolve(name -> ((DataMap) parent).getQueryDescriptor(name) != null);
     }
 
-    String resolve(Predicate nameChecker) {
+    String resolve(Predicate<String> nameChecker) {
         int c = 1;
         String name = baseName;
-        while (nameChecker.isNameInUse(name)) {
+        while (nameChecker.test(name)) {
             name = String.format(dupesPattern, baseName, c++);
         }
 
@@ -216,38 +172,25 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
     }
 
     private String resolveDbEntityProperty() {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
-
-                DbEntity entity = (DbEntity) parent;
-
-                // check if either attribute or relationship name matches...
-                return entity.getAttribute(name) != null || entity.getRelationship(name) != null;
-            }
+        return resolve(name -> {
+            DbEntity entity = (DbEntity) parent;
+            // check if either attribute or relationship name matches...
+            return entity.getAttribute(name) != null || entity.getRelationship(name) != null;
         });
     }
 
     private String resolveObjEntityProperty() {
-        return resolve(new Predicate() {
-            @Override
-            public boolean isNameInUse(String name) {
+        return resolve(name -> {
+            ObjEntity entity = (ObjEntity) parent;
 
-                ObjEntity entity = (ObjEntity) parent;
-
-                // check if either attribute or relationship name matches...
-                if (entity.getAttribute(name) != null || entity.getRelationship(name) != null) {
-                    return true;
-                }
-
-                //  check if there's a callback method that shadows attribute getter (unlikely, but still)
-                String conflictingCallback = "get" + NameUtil.capitalize(name);
-                return entity.getCallbackMethods().contains(conflictingCallback);
+            // check if either attribute or relationship name matches...
+            if (entity.getAttribute(name) != null || entity.getRelationship(name) != null) {
+                return true;
             }
-        });
-    }
 
-    interface Predicate {
-        boolean isNameInUse(String name);
+            //  check if there's a callback method that shadows attribute getter (unlikely, but still)
+            String conflictingCallback = "get" + NameUtil.capitalize(name);
+            return entity.getCallbackMethods().contains(conflictingCallback);
+        });
     }
 }
