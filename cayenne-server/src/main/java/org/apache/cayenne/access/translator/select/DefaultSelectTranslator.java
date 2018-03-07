@@ -261,6 +261,10 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 	 * Warn user in case query uses both limit and joint prefetch, as we don't support this combination.
 	 */
 	private void checkLimitAndJointPrefetch() {
+		if(queryMetadata.getPrefetchTree() == null) {
+			return;
+		}
+
 		if(queryMetadata.getFetchLimit() == 0 && queryMetadata.getFetchOffset() == 0) {
 			return;
 		}
