@@ -393,6 +393,8 @@ public class ServerModule implements Module {
         // DbAdapters
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
 
+        //a default PkGeneratorFactory used to load custom and automatic
+        //PkGenerators
         binder.bind(PkGeneratorFactory.class).to(DefaultPkGeneratorFactory.class);
 
         // binding AshwoodEntitySorter without scope, as this is a stateful

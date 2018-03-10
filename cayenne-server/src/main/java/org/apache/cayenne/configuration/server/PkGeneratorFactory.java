@@ -7,6 +7,9 @@ import org.apache.cayenne.dba.PkGenerator;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+/**
+ * Interface for generator definition
+ */
 public interface PkGeneratorFactory {
 
     /**
