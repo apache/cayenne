@@ -34,7 +34,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.log.JdbcEventLogger;
 
 /**
@@ -53,13 +52,13 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
 	@Inject
 	protected AdhocObjectFactory objectFactory;
+
 	protected List<DbAdapterDetector> detectors;
 
 	public DefaultDbAdapterFactory(@Inject(Constants.SERVER_ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
 		if (detectors == null) {
 			throw new NullPointerException("Null detectors list");
 		}
-
 		this.detectors = detectors;
 	}
 
@@ -92,7 +91,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 			return defaultAdapter();
 		}
 
-		try (Connection c = dataSource.getConnection();) {
+		try (Connection c = dataSource.getConnection()) {
 			return detectAdapter(c.getMetaData());
 		} catch (SQLException e) {
 			throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);

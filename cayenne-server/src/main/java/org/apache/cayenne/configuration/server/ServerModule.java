@@ -82,6 +82,7 @@ import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -94,7 +95,9 @@ import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
+import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
+import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -128,6 +131,9 @@ import org.xml.sax.XMLReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static org.apache.cayenne.dba.DbVersion.MS_SQL_2008;
+import static org.apache.cayenne.dba.DbVersion.MS_SQL_2012;
+
 /**
  * A DI module containing all Cayenne server runtime configuration.
  *
@@ -140,7 +146,7 @@ public class ServerModule implements Module {
     /**
      * Sets transaction management to either external or internal transactions. Default is internally-managed transactions.
      *
-     * @param binder  DI binder passed to the module during injector startup.
+     * @param binder      DI binder passed to the module during injector startup.
      * @param useExternal whether external (true) or internal (false) transaction management should be used.
      * @since 4.0
      */
@@ -152,7 +158,7 @@ public class ServerModule implements Module {
      * Sets max size of snapshot cache, in pre 4.0 version this was set in the Modeler.
      *
      * @param binder DI binder passed to the module during injector startup.
-     * @param size max size of snapshot cache
+     * @param size   max size of snapshot cache
      * @since 4.0
      */
     public static void setSnapshotCacheSize(Binder binder, int size) {
@@ -207,6 +213,17 @@ public class ServerModule implements Module {
     }
 
     /**
+     * Provides access to a DI map builder for {@link PkGenerator}'s that allows downstream modules to
+     * "contribute" their own pk generators.
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return MapBuilder for properties.
+     */
+    public static MapBuilder<Class> contributePkGenerators(Binder binder) {
+        return binder.bindMap(Class.class, Constants.SERVER_PK_GENERATORS_MAP);
+    }
+
+    /**
      * Provides access to a DI map builder for runtime properties that allows downstream modules to
      * "contribute" their own properties.
      *
@@ -257,7 +274,6 @@ public class ServerModule implements Module {
     }
 
     /**
-     *
      * @param binder DI binder passed to module during injector startup
      * @return ListBuilder for user-contributed ValueObjectTypes
      * @since 4.0
@@ -292,6 +308,10 @@ public class ServerModule implements Module {
                 .add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
                 .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
                 .add(MySQLSniffer.class);
+
+        contributePkGenerators(binder)
+                .put(String.valueOf(MS_SQL_2008), SybasePkGenerator.class) //adding a generator for MS SQL version 2012 and higher
+                .put(String.valueOf(MS_SQL_2012), SQLServerPkGenerator.class); //adding a generator since MS SQL version 2012
 
         // configure a filter chain with only one TransactionFilter as default
         contributeDomainFilters(binder).add(TransactionFilter.class);
@@ -336,8 +356,8 @@ public class ServerModule implements Module {
 
         binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
 
-		// a service to provide the main stack DataDomain
-		binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
+        // a service to provide the main stack DataDomain
+        binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
 
         binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
 
@@ -372,6 +392,8 @@ public class ServerModule implements Module {
         // a default DBAdapterFactory used to load custom and automatic
         // DbAdapters
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+
+        binder.bind(PkGeneratorFactory.class).to(DefaultPkGeneratorFactory.class);
 
         // binding AshwoodEntitySorter without scope, as this is a stateful
         // object and is

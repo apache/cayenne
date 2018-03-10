@@ -19,31 +19,42 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactory;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.DbVersion;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
+import static org.apache.cayenne.dba.DbVersion.DbType.MS_SQL;
+
 /**
  * Detects SQLServer database from JDBC metadata.
- * 
+ *
  * @since 1.2
  */
 public class SQLServerSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory) {
+    protected PkGeneratorFactory pkGeneratorFactory;
+
+    private final DbVersion.DbType dbType;
+
+    public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory, @Inject PkGeneratorFactory pkGeneratorFactory) {
         this.objectFactory = objectFactory;
+        this.pkGeneratorFactory = pkGeneratorFactory;
+        this.dbType = MS_SQL;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("MICROSOFT SQL SERVER")) {
+        if (dbName == null || !dbName.toUpperCase().contains(dbType.getType())) {
             return null;
         }
 
@@ -54,16 +65,23 @@ public class SQLServerSniffer implements DbAdapterDetector {
         // detect whether generated keys are supported
 
         boolean generatedKeys = false;
+        PkGenerator pkGenerator = null;
+
         try {
             generatedKeys = md.supportsGetGeneratedKeys();
-        }
-        catch (Throwable th) {
+            if (generatedKeys) {
+                pkGenerator = pkGeneratorFactory.detectPkGenerator(dbType, adapter, md);
+            }
+        } catch (Throwable th) {
             // catch exceptions resulting from incomplete JDBC3 implementation
             // ** we have to catch Throwable, as unimplemented methods would result in
             // "AbstractMethodError".
         }
-
         adapter.setSupportsGeneratedKeys(generatedKeys);
+        if (pkGenerator != null) {
+            adapter.setPkGenerator(pkGenerator);
+        }
+
         return adapter;
     }
 }

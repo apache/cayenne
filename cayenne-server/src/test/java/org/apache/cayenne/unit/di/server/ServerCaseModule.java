@@ -56,9 +56,7 @@ import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.configuration.server.*;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -82,7 +80,9 @@ import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
+import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
+import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -120,6 +120,9 @@ import org.xml.sax.XMLReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import static org.apache.cayenne.dba.DbVersion.MS_SQL_2008;
+import static org.apache.cayenne.dba.DbVersion.MS_SQL_2012;
+
 public class ServerCaseModule implements Module {
 
     protected DefaultScope testScope;
@@ -156,7 +159,11 @@ public class ServerCaseModule implements Module {
                 // Use soft references instead of default weak.
                 // Should remove problems with random-failing tests (those that are GC-sensitive).
                 .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
-        
+
+        ServerModule.contributePkGenerators(binder)
+                .put(String.valueOf(MS_SQL_2008), SybasePkGenerator.class)
+                .put(String.valueOf(MS_SQL_2012), SQLServerPkGenerator.class);
+
         // configure extended types
         ServerModule.contributeDefaultTypes(binder)
                 .add(new VoidType())
@@ -200,6 +207,7 @@ public class ServerCaseModule implements Module {
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(JdbcAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);
+        binder.bind(PkGeneratorFactory.class).to(DefaultPkGeneratorFactory.class);
 
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed

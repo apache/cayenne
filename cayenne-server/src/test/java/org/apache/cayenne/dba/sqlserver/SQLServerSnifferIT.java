@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.configuration.server.PkGeneratorFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -47,10 +48,13 @@ public class SQLServerSnifferIT extends ServerCase {
 	@Inject
 	private AdhocObjectFactory objectFactory;
 
+	@Inject
+	private PkGeneratorFactory pkGeneratorFactory;
+
 	@Test
 	public void testCreateAdapter() throws Exception {
 
-		SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
+		SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory, pkGeneratorFactory);
 
 		DbAdapter adapter = null;
 

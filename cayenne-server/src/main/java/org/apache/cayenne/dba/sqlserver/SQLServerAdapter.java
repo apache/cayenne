@@ -119,9 +119,4 @@ public class SQLServerAdapter extends SybaseAdapter {
 		translator.setCaseInsensitive(caseInsensitiveCollations);
 		return translator;
 	}
-
-	@Override
-	protected PkGenerator createPkGenerator() {
-		return new SQLServerPkGenerator(this);
-	}
 }
