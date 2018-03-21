@@ -240,31 +240,10 @@ public abstract class CayenneAction extends AbstractAction {
 
         public CayenneMenuItem(String title, Icon icon) {
             super(title, icon);
-            updateActiveIcon();
         }
 
         public CayenneMenuItem(AbstractAction action) {
             super(action);
-            updateActiveIcon();
-        }
-
-        protected void updateActiveIcon() {
-            final Icon icon = getIcon();
-            final Icon selectedIcon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.WHITE);
-            // this wouldn't work on MacOS, as it uses native menu
-            addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    if(isEnabled()) {
-                        setIcon(selectedIcon);
-                    }
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    setIcon(icon);
-                }
-            });
         }
     }
 

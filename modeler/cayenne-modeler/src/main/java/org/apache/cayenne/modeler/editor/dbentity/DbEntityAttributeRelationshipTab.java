@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
@@ -107,7 +107,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateObjEntityFromDbAction.class).buildButton(1));
         toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton(2));
         toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();

@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.osx;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.UIManager;
+import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
 
 import org.apache.cayenne.di.Inject;
@@ -81,8 +83,8 @@ public class OSXPlatformInitializer implements PlatformInitializer {
     }
 
     private void overrideUIDefaults() {
-        Color lightGrey = new Color(0xEEEEEE);
-        Color darkGrey  = new Color(225, 225, 225);
+        final Color lightGrey = new Color(0xEEEEEE);
+        final Color darkGrey  = new Color(225, 225, 225);
         Border darkBorder = BorderFactory.createLineBorder(darkGrey);
 
         UIManager.put("ToolBarSeparatorUI",          OSXToolBarSeparatorUI.class.getName());
@@ -97,6 +99,20 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         UIManager.put("SplitPane.border",            BorderFactory.createEmptyBorder());
         UIManager.put("SplitPane.background",        darkGrey);
         UIManager.put("Tree.rendererFillBackground", Boolean.TRUE);
+        UIManager.put("Tree.selectionForeground",    Color.BLACK);
+        UIManager.put("Tree.selectionBackground",    lightGrey);
+        UIManager.put("Tree.selectionBorderColor",   lightGrey);
+
+        Border backgroundPainter = new AbstractBorder() {
+            @Override
+            public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+                g.setColor(lightGrey);
+                g.fillRect(0, 0, width - 1, height - 1);
+            }
+        };
+        UIManager.put("MenuItem.selectedBackgroundPainter", backgroundPainter);
+        UIManager.put("MenuItem.selectionForeground",       Color.BLACK);
+
     }
 
     public void setupMenus(JFrame frame) {

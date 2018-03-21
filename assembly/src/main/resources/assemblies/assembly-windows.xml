@@ -54,7 +54,7 @@
 		</fileSet>
 		<fileSet>
 			<directory>../</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>RELEASE-NOTES.txt</include>
 				<include>UPGRADE.txt</include>

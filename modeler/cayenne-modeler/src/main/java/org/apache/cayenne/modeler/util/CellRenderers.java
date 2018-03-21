@@ -60,23 +60,14 @@ import org.apache.cayenne.util.CayenneMapEntry;
 public final class CellRenderers {
 
     // common icons
-    protected static Icon domainIcon       = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-dom.png"), FilteredIconFactory.FilterType.GRAY);
-    protected static Icon nodeIcon         = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-node.png"), FilteredIconFactory.FilterType.GRAY);
-    protected static Icon mapIcon          = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-datamap.png"), FilteredIconFactory.FilterType.GRAY);
-    protected static Icon dbEntityIcon     = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-dbentity.png"), FilteredIconFactory.FilterType.BLUE);
-    protected static Icon objEntityIcon    = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-objentity.png"), FilteredIconFactory.FilterType.GREEN);
-    protected static Icon procedureIcon    = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-stored-procedure.png"), FilteredIconFactory.FilterType.GRAY);
-    protected static Icon queryIcon        = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-query.png"), FilteredIconFactory.FilterType.GRAY);
-    protected static Icon embeddableIcon   = FilteredIconFactory.createIcon(
-            ModelerUtil.buildIcon("icon-embeddable.png"), FilteredIconFactory.FilterType.VIOLET);
-
+    protected static Icon domainIcon       = ModelerUtil.buildIcon("icon-dom.png");
+    protected static Icon nodeIcon         = ModelerUtil.buildIcon("icon-node.png");
+    protected static Icon mapIcon          = ModelerUtil.buildIcon("icon-datamap.png");
+    protected static Icon dbEntityIcon     = ModelerUtil.buildIcon("icon-dbentity.png");
+    protected static Icon objEntityIcon    = ModelerUtil.buildIcon("icon-objentity.png");
+    protected static Icon procedureIcon    = ModelerUtil.buildIcon("icon-stored-procedure.png");
+    protected static Icon queryIcon        = ModelerUtil.buildIcon("icon-query.png");
+    protected static Icon embeddableIcon   = ModelerUtil.buildIcon("icon-embeddable.png");
     protected static Icon relationshipIcon = ModelerUtil.buildIcon("icon-relationship.png");
     protected static Icon attributeIcon    = ModelerUtil.buildIcon("icon-attribute.png");
 
@@ -218,7 +209,7 @@ public final class CellRenderers {
                 isSelected,
                 cellHasFocus);
 
-            setIcon(isSelected ? FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION) : icon);
+            setIcon(icon);//isSelected ? FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION) : icon);
             setFont(defaultFont);
 
             return this;
@@ -261,7 +252,7 @@ public final class CellRenderers {
             if (showIcons) {
                 Icon icon = iconForObject(value);
                 if(isSelected) {
-                    icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
+//                    icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
                 }
                 setIcon(icon);
             }
@@ -296,7 +287,7 @@ public final class CellRenderers {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
             Icon icon = iconForObject(node.getUserObject());
             if(sel) {
-                icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
+//                icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
             }
             setIcon(icon);
             setFont(defaultFont);
@@ -334,7 +325,7 @@ public final class CellRenderers {
 
             Icon icon = CellRenderers.iconForObject(oldValue);
             if(isSelected) {
-                icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
+//                icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
             }
             setIcon(icon);
             setFont(defaultFont);

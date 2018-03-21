@@ -11,6 +11,11 @@ https://issues.apache.org/jira/browse/CAY
 Release: 4.0.B3
 Date:
 ----------------------------------
+
+Changes/New Features:
+
+CAY-2414 Modeler: new icon design
+
 Bug Fixes:
 
 CAY-2253 Cayenne JDK9 compatibility

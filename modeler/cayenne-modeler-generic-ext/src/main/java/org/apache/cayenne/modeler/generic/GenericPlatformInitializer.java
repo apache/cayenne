@@ -64,18 +64,24 @@ public class GenericPlatformInitializer implements PlatformInitializer {
     }
 
     private void overrideUIDefaults() {
-        UIManager.put("ButtonUI",                  GenericButtonUI.class.getName());
-        UIManager.put("HiResGrayFilterEnabled",    Boolean.TRUE);
-        UIManager.put("Tree.expandedIcon",         ModelerUtil.buildIcon("icon-arrow-open.png"));
-        UIManager.put("Tree.collapsedIcon",        ModelerUtil.buildIcon("icon-arrow-closed.png"));
-        UIManager.put("Tree.paintLines",           Boolean.FALSE);
-        UIManager.put("Tree.selectionBorderColor", UIManager.get("Tree.selectionBackground"));
-        UIManager.put("ScrollPane.border",         BorderFactory.createEmptyBorder());
-        UIManager.put("Table.scrollPaneBorder",    BorderFactory.createEmptyBorder());
-        UIManager.put("SplitPane.border",          BorderFactory.createEmptyBorder());
-        UIManager.put("ToolBar.border",            BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        Color greyHighlight = new Color(0xCBCBCB);
+
+        UIManager.put("ButtonUI",                       GenericButtonUI.class.getName());
+        UIManager.put("HiResGrayFilterEnabled",         Boolean.TRUE);
+        UIManager.put("Tree.expandedIcon",              ModelerUtil.buildIcon("icon-arrow-open.png"));
+        UIManager.put("Tree.collapsedIcon",             ModelerUtil.buildIcon("icon-arrow-closed.png"));
+        UIManager.put("Tree.paintLines",                Boolean.FALSE);
+        UIManager.put("Tree.selectionForeground",       Color.BLACK);
+        UIManager.put("Tree.selectionBackground",       greyHighlight);
+        UIManager.put("Tree.selectionBorderColor",      UIManager.get("Tree.selectionBackground"));
+        UIManager.put("ScrollPane.border",              BorderFactory.createEmptyBorder());
+        UIManager.put("Table.scrollPaneBorder",         BorderFactory.createEmptyBorder());
+        UIManager.put("SplitPane.border",               BorderFactory.createEmptyBorder());
+        UIManager.put("ToolBar.border",                 BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        UIManager.put("MenuItem.selectionBackground",   greyHighlight);
+        UIManager.put("MenuItem.selectionForeground",   Color.BLACK);
         // this one is custom for MainToolBar
-        UIManager.put("MainToolBar.border",        BorderFactory.createLineBorder(Color.GRAY));
+        UIManager.put("MainToolBar.border",             BorderFactory.createLineBorder(Color.GRAY));
     }
 
     protected PlasticTheme findTheme() {

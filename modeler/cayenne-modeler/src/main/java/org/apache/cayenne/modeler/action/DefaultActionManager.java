@@ -73,6 +73,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new CreateDataMapAction(application));
         registerAction(new GenerateCodeAction(application));
         registerAction(new CreateObjEntityAction(application));
+        registerAction(new CreateObjEntityFromDbAction(application));
         registerAction(new CreateDbEntityAction(application));
         registerAction(new CreateProcedureAction(application));
         registerAction(new CreateProcedureParameterAction(application));
@@ -141,14 +142,14 @@ public class DefaultActionManager implements ActionManager {
     }
 
     private void initActions() {
-        SPECIAL_ACTIONS = new HashSet<String>();
+        SPECIAL_ACTIONS = new HashSet<>();
 
         SPECIAL_ACTIONS.addAll(Arrays.asList(
                 SaveAction.class.getName(),
                 UndoAction.class.getName(),
                 RedoAction.class.getName()));
 
-        PROJECT_ACTIONS = new HashSet<String>();
+        PROJECT_ACTIONS = new HashSet<>();
         PROJECT_ACTIONS.addAll(Arrays.asList(
                 RevertAction.class.getName(),
                 ProjectAction.class.getName(),
@@ -156,7 +157,7 @@ public class DefaultActionManager implements ActionManager {
                 SaveAsAction.class.getName(),
                 FindAction.class.getName()));
 
-        DOMAIN_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
+        DOMAIN_ACTIONS = new HashSet<>(PROJECT_ACTIONS);
         DOMAIN_ACTIONS.addAll(Arrays.asList(
                 ImportDataMapAction.class.getName(),
                 CreateDataMapAction.class.getName(),
@@ -167,12 +168,12 @@ public class DefaultActionManager implements ActionManager {
                 GenerateDBAction.class.getName(),
                 PasteAction.class.getName()));
 
-        DATA_NODE_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
+        DATA_NODE_ACTIONS = new HashSet<>(DOMAIN_ACTIONS);
         DATA_NODE_ACTIONS.addAll(Arrays.asList(
                 LinkDataMapsAction.class.getName(),
                 RemoveAction.class.getName()));
 
-        DATA_MAP_ACTIONS = new HashSet<String>(DOMAIN_ACTIONS);
+        DATA_MAP_ACTIONS = new HashSet<>(DOMAIN_ACTIONS);
         DATA_MAP_ACTIONS.addAll(Arrays.asList(
                 CreateEmbeddableAction.class.getName(),
                 CreateObjEntityAction.class.getName(),
@@ -185,7 +186,7 @@ public class DefaultActionManager implements ActionManager {
                 CutAction.class.getName(),
                 CopyAction.class.getName()));
 
-        OBJ_ENTITY_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+        OBJ_ENTITY_ACTIONS = new HashSet<>(DATA_MAP_ACTIONS);
 
         OBJ_ENTITY_ACTIONS.addAll(Arrays.asList(
                 ObjEntitySyncAction.class.getName(),
@@ -195,25 +196,26 @@ public class DefaultActionManager implements ActionManager {
                 ObjEntityToSuperEntityAction.class.getName(),
                 ShowGraphEntityAction.class.getName()));
 
-        DB_ENTITY_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+        DB_ENTITY_ACTIONS = new HashSet<>(DATA_MAP_ACTIONS);
 
         DB_ENTITY_ACTIONS.addAll(Arrays.asList(
                 CreateAttributeAction.class.getName(),
                 CreateRelationshipAction.class.getName(),
                 DbEntitySyncAction.class.getName(),
                 DbEntityCounterpartAction.class.getName(),
-                ShowGraphEntityAction.class.getName()));
+                ShowGraphEntityAction.class.getName(),
+                CreateObjEntityFromDbAction.class.getName()));
 
-        EMBEDDABLE_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+        EMBEDDABLE_ACTIONS = new HashSet<>(DATA_MAP_ACTIONS);
 
-        EMBEDDABLE_ACTIONS.addAll(Arrays.asList(CreateAttributeAction.class.getName()));
+        EMBEDDABLE_ACTIONS.addAll(Collections.singletonList(CreateAttributeAction.class.getName()));
 
-        PROCEDURE_ACTIONS = new HashSet<String>(DATA_MAP_ACTIONS);
+        PROCEDURE_ACTIONS = new HashSet<>(DATA_MAP_ACTIONS);
 
-        PROCEDURE_ACTIONS.addAll(Arrays.asList(CreateProcedureParameterAction.class
+        PROCEDURE_ACTIONS.addAll(Collections.singletonList(CreateProcedureParameterAction.class
                 .getName()));
 
-        MULTIPLE_OBJECTS_ACTIONS = new HashSet<String>(PROJECT_ACTIONS);
+        MULTIPLE_OBJECTS_ACTIONS = new HashSet<>(PROJECT_ACTIONS);
 
         MULTIPLE_OBJECTS_ACTIONS.addAll(Arrays.asList(
                 RemoveAction.class.getName(),
@@ -248,6 +250,7 @@ public class DefaultActionManager implements ActionManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends Action> T getAction(Class<T> actionClass) {
         return (T) actionMap.get(actionClass.getName());
     }
@@ -322,7 +325,7 @@ public class DefaultActionManager implements ActionManager {
         boolean canCopy = true; // cut/copy can be performed if selected objects are on
         // the same level
 
-        if (!cutAction.enableForPath((ConfigurationNode) objects[0])) {
+        if (!cutAction.enableForPath(objects[0])) {
             canCopy = false;
         }
         else {
@@ -333,7 +336,7 @@ public class DefaultActionManager implements ActionManager {
 
             for (int i = 1; i < objects.length; i++) {
                 if (parentGetter.getParent(objects[i]) != parent
-                        || !cutAction.enableForPath((ConfigurationNode) objects[i])) {
+                        || !cutAction.enableForPath(objects[i])) {
                     canCopy = false;
                     break;
                 }

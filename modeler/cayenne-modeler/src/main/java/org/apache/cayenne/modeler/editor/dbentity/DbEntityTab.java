@@ -43,7 +43,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
@@ -103,7 +103,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
         toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateObjEntityFromDbAction.class).buildButton(1));
         toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton(2));
         toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
@@ -206,10 +206,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             return;
         }
 
-        // if entity hasn't changed, still notify PK Generator panels, as entity
-        // PK may
-        // have changed...
-
+        // if entity hasn't changed, still notify PK Generator panels, as entity PK may have changed...
         for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
             ((PKGeneratorPanel) pkGeneratorDetail.getComponent(i)).setDbEntity(entity);
         }

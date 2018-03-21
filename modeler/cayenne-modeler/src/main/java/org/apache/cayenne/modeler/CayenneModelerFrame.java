@@ -159,7 +159,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         recentFileListeners = new Vector<>();
 
-        setIconImage(ModelerUtil.buildIcon("CayenneModeler.jpg").getImage());
+        setIconImage(ModelerUtil.buildIcon("CayenneModeler.png").getImage());
         initMenus();
         initToolbar();
         initStatusBar();
