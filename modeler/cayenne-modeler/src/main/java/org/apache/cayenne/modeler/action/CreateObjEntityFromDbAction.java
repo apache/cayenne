@@ -16,31 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.swing;
 
-import java.awt.Component;
+package org.apache.cayenne.modeler.action;
 
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableCellRenderer;
+import org.apache.cayenne.modeler.Application;
 
-import org.apache.cayenne.swing.components.image.FilteredIconFactory;
+/**
+ * @since 4.1
+ */
+public class CreateObjEntityFromDbAction extends CreateObjEntityAction {
 
-public class ImageRendererColumn extends DefaultTableCellRenderer {
-
-    public ImageRendererColumn() {
-        super();
+    public CreateObjEntityFromDbAction(Application application) {
+        super(application);
     }
 
-    public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
-        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        setText(((JLabel) value).getText());
-        setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-        Icon icon = ((JLabel) value).getIcon();
-        setIcon(icon);
-        return this;
+    @Override
+    public String getIconName() {
+        return "icon-new_objentity.png";
     }
 }

@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.EventObject;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -38,13 +36,12 @@ import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
-import org.apache.cayenne.modeler.action.CreateObjEntityAction;
+import org.apache.cayenne.modeler.action.CreateObjEntityFromDbAction;
 import org.apache.cayenne.modeler.action.CreateRelationshipAction;
 import org.apache.cayenne.modeler.action.DbEntityCounterpartAction;
 import org.apache.cayenne.modeler.action.DbEntitySyncAction;
@@ -106,7 +103,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
         toolBar.add(actionManager.getAction(CreateRelationshipAction.class).buildButton(3));
         toolBar.addSeparator();
 
-        toolBar.add(actionManager.getAction(CreateObjEntityAction.class).buildButton(1));
+        toolBar.add(actionManager.getAction(CreateObjEntityFromDbAction.class).buildButton(1));
         toolBar.add(actionManager.getAction(DbEntitySyncAction.class).buildButton(2));
         toolBar.add(actionManager.getAction(DbEntityCounterpartAction.class).buildButton(3));
         toolBar.addSeparator();
@@ -186,19 +183,16 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
     private void initController() {
         mediator.addDbEntityDisplayListener(this);
 
-        pkGeneratorType.addItemListener(new ItemListener() {
+        pkGeneratorType.addItemListener(e -> {
+            pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType.getSelectedItem());
 
-            public void itemStateChanged(ItemEvent e) {
-                pkGeneratorDetailLayout.show(pkGeneratorDetail, (String) pkGeneratorType.getSelectedItem());
+            for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
+                if (pkGeneratorDetail.getComponent(i).isVisible()) {
 
-                for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
-                    if (pkGeneratorDetail.getComponent(i).isVisible()) {
-
-                        DbEntity entity = mediator.getCurrentDbEntity();
-                        PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
-                        panel.onInit(entity);
-                        break;
-                    }
+                    DbEntity entity = mediator.getCurrentDbEntity();
+                    PKGeneratorPanel panel = (PKGeneratorPanel) pkGeneratorDetail.getComponent(i);
+                    panel.onInit(entity);
+                    break;
                 }
             }
         });
@@ -217,10 +211,7 @@ public class DbEntityTab extends JPanel implements ExistingSelectionProcessor, D
             return;
         }
 
-        // if entity hasn't changed, still notify PK Generator panels, as entity
-        // PK may
-        // have changed...
-
+        // if entity hasn't changed, still notify PK Generator panels, as entity PK may have changed...
         for (int i = 0; i < pkGeneratorDetail.getComponentCount(); i++) {
             ((PKGeneratorPanel) pkGeneratorDetail.getComponent(i)).setDbEntity(entity);
         }

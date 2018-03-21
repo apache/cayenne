@@ -52,7 +52,6 @@ public class CreateObjEntityAction extends CayenneAction {
         return "Create ObjEntity";
     }
 
-
     static void fireObjEntityEvent(
             Object src,
             ProjectController mediator,
@@ -71,7 +70,7 @@ public class CreateObjEntityAction extends CayenneAction {
 
     @Override
     public String getIconName() {
-        return "icon-new_objentity.png";
+        return "icon-objentity.png";
     }
 
     @Override

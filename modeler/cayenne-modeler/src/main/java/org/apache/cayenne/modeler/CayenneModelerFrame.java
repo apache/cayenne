@@ -27,7 +27,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.AWTEventListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -159,7 +158,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
         recentFileListeners = new Vector<>();
 
-        setIconImage(ModelerUtil.buildIcon("CayenneModeler.jpg").getImage());
+        setIconImage(ModelerUtil.buildIcon("CayenneModeler.png").getImage());
         initMenus();
         initToolbar();
         initStatusBar();
@@ -560,13 +559,11 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
             });
             findField.setAction(getAction(FindAction.class));
 
-            Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-                public void eventDispatched(AWTEvent event) {
-                    if (event instanceof KeyEvent) {
-                        if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
-                                && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F) {
-                            findField.requestFocus();
-                        }
+            Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
+                if (event instanceof KeyEvent) {
+                    if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+                            && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F) {
+                        findField.requestFocus();
                     }
                 }
             }, AWTEvent.KEY_EVENT_MASK);

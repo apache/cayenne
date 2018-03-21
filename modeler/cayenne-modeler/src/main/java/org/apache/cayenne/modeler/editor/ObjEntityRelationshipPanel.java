@@ -388,7 +388,6 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
             Icon icon = CellRenderers.iconForObject(oldValue);
             if(isSelected) {
-                icon = FilteredIconFactory.createIcon(icon, FilteredIconFactory.FilterType.SELECTION);
                 setForeground(UIManager.getColor("Table.selectionForeground"));
             }
             setIcon(icon);

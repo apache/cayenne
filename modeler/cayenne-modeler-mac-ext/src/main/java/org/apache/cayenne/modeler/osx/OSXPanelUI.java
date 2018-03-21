@@ -66,12 +66,7 @@ public class OSXPanelUI extends BasicPanelUI {
     protected void installDefaults(final JPanel p) {
         super.installDefaults(p);
         if(p instanceof CayenneModelerFrame.SearchPanel) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    ((CayenneModelerFrame.SearchPanel)p).hideSearchLabel();
-                }
-            });
+            SwingUtilities.invokeLater(((CayenneModelerFrame.SearchPanel) p)::hideSearchLabel);
         } else {
             p.setBackground(BACKGROUND);
         }

@@ -43,7 +43,6 @@ public class FileMenuItem extends CayenneAction.CayenneMenuItem {
         // excludes most generic action keys that are not applicable here...
         setIcon(a != null ? (Icon) a.getValue(Action.SMALL_ICON) : null);
         setEnabled(a == null || a.isEnabled());
-        updateActiveIcon();
     }
 
     /**

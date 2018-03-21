@@ -77,6 +77,10 @@ public class ImportEOModelAction extends CayenneAction {
         super(getActionName(), application);
     }
 
+    public String getIconName() {
+        return "icon-eomodel.png";
+    }
+
     public void performAction(ActionEvent event) {
         importEOModel();
     }
@@ -286,7 +290,7 @@ public class ImportEOModelAction extends CayenneAction {
         }
         else {
             // fix DataMap name, as there maybe a map with the same name already
-            ConfigurationNode root = (DataChannelDescriptor) mediator.getProject().getRootNode();
+            ConfigurationNode root = mediator.getProject().getRootNode();
             map.setName(NameBuilder
                     .builder(map, root)
                     .baseName(map.getName())

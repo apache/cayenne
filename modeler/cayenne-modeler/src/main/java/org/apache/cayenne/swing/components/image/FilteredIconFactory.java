@@ -91,24 +91,24 @@ public class FilteredIconFactory {
 
     static class DisabledFilter extends RGBImageFilter {
 
+        private static final double COLOR_FACTOR = 0.4;
+        private static final double ALPHA_FACTOR = 0.5;
+
         DisabledFilter() {
             canFilterIndexColorModel = true;
         }
 
         public int filterRGB(int x, int y, int rgb) {
-            // find the average of red, green, and blue
-            float avg = (((rgb >> 16) & 0xff) / 255f +
-                    ((rgb >>  8) & 0xff) / 255f +
-                    ( rgb        & 0xff) / 255f) / 3;
-            // pull out the alpha channel
-            float alpha = ((rgb >> 24) & 0xff) / 255f;
-            // calc the average
-            avg = Math.min(1.0f, (1f - avg)/(100.0f/35.0f) + avg);
-            // turn back into argb
-            return  (int)(alpha * 120f) << 24 |
-                    (int)(avg   * 255f) << 16 |
-                    (int)(avg   * 255f) <<  8 |
-                    (int)(avg   * 255f);
+            int a = (rgb >> 24) & 0xff;
+            int r = (rgb >> 16) & 0xff;
+            int g = (rgb >>  8) & 0xff;
+            int b = (rgb      ) & 0xff;
+            int luminance = (int)((1 - COLOR_FACTOR) * Math.min(255.0, (r + g + b) / 3.0));
+
+            return  (int)(a * ALPHA_FACTOR) << 24 |
+                    (int)(r * COLOR_FACTOR + luminance) << 16 |
+                    (int)(g * COLOR_FACTOR + luminance) <<  8 |
+                    (int)(b * COLOR_FACTOR + luminance);
         }
     }
 }

@@ -463,10 +463,6 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             } else {
                 if (attribute.isInherited()) {
                     Icon objEntityIcon = ModelerUtil.buildIcon("icon-inheritance.png");
-                    if(isSelected) {
-                        objEntityIcon = FilteredIconFactory
-                                .createIcon(objEntityIcon, FilteredIconFactory.FilterType.SELECTION);
-                    }
                     setIcon(objEntityIcon);
                 }
                 setText("");
