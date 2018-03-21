@@ -958,6 +958,9 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		}
 
 		public boolean haveJointNode(PrefetchTreeNode prefetchTree) {
+			if(prefetchTree == null) {
+				return false;
+			}
 			haveJointNode = false;
 			prefetchTree.traverse(this);
 			return haveJointNode;
