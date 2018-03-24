@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.BorderFactory;
-import java.awt.Color;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
+import java.awt.*;
 
 public class WinPlatformInitializer implements PlatformInitializer {
 
@@ -54,6 +56,8 @@ public class WinPlatformInitializer implements PlatformInitializer {
         UIManager.put("Tree.collapsedIcon",     ModelerUtil.buildIcon("icon-arrow-closed.png"));
         UIManager.put("Tree.paintLines",        Boolean.FALSE);
         UIManager.put("Tree.drawDashedFocusIndicator",  Boolean.FALSE);
+        UIManager.put("Tree.selectionBackground",       darkGrey);
+        UIManager.put("Tree.selectionForeground",       Color.BLACK);
         UIManager.put("Tree.selectionBorderColor",      UIManager.get("Tree.selectionBackground"));
         UIManager.put("ScrollPane.border",      BorderFactory.createEmptyBorder());
         UIManager.put("Table.scrollPaneBorder", BorderFactory.createEmptyBorder());
@@ -62,5 +66,9 @@ public class WinPlatformInitializer implements PlatformInitializer {
         UIManager.put("Separator.background",   darkGrey);
         UIManager.put("Separator.foreground",   darkGrey);
         UIManager.put("Separator.opaque",       Boolean.TRUE);
+        UIManager.put("MenuItem.selectionBackground",   darkGrey);
+        UIManager.put("MenuItem.selectionForeground",   Color.BLACK);
+        UIManager.put("MenuItem.opaque",        Boolean.TRUE);
+        UIManager.put("Button.border", BorderFactory.createEmptyBorder(2, 2, 2, 2));
     }
 }
