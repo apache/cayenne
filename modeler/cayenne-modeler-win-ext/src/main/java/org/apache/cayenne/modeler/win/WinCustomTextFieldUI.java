@@ -19,17 +19,30 @@
 
 package org.apache.cayenne.modeler.win;
 
+import java.lang.reflect.Constructor;
 import javax.swing.JComponent;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
-import com.jgoodies.looks.windows.WindowsTextFieldUI;
 import org.apache.cayenne.modeler.util.combo.EditorTextField;
 
 /**
  * @since 4.0
  */
 public class WinCustomTextFieldUI extends BasicTextFieldUI {
+
+    private static Constructor<? extends ComponentUI> winFieldUIConstructor;
+
+    static {
+        try {
+            @SuppressWarnings("unchecked")
+            Class<? extends ComponentUI> winFieldUIClass = (Class<? extends ComponentUI>)Class
+                    .forName("com.jgoodies.looks.windows.WindowsTextFieldUI");
+            winFieldUIConstructor = winFieldUIClass.getDeclaredConstructor();
+        } catch (ClassNotFoundException | NoSuchMethodException ex) {
+            winFieldUIConstructor = null;
+        }
+    }
 
     public WinCustomTextFieldUI() {
     }
@@ -38,7 +51,14 @@ public class WinCustomTextFieldUI extends BasicTextFieldUI {
         if(c instanceof EditorTextField) {
             c.putClientProperty("TextField.fullSizeBackground", Boolean.TRUE);
         }
-        return new WindowsTextFieldUI();
+        if(winFieldUIConstructor == null) {
+            return new BasicTextFieldUI();
+        }
+        try {
+            return winFieldUIConstructor.newInstance();
+        } catch (Exception ex) {
+            return new BasicTextFieldUI();
+        }
     }
 
 }
