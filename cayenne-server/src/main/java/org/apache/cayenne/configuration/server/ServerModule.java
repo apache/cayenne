@@ -40,8 +40,8 @@ import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CalendarType;
-import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
@@ -58,6 +58,7 @@ import org.apache.cayenne.access.types.TimeType;
 import org.apache.cayenne.access.types.TimestampType;
 import org.apache.cayenne.access.types.UUIDValueType;
 import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
@@ -82,6 +83,7 @@ import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
@@ -95,7 +97,7 @@ import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
-import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
+import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
@@ -109,13 +111,12 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.template.CayenneSQLTemplateProcessor;
@@ -130,9 +131,6 @@ import org.xml.sax.XMLReader;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
-import static org.apache.cayenne.dba.DbVersion.MS_SQL_2008;
-import static org.apache.cayenne.dba.DbVersion.MS_SQL_2012;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
@@ -219,8 +217,8 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return MapBuilder for properties.
      */
-    public static MapBuilder<Class> contributePkGenerators(Binder binder) {
-        return binder.bindMap(Class.class, Constants.SERVER_PK_GENERATORS_MAP);
+    public static MapBuilder<PkGenerator> contributePkGenerators(Binder binder) {
+        return binder.bindMap(PkGenerator.class, Constants.SERVER_PK_GENERATORS_MAP);
     }
 
     /**
@@ -309,10 +307,25 @@ public class ServerModule implements Module {
                 .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
                 .add(MySQLSniffer.class);
 
-        contributePkGenerators(binder)
-                .put(String.valueOf(MS_SQL_2008), SybasePkGenerator.class) //adding a generator for MS SQL version 2012 and higher
-                .put(String.valueOf(MS_SQL_2012), SQLServerPkGenerator.class); //adding a generator since MS SQL version 2012
+        //installing Pk for adapters
+        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
+        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+        contributePkGenerators(binder).put(SQLServerAdapter.class.getName(), SybasePkGenerator.class);
 
+        /*contributePkGenerators(binder)
+                .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
+                .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
+                .put(FrontBaseAdapter.class.getName(), FrontBaseAdapter.class)
+                .put(H2Adapter.class.getName(), H2PkGenerator.class)
+                .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
+                .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
+                .put(OpenBaseAdapter.class.getName(), OpenBasePkGenerator.class)
+                .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
+                .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
+                .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
+                .put(SQLServerAdapter.class.getName(), SybasePkGenerator.class)
+                .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
+*/
         // configure a filter chain with only one TransactionFilter as default
         contributeDomainFilters(binder).add(TransactionFilter.class);
 
@@ -392,10 +405,6 @@ public class ServerModule implements Module {
         // a default DBAdapterFactory used to load custom and automatic
         // DbAdapters
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
-
-        //a default PkGeneratorFactory used to load custom and automatic
-        //PkGenerators
-        binder.bind(PkGeneratorFactory.class).to(DefaultPkGeneratorFactory.class);
 
         // binding AshwoodEntitySorter without scope, as this is a stateful
         // object and is

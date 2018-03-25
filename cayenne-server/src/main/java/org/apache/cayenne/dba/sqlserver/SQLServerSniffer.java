@@ -20,17 +20,15 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
-import org.apache.cayenne.configuration.server.PkGeneratorFactory;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbVersion;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-
-import static org.apache.cayenne.dba.DbVersion.DbType.MS_SQL;
+import java.util.Objects;
 
 /**
  * Detects SQLServer database from JDBC metadata.
@@ -41,22 +39,16 @@ public class SQLServerSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    protected PkGeneratorFactory pkGeneratorFactory;
+    protected PkGeneratorFactoryProvider pkGeneratorProvider;
 
-    private final DbVersion.DbType dbType;
-
-    public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory, @Inject PkGeneratorFactory pkGeneratorFactory) {
+    public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory,
+                            @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorFactory = pkGeneratorFactory;
-        this.dbType = MS_SQL;
+        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, () -> "Null pkGeneratorProvider");
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains(dbType.getType())) {
-            return null;
-        }
 
         SQLServerAdapter adapter = objectFactory.newInstance(
                 SQLServerAdapter.class,
@@ -70,7 +62,8 @@ public class SQLServerSniffer implements DbAdapterDetector {
         try {
             generatedKeys = md.supportsGetGeneratedKeys();
             if (generatedKeys) {
-                pkGenerator = pkGeneratorFactory.detectPkGenerator(dbType, adapter, md);
+                pkGenerator = pkGeneratorProvider.get(adapter);
+
             }
         } catch (Throwable th) {
             // catch exceptions resulting from incomplete JDBC3 implementation

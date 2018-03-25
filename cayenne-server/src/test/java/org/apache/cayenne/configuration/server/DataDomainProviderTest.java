@@ -53,6 +53,8 @@ import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -66,7 +68,7 @@ import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
-import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
+import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
 import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
@@ -97,8 +99,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.apache.cayenne.dba.DbVersion.MS_SQL_2008;
-import static org.apache.cayenne.dba.DbVersion.MS_SQL_2012;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -161,9 +161,9 @@ public class DataDomainProviderTest {
             ServerModule.contributeDomainListeners(binder).add(mockListener);
             ServerModule.contributeProjectLocations(binder).add(testConfigName);
 
-            ServerModule.contributePkGenerators(binder)
-                    .put(String.valueOf(MS_SQL_2008), SybasePkGenerator.class)
-                    .put(String.valueOf(MS_SQL_2012), SQLServerPkGenerator.class);
+            binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+            binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
+            ServerModule.contributePkGenerators(binder).put(SQLServerAdapter.class.getName(), SybasePkGenerator.class);
 
             // configure extended types
             ServerModule.contributeDefaultTypes(binder);
@@ -194,7 +194,6 @@ public class DataDomainProviderTest {
             binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
             binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
             binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
-            binder.bind(PkGeneratorFactory.class).to(DefaultPkGeneratorFactory.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
             binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);

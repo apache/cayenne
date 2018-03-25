@@ -40,6 +40,10 @@ import java.util.List;
  */
 public class SybasePkGenerator extends JdbcPkGenerator {
 
+	public SybasePkGenerator(){
+		super();
+	}
+
 	protected SybasePkGenerator(JdbcAdapter adapter) {
 		super(adapter);
 	}

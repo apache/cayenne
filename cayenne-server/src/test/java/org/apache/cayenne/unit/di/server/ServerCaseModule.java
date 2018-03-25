@@ -56,7 +56,10 @@ import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.configuration.server.*;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -66,6 +69,8 @@ import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.firebird.FirebirdAdapter;
@@ -80,7 +85,6 @@ import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
-import org.apache.cayenne.dba.sqlserver.SQLServerPkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -91,8 +95,8 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.di.spi.DefaultScope;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -119,9 +123,6 @@ import org.xml.sax.XMLReader;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
-import static org.apache.cayenne.dba.DbVersion.MS_SQL_2008;
-import static org.apache.cayenne.dba.DbVersion.MS_SQL_2012;
 
 public class ServerCaseModule implements Module {
 
@@ -160,9 +161,9 @@ public class ServerCaseModule implements Module {
                 // Should remove problems with random-failing tests (those that are GC-sensitive).
                 .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
 
-        ServerModule.contributePkGenerators(binder)
-                .put(String.valueOf(MS_SQL_2008), SybasePkGenerator.class)
-                .put(String.valueOf(MS_SQL_2012), SQLServerPkGenerator.class);
+        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
+        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+        ServerModule.contributePkGenerators(binder).put(SQLServerAdapter.class.getName(), SybasePkGenerator.class);
 
         // configure extended types
         ServerModule.contributeDefaultTypes(binder)
@@ -207,7 +208,6 @@ public class ServerCaseModule implements Module {
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(JdbcAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);
-        binder.bind(PkGeneratorFactory.class).to(DefaultPkGeneratorFactory.class);
 
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed
