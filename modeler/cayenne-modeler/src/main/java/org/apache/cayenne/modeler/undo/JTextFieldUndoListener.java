@@ -78,10 +78,8 @@ public class JTextFieldUndoListener implements UndoableEditListener {
             return;
         }
 
-        AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent) e
-                .getEdit();
-
-        if (event.getType().equals(DocumentEvent.EventType.CHANGE)) {
+        // See AbstractDocument.DefaultDocumentEvent.getPresentationName() method
+        if("AbstractDocument.styleChangeText".equals(e.getEdit().getPresentationName())) {
             compoundEdit.addEdit(e.getEdit());
             return;
         }
