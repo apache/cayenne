@@ -56,7 +56,7 @@ public class DBConnectionInfoEditorView extends JPanel {
         url = new JTextField();
         userName = new JTextField();
         password = new JPasswordField();
-        labels = new ArrayList<JLabel>();
+        labels = new ArrayList<>();
 
         // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:160dlu:grow", "");

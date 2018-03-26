@@ -21,23 +21,33 @@ package org.apache.cayenne.modeler.dialog.db;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.GetDbConnectionAction;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
 import org.apache.cayenne.modeler.event.DataSourceModificationListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
+import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
 import javax.sql.DataSource;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.WindowConstants;
+import java.awt.Component;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.prefs.Preferences;
+
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.URL_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERTY;
 
 /**
  * A subclass of ConnectionWizard that tests configured DataSource, but does not
@@ -50,6 +60,7 @@ public class DataSourceWizard extends CayenneController {
 	private ObjectBinding dataSourceBinding;
 	private Map<String, DBConnectionInfo> dataSources;
 	private String dataSourceKey;
+	private ProjectController projectController;
 
 	// this object is a clone of an object selected from the dropdown, as we
 	// need to allow
@@ -66,7 +77,7 @@ public class DataSourceWizard extends CayenneController {
 	public DataSourceWizard(CayenneController parent, String title) {
 		super(parent);
 
-		this.view = createView();
+		this.view = createView(title);
 		this.view.setTitle(title);
 		this.connectionInfo = new DBConnectionInfo();
 
@@ -74,11 +85,22 @@ public class DataSourceWizard extends CayenneController {
 		initDataSourceListener();
 	}
 
+	private String[] getLabelsForDialog(String viewTitle) {
+		switch (viewTitle) {
+			case GetDbConnectionAction.DIALOG_TITLE: {
+				return new String[]{"Save", "Cancel"};
+			}
+			default:
+				return new String[]{"Continue", "Cancel"};
+		}
+	}
+
 	/**
 	 * Creates swing dialog for this wizard
 	 */
-	private DataSourceWizardView createView() {
-		return new DataSourceWizardView(this);
+	private DataSourceWizardView createView(String viewTitle) {
+		String[] labels = getLabelsForDialog(viewTitle);
+		return new DataSourceWizardView(this, labels);
 	}
 
 	protected void initBindings() {
@@ -120,6 +142,18 @@ public class DataSourceWizard extends CayenneController {
 				.removeDataSourceModificationListener(dataSourceListener);
 	}
 
+	private DBConnectionInfo getConnectionInfoFromPreferences() {
+		DBConnectionInfo connectionInfo = new DBConnectionInfo();
+		DataMapDefaults dataMapDefaults = projectController.
+				getDataMapPreferences(projectController.getCurrentDataMap());
+		connectionInfo.setDbAdapter(dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
+		connectionInfo.setUrl(dataMapDefaults.getCurrentPreference().get(URL_PROPERTY, null));
+		connectionInfo.setUserName(dataMapDefaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
+		connectionInfo.setPassword(dataMapDefaults.getCurrentPreference().get(PASSWORD_PROPERTY, null));
+		connectionInfo.setJdbcDriver(dataMapDefaults.getCurrentPreference().get(JDBC_DRIVER_PROPERTY, null));
+		return connectionInfo;
+	}
+
 	public String getDataSourceKey() {
 		return dataSourceKey;
 	}
@@ -134,7 +168,6 @@ public class DataSourceWizard extends CayenneController {
 		} else {
 			connectionInfo = new DBConnectionInfo();
 		}
-
 		view.getConnectionInfo().setConnectionInfo(connectionInfo);
 	}
 
@@ -144,13 +177,18 @@ public class DataSourceWizard extends CayenneController {
 	 */
 	public boolean startupAction() {
 		this.canceled = true;
-
 		refreshDataSources();
 		initFavouriteDataSource();
 
+		DataMapDefaults dataMapDefaults = projectController.
+				getDataMapPreferences(projectController.getCurrentDataMap());
+		if (dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null) != null) {
+			getConnectionInfoFromPreferences().copyTo(connectionInfo);
+		}
 		view.pack();
 		view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		view.setModal(true);
+		view.connectionInfo.setConnectionInfo(connectionInfo);
 		makeCloseableOnEscape();
 		centerView();
 		view.setVisible(true);
@@ -252,5 +290,9 @@ public class DataSourceWizard extends CayenneController {
 	 */
 	public DbAdapter getAdapter() {
 		return adapter;
+	}
+
+	public void setProjectController(ProjectController projectController) {
+		this.projectController = projectController;
 	}
 }

@@ -24,6 +24,7 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -297,13 +298,13 @@ public class DefaultDbImportActionTest {
         DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
         DataSource mock = mock(DataSource.class);
         when(dataSourceFactory.getDataSource((DataNodeDescriptor)any())).thenReturn(mock);
-
+        DataChannelMetaData metaData = mock(DataChannelMetaData.class);
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
         when(mergerTokenFactoryProvider.get((DbAdapter)any())).thenReturn(new DefaultMergerTokenFactory());
 
         DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
 
-        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader) {
+        return new DefaultDbImportAction(log, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData) {
 
             protected DbLoader createDbLoader(DbAdapter adapter,
                                                Connection connection,

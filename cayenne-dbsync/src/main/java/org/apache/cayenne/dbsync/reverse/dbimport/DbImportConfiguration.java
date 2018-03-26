@@ -61,6 +61,7 @@ public class DbImportConfiguration {
     private String stripFromTableNames;
     private boolean forceDataMapCatalog;
     private boolean forceDataMapSchema;
+    private boolean useDataMapReverseEngineering;
     private File cayenneProject;
 
     public DbImportConfiguration() {
@@ -316,5 +317,13 @@ public class DbImportConfiguration {
 
     public boolean isForceDataMapSchema() {
         return forceDataMapSchema;
+    }
+
+    public boolean isUseDataMapReverseEngineering() {
+        return useDataMapReverseEngineering;
+    }
+
+    public void setUseDataMapReverseEngineering(boolean useDataMapReverseEngineering) {
+        this.useDataMapReverseEngineering = useDataMapReverseEngineering;
     }
 }

@@ -115,6 +115,9 @@ public class DbImporterTask extends Task {
 
     @Override
     public void execute() {
+        if (reverseEngineering.getCatalogs().size() == 0 && reverseEngineering.isEmptyContainer()) {
+            config.setUseDataMapReverseEngineering(true);
+        }
         config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
         validateAttributes();
 

@@ -65,6 +65,7 @@ import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
+import org.apache.cayenne.project.extension.info.InfoExtension;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.slf4j.Logger;
@@ -121,7 +122,7 @@ public class ToolsModule implements Module {
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
 
-        ProjectModule.contributeExtensions(binder);
+        ProjectModule.contributeExtensions(binder).add(InfoExtension.class);
     }
 
 }

@@ -122,6 +122,9 @@ public class DbImporterMojo extends AbstractMojo {
     DbImportConfiguration createConfig(Logger logger) {
 
         DbImportConfiguration config = new DbImportConfiguration();
+        if (dbImportConfig.getCatalogs().size() == 0 && dbImportConfig.isEmptyContainer()) {
+            config.setUseDataMapReverseEngineering(true);
+        }
         config.setAdapter(adapter);
         config.setDefaultPackage(dbImportConfig.getDefaultPackage());
         config.setDriver(dataSource.getDriver());

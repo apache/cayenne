@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.modeler.Application;
@@ -54,6 +55,7 @@ public class CayenneModelerModule implements Module {
 
         ProjectModule.contributeExtensions(binder)
                 .add(InfoExtension.class)
-                .add(GraphExtension.class);
+                .add(GraphExtension.class)
+                .add(DbImportExtension.class);
     }
 }

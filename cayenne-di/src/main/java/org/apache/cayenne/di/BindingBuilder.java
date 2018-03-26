@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.apache.cayenne.di.DIRuntimeException;
-
-
 /**
  * A binding builder that helps with fluent binding creation.
  * 

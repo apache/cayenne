@@ -75,6 +75,10 @@ public class PatternFilter {
         this.excludes = new TreeSet<>(PATTERN_COMPARATOR);
     }
 
+    public SortedSet<Pattern> getIncludes() {
+        return includes;
+    }
+
     public PatternFilter include(Pattern p) {
         includes.add(p);
 

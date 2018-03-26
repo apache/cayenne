@@ -43,17 +43,17 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
  */
 public class DbActionOptionsDialog extends CayenneDialog {
 
-    protected static final String WILDCARD_PATTERN = ".*";
     public static final int CANCEL = 0;
     public static final int SELECT = 1;
 
-    private int choice;
+    protected int choice;
     private JLabel schemaLabel;
     private JLabel catalogLabel;
     private JComboBox<String> catalogSelector;
     private JComboBox<String> schemaSelector;
     private JButton selectButton;
     private JButton cancelButton;
+    protected JPanel buttons;
 
     public DbActionOptionsDialog(Frame owner, String title, Collection<String> catalogs, Collection<String> schemas,
                                  String currentCatalog, String currentSchema) throws HeadlessException {
@@ -81,9 +81,8 @@ public class DbActionOptionsDialog extends CayenneDialog {
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
+        buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         initForm(builder);
-
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(selectButton);
         buttons.add(cancelButton);
 

@@ -61,6 +61,19 @@
 				<include>KEYS</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>target/doc-staging</directory>
+			<outputDirectory>cayenne-${project.version}-macosx/doc</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>../</directory>
+			<outputDirectory>cayenne-${project.version}-macosx/</outputDirectory>
+			<includes>
+				<include>RELEASE-NOTES.txt</include>
+				<include>UPGRADE.txt</include>
+				<include>KEYS</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 
 	<dependencySets>

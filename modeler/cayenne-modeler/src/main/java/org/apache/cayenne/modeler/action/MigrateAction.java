@@ -78,9 +78,14 @@ public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
 
     @Override
     protected DbActionOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
-                                                 String currentCatalog, String currentSchema) {
+                                                 String currentCatalog, String currentSchema, int command) {
         dialogShown = true;
-        return new DbActionOptionsDialog(Application.getFrame(), "Migrate DB Schema: Select Catalog and Schema",
-                catalogs, schemas, currentCatalog, currentSchema);
+        switch (command) {
+            case DbActionOptionsDialog.SELECT:
+                return new DbActionOptionsDialog(Application.getFrame(), "Migrate DB Schema: Select Catalog and Schema",
+                    catalogs, schemas, currentCatalog, currentSchema);
+            default:
+                return null;
+        }
     }
 }

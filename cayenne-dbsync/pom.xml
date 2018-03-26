@@ -86,6 +86,11 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.cayenne</groupId>
+			<artifactId>cayenne-di</artifactId>
+			<version>4.1.M2-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

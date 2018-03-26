@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph.extension;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.undo.UndoableEdit;
+
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.DataChannelLoaderListener;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphBuilder;

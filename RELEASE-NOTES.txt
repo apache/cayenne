@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-2334 cgen: option to force run from maven/gradle
+CAY-2337 Save reverse engineering configuration with datamap XML
 CAY-2372 Extract new modules from cayenne-server
 CAY-2377 Cleanup deprecated code.
 CAY-2391 cdbimport: add option to skip user-defined relationships
@@ -96,7 +97,7 @@ CAY-1873 Move DataDomain cache configuration from the Modeler and into DI
 CAY-1891 Modeler: Add To-Many Warning
 CAY-1892 Modeler: Add Relationship Data Type Warning
 CAY-2057 Modeler: Clean up OS X version
-CAY-2109 cayenne-crypto: add value authentication (HMAC) 
+CAY-2109 cayenne-crypto: add value authentication (HMAC)
 CAY-2210 Query cache: incorrect cache key for queries with custom value objects
 CAY-2255 ObjectSelect improvement: columns as full entities
 CAY-2258 DI: type-safe binding of List and Map
@@ -318,16 +319,16 @@ CAY-1267 Some changes to LogDialog
 CAY-1826 Merge Entity Attributes and Relationships tabs together with one toolbar.
 CAY-1839 Allow to link DataMaps to DataNodes from DataNode editor.
 CAY-1841 Filters for Left-hand project navigator
-CAY-1842 Remove Listeners support from the Modeler 
+CAY-1842 Remove Listeners support from the Modeler
 CAY-1843 DataMap v7: Stop saving listeners in DataMap, add upgrade handler
-CAY-1845 Upgrade javadoc plugin to 2.9.1 
+CAY-1845 Upgrade javadoc plugin to 2.9.1
 CAY-1846 Reworking of callback mapping
 CAY-1847 Make ConverterFactory extensible
-CAY-1848 New method: ObjectContext.selectOne(Select query) 
+CAY-1848 New method: ObjectContext.selectOne(Select query)
 CAY-1851 Generate default serialVersionUID for generated java classes to avoid eclipse warnings
-CAY-1852 Straighten thread model and synchronization in the Modeler 
-CAY-1855 Iterated and paginated queries must print result counts 
-CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection 
+CAY-1852 Straighten thread model and synchronization in the Modeler
+CAY-1855 Iterated and paginated queries must print result counts
+CAY-1856 Expression.expWithParameters does not work when parameters are placed in the inline collection
 CAY-1860 In-memory matching of DataObjects against ObjectId or int
 CAY-1861 Remove runtime relationships
 CAY-1870 cgen - smarter default for 'superPkg' and 'destDir'
@@ -377,7 +378,7 @@ CAY-1966 SQLTemplate/SQLSelect positional parameter binding
 CAY-1967 Deprecate SQLTemplate parameter batches
 CAY-1968 SQLSelect cleanup and omissions
 CAY-1971 Variants of Property.like(..) : contains(..), startsWith(..), endsWith(..)
-CAY-1972 A property to override DataSources of multi-module projects 
+CAY-1972 A property to override DataSources of multi-module projects
 CAY-1981 Add support of JDBC 4.0 N-types (nchar, nvarchar, longnvarchar, nclob)
 CAY-1984 cdbimport doesn't flatten many to many relationships
 
@@ -385,7 +386,7 @@ Bug Fixes:
 
 CAy-1988 ServerRuntimeBuilder: synthetic DataNode does not have domain's DataMaps linked
 CAY-1480 Implement cross-db functional expressions
-CAY-1695 Unexpected null value in bidirectional one-to-one prefetch 
+CAY-1695 Unexpected null value in bidirectional one-to-one prefetch
 CAY-1736 IllegalArgumentException when synchronizing entities in the Modeler
 CAY-1795 "Invisible" ObjAttribute in subclass
 CAY-1796 ROP: All entity's to-many relationships getting faulted from database when using it as a parameter in qualifier expression
@@ -393,13 +394,13 @@ CAY-1797 NPE importing DataMap
 CAY-1798 ROP: Reverse relationships of prefetched entity objects are not filled during server to client objects conversion
 CAY-1799 ROP: Server can't deserialize LIKE expression with pattern already compiled
 CAY-1818 Fix copyright year in the Modeler "about" panel
-CAY-1834 Exception: ToManyList cannot be cast to DataObject 
-CAY-1857 Problem with hotkeys 
-CAY-1859 NullPointerException when importing EOModel 
+CAY-1834 Exception: ToManyList cannot be cast to DataObject
+CAY-1857 Problem with hotkeys
+CAY-1859 NullPointerException when importing EOModel
 CAY-1863 Make determining whether a particular database type supports length adapter-specific not universal
 CAY-1866 Change in General Modeler Preferences reverts old settings to default value
-CAY-1868 Select contention with multiple contexts 
-CAY-1869 ResultIterator from cayenne-client dependency is subclassed from org.apache.cayenne.access.ResultIterator which is present only in cayenne-server dependency 
+CAY-1868 Select contention with multiple contexts
+CAY-1869 ResultIterator from cayenne-client dependency is subclassed from org.apache.cayenne.access.ResultIterator which is present only in cayenne-server dependency
 CAY-1874 DB2 Procedure action ignores the first result set
 CAY-1877 In-memory evaluation of expression may fail with UnsupportedOpeartionException depending on order of nodes
 CAY-1880 objectStore snapshots never cleared from RefreshQuery when "use shared cache" unchecked
@@ -434,10 +435,10 @@ CAY-1753 remove light-superclass.vm class template
 CAY-1754 Modeler suggested URL for SQLServer should start with 'jdbc:sqlserver:' instead of 'jdbc:microsoft:sqlserver:'
 CAY-1758 cdbimport improvements
 CAY-1759 cdbimport improvements: add 'catalog', rename 'schemaName' to 'schema'
-CAY-1760 cdbimport improvements: Default adapter (if none specified) must be AutoAdapter, not JdbcAdapter 
-CAY-1761 cdbimport improvements: DbLoader must reverse engineer PK auto-increment state. 
-CAY-1762 cdbimport improvements: Support for "defaultPackage" parameter, as the new DataMaps ends up placing entities in the root package 
-CAY-1763 cdbimport improvements: specified "schema" should become the default schema of the generated DataMap 
+CAY-1760 cdbimport improvements: Default adapter (if none specified) must be AutoAdapter, not JdbcAdapter
+CAY-1761 cdbimport improvements: DbLoader must reverse engineer PK auto-increment state.
+CAY-1762 cdbimport improvements: Support for "defaultPackage" parameter, as the new DataMaps ends up placing entities in the root package
+CAY-1763 cdbimport improvements: specified "schema" should become the default schema of the generated DataMap
 CAY-1764 cdbimport improvements: "overwrite" flag
 CAY-1765 cdbimport improvements: add excludeTables/includeTables parameters
 CAY-1766 Deprecating DataPort ant task
@@ -445,25 +446,25 @@ CAY-1768 cdbimport improvements: DataMap "project-version" attribute is skipped 
 CAY-1769 cdbimport improvements: meaningfulPk flag must be turned into a pattern
 CAY-1771 cdbimport improvements: "usePrimitives" flag
 CAY-1772 Real support for DbEntity catalogs
-CAY-1778 TransactionManager to simplify user-managed transactions 
-CAY-1779 Flatten object entities for many to many relationships on reverse engineering 
+CAY-1778 TransactionManager to simplify user-managed transactions
+CAY-1779 Flatten object entities for many to many relationships on reverse engineering
 CAY-1781 Add StatelessContextRequestHandler as an alternative to the Session-based one
 CAY-1785 SelectQuery<T> for DataRows
-CAY-1789 Lock-free EntityResolver 
-CAY-1792 [PATCH] Supply additional factory methods for generic SelectQueries 
-CAY-1803 Optimize Expression conversion to String and EJBQL 
+CAY-1789 Lock-free EntityResolver
+CAY-1792 [PATCH] Supply additional factory methods for generic SelectQueries
+CAY-1803 Optimize Expression conversion to String and EJBQL
 CAY-1809 Remove 'final' modifier from Cayenne, HessianUtil, PropertyComparator, ConversionUtil, and LinkedDeque
 CAY-1813 Missing ObjEntity Attribute Validation with Duplicate DbEntity Columns
-CAY-1814 Support Property.nin 
-CAY-1819 When adding a filter, auto-register it as a listener 
-CAY-1820 DataDomain.addListener(Object) - a shortcut for adding annotated listeners 
+CAY-1814 Support Property.nin
+CAY-1819 When adding a filter, auto-register it as a listener
+CAY-1820 DataDomain.addListener(Object) - a shortcut for adding annotated listeners
 CAY-1821 AuditableFilter and friends should explicitly work with Persistent instead of Object
-CAY-1822 Make DataMap editor fields wider 
-CAY-1823 remove ":sync w/DbEntity" button from ObjEntity - it is redundant and already present on the entity toolbar. 
+CAY-1822 Make DataMap editor fields wider
+CAY-1823 remove ":sync w/DbEntity" button from ObjEntity - it is redundant and already present on the entity toolbar.
 CAY-1825 Simplify API for setting up query caching
 CAY-1828 SQLSelect - generics friendly fluent selecting sql query
 CAY-1829 Make ResultIterator implement Iterable<T>, create ObjectContext.iterate method
-CAY-1836 Firebird Adapter 
+CAY-1836 Firebird Adapter
 CAY-1838 Deprecate EntityResolver.indexedByClassProperty
 CAY-1840 Conditionally log slow / long-running queries
 CAY-1844 Configuration for maximum time to wait for an available DB connection
@@ -476,7 +477,7 @@ CAY-1522 EJBQL query don't support quotes
 CAY-1677 Modeler: text fields discard input unless you press enter
 CAY-1701 Modeler cannot undo pasting of obj (db) entity
 CAY-1708 Modeler error when pasting datamap with EJBQL query
-CAY-1714 ROP: Cayenne tries to build a query for non committed object when using more than 2 nested contexts 
+CAY-1714 ROP: Cayenne tries to build a query for non committed object when using more than 2 nested contexts
 CAY-1721 Writing blobs fails (Oracle)
 CAY-1725 NullPointerException from call to removeToManyTarget
 CAY-1719 Modeler - Obj Attribute Java Type editor won't focus sometimes
@@ -488,15 +489,14 @@ CAY-1742 ObjRelationship inspector says "ObjAttribute Inspector"
 CAY-1744 Unexpected read-only relationships in vertical inheritance mapping
 CAY-1749 NPE on simple nested context commit
 CAY-1755 FaultFailureException resolving relationships to UNIQUE non-PK columns
-CAY-1757 ROP: Faulting entity relationship resets uncommitted modifications made to its reverse relationship 
+CAY-1757 ROP: Faulting entity relationship resets uncommitted modifications made to its reverse relationship
 CAY-1774 EhCacheQueryCache.get(QueryMetadata, QueryCacheEntryFactory) returns null if EhCache instance for group is not present
 CAY-1780 cdbimport do not create xml file in resource folder
 CAY-1782 Deadlock when performing many concurrent inserts
 CAY-1783 JdbcPkGenerator.longPkFromDatabase would throw an exception if the PK value exceeds a range of Java int
 CAY-1794 Duplicate attributes in discriminator columns of PersistentDescriptor
-CAY-1804 Serialisation of long[] type was not working correctly. 
-CAY-1806 Error importing eomodel 
-CAY-1817 NPE during Validate Project 
+CAY-1804 Serialisation of long[] type was not working correctly.
+CAY-1806 Error importing eomodel
+CAY-1817 NPE during Validate Project
 CAY-1827 EhCache region corresponding to a cache group loses its settings after 'removeGroup'
 CAY-1832 Exception when modifying objects in postLoad callback
-

@@ -232,7 +232,6 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         projectMenu.addSeparator();
         projectMenu.add(getAction(RemoveAction.class).buildMenu());
 
-        toolMenu.add(getAction(ReverseEngineeringAction.class).buildMenu());
         toolMenu.add(getAction(InferRelationshipsAction.class).buildMenu());
         toolMenu.add(getAction(ImportEOModelAction.class).buildMenu());
         toolMenu.addSeparator();
