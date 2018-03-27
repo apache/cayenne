@@ -35,7 +35,9 @@ import java.sql.Types;
  * Handles <code>org.joda.time.LocalTime</code> type mapping.
  *
  * @since 4.0
+ * @deprecated since 4.1
  */
+@Deprecated
 public class LocalTimeType implements ExtendedType<LocalTime> {
 
     private static final LocalDate EPOCH = new LocalDate(0, DateTimeZone.UTC);

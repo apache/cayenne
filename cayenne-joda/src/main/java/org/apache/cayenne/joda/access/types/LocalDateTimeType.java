@@ -32,7 +32,9 @@ import java.sql.Types;
  * Handles <code>org.joda.time.LocalDateTime</code> type mapping.
  *
  * @since 4.0
+ * @deprecated since 4.1
  */
+@Deprecated
 public class LocalDateTimeType implements ExtendedType<LocalDateTime> {
 
     @Override
