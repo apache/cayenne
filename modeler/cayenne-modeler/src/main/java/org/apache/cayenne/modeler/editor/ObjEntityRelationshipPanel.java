@@ -41,6 +41,7 @@ import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.DbRelationshipPathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
@@ -63,17 +64,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -253,8 +250,9 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             return new Object[0];
         }
 
-        Collection objEntities = map.getNamespace().getObjEntities();
-        return objEntities.toArray();
+        return map.getNamespace().getObjEntities().stream()
+                .sorted(Comparators.getDataMapChildrenComparator())
+                .toArray();
     }
 
     public void objEntityChanged(EntityEvent e) {
@@ -279,7 +277,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
     public void objRelationshipRemoved(RelationshipEvent e) {
         ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
-        int ind = model.getObjectList().indexOf((ObjRelationship)e.getRelationship());
+        int ind = model.getObjectList().indexOf(e.getRelationship());
         model.removeRow((ObjRelationship) e.getRelationship());
         table.select(ind);
     }
@@ -316,14 +314,11 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                 mediator,
                 this);
 
-        model.addTableModelListener(new TableModelListener() {
-
-            public void tableChanged(TableModelEvent e) {
-                if (table.getSelectedRow() >= 0) {
-                    ObjRelationship rel = model.getRelationship(table.getSelectedRow());
-                    enabledResolve = rel.getSourceEntity().getDbEntity() != null;
-                    resolveMenu.setEnabled(enabledResolve);
-                }
+        model.addTableModelListener(e -> {
+            if (table.getSelectedRow() >= 0) {
+                ObjRelationship rel = model.getRelationship(table.getSelectedRow());
+                enabledResolve = rel.getSourceEntity().getDbEntity() != null;
+                resolveMenu.setEnabled(enabledResolve);
             }
         });
 

@@ -29,6 +29,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -87,17 +88,18 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
         boolean doAll = isAllEntities();
         String defaultSuperclass = getSuperclass();
 
-        for (ObjEntity entity : dataMap.getObjEntities()) {
-            if (doAll || Util.isEmptyString(getSuperClassName(entity))) {
-                if (!Util.nullSafeEquals(defaultSuperclass, getSuperClassName(entity))) {
-                    setSuperClassName(entity, defaultSuperclass);
+        dataMap.getObjEntities().stream()
+                .sorted(Comparators.getDataMapChildrenComparator()).forEach(entity -> {
+                    if (doAll || Util.isEmptyString(getSuperClassName(entity))) {
+                        if (!Util.nullSafeEquals(defaultSuperclass, getSuperClassName(entity))) {
+                            setSuperClassName(entity, defaultSuperclass);
 
-                    // any way to batch events, a big change will flood the app with
-                    // entity events..?
-                    mediator.fireDbEntityEvent(new EntityEvent(this, entity));
-                }
-            }
-        }
+                            // any way to batch events, a big change will flood the app with
+                            // entity events..?
+                            mediator.fireDbEntityEvent(new EntityEvent(this, entity));
+                        }
+                    }
+                });
 
         view.dispose();
     }

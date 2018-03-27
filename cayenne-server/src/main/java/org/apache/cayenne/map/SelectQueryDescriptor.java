@@ -40,7 +40,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
 	protected Expression qualifier;
 
     protected List<Ordering> orderings = new ArrayList<>();
-    protected HashMap<String, Integer> prefetchesMap = new HashMap<>();
+    protected Map<String, Integer> prefetchesMap = new HashMap<>();
 
     public SelectQueryDescriptor() {
         super(SELECT_QUERY);
@@ -103,7 +103,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      *
      * @since 4.1
      */
-    public HashMap<String, Integer> getPrefetchesMap() {
+    public Map<String, Integer> getPrefetchesMap() {
         return prefetchesMap;
     }
 

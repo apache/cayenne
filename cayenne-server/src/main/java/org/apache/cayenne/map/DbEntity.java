@@ -45,7 +45,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.function.Function;
 
 /**
@@ -273,8 +272,8 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
     @SuppressWarnings("unchecked")
     @Override
-    public SortedMap<String, DbRelationship> getRelationshipMap() {
-        return (SortedMap<String, DbRelationship>) super.getRelationshipMap();
+    public Map<String, DbRelationship> getRelationshipMap() {
+        return (Map<String, DbRelationship>) super.getRelationshipMap();
     }
 
     /**

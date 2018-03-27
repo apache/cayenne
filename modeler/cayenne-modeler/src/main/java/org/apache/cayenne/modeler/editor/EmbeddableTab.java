@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
 import java.util.Collection;
-import java.util.EventObject;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
@@ -41,6 +40,7 @@ import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CreateAttributeAction;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayListener;
+import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
@@ -147,10 +147,12 @@ public class EmbeddableTab extends JPanel implements EmbeddableDisplayListener {
 
             mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
 
-            Iterator it =((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps().iterator();
+            Iterator it = ((DataChannelDescriptor) mediator.getProject().getRootNode()).getDataMaps().iterator();
             while (it.hasNext()) {
                 DataMap dataMap = (DataMap) it.next();
-                Iterator<ObjEntity> ent = dataMap.getObjEntities().iterator();
+                Iterator<ObjEntity> ent = dataMap.getObjEntities().stream()
+                        .sorted(Comparators.getDataMapChildrenComparator())
+                        .iterator();
 
                 while (ent.hasNext()) {
                     

@@ -42,7 +42,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Function;
 
@@ -614,16 +613,16 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * Returns a SortedMap of all attributes that either belong to this
+     * Returns a Map of all attributes that either belong to this
      * ObjEntity or inherited.
      */
     @Override
-    public SortedMap<String, ObjAttribute> getAttributeMap() {
+    public Map<String, ObjAttribute> getAttributeMap() {
         if (superEntityName == null) {
             return getAttributeMapInternal();
         }
 
-        SortedMap<String, ObjAttribute> attributeMap = new TreeMap<>();
+        Map<String, ObjAttribute> attributeMap = new HashMap<>();
         appendAttributes(attributeMap);
         return attributeMap;
     }
@@ -636,7 +635,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
-            SortedMap<String, ObjAttribute> attributeMap = new TreeMap<>();
+            Map<String, ObjAttribute> attributeMap = new HashMap<>();
             superEntity.appendAttributes(attributeMap);
             for (String attributeName : attributeMap.keySet()) {
 
@@ -653,8 +652,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     @SuppressWarnings("unchecked")
-    final SortedMap<String, ObjAttribute> getAttributeMapInternal() {
-        return (SortedMap<String, ObjAttribute>) super.getAttributeMap();
+    final Map<String, ObjAttribute> getAttributeMapInternal() {
+        return (Map<String, ObjAttribute>) super.getAttributeMap();
     }
 
     /**
@@ -733,12 +732,12 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     @Override
-    public SortedMap<String, ObjRelationship> getRelationshipMap() {
+    public Map<String, ObjRelationship> getRelationshipMap() {
         if (superEntityName == null) {
             return getRelationshipMapInternal();
         }
 
-        SortedMap<String, ObjRelationship> relationshipMap = new TreeMap<>();
+        Map<String, ObjRelationship> relationshipMap = new HashMap<>();
         appendRelationships(relationshipMap);
         return relationshipMap;
     }
@@ -762,8 +761,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     @SuppressWarnings("unchecked")
-    final SortedMap<String, ObjRelationship> getRelationshipMapInternal() {
-        return (SortedMap<String, ObjRelationship>) super.getRelationshipMap();
+    final Map<String, ObjRelationship> getRelationshipMapInternal() {
+        return (Map<String, ObjRelationship>) super.getRelationshipMap();
     }
 
     /**

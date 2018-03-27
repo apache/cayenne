@@ -64,8 +64,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         this.classes = new ArrayList<>();
 
         for(DataMap dataMap:dataMaps){
-            this.classes.addAll(new ArrayList<>(dataMap.getObjEntities()));
-            this.classes.addAll(new ArrayList<>(dataMap.getEmbeddables()));
+            this.classes.addAll(dataMap.getObjEntities());
+            this.classes.addAll(dataMap.getEmbeddables());
         }
         this.selectedEntities = new HashSet<>();
         this.selectedEmbeddables = new HashSet<>();
@@ -261,7 +261,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public JLabel getItemName(Object obj) {
         String className;
-        Icon icon = null;
+        Icon icon;
         if (obj instanceof Embeddable) {
             className = ((Embeddable) obj).getClassName();
             icon = CellRenderers.iconForObject(new Embeddable());

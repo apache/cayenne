@@ -30,15 +30,12 @@ import java.util.regex.Pattern;
 
 import javax.swing.WindowConstants;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.EmbeddedAttribute;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -103,11 +100,11 @@ public class PackageUpdateController extends DefaultsPreferencesController {
         Collection<Embeddable> embeddables = new ArrayList<>(dataMap.getEmbeddables());
         for (Embeddable embeddable : embeddables) {
             String oldName = embeddable.getClassName();
-            
+
             Pattern p = Pattern.compile("[.]");
             String[] tokens = p.split(oldName);
             String className = tokens[tokens.length-1];
-            
+
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
                 EmbeddableEvent e = new EmbeddableEvent(this, embeddable, embeddable.getClassName());
                 String newClassName = getNameWithDefaultPackage(className);
@@ -116,7 +113,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                 mediator.fireEmbeddableEvent(e, mediator.getCurrentDataMap());
             }
         }
-        
+
         for (ObjEntity entity : dataMap.getObjEntities()) {
             String oldName = getClassName(entity);
 
@@ -125,7 +122,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
                         .getName() : oldName);
                 setClassName(entity, getNameWithDefaultPackage(className));
             }
-            
+
             for(ObjAttribute attribute: entity.getAttributes()){
                 if(attribute instanceof EmbeddedAttribute){
                     if(oldNameEmbeddableToNewName.size()>0 && oldNameEmbeddableToNewName.containsKey(attribute.getType())){

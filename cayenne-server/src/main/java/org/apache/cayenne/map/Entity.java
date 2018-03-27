@@ -27,13 +27,14 @@ import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 /**
  * An Entity is an abstract descriptor for an entity mapping concept. Entity can represent
@@ -55,8 +56,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     protected String name;
     protected DataMap dataMap;
 
-    protected final SortedMap<String, Attribute> attributes = new TreeMap<>();
-    protected final SortedMap<String, Relationship> relationships = new TreeMap<>();
+    protected final Map<String, Attribute> attributes = new LinkedHashMap<>();
+    protected final Map<String, Relationship> relationships = new LinkedHashMap<>();
 
     /**
      * Creates an unnamed Entity.
@@ -231,10 +232,10 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable map of relationships sorted by name.
      */
-    public SortedMap<String, ? extends Relationship> getRelationshipMap() {
+    public Map<String, ? extends Relationship> getRelationshipMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
-        return Collections.unmodifiableSortedMap(relationships);
+        return Collections.unmodifiableMap(relationships);
     }
 
     /**
@@ -269,10 +270,10 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable sorted map of entity attributes.
      */
-    public SortedMap<String, ? extends Attribute> getAttributeMap() {
+    public Map<String, ? extends Attribute> getAttributeMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
-        return Collections.unmodifiableSortedMap(attributes);
+        return Collections.unmodifiableMap(attributes);
     }
 
     /**
