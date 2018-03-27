@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+
 /**
  * A Cayenne transaction. Currently supports managing JDBC connections.
  *
@@ -51,6 +53,8 @@ public abstract class BaseTransaction implements Transaction {
     protected Map<String, Connection> connections;
     protected Collection<TransactionListener> listeners;
     protected int status;
+    protected int defaultIsolationLevel = -1;
+    protected TransactionDescriptor descriptor;
 
     static String decodeStatus(int status) {
         switch (status) {
@@ -91,8 +95,9 @@ public abstract class BaseTransaction implements Transaction {
     /**
      * Creates new inactive transaction.
      */
-    protected BaseTransaction() {
+    protected BaseTransaction(TransactionDescriptor descriptor) {
         this.status = STATUS_NO_TRANSACTION;
+        this.descriptor = descriptor;
     }
 
     @Override
@@ -214,6 +219,15 @@ public abstract class BaseTransaction implements Transaction {
 
     protected Connection addConnection(String connectionName, Connection connection) {
 
+        if(descriptor.getIsolation() != TransactionDescriptor.ISOLATION_DEFAULT) {
+            try {
+                defaultIsolationLevel = connection.getTransactionIsolation();
+                connection.setTransactionIsolation(descriptor.getIsolation());
+            } catch (SQLException ex) {
+                throw new CayenneRuntimeException("Unable to set required isolation level: " + descriptor.getIsolation(), ex);
+            }
+        }
+
         TransactionConnectionDecorator wrapper = new TransactionConnectionDecorator(connection);
 
         if (listeners != null) {
@@ -262,6 +276,15 @@ public abstract class BaseTransaction implements Transaction {
             } catch (Throwable th) {
                 // TODO: chain exceptions...
                 // ignore for now
+            } finally {
+                // restore connection default isolation level ...
+                if(defaultIsolationLevel != -1) {
+                    try {
+                        c.setTransactionIsolation(defaultIsolationLevel);
+                    } catch (SQLException ignore) {
+                        // have no meaningful options here...
+                    }
+                }
             }
         }
     }

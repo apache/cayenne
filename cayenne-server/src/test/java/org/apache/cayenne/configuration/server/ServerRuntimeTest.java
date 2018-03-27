@@ -31,6 +31,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.TransactionDescriptor;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.Test;
@@ -42,6 +43,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,6 +55,7 @@ public class ServerRuntimeTest {
         final BaseTransaction tx = mock(BaseTransaction.class);
         final TransactionFactory txFactory = mock(TransactionFactory.class);
         when(txFactory.createTransaction()).thenReturn(tx);
+        when(txFactory.createTransaction(any(TransactionDescriptor.class))).thenReturn(tx);
 
         Module module = binder -> binder.bind(TransactionFactory.class).toInstance(txFactory);
 

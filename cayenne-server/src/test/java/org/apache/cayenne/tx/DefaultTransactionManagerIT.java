@@ -18,35 +18,32 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
+
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DefaultTransactionManagerIT extends ServerCase {
+public class DefaultTransactionManagerIT {
 
     @Test
     public void testPerformInTransaction_Local() {
 
         final BaseTransaction tx = mock(BaseTransaction.class);
-        TransactionFactory txFactory = mock(TransactionFactory.class);
-        when(txFactory.createTransaction()).thenReturn(tx);
 
-        DefaultTransactionManager txManager = new DefaultTransactionManager(txFactory, mock(JdbcEventLogger.class));
+        DefaultTransactionManager txManager = createDefaultTxManager(() -> tx);
 
         final Object expectedResult = new Object();
-        Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
-            public Object perform() {
-                assertNotNull(BaseTransaction.getThreadTransaction());
-                return expectedResult;
-            }
+        Object result = txManager.performInTransaction(() -> {
+            assertSame(tx, BaseTransaction.getThreadTransaction());
+            return expectedResult;
         });
 
         assertSame(expectedResult, result);
@@ -56,21 +53,17 @@ public class DefaultTransactionManagerIT extends ServerCase {
     public void testPerformInTransaction_ExistingTx() {
 
         final BaseTransaction tx1 = mock(BaseTransaction.class);
-        TransactionFactory txFactory = mock(TransactionFactory.class);
-        when(txFactory.createTransaction()).thenReturn(tx1);
 
-        DefaultTransactionManager txManager = new DefaultTransactionManager(txFactory, mock(JdbcEventLogger.class));
+        DefaultTransactionManager txManager = createDefaultTxManager(() -> tx1);
 
         final BaseTransaction tx2 = mock(BaseTransaction.class);
         BaseTransaction.bindThreadTransaction(tx2);
         try {
 
             final Object expectedResult = new Object();
-            Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
-                public Object perform() {
-                    assertSame(tx2, BaseTransaction.getThreadTransaction());
-                    return expectedResult;
-                }
+            Object result = txManager.performInTransaction(() -> {
+                assertSame(tx2, BaseTransaction.getThreadTransaction());
+                return expectedResult;
             });
 
             assertSame(expectedResult, result);
@@ -79,5 +72,119 @@ public class DefaultTransactionManagerIT extends ServerCase {
         }
     }
 
+    @Test
+    public void testNestedPropagation() {
+        final BaseTransaction tx = mock(BaseTransaction.class);
+
+        assertNull(BaseTransaction.getThreadTransaction());
+
+        DefaultTransactionManager txManager = createDefaultTxManager(() -> tx);
+
+        try {
+            final Object expectedResult = new Object();
+            Object result = txManager.performInTransaction(() -> {
+                    assertSame(tx, BaseTransaction.getThreadTransaction());
+                    return expectedResult;
+                },
+                new TransactionDescriptor(TransactionPropagation.NESTED)
+            );
+            assertSame(expectedResult, result);
+        } finally {
+            BaseTransaction.bindThreadTransaction(null);
+        }
+
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void testMandatoryPropagationNotStarted() {
+        final BaseTransaction tx = mock(BaseTransaction.class);
+
+        assertNull(BaseTransaction.getThreadTransaction());
+
+        DefaultTransactionManager txManager = createDefaultTxManager(() -> tx);
+
+        try {
+            final Object expectedResult = new Object();
+            Object result = txManager.performInTransaction(() -> {
+                        assertSame(tx, BaseTransaction.getThreadTransaction());
+                        return expectedResult;
+                    },
+                    new TransactionDescriptor(TransactionPropagation.MANDATORY)
+            );
+            assertSame(expectedResult, result);
+        } finally {
+            BaseTransaction.bindThreadTransaction(null);
+        }
+
+    }
+
+    @Test
+    public void testMandatoryPropagation() {
+        final BaseTransaction tx = mock(BaseTransaction.class);
+
+        assertNull(BaseTransaction.getThreadTransaction());
+
+        DefaultTransactionManager txManager = createDefaultTxManager(() -> tx);
+        BaseTransaction.bindThreadTransaction(tx);
+
+        try {
+            final Object expectedResult = new Object();
+            Object result = txManager.performInTransaction(() -> {
+                        assertSame(tx, BaseTransaction.getThreadTransaction());
+                        return expectedResult;
+                    },
+                    new TransactionDescriptor(TransactionPropagation.MANDATORY)
+            );
+            assertSame(expectedResult, result);
+        } finally {
+            BaseTransaction.bindThreadTransaction(null);
+        }
+
+    }
+
+    @Test
+    public void testRequiresNewPropagation() {
+        final BaseTransaction tx1 = mock(BaseTransaction.class);
+        final BaseTransaction tx2 = mock(BaseTransaction.class);
+        final AtomicInteger counter = new AtomicInteger(0);
+
+        assertNull(BaseTransaction.getThreadTransaction());
+
+        DefaultTransactionManager txManager = createDefaultTxManager(() -> {
+            counter.incrementAndGet();
+            return tx2;
+        });
+
+        BaseTransaction.bindThreadTransaction(tx1);
+
+        try {
+            final Object expectedResult = new Object();
+            Object result = txManager.performInTransaction(() -> {
+                        assertSame(tx2, BaseTransaction.getThreadTransaction());
+                        return expectedResult;
+                    },
+                    new TransactionDescriptor(TransactionPropagation.REQUIRES_NEW)
+            );
+            assertSame(expectedResult, result);
+            assertSame(tx1, BaseTransaction.getThreadTransaction());
+        } finally {
+            BaseTransaction.bindThreadTransaction(null);
+        }
+
+    }
+
+    private DefaultTransactionManager createDefaultTxManager(final Supplier<Transaction> txSupplier) {
+        return new DefaultTransactionManager(
+                createMockFactory(txSupplier),
+                mock(JdbcEventLogger.class)
+        );
+    }
+
+    private TransactionFactory createMockFactory(final Supplier<Transaction> supplier) {
+        TransactionFactory txFactory = mock(TransactionFactory.class);
+        when(txFactory.createTransaction()).thenReturn(supplier.get());
+        when(txFactory.createTransaction(any(TransactionDescriptor.class))).thenReturn(supplier.get());
+        return txFactory;
+    }
 
 }

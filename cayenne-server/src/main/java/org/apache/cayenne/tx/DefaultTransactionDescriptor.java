@@ -19,41 +19,18 @@
 
 package org.apache.cayenne.tx;
 
-import org.apache.cayenne.log.JdbcEventLogger;
-
 /**
- * Represents a container-managed transaction.
- * 
- * @since 4.0
+ * @since 4.1
  */
-public class ExternalTransaction extends BaseTransaction {
+public class DefaultTransactionDescriptor extends TransactionDescriptor {
 
-    protected JdbcEventLogger logger;
+    private static final DefaultTransactionDescriptor instance = new DefaultTransactionDescriptor();
 
-    public ExternalTransaction(JdbcEventLogger jdbcEventLogger) {
-        this(jdbcEventLogger, DefaultTransactionDescriptor.getInstance());
+    public static TransactionDescriptor getInstance() {
+        return instance;
     }
 
-    /**
-     * @since 4.1
-     */
-    public ExternalTransaction(JdbcEventLogger jdbcEventLogger, TransactionDescriptor descriptor) {
-        super(descriptor);
-        this.logger = jdbcEventLogger;
-    }
-
-    @Override
-    protected void processCommit() {
-        logger.logCommitTransaction("no commit - transaction controlled externally.");
-    }
-
-    @Override
-    protected void processRollback() {
-        logger.logRollbackTransaction("no rollback - transaction controlled externally.");
-    }
-
-    @Override
-    public boolean isExternal() {
-        return true;
+    private DefaultTransactionDescriptor() {
+        super(TransactionDescriptor.ISOLATION_DEFAULT, TransactionPropagation.NESTED);
     }
 }

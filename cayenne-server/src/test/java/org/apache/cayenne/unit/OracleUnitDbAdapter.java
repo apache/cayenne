@@ -145,4 +145,9 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsSelectBooleanExpression() {
         return false;
     }
+
+    @Override
+    public boolean supportsSerializableTransactionIsolation() {
+        return true;
+    }
 }

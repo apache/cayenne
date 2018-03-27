@@ -25,4 +25,13 @@ package org.apache.cayenne.tx;
 public interface TransactionFactory {
 
     Transaction createTransaction();
+
+    /**
+     *
+     * @param descriptor with required transaction properties
+     * @return new transaction
+     *
+     * @since 4.1
+     */
+    Transaction createTransaction(TransactionDescriptor descriptor);
 }

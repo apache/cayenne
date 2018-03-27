@@ -39,8 +39,16 @@ public class DefaultTransactionFactory implements TransactionFactory {
 
     @Override
     public Transaction createTransaction() {
-        return externalTransactions ? new ExternalTransaction(jdbcEventLogger) : new CayenneTransaction(
-                jdbcEventLogger);
+        return createTransaction(DefaultTransactionDescriptor.getInstance());
+    }
+
+    /**
+     * @since 4.1
+     */
+    @Override
+    public Transaction createTransaction(TransactionDescriptor descriptor) {
+        return externalTransactions ? new ExternalTransaction(jdbcEventLogger, descriptor) : new CayenneTransaction(
+                jdbcEventLogger, descriptor);
     }
 
 }

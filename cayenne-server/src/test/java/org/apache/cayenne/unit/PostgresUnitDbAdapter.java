@@ -70,4 +70,9 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsGeneratedKeysDrop() {
         return true;
     }
+
+    @Override
+    public boolean supportsSerializableTransactionIsolation() {
+        return true;
+    }
 }

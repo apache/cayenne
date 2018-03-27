@@ -35,7 +35,15 @@ public class CayenneTransaction extends BaseTransaction {
     protected JdbcEventLogger logger;
 
     public CayenneTransaction(JdbcEventLogger logger) {
-        this.logger = logger;
+        this(logger, DefaultTransactionDescriptor.getInstance());
+    }
+
+    /**
+     * @since 4.1
+     */
+    public CayenneTransaction(JdbcEventLogger jdbcEventLogger, TransactionDescriptor descriptor) {
+        super(descriptor);
+        this.logger = jdbcEventLogger;
     }
 
     @Override
@@ -127,6 +135,7 @@ public class CayenneTransaction extends BaseTransaction {
             }
         }
 
+        logger.logRollbackTransaction("transaction rolledback.");
         if (deferredException != null) {
             throw new CayenneRuntimeException(deferredException);
         }

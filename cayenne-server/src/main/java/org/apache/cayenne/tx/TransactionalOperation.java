@@ -21,6 +21,7 @@ package org.apache.cayenne.tx;
 /**
  * @since 4.0
  */
+@FunctionalInterface
 public interface TransactionalOperation<T> {
 
     /**

@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -37,54 +40,149 @@ public class DefaultTransactionManager implements TransactionManager {
 
     @Override
     public <T> T performInTransaction(TransactionalOperation<T> op) {
-        return performInTransaction(op, DoNothingTransactionListener.getInstance());
+        return performInTransaction(op, DoNothingTransactionListener.getInstance(), DefaultTransactionDescriptor.getInstance());
     }
 
     @Override
     public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback) {
-
-        // Either join existing tx (in such case do not try to commit or rollback), or start a new tx and manage it
-        // till the end
-
-        Transaction currentTx = BaseTransaction.getThreadTransaction();
-        return (currentTx != null)
-                ? performInTransaction(currentTx, op, callback)
-                : performInLocalTransaction(op, callback);
+        return performInTransaction(op, callback, DefaultTransactionDescriptor.getInstance());
     }
 
-    protected <T> T performInLocalTransaction(TransactionalOperation<T> op, TransactionListener callback) {
-        Transaction tx = txFactory.createTransaction();
-        BaseTransaction.bindThreadTransaction(tx);
-        try {
-            T result = performInTransaction(tx, op, callback);
-            tx.commit();
-            return result;
+    /**
+     * @since 4.1
+     */
+    @Override
+    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionDescriptor descriptor) {
+        return performInTransaction(op, DoNothingTransactionListener.getInstance(), descriptor);
+    }
 
-        } catch (CayenneRuntimeException ex) {
-            tx.setRollbackOnly();
-            throw ex;
-        } catch (Exception ex) {
-            tx.setRollbackOnly();
-            throw new CayenneRuntimeException(ex);
-        } finally {
-            BaseTransaction.bindThreadTransaction(null);
+    /**
+     * @since 4.1
+     */
+    @Override
+    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
+        BaseTransactionHandler handler = getHandler(descriptor);
+        return handler.handle(op, callback, descriptor);
+    }
 
-            if (tx.isRollbackOnly()) {
-                try {
-                    tx.rollback();
-                } catch (Exception e) {
-                    // although we don't expect an exception here, print the
-                    // stack, as there have been some Cayenne bugs already
-                    // (CAY-557) that were masked by this 'catch' clause.
-                    jdbcEventLogger.logQueryError(e);
+    protected BaseTransactionHandler getHandler(TransactionDescriptor descriptor) {
+        switch (descriptor.getPropagation()) {
+            // MANDATORY requires transaction to exists
+            case MANDATORY:
+                return new MandatoryTransactionHandler(txFactory, jdbcEventLogger);
+
+            // NESTED can join existing or create new
+            case NESTED:
+                return new NestedTransactionHandler(txFactory, jdbcEventLogger);
+
+            // REQUIRES_NEW should always create new transaction
+            case REQUIRES_NEW:
+                return new RequiresNewTransactionHandler(txFactory, jdbcEventLogger);
+        }
+
+        throw new CayenneRuntimeException("Unsupported transaction propagation: " + descriptor.getPropagation());
+    }
+
+    private static class NestedTransactionHandler extends BaseTransactionHandler {
+
+        private NestedTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
+            super(txFactory, jdbcEventLogger);
+        }
+
+        @Override
+        protected <T> T handle(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
+            Transaction currentTx = BaseTransaction.getThreadTransaction();
+            if(currentTx != null) {
+                return performInTransaction(currentTx, op, callback);
+            } else {
+                return performInNewTransaction(op, callback, descriptor);
+            }
+        }
+    }
+
+    private static class MandatoryTransactionHandler extends BaseTransactionHandler {
+
+        private MandatoryTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
+            super(txFactory, jdbcEventLogger);
+        }
+
+        @Override
+        protected <T> T handle(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
+            Transaction currentTx = BaseTransaction.getThreadTransaction();
+            if(currentTx == null) {
+                throw new CayenneRuntimeException("Transaction operation should join to existing transaction but none found.");
+            }
+            return performInTransaction(currentTx, op, callback);
+        }
+    }
+
+    private static class RequiresNewTransactionHandler extends BaseTransactionHandler {
+
+        private RequiresNewTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
+            super(txFactory, jdbcEventLogger);
+        }
+
+        @Override
+        protected <T> T handle(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
+            Transaction currentTx = BaseTransaction.getThreadTransaction();
+            try {
+                return performInNewTransaction(op, callback, descriptor);
+            } finally {
+                if(currentTx != null) {
+                    // restore old transaction, if where set
+                    BaseTransaction.bindThreadTransaction(currentTx);
                 }
             }
         }
     }
 
-    protected <T> T performInTransaction(Transaction tx, TransactionalOperation<T> op, TransactionListener callback) {
-        tx.addListener(callback);
-        return op.perform();
+    protected static abstract class BaseTransactionHandler {
+
+        private TransactionFactory txFactory;
+        private JdbcEventLogger jdbcEventLogger;
+
+        private BaseTransactionHandler(TransactionFactory txFactory, JdbcEventLogger jdbcEventLogger) {
+            this.txFactory = txFactory;
+            this.jdbcEventLogger = jdbcEventLogger;
+        }
+
+        protected abstract <T> T handle(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor);
+
+        protected <T> T performInNewTransaction(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
+            Transaction tx = txFactory.createTransaction(descriptor);
+            BaseTransaction.bindThreadTransaction(tx);
+            try {
+                T result = performInTransaction(tx, op, callback);
+                tx.commit();
+                return result;
+
+            } catch (CayenneRuntimeException ex) {
+                tx.setRollbackOnly();
+                throw ex;
+            } catch (Exception ex) {
+                tx.setRollbackOnly();
+                throw new CayenneRuntimeException(ex);
+            } finally {
+                BaseTransaction.bindThreadTransaction(null);
+
+                if (tx.isRollbackOnly()) {
+                    try {
+                        tx.rollback();
+                    } catch (Exception e) {
+                        // although we don't expect an exception here, print the
+                        // stack, as there have been some Cayenne bugs already
+                        // (CAY-557) that were masked by this 'catch' clause.
+                        jdbcEventLogger.logQueryError(e);
+                    }
+                }
+            }
+        }
+
+        protected <T> T performInTransaction(Transaction tx, TransactionalOperation<T> op, TransactionListener callback) {
+            tx.addListener(callback);
+            return op.perform();
+        }
+
     }
 
 }
