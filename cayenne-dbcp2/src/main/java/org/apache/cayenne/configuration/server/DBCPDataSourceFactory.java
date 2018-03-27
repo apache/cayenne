@@ -33,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link DataSourceFactory} based on DBCP2 connection pool library.
+ * @deprecated since 4.1
  */
+@Deprecated
 public class DBCPDataSourceFactory implements DataSourceFactory {
 
 	private static final String DBCP2_PROPERTIES = "dbcp2.properties";

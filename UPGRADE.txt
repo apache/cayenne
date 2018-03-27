@@ -5,6 +5,7 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 UPGRADING TO 4.1.M2
+* Per CAY-2400 Cayenne-DBCP2 was deprecated
 
 * Per CAY-2377 All code deprecated in Cayenne 4.0 was removed, please review your code before upgrading.
 
