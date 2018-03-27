@@ -47,7 +47,7 @@
     <db-relationship name="address" source="CHILD" target="ADDRESS">
         <db-attribute-pair source="ADDRESS_ID" target="id"/>
     </db-relationship>
-    <obj-relationship name="children" source="Address" target="Child" deleteRule="Deny" db-relationship-path="children"/>
+    <obj-relationship name="children" source="Address" target="Child" db-relationship-path="children"/>
     <obj-relationship name="address" source="Child" target="Address" deleteRule="Nullify" db-relationship-path="address"/>
 
 </data-map>

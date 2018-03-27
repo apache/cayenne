@@ -19,10 +19,12 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
+import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.CompareToBuilder;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -36,6 +38,7 @@ public class ExportedKey implements Comparable {
 
     private final KeyData pk;
     private final KeyData fk;
+    private int deleteRule;
     private final short keySeq;
 
     /**
@@ -46,6 +49,11 @@ public class ExportedKey implements Comparable {
      *           DataBaseMetaData.getExportedKeys(...)
      */
     ExportedKey(ResultSet rs) throws SQLException {
+        try {
+            deleteRule = translateDbRuleToCayenneRule(Integer.parseInt(rs.getString("DELETE_RULE")));
+        } catch (Exception exception) {
+            deleteRule = DeleteRule.NO_ACTION;
+        }
         String pkCatalog = rs.getString("PKTABLE_CAT");
         String pkSchema = rs.getString("PKTABLE_SCHEM");
         String pkTable = rs.getString("PKTABLE_NAME");
@@ -63,12 +71,31 @@ public class ExportedKey implements Comparable {
         this.keySeq = rs.getShort("KEY_SEQ");
     }
 
+    private int translateDbRuleToCayenneRule(int deleteRule) {
+        switch (deleteRule) {
+            case DatabaseMetaData.importedKeyCascade:
+                return DeleteRule.CASCADE;
+            case DatabaseMetaData.importedKeyRestrict:
+                return DeleteRule.DENY;
+            case DatabaseMetaData.importedKeySetNull:
+                return DeleteRule.NULLIFY;
+            case DatabaseMetaData.importedKeyNoAction:
+            case DatabaseMetaData.importedKeySetDefault:
+            default:
+                return DeleteRule.NO_ACTION;
+        }
+    }
+
     public KeyData getPk() {
         return pk;
     }
 
     public KeyData getFk() {
         return fk;
+    }
+
+    public int getDeleteRule() {
+        return deleteRule;
     }
 
     @Override

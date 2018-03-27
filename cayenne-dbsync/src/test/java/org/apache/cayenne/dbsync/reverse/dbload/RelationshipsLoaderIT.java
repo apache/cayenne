@@ -24,13 +24,38 @@ import java.util.Collection;
 
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DeleteRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class RelationshipsLoaderIT extends BaseLoaderIT {
+
+    // This test ignored because test db is being created with default delete_rules
+    // and on every databases have different default delete_rules
+    @Ignore
+    @Test
+    public void testRelationshipDeleteRuleLoad() throws Exception {
+        DatabaseMetaData metaData = connection.getMetaData();
+        DbLoaderDelegate delegate = new DefaultDbLoaderDelegate();
+        EntityLoader entityLoader = new EntityLoader(adapter, EMPTY_CONFIG, delegate);
+        AttributeLoader attributeLoader = new AttributeLoader(adapter, EMPTY_CONFIG, delegate);
+        ExportedKeyLoader exportedKeyLoader = new ExportedKeyLoader(EMPTY_CONFIG, delegate);
+
+        entityLoader.load(metaData, store);
+        attributeLoader.load(metaData, store);
+        exportedKeyLoader.load(metaData, store);
+        RelationshipLoader relationshipLoader = new RelationshipLoader(EMPTY_CONFIG, delegate, new DefaultObjectNameGenerator());
+        relationshipLoader.load(metaData, store);
+
+        DbRelationship relationship = getDbEntity("DELETE_RULE").getRelationship("deleteCascades");
+        assertEquals(DbRelationshipDetected.class, relationship.getClass());
+        assertEquals(DeleteRule.CASCADE, ((DbRelationshipDetected) relationship).getDeleteRule());
+    }
 
     @Test
     public void testRelationshipLoad() throws Exception {

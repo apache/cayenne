@@ -21,6 +21,7 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.dbload.DbRelationshipDetected;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -93,9 +94,9 @@ class ManyToManyCandidateEntity {
     }
 
     private void addFlattenedRelationship(ObjectNameGenerator nameGenerator, ObjEntity srcEntity, ObjEntity dstEntity,
-                                          DbRelationship rel1, DbRelationship rel2) {
+                                          DbRelationship reverseRelationship, DbRelationship dbRelationship) {
 
-        if (rel1.getSourceAttributes().isEmpty() && rel2.getTargetAttributes().isEmpty()) {
+        if (reverseRelationship.getSourceAttributes().isEmpty() && dbRelationship.getTargetAttributes().isEmpty()) {
             LOG.warn("Wrong call ManyToManyCandidateEntity.addFlattenedRelationship(... , " + srcEntity.getName()
                     + ", " + dstEntity.getName() + ", ...)");
 
@@ -105,14 +106,17 @@ class ManyToManyCandidateEntity {
         ObjRelationship newRelationship = new ObjRelationship();
         newRelationship.setName(NameBuilder
                 .builder(newRelationship, srcEntity)
-                .baseName(nameGenerator.relationshipName(rel1, rel2))
+                .baseName(nameGenerator.relationshipName(reverseRelationship, dbRelationship))
                 .name());
 
         newRelationship.setSourceEntity(srcEntity);
         newRelationship.setTargetEntityName(dstEntity);
+        if (dbRelationship instanceof DbRelationshipDetected) {
+            newRelationship.setDeleteRule(((DbRelationshipDetected) dbRelationship).getDeleteRule());
+        }
 
-        newRelationship.addDbRelationship(rel1);
-        newRelationship.addDbRelationship(rel2);
+        newRelationship.addDbRelationship(reverseRelationship);
+        newRelationship.addDbRelationship(dbRelationship);
 
         srcEntity.addRelationship(newRelationship);
     }

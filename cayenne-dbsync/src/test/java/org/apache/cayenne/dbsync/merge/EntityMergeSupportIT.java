@@ -101,7 +101,7 @@ public class EntityMergeSupportIT extends MergeCase {
 		assertNotNull(objEntity1.getRelationship("newTable2s"));
 		assertNotNull(objEntity2.getRelationship("newTable"));
 
-		assertEquals(objEntity1.getRelationship("newTable2s").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
+		assertEquals(objEntity1.getRelationship("newTable2s").getDeleteRule(), DeleteRule.NO_ACTION);
 		assertEquals(objEntity2.getRelationship("newTable").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
 
 		map.removeObjEntity(objEntity2.getName());

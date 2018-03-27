@@ -23,6 +23,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.dbload.DbRelationshipDetected;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -194,6 +195,9 @@ public class EntityMergeSupport {
 
     private boolean createObjRelationship(ObjEntity entity, DbRelationship dr, String targetEntityName) {
         ObjRelationship or = new ObjRelationship();
+        if (dr instanceof DbRelationshipDetected) {
+            or.setDeleteRule(((DbRelationshipDetected) dr).getDeleteRule());
+        }
         or.setName(NameBuilder.builder(or, entity)
                 .baseName(nameGenerator.relationshipName(dr))
                 .name());

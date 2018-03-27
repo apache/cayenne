@@ -58,16 +58,17 @@ public class DeleteRuleUpdater implements EntityMergeListener {
     /**
      * Updates delete rules for specified relationship
      */
-    public static void updateObjRelationship(ObjRelationship rel) {
-        rel.setDeleteRule(rel.isToMany() ? DeleteRule.DEFAULT_DELETE_RULE_TO_MANY :
-            DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+    public static void updateObjRelationship(ObjRelationship relationship) {
+        if (!relationship.isToMany()) {
+            relationship.setDeleteRule(DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+        }
     }
 
     public void objAttributeAdded(ObjAttribute attr) {
     }
 
-    public void objRelationshipAdded(ObjRelationship rel) {
-        updateObjRelationship(rel);
+    public void objRelationshipAdded(ObjRelationship relationship) {
+        updateObjRelationship(relationship);
     }
     
     /**

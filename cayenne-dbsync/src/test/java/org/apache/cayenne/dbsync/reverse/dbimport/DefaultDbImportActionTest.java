@@ -21,7 +21,6 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.dba.DbAdapter;
@@ -49,7 +48,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
@@ -180,7 +178,7 @@ public class DefaultDbImportActionTest {
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(
-            new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
+            new FileProjectSaver(Collections.emptyList()) {
                 @Override
                 public void save(Project project) {
                     haveWeTriedToSave[0] = true;
@@ -292,14 +290,14 @@ public class DefaultDbImportActionTest {
         DbAdapter dbAdapter = mock(DbAdapter.class);
 
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
-        when(adapterFactory.createAdapter((DataNodeDescriptor)any(), (DataSource)any())).thenReturn(dbAdapter);
+        when(adapterFactory.createAdapter(any(), any())).thenReturn(dbAdapter);
 
         DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
         DataSource mock = mock(DataSource.class);
-        when(dataSourceFactory.getDataSource((DataNodeDescriptor)any())).thenReturn(mock);
+        when(dataSourceFactory.getDataSource(any())).thenReturn(mock);
 
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
-        when(mergerTokenFactoryProvider.get((DbAdapter)any())).thenReturn(new DefaultMergerTokenFactory());
+        when(mergerTokenFactoryProvider.get(any())).thenReturn(new DefaultMergerTokenFactory());
 
         DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
 

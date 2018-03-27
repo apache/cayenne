@@ -59,6 +59,6 @@
 
 
     <obj-relationship name="parent" source="Child" target="Parent" deleteRule="Nullify" db-relationship-path="parent"/>
-    <obj-relationship name="children" source="Parent" target="Child" deleteRule="Deny" db-relationship-path="children"/>
+    <obj-relationship name="children" source="Parent" target="Child" db-relationship-path="children"/>
 </data-map>
 
