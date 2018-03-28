@@ -53,17 +53,19 @@ public class PreferenceDialog extends CayenneController {
     };
 
     protected PreferenceDialogView view;
-    protected Map detailControllers;
+    protected Map<String, CayenneController> detailControllers;
     protected PreferenceEditor editor;
 
     public PreferenceDialog(CayenneController parent) {
         super(parent);
 
-        Window parentView = parent.getView() instanceof Window ? (Window) parent.getView() : 
-            SwingUtilities.getWindowAncestor(parent.getView());
-        this.view = (parentView instanceof Dialog) ? new PreferenceDialogView(
-                (Dialog) parentView) : new PreferenceDialogView((Frame) parentView);
-        this.detailControllers = new HashMap();
+        Window parentView = parent.getView() instanceof Window
+                ? (Window) parent.getView()
+                : SwingUtilities.getWindowAncestor(parent.getView());
+        this.view = (parentView instanceof Dialog)
+                ? new PreferenceDialogView((Dialog) parentView)
+                : new PreferenceDialogView((Frame) parentView);
+        this.detailControllers = new HashMap<>();
 
         // editor must be configured before startup for "showDetailViewAction()" to work
         this.editor = new CayenneModelerPreferenceEditor(application);
@@ -72,33 +74,19 @@ public class PreferenceDialog extends CayenneController {
     }
 
     protected void initBindings() {
-        final JList list = view.getList();
+        final JList<String> list = view.getList();
         list.setListData(preferenceMenus);
-        list.addListSelectionListener(new ListSelectionListener() {
+        list.addListSelectionListener(e -> updateSelection());
 
-            public void valueChanged(ListSelectionEvent e) {
-                Object selection = list.getSelectedValue();
-                if (selection != null) {
-                    view.getDetailLayout().show(
-                            view.getDetailPanel(),
-                            selection.toString());
-                }
-            }
-        });
+        view.getCancelButton().addActionListener(e -> cancelAction());
+        view.getSaveButton().addActionListener(e -> savePreferencesAction());
+    }
 
-        view.getCancelButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                cancelAction();
-            }
-        });
-
-        view.getSaveButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                savePreferencesAction();
-            }
-        });
+    public void updateSelection() {
+        String selection = view.getList().getSelectedValue();
+        if (selection != null) {
+            view.getDetailLayout().show(view.getDetailPanel(), selection);
+        }
     }
 
     public void cancelAction() {
@@ -108,9 +96,6 @@ public class PreferenceDialog extends CayenneController {
 
     public void savePreferencesAction() {
         editor.save();
-
-        // update
-
         view.dispose();
     }
 
@@ -131,7 +116,6 @@ public class PreferenceDialog extends CayenneController {
     }
 
     public void startupAction(String key) {
-
         if (key == null) {
             key = GENERAL_KEY;
         }
@@ -148,7 +132,6 @@ public class PreferenceDialog extends CayenneController {
         registerPanel(CLASS_PATH_KEY, new ClasspathPreferences(this));
         registerPanel(TEMPLATES_KEY, new TemplatePreferences(this));
         view.getDetailLayout().show(view.getDetailPanel(), GENERAL_KEY);
-        // view.getSplit().setDividerLocation(150);
         view.pack();
 
         // show

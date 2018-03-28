@@ -77,7 +77,7 @@ public class DataSourcePreferences extends CayenneController {
 
 		Object[] keys = dataSources.keySet().toArray();
 		Arrays.sort(keys);
-		DefaultComboBoxModel dataSourceModel = new DefaultComboBoxModel(keys);
+		DefaultComboBoxModel<Object> dataSourceModel = new DefaultComboBoxModel<>(keys);
 		view.getDataSources().setModel(dataSourceModel);
 
 		initBindings();
@@ -124,7 +124,6 @@ public class DataSourcePreferences extends CayenneController {
 	 * Shows a dialog to create new local DataSource configuration.
 	 */
 	public void newDataSourceAction() {
-
 		DataSourceCreator creatorWizard = new DataSourceCreator(this);
 		DBConnectionInfo dataSource = creatorWizard.startupAction();
 
@@ -134,7 +133,7 @@ public class DataSourcePreferences extends CayenneController {
 
 			Object[] keys = dataSources.keySet().toArray();
 			Arrays.sort(keys);
-			view.getDataSources().setModel(new DefaultComboBoxModel(keys));
+			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 			view.getDataSources().setSelectedItem(creatorWizard.getName());
 			editDataSourceAction();
 			fireEvent(creatorWizard.getName(), MapEvent.ADD);
@@ -156,7 +155,7 @@ public class DataSourcePreferences extends CayenneController {
 
 				Object[] keys = dataSources.keySet().toArray();
 				Arrays.sort(keys);
-				view.getDataSources().setModel(new DefaultComboBoxModel(keys));
+				view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 				view.getDataSources().setSelectedItem(wizard.getName());
 				editDataSourceAction();
 				fireEvent(wizard.getName(), MapEvent.ADD);
@@ -175,7 +174,7 @@ public class DataSourcePreferences extends CayenneController {
 			dataSources = dataSourcePreferences.getChildrenPreferences();
 			Object[] keys = dataSources.keySet().toArray();
 			Arrays.sort(keys);
-			view.getDataSources().setModel(new DefaultComboBoxModel(keys));
+			view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 			editDataSourceAction(keys.length > 0 ? keys[0] : null);
 			fireEvent(key, MapEvent.REMOVE);
 		}

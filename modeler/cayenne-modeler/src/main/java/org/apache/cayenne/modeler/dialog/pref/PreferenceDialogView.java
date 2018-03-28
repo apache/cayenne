@@ -45,7 +45,7 @@ import javax.swing.JSplitPane;
 public class PreferenceDialogView extends JDialog {
 
     protected JSplitPane split;
-    protected JList<Object> list;
+    protected JList<String> list;
     protected CardLayout detailLayout;
     protected Container detailPanel;
     protected JButton cancelButton;
@@ -102,7 +102,7 @@ public class PreferenceDialogView extends JDialog {
         setTitle("Edit Preferences");
     }
 
-    public JList getList() {
+    public JList<String> getList() {
         return list;
     }
 

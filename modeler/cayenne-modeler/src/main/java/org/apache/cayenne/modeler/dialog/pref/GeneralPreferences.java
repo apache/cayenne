@@ -82,7 +82,6 @@ public class GeneralPreferences extends CayenneController {
 		preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 
 		this.encoding = preferences.get(ENCODING_PREFERENCE, null);
-
 		this.autoLoadProjectPreference = preferences.getBoolean(AUTO_LOAD_PROJECT_PREFERENCE, false);
 		this.deletePromptPreference = preferences.getBoolean(DELETE_PROMPT_PREFERENCE, false);
 
@@ -91,12 +90,8 @@ public class GeneralPreferences extends CayenneController {
 
 		// create bindings...
 		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-
-		this.encodingBinding = builder.bindToProperty(encodingSelector, "encoding",
-				EncodingSelector.ENCODING_PROPERTY_BINDING);
-
+		this.encodingBinding = builder.bindToProperty(encodingSelector, "encoding", EncodingSelector.ENCODING_PROPERTY_BINDING);
 		this.autoLoadProjectBinding = builder.bindToCheckBox(view.getAutoLoadProject(), "autoLoadProject");
-
 		this.deletePromptBinding = builder.bindToCheckBox(view.getDeletePrompt(), "deletePrompt");
 	}
 

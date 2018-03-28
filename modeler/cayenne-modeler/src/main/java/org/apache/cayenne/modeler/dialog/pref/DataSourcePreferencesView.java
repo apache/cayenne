@@ -40,7 +40,7 @@ public class DataSourcePreferencesView extends JPanel {
     protected JButton duplicateDataSource;
     protected JButton removeDataSource;
     protected JButton testDataSource;
-    protected JComboBox dataSources;
+    protected JComboBox<Object> dataSources;
     protected DBConnectionInfoEditor dataSourceEditor;
 
     public DataSourcePreferencesView(CayenneController controller) {
@@ -48,7 +48,7 @@ public class DataSourcePreferencesView extends JPanel {
         this.duplicateDataSource = new JButton("Duplicate...");
         this.removeDataSource = new JButton("Delete");
         this.testDataSource = new JButton("Test...");
-        this.dataSources = new JComboBox();
+        this.dataSources = new JComboBox<>();
         this.dataSourceEditor = new DBConnectionInfoEditor(controller);
 
         // assemble
@@ -74,7 +74,7 @@ public class DataSourcePreferencesView extends JPanel {
         return dataSourceEditor;
     }
 
-    public JComboBox getDataSources() {
+    public JComboBox<Object> getDataSources() {
         return dataSources;
     }
 
