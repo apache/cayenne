@@ -20,8 +20,14 @@
 package org.apache.cayenne.dbsync.xml;
 
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.apache.cayenne.dbsync.reverse.dbimport.*;
-
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;

@@ -47,8 +47,6 @@ public class CayenneDataObject extends BaseDataObject {
 
 	private static final long serialVersionUID = -313743913882350400L;
 
-	protected long snapshotVersion = DEFAULT_VERSION;
-
 	protected Map<String, Object> values = new HashMap<>();
 
 	@Override
