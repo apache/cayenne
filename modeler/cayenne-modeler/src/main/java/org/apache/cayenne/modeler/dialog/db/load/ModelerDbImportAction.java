@@ -16,13 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.modeler.dialog.db.load;
 
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.ProjectSaver;
@@ -30,12 +33,21 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.slf4j.Logger;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 public class ModelerDbImportAction extends DefaultDbImportAction {
 
+    private static final String DIALOG_TITLE = "Reverse Engineering Result";
+
     @Inject
     private DataMap targetMap;
+
+    private DbLoadResultDialog resultDialog;
+    private boolean isNothingChanged;
 
     public ModelerDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
@@ -43,8 +55,55 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
+                                 @Inject DataChannelMetaData metaData,
                                  @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
-        super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader);
+        super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData);
+    }
+
+    @Override
+    protected Collection<MergerToken> log(List<MergerToken> tokens) {
+        resultDialog = new DbLoadResultDialog(DIALOG_TITLE);
+        logger.info("");
+        if (tokens.isEmpty()) {
+            logger.info("Detected changes: No changes to import.");
+            isNothingChanged = true;
+            return tokens;
+        }
+
+        logger.info("Detected changes: ");
+        for (MergerToken token : tokens) {
+            String logString = String.format("    %-20s %s", token.getTokenName(), token.getTokenValue());
+            logger.info(logString);
+            resultDialog.addRowToOutput(logString);
+            isNothingChanged = false;
+        }
+
+        logger.info("");
+        resultDialog.setVisible(true);
+
+        return tokens;
+    }
+
+    @Override
+    protected void addMessageToLogs(String message, List<String> messages) {
+        String formattedMessage = String.format("    %-20s", message);
+        messages.add(formattedMessage);
+        resultDialog.addRowToOutput(formattedMessage);
+        isNothingChanged = false;
+    }
+
+    @Override
+    protected void logMessages(List<String> messages) {
+        super.logMessages(messages);
+        if (isNothingChanged) {
+            JOptionPane optionPane = new JOptionPane("Detected changes: No changes to import.", JOptionPane.PLAIN_MESSAGE);
+            JDialog dialog = optionPane.createDialog(DIALOG_TITLE);
+            dialog.setModal(false);
+            dialog.setAlwaysOnTop(true);
+            dialog.setVisible(true);
+        } else if (!resultDialog.isVisible()) {
+            resultDialog.setVisible(true);
+        }
     }
 
     @Override

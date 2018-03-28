@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph.extension;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.undo.UndoableEdit;
+
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.graph.GraphBuilder;
@@ -29,10 +34,6 @@ import org.jgraph.graph.DefaultGraphCell;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
-
-import javax.swing.undo.UndoableEdit;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Class to load graph from XML

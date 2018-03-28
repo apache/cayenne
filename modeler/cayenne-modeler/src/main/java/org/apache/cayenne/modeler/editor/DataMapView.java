@@ -275,7 +275,7 @@ public class DataMapView extends JPanel {
                 updateDefaultClientSuperclass();
             }
         });
-        
+
         updateDefaultCatalog.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -489,7 +489,7 @@ public class DataMapView extends JPanel {
         dataMap.setDefaultClientSuperclass(newSuperclass);
         eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
     }
-    
+
     void setDefaultCatalog(String newCatalog) {
         DataMap dataMap = eventController.getCurrentDataMap();
 
@@ -593,7 +593,7 @@ public class DataMapView extends JPanel {
         LinkDataMapAction action = eventController.getApplication().getActionManager().getAction(LinkDataMapAction.class);
         action.linkDataMap(map, node);
     }
-    
+
     void updateDefaultCatalog() {
         DataMap dataMap = eventController.getCurrentDataMap();
 

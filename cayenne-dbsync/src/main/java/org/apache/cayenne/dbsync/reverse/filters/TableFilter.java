@@ -84,6 +84,10 @@ public class TableFilter {
         return include.columnsFilter;
     }
 
+    public SortedSet<IncludeTableFilter> getIncludes() {
+        return includes;
+    }
+
     public static TableFilter include(String tablePattern) {
         TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
         includes.add(new IncludeTableFilter(tablePattern == null ? null : tablePattern.replaceAll("%", ".*")));

@@ -33,21 +33,24 @@ import java.awt.*;
  */
 public class DataSourceWizardView extends JDialog {
 
+    private static final byte OK_BUTTON_INDEX = 0;
+    private static final byte CANCEL_BUTTON_INDEX = 1;
+
     protected JComboBox<String> dataSources;
     protected JButton configButton;
     protected JButton okButton;
     protected JButton cancelButton;
     protected DBConnectionInfoEditor connectionInfo;
 
-    public DataSourceWizardView(CayenneController controller) {
+    public DataSourceWizardView(CayenneController controller, String[] labels) {
         super(Application.getFrame());
         
         this.dataSources = new JComboBox<>();
 
         this.configButton = new JButton("...");
         this.configButton.setToolTipText("configure local DataSource");
-        this.okButton = new JButton("Continue");
-        this.cancelButton = new JButton("Cancel");
+        this.okButton = new JButton(labels[OK_BUTTON_INDEX]);
+        this.cancelButton = new JButton(labels[CANCEL_BUTTON_INDEX]);
         this.connectionInfo = new DBConnectionInfoEditor(controller);
 
         CellConstraints cc = new CellConstraints();

@@ -25,7 +25,7 @@ import java.util.LinkedList;
 /**
  * @since 4.0
  */
-abstract class SchemaContainer extends FilterContainer {
+public abstract class SchemaContainer extends FilterContainer {
 
     private final Collection<Schema> schemaCollection = new LinkedList<>();
 
@@ -35,6 +35,16 @@ abstract class SchemaContainer extends FilterContainer {
 
     public void addSchema(Schema schema) {
         this.schemaCollection.add(schema);
+    }
+
+    public SchemaContainer(){
+    }
+
+    public SchemaContainer(SchemaContainer original) {
+        super(original);
+        for (Schema schema : original.getSchemas()) {
+            this.addSchema(new Schema(schema));
+        }
     }
 
     @Override

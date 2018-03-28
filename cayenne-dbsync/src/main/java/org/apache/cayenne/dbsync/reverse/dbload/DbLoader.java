@@ -93,7 +93,7 @@ public class DbLoader {
      */
     public static List<String> loadCatalogs(Connection connection) throws SQLException {
         try (ResultSet rs = connection.getMetaData().getCatalogs()) {
-            return getStrings(rs);
+            return getStrings(rs, 1);
         }
     }
 
@@ -104,14 +104,14 @@ public class DbLoader {
      */
     public static List<String> loadSchemas(Connection connection) throws SQLException {
         try (ResultSet rs = connection.getMetaData().getSchemas()) {
-            return getStrings(rs);
+            return getStrings(rs, 1);
         }
     }
 
-    private static List<String> getStrings(ResultSet rs) throws SQLException {
+    private static List<String> getStrings(ResultSet rs, int columnIndex) throws SQLException {
         List<String> strings = new ArrayList<>();
         while (rs.next()) {
-            strings.add(rs.getString(1));
+            strings.add(rs.getString(columnIndex));
         }
         return strings;
     }

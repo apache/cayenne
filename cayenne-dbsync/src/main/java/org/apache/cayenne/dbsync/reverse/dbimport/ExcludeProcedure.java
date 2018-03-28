@@ -19,14 +19,27 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
 /**
  * @since 4.0.
  */
-public class ExcludeProcedure extends PatternParam {
+public class ExcludeProcedure extends PatternParam implements XMLSerializable {
     public ExcludeProcedure() {
     }
 
     public ExcludeProcedure(String pattern) {
         super(pattern);
+    }
+
+    public ExcludeProcedure(ExcludeProcedure original) {
+        super(original);
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.simpleTag("excludeProcedure", this.getPattern());
     }
 }

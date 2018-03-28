@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
+
 /**
  * @since 4.0.
  */
-public class Catalog extends SchemaContainer {
+public class Catalog extends SchemaContainer implements XMLSerializable {
 
     public Catalog() {
     }
@@ -31,9 +35,27 @@ public class Catalog extends SchemaContainer {
         setName(name);
     }
 
+    public Catalog(Catalog original) {
+        super(original);
+    }
+
     @Override
     public StringBuilder toString(StringBuilder res, String prefix) {
         res.append(prefix).append("Catalog: ").append(getName()).append("\n");
         return super.toString(res, prefix + "  ");
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("catalog")
+            .nested(this.getIncludeTables(), delegate)
+            .nested(this.getExcludeTables(), delegate)
+            .nested(this.getIncludeColumns(), delegate)
+            .nested(this.getExcludeColumns(), delegate)
+            .nested(this.getIncludeProcedures(), delegate)
+            .nested(this.getExcludeProcedures(), delegate)
+            .simpleTag("name", this.getName())
+            .nested(this.getSchemas(), delegate)
+        .end();
     }
 }

@@ -16,6 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -27,6 +28,7 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
@@ -41,6 +43,7 @@ import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -78,12 +81,13 @@ import static org.apache.cayenne.util.Util.isBlank;
 public class DefaultDbImportAction implements DbImportAction {
 
     private final ProjectSaver projectSaver;
-    private final Logger logger;
+    protected final Logger logger;
     private final DataSourceFactory dataSourceFactory;
     private final DbAdapterFactory adapterFactory;
     private final DataMapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
     private final DataChannelDescriptorLoader dataChannelDescriptorLoader;
+    private final DataChannelMetaData metaData;
 
     public DefaultDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
@@ -91,13 +95,15 @@ public class DefaultDbImportAction implements DbImportAction {
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
+                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader,
+                                 @Inject DataChannelMetaData metaData) {
         this.logger = logger;
         this.projectSaver = projectSaver;
         this.dataSourceFactory = dataSourceFactory;
         this.adapterFactory = adapterFactory;
         this.mapLoader = mapLoader;
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
+        this.metaData = metaData;
         this.dataChannelDescriptorLoader = dataChannelDescriptorLoader;
     }
 
@@ -146,11 +152,23 @@ public class DefaultDbImportAction implements DbImportAction {
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
 
         DataMap sourceDataMap;
+        DataMap targetDataMap = existingTargetMap(config);
+
+        ReverseEngineering dataMapReverseEngineering = metaData.get(targetDataMap, ReverseEngineering.class);
+        if ((config.isUseDataMapReverseEngineering()) && (dataMapReverseEngineering != null)) {
+            putReverseEngineeringToConfig(dataMapReverseEngineering, config);
+        }
+        if ((dataMapReverseEngineering != null) && (!config.isUseDataMapReverseEngineering())) {
+            logger.warn("Found several dbimport configs. Configuration selected from 'build.gradle' file.");
+        }
+        if ((dataMapReverseEngineering == null) && (config.isUseDataMapReverseEngineering())) {
+            logger.warn("Missing dbimport config. Database is imported completely.");
+        }
+
         try (Connection connection = dataSource.getConnection()) {
             sourceDataMap = load(config, adapter, connection);
         }
 
-        DataMap targetDataMap = existingTargetMap(config);
         if (targetDataMap == null) {
 
             String path = config.getTargetDataMap() == null ? "null" : config.getTargetDataMap().getAbsolutePath() + "'";
@@ -183,6 +201,20 @@ public class DefaultDbImportAction implements DbImportAction {
         if (hasChanges) {
             saveLoaded(targetDataMap, config);
         }
+    }
+    private void putReverseEngineeringToConfig(ReverseEngineering reverseEngineering, DbImportConfiguration config) {
+        config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
+        config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
+        config.setStripFromTableNames(reverseEngineering.getStripFromTableNames());
+        config.setTableTypes(reverseEngineering.getTableTypes());
+        config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
+        config.setNamingStrategy(reverseEngineering.getNamingStrategy());
+        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
+        config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
+        config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
+        config.setDefaultPackage(reverseEngineering.getDefaultPackage());
+        config.setUsePrimitives(reverseEngineering.isUsePrimitives());
+        config.setUseJava7Types(reverseEngineering.isUseJava7Types());
     }
 
     protected void transformSourceBeforeMerge(DataMap sourceDataMap, DataMap targetDataMap, DbImportConfiguration configuration) {
@@ -228,7 +260,7 @@ public class DefaultDbImportAction implements DbImportAction {
         }
     }
 
-    private Collection<MergerToken> log(List<MergerToken> tokens) {
+    protected Collection<MergerToken> log(List<MergerToken> tokens) {
         logger.info("");
         if (tokens.isEmpty()) {
             logger.info("Detected changes: No changes to import.");
@@ -365,11 +397,17 @@ public class DefaultDbImportAction implements DbImportAction {
         return true;
     }
 
-    private boolean syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
+    protected void addMessageToLogs(String message, List<String> messages) {
+        messages.add(message);
+    }
+
+    protected void logMessages(List<String> messages) {
+        messages.forEach(logger::info);
+    }
+
+    protected boolean syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
         Collection<Procedure> procedures = loadedDataMap.getProcedures();
-        if (procedures.isEmpty()) {
-            return false;
-        }
+        List<String> messages = new LinkedList<>();
 
         boolean hasChanges = false;
         for (Procedure procedure : procedures) {
@@ -382,13 +420,14 @@ public class DefaultDbImportAction implements DbImportAction {
             // maybe we need to compare oldProcedure's and procedure's fully qualified names?
             if (oldProcedure != null) {
                 targetDataMap.removeProcedure(procedure.getName());
-                logger.info("Replace procedure " + procedure.getName());
+                addMessageToLogs("Replace procedure " + procedure.getName(), messages);
             } else {
-                logger.info("Add new procedure " + procedure.getName());
+                addMessageToLogs("Add new procedure " + procedure.getName(), messages);
             }
             targetDataMap.addProcedure(procedure);
             hasChanges = true;
         }
+        logMessages(messages);
         return hasChanges;
     }
 

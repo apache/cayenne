@@ -27,6 +27,7 @@ import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.FileProjectSaver;
@@ -51,7 +52,7 @@ public class DbImportModule implements Module {
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
-        ProjectModule.contributeExtensions(binder);
+        ProjectModule.contributeExtensions(binder).add(DbImportExtension.class);
     }
 
 }

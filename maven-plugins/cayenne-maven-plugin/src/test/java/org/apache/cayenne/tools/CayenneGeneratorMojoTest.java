@@ -31,31 +31,22 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertNotNull(pom);
         assertTrue(pom.exists());
 
-        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen",
-                pom);
+        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
         assertNotNull(myMojo);
         myMojo.execute();
 
-        File superTestEntity = new File(
-                "target/cayenneGeneratedClasses/superPkg/_TestEntity.txt");
-        File testEntity = new File(
-                "target/cayenneGeneratedClasses/pack/TestEntity.txt");
+        File superTestEntity = new File("target/cayenneGeneratedClasses/superPkg/_TestEntity.txt");
+        File testEntity = new File("target/cayenneGeneratedClasses/pack/TestEntity.txt");
 
-        File superEmbeddable = new File(
-                "target/cayenneGeneratedClasses/superPkg/_Embeddable.txt");
-        File embeddable = new File(
-                "target/cayenneGeneratedClasses/pack/Embeddable.txt");
+        File superEmbeddable = new File("target/cayenneGeneratedClasses/superPkg/_Embeddable.txt");
+        File embeddable = new File("target/cayenneGeneratedClasses/pack/Embeddable.txt");
 
-        File superNotIncludedEntity = new File(
-                "target/cayenneGeneratedClasses/pack/_NotIncludedEntity.txt");
+        File superNotIncludedEntity = new File("target/cayenneGeneratedClasses/pack/_NotIncludedEntity.txt");
 
-        File notIncludedEntity = new File(
-                "target/cayenneGeneratedClasses/pack/NotIncludedEntity.txt");
+        File notIncludedEntity = new File("target/cayenneGeneratedClasses/pack/NotIncludedEntity.txt");
 
-        File superExcludedEntity = new File(
-                "target/cayenneGeneratedClasses/pack/_TestExcludedEntity.txt");
-        File excludedEntity = new File(
-                "target/cayenneGeneratedClasses/pack/TestExcludedEntity.txt");
+        File superExcludedEntity = new File("target/cayenneGeneratedClasses/pack/_TestExcludedEntity.txt");
+        File excludedEntity = new File("target/cayenneGeneratedClasses/pack/TestExcludedEntity.txt");
 
         assertTrue(superTestEntity.exists());
         assertTrue(testEntity.exists());
@@ -73,6 +64,5 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertTrue(content.contains("public static final Property<List<TestRelEntity>> ADDITIONAL_REL = Property.create(\"additionalRel\", List.class);"));
         assertTrue(content.contains("public void addToAdditionalRel(TestRelEntity obj)"));
         assertTrue(content.contains("public void removeFromAdditionalRel(TestRelEntity obj)"));
-
     }
 }

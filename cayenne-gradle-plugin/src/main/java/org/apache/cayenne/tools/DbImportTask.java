@@ -82,8 +82,8 @@ public class DbImportTask extends BaseCayenneTask {
         DbImportConfiguration config = createConfig();
 
         Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()), new DbImportModule());
-
         DbImportConfigurationValidator validator = new DbImportConfigurationValidator(reverseEngineering, config, injector);
+
         try {
             validator.validate();
         } catch (Exception ex) {
@@ -109,25 +109,27 @@ public class DbImportTask extends BaseCayenneTask {
     DbImportConfiguration createConfig() {
 
         reverseEngineering = config.toReverseEngineering();
-
         DbImportConfiguration config = new DbImportConfiguration();
+        if (reverseEngineering.getCatalogs().size() == 0 && reverseEngineering.isEmptyContainer()) {
+            config.setUseDataMapReverseEngineering(true);
+        }
         config.setAdapter(adapter);
-        config.setDefaultPackage(reverseEngineering.getDefaultPackage());
         config.setDriver(dataSource.getDriver());
-        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
-        config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
-        config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setLogger(getLogger());
-        config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
-        config.setNamingStrategy(reverseEngineering.getNamingStrategy());
         config.setPassword(dataSource.getPassword());
+        config.setTargetDataMap(getDataMapFile());
+        config.setUrl(dataSource.getUrl());
+        config.setUsername(dataSource.getUsername());
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setStripFromTableNames(reverseEngineering.getStripFromTableNames());
         config.setTableTypes(reverseEngineering.getTableTypes());
-        config.setTargetDataMap(getDataMapFile());
-        config.setUrl(dataSource.getUrl());
-        config.setUsername(dataSource.getUsername());
+        config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
+        config.setNamingStrategy(reverseEngineering.getNamingStrategy());
+        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
+        config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
+        config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
+        config.setDefaultPackage(reverseEngineering.getDefaultPackage());
         config.setUsePrimitives(reverseEngineering.isUsePrimitives());
         config.setUseJava7Types(reverseEngineering.isUseJava7Types());
         config.setCayenneProject(cayenneProject);

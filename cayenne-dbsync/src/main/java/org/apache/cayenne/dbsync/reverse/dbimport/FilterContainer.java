@@ -46,6 +46,31 @@ public abstract class FilterContainer {
 
     private final Collection<ExcludeRelationship> excludeRelationshipCollection = new LinkedList<>();
 
+    public FilterContainer() {
+    }
+
+    public FilterContainer(FilterContainer original) {
+        this.setName(original.getName());
+        for (IncludeTable includeTable : original.getIncludeTables()) {
+            this.addIncludeTable(new IncludeTable(includeTable));
+        }
+        for (ExcludeTable excludeTable : original.getExcludeTables()) {
+            this.addExcludeTable(new ExcludeTable(excludeTable));
+        }
+        for (IncludeColumn includeColumn : original.getIncludeColumns()) {
+            this.addIncludeColumn(new IncludeColumn(includeColumn));
+        }
+        for (ExcludeColumn excludeColumn : original.getExcludeColumns()) {
+            this.addExcludeColumn(new ExcludeColumn(excludeColumn));
+        }
+        for (IncludeProcedure includeProcedure : original.getIncludeProcedures()) {
+            this.addIncludeProcedure(new IncludeProcedure(includeProcedure));
+        }
+        for (ExcludeProcedure excludeProcedure : original.getExcludeProcedures()) {
+            this.addExcludeProcedure(new ExcludeProcedure(excludeProcedure));
+        }
+    }
+
     public Collection<IncludeTable> getIncludeTables() {
         return includeTableCollection;
     }
