@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 
 
 /**

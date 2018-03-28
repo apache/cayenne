@@ -100,7 +100,7 @@ public class DbAttributeBuilder extends DefaultBuilder<DbAttribute> {
 
     @Override
     public DbAttribute build() {
-        if (Util.isEmptyString((obj.getName()))) {
+        if (Util.isEmptyString(obj.getName())) {
             name();
         }
 

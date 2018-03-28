@@ -20,8 +20,8 @@
 package org.apache.cayenne.modeler.dialog.db.load;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.DeleteNodeAction;
-import org.apache.cayenne.modeler.action.EditNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;

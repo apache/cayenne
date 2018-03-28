@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.undo;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.DbImportTree;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;

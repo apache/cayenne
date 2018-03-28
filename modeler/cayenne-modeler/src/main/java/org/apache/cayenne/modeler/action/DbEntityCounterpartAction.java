@@ -21,9 +21,6 @@ package org.apache.cayenne.modeler.action;
 
 import java.util.Iterator;
 
-import javax.swing.tree.TreePath;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;

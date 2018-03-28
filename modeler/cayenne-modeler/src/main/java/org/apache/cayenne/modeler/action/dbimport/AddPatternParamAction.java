@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
@@ -30,7 +30,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
@@ -84,21 +83,8 @@ public abstract class AddPatternParamAction extends TreeManipulationAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        tree.stopEditing();
-        String name = insertableNodeName != null ? insertableNodeName : EMPTY_NAME;
-        boolean updateSelected;
-        if (tree.getSelectionPath() == null) {
-            TreePath root = new TreePath(tree.getRootNode());
-            tree.setSelectionPath(root);
-        }
-        if (foundNode == null) {
-            selectedElement = tree.getSelectedNode();
-        } else {
-            selectedElement = foundNode;
-        }
-        parentElement = (DbImportTreeNode) selectedElement.getParent();
+        ReverseEngineering reverseEngineeringOldCopy = prepareElements();
         Object selectedObject;
-        ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
         if (reverseEngineeringIsEmpty()) {
             tree.getRootNode().removeAllChildren();
         }
@@ -122,16 +108,7 @@ public abstract class AddPatternParamAction extends TreeManipulationAction {
             }
             updateSelected = false;
         }
-        if (!isMultipleAction) {
-            updateAfterInsert(updateSelected);
-        }
-        ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(tree.getReverseEngineering());
-        if ((!isMultipleAction) && (!insertableNodeName.equals(EMPTY_NAME))) {
-            DbImportTreeUndoableEdit undoableEdit = new DbImportTreeUndoableEdit(
-                    reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectController()
-            );
-            getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
-        }
+        completeInserting(reverseEngineeringOldCopy);
     }
 
     public void setParamClass(Class paramClass) {

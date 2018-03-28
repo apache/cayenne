@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.editor.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
@@ -26,8 +26,8 @@ import javax.swing.JTree;
 import java.awt.Color;
 import java.awt.Component;
 
-import static org.apache.cayenne.modeler.editor.DbImportNodeHandler.LABEL_COLOR;
-import static org.apache.cayenne.modeler.editor.DbImportNodeHandler.NON_INCLUDE_COLOR;
+import static org.apache.cayenne.modeler.editor.dbimport.DbImportNodeHandler.LABEL_COLOR;
+import static org.apache.cayenne.modeler.editor.dbimport.DbImportNodeHandler.NON_INCLUDE_COLOR;
 
 /**
  * @since 4.1
@@ -79,8 +79,8 @@ public class ColorTreeRenderer extends DbImportTreeCellRenderer {
         }
         renderedTree.getRootNode().setColorized(true);
 
-        int bypassResult = handler.bypassTree(root);
-        if (bypassResult > 0) {
+        int traverseResult = handler.traverseTree(root);
+        if (traverseResult > 0) {
             // Case on IncludeProcedure on zero level is selected
             if (root.getUserObject().getClass() == IncludeProcedure.class) {
                 if (handler.nodesIsEqual(root)) {

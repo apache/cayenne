@@ -24,7 +24,7 @@ import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoaderContext;
 import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
-import org.apache.cayenne.modeler.editor.DbImportView;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 

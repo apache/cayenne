@@ -17,14 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
@@ -37,7 +36,7 @@ public class AddIncludeTableAction extends TreeManipulationAction {
     private static final String ACTION_NAME = "Add Include Table";
     private static final String ICON_NAME = "icon-dbi-includeTable.png";
 
-    AddIncludeTableAction(Application application) {
+    public AddIncludeTableAction(Application application) {
         super(ACTION_NAME, application);
         insertableNodeClass = IncludeTable.class;
     }
@@ -48,24 +47,11 @@ public class AddIncludeTableAction extends TreeManipulationAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        boolean updateSelected = false;
-        tree.stopEditing();
-        String name = insertableNodeName != null ? insertableNodeName : EMPTY_NAME;
-        if (tree.getSelectionPath() == null) {
-            TreePath root = new TreePath(tree.getRootNode());
-            tree.setSelectionPath(root);
-        }
-        if (foundNode == null) {
-            selectedElement = tree.getSelectedNode();
-        } else {
-            selectedElement = foundNode;
-        }
-        parentElement = (DbImportTreeNode) selectedElement.getParent();
-        ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
-        IncludeTable newTable = new IncludeTable(name);
+        ReverseEngineering reverseEngineeringOldCopy = prepareElements();
         if (reverseEngineeringIsEmpty()) {
             tree.getRootNode().removeAllChildren();
         }
+        IncludeTable newTable = new IncludeTable(name);
         if (canBeInserted(selectedElement)) {
             ((FilterContainer) selectedElement.getUserObject()).addIncludeTable(newTable);
             selectedElement.add(new DbImportTreeNode(newTable));
@@ -78,15 +64,6 @@ public class AddIncludeTableAction extends TreeManipulationAction {
             parentElement.add(new DbImportTreeNode(newTable));
             updateSelected = false;
         }
-        if (!isMultipleAction) {
-            updateAfterInsert(updateSelected);
-        }
-        ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(tree.getReverseEngineering());
-        if ((!isMultipleAction) && (!insertableNodeName.equals(EMPTY_NAME))) {
-            DbImportTreeUndoableEdit undoableEdit = new DbImportTreeUndoableEdit(
-                    reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectController()
-            );
-            getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
-        }
+        completeInserting(reverseEngineeringOldCopy);
     }
 }

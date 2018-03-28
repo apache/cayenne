@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -30,8 +30,9 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.DbImportModel;
-import org.apache.cayenne.modeler.editor.DbImportTree;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
+import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.JTree;
@@ -57,10 +58,55 @@ public abstract class TreeManipulationAction extends CayenneAction {
     boolean isMultipleAction;
     private boolean movedFromDbSchema;
     private Map<Class, List<Class>> levels;
+    protected String name;
+    protected boolean updateSelected;
 
     public TreeManipulationAction(String name, Application application) {
         super(name, application);
         initLevels();
+    }
+
+    void completeInserting(ReverseEngineering reverseEngineeringOldCopy) {
+        if (!isMultipleAction) {
+            updateAfterInsert();
+        }
+        if ((!isMultipleAction) && (!insertableNodeName.equals(EMPTY_NAME))) {
+            putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
+        }
+    }
+
+    private String getNodeName() {
+        return insertableNodeName != null ? insertableNodeName : EMPTY_NAME;
+    }
+
+    protected ReverseEngineering prepareElements() {
+        name = getNodeName();
+        tree.stopEditing();
+        if (tree.getSelectionPath() == null) {
+            TreePath root = new TreePath(tree.getRootNode());
+            tree.setSelectionPath(root);
+        }
+        if (foundNode == null) {
+            selectedElement = tree.getSelectedNode();
+        } else {
+            selectedElement = foundNode;
+        }
+        parentElement = (DbImportTreeNode) selectedElement.getParent();
+        if (parentElement == null) {
+            parentElement = selectedElement;
+        }
+        if (reverseEngineeringIsEmpty()) {
+            tree.getRootNode().removeAllChildren();
+        }
+        return new ReverseEngineering(tree.getReverseEngineering());
+    }
+
+    protected void putReverseEngineeringToUndoManager(ReverseEngineering reverseEngineeringOldCopy) {
+        ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(tree.getReverseEngineering());
+        DbImportTreeUndoableEdit undoableEdit = new DbImportTreeUndoableEdit(
+                reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectController()
+        );
+        getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
     }
 
     boolean reverseEngineeringIsEmpty() {
@@ -161,7 +207,7 @@ public abstract class TreeManipulationAction extends CayenneAction {
         }
     }
 
-    void updateAfterInsert(boolean updateSelected) {
+    void updateAfterInsert() {
         updateModel(updateSelected);
         if (!movedFromDbSchema) {
             if (updateSelected) {

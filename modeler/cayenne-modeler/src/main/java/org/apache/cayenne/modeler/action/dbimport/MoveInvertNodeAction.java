@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.modeler.Application;
 
@@ -28,7 +28,7 @@ public class MoveInvertNodeAction extends MoveImportNodeAction {
 
     private static final String ACTION_NAME = "Exclude";
 
-    MoveInvertNodeAction(Application application) {
+    public MoveInvertNodeAction(Application application) {
         super(ACTION_NAME, application);
         moveInverted = true;
     }

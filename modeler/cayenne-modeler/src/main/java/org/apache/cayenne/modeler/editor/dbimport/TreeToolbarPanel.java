@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.editor.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -29,20 +29,22 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.AddCatalogAction;
-import org.apache.cayenne.modeler.action.AddExcludeColumnAction;
-import org.apache.cayenne.modeler.action.AddExcludeProcedureAction;
-import org.apache.cayenne.modeler.action.AddExcludeTableAction;
-import org.apache.cayenne.modeler.action.AddIncludeColumnAction;
-import org.apache.cayenne.modeler.action.AddIncludeProcedureAction;
-import org.apache.cayenne.modeler.action.AddIncludeTableAction;
-import org.apache.cayenne.modeler.action.AddPatternParamAction;
-import org.apache.cayenne.modeler.action.AddSchemaAction;
-import org.apache.cayenne.modeler.action.DeleteNodeAction;
-import org.apache.cayenne.modeler.action.EditNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.AddCatalogAction;
+import org.apache.cayenne.modeler.action.dbimport.AddExcludeColumnAction;
+import org.apache.cayenne.modeler.action.dbimport.AddExcludeProcedureAction;
+import org.apache.cayenne.modeler.action.dbimport.AddExcludeTableAction;
+import org.apache.cayenne.modeler.action.dbimport.AddIncludeColumnAction;
+import org.apache.cayenne.modeler.action.dbimport.AddIncludeProcedureAction;
+import org.apache.cayenne.modeler.action.dbimport.AddIncludeTableAction;
+import org.apache.cayenne.modeler.action.dbimport.AddPatternParamAction;
+import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
+import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import org.apache.cayenne.modeler.action.GetDbConnectionAction;
-import org.apache.cayenne.modeler.action.TreeManipulationAction;
+import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
+import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
 
 import javax.swing.JButton;
 import javax.swing.JToolBar;

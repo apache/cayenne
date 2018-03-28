@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -30,9 +30,9 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.DbImportTree;
-import org.apache.cayenne.modeler.editor.DbImportView;
-import org.apache.cayenne.modeler.editor.DraggableTreePanel;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
+import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
@@ -58,7 +58,7 @@ public class MoveImportNodeAction extends CayenneAction {
     protected boolean moveInverted;
     private Map<Class, Class> classMap;
 
-    MoveImportNodeAction(Application application) {
+    public MoveImportNodeAction(Application application) {
         super(ACTION_NAME, application);
     }
 
@@ -137,6 +137,9 @@ public class MoveImportNodeAction extends CayenneAction {
                         for (int i = selectedElement.getParents().size() - 2; i >= 0; i--) {
                             DbImportTreeNode insertedNode = selectedElement.getParents().get(i);
                             previousNode = targetTree.findNodeByParentsChain(targetTree.getRootNode(), insertedNode, 0);
+                            if (previousNode == null) {
+                                previousNode = targetTree.getRootNode();
+                            }
                             TreeManipulationAction manipulationAction = panel.getActionByNodeType(
                                     insertedNode.getUserObject().getClass()
                             );

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.editor.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
@@ -161,30 +161,30 @@ class DbImportNodeHandler {
     }
 
     /*
-    *  Recursively bypasses DbImportTree,
+    *  Recursively traverse DbImportTree,
     *  Increment result if rendered node exists in configuration tree,
     *  Subtract EXCLUDE_TABLE_RATE from result, if found Exclude-node for rendered node,
     *  Return 0, if rendered node not found.
     */
-    int bypassTree(DbImportTreeNode rootNode) {
-        int bypassResult = 0;
+    int traverseTree(DbImportTreeNode rootNode) {
+        int traverseResult = 0;
         int childCount = rootNode.getChildCount();
         boolean hasProcedures = false;
 
         // Case for empty reverse engineering, which has a include/exclude tables/procedures
         if ((childCount == 0) && (nodesIsEqual(rootNode))) {
-            bypassResult++;
+            traverseResult++;
         }
 
         if (nodesIsEqual(rootNode)) {
-            bypassResult++;
+            traverseResult++;
         }
 
         ReverseEngineering reverseEngineering = reverseEngineeringTree.getReverseEngineering();
         if ((reverseEngineering.getCatalogs().isEmpty()) && (reverseEngineering.getSchemas().isEmpty())
                 && (reverseEngineering.getIncludeTables().isEmpty())
                 && (!dbSchemaNode.isIncludeProcedure())) {
-            bypassResult++;
+            traverseResult++;
         }
 
         if (nodesIsEqual(rootNode) && isEmptyContainer(rootNode)) {
@@ -210,18 +210,18 @@ class DbImportNodeHandler {
                 if (dbSchemaNode.isIncludeProcedure() && (nodesIsEqual(tmpNode))) {
                     int tmpNodeChildCount = tmpNode.getChildCount();
                     if (tmpNodeChildCount > 0) {
-                        bypassResult += bypassTree((DbImportTreeNode) rootNode.getChildAt(i));
+                        traverseResult += traverseTree((DbImportTreeNode) rootNode.getChildAt(i));
                     }
-                    bypassResult++;
+                    traverseResult++;
                     hasProcedures = true;
                 }
             }
             if ((!rootNode.isExcludeTable()) && (!nodesIsEqual(rootNode))
                     && (!dbSchemaNode.isIncludeProcedure())) {
-                bypassResult++;
+                traverseResult++;
             } else {
                 if ((!hasProcedures) && (!dbSchemaNode.isIncludeProcedure())) {
-                    bypassResult += EXCLUDE_TABLE_RATE;
+                    traverseResult += EXCLUDE_TABLE_RATE;
                 }
             }
         }
@@ -229,25 +229,25 @@ class DbImportNodeHandler {
         for (int i = 0; i < childCount; i++) {
             DbImportTreeNode tmpNode = (DbImportTreeNode) rootNode.getChildAt(i);
             if (tmpNode.getChildCount() > 0) {
-                bypassResult += bypassTree(tmpNode);
+                traverseResult += traverseTree(tmpNode);
                 if (tmpNode.isExcludeTable() || tmpNode.isExcludeProcedure()) {
-                    bypassResult += EXCLUDE_TABLE_RATE;
+                    traverseResult += EXCLUDE_TABLE_RATE;
                 }
             } else if (compareWithParent(tmpNode) && !(existFirstLevelIncludeTable)) {
                 if (!dbSchemaNode.isIncludeProcedure()) {
-                    bypassResult++;
+                    traverseResult++;
                 }
             }
             if (dbSchemaNode.getParent() != null) {
                 if (nodesIsEqual(tmpNode)) {
                     if (tmpNode.isExcludeTable() || tmpNode.isExcludeProcedure()) {
-                        bypassResult += EXCLUDE_TABLE_RATE;
+                        traverseResult += EXCLUDE_TABLE_RATE;
                     }
-                    bypassResult++;
+                    traverseResult++;
                 }
             }
         }
-        return bypassResult;
+        return traverseResult;
     }
 
     Color getColorByNodeType(DbImportTreeNode node) {

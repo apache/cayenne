@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -32,12 +32,10 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.DbImportModel;
-import org.apache.cayenne.modeler.editor.DbImportView;
-import org.apache.cayenne.modeler.editor.DraggableTreePanel;
-import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
+import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
 
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -52,7 +50,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
 
     private DraggableTreePanel panel;
 
-    DeleteNodeAction(Application application) {
+    public DeleteNodeAction(Application application) {
         super(ACTION_NAME, application);
     }
 
@@ -160,10 +158,7 @@ public class DeleteNodeAction extends TreeManipulationAction {
             } else {
                 updateParentChilds();
             }
-            ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(tree.getReverseEngineering());
-            getProjectController().getApplication().getUndoManager().addEdit(
-                    new DbImportTreeUndoableEdit(reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectController())
-            );
+            putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
             rootParent.getLoadDbSchemaButton().setEnabled(true);
             rootParent.getReverseEngineeringProgress().setVisible(false);
         }

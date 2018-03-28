@@ -25,7 +25,7 @@ import java.util.LinkedList;
 /**
  * @since 4.0
  */
-public abstract class SchemaContainer extends FilterContainer implements Cloneable {
+public abstract class SchemaContainer extends FilterContainer {
 
     private final Collection<Schema> schemaCollection = new LinkedList<>();
 

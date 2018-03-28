@@ -17,22 +17,22 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.modeler.Application;
 
 /**
  * @since 4.1
  */
-public class AddIncludeProcedureAction extends AddPatternParamAction {
+public class AddIncludeColumnAction extends AddPatternParamAction {
 
-    private static final String ACTION_NAME = "Add Include Procedure";
-    private static final String ICON_NAME = "icon-dbi-includeProcedure.png";
+    private static final String ACTION_NAME = "Add Include Column";
+    private static final String ICON_NAME = "icon-dbi-includeColumn.png";
 
-    public AddIncludeProcedureAction(Application application) {
+    public AddIncludeColumnAction(Application application) {
         super(ACTION_NAME, application);
-        insertableNodeClass = IncludeProcedure.class;
+        insertableNodeClass = IncludeColumn.class;
     }
 
     public String getIconName() {

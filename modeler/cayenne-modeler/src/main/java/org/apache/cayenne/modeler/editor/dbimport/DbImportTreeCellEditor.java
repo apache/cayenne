@@ -17,11 +17,11 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.editor.dbimport;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.DeleteNodeAction;
-import org.apache.cayenne.modeler.action.EditNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.util.Util;
 

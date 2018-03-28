@@ -17,15 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 
-import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
 /**
@@ -36,7 +34,7 @@ public class AddCatalogAction extends TreeManipulationAction {
     private static final String ACTION_NAME = "Add Catalog";
     private static final String ICON_NAME = "icon-dbi-catalog.png";
 
-    AddCatalogAction(Application application) {
+    public AddCatalogAction(Application application) {
         super(ACTION_NAME, application);
         insertableNodeClass = Catalog.class;
     }
@@ -47,27 +45,8 @@ public class AddCatalogAction extends TreeManipulationAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        boolean updateSelected = false;
-        tree.stopEditing();
-        String name = insertableNodeName != null ? insertableNodeName : EMPTY_NAME;
-        if (tree.getSelectionPath() == null) {
-            TreePath root = new TreePath(tree.getRootNode());
-            tree.setSelectionPath(root);
-        }
-        if (foundNode == null) {
-            selectedElement = tree.getSelectedNode();
-        } else {
-            selectedElement = foundNode;
-        }
-        parentElement = (DbImportTreeNode) selectedElement.getParent();
-        if (parentElement == null) {
-            parentElement = selectedElement;
-        }
+        ReverseEngineering reverseEngineeringOld = prepareElements();
         Catalog newCatalog = new Catalog(name);
-        ReverseEngineering reverseEngineeringOldCopy = new ReverseEngineering(tree.getReverseEngineering());
-        if (reverseEngineeringIsEmpty()) {
-            tree.getRootNode().removeAllChildren();
-        }
         if (canBeInserted(selectedElement)) {
             ((ReverseEngineering) selectedElement.getUserObject()).addCatalog(newCatalog);
             selectedElement.add(new DbImportTreeNode(newCatalog));
@@ -77,15 +56,6 @@ public class AddCatalogAction extends TreeManipulationAction {
             parentElement.add(new DbImportTreeNode(newCatalog));
             updateSelected = false;
         }
-        if (!isMultipleAction) {
-            updateAfterInsert(updateSelected);
-        }
-        ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(tree.getReverseEngineering());
-        if ((!isMultipleAction) && (!insertableNodeName.equals(EMPTY_NAME))) {
-            DbImportTreeUndoableEdit undoableEdit = new DbImportTreeUndoableEdit(
-                    reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectController()
-            );
-            getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
-        }
+        completeInserting(reverseEngineeringOld);
     }
 }

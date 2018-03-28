@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.editor.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
@@ -36,6 +36,11 @@ import org.apache.cayenne.modeler.dialog.db.load.DefaultPopUpMenu;
 import org.apache.cayenne.modeler.dialog.db.load.IncludeTablePopUpMenu;
 import org.apache.cayenne.modeler.dialog.db.load.RootPopUpMenu;
 import org.apache.cayenne.modeler.dialog.db.load.SchemaPopUpMenu;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportTreeCellEditor;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportTreeCellRenderer;
+import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
+import org.apache.cayenne.modeler.editor.dbimport.TreeToolbarPanel;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -44,7 +49,6 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

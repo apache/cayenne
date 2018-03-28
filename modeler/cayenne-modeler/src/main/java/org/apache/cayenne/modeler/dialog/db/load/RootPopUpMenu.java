@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import org.apache.cayenne.modeler.action.AddCatalogAction;
-import org.apache.cayenne.modeler.action.AddExcludeColumnAction;
-import org.apache.cayenne.modeler.action.AddExcludeProcedureAction;
-import org.apache.cayenne.modeler.action.AddExcludeTableAction;
-import org.apache.cayenne.modeler.action.AddIncludeColumnAction;
-import org.apache.cayenne.modeler.action.AddIncludeProcedureAction;
-import org.apache.cayenne.modeler.action.AddIncludeTableAction;
-import org.apache.cayenne.modeler.action.AddSchemaAction;
+import org.apache.cayenne.modeler.action.dbimport.AddCatalogAction;
+import org.apache.cayenne.modeler.action.dbimport.AddExcludeColumnAction;
+import org.apache.cayenne.modeler.action.dbimport.AddExcludeProcedureAction;
+import org.apache.cayenne.modeler.action.dbimport.AddExcludeTableAction;
+import org.apache.cayenne.modeler.action.dbimport.AddIncludeColumnAction;
+import org.apache.cayenne.modeler.action.dbimport.AddIncludeProcedureAction;
+import org.apache.cayenne.modeler.action.dbimport.AddIncludeTableAction;
+import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;

@@ -397,11 +397,17 @@ public class DefaultDbImportAction implements DbImportAction {
         return true;
     }
 
+    protected void addMessageToLogs(String message, List<String> messages) {
+        messages.add(message);
+    }
+
+    protected void logMessages(List<String> messages) {
+        messages.forEach(logger::info);
+    }
+
     protected boolean syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
         Collection<Procedure> procedures = loadedDataMap.getProcedures();
-        if (procedures.isEmpty()) {
-            return false;
-        }
+        List<String> messages = new LinkedList<>();
 
         boolean hasChanges = false;
         for (Procedure procedure : procedures) {
@@ -414,13 +420,14 @@ public class DefaultDbImportAction implements DbImportAction {
             // maybe we need to compare oldProcedure's and procedure's fully qualified names?
             if (oldProcedure != null) {
                 targetDataMap.removeProcedure(procedure.getName());
-                logger.info("Replace procedure " + procedure.getName());
+                addMessageToLogs("Replace procedure " + procedure.getName(), messages);
             } else {
-                logger.info("Add new procedure " + procedure.getName());
+                addMessageToLogs("Add new procedure " + procedure.getName(), messages);
             }
             targetDataMap.addProcedure(procedure);
             hasChanges = true;
         }
+        logMessages(messages);
         return hasChanges;
     }
 

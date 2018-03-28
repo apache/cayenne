@@ -17,14 +17,13 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+package org.apache.cayenne.modeler.action.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 import org.apache.cayenne.util.Util;
 
 import java.awt.event.ActionEvent;
@@ -39,7 +38,7 @@ public class EditNodeAction extends TreeManipulationAction {
 
     private String actionName;
 
-    EditNodeAction(Application application) {
+    public EditNodeAction(Application application) {
         super(ACTION_NAME, application);
     }
 
@@ -75,12 +74,8 @@ public class EditNodeAction extends TreeManipulationAction {
                     updateModel(true);
                     selectedElement = null;
                 }
-                ReverseEngineering reverseEngineeringNewCopy = new ReverseEngineering(tree.getReverseEngineering());
                 if (!actionName.equals(EMPTY_NAME)) {
-                    DbImportTreeUndoableEdit undoableEdit = new DbImportTreeUndoableEdit(
-                            reverseEngineeringOldCopy, reverseEngineeringNewCopy, tree, getProjectController()
-                    );
-                    getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
+                    putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
                 }
             }
         }

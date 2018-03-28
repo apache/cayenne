@@ -26,11 +26,8 @@ import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
@@ -88,43 +85,25 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     }
 
     @Override
-    protected boolean syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
-        Collection<Procedure> procedures = loadedDataMap.getProcedures();
+    protected void addMessageToLogs(String message, List<String> messages) {
+        String formattedMessage = String.format("    %-20s", message);
+        messages.add(formattedMessage);
+        resultDialog.addRowToOutput(formattedMessage);
+        isNothingChanged = false;
+    }
 
-        boolean hasChanges = false;
-        for (Procedure procedure : procedures) {
-            PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
-            if (proceduresFilter == null || !proceduresFilter.isIncluded(procedure.getName())) {
-                continue;
-            }
-
-            Procedure oldProcedure = targetDataMap.getProcedure(procedure.getName());
-            // maybe we need to compare oldProcedure's and procedure's fully qualified names?
-            if (oldProcedure != null) {
-                targetDataMap.removeProcedure(procedure.getName());
-                String logString = String.format("    %-20s %s", "Replace procedure ", procedure.getName());
-                logger.info(logString);
-                resultDialog.addRowToOutput(logString);
-            } else {
-                String logString = String.format("    %-20s %s", "Add new procedure ", procedure.getName());
-                logger.info(logString);
-                resultDialog.addRowToOutput(logString);
-            }
-            targetDataMap.addProcedure(procedure);
-            if (!resultDialog.isVisible()) {
-                resultDialog.setVisible(true);
-            }
-            isNothingChanged = false;
-            hasChanges = true;
-        }
-        if ((isNothingChanged)) {
+    @Override
+    protected void logMessages(List<String> messages) {
+        super.logMessages(messages);
+        if (isNothingChanged) {
             JOptionPane optionPane = new JOptionPane("Detected changes: No changes to import.", JOptionPane.PLAIN_MESSAGE);
             JDialog dialog = optionPane.createDialog(DIALOG_TITLE);
             dialog.setModal(false);
             dialog.setAlwaysOnTop(true);
             dialog.setVisible(true);
+        } else if (!resultDialog.isVisible()) {
+            resultDialog.setVisible(true);
         }
-        return hasChanges;
     }
 
     @Override

@@ -34,7 +34,7 @@ import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.editor.DbImportView;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;

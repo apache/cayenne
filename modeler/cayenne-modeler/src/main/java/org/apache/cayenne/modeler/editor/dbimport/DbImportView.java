@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor;
+package org.apache.cayenne.modeler.editor.dbimport;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
@@ -56,7 +56,7 @@ public class DbImportView extends JPanel {
 
     private ProjectController projectController;
 
-    DbImportView(ProjectController projectController) {
+    public DbImportView(ProjectController projectController) {
         this.projectController = projectController;
         initFormElements();
         initListeners();
