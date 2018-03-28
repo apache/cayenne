@@ -21,8 +21,8 @@ package org.apache.cayenne.map;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -51,7 +51,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	}
 
 	public Embeddable(String className) {
-		this.attributes = new TreeMap<String, EmbeddableAttribute>();
+		this.attributes = new HashMap<>();
 		this.className = className;
 	}
 

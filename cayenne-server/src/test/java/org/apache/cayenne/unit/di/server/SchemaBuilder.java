@@ -29,8 +29,6 @@ import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactor
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
-import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -57,6 +55,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Default implementation of the AccessStack that has a single DataNode per
@@ -240,7 +240,8 @@ public class SchemaBuilder {
 	 * and returns an ordered list.
 	 */
 	private List<DbEntity> dbEntitiesInInsertOrder(DataNode node, DataMap map) {
-		List<DbEntity> entities = new ArrayList<DbEntity>(map.getDbEntities());
+		TreeMap<String, DbEntity> dbEntityMap = new TreeMap<>(map.getDbEntityMap());
+		List<DbEntity> entities = new ArrayList<>(dbEntityMap.values());
 
 		dbEntitiesFilter(entities);
 
@@ -250,7 +251,8 @@ public class SchemaBuilder {
 
 	protected List<DbEntity> dbEntitiesInDeleteOrder(DataMap dataMap) {
 		DataMap map = domain.getDataMap(dataMap.getName());
-		List<DbEntity> entities = new ArrayList<>(map.getDbEntities());
+		Map<String, DbEntity> dbEntityMap = new TreeMap<>(map.getDbEntityMap());
+		List<DbEntity> entities = new ArrayList<>(dbEntityMap.values());
 
 		dbEntitiesFilter(entities);
 
@@ -323,7 +325,7 @@ public class SchemaBuilder {
 		try (Connection conn = dataSourceFactory.getSharedDataSource().getConnection();) {
 
 			DatabaseMetaData md = conn.getMetaData();
-			List<String> allTables = new ArrayList<String>();
+			List<String> allTables = new ArrayList<>();
 
 			try (ResultSet tables = md.getTables(null, null, "%", null)) {
 				while (tables.next()) {
@@ -341,7 +343,7 @@ public class SchemaBuilder {
 			unitDbAdapter.willDropTables(conn, map, allTables);
 
 			// drop all tables in the map
-			try (Statement stmt = conn.createStatement();) {
+			try (Statement stmt = conn.createStatement()) {
 
 				ListIterator<DbEntity> it = list.listIterator(list.size());
 				while (it.hasPrevious()) {

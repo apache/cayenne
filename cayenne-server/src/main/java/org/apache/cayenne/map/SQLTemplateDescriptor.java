@@ -69,11 +69,6 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
         this.adapterSql = adapterSql;
     }
 
-    @Override
-    public Map<String, String> getProperties() {
-        return super.getProperties();
-    }
-
     /**
      * Returns map of prefetch paths with semantics for this query.
      * @since 4.1

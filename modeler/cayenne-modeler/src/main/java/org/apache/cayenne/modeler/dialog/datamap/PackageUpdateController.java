@@ -30,12 +30,15 @@ import java.util.regex.Pattern;
 
 import javax.swing.WindowConstants;
 
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EmbeddableEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.util.Util;
 
 /**
