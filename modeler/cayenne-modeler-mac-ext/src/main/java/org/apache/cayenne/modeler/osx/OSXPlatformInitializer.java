@@ -76,21 +76,24 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         Color darkGrey  = new Color(225, 225, 225);
         Border darkBorder = BorderFactory.createLineBorder(darkGrey);
 
-        UIManager.put("ToolBarSeparatorUI",          OSXToolBarSeparatorUI.class.getName());
-        UIManager.put("PanelUI",                     OSXPanelUI.class.getName());
+        UIManager.put("ToolBarSeparatorUI",           OSXToolBarSeparatorUI.class.getName());
+        UIManager.put("PanelUI",                      OSXPanelUI.class.getName());
         // next two is custom made for Cayenne's MainToolBar
-        UIManager.put("MainToolBar.background",      UIManager.get("ToolBar.background"));
-        UIManager.put("MainToolBar.border",          BorderFactory.createEmptyBorder(0, 7, 0, 7));
-        UIManager.put("ToolBar.background",          lightGrey);
-        UIManager.put("ToolBar.border",              darkBorder);
-        UIManager.put("ScrollPane.border",           darkBorder);
-        UIManager.put("Table.scrollPaneBorder",      darkBorder);
-        UIManager.put("SplitPane.border",            BorderFactory.createEmptyBorder());
-        UIManager.put("SplitPane.background",        darkGrey);
-        UIManager.put("Tree.rendererFillBackground", Boolean.TRUE);
-        UIManager.put("Tree.selectionForeground",    Color.BLACK);
-        UIManager.put("Tree.selectionBackground",    lightGrey);
-        UIManager.put("Tree.selectionBorderColor",   lightGrey);
+        UIManager.put("MainToolBar.background",       UIManager.get("ToolBar.background"));
+        UIManager.put("MainToolBar.border",           BorderFactory.createEmptyBorder(0, 7, 0, 7));
+        UIManager.put("ToolBar.background",           lightGrey);
+        UIManager.put("ToolBar.border",               darkBorder);
+        UIManager.put("ScrollPane.border",            darkBorder);
+        UIManager.put("Table.scrollPaneBorder",       darkBorder);
+        UIManager.put("SplitPane.border",             BorderFactory.createEmptyBorder());
+        UIManager.put("SplitPane.background",         darkGrey);
+        UIManager.put("Tree.rendererFillBackground",  Boolean.TRUE);
+        UIManager.put("ComboBox.background",          Color.WHITE);
+        UIManager.put("ComboBox.selectionBackground", darkGrey);
+        UIManager.put("ComboBox.selectionForeground", Color.BLACK);
+        UIManager.put("Tree.selectionForeground",     Color.BLACK);
+        UIManager.put("Tree.selectionBackground",     lightGrey);
+        UIManager.put("Tree.selectionBorderColor",    lightGrey);
 
         Border backgroundPainter = new AbstractBorder() {
             @Override
