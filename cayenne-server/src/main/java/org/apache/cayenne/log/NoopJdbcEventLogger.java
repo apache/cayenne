@@ -18,13 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import java.util.List;
-
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
+ * Noop implementation of JdbcEventLogger
+ *
  * @since 3.1
  */
 public class NoopJdbcEventLogger implements JdbcEventLogger {
@@ -36,7 +35,6 @@ public class NoopJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	private NoopJdbcEventLogger() {
-
 	}
 
 	@Override

@@ -20,17 +20,15 @@ package org.apache.cayenne.log;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
 
 /**
- * A {@link Slf4jJdbcEventLogger} extension that provides pretty formatting of the
- * logged SQL messages.
+ * A {@link Slf4jJdbcEventLogger} extension that provides pretty formatting of the logged SQL messages.
  * 
  * @since 3.1
  * @since 4.0 renamed from FormattedCommonsJdbcEventLogger to FormattedSlf4jJdbcEventLogger as part of migration to SLF4J
@@ -121,4 +119,10 @@ public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         return result;
     }
 
+    @Override
+    public void logQuery(String sql, ParameterBinding[] bindings) {
+        if (isLoggable()) {
+            super.logQuery(formatQuery(sql), bindings);
+        }
+    }
 }

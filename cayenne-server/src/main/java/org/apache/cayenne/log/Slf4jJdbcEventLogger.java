@@ -19,23 +19,17 @@
 package org.apache.cayenne.log;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ExtendedEnumeration;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Array;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * A {@link JdbcEventLogger} built on top of slf4j-api logger.
@@ -46,11 +40,6 @@ import java.util.List;
 public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 
 	private static final Logger logger = LoggerFactory.getLogger(JdbcEventLogger.class);
-
-    /**
-     * @deprecated since 4.0
-     */
-	private static final int TRIM_VALUES_THRESHOLD = 30;
 
 	protected long queryExecutionTimeLoggingThreshold;
 
@@ -72,16 +61,6 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 			String entity = attribute.getEntity().getName();
 			logger.info("Generated PK: " + entity + "." + attribute.getName() + " = " + value);
 		}
-	}
-
-	private boolean isInserting(String query) {
-		if (query == null || query.length() == 0) {
-			return false;
-		}
-
-		char firstCharacter = query.charAt(0);
-
-		return firstCharacter == 'I' || firstCharacter == 'i';
 	}
 
 	@Override
