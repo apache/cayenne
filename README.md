@@ -19,9 +19,11 @@
 Apache Cayenne
 ==============
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server.svg)](https://cayenne.apache.org/download/)
 [![Build Status](https://travis-ci.org/apache/cayenne.svg)](https://travis-ci.org/apache/cayenne)
-<!-- [![Build Status](https://builds.apache.org/job/cayenne-master/badge/icon)](https://builds.apache.org/view/All/job/cayenne-master/) -->
+
+<!-- Broken maven badge: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/) -->
+<!-- Jenkins badge: [![Build Status](https://builds.apache.org/job/cayenne-master/badge/icon)](https://builds.apache.org/view/All/job/cayenne-master/) -->
 
 <p align="center">
     <a href="https://cayenne.apache.org"><img src="https://cayenne.apache.org/img/cayenne_illustr3-30e8b8fa06.png" width="261" height="166" alt="Apache Cayenne Logo"/></a>
