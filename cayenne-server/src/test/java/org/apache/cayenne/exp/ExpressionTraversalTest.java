@@ -51,45 +51,44 @@ public class ExpressionTraversalTest {
 	}
 
 	@Test
-	public void testBinary_In1() throws Exception {
+	public void testBinary_In1() {
 		doExpressionTest("toGallery.galleryName in ('g1', 'g2', 'g3')", 3, 2);
 	}
 
 	@Test
-	public void testBinary_In2() throws Exception {
-		Expression exp = ExpressionFactory.inExp("toGallery.galleryName",
-				Arrays.asList(new Object[] { "g1", "g2", "g3" }));
+	public void testBinary_In2() {
+		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", Arrays.asList("g1", "g2", "g3"));
 		doExpressionTest(exp, 3, 2);
 	}
 
 	@Test
-	public void testBinary_In3() throws Exception {
-		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", new Object[] { "g1", "g2", "g3" });
+	public void testBinary_In3() {
+		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", "g1", "g2", "g3");
 		doExpressionTest(exp, 3, 2);
 	}
 
 	@Test
-	public void testBinary_Like() throws Exception {
+	public void testBinary_Like() {
 		doExpressionTest("toGallery.galleryName like 'a%'", 2, 2);
 	}
 
 	@Test
-	public void testBinary_LikeIgnoreCase() throws Exception {
+	public void testBinary_LikeIgnoreCase() {
 		doExpressionTest("toGallery.galleryName likeIgnoreCase 'a%'", 2, 2);
 	}
 
 	@Test
-	public void testBinary_IsNull() throws Exception {
+	public void testBinary_IsNull() {
 		doExpressionTest("toGallery.galleryName = null", 2, 2);
 	}
 
 	@Test
-	public void testBinary_IsNotNull() throws Exception {
+	public void testBinary_IsNotNull() {
 		doExpressionTest("toGallery.galleryName != null", 2, 2);
 	}
 
 	@Test
-	public void testTernary_Between() throws Exception {
+	public void testTernary_Between() {
 		doExpressionTest("estimatedPrice between 3000 and 15000", 2, 3);
 	}
 
