@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
@@ -48,7 +49,7 @@ public class EntityIdCoder {
     private static final int TEMP_PREFIX_LENGTH = TEMP_ID_PREFIX.length();
 
     private String entityName;
-    private Map<String, Converter> converters;
+    private SortedMap<String, Converter<?>> converters;
     private int idSize;
 
     public static String getEntityName(String id) {
@@ -69,32 +70,27 @@ public class EntityIdCoder {
     public EntityIdCoder(ObjEntity entity) {
 
         this.entityName = entity.getName();
-        this.converters = new HashMap<>();
+        this.converters = new TreeMap<>();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
             if (attribute.isPrimaryKey()) {
-                converters.put(attribute.getDbAttributeName(),
-                        create(attribute.getJavaClass()));
+                converters.put(attribute.getDbAttributeName(), create(attribute.getJavaClass()));
             }
         }
 
         for (DbAttribute attribute : entity.getDbEntity().getPrimaryKeys()) {
             if (!converters.containsKey(attribute.getName())) {
-                String type = TypesMapping
-                        .getJavaBySqlType(attribute.getType());
+                String type = TypesMapping.getJavaBySqlType(attribute.getType());
                 try {
-                    converters.put(attribute.getName(),
-                            create(Util.getJavaClass(type)));
+                    converters.put(attribute.getName(), create(Util.getJavaClass(type)));
                 } catch (ClassNotFoundException e) {
-                    throw new CayenneRuntimeException(
-                            "Can't instantiate class " + type, e);
+                    throw new CayenneRuntimeException("Can't instantiate class " + type, e);
                 }
             }
         }
 
         if (converters.isEmpty()) {
-            throw new IllegalArgumentException("Entity has no PK definied: "
-                    + entity.getName());
+            throw new IllegalArgumentException("Entity has no PK defined: " + entity.getName());
         }
 
         this.idSize = (int) Math.ceil(converters.size() / 0.75d);
@@ -137,7 +133,7 @@ public class EntityIdCoder {
         buffer.append(id.getEntityName());
         Map<String, Object> idValues = id.getIdSnapshot();
 
-        for (Entry<String, Converter> entry : converters.entrySet()) {
+        for (Entry<String, Converter<?>> entry : converters.entrySet()) {
             Object value = idValues.get(entry.getKey());
             buffer.append(ID_SEPARATOR).append(entry.getValue().toUuid(value));
         }
@@ -148,16 +144,14 @@ public class EntityIdCoder {
     public ObjectId toObjectId(String stringId) {
 
         if (stringId.startsWith(TEMP_ID_PREFIX)) {
-            String idValues = stringId.substring(entityName.length() + 1
-                    + TEMP_PREFIX_LENGTH);
+            String idValues = stringId.substring(entityName.length() + 1 + TEMP_PREFIX_LENGTH);
             return new ObjectId(entityName, decodeTemp(idValues));
         }
 
         String idValues = stringId.substring(entityName.length() + 1);
 
         if (converters.size() == 1) {
-            Entry<String, Converter> entry = converters.entrySet().iterator()
-                    .next();
+            Entry<String, Converter<?>> entry = converters.entrySet().iterator().next();
 
             String decoded;
             try {
@@ -166,8 +160,7 @@ public class EntityIdCoder {
                 // unexpected
                 throw new CayenneRuntimeException("Unsupported encoding", e);
             }
-            return new ObjectId(entityName, entry.getKey(), entry.getValue()
-                    .fromStringId(decoded));
+            return new ObjectId(entityName, entry.getKey(), entry.getValue().fromStringId(decoded));
         }
 
         Map<String, Object> idMap = new HashMap<>(idSize);
@@ -178,7 +171,7 @@ public class EntityIdCoder {
                     + entityName + ": " + idValues);
         }
 
-        for (Entry<String, Converter> entry : converters.entrySet()) {
+        for (Entry<String, Converter<?>> entry : converters.entrySet()) {
             String value = toks.nextToken();
 
             String decoded;
@@ -205,52 +198,32 @@ public class EntityIdCoder {
             // 128 as negative bytes
             int c1 = byteString.charAt(index);
             int c2 = byteString.charAt(index + 1);
-            bytes[i] = (byte) ((Character.digit(c1, 16) << 4) + Character
-                    .digit(c2, 16));
+            bytes[i] = (byte) ((Character.digit(c1, 16) << 4) + Character.digit(c2, 16));
         }
 
         return bytes;
     }
 
-    private Converter create(Class<?> type) {
+    private Converter<?> create(Class<?> type) {
 
         if (type == null) {
             throw new NullPointerException("Null type");
         }
 
         if (Long.class.isAssignableFrom(type)) {
-            return new Converter() {
-
-                @Override
-                Object fromStringId(String stringId) {
-                    return Long.valueOf(stringId);
-                }
-            };
+            return Long::valueOf;
         } else if (Integer.class.isAssignableFrom(type)) {
-            return new Converter() {
-
-                @Override
-                Object fromStringId(String stringId) {
-                    return Integer.valueOf(stringId);
-                }
-            };
+            return Integer::valueOf;
         } else if (String.class.isAssignableFrom(type)) {
-            return new Converter() {
-
-                @Override
-                Object fromStringId(String stringId) {
-                    return stringId;
-                }
-            };
+            return stringId -> stringId;
         }
 
-        throw new IllegalArgumentException("Unsupported ID type: "
-                + type.getName());
+        throw new IllegalArgumentException("Unsupported ID type: " + type.getName());
     }
 
-    abstract class Converter {
+    interface Converter<T> {
 
-        String toUuid(Object value) {
+        default String toUuid(Object value) {
             try {
                 return URLEncoder.encode(String.valueOf(value), "UTF-8");
             } catch (UnsupportedEncodingException e) {
@@ -259,6 +232,6 @@ public class EntityIdCoder {
             }
         }
 
-        abstract Object fromStringId(String stringId);
+        T fromStringId(String stringId);
     }
 }

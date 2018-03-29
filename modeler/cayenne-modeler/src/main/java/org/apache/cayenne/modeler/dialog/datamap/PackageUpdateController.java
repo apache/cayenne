@@ -80,18 +80,8 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     }
     
     private void initController() {
-        view.getCancelButton().addActionListener(new ActionListener() {
-            
-            public void actionPerformed(ActionEvent arg0) {
-                view.dispose();
-            }
-        });
-        view.getUpdateButton().addActionListener(new ActionListener() {
-            
-            public void actionPerformed(ActionEvent arg0) {
-                updatePackage();
-            }
-        });
+        view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getUpdateButton().addActionListener(e -> updatePackage());
     }
 
     protected void updatePackage() {
@@ -104,8 +94,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
         for (Embeddable embeddable : embeddables) {
             String oldName = embeddable.getClassName();
 
-            Pattern p = Pattern.compile("[.]");
-            String[] tokens = p.split(oldName);
+            String[] tokens = oldName.split("\\.");
             String className = tokens[tokens.length-1];
 
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
@@ -121,8 +110,7 @@ public class PackageUpdateController extends DefaultsPreferencesController {
             String oldName = getClassName(entity);
 
             if (doAll || Util.isEmptyString(oldName) || oldName.indexOf('.') < 0) {
-                String className = extractClassName(Util.isEmptyString(oldName) ? entity
-                        .getName() : oldName);
+                String className = extractClassName(Util.isEmptyString(oldName) ? entity.getName() : oldName);
                 setClassName(entity, getNameWithDefaultPackage(className));
             }
 
@@ -146,9 +134,9 @@ public class PackageUpdateController extends DefaultsPreferencesController {
         }
 
         int dot = name.lastIndexOf('.');
-        return (dot < 0) ? name : (dot + 1 < name.length())
-                ? name.substring(dot + 1)
-                : "";
+        return (dot < 0)
+                ? name
+                : (dot + 1 < name.length()) ? name.substring(dot + 1) : "";
     }
 
     protected String getNameWithDefaultPackage(String name) {
