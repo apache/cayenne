@@ -24,7 +24,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
@@ -49,7 +48,7 @@ public class EntityIdCoder {
     private static final int TEMP_PREFIX_LENGTH = TEMP_ID_PREFIX.length();
 
     private String entityName;
-    private SortedMap<String, Converter> converters;
+    private Map<String, Converter> converters;
     private int idSize;
 
     public static String getEntityName(String id) {
@@ -70,7 +69,7 @@ public class EntityIdCoder {
     public EntityIdCoder(ObjEntity entity) {
 
         this.entityName = entity.getName();
-        this.converters = new TreeMap<String, Converter>();
+        this.converters = new HashMap<>();
 
         for (ObjAttribute attribute : entity.getAttributes()) {
             if (attribute.isPrimaryKey()) {

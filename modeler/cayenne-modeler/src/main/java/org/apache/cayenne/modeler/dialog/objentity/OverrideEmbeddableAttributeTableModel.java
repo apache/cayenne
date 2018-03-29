@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListCellRenderer;
@@ -73,7 +74,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
         this.isAttributeOverrideChange = false;
         if (attr instanceof EmbeddedAttribute) {
             EmbeddedAttribute embeddedAttribute = (EmbeddedAttribute) attr;
-            this.overrideAttr = embeddedAttribute.getAttributeOverrides();
+            this.overrideAttr = new TreeMap<>(embeddedAttribute.getAttributeOverrides());
         }
         else {
             this.overrideAttr = null;

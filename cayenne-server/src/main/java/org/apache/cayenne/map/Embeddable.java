@@ -21,14 +21,11 @@ package org.apache.cayenne.map;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -46,7 +43,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	private static final long serialVersionUID = -7163768090567642099L;
 	
 	protected String className;
-	protected SortedMap<String, EmbeddableAttribute> attributes;
+	protected Map<String, EmbeddableAttribute> attributes;
 	protected DataMap dataMap;
 
 	public Embeddable() {
@@ -54,7 +51,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	}
 
 	public Embeddable(String className) {
-		this.attributes = new TreeMap<String, EmbeddableAttribute>();
+		this.attributes = new HashMap<>();
 		this.className = className;
 	}
 
@@ -91,10 +88,10 @@ public class Embeddable implements ConfigurationNode, XMLSerializable, Serializa
 	/**
 	 * Returns an unmodifiable sorted map of embeddable attributes.
 	 */
-	public SortedMap<String, EmbeddableAttribute> getAttributeMap() {
+	public Map<String, EmbeddableAttribute> getAttributeMap() {
 		// create a new instance ... Caching unmodifiable map causes
 		// serialization issues (esp. with Hessian).
-		return Collections.unmodifiableSortedMap(attributes);
+		return Collections.unmodifiableMap(attributes);
 	}
 
 	/**

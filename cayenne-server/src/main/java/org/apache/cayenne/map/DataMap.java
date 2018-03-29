@@ -37,12 +37,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static java.util.Collections.emptyList;
 
@@ -138,12 +135,12 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	protected String defaultClientPackage;
 	protected String defaultClientSuperclass;
 
-	private SortedMap<String, Embeddable> embeddablesMap;
-	private SortedMap<String, ObjEntity> objEntityMap;
-	private SortedMap<String, DbEntity> dbEntityMap;
-	private SortedMap<String, Procedure> procedureMap;
-	private SortedMap<String, QueryDescriptor> queryDescriptorMap;
-	private SortedMap<String, SQLResult> results;
+	private Map<String, Embeddable> embeddablesMap;
+    private Map<String, ObjEntity> objEntityMap;
+    private Map<String, DbEntity> dbEntityMap;
+    private Map<String, Procedure> procedureMap;
+    private Map<String, QueryDescriptor> queryDescriptorMap;
+    private Map<String, SQLResult> results;
 
 	/**
 	 * @since 3.1
@@ -170,12 +167,12 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	public DataMap(String mapName, Map<String, Object> properties) {
-		embeddablesMap = new TreeMap<>();
-		objEntityMap = new TreeMap<>();
-		dbEntityMap = new TreeMap<>();
-		procedureMap = new TreeMap<>();
-		queryDescriptorMap = new TreeMap<>();
-		results = new TreeMap<>();
+		embeddablesMap = new HashMap<>();
+		objEntityMap = new HashMap<>();
+		dbEntityMap = new HashMap<>();
+		procedureMap = new HashMap<>();
+		queryDescriptorMap = new HashMap<>();
+		results = new HashMap<>();
 		setName(mapName);
 		initWithProperties(properties);
 	}
@@ -318,10 +315,10 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 				.property(DEFAULT_CLIENT_PACKAGE_PROPERTY, defaultClientPackage)
 				.property(DEFAULT_CLIENT_SUPERCLASS_PROPERTY, defaultClientSuperclass)
 				// elements
-				.nested(getEmbeddableMap(), delegate)
-				.nested(getProcedureMap(), delegate)
-				.nested(getDbEntityMap(), delegate)
-				.nested(getObjEntityMap(), delegate);
+				.nested(new TreeMap<>(getEmbeddableMap()), delegate)
+				.nested(new TreeMap<>(getProcedureMap()), delegate)
+				.nested(new TreeMap<>(getDbEntityMap()), delegate)
+				.nested(new TreeMap<>(getObjEntityMap()), delegate);
 
 		// and finally relationships
 		encodeDbRelationshipsAsXML(encoder, delegate);
@@ -336,25 +333,17 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
 	// stores relationships for the map of entities
 	private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-		for (Entity entity : getDbEntityMap().values()) {
-			for (Relationship relationship : entity.getRelationships()) {
-				// filter out synthetic
-				if (!relationship.isRuntime()) {
-					relationship.encodeAsXML(encoder, delegate);
-				}
-			}
+		for (Entity entity : new TreeMap<>(getDbEntityMap()).values()) {
+			entity.getRelationships().stream().filter(r -> !r.isRuntime())
+					.forEach(r -> r.encodeAsXML(encoder, delegate));
 		}
 	}
 
 	// stores relationships for the map of entities
 	private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-		for (ObjEntity entity : getObjEntityMap().values()) {
-			for (Relationship relationship : entity.getDeclaredRelationships()) {
-				// filter out synthetic
-				if (!relationship.isRuntime()) {
-					relationship.encodeAsXML(encoder, delegate);
-				}
-			}
+		for (ObjEntity entity : new TreeMap<>(getObjEntityMap()).values()) {
+			entity.getDeclaredRelationships().stream().filter(r -> !r.isRuntime())
+					.forEach(r -> r.encodeAsXML(encoder, delegate));
 		}
 	}
 
@@ -419,19 +408,19 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	/**
-	 * Returns a sorted unmodifiable map of ObjEntities contained in this
+	 * Returns a unmodifiable map of ObjEntities contained in this
 	 * DataMap, keyed by ObjEntity name.
 	 */
-	public SortedMap<String, ObjEntity> getObjEntityMap() {
-		return Collections.unmodifiableSortedMap(objEntityMap);
+	public Map<String, ObjEntity> getObjEntityMap() {
+		return Collections.unmodifiableMap(objEntityMap);
 	}
 
 	/**
-	 * Returns a sorted unmodifiable map of DbEntities contained in this
+	 * Returns a unmodifiable map of DbEntities contained in this
 	 * DataMap, keyed by DbEntity name.
 	 */
-	public SortedMap<String, DbEntity> getDbEntityMap() {
-		return Collections.unmodifiableSortedMap(dbEntityMap);
+	public Map<String, DbEntity> getDbEntityMap() {
+		return Collections.unmodifiableMap(dbEntityMap);
 	}
 
 	/**
@@ -533,8 +522,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	/**
 	 * @since 4.0
      */
-	public SortedMap<String, QueryDescriptor> getQueryDescriptorMap() {
-		return Collections.unmodifiableSortedMap(queryDescriptorMap);
+	public Map<String, QueryDescriptor> getQueryDescriptorMap() {
+		return Collections.unmodifiableMap(queryDescriptorMap);
 	}
 
 	/**
@@ -949,8 +938,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * Returns a sorted unmodifiable map of Procedures in this DataMap keyed by
 	 * name.
 	 */
-	public SortedMap<String, Procedure> getProcedureMap() {
-		return Collections.unmodifiableSortedMap(procedureMap);
+	public Map<String, Procedure> getProcedureMap() {
+		return Collections.unmodifiableMap(procedureMap);
 	}
 
 	/**

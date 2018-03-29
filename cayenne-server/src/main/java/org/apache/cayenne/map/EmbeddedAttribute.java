@@ -26,9 +26,8 @@ import org.apache.cayenne.util.XMLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * An attribute of the ObjEntity that maps to an embeddable class.
@@ -37,10 +36,10 @@ import java.util.TreeMap;
  */
 public class EmbeddedAttribute extends ObjAttribute {
 
-    protected SortedMap<String, String> attributeOverrides;
+    protected Map<String, String> attributeOverrides;
 
     public EmbeddedAttribute() {
-        attributeOverrides = new TreeMap<String, String>();
+        attributeOverrides = new HashMap<>();
     }
 
     public EmbeddedAttribute(String name) {

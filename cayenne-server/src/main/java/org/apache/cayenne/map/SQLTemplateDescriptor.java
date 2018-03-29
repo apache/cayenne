@@ -33,7 +33,7 @@ import java.util.TreeSet;
 public class SQLTemplateDescriptor extends QueryDescriptor {
 
     protected String sql;
-    protected HashMap<String, Integer> prefetchesMap = new HashMap<>();
+    protected Map<String, Integer> prefetchesMap = new HashMap<>();
 
     protected Map<String, String> adapterSql = new HashMap<>();
 
@@ -73,7 +73,7 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
      * Returns map of prefetch paths with semantics for this query.
      * @since 4.1
      */
-    public HashMap<String, Integer> getPrefetchesMap() { return prefetchesMap; }
+    public Map<String, Integer> getPrefetchesMap() { return prefetchesMap; }
 
     /**
      * Sets map of prefetch paths with semantics for this query.

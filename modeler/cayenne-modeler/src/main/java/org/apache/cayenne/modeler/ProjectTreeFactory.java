@@ -23,11 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.modeler.util.Comparators;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
@@ -135,28 +131,26 @@ public class ProjectTreeFactory {
         public DefaultMutableTreeNode visitDataMap(DataMap dataMap) {
             pushNode(dataMap);
 
-            // don't have to sort DataMap children, as DataMap stores everything as
-            // SortedMap internally
+            //Should be sorted manually because dataMap don't provide sorted collection.
+            dataMap.getObjEntities().stream()
+                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .forEach(e -> makeNode(e));
 
-            for (ObjEntity entity : dataMap.getObjEntities()) {
-                makeNode(entity);
-            }
+            dataMap.getEmbeddables().stream()
+                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .forEach(e -> makeNode(e));
 
-            for (Embeddable embeddable : dataMap.getEmbeddables()) {
-                makeNode(embeddable);
-            }
+            dataMap.getDbEntities().stream()
+                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .forEach(e -> makeNode(e));
 
-            for (DbEntity entity : dataMap.getDbEntities()) {
-                makeNode(entity);
-            }
+            dataMap.getProcedures().stream()
+                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .forEach(e -> makeNode(e));
 
-            for (Procedure procedure : dataMap.getProcedures()) {
-                makeNode(procedure);
-            }
-
-            for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
-                makeNode(query);
-            }
+            dataMap.getQueryDescriptors().stream()
+                    .sorted(Comparators.getDataMapChildrenComparator())
+                    .forEach(e -> makeNode(e));
 
             return popNode();
         }
