@@ -31,6 +31,7 @@ CAY-2407 Modeler: add prefetch support for the SQLTemplate query
 CAY-2410 Add prefetch type support for SQLTemplate query and SelectQuery
 CAY-2414 Modeler: new icon design
 CAY-2415 Transaction isolation and propagation support
+CAY-2416 Change TreeMap for HashMap to store data in Cayenne model classes
 
 Bug Fixes:
 
