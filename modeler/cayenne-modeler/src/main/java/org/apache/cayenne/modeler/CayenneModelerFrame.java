@@ -87,6 +87,7 @@ import org.apache.cayenne.modeler.action.SaveAsAction;
 import org.apache.cayenne.modeler.action.ShowLogConsoleAction;
 import org.apache.cayenne.modeler.action.UndoAction;
 import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.action.dbimport.ReverseEngineeringToolMenuAction;
 import org.apache.cayenne.modeler.dialog.LogConsole;
 import org.apache.cayenne.modeler.dialog.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.editor.EditorView;
@@ -232,6 +233,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
         projectMenu.addSeparator();
         projectMenu.add(getAction(RemoveAction.class).buildMenu());
 
+        toolMenu.add(getAction(ReverseEngineeringToolMenuAction.class).buildMenu());
         toolMenu.add(getAction(InferRelationshipsAction.class).buildMenu());
         toolMenu.add(getAction(ImportEOModelAction.class).buildMenu());
         toolMenu.addSeparator();
