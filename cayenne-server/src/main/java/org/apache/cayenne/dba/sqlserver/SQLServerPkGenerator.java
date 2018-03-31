@@ -83,7 +83,7 @@ public class SQLServerPkGenerator extends OraclePkGenerator {
     public Object generatePk(DataNode node, DbAttribute pk) throws Exception {
         DbEntity entity = pk.getEntity();
 
-        //check key on UNIQUEIDENTIFIER; UNIQUEIDENTIFIER is a character with a length of 35
+        //check key on UNIQUEIDENTIFIER; UNIQUEIDENTIFIER is a character with a length of 36
         if (TypesMapping.isCharacter(pk.getType()) && pk.getMaxLength() == MAX_LENGTH_GUID) {
             return guidPkFromDatabase(node, entity);
         } else {

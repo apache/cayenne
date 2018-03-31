@@ -85,20 +85,40 @@ import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.dba.db2.DB2Adapter;
+import org.apache.cayenne.dba.db2.DB2PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
+import org.apache.cayenne.dba.derby.DerbyAdapter;
+import org.apache.cayenne.dba.derby.DerbyPkGenerator;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
+import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
+import org.apache.cayenne.dba.frontbase.FrontBasePkGenerator;
 import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
+import org.apache.cayenne.dba.h2.H2Adapter;
+import org.apache.cayenne.dba.h2.H2PkGenerator;
 import org.apache.cayenne.dba.h2.H2Sniffer;
 import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
+import org.apache.cayenne.dba.ingres.IngresAdapter;
+import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.ingres.IngresSniffer;
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
+import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.dba.openbase.OpenBasePkGenerator;
 import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
+import org.apache.cayenne.dba.oracle.Oracle8Adapter;
+import org.apache.cayenne.dba.oracle.OracleAdapter;
+import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
+import org.apache.cayenne.dba.postgres.PostgresAdapter;
+import org.apache.cayenne.dba.postgres.PostgresPkGenerator;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
+import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -301,21 +321,30 @@ public class ServerModule implements Module {
         // configure known DbAdapter detectors in reverse order of popularity.
         // Users can add their own to install custom adapters automatically
 
-        contributeAdapterDetectors(binder).add(FirebirdSniffer.class).add(OpenBaseSniffer.class)
-                .add(FrontBaseSniffer.class).add(IngresSniffer.class).add(SQLiteSniffer.class).add(DB2Sniffer.class)
-                .add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
-                .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
+        contributeAdapterDetectors(binder)
+                .add(FirebirdSniffer.class)
+                .add(OpenBaseSniffer.class)
+                .add(FrontBaseSniffer.class)
+                .add(IngresSniffer.class)
+                .add(SQLiteSniffer.class)
+                .add(DB2Sniffer.class)
+                .add(H2Sniffer.class)
+                .add(HSQLDBSniffer.class)
+                .add(SybaseSniffer.class)
+                .add(DerbySniffer.class)
+                .add(SQLServerSniffer.class)
+                .add(OracleSniffer.class)
+                .add(PostgresSniffer.class)
                 .add(MySQLSniffer.class);
 
         //installing Pk for adapters
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-        contributePkGenerators(binder).put(SQLServerAdapter.class.getName(), SybasePkGenerator.class);
 
-        /*contributePkGenerators(binder)
+        contributePkGenerators(binder)
                 .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
                 .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
-                .put(FrontBaseAdapter.class.getName(), FrontBaseAdapter.class)
+                .put(FrontBaseAdapter.class.getName(), FrontBasePkGenerator.class)
                 .put(H2Adapter.class.getName(), H2PkGenerator.class)
                 .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
                 .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
@@ -325,7 +354,7 @@ public class ServerModule implements Module {
                 .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
                 .put(SQLServerAdapter.class.getName(), SybasePkGenerator.class)
                 .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
-*/
+
         // configure a filter chain with only one TransactionFilter as default
         contributeDomainFilters(binder).add(TransactionFilter.class);
 
@@ -336,10 +365,17 @@ public class ServerModule implements Module {
         contributeDefaultTypes(binder)
                 .add(new VoidType())
                 .add(new BigDecimalType())
-                .add(new BooleanType()).add(new ByteType(false)).add(new CharType(false, true))
-                .add(new DoubleType()).add(new FloatType()).add(new IntegerType()).add(new LongType()).add(new ShortType(false))
+                .add(new BooleanType())
+                .add(new ByteType(false))
+                .add(new CharType(false, true))
+                .add(new DoubleType())
+                .add(new FloatType())
+                .add(new IntegerType())
+                .add(new LongType())
+                .add(new ShortType(false))
                 .add(new ByteArrayType(false, true))
-                .add(new DateType()).add(new TimeType()).add(new TimestampType())
+                .add(new DateType()).add(new TimeType())
+                .add(new TimestampType())
                 // should be converted from ExtendedType to ValueType
                 .add(new UtilDateType()).add(new CalendarType<>(GregorianCalendar.class)).add(new CalendarType<>(Calendar.class));
         contributeUserTypes(binder);

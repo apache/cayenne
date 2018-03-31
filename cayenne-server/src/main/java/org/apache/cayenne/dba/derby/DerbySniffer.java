@@ -19,31 +19,52 @@
 
 package org.apache.cayenne.dba.derby;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
+
 /**
  * Creates a DerbyAdapter if Apache Derby database is detected.
- * 
+ *
  * @since 1.2
  */
 public class DerbySniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    public DerbySniffer(@Inject AdhocObjectFactory objectFactory) {
+    protected PkGeneratorFactoryProvider pkGeneratorProvider;
+
+    public DerbySniffer(@Inject AdhocObjectFactory objectFactory,
+                        @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
+        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().contains("APACHE DERBY")
-                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, DerbyAdapter.class.getName()) : null;
+        if (dbName == null || !dbName.toUpperCase().contains("APACHE DERBY")) {
+            return null;
+        }
+
+        JdbcAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class,
+                DerbyAdapter.class.getName());
+
+        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
+
+        if (pkGenerator != null) {
+            adapter.setPkGenerator(pkGenerator);
+        }
+
+        return adapter;
     }
 }

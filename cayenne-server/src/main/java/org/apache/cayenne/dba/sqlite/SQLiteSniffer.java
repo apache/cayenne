@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.dba.sqlite;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Detects SQLite database from JDBC metadata.
@@ -35,8 +39,12 @@ public class SQLiteSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    public SQLiteSniffer(@Inject AdhocObjectFactory objectFactory) {
+    protected PkGeneratorFactoryProvider pkGeneratorProvider;
+
+    public SQLiteSniffer(@Inject AdhocObjectFactory objectFactory,
+                         @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
+        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
@@ -46,6 +54,16 @@ public class SQLiteSniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.newInstance(DbAdapter.class, SQLiteAdapter.class.getName());
+        JdbcAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class,
+                SQLiteAdapter.class.getName());
+
+        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
+
+        if (pkGenerator != null) {
+            adapter.setPkGenerator(pkGenerator);
+        }
+
+        return adapter;
     }
 }

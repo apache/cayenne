@@ -19,13 +19,17 @@
 
 package org.apache.cayenne.dba.ingres;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Detects Ingres database from JDBC metadata.
@@ -36,14 +40,31 @@ public class IngresSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    public IngresSniffer(@Inject AdhocObjectFactory objectFactory) {
+    protected PkGeneratorFactoryProvider pkGeneratorProvider;
+
+    public IngresSniffer(@Inject AdhocObjectFactory objectFactory,
+                         @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
+        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().contains("INGRES")
-                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, IngresAdapter.class.getName()) : null;
+        if (dbName == null || !dbName.toUpperCase().contains("INGRES")) {
+            return null;
+        }
+
+        JdbcAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class,
+                IngresAdapter.class.getName());
+
+        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
+
+        if (pkGenerator != null) {
+            adapter.setPkGenerator(pkGenerator);
+        }
+
+        return adapter;
     }
 }

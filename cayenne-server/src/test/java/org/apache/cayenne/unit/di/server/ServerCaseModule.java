@@ -72,17 +72,26 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Adapter;
+import org.apache.cayenne.dba.db2.DB2PkGenerator;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
+import org.apache.cayenne.dba.derby.DerbyPkGenerator;
 import org.apache.cayenne.dba.firebird.FirebirdAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
+import org.apache.cayenne.dba.frontbase.FrontBasePkGenerator;
 import org.apache.cayenne.dba.h2.H2Adapter;
+import org.apache.cayenne.dba.h2.H2PkGenerator;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
+import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.dba.openbase.OpenBasePkGenerator;
 import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
+import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
+import org.apache.cayenne.dba.postgres.PostgresPkGenerator;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
@@ -163,7 +172,19 @@ public class ServerCaseModule implements Module {
 
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-        ServerModule.contributePkGenerators(binder).put(SQLServerAdapter.class.getName(), SybasePkGenerator.class);
+        ServerModule.contributePkGenerators(binder)
+                .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
+                .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
+                .put(FrontBaseAdapter.class.getName(), FrontBasePkGenerator.class)
+                .put(H2Adapter.class.getName(), H2PkGenerator.class)
+                .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
+                .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
+                .put(OpenBaseAdapter.class.getName(), OpenBasePkGenerator.class)
+                .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
+                .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
+                .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
+                .put(SQLServerAdapter.class.getName(), SybasePkGenerator.class)
+                .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
 
         // configure extended types
         ServerModule.contributeDefaultTypes(binder)

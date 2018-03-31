@@ -28,25 +28,29 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class PostgresPkGenerator extends OraclePkGenerator {
 
-	protected PostgresPkGenerator(JdbcAdapter adapter) {
-		super(adapter);
-	}
+    public PostgresPkGenerator() {
+        super();
+    }
 
-	@Override
-	protected String createSequenceString(DbEntity ent) {
-		// note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
-		// however 7.3 doesn't like BY and WITH, so using older more neutral
-		// syntax that works with all tested versions.
-		return "CREATE SEQUENCE " + sequenceName(ent) + " INCREMENT " + pkCacheSize(ent) + " START " + pkStartValue;
-	}
+    protected PostgresPkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
-	@Override
-	protected String selectNextValQuery(String sequenceName) {
-		return "SELECT nextval('" + sequenceName + "')";
-	}
+    @Override
+    protected String createSequenceString(DbEntity ent) {
+        // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
+        // however 7.3 doesn't like BY and WITH, so using older more neutral
+        // syntax that works with all tested versions.
+        return "CREATE SEQUENCE " + sequenceName(ent) + " INCREMENT " + pkCacheSize(ent) + " START " + pkStartValue;
+    }
 
-	@Override
-	protected String selectAllSequencesQuery() {
-		return "SELECT relname FROM pg_class WHERE relkind='S'";
-	}
+    @Override
+    protected String selectNextValQuery(String sequenceName) {
+        return "SELECT nextval('" + sequenceName + "')";
+    }
+
+    @Override
+    protected String selectAllSequencesQuery() {
+        return "SELECT relname FROM pg_class WHERE relkind='S'";
+    }
 }

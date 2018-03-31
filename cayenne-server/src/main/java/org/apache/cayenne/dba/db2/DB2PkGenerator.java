@@ -27,40 +27,44 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DB2PkGenerator extends OraclePkGenerator {
 
-	DB2PkGenerator(JdbcAdapter adapter) {
-		super(adapter);
-	}
+    public DB2PkGenerator() {
+        super();
+    }
 
-	private static final String _SEQUENCE_PREFIX = "S_";
+    DB2PkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
-	@Override
-	protected String sequenceName(DbEntity entity) {
-		return super.sequenceName(entity).toUpperCase();
-	}
+    private static final String _SEQUENCE_PREFIX = "S_";
 
-	@Override
-	protected String getSequencePrefix() {
-		return _SEQUENCE_PREFIX;
-	}
+    @Override
+    protected String sequenceName(DbEntity entity) {
+        return super.sequenceName(entity).toUpperCase();
+    }
 
-	@Override
-	protected String selectNextValQuery(String pkGeneratingSequenceName) {
-		return "SELECT NEXTVAL FOR " + pkGeneratingSequenceName + " FROM SYSIBM.SYSDUMMY1";
-	}
+    @Override
+    protected String getSequencePrefix() {
+        return _SEQUENCE_PREFIX;
+    }
 
-	@Override
-	protected String selectAllSequencesQuery() {
-		return "SELECT SEQNAME FROM SYSCAT.SEQUENCES WHERE SEQNAME LIKE '" + _SEQUENCE_PREFIX + "%'";
-	}
+    @Override
+    protected String selectNextValQuery(String pkGeneratingSequenceName) {
+        return "SELECT NEXTVAL FOR " + pkGeneratingSequenceName + " FROM SYSIBM.SYSDUMMY1";
+    }
 
-	@Override
-	protected String dropSequenceString(DbEntity entity) {
-		return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT ";
-	}
+    @Override
+    protected String selectAllSequencesQuery() {
+        return "SELECT SEQNAME FROM SYSCAT.SEQUENCES WHERE SEQNAME LIKE '" + _SEQUENCE_PREFIX + "%'";
+    }
 
-	@Override
-	protected String createSequenceString(DbEntity entity) {
-		return "CREATE SEQUENCE " + sequenceName(entity) + " AS BIGINT START WITH " + pkStartValue +
-				" INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE CACHE " + getPkCacheSize();
-	}
+    @Override
+    protected String dropSequenceString(DbEntity entity) {
+        return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT ";
+    }
+
+    @Override
+    protected String createSequenceString(DbEntity entity) {
+        return "CREATE SEQUENCE " + sequenceName(entity) + " AS BIGINT START WITH " + pkStartValue +
+                " INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE CACHE " + getPkCacheSize();
+    }
 }

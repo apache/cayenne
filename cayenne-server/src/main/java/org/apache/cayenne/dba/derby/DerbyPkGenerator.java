@@ -25,38 +25,42 @@ import org.apache.cayenne.map.DbEntity;
 
 /**
  * PK generator for Derby that uses sequences.
- * 
+ *
  * @since 4.0 (old one used AUTO_PK_SUPPORT table)
  */
 public class DerbyPkGenerator extends OraclePkGenerator {
 
-	DerbyPkGenerator(JdbcAdapter adapter) {
-		super(adapter);
-	}
+    public DerbyPkGenerator() {
+        super();
+    }
 
-	@Override
-	protected String sequenceName(DbEntity entity) {
-		return super.sequenceName(entity).toUpperCase();
-	}
+    DerbyPkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
-	@Override
-	protected String selectNextValQuery(String pkGeneratingSequenceName) {
-		return "VALUES (NEXT VALUE FOR " + pkGeneratingSequenceName + ")";
-	}
+    @Override
+    protected String sequenceName(DbEntity entity) {
+        return super.sequenceName(entity).toUpperCase();
+    }
 
-	@Override
-	protected String selectAllSequencesQuery() {
-		return "SELECT SEQUENCENAME FROM SYS.SYSSEQUENCES";
-	}
+    @Override
+    protected String selectNextValQuery(String pkGeneratingSequenceName) {
+        return "VALUES (NEXT VALUE FOR " + pkGeneratingSequenceName + ")";
+    }
 
-	@Override
-	protected String dropSequenceString(DbEntity entity) {
-		return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT";
-	}
+    @Override
+    protected String selectAllSequencesQuery() {
+        return "SELECT SEQUENCENAME FROM SYS.SYSSEQUENCES";
+    }
 
-	@Override
-	protected String createSequenceString(DbEntity entity) {
-		return "CREATE SEQUENCE " + sequenceName(entity) + " AS BIGINT START WITH " + pkStartValue +
-				" INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE";
-	}
+    @Override
+    protected String dropSequenceString(DbEntity entity) {
+        return "DROP SEQUENCE " + sequenceName(entity) + " RESTRICT";
+    }
+
+    @Override
+    protected String createSequenceString(DbEntity entity) {
+        return "CREATE SEQUENCE " + sequenceName(entity) + " AS BIGINT START WITH " + pkStartValue +
+                " INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE";
+    }
 }

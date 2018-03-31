@@ -25,28 +25,32 @@ import org.apache.cayenne.map.DbEntity;
 
 /**
  * Default PK generator for H2 that uses sequences for PK generation.
- * 
+ *
  * @since 4.0
  */
 public class H2PkGenerator extends OraclePkGenerator {
 
-	protected H2PkGenerator(JdbcAdapter adapter) {
-		super(adapter);
-	}
+    public H2PkGenerator() {
+        super();
+    }
 
-	@Override
-	protected String createSequenceString(DbEntity ent) {
-		return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue + " INCREMENT BY "
-				+ pkCacheSize(ent) + " CACHE 1";
-	}
+    protected H2PkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
-	@Override
-	protected String selectNextValQuery(String sequenceName) {
-		return "SELECT NEXT VALUE FOR " + sequenceName;
-	}
+    @Override
+    protected String createSequenceString(DbEntity ent) {
+        return "CREATE SEQUENCE " + sequenceName(ent) + " START WITH " + pkStartValue + " INCREMENT BY "
+                + pkCacheSize(ent) + " CACHE 1";
+    }
 
-	@Override
-	protected String selectAllSequencesQuery() {
-		return "SELECT LOWER(sequence_name) FROM Information_Schema.Sequences";
-	}
+    @Override
+    protected String selectNextValQuery(String sequenceName) {
+        return "SELECT NEXT VALUE FOR " + sequenceName;
+    }
+
+    @Override
+    protected String selectAllSequencesQuery() {
+        return "SELECT LOWER(sequence_name) FROM Information_Schema.Sequences";
+    }
 }

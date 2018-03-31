@@ -44,7 +44,7 @@ public class SQLServerSniffer implements DbAdapterDetector {
     public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory,
                             @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, () -> "Null pkGeneratorProvider");
+        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override

@@ -20,7 +20,9 @@
 package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
@@ -28,6 +30,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 
 /**
  * Detects MySQL database from JDBC metadata.
@@ -38,8 +41,12 @@ public class MySQLSniffer implements DbAdapterDetector {
 
 	protected AdhocObjectFactory objectFactory;
 
-	public MySQLSniffer(@Inject AdhocObjectFactory objectFactory) {
+	protected PkGeneratorFactoryProvider pkGeneratorProvider;
+
+	public MySQLSniffer(@Inject AdhocObjectFactory objectFactory,
+						@Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
 		this.objectFactory = objectFactory;
+		this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
 	}
 
 	@Override
@@ -53,7 +60,7 @@ public class MySQLSniffer implements DbAdapterDetector {
 
 		String adapterStorageEngine = MySQLAdapter.DEFAULT_STORAGE_ENGINE;
 
-		try (Statement statement = md.getConnection().createStatement();) {
+		try (Statement statement = md.getConnection().createStatement()) {
 			// http://dev.mysql.com/doc/refman/5.0/en/storage-engines.html
 			// per link above "table type" concept is deprecated in favor of
 			// "storage
@@ -61,7 +68,7 @@ public class MySQLSniffer implements DbAdapterDetector {
 			// and in what
 			// version of MySQL it got introduced...
 
-			try (ResultSet rs = statement.executeQuery("SHOW VARIABLES LIKE 'table_type'");) {
+			try (ResultSet rs = statement.executeQuery("SHOW VARIABLES LIKE 'table_type'")) {
 				if (rs.next()) {
 					String storageEngine = rs.getString(2);
 					if (storageEngine != null) {
@@ -73,6 +80,12 @@ public class MySQLSniffer implements DbAdapterDetector {
 
 		MySQLAdapter adapter = objectFactory.newInstance(MySQLAdapter.class, MySQLAdapter.class.getName());
 		adapter.setStorageEngine(adapterStorageEngine);
+
+		PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
+
+		if (pkGenerator != null) {
+			adapter.setPkGenerator(pkGenerator);
+		}
 		return adapter;
 	}
 }

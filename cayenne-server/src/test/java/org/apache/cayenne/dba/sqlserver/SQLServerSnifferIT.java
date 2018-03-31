@@ -58,7 +58,7 @@ public class SQLServerSnifferIT extends ServerCase {
 
 		DbAdapter adapter = null;
 
-		try (Connection c = dataSourceFactory.getSharedDataSource().getConnection();) {
+		try (Connection c = dataSourceFactory.getSharedDataSource().getConnection()) {
 			adapter = sniffer.createAdapter(c.getMetaData());
 		}
 

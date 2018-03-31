@@ -19,22 +19,27 @@
 
 package org.apache.cayenne.dba.sybase;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
 /**
  * Detects Sybase database from JDBC metadata.
- * 
+ *
  * @since 1.2
  */
 public class SybaseSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
+
+    protected PkGeneratorFactoryProvider pkGeneratorProvider;
 
     public SybaseSniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
@@ -44,15 +49,23 @@ public class SybaseSniffer implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         // JTDS driver returns "sql server" for Sybase, so need to handle it differently
         String driver = md.getDriverName();
+        JdbcAdapter adapter;
         if (driver != null && driver.toLowerCase().startsWith("jtds")) {
             String url = md.getURL();
-            return url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
-                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
-        }
-        else {
+            adapter = url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
+                    ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
+        } else {
             String dbName = md.getDatabaseProductName();
-            return dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
-                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
+            adapter = dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
+                    ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
         }
+
+        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
+
+        if (adapter != null && pkGenerator != null) {
+            adapter.setPkGenerator(pkGenerator);
+        }
+
+        return adapter;
     }
 }

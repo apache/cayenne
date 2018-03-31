@@ -38,140 +38,144 @@ import org.slf4j.LoggerFactory;
  */
 public class MySQLPkGenerator extends JdbcPkGenerator {
 
-	private static final Logger logger = LoggerFactory.getLogger(MySQLPkGenerator.class);
+    private static final Logger logger = LoggerFactory.getLogger(MySQLPkGenerator.class);
 
-	MySQLPkGenerator(JdbcAdapter adapter) {
-		super(adapter);
-	}
+    public MySQLPkGenerator() {
+        super();
+    }
 
-	/**
-	 * Overrides superclass's implementation to perform locking of the primary
-	 * key lookup table.
-	 * 
-	 * @since 3.0
-	 */
-	@Override
-	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    MySQLPkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
-		// must work directly with JDBC connection, since we
-		// must unlock the AUTO_PK_SUPPORT table in case of
-		// failures.... ah..JDBC is fun...
+    /**
+     * Overrides superclass's implementation to perform locking of the primary
+     * key lookup table.
+     *
+     * @since 3.0
+     */
+    @Override
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
-		// chained SQL exception
-		SQLException exception = null;
-		long pk = -1L;
+        // must work directly with JDBC connection, since we
+        // must unlock the AUTO_PK_SUPPORT table in case of
+        // failures.... ah..JDBC is fun...
 
-		// Start new transaction if needed, can any way lead to problems when
-		// using external transaction manager. We can only warn about it.
-		// See https://issues.apache.org/jira/browse/CAY-2186 for details.
-		Transaction transaction = BaseTransaction.getThreadTransaction();
-		if(transaction != null && transaction.isExternal()) {
-			logger.warn("Using MysqlPkGenerator with external transaction manager may lead to inconsistent state.");
-		}
-		BaseTransaction.bindThreadTransaction(null);
+        // chained SQL exception
+        SQLException exception = null;
+        long pk = -1L;
 
-		try (Connection con = node.getDataSource().getConnection()) {
+        // Start new transaction if needed, can any way lead to problems when
+        // using external transaction manager. We can only warn about it.
+        // See https://issues.apache.org/jira/browse/CAY-2186 for details.
+        Transaction transaction = BaseTransaction.getThreadTransaction();
+        if (transaction != null && transaction.isExternal()) {
+            logger.warn("Using MysqlPkGenerator with external transaction manager may lead to inconsistent state.");
+        }
+        BaseTransaction.bindThreadTransaction(null);
 
-			if (con.getAutoCommit()) {
-				con.setAutoCommit(false);
-			}
+        try (Connection con = node.getDataSource().getConnection()) {
 
-			try(Statement st = con.createStatement()) {
-				try {
-					pk = getLongPrimaryKey(st, entity.getName());
-					con.commit();
-				} catch (SQLException pkEx) {
-					try {
-						con.rollback();
-					} catch (SQLException ignored) {
-					}
+            if (con.getAutoCommit()) {
+                con.setAutoCommit(false);
+            }
 
-					exception = processSQLException(pkEx, null);
-				} finally {
-					// UNLOCK!
-					// THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE PRIMARY KEY TABLE!!
-					try {
-						String unlockString = "UNLOCK TABLES";
-						adapter.getJdbcEventLogger().log(unlockString);
-						st.execute(unlockString);
-					} catch (SQLException unlockEx) {
-						exception = processSQLException(unlockEx, exception);
-					}
-				}
-			}
-		} catch (SQLException otherEx) {
-			exception = processSQLException(otherEx, null);
-		} finally {
-			BaseTransaction.bindThreadTransaction(transaction);
-		}
+            try (Statement st = con.createStatement()) {
+                try {
+                    pk = getLongPrimaryKey(st, entity.getName());
+                    con.commit();
+                } catch (SQLException pkEx) {
+                    try {
+                        con.rollback();
+                    } catch (SQLException ignored) {
+                    }
 
-		// check errors
-		if (exception != null) {
-			throw exception;
-		}
+                    exception = processSQLException(pkEx, null);
+                } finally {
+                    // UNLOCK!
+                    // THIS MUST BE EXECUTED NO MATTER WHAT, OR WE WILL LOCK THE PRIMARY KEY TABLE!!
+                    try {
+                        String unlockString = "UNLOCK TABLES";
+                        adapter.getJdbcEventLogger().log(unlockString);
+                        st.execute(unlockString);
+                    } catch (SQLException unlockEx) {
+                        exception = processSQLException(unlockEx, exception);
+                    }
+                }
+            }
+        } catch (SQLException otherEx) {
+            exception = processSQLException(otherEx, null);
+        } finally {
+            BaseTransaction.bindThreadTransaction(transaction);
+        }
 
-		return pk;
+        // check errors
+        if (exception != null) {
+            throw exception;
+        }
 
-	}
+        return pk;
 
-	/**
-	 * Appends a new SQLException to the chain. If parent is null, uses the
-	 * exception as the chain root.
-	 */
-	protected SQLException processSQLException(SQLException exception, SQLException parent) {
-		if (parent == null) {
-			return exception;
-		}
+    }
 
-		parent.setNextException(exception);
-		return parent;
-	}
+    /**
+     * Appends a new SQLException to the chain. If parent is null, uses the
+     * exception as the chain root.
+     */
+    protected SQLException processSQLException(SQLException exception, SQLException parent) {
+        if (parent == null) {
+            return exception;
+        }
 
-	@Override
-	protected String dropAutoPkString() {
-		return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
-	}
+        parent.setNextException(exception);
+        return parent;
+    }
 
-	@Override
-	protected String pkTableCreateString() {
-		return "CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT " +
-				"(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)) " +
-				"ENGINE=" + MySQLAdapter.DEFAULT_STORAGE_ENGINE;
-	}
+    @Override
+    protected String dropAutoPkString() {
+        return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
+    }
 
-	/**
-	 * @since 3.0
-	 */
-	protected long getLongPrimaryKey(Statement statement, String entityName) throws SQLException {
-		// lock
-		String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
-		adapter.getJdbcEventLogger().log(lockString);
-		statement.execute(lockString);
+    @Override
+    protected String pkTableCreateString() {
+        return "CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT " +
+                "(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)) " +
+                "ENGINE=" + MySQLAdapter.DEFAULT_STORAGE_ENGINE;
+    }
 
-		// select
-		String selectString = super.pkSelectString(entityName);
-		adapter.getJdbcEventLogger().log(selectString);
-		long pk;
-		try(ResultSet rs = statement.executeQuery(selectString)) {
-			if (!rs.next()) {
-				throw new SQLException("No rows for '" + entityName + "'");
-			}
+    /**
+     * @since 3.0
+     */
+    protected long getLongPrimaryKey(Statement statement, String entityName) throws SQLException {
+        // lock
+        String lockString = "LOCK TABLES AUTO_PK_SUPPORT WRITE";
+        adapter.getJdbcEventLogger().log(lockString);
+        statement.execute(lockString);
 
-			pk = rs.getLong(1);
-			if (rs.next()) {
-				throw new SQLException("More than one row for '" + entityName + "'");
-			}
-		}
+        // select
+        String selectString = super.pkSelectString(entityName);
+        adapter.getJdbcEventLogger().log(selectString);
+        long pk;
+        try (ResultSet rs = statement.executeQuery(selectString)) {
+            if (!rs.next()) {
+                throw new SQLException("No rows for '" + entityName + "'");
+            }
 
-		// update
-		String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
-		adapter.getJdbcEventLogger().log(updateString);
-		int updated = statement.executeUpdate(updateString);
-		// optimistic lock failure...
-		if (updated != 1) {
-			throw new SQLException("Error updating PK count '" + entityName + "': " + updated);
-		}
+            pk = rs.getLong(1);
+            if (rs.next()) {
+                throw new SQLException("More than one row for '" + entityName + "'");
+            }
+        }
 
-		return pk;
-	}
+        // update
+        String updateString = super.pkUpdateString(entityName) + " AND NEXT_ID = " + pk;
+        adapter.getJdbcEventLogger().log(updateString);
+        int updated = statement.executeUpdate(updateString);
+        // optimistic lock failure...
+        if (updated != 1) {
+            throw new SQLException("Error updating PK count '" + entityName + "': " + updated);
+        }
+
+        return pk;
+    }
 }
