@@ -29,6 +29,7 @@ import org.apache.cayenne.di.Inject;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * Detects Sybase database from JDBC metadata.
@@ -41,8 +42,10 @@ public class SybaseSniffer implements DbAdapterDetector {
 
     protected PkGeneratorFactoryProvider pkGeneratorProvider;
 
-    public SybaseSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public SybaseSniffer(@Inject AdhocObjectFactory objectFactory,
+                         @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
+        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
@@ -59,13 +62,16 @@ public class SybaseSniffer implements DbAdapterDetector {
             adapter = dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
                     ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
         }
+        
+        if (adapter != null) {
+            PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
 
-        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
-
-        if (adapter != null && pkGenerator != null) {
-            adapter.setPkGenerator(pkGenerator);
+            if (pkGenerator != null) {
+                adapter.setPkGenerator(pkGenerator);
+            }
+            return adapter;
+        } else {
+            return null;
         }
-
-        return adapter;
     }
 }
