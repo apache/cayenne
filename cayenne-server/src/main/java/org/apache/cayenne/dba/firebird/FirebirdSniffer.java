@@ -16,28 +16,50 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
- 
+
 package org.apache.cayenne.dba.firebird;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
+
 public class FirebirdSniffer implements DbAdapterDetector {
+
     protected AdhocObjectFactory objectFactory;
 
-    public FirebirdSniffer(@Inject AdhocObjectFactory objectFactory) {
+    protected PkGeneratorFactoryProvider pkGeneratorProvider;
+
+    public FirebirdSniffer(@Inject AdhocObjectFactory objectFactory,
+                           @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
+        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().contains("FIREBIRD")
-                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, FirebirdAdapter.class.getName()) : null;
+        if (dbName == null || !dbName.toUpperCase().contains("FIREBIRD")) {
+            return null;
+        }
+
+        JdbcAdapter adapter = objectFactory.newInstance(
+                DbAdapter.class,
+                FirebirdAdapter.class.getName());
+
+        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
+
+        if (pkGenerator != null) {
+            adapter.setPkGenerator(pkGenerator);
+        }
+
+        return adapter;
     }
 }
