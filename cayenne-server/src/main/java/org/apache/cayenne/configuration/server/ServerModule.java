@@ -374,7 +374,8 @@ public class ServerModule implements Module {
                 .add(new LongType())
                 .add(new ShortType(false))
                 .add(new ByteArrayType(false, true))
-                .add(new DateType()).add(new TimeType())
+                .add(new DateType())
+                .add(new TimeType())
                 .add(new TimestampType())
                 // should be converted from ExtendedType to ValueType
                 .add(new UtilDateType()).add(new CalendarType<>(GregorianCalendar.class)).add(new CalendarType<>(Calendar.class));
