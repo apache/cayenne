@@ -30,6 +30,10 @@ public class SQLServerPkGenerator extends OraclePkGenerator {
 
     private static final int MAX_LENGTH_GUID = 36;
 
+    public SQLServerPkGenerator() {
+        super();
+    }
+
     protected SQLServerPkGenerator(JdbcAdapter adapter) {
         super(adapter);
     }
