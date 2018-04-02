@@ -12,3 +12,4 @@ bin/
 .factorypath
 build
 .gradle
+out
