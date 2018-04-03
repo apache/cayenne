@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveImportNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveInvertNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.ReverseEngineeringToolMenuAction;
 import org.apache.cayenne.modeler.graph.action.ShowGraphEntityAction;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
@@ -107,6 +108,7 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new ObjEntityToSuperEntityAction(application));
         registerAction(new ReverseEngineeringAction(application));
         registerAction(new InferRelationshipsAction(application));
+        registerAction(new ReverseEngineeringToolMenuAction(application));
         registerAction(new ImportEOModelAction(application));
         registerAction(new GenerateDBAction(application));
         registerAction(new MigrateAction(application));
@@ -192,7 +194,8 @@ public class DefaultActionManager implements ActionManager {
                 ImportEOModelAction.class.getName(),
                 GenerateCodeAction.class.getName(),
                 GenerateDBAction.class.getName(),
-                PasteAction.class.getName()));
+                PasteAction.class.getName(),
+                ReverseEngineeringToolMenuAction.class.getName()));
 
         DATA_NODE_ACTIONS = new HashSet<>(DOMAIN_ACTIONS);
         DATA_NODE_ACTIONS.addAll(Arrays.asList(
