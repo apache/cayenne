@@ -23,6 +23,11 @@
 	http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <name>DbImporterMojo Test1</name>
+    <groupId>org.apache.maven.plugin-testing</groupId>
+    <artifactId>maven-plugin-testing</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <modelVersion>4.0.0</modelVersion>
 
     <build>
         <plugins>
@@ -38,6 +43,7 @@
                         <schema>SCHEMA_01</schema>
                         <useJava7Types>false</useJava7Types>
                     </dbimport>
+                    <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
                 </configuration>
             </plugin>
         </plugins>

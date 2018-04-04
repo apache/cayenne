@@ -13,8 +13,8 @@
 
 	<parent>
 		<artifactId>cayenne-maven-plugins-parent</artifactId>
-		<groupId>org.apache.cayenne.plugins</groupId>
-		<version>4.1.M2-SNAPSHOT</version>
+			<groupId>org.apache.cayenne.plugins</groupId>
+			<version>4.1.M2-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>

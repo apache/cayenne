@@ -24,6 +24,11 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.cayenne.test.resource.ResourceUtil;
+import org.apache.maven.execution.DefaultMavenExecutionRequest;
+import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.slf4j.Logger;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
@@ -355,6 +360,8 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     private void test(String name) throws Exception {
+//        MavenProject mavenProject = getMavenProject("src/test/resources/org/apache/cayenne/tools/dbimport/" + name + "-pom.xml");
+
         DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
         File mapFile = cdbImport.getMap();
         File mapFileCopy = new File(mapFile.getParentFile(), "copy-" + mapFile.getName());
@@ -462,5 +469,14 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
                 }
             }
         }
+    }
+
+
+    private MavenProject getMavenProject(String pomPath) throws Exception {
+        File pom = new File(pomPath);
+        MavenExecutionRequest request = new DefaultMavenExecutionRequest();
+        request.setPom(pom);
+        ProjectBuildingRequest configuration = request.getProjectBuildingRequest();
+        return lookup( ProjectBuilder.class ).build( pom, configuration ).getProject();
     }
 }

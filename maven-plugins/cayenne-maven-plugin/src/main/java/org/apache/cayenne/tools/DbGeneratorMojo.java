@@ -26,6 +26,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -33,6 +34,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -47,10 +50,10 @@ import java.sql.Driver;
 /**
  * Maven mojo to perform class generation from data map. This class is a Maven
  * adapter to DefaultClassGenerator class.
- * 
+ *
  * @since 3.0
  */
-@Mojo(name = "cdbgen", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST)
+@Mojo(name = "cdbgen", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class DbGeneratorMojo extends AbstractMojo {
 
     /**
@@ -111,6 +114,9 @@ public class DbGeneratorMojo extends AbstractMojo {
     @Parameter(defaultValue = "true")
     private boolean createFK;
 
+    @Parameter(defaultValue = "${project}")
+    private MavenProject project;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         Logger logger = new MavenLogger(this);
@@ -118,7 +124,8 @@ public class DbGeneratorMojo extends AbstractMojo {
         // check missing data source parameters
         dataSource.validate();
 
-        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger));
+        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger),
+                binder -> binder.bind(ClassLoaderManager.class).toInstance(new MavenPluginClassLoaderManager(project)));
         AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]",
@@ -158,7 +165,9 @@ public class DbGeneratorMojo extends AbstractMojo {
         }
     }
 
-    /** Loads and returns DataMap based on <code>map</code> attribute. */
+    /**
+     * Loads and returns DataMap based on <code>map</code> attribute.
+     */
     private DataMap loadDataMap(Injector injector) throws Exception {
         return injector.getInstance(DataMapLoader.class).load(new URLResource(map.toURI().toURL()));
     }

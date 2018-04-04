@@ -23,6 +23,7 @@ import java.io.File;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.Project;
 import org.gradle.api.tasks.Internal;
 
 /**
@@ -55,6 +56,7 @@ public class BaseCayenneTask extends DefaultTask {
     public void map(File mapFile) {
         setMap(mapFile);
     }
+
 
     @Internal
     public File getDataMapFile() {
