@@ -214,6 +214,8 @@ public class DataSourceWizard extends CayenneController {
 			this.dataSource = info.makeDataSource(classLoader);
 			try (Connection connection = dataSource.getConnection()) {
 			} catch (SQLException ignore) {
+				reportError("Connection Error", ignore);
+				return;
 			}
 		} catch (Throwable th) {
 			reportError("Connection Error", th);
