@@ -23,16 +23,12 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.PreferenceEditor;
@@ -56,10 +52,10 @@ public class PreferenceDialog extends CayenneController {
     protected Map<String, CayenneController> detailControllers;
     protected PreferenceEditor editor;
 
-    public PreferenceDialog(CayenneController parent) {
+    public PreferenceDialog(final CayenneController parent) {
         super(parent);
 
-        Window parentView = parent.getView() instanceof Window
+        final Window parentView = parent.getView() instanceof Window
                 ? (Window) parent.getView()
                 : SwingUtilities.getWindowAncestor(parent.getView());
         this.view = (parentView instanceof Dialog)
@@ -83,7 +79,7 @@ public class PreferenceDialog extends CayenneController {
     }
 
     public void updateSelection() {
-        String selection = view.getList().getSelectedValue();
+        final String selection = view.getList().getSelectedValue();
         if (selection != null) {
             view.getDetailLayout().show(view.getDetailPanel(), selection);
         }
@@ -103,25 +99,37 @@ public class PreferenceDialog extends CayenneController {
      * Configures preferences dialog to display an editor for a local DataSource with
      * specified name.
      */
-    public void showDataSourceEditorAction(Object dataSourceKey) {
+    public void showDataSourceEditorAction(final Object dataSourceKey) {
         configure();
 
         // this will install needed controller
         view.getDetailLayout().show(view.getDetailPanel(), DATA_SOURCES_KEY);
 
-        DataSourcePreferences controller = (DataSourcePreferences) detailControllers
+        final DataSourcePreferences controller = (DataSourcePreferences) detailControllers
                 .get(DATA_SOURCES_KEY);
         controller.editDataSourceAction(dataSourceKey);
         view.setVisible(true);
     }
 
-    public void startupAction(String key) {
-        if (key == null) {
-            key = GENERAL_KEY;
-        }
-
+    /**
+     * Configures preferences dialog to display an editor for a local DataSource with
+     * specified name.
+     */
+    public void showClassPathEditorAction() {
         configure();
-        view.getList().setSelectedValue(key, true);
+
+        // this will install needed controller
+        view.getDetailLayout().show(view.getDetailPanel(), CLASS_PATH_KEY);
+
+        ClasspathPreferences controller = (ClasspathPreferences) detailControllers
+                .get(CLASS_PATH_KEY);
+        controller.getView().setEnabled(true);
+        view.setVisible(true);
+    }
+
+    public void startupAction(final String key) {
+        configure();
+        view.getList().setSelectedValue(key == null ? GENERAL_KEY : key, true);
         view.setVisible(true);
     }
 
@@ -142,7 +150,7 @@ public class PreferenceDialog extends CayenneController {
         view.setModal(true);
     }
 
-    protected void registerPanel(String name, CayenneController panelController) {
+    protected void registerPanel(final String name, final CayenneController panelController) {
         detailControllers.put(name, panelController);
         view.getDetailPanel().add(panelController.getView(), name);
     }
