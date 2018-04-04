@@ -201,6 +201,8 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         }
 
         table.select(newSel);
+        parentPanel.getResolve().removeActionListener(getResolver());
+        parentPanel.getResolve().addActionListener(getResolver());
     }
 
     /**

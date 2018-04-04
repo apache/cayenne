@@ -189,6 +189,8 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         }
 
         table.select(newSel);
+        parentPanel.getResolve().removeActionListener(getResolver());
+        parentPanel.getResolve().addActionListener(getResolver());
     }
 
     /**
