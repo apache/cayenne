@@ -49,7 +49,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
