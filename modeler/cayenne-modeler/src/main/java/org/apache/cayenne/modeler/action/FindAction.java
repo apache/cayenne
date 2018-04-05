@@ -33,6 +33,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
@@ -47,6 +49,8 @@ import org.apache.cayenne.modeler.event.AttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
+import org.apache.cayenne.modeler.event.ProcedureDisplayEvent;
+import org.apache.cayenne.modeler.event.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -88,6 +92,8 @@ public class FindAction extends CayenneAction {
         PRIORITY_BY_TYPE.put(ProcedureQueryDescriptor.class,13);
         PRIORITY_BY_TYPE.put(Embeddable.class,              14);
         PRIORITY_BY_TYPE.put(EmbeddableAttribute.class,     15);
+        PRIORITY_BY_TYPE.put(Procedure.class,               16);
+        PRIORITY_BY_TYPE.put(ProcedureParameter.class,      17);
     }
 
     public static String getActionName() {
@@ -145,6 +151,10 @@ public class FindAction extends CayenneAction {
             jumpToEmbeddableAttributeResult((EmbeddableAttribute)searchResultEntry.getObject(), editor, domain);
         } else if (searchResultEntry.getObject() instanceof Attribute || searchResultEntry.getObject() instanceof Relationship) {
             jumpToAttributeResult(searchResultEntry, editor, domain);
+        } else if (searchResultEntry.getObject() instanceof Procedure) {
+            jumpToProcedureResult((Procedure)searchResultEntry.getObject(), editor, domain);
+        } else if (searchResultEntry.getObject() instanceof ProcedureParameter) {
+            jumpToProcedureResult((ProcedureParameter)searchResultEntry.getObject(), editor, domain);
         }
     }
 
@@ -156,6 +166,7 @@ public class FindAction extends CayenneAction {
             searchInEmbeddables(pattern, result, dataMap);
             searchInDbEntities(pattern, result, dataMap);
             searchInObjEntities(pattern, result, dataMap);
+            searchInProcedures(pattern, result, dataMap);
         }
         Collections.sort(result);
         return result;
@@ -218,6 +229,20 @@ public class FindAction extends CayenneAction {
 
             checkCatalogOrSchema(pattern, result, ent, ent.getCatalog());
             checkCatalogOrSchema(pattern, result, ent, ent.getSchema());
+        }
+    }
+
+    private void searchInProcedures(Pattern pattern, List<SearchResultEntry> result, DataMap dataMap) {
+        for (Procedure proc : dataMap.getProcedures()) {
+            if (match(proc.getName(), pattern)) {
+                result.add(new SearchResultEntry(proc, proc.getName()));
+            }
+
+            for(ProcedureParameter param : proc.getCallParameters()) {
+                if(match(param.getName(), pattern)) {
+                    result.add(new SearchResultEntry(param, proc.getName() + '.' + param.getName()));
+                }
+            }
         }
     }
 
@@ -305,6 +330,22 @@ public class FindAction extends CayenneAction {
         } else if (entity instanceof DbEntity) {
             editor.getDbDetailView().currentDbEntityChanged(event);
         }
+    }
+
+    private static void jumpToProcedureResult(Procedure procedure, EditorView editor, DataChannelDescriptor domain) {
+        DataMap map = procedure.getDataMap();
+        buildAndSelectTreePath(map, procedure, editor);
+        ProcedureDisplayEvent event = new ProcedureDisplayEvent(editor.getProjectTreeView(), procedure, map, domain);
+        editor.getProcedureView().currentProcedureChanged(event);
+    }
+
+    private static void jumpToProcedureResult(ProcedureParameter parameter, EditorView editor, DataChannelDescriptor domain) {
+        Procedure procedure = parameter.getProcedure();
+        DataMap map = procedure.getDataMap();
+        buildAndSelectTreePath(map, procedure, editor);
+        ProcedureParameterDisplayEvent event =
+                new ProcedureParameterDisplayEvent(editor.getProjectTreeView(), parameter, procedure, map, domain);
+        editor.getProcedureView().currentProcedureParameterChanged(event);
     }
 
     /**

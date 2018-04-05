@@ -65,12 +65,7 @@ public class FindDialog extends CayenneController {
     }
 
     protected void initBindings() {
-        view.getOkButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                view.dispose();
-            }
-        });
+        view.getOkButton().addActionListener(e -> view.dispose());
 
         JTable table = view.getTable();
         table.setRowHeight(24);
