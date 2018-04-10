@@ -193,7 +193,6 @@ public class DefaultActionManager implements ActionManager {
                 ReverseEngineeringAction.class.getName(),
                 ImportEOModelAction.class.getName(),
                 GenerateCodeAction.class.getName(),
-                GenerateDBAction.class.getName(),
                 PasteAction.class.getName(),
                 ReverseEngineeringToolMenuAction.class.getName()));
 
@@ -210,6 +209,7 @@ public class DefaultActionManager implements ActionManager {
                 CreateQueryAction.class.getName(),
                 CreateProcedureAction.class.getName(),
                 MigrateAction.class.getName(),
+                GenerateDBAction.class.getName(),
                 RemoveAction.class.getName(),
                 InferRelationshipsAction.class.getName(),
                 CutAction.class.getName(),
