@@ -70,7 +70,7 @@ public class DbImportIT extends BaseTaskIT {
 
     @Test
     public void emptyDbTaskWithDependency() throws Exception {
-        GradleRunner runner = createRunner("my-test", "cdbimport", "--info");
+        GradleRunner runner = createRunner("dbimport-with-project-dependency", "cdbimport", "--info");
 
         BuildResult result = runner.build();
 

@@ -57,12 +57,11 @@ public class GradlePluginClassLoaderManager implements ClassLoaderManager {
             return;
         }
 
-        configuration.files(dependency).forEach(file -> addUrlFromFile(file));
+        configuration.files(dependency).forEach(this::addUrlFromFile);
     }
 
     private void addUrlFromFile(final File file) {
         try {
-            System.out.println("Add URI to classpath: " + file.toURI());
             urls.add(file.toURI().toURL());
         } catch (Exception ignored) {
         }

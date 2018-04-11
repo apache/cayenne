@@ -360,8 +360,6 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     private void test(String name) throws Exception {
-//        MavenProject mavenProject = getMavenProject("src/test/resources/org/apache/cayenne/tools/dbimport/" + name + "-pom.xml");
-
         DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
         File mapFile = cdbImport.getMap();
         File mapFileCopy = new File(mapFile.getParentFile(), "copy-" + mapFile.getName());
