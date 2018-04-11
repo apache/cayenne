@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2304 Add updating maven and gradle plugins class loaders with project dependencies to remove dependency duplication in configuration files.
 CAY-2334 cgen: option to force run from maven/gradle
 CAY-2337 Save reverse engineering configuration with datamap XML
 CAY-2372 Extract new modules from cayenne-server

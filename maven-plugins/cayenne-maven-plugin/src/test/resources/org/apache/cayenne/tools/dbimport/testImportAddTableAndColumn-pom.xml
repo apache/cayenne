@@ -21,8 +21,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 	http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<name>DbImporterMojo Test1</name>	
+	<name>DbImporterMojo Test1</name>
+	<groupId>org.apache.maven.plugin-testing</groupId>
+	<artifactId>maven-plugin-testing</artifactId>
+	<version>1.0-SNAPSHOT</version>
 
+	<modelVersion>4.0.0</modelVersion>
 	<build>
 		<plugins>
 			<plugin>
@@ -33,6 +37,8 @@
 						<driver>org.apache.derby.jdbc.EmbeddedDriver</driver>
 						<url>jdbc:derby:memory:DbImporterMojoTest;create=true</url>
 					</dataSource>
+					<project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
+
 				</configuration>
 			</plugin>
 		</plugins>
