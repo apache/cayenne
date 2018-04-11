@@ -48,6 +48,7 @@ CAY-2397 Modeler: Unable to set enum:value as Entity qualifier
 CAY-2401 Modeler: NPE in ObjEntity sync action
 CAY-2405 Broken prefetch of entity with inheritance and attribute with custom java type
 CAY-2411 Wrong resolution of ExtendedType with ValueObjectType for inherited class
+CAY-2418 Modeler: unable to edit entity selected via Search
 CAY-2419 Modeler: Not changing highlight on selecting search results within one entity
 CAY-2420 Modeler: search is not performed for Stored Procedures
 
