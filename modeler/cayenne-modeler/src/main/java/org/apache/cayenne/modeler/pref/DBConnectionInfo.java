@@ -36,8 +36,6 @@ import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.util.Util;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 public class DBConnectionInfo extends CayennePreference {
 
 	private static final String EMPTY_STRING = "";
@@ -217,7 +215,7 @@ public class DBConnectionInfo extends CayennePreference {
 			throw new SQLException("No DB URL set.");
 		}
 
-		if (!isBlank(getPassword()) && isBlank(getUserName())) {
+		if (!Util.isBlank(getPassword()) && Util.isBlank(getUserName())) {
 			throw new SQLException("No username when password is set.");
 		}
 
