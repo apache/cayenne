@@ -215,13 +215,13 @@ public class DataSourceWizard extends CayenneController {
 				this.adapter = info.makeAdapter(classLoader);
 				this.dataSource = info.makeDataSource(classLoader);
 			} catch (SQLException ignore) {
-				showNoConnectorDialog("Driver is not configured!", "You didn't attach the proper driver.");
+				showNoConnectorDialog("Unable to load driver '" + info.getJdbcDriver() + "'");
 				return;
 			}
 
+			// Test connection
 			try (Connection connection = dataSource.getConnection()) {
-			} catch (SQLException ignore) {
-			}
+            }
 		} catch (Throwable th) {
 			reportError("Connection Error", th);
 			return;
@@ -297,12 +297,11 @@ public class DataSourceWizard extends CayenneController {
 		dataSourceBinding.updateView();
 	}
 
-	protected void showNoConnectorDialog(final String title, final String message) {
+	protected void showNoConnectorDialog(String message) {
+		final String[] options = {"Setup driver", "Cancel"};
 
-		final String [] options = {"Setup driver", "OK"};
-
-		final int selection = JOptionPane.showOptionDialog(getView(), message, title, JOptionPane.ERROR_MESSAGE,
-				JOptionPane.ERROR_MESSAGE, null, options, options[1]);
+		final int selection = JOptionPane.showOptionDialog(getView(), message, "Configuration error",
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE, null, options, options[0]);
 		if (selection == 0) {
 			classPathConfigAction();
 		}
