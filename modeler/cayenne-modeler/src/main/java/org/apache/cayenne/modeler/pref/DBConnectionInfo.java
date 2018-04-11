@@ -36,8 +36,11 @@ import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.pref.CayennePreference;
 import org.apache.cayenne.util.Util;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 public class DBConnectionInfo extends CayennePreference {
 
+	private static final String EMPTY_STRING = "";
 	public static final String DB_ADAPTER_PROPERTY = "dbAdapter";
 	public static final String JDBC_DRIVER_PROPERTY = "jdbcDriver";
 	public static final String PASSWORD_PROPERTY = "password";
@@ -62,7 +65,7 @@ public class DBConnectionInfo extends CayennePreference {
 		setCurrentPreference(dbConnectionInfoPreferences);
 	};
 
-	public DBConnectionInfo(String nameNode, boolean initFromPreferences) {
+	public DBConnectionInfo(final String nameNode, final boolean initFromPreferences) {
 		this();
 		setNodeName(nameNode);
 		if (initFromPreferences) {
@@ -79,7 +82,7 @@ public class DBConnectionInfo extends CayennePreference {
 	}
 
 	@Override
-	public void setObject(CayennePreference object) {
+	public void setObject(final CayennePreference object) {
 		if (object instanceof DBConnectionInfo) {
 			setUrl(((DBConnectionInfo) object).getUrl());
 			setUserName(((DBConnectionInfo) object).getUserName());
@@ -125,7 +128,7 @@ public class DBConnectionInfo extends CayennePreference {
 		return nodeName;
 	}
 
-	public void setNodeName(String nodeName) {
+	public void setNodeName(final String nodeName) {
 		this.nodeName = nodeName;
 	}
 
@@ -133,7 +136,7 @@ public class DBConnectionInfo extends CayennePreference {
 		return dbAdapter;
 	}
 
-	public void setDbAdapter(String dbAdapter) {
+	public void setDbAdapter(final String dbAdapter) {
 		this.dbAdapter = dbAdapter;
 	}
 
@@ -141,15 +144,15 @@ public class DBConnectionInfo extends CayennePreference {
 		return jdbcDriver;
 	}
 
-	public void setJdbcDriver(String jdbcDriver) {
+	public void setJdbcDriver(final String jdbcDriver) {
 		this.jdbcDriver = jdbcDriver;
 	}
 
 	public String getPassword() {
-		return password;
+		return password == null ? EMPTY_STRING : password;
 	}
 
-	public void setPassword(String password) {
+	public void setPassword(final String password) {
 		this.password = password;
 	}
 
@@ -157,15 +160,15 @@ public class DBConnectionInfo extends CayennePreference {
 		return url;
 	}
 
-	public void setUrl(String url) {
+	public void setUrl(final String url) {
 		this.url = url;
 	}
 
 	public String getUserName() {
-		return userName;
+		return userName == null ? EMPTY_STRING : userName;
 	}
 
-	public void setUserName(String userName) {
+	public void setUserName(final String userName) {
 		this.userName = userName;
 	}
 
@@ -173,14 +176,14 @@ public class DBConnectionInfo extends CayennePreference {
 		return dbConnectionInfoPreferences;
 	}
 
-	public void setDbConnectionInfoPreferences(Preferences dbConnectionInfoPreferences) {
+	public void setDbConnectionInfoPreferences(final Preferences dbConnectionInfoPreferences) {
 		this.dbConnectionInfoPreferences = dbConnectionInfoPreferences;
 	}
 
 	/**
 	 * Creates a DbAdapter based on configured values.
 	 */
-	public DbAdapter makeAdapter(ClassLoadingService classLoader) throws Exception {
+	public DbAdapter makeAdapter(final ClassLoadingService classLoader) throws Exception {
 		String adapterClassName = getDbAdapter();
 		Application appInstance = Application.getInstance();
 
@@ -203,7 +206,7 @@ public class DBConnectionInfo extends CayennePreference {
 	 * Returned DataSource is not pooling its connections. It can be wrapped in
 	 * PoolManager if pooling is needed.
 	 */
-	public DataSource makeDataSource(ClassLoadingService classLoader) throws SQLException {
+	public DataSource makeDataSource(final ClassLoadingService classLoader) throws SQLException {
 
 		// validate...
 		if (getJdbcDriver() == null) {
@@ -212,6 +215,10 @@ public class DBConnectionInfo extends CayennePreference {
 
 		if (getUrl() == null) {
 			throw new SQLException("No DB URL set.");
+		}
+
+		if (!isBlank(getPassword()) && isBlank(getUserName())) {
+			throw new SQLException("No username when password is set.");
 		}
 
 		// load driver...
@@ -230,7 +237,7 @@ public class DBConnectionInfo extends CayennePreference {
 	/**
 	 * Updates another DBConnectionInfo with this object's values.
 	 */
-	public boolean copyTo(DBConnectionInfo dataSourceInfo) {
+	public boolean copyTo(final DBConnectionInfo dataSourceInfo) {
 		boolean updated = false;
 
 		if (!Util.nullSafeEquals(dataSourceInfo.getUrl(), getUrl())) {
@@ -269,7 +276,7 @@ public class DBConnectionInfo extends CayennePreference {
 	 * an adapter update here. </i>
 	 * </p>
 	 */
-	public boolean copyTo(DataSourceInfo dataSourceInfo) {
+	public boolean copyTo(final DataSourceInfo dataSourceInfo) {
 		boolean updated = false;
 
 		if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {
@@ -295,7 +302,7 @@ public class DBConnectionInfo extends CayennePreference {
 		return updated;
 	}
 
-	public boolean copyFrom(DataSourceInfo dataSourceInfo) {
+	public boolean copyFrom(final DataSourceInfo dataSourceInfo) {
 		boolean updated = false;
 
 		if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {

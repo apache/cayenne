@@ -42,7 +42,7 @@ public class GetDbConnectionAction extends DBWizardAction<DbActionOptionsDialog>
     private static final String ACTION_NAME = "Configure Connection";
     private static final String ICON_NAME = "icon-dbi-config.png";
 
-    public GetDbConnectionAction(Application application) {
+    public GetDbConnectionAction(final Application application) {
         super(ACTION_NAME, application);
     }
 
@@ -51,22 +51,25 @@ public class GetDbConnectionAction extends DBWizardAction<DbActionOptionsDialog>
     }
 
     @Override
-    protected DbActionOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
-                                                 String currentCatalog, String currentSchema, int command) {
+    protected DbActionOptionsDialog createDialog(final Collection<String> catalogs, final Collection<String> schemas,
+                                                 final String currentCatalog, final String currentSchema, final int command) {
         // NOOP
         return null;
     }
 
     @Override
-    public void performAction(ActionEvent e) {
+    public void performAction(final ActionEvent e) {
         final DataSourceWizard connectWizard = dataSourceWizardDialog(DIALOG_TITLE);
-        if(connectWizard == null) {
+        if (connectWizard == null) {
             return;
         }
 
-        DataMapDefaults dataMapDefaults = getProjectController().
+        final DataMapDefaults dataMapDefaults = getProjectController().
                 getDataMapPreferences(getProjectController().getCurrentDataMap());
-        dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, connectWizard.getConnectionInfo().getDbAdapter());
+
+        if (connectWizard.getConnectionInfo().getDbAdapter() != null) {
+            dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, connectWizard.getConnectionInfo().getDbAdapter());
+        }
         dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, connectWizard.getConnectionInfo().getUrl());
         dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, connectWizard.getConnectionInfo().getUserName());
         dataMapDefaults.getCurrentPreference().put(PASSWORD_PROPERTY, connectWizard.getConnectionInfo().getPassword());
