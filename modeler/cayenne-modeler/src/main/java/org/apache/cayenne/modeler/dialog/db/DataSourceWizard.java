@@ -35,6 +35,7 @@ import org.apache.cayenne.swing.ObjectBinding;
 
 import javax.sql.DataSource;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import java.awt.Component;
 import java.sql.Connection;
@@ -74,7 +75,7 @@ public class DataSourceWizard extends CayenneController {
 	private DbAdapter adapter;
 	private DataSource dataSource;
 
-	public DataSourceWizard(CayenneController parent, String title) {
+	public DataSourceWizard(final CayenneController parent, final String title) {
 		super(parent);
 
 		this.view = createView(title);
@@ -85,7 +86,7 @@ public class DataSourceWizard extends CayenneController {
 		initDataSourceListener();
 	}
 
-	private String[] getLabelsForDialog(String viewTitle) {
+	private String[] getLabelsForDialog(final String viewTitle) {
 		switch (viewTitle) {
 			case GetDbConnectionAction.DIALOG_TITLE: {
 				return new String[]{"Save", "Cancel"};
@@ -98,13 +99,13 @@ public class DataSourceWizard extends CayenneController {
 	/**
 	 * Creates swing dialog for this wizard
 	 */
-	private DataSourceWizardView createView(String viewTitle) {
-		String[] labels = getLabelsForDialog(viewTitle);
+	private DataSourceWizardView createView(final String viewTitle) {
+		final String[] labels = getLabelsForDialog(viewTitle);
 		return new DataSourceWizardView(this, labels);
 	}
 
 	protected void initBindings() {
-		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
+		final BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
 
 		dataSourceBinding = builder.bindToComboSelection(view.getDataSources(), "dataSourceKey");
 
@@ -129,9 +130,9 @@ public class DataSourceWizard extends CayenneController {
 	}
 
 	private void initFavouriteDataSource() {
-		Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
-		String favouriteDataSource = pref.get(GeneralPreferences.FAVOURITE_DATA_SOURCE, null);
-		if(favouriteDataSource != null && dataSources.containsKey(favouriteDataSource)) {
+		final Preferences pref = getApplication().getPreferencesNode(GeneralPreferences.class, "");
+		final String favouriteDataSource = pref.get(GeneralPreferences.FAVOURITE_DATA_SOURCE, null);
+		if (favouriteDataSource != null && dataSources.containsKey(favouriteDataSource)) {
 			setDataSourceKey(favouriteDataSource);
 			dataSourceBinding.updateView();
 		}
@@ -143,8 +144,8 @@ public class DataSourceWizard extends CayenneController {
 	}
 
 	private DBConnectionInfo getConnectionInfoFromPreferences() {
-		DBConnectionInfo connectionInfo = new DBConnectionInfo();
-		DataMapDefaults dataMapDefaults = projectController.
+		final DBConnectionInfo connectionInfo = new DBConnectionInfo();
+		final DataMapDefaults dataMapDefaults = projectController.
 				getDataMapPreferences(projectController.getCurrentDataMap());
 		connectionInfo.setDbAdapter(dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
 		connectionInfo.setUrl(dataMapDefaults.getCurrentPreference().get(URL_PROPERTY, null));
@@ -158,11 +159,11 @@ public class DataSourceWizard extends CayenneController {
 		return dataSourceKey;
 	}
 
-	public void setDataSourceKey(String dataSourceKey) {
+	public void setDataSourceKey(final String dataSourceKey) {
 		this.dataSourceKey = dataSourceKey;
 
 		// update a clone object that will be used to obtain connection...
-		DBConnectionInfo currentInfo = dataSources.get(dataSourceKey);
+		final DBConnectionInfo currentInfo = dataSources.get(dataSourceKey);
 		if (currentInfo != null) {
 			currentInfo.copyTo(connectionInfo);
 		} else {
@@ -180,7 +181,7 @@ public class DataSourceWizard extends CayenneController {
 		refreshDataSources();
 		initFavouriteDataSource();
 
-		DataMapDefaults dataMapDefaults = projectController.
+		final DataMapDefaults dataMapDefaults = projectController.
 				getDataMapPreferences(projectController.getCurrentDataMap());
 		if (dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null) != null) {
 			getConnectionInfoFromPreferences().copyTo(connectionInfo);
@@ -205,13 +206,19 @@ public class DataSourceWizard extends CayenneController {
 	 * conneciton. Does not store the open connection.
 	 */
 	public void okAction() {
-		DBConnectionInfo info = getConnectionInfo();
-		ClassLoadingService classLoader = getApplication().getClassLoadingService();
+		final DBConnectionInfo info = getConnectionInfo();
+		final ClassLoadingService classLoader = getApplication().getClassLoadingService();
 
 		// doing connection testing...
 		try {
-			this.adapter = info.makeAdapter(classLoader);
-			this.dataSource = info.makeDataSource(classLoader);
+			try {
+				this.adapter = info.makeAdapter(classLoader);
+				this.dataSource = info.makeDataSource(classLoader);
+			} catch (SQLException ignore) {
+				showNoConnectorDialog("Driver is not configured!", "You didn't attach the proper driver.");
+				return;
+			}
+
 			try (Connection connection = dataSource.getConnection()) {
 			} catch (SQLException ignore) {
 			}
@@ -229,7 +236,7 @@ public class DataSourceWizard extends CayenneController {
 	/**
 	 * On close handler. Introduced to remove data source listener.
 	 */
-	protected void onClose(boolean canceled) {
+	protected void onClose(final boolean canceled) {
 		// set success flag, and unblock the caller...
 		this.canceled = canceled;
 		view.dispose();
@@ -244,8 +251,17 @@ public class DataSourceWizard extends CayenneController {
 	 * Opens preferences panel to allow configuration of DataSource presets.
 	 */
 	public void dataSourceConfigAction() {
-		PreferenceDialog prefs = new PreferenceDialog(this);
+		final PreferenceDialog prefs = new PreferenceDialog(this);
 		prefs.showDataSourceEditorAction(dataSourceKey);
+		refreshDataSources();
+	}
+
+	/**
+	 * Opens preferences panel to allow configuration of classpath.
+	 */
+	public void classPathConfigAction() {
+		final PreferenceDialog prefs = new PreferenceDialog(this);
+		prefs.showClassPathEditorAction();
 		refreshDataSources();
 	}
 
@@ -255,7 +271,7 @@ public class DataSourceWizard extends CayenneController {
 
 	@SuppressWarnings("unchecked")
 	private void refreshDataSources() {
-		this.dataSources = (Map<String, DBConnectionInfo>)getApplication().getCayenneProjectPreferences().getDetailObject(DBConnectionInfo.class)
+		this.dataSources = (Map<String, DBConnectionInfo>) getApplication().getCayenneProjectPreferences().getDetailObject(DBConnectionInfo.class)
 				.getChildrenPreferences();
 
 		// 1.2 migration fix - update data source adapter names
@@ -266,7 +282,7 @@ public class DataSourceWizard extends CayenneController {
 			}
 		}
 
-		String[] keys = dataSources.keySet().toArray(new String[0]);
+		final String[] keys = dataSources.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 		view.getDataSources().setModel(new DefaultComboBoxModel<>(keys));
 
@@ -281,6 +297,17 @@ public class DataSourceWizard extends CayenneController {
 		dataSourceBinding.updateView();
 	}
 
+	protected void showNoConnectorDialog(final String title, final String message) {
+
+		final String [] options = {"Setup driver", "OK"};
+
+		final int selection = JOptionPane.showOptionDialog(getView(), message, title, JOptionPane.ERROR_MESSAGE,
+				JOptionPane.ERROR_MESSAGE, null, options, options[1]);
+		if (selection == 0) {
+			classPathConfigAction();
+		}
+	}
+
 	public DataSource getDataSource() {
 		return dataSource;
 	}
@@ -292,7 +319,7 @@ public class DataSourceWizard extends CayenneController {
 		return adapter;
 	}
 
-	public void setProjectController(ProjectController projectController) {
+	public void setProjectController(final ProjectController projectController) {
 		this.projectController = projectController;
 	}
 }
