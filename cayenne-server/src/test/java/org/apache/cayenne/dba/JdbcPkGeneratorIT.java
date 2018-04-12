@@ -85,7 +85,7 @@ public class JdbcPkGeneratorIT extends ServerCase {
         		!DerbyPkGenerator.class.equals(adapter.getPkGenerator().getClass())) { // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
             pkGenerator.dropAutoPk(node, Collections.singletonList(artistEntity));
         }
-        pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
+        pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity), null);
         pkGenerator.reset();
         
         Object pk = pkGenerator.generatePk(node, pkAttribute);

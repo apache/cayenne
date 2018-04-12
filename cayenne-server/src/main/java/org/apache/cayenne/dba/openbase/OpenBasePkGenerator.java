@@ -125,7 +125,7 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
 	}
 
 	@Override
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+	public void createAutoPk(final DataNode node, final List<DbEntity> dbEntities, final String catalog) throws Exception {
 		// looks like generating a PK on top of an existing one does not
 		// result in errors...
 

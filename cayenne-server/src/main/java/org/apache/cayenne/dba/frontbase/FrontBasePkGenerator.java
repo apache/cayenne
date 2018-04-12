@@ -53,7 +53,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 	}
 
 	@Override
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+	public void createAutoPk(final DataNode node, final List<DbEntity> dbEntities, final String catalog) throws Exception {
 		// For each entity (re)set the unique counter
 		for (DbEntity entity : dbEntities) {
 			runUpdate(node, pkCreateString(entity.getName()));

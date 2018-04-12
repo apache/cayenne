@@ -59,7 +59,7 @@ public class OraclePkGenerator extends JdbcPkGenerator {
 	private static final String _SEQUENCE_PREFIX = "pk_";
 
 	@Override
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+	public void createAutoPk(final DataNode node, final List<DbEntity> dbEntities, final String catalog) throws Exception {
 		List<String> sequences = getExistingSequences(node);
 		// create needed sequences
 		for (DbEntity dbEntity : dbEntities) {

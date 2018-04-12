@@ -55,7 +55,7 @@ public class PkGeneratorIT extends ServerCase {
 
         List<DbEntity> list = new ArrayList<DbEntity>();
         list.add(paintingEntity);
-        pkGenerator.createAutoPk(node, list);
+        pkGenerator.createAutoPk(node, list, null);
         pkGenerator.reset();
     }
 

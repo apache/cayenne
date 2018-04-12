@@ -67,22 +67,26 @@ public class JdbcPkGenerator implements PkGenerator {
 		return adapter;
 	}
 
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+	public void createAutoPk(final DataNode node, final List<DbEntity> dbEntities) throws Exception {
+		createAutoPk(node, dbEntities, null);
+	}
+
+	public void createAutoPk(final DataNode node, final List<DbEntity> dbEntities, final String catalog) throws Exception {
 		// check if a table exists
 
 		// create AUTO_PK_SUPPORT table
 		if (!autoPkTableExists(node)) {
-			runUpdate(node, pkTableCreateString());
+			runUpdate(node, pkTableCreateString(), catalog);
 		}
 
 		// delete any existing pk entries
 		if (!dbEntities.isEmpty()) {
-			runUpdate(node, pkDeleteString(dbEntities));
+			runUpdate(node, pkDeleteString(dbEntities), catalog);
 		}
 
 		// insert all needed entries
-		for (DbEntity ent : dbEntities) {
-			runUpdate(node, pkCreateString(ent.getName()));
+		for (final DbEntity ent : dbEntities) {
+			runUpdate(node, pkCreateString(ent.getName()), catalog);
 		}
 	}
 
@@ -170,10 +174,26 @@ public class JdbcPkGenerator implements PkGenerator {
 	 * @throws SQLException
 	 *             in case of query failure.
 	 */
-	public int runUpdate(DataNode node, String sql) throws SQLException {
+	public int runUpdate(final DataNode node, final String sql) throws SQLException {
+		return runUpdate(node, sql, null);
+	}
+
+
+	/**
+	 * Runs JDBC update over a Connection obtained from DataNode with preferred catalog name. Returns a
+	 * number of objects returned from update.
+	 *
+	 * @throws SQLException
+	 *             in case of query failure.
+	 */
+	public int runUpdate(final DataNode node, final String sql, final String catalog) throws SQLException {
 		adapter.getJdbcEventLogger().log(sql);
 
 		try (Connection con = node.getDataSource().getConnection()) {
+			if (catalog != null) {
+				con.setCatalog(catalog);
+			}
+
 			try (Statement upd = con.createStatement()) {
 				return upd.executeUpdate(sql);
 			}

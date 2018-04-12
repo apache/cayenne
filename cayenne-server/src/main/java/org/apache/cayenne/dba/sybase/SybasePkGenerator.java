@@ -90,8 +90,8 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	 *            node that provides access to a DataSource.
 	 */
 	@Override
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
-		super.createAutoPk(node, dbEntities);
+	public void createAutoPk(DataNode node, List<DbEntity> dbEntities, String catalog) throws Exception {
+		super.createAutoPk(node, dbEntities, catalog);
 		super.runUpdate(node, safePkProcDrop());
 		super.runUpdate(node, unsafePkProcCreate());
 	}
