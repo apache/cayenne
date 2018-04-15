@@ -86,6 +86,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 		if (adapterType != null) {
 			JdbcAdapter dbAdapter = objectFactory.newInstance(DbAdapter.class, adapterType);
 			PkGenerator pkGenerator = pkGeneratorProvider.get(dbAdapter);
+			pkGenerator.setAdapter(dbAdapter);
 			dbAdapter.setPkGenerator(pkGenerator);
 			return dbAdapter;
 		} else {

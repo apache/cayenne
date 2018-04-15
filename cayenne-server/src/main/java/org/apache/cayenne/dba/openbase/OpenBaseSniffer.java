@@ -51,7 +51,7 @@ public class OpenBaseSniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.<JdbcAdapter>newInstance(
+        return objectFactory.newInstance(
                 DbAdapter.class,
                 OpenBaseAdapter.class.getName());
     }

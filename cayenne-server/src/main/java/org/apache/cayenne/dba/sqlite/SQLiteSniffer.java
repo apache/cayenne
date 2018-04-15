@@ -50,7 +50,7 @@ public class SQLiteSniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.<JdbcAdapter>newInstance(
+        return objectFactory.newInstance(
                 DbAdapter.class,
                 SQLiteAdapter.class.getName());
     }

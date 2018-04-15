@@ -52,7 +52,7 @@ public class IngresSniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.<JdbcAdapter>newInstance(
+        return objectFactory.newInstance(
                 DbAdapter.class,
                 IngresAdapter.class.getName());
     }

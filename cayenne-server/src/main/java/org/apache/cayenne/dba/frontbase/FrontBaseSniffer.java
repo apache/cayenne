@@ -49,7 +49,7 @@ public class FrontBaseSniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.<JdbcAdapter>newInstance(
+        return objectFactory.newInstance(
                 DbAdapter.class,
                 FrontBaseAdapter.class.getName());
     }

@@ -46,7 +46,7 @@ public class FirebirdSniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.<JdbcAdapter>newInstance(
+        return objectFactory.newInstance(
                 DbAdapter.class,
                 FirebirdAdapter.class.getName());
     }

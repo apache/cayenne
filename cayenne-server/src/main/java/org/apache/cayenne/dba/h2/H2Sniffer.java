@@ -49,7 +49,7 @@ public class H2Sniffer implements DbAdapterDetector {
             return null;
         }
 
-        return objectFactory.<JdbcAdapter>newInstance(
+        return objectFactory.newInstance(
                 DbAdapter.class,
                 H2Adapter.class.getName());
     }
