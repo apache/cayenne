@@ -56,7 +56,6 @@ public class SQLServerSniffer implements DbAdapterDetector {
                 SQLServerAdapter.class.getName());
 
         // detect whether generated keys are supported
-
         boolean generatedKeys = false;
 
         try {
