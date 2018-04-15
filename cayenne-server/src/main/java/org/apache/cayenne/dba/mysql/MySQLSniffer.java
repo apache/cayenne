@@ -41,12 +41,8 @@ public class MySQLSniffer implements DbAdapterDetector {
 
 	protected AdhocObjectFactory objectFactory;
 
-	protected PkGeneratorFactoryProvider pkGeneratorProvider;
-
-	public MySQLSniffer(@Inject AdhocObjectFactory objectFactory,
-						@Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
+	public MySQLSniffer(@Inject AdhocObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
-		this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
 	}
 
 	@Override
@@ -81,11 +77,6 @@ public class MySQLSniffer implements DbAdapterDetector {
 		MySQLAdapter adapter = objectFactory.newInstance(MySQLAdapter.class, MySQLAdapter.class.getName());
 		adapter.setStorageEngine(adapterStorageEngine);
 
-		PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
-
-		if (pkGenerator != null) {
-			adapter.setPkGenerator(pkGenerator);
-		}
 		return adapter;
 	}
 }

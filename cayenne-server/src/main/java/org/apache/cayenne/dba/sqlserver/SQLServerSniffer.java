@@ -39,12 +39,9 @@ public class SQLServerSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    protected PkGeneratorFactoryProvider pkGeneratorProvider;
-
     public SQLServerSniffer(@Inject AdhocObjectFactory objectFactory,
                             @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
@@ -61,24 +58,15 @@ public class SQLServerSniffer implements DbAdapterDetector {
         // detect whether generated keys are supported
 
         boolean generatedKeys = false;
-        PkGenerator pkGenerator = null;
 
         try {
             generatedKeys = md.supportsGetGeneratedKeys();
-            if (generatedKeys) {
-                pkGenerator = pkGeneratorProvider.get(adapter);
-
-            }
         } catch (Throwable th) {
             // catch exceptions resulting from incomplete JDBC3 implementation
             // ** we have to catch Throwable, as unimplemented methods would result in
             // "AbstractMethodError".
         }
         adapter.setSupportsGeneratedKeys(generatedKeys);
-        if (pkGenerator != null) {
-            adapter.setPkGenerator(pkGenerator);
-        }
-
         return adapter;
     }
 }

@@ -40,38 +40,22 @@ public class SybaseSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    protected PkGeneratorFactoryProvider pkGeneratorProvider;
-
-    public SybaseSniffer(@Inject AdhocObjectFactory objectFactory,
-                         @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
+    public SybaseSniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         // JTDS driver returns "sql server" for Sybase, so need to handle it differently
         String driver = md.getDriverName();
-        JdbcAdapter adapter;
         if (driver != null && driver.toLowerCase().startsWith("jtds")) {
             String url = md.getURL();
-            adapter = url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
+            return url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
                     ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
         } else {
             String dbName = md.getDatabaseProductName();
-            adapter = dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
+            return dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
                     ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
-        }
-        
-        if (adapter != null) {
-            PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
-
-            if (pkGenerator != null) {
-                adapter.setPkGenerator(pkGenerator);
-            }
-            return adapter;
-        } else {
-            return null;
         }
     }
 }

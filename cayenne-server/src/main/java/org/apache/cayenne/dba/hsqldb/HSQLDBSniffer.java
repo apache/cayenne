@@ -40,12 +40,9 @@ public class HSQLDBSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    protected PkGeneratorFactoryProvider pkGeneratorProvider;
-
     public HSQLDBSniffer(@Inject AdhocObjectFactory objectFactory,
                          @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
@@ -58,16 +55,8 @@ public class HSQLDBSniffer implements DbAdapterDetector {
         boolean supportsSchema = md.getDriverMajorVersion() < 1
                 || md.getDriverMajorVersion() == 1 && md.getDriverMinorVersion() <= 8;
 
-        JdbcAdapter adapter = supportsSchema
+        return supportsSchema
                 ? objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
                 : objectFactory.newInstance(DbAdapter.class, HSQLDBNoSchemaAdapter.class.getName());
-
-        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
-
-        if (pkGenerator != null) {
-            adapter.setPkGenerator(pkGenerator);
-        }
-
-        return adapter;
     }
 }

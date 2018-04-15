@@ -38,12 +38,8 @@ public class FrontBaseSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    protected PkGeneratorFactoryProvider pkGeneratorProvider;
-
-    public FrontBaseSniffer(@Inject AdhocObjectFactory objectFactory,
-                            @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
+    public FrontBaseSniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
@@ -53,16 +49,8 @@ public class FrontBaseSniffer implements DbAdapterDetector {
             return null;
         }
 
-        JdbcAdapter adapter = objectFactory.newInstance(
+        return objectFactory.<JdbcAdapter>newInstance(
                 DbAdapter.class,
                 FrontBaseAdapter.class.getName());
-
-        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
-
-        if (pkGenerator != null) {
-            adapter.setPkGenerator(pkGenerator);
-        }
-
-        return adapter;
     }
 }

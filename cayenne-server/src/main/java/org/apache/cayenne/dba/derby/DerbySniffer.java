@@ -40,12 +40,9 @@ public class DerbySniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    protected PkGeneratorFactoryProvider pkGeneratorProvider;
-
     public DerbySniffer(@Inject AdhocObjectFactory objectFactory,
                         @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
@@ -55,16 +52,8 @@ public class DerbySniffer implements DbAdapterDetector {
             return null;
         }
 
-        JdbcAdapter adapter = objectFactory.newInstance(
+        return objectFactory.<JdbcAdapter>newInstance(
                 DbAdapter.class,
                 DerbyAdapter.class.getName());
-
-        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
-
-        if (pkGenerator != null) {
-            adapter.setPkGenerator(pkGenerator);
-        }
-
-        return adapter;
     }
 }

@@ -38,12 +38,9 @@ public class OracleSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    protected PkGeneratorFactoryProvider pkGeneratorProvider;
-
     public OracleSniffer(@Inject AdhocObjectFactory objectFactory,
                          @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
-        this.pkGeneratorProvider = Objects.requireNonNull(pkGeneratorProvider, "Null pkGeneratorProvider");
     }
 
     @Override
@@ -53,16 +50,8 @@ public class OracleSniffer implements DbAdapterDetector {
             return null;
         }
 
-        JdbcAdapter adapter = md.getDriverMajorVersion() <= 8
+        return md.getDriverMajorVersion() <= 8
                 ? objectFactory.newInstance(DbAdapter.class, Oracle8Adapter.class.getName())
                 : objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
-
-        PkGenerator pkGenerator = pkGeneratorProvider.get(adapter);
-
-        if (pkGenerator != null) {
-            adapter.setPkGenerator(pkGenerator);
-        }
-
-        return adapter;
     }
 }

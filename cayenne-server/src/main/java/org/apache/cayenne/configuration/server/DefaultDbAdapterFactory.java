@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 import javax.sql.DataSource;
 
@@ -31,6 +32,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -39,7 +41,7 @@ import org.apache.cayenne.log.JdbcEventLogger;
 /**
  * A factory of DbAdapters that either loads user-provided adapter or guesses
  * the adapter type from the database metadata.
- * 
+ *
  * @since 3.1
  */
 public class DefaultDbAdapterFactory implements DbAdapterFactory {
@@ -52,6 +54,9 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
 	@Inject
 	protected AdhocObjectFactory objectFactory;
+
+	@Inject
+	protected PkGeneratorFactoryProvider pkGeneratorProvider;
 
 	protected List<DbAdapterDetector> detectors;
 
@@ -79,7 +84,10 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 		}
 
 		if (adapterType != null) {
-			return objectFactory.newInstance(DbAdapter.class, adapterType);
+			JdbcAdapter dbAdapter = objectFactory.newInstance(DbAdapter.class, adapterType);
+			PkGenerator pkGenerator = pkGeneratorProvider.get(dbAdapter);
+			dbAdapter.setPkGenerator(pkGenerator);
+			return dbAdapter;
 		} else {
 			return new AutoAdapter(() -> detectAdapter(dataSource), jdbcEventLogger);
 		}
