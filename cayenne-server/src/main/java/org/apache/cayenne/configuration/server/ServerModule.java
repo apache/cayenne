@@ -341,6 +341,7 @@ public class ServerModule implements Module {
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
 
+        //set PkGenerators for current Adapters
         contributePkGenerators(binder)
                 .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
                 .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
