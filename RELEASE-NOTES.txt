@@ -54,6 +54,7 @@ CAY-2418 Modeler: unable to edit entity selected via Search
 CAY-2419 Modeler: Not changing highlight on selecting search results within one entity
 CAY-2420 Modeler: search is not performed for Stored Procedures
 CAY-2425 Modeler: Migrate DB Direction field is locked if no option was selected in dropdown list
+CAY-2427 Modeler: Undo throws exeption
 
 ----------------------------------
 Release: 4.1.M1
