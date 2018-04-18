@@ -19,17 +19,21 @@
 
 package org.apache.cayenne.dba.sybase;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
+
 /**
  * Detects Sybase database from JDBC metadata.
- * 
+ *
  * @since 1.2
  */
 public class SybaseSniffer implements DbAdapterDetector {
@@ -47,12 +51,11 @@ public class SybaseSniffer implements DbAdapterDetector {
         if (driver != null && driver.toLowerCase().startsWith("jtds")) {
             String url = md.getURL();
             return url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
-                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
-        }
-        else {
+                    ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
+        } else {
             String dbName = md.getDatabaseProductName();
             return dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
-                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
+                    ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
         }
     }
 }

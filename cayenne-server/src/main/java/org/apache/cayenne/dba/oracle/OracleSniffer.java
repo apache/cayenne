@@ -19,13 +19,17 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * @since 1.2
@@ -34,7 +38,8 @@ public class OracleSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    public OracleSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public OracleSniffer(@Inject AdhocObjectFactory objectFactory,
+                         @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
     }
 
@@ -46,7 +51,7 @@ public class OracleSniffer implements DbAdapterDetector {
         }
 
         return md.getDriverMajorVersion() <= 8
-                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, Oracle8Adapter.class.getName())
-                : (DbAdapter) objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
+                ? objectFactory.newInstance(DbAdapter.class, Oracle8Adapter.class.getName())
+                : objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
     }
 }

@@ -19,24 +19,29 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
+
 /**
  * Detects HSQLDB database from JDBC metadata.
- * 
+ *
  * @since 1.2
  */
 public class HSQLDBSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    public HSQLDBSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public HSQLDBSniffer(@Inject AdhocObjectFactory objectFactory,
+                         @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.objectFactory = objectFactory;
     }
 
@@ -51,7 +56,7 @@ public class HSQLDBSniffer implements DbAdapterDetector {
                 || md.getDriverMajorVersion() == 1 && md.getDriverMinorVersion() <= 8;
 
         return supportsSchema
-                    ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
-                    : (DbAdapter) objectFactory.newInstance(DbAdapter.class, HSQLDBNoSchemaAdapter.class.getName());
+                ? objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName())
+                : objectFactory.newInstance(DbAdapter.class, HSQLDBNoSchemaAdapter.class.getName());
     }
 }

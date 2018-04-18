@@ -30,12 +30,13 @@ import org.apache.cayenne.map.DbEntity;
  */
 public interface PkGenerator {
 
+
     /**
      * Generates necessary database objects to provide automatic primary key support.
-     * 
-     * @param node node that provides access to a DataSource.
+     *
+     * @param node       node that provides access to a DataSource.
      * @param dbEntities a list of entities that require primary key auto-generation
-     *            support
+     *                   support
      */
     void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception;
 
@@ -49,10 +50,10 @@ public interface PkGenerator {
     /**
      * Drops any common database objects associated with automatic primary key generation
      * process. This may be lookup tables, special stored procedures or sequences.
-     * 
-     * @param node node that provides access to a DataSource.
+     *
+     * @param node       node that provides access to a DataSource.
      * @param dbEntities a list of entities whose primary key auto-generation support
-     *            should be dropped.
+     *                   should be dropped.
      */
     void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception;
 
@@ -64,10 +65,20 @@ public interface PkGenerator {
 
     /**
      * Generates a unique and non-repeating primary key for specified PK attribute.
-     * 
+     *
      * @since 3.0
      */
     Object generatePk(DataNode dataNode, DbAttribute pk) throws Exception;
+
+    /**
+     * Install the adapter associated with current PkGenerator
+     */
+    void setAdapter(DbAdapter q);
+
+    /**
+     * Get an adapter associated with current PkGenerator
+     */
+    DbAdapter getAdapter();
 
     /**
      * Resets any cached primary keys forcing generator to go to the database next time id

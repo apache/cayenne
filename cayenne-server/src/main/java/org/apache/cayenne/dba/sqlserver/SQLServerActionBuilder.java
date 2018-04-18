@@ -24,6 +24,7 @@ import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 1.2

@@ -45,6 +45,12 @@ public interface Constants {
     String SERVER_ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
 
     /**
+     * A DI container key for the Map&lt;Key, PkGenerator.class&gt; that objects
+     * that can discover the type of current database and install correct PkGenerator in runtime.
+     */
+    String SERVER_PK_GENERATORS_MAP = "cayenne.server.pk_generators";
+
+    /**
      * A DI container key for the List&lt;DataChannelFilter&gt; storing
      * DataDomain filters.
      *
@@ -210,6 +216,7 @@ public interface Constants {
 
     /**
      * Snapshot cache max size
+     *
      * @see org.apache.cayenne.configuration.server.ServerModule#setSnapshotCacheSize(Binder, int)
      * @since 4.0
      */

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import java.util.Objects;
-
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
@@ -33,6 +31,7 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
@@ -40,6 +39,8 @@ import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -52,7 +53,9 @@ import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
+import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
+import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -61,14 +64,16 @@ import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.slf4j.Logger;
 import org.xml.sax.XMLReader;
+
+import java.util.Objects;
 
 /**
  * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
@@ -111,6 +116,10 @@ public class ToolsModule implements Module {
                 .add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
                 .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
                 .add(MySQLSniffer.class);
+
+        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
+        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+        ServerModule.contributePkGenerators(binder).put(SQLServerAdapter.class.getName(), SybasePkGenerator.class);
 
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
         binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);

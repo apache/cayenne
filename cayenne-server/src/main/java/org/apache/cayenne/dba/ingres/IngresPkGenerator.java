@@ -24,22 +24,26 @@ import org.apache.cayenne.dba.oracle.OraclePkGenerator;
 
 /**
  * Ingres-specific sequence based PK generator.
- * 
+ *
  * @since 1.2
  */
 public class IngresPkGenerator extends OraclePkGenerator {
 
-	protected IngresPkGenerator(JdbcAdapter adapter) {
-		super(adapter);
-	}
+    public IngresPkGenerator() {
+        super();
+    }
 
-	@Override
-	protected String selectNextValQuery(String sequenceName) {
-		return "SELECT " + sequenceName + ".nextval";
-	}
+    protected IngresPkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+    }
 
-	@Override
-	protected String selectAllSequencesQuery() {
-		return "SELECT seq_name FROM iisequences WHERE seq_owner != 'DBA'";
-	}
+    @Override
+    protected String selectNextValQuery(String sequenceName) {
+        return "SELECT " + sequenceName + ".nextval";
+    }
+
+    @Override
+    protected String selectAllSequencesQuery() {
+        return "SELECT seq_name FROM iisequences WHERE seq_owner != 'DBA'";
+    }
 }

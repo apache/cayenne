@@ -19,13 +19,17 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * @since 1.2
@@ -41,7 +45,12 @@ public class PostgresSniffer implements DbAdapterDetector {
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        return dbName != null && dbName.toUpperCase().contains("POSTGRESQL")
-                ? (DbAdapter) objectFactory.newInstance(DbAdapter.class, PostgresAdapter.class.getName()) : null;
+        if (dbName == null || !dbName.toUpperCase().contains("POSTGRESQL")) {
+            return null;
+        }
+
+        return objectFactory.newInstance(
+                DbAdapter.class,
+                PostgresAdapter.class.getName());
     }
 }

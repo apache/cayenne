@@ -39,100 +39,104 @@ import java.util.List;
  */
 public class FrontBasePkGenerator extends JdbcPkGenerator {
 
-	public FrontBasePkGenerator(JdbcAdapter adapter) {
-		super(adapter);
-		pkStartValue = 1000000;
-	}
+    public FrontBasePkGenerator() {
+        super();
+    }
 
-	/**
-	 * Returns zero as PK caching is not supported by FrontBaseAdapter.
-	 */
-	@Override
-	public int getPkCacheSize() {
-		return 0;
-	}
+    public FrontBasePkGenerator(JdbcAdapter adapter) {
+        super(adapter);
+        pkStartValue = 1000000;
+    }
 
-	@Override
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
-		// For each entity (re)set the unique counter
-		for (DbEntity entity : dbEntities) {
-			runUpdate(node, pkCreateString(entity.getName()));
-		}
-	}
+    /**
+     * Returns zero as PK caching is not supported by FrontBaseAdapter.
+     */
+    @Override
+    public int getPkCacheSize() {
+        return 0;
+    }
 
-	@Override
-	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
-		List<String> list = new ArrayList<>();
-		for (DbEntity entity : dbEntities) {
-			list.add(pkCreateString(entity.getName()));
-		}
-		return list;
-	}
+    @Override
+    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+        // For each entity (re)set the unique counter
+        for (DbEntity entity : dbEntities) {
+            runUpdate(node, pkCreateString(entity.getName()));
+        }
+    }
 
-	@Override
-	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
-	}
+    @Override
+    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+        List<String> list = new ArrayList<>();
+        for (DbEntity entity : dbEntities) {
+            list.add(pkCreateString(entity.getName()));
+        }
+        return list;
+    }
 
-	@Override
-	protected String pkTableCreateString() {
-		return "";
-	}
+    @Override
+    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+    }
 
-	@Override
-	protected String pkDeleteString(List<DbEntity> dbEntities) {
-		return "-- The 'Drop Primary Key Support' option is unavailable";
-	}
+    @Override
+    protected String pkTableCreateString() {
+        return "";
+    }
 
-	@Override
-	protected String pkCreateString(String entName) {
-		StringBuilder buf = new StringBuilder();
-		buf.append("SET UNIQUE = ").append(pkStartValue).append(" FOR \"").append(entName).append("\"");
-		return buf.toString();
-	}
+    @Override
+    protected String pkDeleteString(List<DbEntity> dbEntities) {
+        return "-- The 'Drop Primary Key Support' option is unavailable";
+    }
 
-	@Override
-	protected String pkSelectString(String entName) {
-		StringBuilder buf = new StringBuilder();
-		buf.append("SELECT UNIQUE FROM \"").append(entName).append("\"");
-		return buf.toString();
-	}
+    @Override
+    protected String pkCreateString(String entName) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("SET UNIQUE = ").append(pkStartValue).append(" FOR \"").append(entName).append("\"");
+        return buf.toString();
+    }
 
-	@Override
-	protected String pkUpdateString(String entName) {
-		return "";
-	}
+    @Override
+    protected String pkSelectString(String entName) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("SELECT UNIQUE FROM \"").append(entName).append("\"");
+        return buf.toString();
+    }
 
-	@Override
-	protected String dropAutoPkString() {
-		return "";
-	}
+    @Override
+    protected String pkUpdateString(String entName) {
+        return "";
+    }
 
-	/**
-	 * @since 3.0
-	 */
-	@Override
-	protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    @Override
+    protected String dropAutoPkString() {
+        return "";
+    }
 
-		String template = "SELECT #result('UNIQUE' 'long') FROM " + entity.getName();
+    /**
+     * @since 3.0
+     */
+    @Override
+    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
 
-		final long[] pkHolder = new long[1];
+        String template = "SELECT #result('UNIQUE' 'long') FROM " + entity.getName();
 
-		SQLTemplate query = new SQLTemplate(entity, template);
-		OperationObserver observer = new DoNothingOperationObserver() {
+        final long[] pkHolder = new long[1];
 
-			@Override
-			public void nextRows(Query query, List<?> dataRows) {
-				if (dataRows.size() != 1) {
-					throw new CayenneRuntimeException("Error fetching PK. Expected one row, got %d", dataRows.size());
-				}
+        SQLTemplate query = new SQLTemplate(entity, template);
+        OperationObserver observer = new DoNothingOperationObserver() {
 
-				DataRow row = (DataRow) dataRows.get(0);
-				Number pk = (Number) row.get("UNIQUE");
-				pkHolder[0] = pk.longValue();
-			}
-		};
+            @Override
+            public void nextRows(Query query, List<?> dataRows) {
+                if (dataRows.size() != 1) {
+                    throw new CayenneRuntimeException("Error fetching PK. Expected one row, got %d", dataRows.size());
+                }
 
-		node.performQueries(Collections.singleton((Query) query), observer);
-		return pkHolder[0];
-	}
+                DataRow row = (DataRow) dataRows.get(0);
+                Number pk = (Number) row.get("UNIQUE");
+                pkHolder[0] = pk.longValue();
+            }
+        };
+
+        node.performQueries(Collections.singleton((Query) query), observer);
+        return pkHolder[0];
+    }
 }
