@@ -72,11 +72,15 @@ public interface PkGenerator {
 
     /**
      * Install the adapter associated with current PkGenerator
+     *
+     * @since 4.1
      */
     void setAdapter(DbAdapter q);
 
     /**
      * Get an adapter associated with current PkGenerator
+     *
+     * @since 4.1
      */
     DbAdapter getAdapter();
 

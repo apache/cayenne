@@ -30,6 +30,10 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class H2PkGenerator extends OraclePkGenerator {
 
+    /**
+     * Used by DI
+     * @since 4.1
+     */
     public H2PkGenerator() {
         super();
     }

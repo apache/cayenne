@@ -236,9 +236,10 @@ public class ServerModule implements Module {
      *
      * @param binder DI binder passed to the module during injector startup.
      * @return MapBuilder for properties.
+     * @since 4.1
      */
     public static MapBuilder<PkGenerator> contributePkGenerators(Binder binder) {
-        return binder.bindMap(PkGenerator.class, Constants.SERVER_PK_GENERATORS_MAP);
+        return binder.bindMap(PkGenerator.class);
     }
 
     /**

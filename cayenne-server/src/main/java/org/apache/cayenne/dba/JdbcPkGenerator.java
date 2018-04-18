@@ -59,6 +59,9 @@ public class JdbcPkGenerator implements PkGenerator {
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
     protected long pkStartValue = DEFAULT_PK_START_VALUE;
 
+    /**
+     * @since 4.1
+     */
     public JdbcPkGenerator() {
     }
 

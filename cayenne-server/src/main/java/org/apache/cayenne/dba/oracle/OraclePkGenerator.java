@@ -52,6 +52,10 @@ import java.util.List;
  */
 public class OraclePkGenerator extends JdbcPkGenerator {
 
+    /**
+     * Used by DI
+     * @since 4.1
+     */
     public OraclePkGenerator() {
         super();
     }

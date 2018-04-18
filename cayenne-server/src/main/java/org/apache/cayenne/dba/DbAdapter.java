@@ -144,6 +144,13 @@ public interface DbAdapter {
 	PkGenerator getPkGenerator();
 
 	/**
+	 * Set custom PK generator  associated with this DbAdapter.
+	 * @param pkGenerator to set
+	 * @since 4.1
+	 */
+	void setPkGenerator(PkGenerator pkGenerator);
+
+	/**
 	 * Creates and returns a DbAttribute based on supplied parameters (usually
 	 * obtained from database meta data).
 	 *

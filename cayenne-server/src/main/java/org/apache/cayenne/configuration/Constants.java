@@ -45,12 +45,6 @@ public interface Constants {
     String SERVER_ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
 
     /**
-     * A DI container key for the Map&lt;Key, PkGenerator.class&gt; that objects
-     * that can discover the type of current database and install correct PkGenerator in runtime.
-     */
-    String SERVER_PK_GENERATORS_MAP = "cayenne.server.pk_generators";
-
-    /**
      * A DI container key for the List&lt;DataChannelFilter&gt; storing
      * DataDomain filters.
      *

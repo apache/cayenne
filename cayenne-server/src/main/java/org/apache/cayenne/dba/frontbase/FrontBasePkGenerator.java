@@ -39,6 +39,10 @@ import java.util.List;
  */
 public class FrontBasePkGenerator extends JdbcPkGenerator {
 
+    /**
+     * Used by DI
+     * @since 4.1
+     */
     public FrontBasePkGenerator() {
         super();
     }

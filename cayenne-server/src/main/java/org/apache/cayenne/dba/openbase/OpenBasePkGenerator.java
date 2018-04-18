@@ -43,6 +43,10 @@ import java.util.List;
  */
 public class OpenBasePkGenerator extends JdbcPkGenerator {
 
+    /**
+     * Used by DI
+     * @since 4.1
+     */
     public OpenBasePkGenerator() {
         super();
     }

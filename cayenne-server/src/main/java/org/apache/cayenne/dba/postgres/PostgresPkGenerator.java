@@ -28,6 +28,10 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class PostgresPkGenerator extends OraclePkGenerator {
 
+    /**
+     * Used by DI
+     * @since 4.1
+     */
     public PostgresPkGenerator() {
         super();
     }

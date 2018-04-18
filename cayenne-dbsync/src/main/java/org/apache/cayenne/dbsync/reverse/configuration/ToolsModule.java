@@ -119,7 +119,7 @@ public class ToolsModule implements Module {
 
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-        ServerModule.contributePkGenerators(binder).put(SQLServerAdapter.class.getName(), SybasePkGenerator.class);
+        ServerModule.contributePkGenerators(binder);
 
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
         binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);

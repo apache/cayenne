@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -48,15 +47,12 @@ public class SQLServerSnifferIT extends ServerCase {
 	@Inject
 	private AdhocObjectFactory objectFactory;
 
-	@Inject
-	private PkGeneratorFactoryProvider pkGeneratorProvider;
-
 	@Test
 	public void testCreateAdapter() throws Exception {
 
-		SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory, pkGeneratorProvider);
+		SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);
 
-		DbAdapter adapter = null;
+		DbAdapter adapter;
 
 		try (Connection c = dataSourceFactory.getSharedDataSource().getConnection()) {
 			adapter = sniffer.createAdapter(c.getMetaData());

@@ -84,11 +84,8 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 		}
 
 		if (adapterType != null) {
-			JdbcAdapter dbAdapter = objectFactory.newInstance(DbAdapter.class, adapterType);
-			PkGenerator pkGenerator = pkGeneratorProvider.get(dbAdapter);
-			pkGenerator.setAdapter(dbAdapter);
-			dbAdapter.setPkGenerator(pkGenerator);
-			return dbAdapter;
+			DbAdapter dbAdapter = objectFactory.newInstance(DbAdapter.class, adapterType);
+			return setupPkGenerator(dbAdapter);
 		} else {
 			return new AutoAdapter(() -> detectAdapter(dataSource), jdbcEventLogger);
 		}
@@ -121,7 +118,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 				// TODO: should detector do this??
 				injector.injectMembers(adapter);
 
-				return adapter;
+				return setupPkGenerator(adapter);
 			}
 		}
 
@@ -131,5 +128,20 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 	protected DbAdapter defaultAdapter() {
 		jdbcEventLogger.log("Failed to detect database type, using generic adapter");
 		return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
+	}
+
+	/**
+	 * Setup PK generator for the adapter
+	 * @param dbAdapter to process
+	 * @return db adapter
+	 * @since 4.1
+	 */
+	protected DbAdapter setupPkGenerator(DbAdapter dbAdapter) {
+		PkGenerator pkGenerator = pkGeneratorProvider.get(Objects.requireNonNull(dbAdapter));
+		if(pkGenerator != null) {
+			pkGenerator.setAdapter(dbAdapter);
+			dbAdapter.setPkGenerator(pkGenerator);
+		}
+		return dbAdapter;
 	}
 }

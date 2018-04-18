@@ -228,6 +228,7 @@ public class JdbcAdapter implements DbAdapter {
      *
      * @since 1.1
      */
+    @Override
     public void setPkGenerator(PkGenerator pkGenerator) {
         this.pkGenerator = pkGenerator;
     }

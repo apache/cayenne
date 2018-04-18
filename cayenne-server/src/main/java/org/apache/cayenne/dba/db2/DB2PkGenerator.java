@@ -27,6 +27,10 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class DB2PkGenerator extends OraclePkGenerator {
 
+    /**
+     * Used by DI
+     * @since 4.1
+     */
     public DB2PkGenerator() {
         super();
     }

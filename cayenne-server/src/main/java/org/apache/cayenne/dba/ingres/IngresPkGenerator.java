@@ -29,6 +29,10 @@ import org.apache.cayenne.dba.oracle.OraclePkGenerator;
  */
 public class IngresPkGenerator extends OraclePkGenerator {
 
+    /**
+     * Used by DI
+     * @since 4.1
+     */
     public IngresPkGenerator() {
         super();
     }

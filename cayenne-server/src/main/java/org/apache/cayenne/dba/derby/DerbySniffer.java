@@ -20,16 +20,12 @@
 package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
-import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Objects;
 
 /**
  * Creates a DerbyAdapter if Apache Derby database is detected.
@@ -40,8 +36,7 @@ public class DerbySniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
 
-    public DerbySniffer(@Inject AdhocObjectFactory objectFactory,
-                        @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
+    public DerbySniffer(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 

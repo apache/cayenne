@@ -20,16 +20,12 @@
 package org.apache.cayenne.dba.sybase;
 
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
-import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.Objects;
 
 /**
  * Detects Sybase database from JDBC metadata.
