@@ -75,7 +75,7 @@ public class TransactionIsolationIT extends ServerCase {
         }
 
         TransactionDescriptor descriptor = new TransactionDescriptor(
-                Connection.TRANSACTION_REPEATABLE_READ,
+                Connection.TRANSACTION_SERIALIZABLE,
                 TransactionPropagation.REQUIRES_NEW
         );
 
