@@ -28,13 +28,17 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
-import javax.swing.*;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -53,7 +57,7 @@ public class MergerTokenSelectorController extends CayenneController {
     protected MergerTokenFactory mergerTokenFactory;
     protected boolean isReverse;
 
-    public MergerTokenSelectorController(CayenneController parent) {
+    public MergerTokenSelectorController(final CayenneController parent) {
         super(parent);
         this.view = new MergerTokenSelectorView();
         this.excludedTokens = new HashSet<>();
@@ -61,18 +65,18 @@ public class MergerTokenSelectorController extends CayenneController {
         initController();
     }
 
-    public void setMergerTokenFactory(MergerTokenFactory mergerTokenFactory) {
+    public void setMergerTokenFactory(final MergerTokenFactory mergerTokenFactory) {
         this.mergerTokenFactory = mergerTokenFactory;
     }
 
-    public void setTokens(List<MergerToken> tokens) {
+    public void setTokens(final List<MergerToken> tokens) {
         selectableTokensList.clear();
         selectableTokensList.addAll(tokens);
         excludedTokens.addAll(tokens);
     }
 
     public List<MergerToken> getSelectedTokens() {
-        List<MergerToken> t = new ArrayList<>(selectableTokensList);
+        final List<MergerToken> t = new ArrayList<>(selectableTokensList);
         t.removeAll(excludedTokens);
         return Collections.unmodifiableList(t);
     }
@@ -81,11 +85,11 @@ public class MergerTokenSelectorController extends CayenneController {
         return Collections.unmodifiableList(selectableTokensList);
     }
     
-    public void removeToken(MergerToken token) {
+    public void removeToken(final MergerToken token) {
         selectableTokensList.remove(token);
         excludedTokens.remove(token);
 
-        AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
+        final AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
         model.fireTableDataChanged();
     }
 
@@ -98,7 +102,7 @@ public class MergerTokenSelectorController extends CayenneController {
     /**
      * Called by table binding script to set current token.
      */
-    public void setToken(MergerToken token) {
+    public void setToken(final MergerToken token) {
         this.token = token;
     }
 
@@ -117,7 +121,7 @@ public class MergerTokenSelectorController extends CayenneController {
         return !excludedTokens.contains(token);
     }
 
-    public void setIncluded(boolean b) {
+    public void setIncluded(final boolean b) {
         if (token == null) {
             return;
         }
@@ -135,7 +139,7 @@ public class MergerTokenSelectorController extends CayenneController {
      * A callback action that updates the state of Select All checkbox.
      */
     public void tableSelectedAction() {
-        int unselectedCount = excludedTokens.size() - permanentlyExcludedCount;
+        final int unselectedCount = excludedTokens.size() - permanentlyExcludedCount;
 
         if (unselectedCount == selectableTokensList.size()) {
             view.getCheckAll().setSelected(false);
@@ -147,33 +151,33 @@ public class MergerTokenSelectorController extends CayenneController {
     // ------ other stuff ------
 
     protected void initController() {
-        BindingBuilder builder = new BindingBuilder(
+        final BindingBuilder builder = new BindingBuilder(
                 getApplication().getBindingFactory(),
                 this);
 
         builder.bindToAction(view.getCheckAll(), "checkAllAction()");
         builder.bindToAction(view.getReverseAll(), "reverseAllAction()");
 
-        TableModel model = new MergerTokenTableModel(this);
+        final TableModel model = new MergerTokenTableModel(this);
 
-        MergeDirection[] dirs = new MergeDirection[] {
+        final MergeDirection[] dirs = new MergeDirection[] {
                 MergeDirection.TO_DB, MergeDirection.TO_MODEL
         };
 
         view.getTokens().setModel(model);
 
-        TableColumnModel columnModel = view.getTokens().getColumnModel();
+        final TableColumnModel columnModel = view.getTokens().getColumnModel();
 
         // dropdown for direction column
-        JComboBox directionCombo = Application.getWidgetFactory().createComboBox(dirs, false);
+        final JComboBox directionCombo = Application.getWidgetFactory().createComboBox(dirs, false);
         directionCombo.setEditable(false);
-        TableColumn directionColumn = columnModel.getColumn(
+        final TableColumn directionColumn = columnModel.getColumn(
                 MergerTokenTableModel.COL_DIRECTION);
 
         directionColumn.setCellRenderer(new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                                                           boolean isSelected, boolean hasFocus, int row, int column) {
+            public Component getTableCellRendererComponent(final JTable table, final Object value,
+                                                           final boolean isSelected, final boolean hasFocus, final int row, final int column) {
                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 setHorizontalTextPosition(SwingConstants.LEFT);
                 setIcon(ModelerUtil.buildIcon("icon-arrow-open.png"));
@@ -189,11 +193,12 @@ public class MergerTokenSelectorController extends CayenneController {
         columnModel.getColumn(MergerTokenTableModel.COL_DIRECTION).setMaxWidth(100);
     }
 
-    public boolean isSelected(MergerToken token) {
+    public boolean isSelected(final MergerToken token) {
         return (selectableTokensList.contains(token) && !excludedTokens.contains(token));
     }
 
-    public void select(MergerToken token, boolean select) {
+    public void select(final MergerToken token, final boolean select) {
+
         if (select) {
             excludedTokens.remove(token);
         } else {
@@ -201,12 +206,13 @@ public class MergerTokenSelectorController extends CayenneController {
         }
     }
 
-    public void setDirection(MergerToken token, MergeDirection direction) {
+    public void setDirection(final MergerToken token, final MergeDirection direction) {
         if (token.getDirection().equals(direction)) {
             return;
         }
-        int i = selectableTokensList.indexOf(token);
-        MergerToken reverse = token.createReverse(mergerTokenFactory);
+
+        final int i = selectableTokensList.indexOf(token);
+        final MergerToken reverse = token.createReverse(mergerTokenFactory);
         selectableTokensList.set(i, reverse);
         if (excludedTokens.remove(token)) {
             excludedTokens.add(reverse);
@@ -217,8 +223,9 @@ public class MergerTokenSelectorController extends CayenneController {
     }
 
     public void checkAllAction() {
+        stopEditing();
 
-        boolean isCheckAllSelected = view.getCheckAll().isSelected();
+        final boolean isCheckAllSelected = view.getCheckAll().isSelected();
 
         if (isCheckAllSelected) {
             excludedTokens.clear();
@@ -226,7 +233,7 @@ public class MergerTokenSelectorController extends CayenneController {
             excludedTokens.addAll(selectableTokensList);
         }
 
-        AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
+        final AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
         model.fireTableDataChanged();
     }
 
@@ -235,12 +242,13 @@ public class MergerTokenSelectorController extends CayenneController {
     }
 
     public void reverseAllAction() {
+        stopEditing();
 
         isReverse = !isReverse;
 
         for (int i = 0; i < selectableTokensList.size(); i++) {
-            MergerToken token = selectableTokensList.get(i);
-            MergerToken reverse = token.createReverse(mergerTokenFactory);
+            final MergerToken token = selectableTokensList.get(i);
+            final MergerToken reverse = token.createReverse(mergerTokenFactory);
             selectableTokensList.set(i, reverse);
             if (excludedTokens.remove(token)) {
                 excludedTokens.add(reverse);
@@ -248,7 +256,16 @@ public class MergerTokenSelectorController extends CayenneController {
         }
 
         Collections.sort(selectableTokensList);
-        AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
+        final AbstractTableModel model = (AbstractTableModel) view.getTokens().getModel();
         model.fireTableDataChanged();
+    }
+
+    private void stopEditing() {
+        // Stop cell editing before any action
+        final TableCellEditor cellEditor = view.getTokens().getCellEditor();
+
+        if (cellEditor != null) {
+            cellEditor.stopCellEditing();
+        }
     }
 }
