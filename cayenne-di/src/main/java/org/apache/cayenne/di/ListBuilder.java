@@ -67,4 +67,9 @@ public interface ListBuilder<T> {
 
     void in(Scope scope);
 
+    /**
+     * @since 4.1
+     */
+    void withoutScope();
+
 }

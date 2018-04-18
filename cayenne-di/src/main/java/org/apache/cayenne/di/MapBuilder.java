@@ -35,4 +35,9 @@ public interface MapBuilder<T> {
     MapBuilder<T> putAll(Map<String, T> map) throws DIRuntimeException;
 
     void in(Scope scope);
+
+    /**
+     * @since 4.1
+     */
+    void withoutScope();
 }

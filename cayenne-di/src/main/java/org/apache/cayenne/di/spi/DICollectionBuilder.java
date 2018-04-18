@@ -80,4 +80,11 @@ public abstract class DICollectionBuilder<K, E> {
     public void in(Scope scope) {
         injector.changeBindingScope(bindingKey, scope);
     }
+
+    /**
+     * @since 4.1
+     */
+    public void withoutScope() {
+        in(injector.getNoScope());
+    }
 }
