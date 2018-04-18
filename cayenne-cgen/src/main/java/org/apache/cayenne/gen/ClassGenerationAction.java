@@ -130,6 +130,8 @@ public class ClassGenerationAction {
 			return template;
 		case ENTITY_SUPERCLASS:
 			return superTemplate;
+		case EMBEDDABLE_SINGLE_CLASS:
+			return embeddableTemplate;
 		case EMBEDDABLE_SUBCLASS:
 			return embeddableTemplate;
 		case EMBEDDABLE_SUPERCLASS:
