@@ -35,7 +35,6 @@ CAY-2414 Modeler: new icon design
 CAY-2415 Transaction isolation and propagation support
 CAY-2416 Change TreeMap for HashMap to store data in Cayenne model classes
 CAY-2422 Modeler: Open driver setup window on driver load error
-CAY-2430 Modeler: Redo throws NPE
 
 Bug Fixes:
 
@@ -57,6 +56,7 @@ CAY-2420 Modeler: search is not performed for Stored Procedures
 CAY-2425 Modeler: Migrate DB Direction field is locked if no option was selected in dropdown list
 CAY-2427 Modeler: Undo throws exception
 CAY-2429 Generate classes: Invalid template type: EMBEDDABLE_SINGLE_CLASS
+CAY-2430 Modeler: Redo throws NPE
 
 ----------------------------------
 Release: 4.1.M1
