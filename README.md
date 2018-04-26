@@ -39,7 +39,7 @@ Quick Start
 To create Cayenne project you will need Cayenne Modeler.
 You can download it from https://cayenne.apache.org/download/
 
-[![Modeler](https://cayenne.apache.org/docs/4.0/getting-started-guide/images/modeler-deleterule.png)](https://cayenne.apache.org/download/)
+[![Modeler](https://cayenne.apache.org/img/cayenne-modeler-40rc1-24b0368dc2.png)](https://cayenne.apache.org/download/)
 
 See tutorial https://cayenne.apache.org/docs/4.0/getting-started-guide/ 
 
@@ -52,12 +52,12 @@ See tutorial https://cayenne.apache.org/docs/4.0/getting-started-guide/
     <dependency>
         <groupId>org.apache.cayenne</groupId>
         <artifactId>cayenne-server</artifactId>
-        <version>4.0.B2</version>
+        <version>4.0.RC1</version>
     </dependency>
     <dependency>
         <groupId>org.apache.cayenne</groupId>
         <artifactId>cayenne-java8</artifactId>
-        <version>4.0.B2</version>
+        <version>4.0.RC1</version>
     </dependency>
 </dependencies>
 ```
@@ -65,8 +65,8 @@ See tutorial https://cayenne.apache.org/docs/4.0/getting-started-guide/
 ##### Gradle
 
 ```groovy
-compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.0.B2'
-compile group: 'org.apache.cayenne', name: 'cayenne-java8', version: '4.0.B2'
+compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.0.RC1'
+compile group: 'org.apache.cayenne', name: 'cayenne-java8', version: '4.0.RC1'
 ```
 
 #### Create Cayenne Runtime
