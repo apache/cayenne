@@ -44,10 +44,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <asciidoctorj.version>1.5.6</asciidoctorj.version>
+        <asciidoctorj.version>1.6.0-alpha.6</asciidoctorj.version>
         <asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.5.0-alpha.16</asciidoctorj.pdf.version>
-        <jruby.version>9.1.14.0</jruby.version>
+        <jruby.version>9.1.17.0</jruby.version>
         <cayenne.major.version>4.1</cayenne.major.version>
     </properties>
 
@@ -111,6 +111,11 @@
                         <groupId>org.jruby</groupId>
                         <artifactId>jruby-complete</artifactId>
                         <version>${jruby.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj</artifactId>
+                        <version>${asciidoctorj.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

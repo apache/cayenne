@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.asciidoctor.Options;
 import org.asciidoctor.ast.Document;
-import org.asciidoctor.ast.DocumentRuby;
 import org.asciidoctor.extension.Postprocessor;
 import org.jsoup.Jsoup;
 
@@ -59,8 +58,12 @@ public class CayennePostProcessor extends Postprocessor {
     private static final String POSITION_BODY = "body";
     private static final String POSITION_BOTTOM = "bottom";
 
-    public CayennePostProcessor(DocumentRuby documentRuby) {
+    public CayennePostProcessor() {
         super();
+    }
+
+    public CayennePostProcessor(Map<String, Object> config) {
+        super(config);
     }
 
     public String process(Document document, String output) {
