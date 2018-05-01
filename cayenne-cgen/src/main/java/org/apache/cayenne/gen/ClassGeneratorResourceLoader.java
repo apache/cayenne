@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
@@ -94,10 +95,12 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
     }
 
     protected Reader loadFromThreadClassLoader(String name) {
-        return new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(name));
+    	InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+        return stream != null ? new InputStreamReader(stream) : null;
     }
 
     protected Reader loadFromThisClassLoader(String name) {
-        return new InputStreamReader(getClass().getClassLoader().getResourceAsStream(name));
+    	InputStream stream = getClass().getClassLoader().getResourceAsStream(name);
+        return stream != null ? new InputStreamReader(stream) : null;
     }
 }
