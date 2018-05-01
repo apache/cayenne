@@ -19,20 +19,25 @@
 
 package org.apache.cayenne.jcache;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.cache.Cache;
+import javax.cache.Cache.Entry;
+import javax.cache.CacheException;
+import javax.cache.CacheManager;
+
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryMetadata;
-
-import javax.cache.Cache;
-import javax.cache.CacheException;
-import javax.cache.CacheManager;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @since 4.0
@@ -75,14 +80,16 @@ public class JCacheQueryCache implements QueryCache {
     }
 
     @Override
-    public void remove(String key) {
-        if (key != null) {
-            for (String cache : cacheManager.getCacheNames()) {
-                getCache(cache).remove(key);
+    public void remove(QueryMetadata metadata) {
+        if (metadata != null) {
+            Cache<String, List> cache = getCache(metadata.getCacheGroup());
+            if (cache != null) {
+            	String key = metadata.getCacheKey();
+            	cache.remove(key);
             }
         }
     }
-
+    
     @Override
     public void removeGroup(String groupKey) {
         Cache<String, List> cache = getCache(groupKey);
@@ -156,4 +163,37 @@ public class JCacheQueryCache implements QueryCache {
     public void shutdown() {
         cacheManager.close();
     }
+    
+    @Override
+    public void clearLocalCache(Optional<String> namespace) {
+    	if (!namespace.isPresent()) {
+    		return;
+    	}
+
+    	for (String name : cacheManager.getCacheNames()) {
+    		Cache<String, List> cache = getCache(name);
+    		Iterator<Entry<String, List>> it = cache.iterator();
+    		while (it.hasNext()) {
+    			Entry<String, List> entry = (Entry<String, List>) it.next();
+    			if (entry.getKey().startsWith(namespace.get())) {
+    				it.remove();
+    			}
+    		}
+    	}
+    }
+
+	@Override
+	public List<String> debugListCacheKeys() {
+		List<String> result = new ArrayList<>();
+		for (String name : cacheManager.getCacheNames()) {
+            Cache<String, List> cache = getCache(name);
+            Iterator<Entry<String, List>> it = cache.iterator();
+            while (it.hasNext()) {
+            	Entry<String, List> entry = (Entry<String, List>) it.next();
+				result.add(name + "." + entry.getKey());
+			}
+		}
+		return result;
+	}
+
 }

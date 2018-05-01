@@ -21,6 +21,7 @@ package org.apache.cayenne.cache;
 import org.apache.cayenne.query.QueryMetadata;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Defines API of a cache that stores query results.
@@ -29,6 +30,7 @@ import java.util.List;
  */
 public interface QueryCache {
 
+	
     /**
      * Returns a cached query result for the given QueryMetadata or null if the result is
      * not cached or is expired.
@@ -51,11 +53,13 @@ public interface QueryCache {
 
     @SuppressWarnings("rawtypes")
     void put(QueryMetadata metadata, List results);
-
+	
     /**
-     * Removes a single entry from cache.
+     * Removes a single query result from the cache that matches the given metadata.
+     * The metadata can be obtained like so: 
+     * <pre>query.getMetaData(context.getEntityResolver())</pre>
      */
-    void remove(String key);
+    void remove(QueryMetadata metadata);
 
     /**
      * Removes a group of entries identified by group key. Note that depending on
@@ -65,7 +69,7 @@ public interface QueryCache {
      * will not change after calling this method.
      */
     void removeGroup(String groupKey);
-
+    
     /**
      * Removes a group of entries identified by group key.
      * Can be used if cache provider supports strictly typed caches.
@@ -82,4 +86,13 @@ public interface QueryCache {
      */
     @Deprecated
     void clear();
+    
+    /**
+     * Clears all entries in the LOCAL cache.
+     * @param namespace this parameter is for internal use only - client should always pass Optional.empty()
+     */
+	void clearLocalCache(Optional<String> namespace);
+	
+	List<String> debugListCacheKeys();
+
 }

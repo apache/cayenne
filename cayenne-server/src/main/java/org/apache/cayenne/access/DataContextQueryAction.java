@@ -31,6 +31,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.ObjectContextQueryAction;
@@ -176,9 +177,8 @@ class DataContextQueryAction extends ObjectContextQueryAction {
             Query cachedQuery = refreshQuery.getQuery();
             if (cachedQuery != null) {
 
-                String cacheKey = cachedQuery
-                        .getMetaData(context.getEntityResolver())
-                        .getCacheKey();
+                QueryMetadata cacheKey = cachedQuery
+                        .getMetaData(context.getEntityResolver());
                 context.getQueryCache().remove(cacheKey);
 
                 this.response = context.performGenericQuery(cachedQuery);

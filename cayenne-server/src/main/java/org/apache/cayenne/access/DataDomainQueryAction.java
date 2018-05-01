@@ -344,7 +344,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             if (refreshQuery.getQuery() != null) {
                 Query cachedQuery = refreshQuery.getQuery();
 
-                String cacheKey = cachedQuery.getMetaData(context.getEntityResolver()).getCacheKey();
+                QueryMetadata cacheKey = cachedQuery.getMetaData(context.getEntityResolver());
                 context.getQueryCache().remove(cacheKey);
 
                 this.response = domain.onQuery(context, cachedQuery);

@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import java.util.Optional;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -67,6 +69,10 @@ public class StatelessContextRequestHandler implements RequestHandler {
 
     public void requestEnd(ServletRequest request, ServletResponse response) {
         CayenneRuntime.bindThreadInjector(null);
+        ObjectContext context = BaseContext.getThreadObjectContext();
+        if (context != null) {
+        	((BaseContext)context).getQueryCache().clearLocalCache(Optional.empty());
+        }
         BaseContext.bindThreadObjectContext(null);
     }
 

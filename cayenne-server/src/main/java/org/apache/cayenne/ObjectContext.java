@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
@@ -261,6 +262,8 @@ public interface ObjectContext extends DataChannel, Serializable {
      */
     DataChannel getChannel();
 
+    QueryCache getQueryCache();
+    
     /**
      * Returns <code>true</code> if there are any modified, deleted or new
      * objects registered with this ObjectContext, <code>false</code> otherwise.

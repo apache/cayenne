@@ -48,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -120,6 +121,14 @@ public abstract class BaseContext implements ObjectContext {
 		graphAction = new ObjectContextGraphAction(this);
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		if (queryCache != null) {
+			queryCache.clearLocalCache(Optional.empty());
+		}
+		super.finalize();
+	}
+	
 	/**
 	 * Checks whether this context is attached to Cayenne runtime stack and if
 	 * not, attempts to attach itself to the runtime using Injector returned
@@ -469,6 +478,7 @@ public abstract class BaseContext implements ObjectContext {
 	@Override
 	public abstract Collection<?> uncommittedObjects();
 
+	@Override
 	public QueryCache getQueryCache() {
 		attachToRuntimeIfNeeded();
 		return queryCache;

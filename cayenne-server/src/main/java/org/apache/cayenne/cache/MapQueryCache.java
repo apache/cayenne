@@ -19,8 +19,12 @@
 package org.apache.cayenne.cache;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -97,15 +101,15 @@ public class MapQueryCache implements QueryCache, Serializable {
         }
     }
 
-    public void remove(String key) {
+    public void remove(QueryMetadata metadata) {
+        String key = metadata.getCacheKey();
         if (key == null) {
             return;
         }
-
-        for(Map<String, List<?>> map : cacheGroups.values()) {
-            synchronized (map) {
-                map.remove(key);
-            }
+        
+        Map<String, List<?>> map = createIfAbsent(metadata);
+        synchronized (map) {
+            map.remove(key);
         }
     }
 
@@ -172,4 +176,32 @@ public class MapQueryCache implements QueryCache, Serializable {
         // no explicit cache group
         return DEFAULT_CACHE_NAME;
     }
+
+	@Override
+	public void clearLocalCache(Optional<String> namespace) {
+		if (!namespace.isPresent()) {
+    		return;
+    	}
+		
+        for (Entry<String, Map<String, List<?>>> cacheGroup : cacheGroups.entrySet()) {
+        	Set<String> keys = cacheGroup.getValue().keySet();
+        	for (String key : keys) {
+        		if (key.startsWith(namespace.get())) {
+        			keys.remove(key);
+        		}
+        	}
+        }
+	}
+
+	@Override
+	public List<String> debugListCacheKeys() {
+		List<String> result = new ArrayList<>();
+        for (Entry<String, Map<String, List<?>>> cacheGroup : cacheGroups.entrySet()) {
+        	for (String key : cacheGroup.getValue().keySet()) {
+				result.add(cacheGroup.getKey() + "." + key);
+        	}
+        }
+		return result;
+	}
+
 }

@@ -18,8 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
 
 public class MockQueryCache implements QueryCache {
@@ -38,7 +42,7 @@ public class MockQueryCache implements QueryCache {
     public void put(QueryMetadata metadata, List results) {
     }
 
-    public void remove(String key) {
+    public void remove(QueryMetadata metadata) {
     }
 
     public void removeGroup(String groupKey) {
@@ -51,4 +55,14 @@ public class MockQueryCache implements QueryCache {
     public int size() {
         return 0;
     }
+    
+	@Override
+	public void clearLocalCache(Optional<String> namespace) {
+	}
+
+	@Override
+	public List<String> debugListCacheKeys() {
+		return Collections.emptyList();
+	}
+
 }

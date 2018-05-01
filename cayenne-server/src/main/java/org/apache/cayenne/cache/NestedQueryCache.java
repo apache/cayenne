@@ -18,10 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryMetadataProxy;
-
-import java.util.List;
 
 /**
  * A {@link QueryCache} wrapper that introduces a key namespace on top of a
@@ -97,8 +98,8 @@ public class NestedQueryCache implements QueryCache {
      * Removes an entry for key in the current namespace.
      */
     @Override
-    public void remove(String key) {
-        delegate.remove(qualifiedKey(key));
+    public void remove(QueryMetadata metadata) {
+        delegate.remove(qualifiedMetadata(metadata));
     }
 
     /**
@@ -126,4 +127,16 @@ public class NestedQueryCache implements QueryCache {
             }
         };
     }
+
+	@Override
+	public void clearLocalCache(Optional<String> namespace) {
+		// ignore passed in namespace
+		delegate.clearLocalCache(Optional.of(this.namespace));
+	}
+
+	@Override
+	public List<String> debugListCacheKeys() {
+		return delegate.debugListCacheKeys();
+	}
+
 }
