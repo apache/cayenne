@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.web;
 
+import org.apache.cayenne.configuration.server.PropertyDataSourceFactory;
+import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.util.Util;
 
@@ -45,6 +47,7 @@ public class WebConfiguration {
 
     static final String CONFIGURATION_LOCATION_PARAMETER = "configuration-location";
     static final String EXTRA_MODULES_PARAMETER = "extra-modules";
+    static final String DATA_DOMAIN_NAME_PARAMETER = "data-domain-name";
 
     private FilterConfig configuration;
 
@@ -99,6 +102,19 @@ public class WebConfiguration {
         return name;
     }
 
+    /**
+     * If you are using multiple configuration files (cayenne-*.xml) this allows you
+     * to specify a name for the data domain other than the default name "cayenne" 
+     * (see {@value ServerRuntimeBuilder}).
+     * A specific data domain name is useful if you are setting database connection info 
+     * using properties via {@link PropertyDataSourceFactory}.
+     * @return
+     */
+    public String getDataDomainName() {
+        String name = configuration.getInitParameter(DATA_DOMAIN_NAME_PARAMETER);
+        return name;
+    }
+    
     /**
      * Creates and returns a collection of modules made of provided standard modules and
      * extra custom modules specified via an optional "extra-modules" init parameter. The

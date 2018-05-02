@@ -76,7 +76,9 @@ public class CayenneFilter implements Filter {
         Collection<Module> modules = configAdapter.createModules();
         modules.addAll(getAdditionalModules());
 
-        ServerRuntime runtime = ServerRuntime.builder()
+        String dataDomainName = configAdapter.getDataDomainName();
+        
+        ServerRuntime runtime = ServerRuntime.builder(dataDomainName)
                 .addConfigs(configurationLocations)
                 .addModules(modules).build();
 
