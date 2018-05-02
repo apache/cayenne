@@ -102,18 +102,18 @@ class DataNodeSyncQualifierDescriptor {
 						attributes.add(dbAttribute);
 						valueTransformers.add(input -> {
                             ObjectId id = (ObjectId) input.getNodeId();
-                            return id.getIdSnapshot().get(dbAttrPair.getSourceName());
+                            return id.getIdSnapshot().get(dbAttrPair.getTargetName());
                         });
-					}
-				}
-			}
-		}
+                    }
+                }
+            }
+        }
 
-		if (usingOptimisticLocking) {
+		if (descriptor.isMaster() && usingOptimisticLocking) {
 
 			for (final ObjAttribute attribute : descriptor.getEntity().getAttributes()) {
 
-				if (attribute.isUsedForLocking()) {
+				if (attribute.isUsedForLocking() && !attribute.isFlattened()) {
 					// only care about first step in a flattened attribute
 					DbAttribute dbAttribute = (DbAttribute) attribute.getDbPathIterator().next();
 
