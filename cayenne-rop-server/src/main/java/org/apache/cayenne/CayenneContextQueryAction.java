@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -108,10 +109,9 @@ class CayenneContextQueryAction extends ObjectContextQueryAction {
             if (refreshQuery.getQuery() != null) {
                 Query cachedQuery = refreshQuery.getQuery();
 
-                String cacheKey = cachedQuery
-                        .getMetaData(context.getEntityResolver())
-                        .getCacheKey();
-                context.getQueryCache().remove(cacheKey);
+                QueryMetadata metadata = cachedQuery
+                        .getMetaData(context.getEntityResolver());
+                context.getQueryCache().remove(metadata);
 
                 this.response = context.performGenericQuery(cachedQuery);
 
