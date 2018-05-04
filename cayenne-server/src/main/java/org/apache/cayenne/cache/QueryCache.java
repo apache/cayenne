@@ -55,9 +55,19 @@ public interface QueryCache {
     void put(QueryMetadata metadata, List results);
 	
     /**
+     * Removes a single entry from cache.<br>
+     * @deprecated since 4.1 - use {@link #remove(QueryMetadata)} instead.
+     */
+    @Deprecated
+    void remove(String key);
+
+    /**
      * Removes a single query result from the cache that matches the given metadata.
      * The metadata can be obtained like so: 
-     * <pre>query.getMetaData(context.getEntityResolver())</pre>
+     * <p>
+     * <code>query.getMetaData(objectContext.getEntityResolver())</code>
+     * 
+     * @since 4.1
      */
     void remove(QueryMetadata metadata);
 
@@ -89,10 +99,8 @@ public interface QueryCache {
     
     /**
      * Clears all entries in the LOCAL cache.
-     * @param namespace this parameter is for internal use only - client should always pass Optional.empty()
+     * @param namespace this parameter is for internal use only - clients should always pass Optional.empty()
      */
 	void clearLocalCache(Optional<String> namespace);
-	
-	List<String> debugListCacheKeys();
 
 }

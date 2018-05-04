@@ -40,6 +40,16 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
+ * An implementation of the {@link QueryCache} interface that delegates to a JCache (JSR 107)
+ * compatible cache like EhCache. This QueryCache can be used with any JCache implementation.
+ * <p>
+ * Usually you don't need to access a specific concrete implementation of the QueryCache
+ * in client code, but if you do need to, you can do so like this:
+ * <p>
+ * <code>
+ * JCacheQueryCache cache = (JCacheQueryCache)((NestedQueryCache)objectContext.getQueryCache()).getDelegate();
+ * </code>
+ * 
  * @since 4.0
  */
 public class JCacheQueryCache implements QueryCache {
@@ -79,15 +89,36 @@ public class JCacheQueryCache implements QueryCache {
         cache.put(key, results);
     }
 
+    /**
+     * Removes an entry for key in the current namespace.
+     * @deprecated since 4.1 - use {@link #remove(QueryMetadata)} instead.
+     */
     @Override
-    public void remove(QueryMetadata metadata) {
-        if (metadata != null) {
-            Cache<String, List> cache = getCache(metadata.getCacheGroup());
-            if (cache != null) {
-            	String key = metadata.getCacheKey();
-            	cache.remove(key);
+    public void remove(String key) {
+        if (key != null) {
+            for (String cache : cacheManager.getCacheNames()) {
+                getCache(cache).remove(key);
             }
         }
+    }
+    
+    /**
+     * Removes a single query result from the cache that matches the given metadata.
+     * The metadata can be obtained like so: 
+     * <p>
+     * <code>query.getMetaData(objectContext.getEntityResolver())</code>
+     * 
+     * @since 4.1
+     */
+    @Override
+    public void remove(QueryMetadata metadata) {
+    	if (metadata != null) {
+    		Cache<String, List> cache = getCache(metadata.getCacheGroup());
+    		if (cache != null) {
+    			String key = metadata.getCacheKey();
+    			cache.remove(key);
+    		}
+    	}
     }
     
     @Override
@@ -182,7 +213,10 @@ public class JCacheQueryCache implements QueryCache {
     	}
     }
 
-	@Override
+    /**
+     * For debugging / troubleshooting purposes only.
+     * @return list of all queries in all cache groups that are currently cached.
+     */
 	public List<String> debugListCacheKeys() {
 		List<String> result = new ArrayList<>();
 		for (String name : cacheManager.getCacheNames()) {

@@ -34,8 +34,13 @@ import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 /**
  * A default implementation of the {@link QueryCache} interface that stores data in a
  * non-expiring LRUMap.
- * 
- * @since 3.0
+ * <p>
+ * Usually you don't need to access a specific concrete implementation of the QueryCache
+ * in client code, but if you do need to, you can do so like this:
+ * <p>
+ * <code>
+ * MapQueryCache cache = (MapQueryCache)((NestedQueryCache)objectContext.getQueryCache()).getDelegate();
+ * </code>
  */
 public class MapQueryCache implements QueryCache, Serializable {
 
@@ -101,16 +106,37 @@ public class MapQueryCache implements QueryCache, Serializable {
         }
     }
 
+    /**
+     * Removes an entry for key in the current namespace.
+     * @deprecated since 4.1 - use {@link #remove(QueryMetadata)} instead.
+     */
+    public void remove(String key) {
+
+    	for(Map<String, List<?>> map : cacheGroups.values()) {
+    		synchronized (map) {
+    			map.remove(key);
+    		}
+    	}
+    }
+
+    /**
+     * Removes a single query result from the cache that matches the given metadata.
+     * The metadata can be obtained like so: 
+     * <p>
+     * <code>query.getMetaData(objectContext.getEntityResolver())</code>
+     * 
+     * @since 4.1
+     */
     public void remove(QueryMetadata metadata) {
-        String key = metadata.getCacheKey();
-        if (key == null) {
-            return;
-        }
-        
-        Map<String, List<?>> map = createIfAbsent(metadata);
-        synchronized (map) {
-            map.remove(key);
-        }
+    	String key = metadata.getCacheKey();
+    	if (key == null) {
+    		return;
+    	}
+
+    	Map<String, List<?>> map = createIfAbsent(metadata);
+    	synchronized (map) {
+    		map.remove(key);
+    	}
     }
 
     public void removeGroup(String groupKey) {
@@ -193,7 +219,10 @@ public class MapQueryCache implements QueryCache, Serializable {
         }
 	}
 
-	@Override
+    /**
+     * For debugging / troubleshooting purposes only.
+     * @return list of all queries in all cache groups that are currently cached.
+     */
 	public List<String> debugListCacheKeys() {
 		List<String> result = new ArrayList<>();
         for (Entry<String, Map<String, List<?>>> cacheGroup : cacheGroups.entrySet()) {

@@ -37,7 +37,7 @@ public class NestedQueryCache implements QueryCache {
     // the idea is to be something short (to speed up comparisons), but clear
     // and unlikely to create a conflict with application cache keys...
     // fully-qualified class name that we used before was a bit too long
-    private static final String NAMESPACE_PREXIX = "#nested-";
+    private static final String NAMESPACE_PREFIX = "#nested-";
     private static volatile int currentId;
 
     protected QueryCache delegate;
@@ -53,7 +53,7 @@ public class NestedQueryCache implements QueryCache {
 
     public NestedQueryCache(QueryCache delegate) {
         this.delegate = delegate;
-        this.namespace = NAMESPACE_PREXIX + nextInt() + ":";
+        this.namespace = NAMESPACE_PREFIX + nextInt() + ":";
     }
 
     /**
@@ -65,7 +65,7 @@ public class NestedQueryCache implements QueryCache {
     }
 
     /**
-     * Clears the underlying shared cache.
+     * Clears the underlying cache instance.
      * @see QueryCache#clear()
      * @deprecated since 4.0
      */
@@ -96,6 +96,21 @@ public class NestedQueryCache implements QueryCache {
 
     /**
      * Removes an entry for key in the current namespace.
+     * @deprecated since 4.1 - use {@link #remove(QueryMetadata)} instead.
+     */
+    @Deprecated
+    @Override
+    public void remove(String key) {
+    	delegate.remove(qualifiedKey(key));
+    }
+    
+    /**
+     * Removes a single query result from the cache that matches the given metadata.
+     * The metadata can be obtained like so: 
+     * <p>
+     * <code>query.getMetaData(objectContext.getEntityResolver())</code>
+     * 
+     * @since 4.1
      */
     @Override
     public void remove(QueryMetadata metadata) {
@@ -103,13 +118,16 @@ public class NestedQueryCache implements QueryCache {
     }
 
     /**
-     * Invalidates a shared cache group.
+     * Invalidates a cache group (both shared and local)
      */
     @Override
     public void removeGroup(String groupKey) {
         delegate.removeGroup(groupKey);
     }
 
+    /**
+     * Invalidates a cache group (both shared and local)
+     */
     @Override
     public void removeGroup(String groupKey, Class<?> keyType, Class<?> valueType) {
         delegate.removeGroup(groupKey, keyType, valueType);
@@ -119,7 +137,7 @@ public class NestedQueryCache implements QueryCache {
         return key != null ? namespace + key : null;
     }
 
-    private QueryMetadata qualifiedMetadata(QueryMetadata md) {
+    public QueryMetadata qualifiedMetadata(QueryMetadata md) {
         return new QueryMetadataProxy(md) {
             @Override
             public String getCacheKey() {
@@ -132,11 +150,6 @@ public class NestedQueryCache implements QueryCache {
 	public void clearLocalCache(Optional<String> namespace) {
 		// ignore passed in namespace
 		delegate.clearLocalCache(Optional.of(this.namespace));
-	}
-
-	@Override
-	public List<String> debugListCacheKeys() {
-		return delegate.debugListCacheKeys();
 	}
 
 }

@@ -42,6 +42,9 @@ public class MockQueryCache implements QueryCache {
     public void put(QueryMetadata metadata, List results) {
     }
 
+    public void remove(String key) {
+    }
+    
     public void remove(QueryMetadata metadata) {
     }
 
@@ -55,14 +58,9 @@ public class MockQueryCache implements QueryCache {
     public int size() {
         return 0;
     }
-    
-	@Override
-	public void clearLocalCache(Optional<String> namespace) {
-	}
 
-	@Override
-	public List<String> debugListCacheKeys() {
-		return Collections.emptyList();
-	}
+    @Override
+    public void clearLocalCache(Optional<String> namespace) {
+    }
 
 }
