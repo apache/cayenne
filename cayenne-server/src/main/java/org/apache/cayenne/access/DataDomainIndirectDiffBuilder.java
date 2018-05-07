@@ -91,13 +91,16 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
                             , relationship.getName(), relationship.getSourceEntity().getName());
                 }
 
-                String path = relationship.getDbRelationshipPath();
-                int lastDot = path.lastIndexOf('.');
-                if(lastDot > -1) {
-                    path = path.substring(0, lastDot);
+                // build path without last segment
+                StringBuilder path = new StringBuilder();
+                for(int i=0; i<relationship.getDbRelationships().size() - 1; i++) {
+                    if(path.length() > 0) {
+                        path.append('.');
+                    }
+                    path.append(relationship.getDbRelationships().get(i).getName());
                 }
 
-                if(!parent.getContext().getObjectStore().hasFlattenedPath(nodeObjectId, path)) {
+                if(!parent.getContext().getObjectStore().hasFlattenedPath(nodeObjectId, path.toString())) {
                     // Register this combination (so we can remove it later if an insert occurs before commit)
                     FlattenedArcKey key = new FlattenedArcKey(nodeObjectId, (ObjectId) targetNodeId, relationship);
 
