@@ -60,6 +60,8 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 	protected ObjEntity entity;
 	protected Collection<DbEntity> rootDbEntities;
+	protected Map<String, DbEntity> additionalDbEntities;
+
 	protected EntityInheritanceTree entityInheritanceTree;
 
 	// combines declared and super properties
@@ -116,6 +118,20 @@ public class PersistentDescriptor implements ClassDescriptor {
 	 */
 	public void addRootDbEntity(DbEntity dbEntity) {
 		this.rootDbEntities.add(dbEntity);
+	}
+
+	/**
+	 * Adds additional DbEntity for this descriptor.
+	 *
+	 * @param path path for entity
+	 * @param targetEntity additional entity
+	 */
+	void addAdditionalDbEntity(String path, DbEntity targetEntity) {
+		if(additionalDbEntities == null) {
+			additionalDbEntities = new HashMap<>();
+		}
+
+		additionalDbEntities.put(path, targetEntity);
 	}
 
 	void sortProperties() {
@@ -211,6 +227,14 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 	public Collection<DbEntity> getRootDbEntities() {
 		return rootDbEntities;
+	}
+
+	@Override
+	public Map<String, DbEntity> getAdditionalDbEntities() {
+		if(additionalDbEntities == null) {
+			return Collections.emptyMap();
+		}
+		return additionalDbEntities;
 	}
 
 	public boolean isFault(Object object) {

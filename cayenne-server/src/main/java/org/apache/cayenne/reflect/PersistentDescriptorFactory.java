@@ -19,6 +19,8 @@
 package org.apache.cayenne.reflect;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -27,11 +29,13 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHelper;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * A convenience superclass for {@link ClassDescriptorFactory} implementors.
@@ -104,8 +108,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             }
         }
 
-        EntityInheritanceTree inheritanceTree = descriptorMap.getResolver().getInheritanceTree(
-                descriptor.getEntity().getName());
+        EntityInheritanceTree inheritanceTree = descriptorMap.getResolver().getInheritanceTree(descriptor.getEntity().getName());
         descriptor.setEntityInheritanceTree(inheritanceTree);
         indexSubclassDescriptors(descriptor, inheritanceTree);
         indexQualifiers(descriptor, inheritanceTree);
@@ -114,6 +117,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         indexRootDbEntities(descriptor, inheritanceTree);
 
         indexSuperclassProperties(descriptor);
+        indexAdditionalDbEntities(descriptor);
 
         descriptor.sortProperties();
 
@@ -288,6 +292,57 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 }
             });
         }
+    }
+
+    protected void indexAdditionalDbEntities(final PersistentDescriptor descriptor) {
+        descriptor.visitProperties(new PropertyVisitor() {
+            @Override
+            public boolean visitAttribute(AttributeProperty property) {
+                if(!property.getAttribute().isFlattened()) {
+                    return true;
+                }
+
+                Iterator<CayenneMapEntry> it = property.getAttribute().getDbPathIterator();
+                StringBuilder sb = new StringBuilder();
+                while(it.hasNext()) {
+                    CayenneMapEntry next = it.next();
+                    if(next instanceof DbRelationship) {
+                        DbRelationship rel = (DbRelationship)next;
+                        if(sb.length() > 0) {
+                            sb.append('.');
+                        }
+                        sb.append(rel.getName());
+                        descriptor.addAdditionalDbEntity(sb.toString(), rel.getTargetEntity());
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            public boolean visitToOne(ToOneProperty property) {
+                if(!property.getRelationship().isFlattened()) {
+                    return true;
+                }
+
+                List<DbRelationship> dbRelationships = property.getRelationship().getDbRelationships();
+                StringBuilder sb = new StringBuilder();
+                int count = dbRelationships.size();
+                for(int i=0; i<count-1; i++) {
+                    DbRelationship rel = dbRelationships.get(i);
+                    if(sb.length() > 0) {
+                        sb.append('.');
+                    }
+                    sb.append(rel.getName());
+                    descriptor.addAdditionalDbEntity(sb.toString(), rel.getTargetEntity());
+                }
+                return true;
+            }
+
+            @Override
+            public boolean visitToMany(ToManyProperty property) {
+                return true;
+            }
+        });
     }
 
     /**

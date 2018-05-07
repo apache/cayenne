@@ -19,6 +19,7 @@
 package org.apache.cayenne.reflect;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
@@ -86,6 +87,12 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     public Collection<DbEntity> getRootDbEntities() {
         checkDescriptorInitialized();
         return descriptor.getRootDbEntities();
+    }
+
+    @Override
+    public Map<String, DbEntity> getAdditionalDbEntities() {
+        checkDescriptorInitialized();
+        return descriptor.getAdditionalDbEntities();
     }
 
     public EntityInheritanceTree getEntityInheritanceTree() {

@@ -27,6 +27,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -90,12 +91,20 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
                             , relationship.getName(), relationship.getSourceEntity().getName());
                 }
 
-                // Register this combination (so we can remove it later if an insert occurs before commit)
-                FlattenedArcKey key = new FlattenedArcKey((ObjectId) nodeId, (ObjectId) targetNodeId, relationship);
+                String path = relationship.getDbRelationshipPath();
+                int lastDot = path.lastIndexOf('.');
+                if(lastDot > -1) {
+                    path = path.substring(0, lastDot);
+                }
 
-                // If this combination has already been deleted, simply undelete it.
-                if (!flattenedDeletes.remove(key)) {
-                    flattenedInserts.add(key);
+                if(!parent.getContext().getObjectStore().hasFlattenedPath(nodeObjectId, path)) {
+                    // Register this combination (so we can remove it later if an insert occurs before commit)
+                    FlattenedArcKey key = new FlattenedArcKey(nodeObjectId, (ObjectId) targetNodeId, relationship);
+
+                    // If this combination has already been deleted, simply undelete it.
+                    if (!flattenedDeletes.remove(key)) {
+                        flattenedInserts.add(key);
+                    }
                 }
             }
         }
@@ -120,12 +129,23 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
                             , relationship.getName());
                 }
 
-                // Register this combination (so we can remove it later if an insert occurs before commit)
-                FlattenedArcKey key = new FlattenedArcKey((ObjectId) nodeId, (ObjectId) targetNodeId, relationship);
+                // build path without last segment
+                StringBuilder path = new StringBuilder();
+                for(int i=0; i<relationship.getDbRelationships().size() - 1; i++) {
+                    if(path.length() > 0) {
+                        path.append('.');
+                    }
+                    path.append(relationship.getDbRelationships().get(i).getName());
+                }
 
-                // If this combination has already been inserted, simply "uninsert" it also do not delete it twice
-                if (!flattenedInserts.remove(key)) {
-                    flattenedDeletes.add(key);
+                if(!parent.getContext().getObjectStore().hasFlattenedPath(nodeObjectId, path.toString())) {
+                    // Register this combination (so we can remove it later if an insert occurs before commit)
+                    FlattenedArcKey key = new FlattenedArcKey(nodeObjectId, (ObjectId) targetNodeId, relationship);
+
+                    // If this combination has already been inserted, simply "uninsert" it also do not delete it twice
+                    if (!flattenedInserts.remove(key)) {
+                        flattenedDeletes.add(key);
+                    }
                 }
             }
         }

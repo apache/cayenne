@@ -52,6 +52,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ObjectStore stores objects using their ObjectId as a key. It works as a dedicated
@@ -65,6 +67,13 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
     protected Map<Object, Persistent> objectMap;
     protected Map<Object, ObjectDiff> changes;
+
+    /**
+     * Map that tracks flattened paths for given object Id that is present in db.
+     * Presence of path in this map is used to separate insert from update case of flattened records.
+     * @since 4.1
+     */
+    protected Map<Object, Set<String>> trackedFlattenedPaths;
 
     // a sequential id used to tag GraphDiffs so that they can later be sorted in the
     // original creation order
@@ -293,6 +302,9 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             // remove object but not snapshot
             objectMap.remove(id);
             changes.remove(id);
+            if(id != null && trackedFlattenedPaths != null) {
+                trackedFlattenedPaths.remove(id);
+            }
             ids.add(id);
 
             object.setObjectContext(null);
@@ -587,6 +599,13 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             ObjectDiff change = changes.remove(nodeId);
             if (change != null) {
                 changes.put(newId, change);
+            }
+        }
+
+        if(trackedFlattenedPaths != null) {
+            Set<String> paths = trackedFlattenedPaths.remove(nodeId);
+            if(paths != null) {
+                trackedFlattenedPaths.put(newId, paths);
             }
         }
     }
@@ -965,7 +984,32 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             registerLifecycleEventInducedChange(diff);
         }
 
-        registerDiff((ObjectId)nodeId, diff);
+        registerDiff(nodeId, diff);
+    }
+
+    /**
+     * Check that flattened path for given object ID has data row in DB.
+     * @since 4.1
+     */
+    boolean hasFlattenedPath(ObjectId objectId, String path) {
+        if(trackedFlattenedPaths == null) {
+            return false;
+        }
+        return trackedFlattenedPaths
+                .getOrDefault(objectId, Collections.emptySet()).contains(path);
+    }
+
+    /**
+     * Mark that flattened path for object has data row in DB.
+     * @since 4.1
+     */
+    void markFlattenedPath(ObjectId objectId, String path) {
+        if(trackedFlattenedPaths == null) {
+            trackedFlattenedPaths = new ConcurrentHashMap<>();
+        }
+        trackedFlattenedPaths
+                .computeIfAbsent(objectId, o -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+                .add(path);
     }
 
     // an ObjectIdQuery optimized for retrieval of multiple snapshots - it can be reset

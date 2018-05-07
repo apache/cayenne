@@ -44,11 +44,11 @@
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
 	<db-entity name="IV_IMPL">
-		<db-attribute name="ATTR1" type="VARCHAR" isMandatory="true" length="100"/>
-		<db-attribute name="ATTR2" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="ATTR1" type="VARCHAR" length="100"/>
+		<db-attribute name="ATTR2" type="VARCHAR" length="100"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="OTHER1_ID" type="INTEGER" isMandatory="true"/>
-		<db-attribute name="OTHER2_ID" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="OTHER1_ID" type="INTEGER"/>
+		<db-attribute name="OTHER2_ID" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="IV_IMPL_WITH_LOCK">
 		<db-attribute name="ATTR1" type="VARCHAR" isMandatory="true" length="100"/>

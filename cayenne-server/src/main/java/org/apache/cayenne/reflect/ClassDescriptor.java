@@ -20,6 +20,7 @@
 package org.apache.cayenne.reflect;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
@@ -50,6 +51,17 @@ public interface ClassDescriptor {
      * @since 3.0
      */
     Collection<DbEntity> getRootDbEntities();
+
+    /**
+     * Returns information about additional db entities that is used for this ObjEntity (i.e. for flattened attributes).
+     * <p>
+     * Keys are full paths for corresponding flattened attributes.
+     * <p>
+     *
+     * @since 4.1
+     * @return information about additional db entities
+     */
+    Map<String, DbEntity> getAdditionalDbEntities();
 
     /**
      * @since 3.0

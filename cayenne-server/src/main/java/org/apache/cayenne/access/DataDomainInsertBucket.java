@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,8 @@ import org.apache.cayenne.query.Query;
  * @since 1.2
  */
 class DataDomainInsertBucket extends DataDomainSyncBucket {
+
+    List<FlattenedInsert> flattenedInserts;
 
     DataDomainInsertBucket(DataDomainFlushAction parent) {
         super(parent);
@@ -83,6 +86,9 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
                     }
 
                     batch.add(snapshot, o.getObjectId());
+                    if(!descriptor.isMaster()) {
+                        trackFlattenedInsert(descriptor, o);
+                    }
                 }
             }
 
@@ -185,5 +191,44 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
         }
 
         return false;
+    }
+
+    void trackFlattenedInsert(DbEntityClassDescriptor descriptor, Persistent object) {
+        if(flattenedInserts == null) {
+            flattenedInserts = new LinkedList<>();
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for(DbRelationship rel : descriptor.getPathFromMaster()) {
+            if(sb.length() > 0) {
+                sb.append('.');
+            }
+            sb.append(rel.getName());
+         }
+
+        flattenedInserts.add(new FlattenedInsert(sb.toString(), object));
+    }
+
+    @Override
+    void postprocess() {
+        super.postprocess();
+        if(flattenedInserts != null) {
+            for(FlattenedInsert insert : flattenedInserts) {
+                insert.register(parent.getContext().getObjectStore());
+            }
+        }
+    }
+
+    private static class FlattenedInsert {
+        private final String path;
+        private final Persistent object;
+        private FlattenedInsert(String path, Persistent object) {
+            this.path = path;
+            this.object = object;
+        }
+
+        private void register(ObjectStore objectStore) {
+            objectStore.markFlattenedPath(object.getObjectId(), path);
+        }
     }
 }

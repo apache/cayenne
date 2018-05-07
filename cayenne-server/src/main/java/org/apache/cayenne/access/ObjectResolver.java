@@ -145,6 +145,9 @@ class ObjectResolver {
 		// this will create a HOLLOW object if it is not registered yet
 		Persistent object = context.findOrCreateObject(anId);
 
+		// resolve additional Object IDs for flattened attributes
+		resolveAdditionalIds(row, object, classDescriptor);
+
 		// deal with object state
 		int state = object.getPersistenceState();
 		switch (state) {
@@ -179,7 +182,24 @@ class ObjectResolver {
 		return object;
 	}
 
-	ObjEntity getEntity() {
+    private void resolveAdditionalIds(DataRow row, Persistent object, ClassDescriptor classDescriptor) {
+	    if(classDescriptor.getAdditionalDbEntities().isEmpty()) {
+	        return;
+        }
+
+	    for(Map.Entry<String, DbEntity> entry : classDescriptor.getAdditionalDbEntities().entrySet()) {
+            DbEntity dbEntity = entry.getValue();
+            String path = entry.getKey();
+            int lastDot = path.lastIndexOf('.');
+            String prefix = lastDot == -1 ? path : path.substring(lastDot + 1);
+            ObjectId objectId = createObjectId(row, dbEntity.getName(), dbEntity.getPrimaryKeys(), prefix + '.', false);
+            if(objectId != null) {
+				context.getObjectStore().markFlattenedPath(object.getObjectId(), path);
+            }
+        }
+    }
+
+    ObjEntity getEntity() {
 		return descriptor.getEntity();
 	}
 
@@ -196,10 +216,13 @@ class ObjectResolver {
 	}
 
 	ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, String namePrefix) {
+        Collection<DbAttribute> pk = objEntity == this.descriptor.getEntity()
+                ? this.primaryKey
+                : objEntity.getDbEntity().getPrimaryKeys();
+        return createObjectId(dataRow, objEntity.getName(), pk, namePrefix, true);
+    }
 
-		Collection<DbAttribute> pk = objEntity == this.descriptor.getEntity() ? this.primaryKey : objEntity
-				.getDbEntity().getPrimaryKeys();
-
+    ObjectId createObjectId(DataRow dataRow, String name, Collection<DbAttribute> pk, String namePrefix, boolean strict) {
 		boolean prefix = namePrefix != null && namePrefix.length() > 0;
 
 		// ... handle special case - PK.size == 1
@@ -214,14 +237,14 @@ class ObjectResolver {
 
 			// this is possible when processing left outer joint prefetches
 			if (val == null) {
-				if(!dataRow.containsKey(key)) {
+				if(strict && !dataRow.containsKey(key)) {
 					throw new CayenneRuntimeException("No PK column '%s' found in data row.", key);
 				}
 				return null;
 			}
 
 			// PUT without a prefix
-			return new ObjectId(objEntity.getName(), attribute.getName(), val);
+			return new ObjectId(name, attribute.getName(), val);
 		}
 
 		// ... handle generic case - PK.size > 1
@@ -235,7 +258,7 @@ class ObjectResolver {
 
 			// this is possible when processing left outer joint prefetches
 			if (val == null) {
-				if(!dataRow.containsKey(key)) {
+				if(strict && !dataRow.containsKey(key)) {
 					throw new CayenneRuntimeException("No PK column '%s' found in data row.", key);
 				}
 				return null;
@@ -245,7 +268,7 @@ class ObjectResolver {
 			idMap.put(attribute.getName(), val);
 		}
 
-		return new ObjectId(objEntity.getName(), idMap);
+		return new ObjectId(name, idMap);
 	}
 
 	interface DescriptorResolutionStrategy {

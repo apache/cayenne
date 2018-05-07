@@ -97,11 +97,22 @@ public class CDOOneToOneFKIT extends ServerCase {
                 false,
                 ObjectIdQuery.CACHE_REFRESH);
         ToOneFK2 src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        assertNull(src2.getToOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
 
         // *** TESTING THIS ***
         src2.setToOneToFK(null);
         assertNull(src2.getToOneToFK());
+
+        context.commitChanges();
+
+        refetch = new ObjectIdQuery(
+                src.getObjectId(),
+                false,
+                ObjectIdQuery.CACHE_REFRESH);
+        src2 = (ToOneFK2) Cayenne.objectForQuery(context1, refetch);
+        assertNull(src2.getToOneToFK());
+        assertEquals(src.getObjectId(), src2.getObjectId());
     }
 
     @Test

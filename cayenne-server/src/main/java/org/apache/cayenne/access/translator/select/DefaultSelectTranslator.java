@@ -616,6 +616,19 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 			public boolean visitToOne(ToOneProperty property) {
 				visitRelationship(property);
+
+				// add PKs for flattened tables in flattened path
+				ObjRelationship rel = property.getRelationship();
+				for(int i=0; i<rel.getDbRelationships().size() - 1; i++) {
+					DbRelationship dbRel = rel.getDbRelationships().get(i);
+					dbRelationshipAdded(dbRel, JoinType.LEFT_OUTER, null);
+
+					// append path PK attributes
+					for(DbAttribute dba : dbRel.getTargetEntity().getPrimaryKeys()) {
+						appendColumn(columns, null, dba, attributes, dbRel.getName() + '.' + dba.getName());
+					}
+				}
+
 				return true;
 			}
 
