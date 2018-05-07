@@ -5,8 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import javax.annotation.Generated;
-
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.inheritance_with_enum.Dependent;
