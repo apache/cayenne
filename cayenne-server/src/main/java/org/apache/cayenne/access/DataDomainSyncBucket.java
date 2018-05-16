@@ -97,48 +97,35 @@ abstract class DataDomainSyncBucket {
         descriptorsByDbEntity = new HashMap<>(objectsByDescriptor.size() * 2);
 
         for (ClassDescriptor descriptor : objectsByDescriptor.keySet()) {
+            addSpannedDbEntities(descriptor);
+        }
+    }
 
-            // root DbEntity
-            {
-                DbEntityClassDescriptor dbEntityDescriptor = new DbEntityClassDescriptor(descriptor);
-                DbEntity dbEntity = dbEntityDescriptor.getDbEntity();
+    void addSpannedDbEntities(ClassDescriptor descriptor) {
+        // root DbEntity
+        addDescriptor(descriptor, new DbEntityClassDescriptor(descriptor));
 
-                Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
-                if (descriptors == null) {
-                    descriptors = new ArrayList<>(1);
-                    dbEntities.add(dbEntity);
-                    descriptorsByDbEntity.put(dbEntity, descriptors);
-                }
-
-                if (!containsClassDescriptor(descriptors, descriptor)) {
-                    descriptors.add(dbEntityDescriptor);
-                }
+        // secondary DbEntities...
+        // Note that this logic won't allow flattened attributes to span multiple databases...
+        for (ObjAttribute objAttribute : descriptor.getEntity().getAttributes()) {
+            if (objAttribute.isFlattened()) {
+                addDescriptor(descriptor, new DbEntityClassDescriptor(descriptor, objAttribute));
             }
+        }
+    }
 
-            // secondary DbEntities...
+    void addDescriptor(ClassDescriptor descriptor, DbEntityClassDescriptor dbEntityDescriptor) {
+        DbEntity dbEntity = dbEntityDescriptor.getDbEntity();
+        Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
 
-            // Note that this logic won't allow flattened attributes to span multiple databases...
-            for (ObjAttribute objAttribute : descriptor.getEntity().getAttributes()) {
+        if (descriptors == null) {
+            descriptors = new ArrayList<>(1);
+            dbEntities.add(dbEntity);
+            descriptorsByDbEntity.put(dbEntity, descriptors);
+        }
 
-                if (objAttribute.isFlattened()) {
-                    DbEntityClassDescriptor dbEntityDescriptor = new DbEntityClassDescriptor(
-                            descriptor,
-                            objAttribute);
-
-                    DbEntity dbEntity = dbEntityDescriptor.getDbEntity();
-                    Collection<DbEntityClassDescriptor> descriptors = descriptorsByDbEntity.get(dbEntity);
-
-                    if (descriptors == null) {
-                        descriptors = new ArrayList<>(1);
-                        dbEntities.add(dbEntity);
-                        descriptorsByDbEntity.put(dbEntity, descriptors);
-                    }
-
-                    if (!containsClassDescriptor(descriptors, descriptor)) {
-                        descriptors.add(dbEntityDescriptor);
-                    }
-                }
-            }
+        if (!containsClassDescriptor(descriptors, descriptor)) {
+            descriptors.add(dbEntityDescriptor);
         }
     }
 
@@ -154,15 +141,7 @@ abstract class DataDomainSyncBucket {
     }
 
     void addDirtyObject(Persistent object, ClassDescriptor descriptor) {
-
-        List<Persistent> objects = objectsByDescriptor.get(descriptor);
-        if (objects == null) {
-
-            objects = new ArrayList<>();
-            objectsByDescriptor.put(descriptor, objects);
-        }
-
-        objects.add(object);
+        objectsByDescriptor.computeIfAbsent(descriptor, k -> new ArrayList<>()).add(object);
     }
 
     void postprocess() {
@@ -243,7 +222,7 @@ abstract class DataDomainSyncBucket {
         }
     }
 
-    private final void remapTarget(
+    private void remapTarget(
             ToManyMapProperty property,
             Object source,
             Object target) throws PropertyException {

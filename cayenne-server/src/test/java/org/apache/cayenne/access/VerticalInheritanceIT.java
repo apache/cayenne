@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
@@ -42,6 +43,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -53,6 +55,9 @@ public class VerticalInheritanceIT extends ServerCase {
 
 	@Inject
 	protected DBHelper dbHelper;
+
+	@Inject
+	protected ServerRuntime runtime;
 
     @Test
 	public void testInsert_Root() throws Exception {
@@ -237,8 +242,8 @@ public class VerticalInheritanceIT extends ServerCase {
 	public void testUpdateRelation_Sub3() throws Exception {
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
-		ivRootTable.insert(1, null, null);
-		ivRootTable.insert(2, null, null);
+		ivRootTable.insert(1, "root1", null);
+		ivRootTable.insert(2, "root2", null);
 		ivRootTable.insert(3, "name", "IvSub3");
 
 		TableHelper ivSub3Table = new TableHelper(dbHelper, "IV_SUB3");
@@ -253,6 +258,17 @@ public class VerticalInheritanceIT extends ServerCase {
 		// this will create 3 queries...
 		// update for name, insert for new relationship, delete for old relationship
 		context.commitChanges();
+
+		ObjectContext cleanContext = runtime.newContext();
+		IvSub3 sub3Clean = SelectById.query(IvSub3.class, 3).selectOne(cleanContext);
+
+		assertNotNull(sub3Clean);
+		assertNotSame(sub3, sub3Clean);
+
+		assertEquals("new name", sub3.getName());
+		assertNotNull(sub3Clean.getIvRoot());
+		assertEquals("root2", sub3Clean.getIvRoot().getName());
+
 	}
 
     @Test

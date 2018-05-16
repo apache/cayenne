@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -58,7 +60,7 @@ class DbEntityClassDescriptor {
                 if (object instanceof DbRelationship) {
 
                     if (pathFromMaster == null) {
-                        pathFromMaster = new ArrayList<>(2);
+                        pathFromMaster = new ArrayList<>(1);
                     }
 
                     pathFromMaster.add((DbRelationship) object);
@@ -72,6 +74,17 @@ class DbEntityClassDescriptor {
         if (dbEntity == null) {
             dbEntity = classDescriptor.getEntity().getDbEntity();
         }
+    }
+
+    DbEntityClassDescriptor(ClassDescriptor classDescriptor, ObjRelationship masterRelationship) {
+        if(masterRelationship.getDbRelationships().size() > 2) {
+            throw new CayenneRuntimeException("Only two step flattened relationships are supported, " + masterRelationship.getDbRelationshipPath());
+        }
+        this.classDescriptor = classDescriptor;
+        DbRelationship pathRelationship = masterRelationship.getDbRelationships().get(0);
+        pathFromMaster = new ArrayList<>(1);
+        pathFromMaster.add(pathRelationship);
+        dbEntity = pathRelationship.getTargetEntity();
     }
 
     boolean isMaster() {

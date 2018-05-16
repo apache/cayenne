@@ -28,14 +28,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 1.2
@@ -44,6 +45,17 @@ class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
     DataDomainUpdateBucket(DataDomainFlushAction parent) {
         super(parent);
+    }
+
+    @Override
+    void addSpannedDbEntities(ClassDescriptor descriptor) {
+        super.addSpannedDbEntities(descriptor);
+        // for update we need to add entities for flattened toOne relationships
+        for(ObjRelationship objRelationship : descriptor.getEntity().getRelationships()) {
+            if(objRelationship.isFlattened() && !objRelationship.isToMany()) {
+                addDescriptor(descriptor, new DbEntityClassDescriptor(descriptor, objRelationship));
+            }
+        }
     }
 
     @Override
