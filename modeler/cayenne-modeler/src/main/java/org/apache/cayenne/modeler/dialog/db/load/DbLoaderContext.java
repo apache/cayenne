@@ -192,12 +192,7 @@ public class DbLoaderContext {
 
     public void processException(final Throwable th, final String message) {
         LOGGER.info("Exception on reverse engineering", Util.unwindException(th));
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                JOptionPane.showMessageDialog(Application.getFrame(), th.getMessage(), message,
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        SwingUtilities.invokeLater(() -> JOptionPane
+                .showMessageDialog(Application.getFrame(), th.getMessage(), message, JOptionPane.ERROR_MESSAGE));
     }
 }

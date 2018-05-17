@@ -82,7 +82,7 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
     private void addDbEntityToMap(DetectedDbEntity table, DbLoadDataStore map) {
         DbEntity oldEnt = map.addDbEntitySafe(table);
         if (oldEnt != null) {
-            LOGGER.debug("Overwrite DbEntity: " + oldEnt.getName());
+            LOGGER.warn("Overwrite DbEntity: " + oldEnt.getName());
             delegate.dbEntityRemoved(oldEnt);
         }
         delegate.dbEntityAdded(table);
