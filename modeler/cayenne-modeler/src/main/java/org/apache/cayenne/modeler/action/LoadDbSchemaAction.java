@@ -64,29 +64,28 @@ public class LoadDbSchemaAction extends CayenneAction {
         rootParent.getLoadDbSchemaButton().setEnabled(false);
         Thread thread = new Thread(() -> {
             LoadDbSchemaAction.this.setEnabled(false);
+            rootParent.lockToolbarButtons();
             draggableTreePanel.getMoveButton().setEnabled(false);
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
-            rootParent.lockToolbarButtons();
-            DBConnectionInfo connectionInfo;
-            if (!datamapPreferencesExist()) {
-                final DataSourceWizard connectWizard = new DataSourceWizard(getProjectController(), "Load Db Schema");
-                connectWizard.setProjectController(getProjectController());
-                if (!connectWizard.startupAction()) {
-                    return;
-                }
-                connectionInfo = connectWizard.getConnectionInfo();
-                saveConnectionInfo(connectWizard);
-            } else {
-                connectionInfo = getConnectionInfoFromPreferences();
-            }
             try {
+                DBConnectionInfo connectionInfo;
+                if (!datamapPreferencesExist()) {
+                    final DataSourceWizard connectWizard = new DataSourceWizard(getProjectController(), "Load Db Schema");
+                    connectWizard.setProjectController(getProjectController());
+                    if (!connectWizard.startupAction()) {
+                        return;
+                    }
+                    connectionInfo = connectWizard.getConnectionInfo();
+                    saveConnectionInfo(connectWizard);
+                } else {
+                    connectionInfo = getConnectionInfoFromPreferences();
+                }
+
                 ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
                         .load(connectionInfo, getApplication().getClassLoadingService());
-                draggableTreePanel
-                        .getSourceTree()
+                draggableTreePanel.getSourceTree()
                         .setEnabled(true);
-                draggableTreePanel
-                        .getSourceTree()
+                draggableTreePanel.getSourceTree()
                         .translateReverseEngineeringToTree(databaseReverseEngineering, true);
                 draggableTreePanel
                         .bindReverseEngineeringToDatamap(getProjectController().getCurrentDataMap(), databaseReverseEngineering);
@@ -97,8 +96,7 @@ public class LoadDbSchemaAction extends CayenneAction {
                         exception.getMessage(),
                         "Error db schema loading",
                         JOptionPane.ERROR_MESSAGE);
-            }
-            finally {
+            } finally {
                 rootParent.getLoadDbSchemaButton().setEnabled(true);
                 rootParent.getLoadDbSchemaProgress().setVisible(false);
                 rootParent.unlockToolbarButtons();
