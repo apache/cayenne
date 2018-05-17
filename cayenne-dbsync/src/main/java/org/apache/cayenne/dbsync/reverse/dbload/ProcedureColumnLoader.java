@@ -58,7 +58,7 @@ public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
         String procCatalog = rs.getString("PROCEDURE_CAT");
         String name = rs.getString("PROCEDURE_NAME");
         String key = Procedure.generateFullyQualifiedName(procCatalog, procSchema, name);
-        Procedure procedure = map.getProcedure(key);
+        Procedure procedure = map.getProcedure(name);
         if (procedure == null) {
             return;
         }
