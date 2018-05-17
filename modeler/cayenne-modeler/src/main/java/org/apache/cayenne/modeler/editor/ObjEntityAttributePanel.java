@@ -173,27 +173,24 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         mediator.addObjEntityListener(this);
         mediator.addObjAttributeListener(this);
 
-        resolver = new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                if (row < 0) {
-                    return;
-                }
-
-                ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
-
-                // ... show dialog...
-                new ObjAttributeInfoDialog(mediator, row, model).startupAction();
-
-                // This is required for a table to be updated properly
-                table.cancelEditing();
-
-                // need to refresh selected row... do this by unselecting/selecting the row
-                table.getSelectionModel().clearSelection();
-                table.select(row);
-                enabledResolve = false;
+        resolver = e -> {
+            int row = table.getSelectedRow();
+            if (row < 0) {
+                return;
             }
+
+            ObjAttributeTableModel model = (ObjAttributeTableModel) table.getModel();
+
+            // ... show dialog...
+            new ObjAttributeInfoDialog(mediator, row, model).startupAction();
+
+            // This is required for a table to be updated properly
+            table.cancelEditing();
+
+            // need to refresh selected row... do this by unselecting/selecting the row
+            table.getSelectionModel().clearSelection();
+            table.select(row);
+            enabledResolve = false;
         };
         resolveMenu.addActionListener(resolver);
 
@@ -249,6 +246,9 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
         }
 
         table.select(newSel);
+
+        parentPanel.getResolve().removeActionListener(getResolver());
+        parentPanel.getResolve().addActionListener(getResolver());
     }
 
     public void objAttributeChanged(AttributeEvent e) {
