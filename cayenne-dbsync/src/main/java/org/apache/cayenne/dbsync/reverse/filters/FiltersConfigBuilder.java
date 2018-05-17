@@ -31,6 +31,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -88,9 +89,10 @@ public final class FiltersConfigBuilder {
     private SortedSet<IncludeTableFilter> transformIncludeTable(Collection<IncludeTable> includeTables) {
         SortedSet<IncludeTableFilter> includeTableFilters = new TreeSet<>();
         for (IncludeTable includeTable : includeTables) {
-            includeTableFilters.add(new IncludeTableFilter(includeTable.getPattern(),
-                    transform(includeTable.getIncludeColumns(), includeTable.getExcludeColumns(), includeTable.getExcludeRelationship())));
-
+            includeTableFilters.add(new IncludeTableFilter(includeTable.getPattern()
+                    , transform(includeTable.getIncludeColumns(), includeTable.getExcludeColumns())
+                    , transform(Collections.emptyList(), includeTable.getExcludeRelationship())
+            ));
         }
 
         return includeTableFilters;

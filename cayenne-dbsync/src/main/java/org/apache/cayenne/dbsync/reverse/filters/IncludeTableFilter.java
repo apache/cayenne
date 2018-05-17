@@ -28,17 +28,37 @@ public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
 
     public final PatternFilter columnsFilter;
 
+    /**
+     * @since 4.1
+     */
+    public final PatternFilter relationshipFilter;
+
     public IncludeTableFilter(String pattern) {
-        this(pattern, PatternFilter.INCLUDE_EVERYTHING);
+        this(pattern, PatternFilter.INCLUDE_EVERYTHING, PatternFilter.INCLUDE_EVERYTHING);
     }
 
     public IncludeTableFilter(String pattern, PatternFilter columnsFilter) {
+        this(pattern, columnsFilter, PatternFilter.INCLUDE_EVERYTHING);
+    }
+
+    /**
+     * @since 4.1
+     */
+    public IncludeTableFilter(String pattern, PatternFilter columnsFilter, PatternFilter relationshipFilter) {
         this.pattern = PatternFilter.pattern(pattern);
         this.columnsFilter = columnsFilter;
+        this.relationshipFilter = relationshipFilter;
     }
 
     public boolean isIncludeColumn (String name) {
         return columnsFilter.isIncluded(name);
+    }
+
+    /**
+     * @since 4.1
+     */
+    public boolean isIncludeRelationship (String name) {
+        return relationshipFilter.isIncluded(name);
     }
 
     @Override

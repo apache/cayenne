@@ -62,7 +62,7 @@ class DbRelationshipDictionary extends MergerDictionary<DbRelationship> {
         Collection<DbRelationship> existingFiltered = new LinkedList<>();
         TableFilter tableFilter = filtersConfig.tableFilter(container.getCatalog(), container.getSchema());
         if(tableFilter != null && tableFilter.isIncludeTable(container.getName())){
-            PatternFilter patternFilter = tableFilter.getIncludeTableColumnFilter(container.getName());
+            PatternFilter patternFilter = tableFilter.getIncludeTableRelationshipFilter(container.getName());
             for(DbRelationship rel : container.getRelationships()){
                 if(patternFilter.isIncluded(rel.getName())){
                     existingFiltered.add(rel);
@@ -71,6 +71,7 @@ class DbRelationshipDictionary extends MergerDictionary<DbRelationship> {
         }
         return existingFiltered;
     }
+
     /**
      * Signature of DbRelationship is sorted strings generated from its DbJoins
      */

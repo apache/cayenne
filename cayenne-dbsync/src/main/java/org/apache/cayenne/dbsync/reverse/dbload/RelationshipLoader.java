@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -125,11 +126,31 @@ public class RelationshipLoader extends AbstractLoader {
     }
 
     private void checkAndAddRelationship(DbEntity entity, DbRelationship relationship){
-        boolean isIncluded = config.getFiltersConfig()
-                .tableFilter(entity.getCatalog(), entity.getSchema())
-                .getIncludeTableColumnFilter(entity.getName())
-                .isIncluded(relationship.getName());
-        if (isIncluded && delegate.dbRelationshipLoaded(entity, relationship)) {
+        TableFilter tableFilter = config.getFiltersConfig()
+                .tableFilter(entity.getCatalog(), entity.getSchema());
+
+        // check that relationship can be included
+        if(!tableFilter.getIncludeTableRelationshipFilter(entity.getName())
+                .isIncluded(relationship.getName())) {
+            return;
+        }
+
+        // this can be because of filtered out columns, so next check can be excessive,
+        // but still better to check everything here too, so we can assert that added relationship is valid.
+        if(relationship.getJoins().isEmpty()) {
+            return;
+        }
+
+        // check that all join attributes are included
+        for(DbJoin join : relationship.getJoins()) {
+            if(!tableFilter.getIncludeTableColumnFilter(entity.getName()).isIncluded(join.getSourceName()) ||
+                    !tableFilter.getIncludeTableColumnFilter(relationship.getTargetEntityName()).isIncluded(join.getTargetName())) {
+                return;
+            }
+        }
+
+        // add relationship if delegate permit it
+        if (delegate.dbRelationshipLoaded(entity, relationship)) {
             entity.addRelationship(relationship);
         }
     }
@@ -172,7 +193,6 @@ public class RelationshipLoader extends AbstractLoader {
 
             addJoin(forwardRelationship, pkName, fkName);
             addJoin(reverseRelationship, fkName, pkName);
-
         }
     }
 

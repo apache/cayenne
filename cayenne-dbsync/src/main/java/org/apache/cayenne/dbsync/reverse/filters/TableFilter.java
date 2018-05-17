@@ -35,9 +35,6 @@ public class TableFilter {
 
     /**
      * Includes can contain only one include table
-     *
-     * @param includes
-     * @param excludes
      */
     public TableFilter(SortedSet<IncludeTableFilter> includes, SortedSet<Pattern> excludes) {
         if (includes.isEmpty()) {
@@ -56,11 +53,25 @@ public class TableFilter {
 
     /**
      * Return filter for columns in case we should take this table
-     *
-     * @param tableName
-     * @return
      */
     public PatternFilter getIncludeTableColumnFilter(String tableName) {
+        IncludeTableFilter include = getIncludeTableFilter(tableName);
+        if (include == null) return null;
+
+        return include.columnsFilter;
+    }
+
+    /**
+     * @since 4.1
+     */
+    public PatternFilter getIncludeTableRelationshipFilter(String tableName) {
+        IncludeTableFilter include = getIncludeTableFilter(tableName);
+        if (include == null) return null;
+
+        return include.relationshipFilter;
+    }
+
+    private IncludeTableFilter getIncludeTableFilter(String tableName) {
         IncludeTableFilter include = null;
         for (IncludeTableFilter p : includes) {
             if (p.pattern == null || p.pattern.matcher(tableName).matches()) {
@@ -80,8 +91,7 @@ public class TableFilter {
                 }
             }
         }
-
-        return include.columnsFilter;
+        return include;
     }
 
     public SortedSet<IncludeTableFilter> getIncludes() {
@@ -89,17 +99,17 @@ public class TableFilter {
     }
 
     public static TableFilter include(String tablePattern) {
-        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
         includes.add(new IncludeTableFilter(tablePattern == null ? null : tablePattern.replaceAll("%", ".*")));
 
-        return new TableFilter(includes, new TreeSet<Pattern>());
+        return new TableFilter(includes, new TreeSet<>());
     }
 
     public static TableFilter everything() {
-        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
         includes.add(new IncludeTableFilter(null));
 
-        return new TableFilter(includes, new TreeSet<Pattern>());
+        return new TableFilter(includes, new TreeSet<>());
     }
 
     protected StringBuilder toString(StringBuilder res, String prefix) {
