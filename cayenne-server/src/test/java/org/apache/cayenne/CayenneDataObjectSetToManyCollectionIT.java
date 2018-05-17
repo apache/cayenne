@@ -33,9 +33,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
 public class CayenneDataObjectSetToManyCollectionIT extends ServerCase {
@@ -60,7 +58,7 @@ public class CayenneDataObjectSetToManyCollectionIT extends ServerCase {
 	}
 
 	@Test
-	public void testReadToMany() throws Exception {
+	public void testReadToMany() {
 
 		CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 
@@ -77,22 +75,17 @@ public class CayenneDataObjectSetToManyCollectionIT extends ServerCase {
 	}
 
 	/**
-	 * Testing if collection type is Collection, everything should work fine without an
-	 * runtimexception
-	 * 
-	 * @throws Exception
+	 * Testing if collection type is Collection, everything should work fine without a runtime exception
 	 */
 	@Test
-	public void testRelationCollectionTypeCollection() throws Exception {
+	public void testRelationCollectionTypeCollection() {
 		CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
 		assertTrue(o1.readProperty(CollectionToMany.TARGETS.getName()) instanceof Collection);
-		boolean catchedSomething = false;
 		try {
 			o1.setToManyTarget(CollectionToMany.TARGETS.getName(), new ArrayList<CollectionToMany>(0), true);
 		} catch (RuntimeException e) {
-			catchedSomething = true;
+			fail();
 		}
-		assertEquals(catchedSomething, false);
-		assertEquals(o1.getTargets().size(), 0);
+		assertEquals(0, o1.getTargets().size());
 	}
 }

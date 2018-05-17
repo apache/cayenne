@@ -496,9 +496,7 @@ public class NestedDataContextWriteIT extends ServerCase {
 
         ObjEntity ent = childContext.getEntityResolver().getObjEntity("ArtGroup");
         Collection<ObjRelationship> rels = ent.getDeclaredRelationships();
-        for (ObjRelationship rel : rels) {
-            System.out.println(rel.getName());
-        }
+        assertEquals(3, rels.size());
 
         assertEquals(1, childO1.getGroupArray().size());
         assertEquals(1, childO2.getArtistArray().size());

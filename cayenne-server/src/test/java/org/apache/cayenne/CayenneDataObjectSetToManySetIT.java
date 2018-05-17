@@ -33,8 +33,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
 public class CayenneDataObjectSetToManySetIT extends ServerCase {
@@ -55,6 +54,8 @@ public class CayenneDataObjectSetToManySetIT extends ServerCase {
 
 		tSetToManyTarget = new TableHelper(dbHelper, "SET_TO_MANY_TARGET");
 		tSetToManyTarget.setColumns("ID", "SET_TO_MANY_ID");
+
+		createTestDataSet();
 	}
 
 	protected void createTestDataSet() throws Exception {
@@ -67,24 +68,19 @@ public class CayenneDataObjectSetToManySetIT extends ServerCase {
 	}
 
 	/**
-	 * Testing if collection type is set, everything should work fine without an
-	 * runtimexception
-	 * 
-	 * @throws Exception
+	 * Testing if collection type is set, everything should work fine without a runtime exception
 	 */
 	@Test
 	public void testRelationCollectionTypeMap() throws Exception {
-		createTestDataSet();
+
 
 		SetToMany o1 = Cayenne.objectForPK(context, SetToMany.class, 1);
 		assertTrue(o1.readProperty(SetToMany.TARGETS.getName()) instanceof Set);
-		boolean catchedSomething = false;
 		try {
 			o1.setToManyTarget(SetToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true);
 		} catch (RuntimeException e) {
-			catchedSomething = true;
+			fail();
 		}
-		assertEquals(catchedSomething, false);
 		assertEquals(o1.getTargets().size(), 0);
 	}
 }

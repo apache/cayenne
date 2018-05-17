@@ -60,7 +60,6 @@ public class MavenPluginClassLoaderManager implements ClassLoaderManager {
 
     private void addUrlFromFile(final File file) {
         try {
-            System.out.println("Add URI to classpath: " + file.toURI());
             urls.add(file.toURI().toURL());
         } catch (Exception ignored) {
         }

@@ -1349,7 +1349,7 @@
 								<cayenneAdapter>org.apache.cayenne.dba.mysql.MySQLAdapter</cayenneAdapter>
 								<cayenneJdbcUsername>root</cayenneJdbcUsername>
 								<cayenneJdbcPassword />
-								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne?useUnicode=true&amp;characterEncoding=UTF-8&amp;generateSimpleParameterMetadata=true</cayenneJdbcUrl>
+								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne?useUnicode=true&amp;characterEncoding=UTF-8&amp;generateSimpleParameterMetadata=true&amp;useSSL=false</cayenneJdbcUrl>
 								<cayenneJdbcDriver>com.mysql.jdbc.Driver</cayenneJdbcDriver>
 							</systemPropertyVariables>
 						</configuration>

@@ -38,9 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CayenneDataObjectSetToManyListIT extends ServerCase {
@@ -66,6 +64,7 @@ public class CayenneDataObjectSetToManyListIT extends ServerCase {
 		tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID").setColumnTypes(Types.INTEGER, Types.VARCHAR,
 				Types.BIGINT);
 
+		createArtistWithPaintingDataSet();
 	}
 
 	private void createArtistWithPaintingDataSet() throws Exception {
@@ -76,13 +75,9 @@ public class CayenneDataObjectSetToManyListIT extends ServerCase {
 	}
 
 	@Test
-	public void testReadRO1() throws Exception {
-
-		createArtistWithPaintingDataSet();
-
+	public void testReadRO1() {
 		Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
-
-		assertEquals(a1 != null, true);
+		assertNotNull(a1);
 
 		List<ROPainting> paints = ObjectSelect.query(ROPainting.class).where(ROPainting.TO_ARTIST.eq(a1))
 				.select(context);
@@ -94,67 +89,43 @@ public class CayenneDataObjectSetToManyListIT extends ServerCase {
 	}
 
 	@Test
-	public void testSetEmptyList1() throws Exception {
-		createArtistWithPaintingDataSet();
+	public void testSetEmptyList1() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<ROPainting>(0), true);
 		List<Painting> paints = artist.getPaintingArray();
 		assertEquals(0, paints.size());
 	}
 
-	@Test
-	public void testSetEmptyList2() throws Exception {
-		createArtistWithPaintingDataSet();
+	@Test(expected = IllegalArgumentException.class)
+	public void testSetEmptyList2() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
-		boolean thrown = false;
-		try {
-			artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), null, true);
-		} catch (IllegalArgumentException e) {
-			thrown = true;
-		}
-		assertEquals("should throw a IllegalArgumentException", thrown, true);
+		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), null, true);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testNonExistentRelName() {
+		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
+		artist.setToManyTarget("doesnotexist", new ArrayList<ROPainting>(0), true);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testEmptyRelName() {
+		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
+		artist.setToManyTarget("", new ArrayList<ROPainting>(0), true);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullRelName() {
+		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
+		artist.setToManyTarget(null, new ArrayList<ROPainting>(0), true);
 	}
 
 	@Test
-	public void testWrongRelName() throws Exception {
-		createArtistWithPaintingDataSet();
-
-		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
-		boolean thrown = false;
-		try {
-			artist.setToManyTarget("doesnotexist", new ArrayList<ROPainting>(0), true);
-		} catch (IllegalArgumentException e) {
-			thrown = true;
-		}
-		assertEquals("should throw a IllegalArgumentException, because the relName does not exist", thrown, true);
-
-		thrown = false;
-		try {
-			artist.setToManyTarget("", new ArrayList<ROPainting>(0), true);
-		} catch (IllegalArgumentException e) {
-			thrown = true;
-		}
-		assertEquals("should throw a IllegalArgumentException, because the relName is an empty string", thrown, true);
-
-		thrown = false;
-		try {
-			artist.setToManyTarget(null, new ArrayList<ROPainting>(0), true);
-		} catch (IllegalArgumentException e) {
-			thrown = true;
-		}
-		assertEquals("should throw a IllegalArgumentException, because the relName is NULL", thrown, true);
-
-	}
-
-	@Test
-	public void testTotalDifferentPaintings() throws Exception {
-		createArtistWithPaintingDataSet();
-
+	public void testTotalDifferentPaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 
 		// copy the paintings list. Replacing paintings wont change the copy
-		List<Painting> oldPaints = new ArrayList<Painting>(artist.getPaintingArray());
-		System.out.println("class:" + oldPaints.getClass());
+		List<Painting> oldPaints = new ArrayList<>(artist.getPaintingArray());
 
 		Painting paintX = new Painting();
 		paintX.setPaintingTitle("pantingX");
@@ -166,24 +137,22 @@ public class CayenneDataObjectSetToManyListIT extends ServerCase {
 		List<? extends DataObject> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(),
 				Arrays.asList(paintX, paintY, paintZ), true);
 
-		assertEquals(returnList.size(), 3);
-		assertEquals(returnList.containsAll(oldPaints), true);
+		assertEquals(3, returnList.size());
+		assertTrue(returnList.containsAll(oldPaints));
 
 		List<Painting> newPaints = artist.getPaintingArray();
 
-		assertEquals(newPaints.size(), 3);
+		assertEquals(3, newPaints.size());
 		for (Painting oldPaint : oldPaints) {
 			// no element of oldPaints should exist in the newPaints
-			assertEquals(newPaints.contains(oldPaint), false);
+			assertFalse(newPaints.contains(oldPaint));
 		}
 	}
 
 	@Test
-	public void testSamePaintings() throws Exception {
-		createArtistWithPaintingDataSet();
-
+	public void testSamePaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
-		List<Painting> oldPaints = new ArrayList<Painting>(artist.getPaintingArray());
+		List<Painting> oldPaints = new ArrayList<>(artist.getPaintingArray());
 
 		Painting paint6 = Cayenne.objectForPK(context, Painting.class, 6);
 		Painting paint7 = Cayenne.objectForPK(context, Painting.class, 7);
@@ -193,26 +162,22 @@ public class CayenneDataObjectSetToManyListIT extends ServerCase {
 		List<? extends DataObject> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints,
 				true);
 
-		assertEquals(returnList.size(), 0);
+		assertEquals(0, returnList.size());
 
 		newPaints = artist.getPaintingArray();
 		// testing if oldPaints and newPaints contain the same objects
-		assertEquals(newPaints.size(), 3);
-		assertEquals(oldPaints.size(), 3);
-		assertEquals(newPaints.containsAll(oldPaints), true);
+		assertEquals(3, newPaints.size());
+		assertEquals(3, oldPaints.size());
+		assertTrue(newPaints.containsAll(oldPaints));
 	}
 
 	@Test
-	public void testOldPlusNewPaintings() throws Exception {
-		createArtistWithPaintingDataSet();
-
+	public void testOldPlusNewPaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 		List<Painting> oldPaints = artist.getPaintingArray();
 
-		List<Painting> newPaints = new ArrayList<Painting>(6);
-		for (int i = 0; i < oldPaints.size(); i++) {
-			newPaints.add(oldPaints.get(i));
-		}
+		List<Painting> newPaints = new ArrayList<>(6);
+		newPaints.addAll(oldPaints);
 
 		Painting paintX = new Painting();
 		paintX.setPaintingTitle("pantingX");
@@ -232,22 +197,20 @@ public class CayenneDataObjectSetToManyListIT extends ServerCase {
 		Painting paint7 = Cayenne.objectForPK(context, Painting.class, 7);
 		Painting paint8 = Cayenne.objectForPK(context, Painting.class, 8);
 
-		assertEquals(newPaints2.size(), 6);
-		assertEquals(newPaints2.contains(paintX), true);
-		assertEquals(newPaints2.contains(paintY), true);
-		assertEquals(newPaints2.contains(paintZ), true);
-		assertEquals(newPaints2.contains(paint6), true);
-		assertEquals(newPaints2.contains(paint7), true);
-		assertEquals(newPaints2.contains(paint8), true);
+		assertEquals(6, newPaints2.size());
+		assertTrue(newPaints2.contains(paintX));
+		assertTrue(newPaints2.contains(paintY));
+		assertTrue(newPaints2.contains(paintZ));
+		assertTrue(newPaints2.contains(paint6));
+		assertTrue(newPaints2.contains(paint7));
+		assertTrue(newPaints2.contains(paint8));
 	}
 
 	@Test
-	public void testRemoveOneOldAndAddOneNewPaintings() throws Exception {
-		createArtistWithPaintingDataSet();
-
+	public void testRemoveOneOldAndAddOneNewPaintings() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 
-		List<Painting> newPaints = new ArrayList<Painting>();
+		List<Painting> newPaints = new ArrayList<>();
 
 		Painting paint6 = artist.getPaintingArray().get(0);
 		Painting paint7 = artist.getPaintingArray().get(1);
@@ -262,40 +225,33 @@ public class CayenneDataObjectSetToManyListIT extends ServerCase {
 		newPaints.add(paintX);
 		newPaints.add(paintY);
 
-		List<? extends DataObject> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints,
-				true);
+		List<? extends DataObject> returnList = artist
+				.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints, true);
 
-		assertEquals(returnList.size(), 1);
-		assertEquals(returnList.get(0) == paint8, true);
+		assertEquals(1, returnList.size());
+		assertSame(paint8, returnList.get(0));
 
 		List<Painting> newPaints2 = artist.getPaintingArray();
 
-		assertEquals(newPaints2.size(), 4);
-		assertEquals(newPaints2.contains(paintX), true);
-		assertEquals(newPaints2.contains(paintY), true);
-		assertEquals(newPaints2.contains(paint6), true);
-		assertEquals(newPaints2.contains(paint7), true);
+		assertEquals(4, newPaints2.size());
+		assertTrue(newPaints2.contains(paintX));
+		assertTrue(newPaints2.contains(paintY));
+		assertTrue(newPaints2.contains(paint6));
+		assertTrue(newPaints2.contains(paint7));
 	}
 
 	/**
-	 * Testing if collection type is list, everything should work fine without an
-	 * runtimexception
-	 * 
-	 * @throws Exception
+	 * Testing if collection type is list, everything should work fine without a RuntimeException
 	 */
 	@Test
-	public void testRelationCollectionTypeList() throws Exception {
-		createArtistWithPaintingDataSet();
-
+	public void testRelationCollectionTypeList() {
 		Artist artist = Cayenne.objectForPK(context, Artist.class, 8);
 		assertTrue(artist.readProperty(Artist.PAINTING_ARRAY.getName()) instanceof List);
-		boolean catchedSomething = false;
 		try {
 			artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<Painting>(0), true);
 		} catch (UnsupportedOperationException e) {
-			catchedSomething = true;
+			fail();
 		}
-		assertEquals(catchedSomething, false);
-		assertEquals(artist.getPaintingArray().size(), 0);
+		assertEquals(0, artist.getPaintingArray().size());
 	}
 }

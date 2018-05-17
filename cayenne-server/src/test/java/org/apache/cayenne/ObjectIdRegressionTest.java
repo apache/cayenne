@@ -28,27 +28,14 @@ import static org.junit.Assert.assertTrue;
 
 public class ObjectIdRegressionTest {
 
-    // public void testX() {
-    // for (int i = 0; i < 10000; i++) {
-    // byte[] bytes = IDUtil.pseudoUniqueByteSequence8();
-    // StringBuffer buffer = new StringBuffer(16);
-    // for(int j = 0; j < 8; j++) {
-    // IDUtil.appendFormattedByte(buffer, bytes[j]);
-    // }
-    //            
-    // System.out.println(buffer);
-    // }
-    // }
-
     @Test
     public void testIdPool() throws Exception {
-        // testing uniqueness of a sequence of ObjectIds generated quickly one after the
-        // other...
+        // testing uniqueness of a sequence of ObjectIds generated quickly one after the other...
 
         int size = 100000;
 
         new ObjectId("Artist");
-        Object[] pool = new Object[size];
+        ObjectId[] pool = new ObjectId[size];
 
         long t0 = System.currentTimeMillis();
         // fill in
@@ -60,7 +47,7 @@ public class ObjectIdRegressionTest {
 
         assertTrue("This machine is too fast to run such test!", t1 - t0 > 1);
 
-        Set idSet = new HashSet();
+        Set<ObjectId> idSet = new HashSet<>();
         for (int i = 0; i < size; i++) {
             assertTrue("Failed to generate unique id #" + i, idSet.add(pool[i]));
         }

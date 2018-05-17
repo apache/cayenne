@@ -32,65 +32,60 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
 public class CayenneDataObjectSetToManyMapIT extends ServerCase {
 
-	 @Inject
-	    protected ObjectContext context;
+    @Inject
+    protected ObjectContext context;
 
-	    @Inject
-	    protected DBHelper dbHelper;
+    @Inject
+    protected DBHelper dbHelper;
 
-	    protected TableHelper tMapToMany;
-	    protected TableHelper tMapToManyTarget;
-	    protected TableHelper tIdMapToMany;
-	    protected TableHelper tIdMapToManyTarget;
+    protected TableHelper tMapToMany;
+    protected TableHelper tMapToManyTarget;
+    protected TableHelper tIdMapToMany;
+    protected TableHelper tIdMapToManyTarget;
 
-	    @Before
-	    public void setUp() throws Exception {
-	        tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
-	        tMapToMany.setColumns("ID");
+    @Before
+    public void setUp() throws Exception {
+        tMapToMany = new TableHelper(dbHelper, "MAP_TO_MANY");
+        tMapToMany.setColumns("ID");
 
-	        tMapToManyTarget = new TableHelper(dbHelper, "MAP_TO_MANY_TARGET");
-	        tMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID", "NAME");
+        tMapToManyTarget = new TableHelper(dbHelper, "MAP_TO_MANY_TARGET");
+        tMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID", "NAME");
 
-	        tIdMapToMany = new TableHelper(dbHelper, "ID_MAP_TO_MANY");
-	        tIdMapToMany.setColumns("ID");
+        tIdMapToMany = new TableHelper(dbHelper, "ID_MAP_TO_MANY");
+        tIdMapToMany.setColumns("ID");
 
-	        tIdMapToManyTarget = new TableHelper(dbHelper, "ID_MAP_TO_MANY_TARGET");
-	        tIdMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
-	    }
+        tIdMapToManyTarget = new TableHelper(dbHelper, "ID_MAP_TO_MANY_TARGET");
+        tIdMapToManyTarget.setColumns("ID", "MAP_TO_MANY_ID");
 
+        createTestDataSet();
+    }
 
-	    protected void createTestDataSet() throws Exception {
-	        tMapToMany.insert(1);
-	        tMapToMany.insert(2);
-	        tMapToManyTarget.insert(1, 1, "A");
-	        tMapToManyTarget.insert(2, 1, "B");
-	        tMapToManyTarget.insert(3, 1, "C");
-	        tMapToManyTarget.insert(4, 2, "A");
-	    }
-	
-	/**
-	 * Testing if collection type is map, everything should work fine without an runtimexception
-	 * @throws Exception
-	 */
-	@Test
-	public void testRelationCollectionTypeMap() throws Exception {
-		createTestDataSet();
-		
-		 MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
-		 assertTrue (o1.readProperty(MapToMany.TARGETS.getName()) instanceof Map);
-		 boolean catchedSomething = false;
-		 try {
-			 o1.setToManyTarget(MapToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true);
-		 } catch(RuntimeException e) {
-			 catchedSomething = true;
-		 }
-		 assertEquals(catchedSomething,false);
-		 assertEquals(o1.getTargets().size(),0);
-	}
+    protected void createTestDataSet() throws Exception {
+        tMapToMany.insert(1);
+        tMapToMany.insert(2);
+        tMapToManyTarget.insert(1, 1, "A");
+        tMapToManyTarget.insert(2, 1, "B");
+        tMapToManyTarget.insert(3, 1, "C");
+        tMapToManyTarget.insert(4, 2, "A");
+    }
+
+    /**
+     * Testing if collection type is map, everything should work fine without a runtime exception
+     */
+    @Test
+    public void testRelationCollectionTypeMap() {
+        MapToMany o1 = Cayenne.objectForPK(context, MapToMany.class, 1);
+        assertTrue(o1.readProperty(MapToMany.TARGETS.getName()) instanceof Map);
+        try {
+            o1.setToManyTarget(MapToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true);
+        } catch (RuntimeException e) {
+            fail();
+        }
+        assertEquals(0, o1.getTargets().size(), 0);
+    }
 }

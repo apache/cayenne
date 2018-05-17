@@ -164,7 +164,6 @@ public class DbImporterTaskTest {
         ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
         while (tables.next()) {
             String schema = tables.getString("TABLE_SCHEM");
-            System.out.println("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
             stmt.execute("DROP TABLE " + (isBlank(schema) ? "" : schema + ".") + tables.getString("TABLE_NAME"));
         }
 
@@ -172,7 +171,6 @@ public class DbImporterTaskTest {
         while (schemas.next()) {
             String schem = schemas.getString("TABLE_SCHEM");
             if (schem.startsWith("SCHEMA")) {
-                System.out.println("DROP SCHEMA " + schem);
                 stmt.execute("DROP SCHEMA " + schem + " RESTRICT");
             }
         }
@@ -195,10 +193,7 @@ public class DbImporterTaskTest {
                 fail(diff.toString());
             }
 
-        } catch (SAXException e) {
-            e.printStackTrace();
-            fail();
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             e.printStackTrace();
             fail();
         }
@@ -214,8 +209,7 @@ public class DbImporterTaskTest {
         try (Connection c = DriverManager.getConnection(dbImportConfiguration.getUrl());) {
 
             // TODO: move parsing SQL files to a common utility (DBHelper?) .
-            // ALso see UnitDbApater.executeDDL - this should use the same
-            // utility
+            // Also see UnitDbApater.executeDDL - this should use the same utility
 
             try (Statement stmt = c.createStatement();) {
                 for (String sql : SQLReader.statements(sqlUrl, ";")) {
@@ -230,7 +224,5 @@ public class DbImporterTaskTest {
             }
         }
     }
-
-
 
 }

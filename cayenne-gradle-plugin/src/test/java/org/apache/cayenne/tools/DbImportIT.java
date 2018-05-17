@@ -76,7 +76,7 @@ public class DbImportIT extends BaseTaskIT {
 
         assertNotNull(result.task(":cdbimport"));
         assertEquals(TaskOutcome.SUCCESS, result.task(":cdbimport").getOutcome());
-        System.out.println(result.getOutput());
+
         File dataMap = new File(projectDir.getAbsolutePath() + "/datamap.map.xml");
         assertTrue(dataMap.exists());
         assertTrue(result.getOutput().contains("Detected changes: No changes to import."));

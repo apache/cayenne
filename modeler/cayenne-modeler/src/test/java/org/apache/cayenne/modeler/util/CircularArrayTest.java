@@ -19,20 +19,17 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.util.Objects;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class CircularArrayTest {
 
     @Test
-    public void testArray() {
+    public void testArraySize5() {
 
         String a = "A", b = "B", c = "C", d = "D", e = "E", f = "F", g = "G", h = "H";
-        String s;
-
         CircularArray<String> q = new CircularArray<>(5);
 
         assertAdd(q, a, "[A, null, null, null, null]");
@@ -68,134 +65,63 @@ public class CircularArrayTest {
         assertRemove(q, f, "[D, G, null, null, null]");
         assertRemove(q, g, "[D, null, null, null, null]");
         assertRemove(q, d, "[null, null, null, null, null]");
+    }
 
-        q = new CircularArray<>(3);
+    @Test
+    public void testArraySize3() {
+        String a = "A", b = "B", c = "C", d = "D", e = "E";
+        CircularArray<String> q = new CircularArray<>(3);
+
+        assertEquals(0, q.size());
+        assertEquals(3, q.capacity());
+
         q.add(a);
-        int i = q.indexOf(a);
-        if (i != 0) {
-            System.out.println("indexOf(a) should be zero instead got [" + String.valueOf(i) + "]");
-        }
-        s = q.get(0);
-        if (!Objects.equals(s, a)) {
-            System.out.println("get(0) should be 'a' instead got [" + s + "]");
-        }
-        i = q.size();
-        if (i != 1) {
-            System.out.println("size() should be 1 instead got [" + String.valueOf(i) + "]");
-        }
+
+        assertEquals(0, q.indexOf(a));
+        assertEquals(a, q.get(0));
+        assertEquals(1, q.size());
 
         q.add(b);
-        i = q.indexOf(b);
-        if (i != 1) {
-            System.out.println("indexOf(b) should be 1 instead got [" + String.valueOf(i) + "]");
-        }
-        s = q.get(0);
-        if (!Objects.equals(s, a)) {
-            System.out.println("get(0) should be 'a' instead got [" + s + "]");
-        }
-        s = q.get(1);
-        if (!Objects.equals(s, b)) {
-            System.out.println("get(1) should be 'b' instead got [" + s + "]");
-        }
 
-        i = q.size();
-        if (i != 2) {
-            System.out.println("size() should be 2 instead got [" + String.valueOf(i) + "]");
-        }
+        assertEquals(1, q.indexOf(b));
+        assertEquals(a, q.get(0));
+        assertEquals(b, q.get(1));
+        assertEquals(2, q.size());
 
         q.add(c);
-        i = q.indexOf(c);
-        if (i != 2) {
-            System.out.println("indexOf(c) should be 2 instead got [" + String.valueOf(i) + "]");
-        }
-        s = q.get(0);
-        if (!Objects.equals(s, a)) {
-            System.out.println("get(0) should be 'a' instead got [" + s + "]");
-        }
-        s = q.get(1);
-        if (!Objects.equals(s, b)) {
-            System.out.println("get(1) should be 'b' instead got [" + s + "]");
-        }
-        s = q.get(2);
-        if (!Objects.equals(s, c)) {
-            System.out.println("get(1) should be 'c' instead got [" + s + "]");
-        }
-        i = q.size();
-        if (i != 3) {
-            System.out.println("size() should be 3 instead got [" + String.valueOf(i) + "]");
-        }
+
+        assertEquals(2, q.indexOf(c));
+        assertEquals(a, q.get(0));
+        assertEquals(b, q.get(1));
+        assertEquals(c, q.get(2));
+        assertEquals(3, q.size());
 
         q.add(d);
-        i = q.size();
-        if (i != 3) {
-            System.out.println("size() should be 3 instead got [" + String.valueOf(i) + "]");
-        }
+
+        assertEquals(3, q.size());
 
         q.add(e);
-        i = q.size();
-        if (i != 3) {
-            System.out.println("size() should be 3 instead got [" + String.valueOf(i) + "]");
-        }
 
-        if (q.contains(a)) {
-            System.out.println("A should not be in the q");
-        }
-
-        i = q.indexOf(c);
-        if (i != 0) {
-            System.out.println("indexOf(c) should be zero instead got [" + String.valueOf(i) + "]");
-        }
-        s = q.get(0);
-        if (!Objects.equals(s, c)) {
-            System.out.println("get(0) should be 'c' instead got [" + s + "]");
-        }
-
-        i = q.indexOf(d);
-        if (i != 1) {
-            System.out.println("indexOf(d) should be 1 instead got [" + String.valueOf(i) + "]");
-        }
-        s = q.get(1);
-        if (!Objects.equals(s, d)) {
-            System.out.println("get(1) should be 'd' instead got [" + s + "]");
-        }
-
-        i = q.indexOf(e);
-        if (i != 2) {
-            System.out.println("indexOf(e) should be 2 instead got ["
-                    + String.valueOf(i)
-                    + "]");
-        }
-        s = q.get(2);
-        if (!Objects.equals(s, e)) {
-            System.out.println("get(2) should be 'e' instead got [" + s + "]");
-        }
-
-        q.resize(5);
-        i = q.capacity();
-        if (i != 5) {
-            System.out.println("size() should be 5 after resizing to 5 instead got [" + String.valueOf(i) + "]");
-        }
+        assertEquals(3, q.size());
+        assertFalse("A should not be in the q", q.contains(a));
+        assertEquals(0, q.indexOf(c));
+        assertEquals(c, q.get(0));
+        assertEquals(1, q.indexOf(d));
+        assertEquals(d, q.get(1));
+        assertEquals(2, q.indexOf(e));
+        assertEquals(e, q.get(2));
 
         // should be the same after resizing
-        i = q.size();
-        if (i != 3) {
-            System.out.println("size() should be 3 instead got [" + String.valueOf(i) + "]");
-        }
+        q.resize(5);
 
-        i = q.indexOf(e);
-        if (i != 2) {
-            System.out.println("indexOf(e) should be 2 instead got [" + String.valueOf(i) + "]");
-        }
-        s = q.get(2);
-        if (!Objects.equals(s, e)) {
-            System.out.println("get(2) should be 'e' instead got [" + s + "]");
-        }
+        assertEquals(5, q.capacity());
+        assertEquals(3, q.size());
+        assertEquals(2, q.indexOf(e));
+        assertEquals(e, q.get(2));
 
         q.resize(2);
-        i = q.capacity();
-        if (i != 2) {
-            System.out.println("size() should be 2 after resizing to 2 instead got [" + String.valueOf(i) + "]");
-        }
+
+        assertEquals(2, q.capacity());
     }
 
     @Test
