@@ -63,7 +63,7 @@ CAY-2436 NPE in CayenneRuntimeException constructor
 
 ----------------------------------
 Release: 4.1.M1
-Date:
+Date: October 14, 2017
 ----------------------------------
 Changes/New Features:
 
