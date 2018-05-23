@@ -58,8 +58,9 @@ public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
         String procCatalog = rs.getString("PROCEDURE_CAT");
         String name = rs.getString("PROCEDURE_NAME");
         String key = Procedure.generateFullyQualifiedName(procCatalog, procSchema, name);
-        Procedure procedure = map.getProcedure(key);
-        if (procedure == null) {
+        Procedure procedure = map.getProcedure(name);
+        // should be filtered out in getResultSet() method, but check full name here too..
+        if (procedure == null || !key.equals(procedure.getFullyQualifiedName())) {
             return;
         }
 
@@ -80,7 +81,7 @@ public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
             return null;
         }
 
-        if (columnName == null) {
+        if (columnName == null || columnName.isEmpty()) {
             if (type == DatabaseMetaData.procedureColumnReturn) {
                 LOGGER.debug("null column name, assuming result column: " + key);
                 columnName = "_return_value";
@@ -103,7 +104,10 @@ public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
         }
 
         ProcedureParameter column = new ProcedureParameter(columnName);
-        column.setDirection(getDirection(type));
+        int direction = getDirection(type);
+        if(direction != -1) {
+            column.setDirection(direction);
+        }
         column.setType(columnType);
         column.setMaxLength(rs.getInt("LENGTH"));
         column.setPrecision(decimalDigits);
@@ -119,6 +123,8 @@ public class ProcedureColumnLoader extends PerCatalogAndSchemaLoader {
             case DatabaseMetaData.procedureColumnInOut:
                 return ProcedureParameter.IN_OUT_PARAMETER;
             case DatabaseMetaData.procedureColumnOut:
+                return ProcedureParameter.OUT_PARAMETER;
+            case DatabaseMetaData.procedureColumnReturn:
                 return ProcedureParameter.OUT_PARAMETER;
             default:
                 return -1;
