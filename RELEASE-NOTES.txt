@@ -16,9 +16,11 @@ Changes/New Features:
 
 Bug Fixes:
 
+CAY-2436 NPE in CayenneRuntimeException constructor
+
 ----------------------------------
 Release: 4.0.RC1
-Date:
+Date: April 25, 2018
 ----------------------------------
 
 Changes/New Features:
