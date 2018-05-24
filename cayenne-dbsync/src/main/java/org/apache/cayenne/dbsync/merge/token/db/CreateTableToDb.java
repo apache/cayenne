@@ -50,14 +50,15 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
     }
 
     @Override
-    public void execute(MergerContext mergerContext) {
+    public void execute(final MergerContext mergerContext) {
         try {
-            DataNode node = mergerContext.getDataNode();
-            DbAdapter adapter = node.getAdapter();
-            if(needAutoPkSupport()) {
+            final DataNode node = mergerContext.getDataNode();
+            final DbAdapter adapter = node.getAdapter();
+            if (needAutoPkSupport()) {
                 adapter.getPkGenerator().createAutoPk(
                         node,
-                        Collections.singletonList(getEntity()));
+                        Collections.singletonList(getEntity()),
+                        mergerContext.getDataMap().getDefaultCatalog());
             }
             executeSql(mergerContext, adapter.createTable(getEntity()));
         }

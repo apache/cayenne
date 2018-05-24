@@ -38,7 +38,18 @@ public interface PkGenerator {
      * @param dbEntities a list of entities that require primary key auto-generation
      *                   support
      */
+    @Deprecated
     void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception;
+
+    /**
+     * Generates necessary database objects to provide automatic primary key support for specified catalog.
+     *
+     * @param node node that provides access to a DataSource.
+     * @param dbEntities a list of entities that require primary key auto-generation
+     *            support
+     * @param catalog catalog name
+     */
+    void createAutoPk(DataNode node, List<DbEntity> dbEntities, String catalog) throws Exception;
 
     /**
      * Returns a list of SQL strings needed to generates database objects to provide

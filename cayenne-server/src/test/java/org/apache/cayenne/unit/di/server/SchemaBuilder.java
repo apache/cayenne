@@ -374,7 +374,7 @@ public class SchemaBuilder {
 
 	private void createPKSupport(DataNode node, DataMap map) throws Exception {
 		List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(node, map);
-		node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities);
+		node.getAdapter().getPkGenerator().createAutoPk(node, filteredEntities, null);
 	}
 
 	private void createSchema(DataNode node, DataMap map) throws Exception {
