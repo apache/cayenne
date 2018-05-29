@@ -28,19 +28,44 @@ import org.apache.cayenne.query.Query;
  * etc.
  * 
  * @since 3.1
+ * @deprecated since 4.1 use {@link DataChannelQueryFilter} and {@link DataChannelSyncFilter}
  */
-public interface DataChannelFilter {
-    
+@Deprecated
+public interface DataChannelFilter extends DataChannelSyncFilter, DataChannelQueryFilter {
+
     void init(DataChannel channel);
 
-    QueryResponse onQuery(
-            ObjectContext originatingContext,
-            Query query,
-            DataChannelFilterChain filterChain);
+    QueryResponse onQuery(ObjectContext originatingContext, Query query,
+                          DataChannelFilterChain filterChain);
 
-    GraphDiff onSync(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            int syncType,
-            DataChannelFilterChain filterChain);
+    GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType,
+                     DataChannelFilterChain filterChain);
+
+    /**
+     * Adapter method that allows to use old DataChannelFilter as new query filter
+     */
+    @Override
+    default QueryResponse onQuery(ObjectContext originatingContext, Query query,
+                                  DataChannelQueryFilterChain filterChain) {
+        return onQuery(originatingContext, query, new DataChannelFilterChain(){
+            @Override
+            public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+                return filterChain.onQuery(originatingContext, query);
+            }
+        });
+    }
+
+    /**
+     * Adapter method that allows to use old DataChannelFilter as new sync filter
+     */
+    @Override
+    default GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType,
+                             DataChannelSyncFilterChain filterChain) {
+        return onSync(originatingContext, changes, syncType, new DataChannelFilterChain(){
+            @Override
+            public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+                return filterChain.onSync(originatingContext, changes, syncType);
+            }
+        });
+    }
 }

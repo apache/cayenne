@@ -20,6 +20,8 @@ package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
+import org.apache.cayenne.DataChannelQueryFilter;
+import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
@@ -202,9 +204,35 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for DataChannelFilter.
      * @since 4.0
+     * @deprecated since 4.1 use {@link #contributeDomainQueryFilters(Binder)} and {@link #contributeDomainSyncFilters(Binder)}
      */
+    @Deprecated
     public static ListBuilder<DataChannelFilter> contributeDomainFilters(Binder binder) {
         return binder.bindList(DataChannelFilter.class, Constants.SERVER_DOMAIN_FILTERS_LIST);
+    }
+
+    /**
+     * Provides access to a DI collection builder for {@link DataChannelQueryFilter}'s that allows downstream modules to
+     * "contribute" their own DataDomain query filters
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for DataChannelQueryFilter.
+     * @since 4.1
+     */
+    public static ListBuilder<DataChannelQueryFilter> contributeDomainQueryFilters(Binder binder) {
+        return binder.bindList(DataChannelQueryFilter.class);
+    }
+
+    /**
+     * Provides access to a DI collection builder for {@link DataChannelSyncFilter}'s that allows downstream modules to
+     * "contribute" their own DataDomain sync filters
+     *
+     * @param binder DI binder passed to the module during injector startup.
+     * @return ListBuilder for DataChannelSyncFilter.
+     * @since 4.1
+     */
+    public static ListBuilder<DataChannelSyncFilter> contributeDomainSyncFilters(Binder binder) {
+        return binder.bindList(DataChannelSyncFilter.class);
     }
 
     /**
@@ -358,7 +386,9 @@ public class ServerModule implements Module {
                 .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
 
         // configure a filter chain with only one TransactionFilter as default
-        contributeDomainFilters(binder).add(TransactionFilter.class);
+        contributeDomainFilters(binder);
+        contributeDomainQueryFilters(binder);
+        contributeDomainSyncFilters(binder).add(TransactionFilter.class);
 
         // init listener list
         contributeDomainListeners(binder);

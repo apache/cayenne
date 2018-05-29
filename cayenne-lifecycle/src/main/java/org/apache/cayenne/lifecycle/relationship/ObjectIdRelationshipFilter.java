@@ -18,28 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelFilter;
-import org.apache.cayenne.DataChannelFilterChain;
+import org.apache.cayenne.DataChannelQueryFilter;
+import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.annotation.PostLoad;
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostUpdate;
-import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
 /**
- * A {@link DataChannelFilter} that implements ObjectId relationships read functionality.
+ * A {@link DataChannelQueryFilter} that implements ObjectId relationships read functionality.
  * 
  * @since 3.1
  */
-public class ObjectIdRelationshipFilter implements DataChannelFilter {
+public class ObjectIdRelationshipFilter implements DataChannelQueryFilter {
 
     private ObjectIdRelationshipFaultingStrategy faultingStrategy;
 
-    public void init(DataChannel channel) {
+    public ObjectIdRelationshipFilter() {
         this.faultingStrategy = createFaultingStrategy();
     }
 
@@ -47,24 +45,10 @@ public class ObjectIdRelationshipFilter implements DataChannelFilter {
         return new ObjectIdRelationshipBatchFaultingStrategy();
     }
 
-    public GraphDiff onSync(
-            ObjectContext context,
-            GraphDiff diff,
-            int syncType,
-            DataChannelFilterChain chain) {
-        // noop ... all work is done via listeners...
-        return chain.onSync(context, diff, syncType);
-    }
-
-    public QueryResponse onQuery(
-            ObjectContext context,
-            Query query,
-            DataChannelFilterChain chain) {
-
+    public QueryResponse onQuery(ObjectContext context, Query query, DataChannelQueryFilterChain chain) {
         try {
             return chain.onQuery(context, query);
-        }
-        finally {
+        } finally {
             faultingStrategy.afterQuery();
         }
     }

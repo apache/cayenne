@@ -22,25 +22,23 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelFilter;
-import org.apache.cayenne.DataChannelFilterChain;
+import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
-import org.apache.cayenne.query.Query;
 
 /**
- * A {@link DataChannelFilter} that captures commit changes, delegating their
+ * A {@link DataChannelSyncFilter} that captures commit changes, delegating their
  * processing to an underlying collection of listeners.
  * 
  * @since 4.0
  */
-public class CommitLogFilter implements DataChannelFilter {
+public class CommitLogFilter implements DataChannelSyncFilter {
 
 	private CommitLogEntityFactory entityFactory;
 	private Collection<CommitLogListener> listeners;
@@ -52,18 +50,8 @@ public class CommitLogFilter implements DataChannelFilter {
 	}
 
 	@Override
-	public void init(DataChannel channel) {
-		// do nothing...
-	}
-
-	@Override
-	public QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelFilterChain filterChain) {
-		return filterChain.onQuery(originatingContext, query);
-	}
-
-	@Override
 	public GraphDiff onSync(ObjectContext originatingContext, GraphDiff beforeDiff, int syncType,
-			DataChannelFilterChain filterChain) {
+							DataChannelSyncFilterChain filterChain) {
 
 		// process commits only; skip rollback
 		if (syncType != DataChannel.FLUSH_CASCADE_SYNC && syncType != DataChannel.FLUSH_NOCASCADE_SYNC) {

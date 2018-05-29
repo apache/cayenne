@@ -16,25 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne;
 
-import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
 /**
- * Provides DataChannelFilters with API to pass control to the next filter in the chain or
- * the underlying DataChannel for the last chain filter.
- * 
- * @since 3.1
- * @deprecated since 4.1 in favor of {@link DataChannelSyncFilterChain} and {@link DataChannelQueryFilterChain}
+ * @since 4.1
  */
-public interface DataChannelFilterChain {
+public interface DataChannelQueryFilterChain {
 
-    default QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-        throw new UnsupportedOperationException();
-    }
+    QueryResponse onQuery(ObjectContext originatingContext, Query query);
 
-    default GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
-        throw new UnsupportedOperationException();
-    }
 }

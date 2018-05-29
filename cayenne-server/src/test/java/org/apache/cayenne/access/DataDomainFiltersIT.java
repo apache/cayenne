@@ -18,15 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataChannelFilter;
-import org.apache.cayenne.DataChannelFilterChain;
-import org.apache.cayenne.MockDataChannelFilter;
+import org.apache.cayenne.DataChannelQueryFilter;
+import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -53,53 +51,36 @@ public class DataDomainFiltersIT extends ServerCase {
 
     @Test
     public void testDefaultFilters() {
-
         // There is a default TransactionFilter
         DataDomain domain = runtime.getDataDomain();
-        assertEquals(1, domain.filters.size());
+        assertEquals(0, domain.queryFilters.size());
+        assertEquals(1, domain.syncFilters.size());
     }
 
     @Test
     public void testOnQuery_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
+        List<String> results = new ArrayList<>();
 
-        final List<String> results = new ArrayList<String>();
-
-        DataChannelFilter f1 = new MockDataChannelFilter() {
-
-            @Override
-            public QueryResponse onQuery(
-                    ObjectContext originatingContext,
-                    Query query,
-                    DataChannelFilterChain filterChain) {
-
-                results.add("f1start");
-                QueryResponse response = filterChain.onQuery(originatingContext, query);
-                results.add("f1end");
-                return response;
-            }
+        DataChannelQueryFilter f1 = (originatingContext, query, filterChain) -> {
+            results.add("f1start");
+            QueryResponse response = filterChain.onQuery(originatingContext, query);
+            results.add("f1end");
+            return response;
         };
 
-        DataChannelFilter f2 = new MockDataChannelFilter() {
-
-            @Override
-            public QueryResponse onQuery(
-                    ObjectContext originatingContext,
-                    Query query,
-                    DataChannelFilterChain filterChain) {
-
-                results.add("f2start");
-                QueryResponse response = filterChain.onQuery(originatingContext, query);
-                results.add("f2end");
-                return response;
-            }
+        DataChannelQueryFilter f2 = (originatingContext, query, filterChain) -> {
+            results.add("f2start");
+            QueryResponse response = filterChain.onQuery(originatingContext, query);
+            results.add("f2end");
+            return response;
         };
 
-        domain.filters.add(f1);
-        domain.filters.add(f2);
+        domain.queryFilters.add(f1);
+        domain.queryFilters.add(f2);
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
         QueryResponse response = domain.onQuery(context, query);
         assertNotNull(response);
         assertEquals(4, results.size());
@@ -113,55 +94,31 @@ public class DataDomainFiltersIT extends ServerCase {
     public void testOnSync_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
+        List<String> results = new ArrayList<>();
 
-        final List<String> results = new ArrayList<String>();
-
-        DataChannelFilter f1 = new MockDataChannelFilter() {
-
-            @Override
-            public GraphDiff onSync(
-                    ObjectContext originatingContext,
-                    GraphDiff changes,
-                    int syncType,
-                    DataChannelFilterChain filterChain) {
-
-                results.add("f1start");
-                GraphDiff response = filterChain.onSync(
-                        originatingContext,
-                        changes,
-                        syncType);
-                results.add("f1end");
-                return response;
-            }
+        DataChannelSyncFilter f1 = (originatingContext, changes, syncType, filterChain) -> {
+            results.add("f1start");
+            GraphDiff response = filterChain.onSync(originatingContext, changes, syncType);
+            results.add("f1end");
+            return response;
         };
 
-        DataChannelFilter f2 = new MockDataChannelFilter() {
-
-            @Override
-            public GraphDiff onSync(
-                    ObjectContext originatingContext,
-                    GraphDiff changes,
-                    int syncType,
-                    DataChannelFilterChain filterChain) {
-
-                results.add("f2start");
-                GraphDiff response = filterChain.onSync(
-                        originatingContext,
-                        changes,
-                        syncType);
-                results.add("f2end");
-                return response;
-            }
+        DataChannelSyncFilter f2 = (originatingContext, changes, syncType, filterChain) -> {
+            results.add("f2start");
+            GraphDiff response = filterChain.onSync(originatingContext, changes, syncType);
+            results.add("f2end");
+            return response;
         };
 
-        domain.filters.add(f1);
-        domain.filters.add(f2);
+        domain.syncFilters.add(f1);
+        domain.syncFilters.add(f2);
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("AAA");
 
         // testing domain.onSync indirectly
         context.commitChanges();
+
         assertEquals(4, results.size());
         assertEquals("f2start", results.get(0));
         assertEquals("f1start", results.get(1));
@@ -174,38 +131,18 @@ public class DataDomainFiltersIT extends ServerCase {
 
         DataDomain domain = runtime.getDataDomain();
 
-        final QueryResponse r1 = new ListResponse();
-        final QueryResponse r2 = new ListResponse();
+        QueryResponse r1 = new ListResponse();
+        QueryResponse r2 = new ListResponse();
 
-        DataChannelFilter f1 = new MockDataChannelFilter() {
+        DataChannelQueryFilter f1 = (originatingContext, query, filterChain) -> r1;
+        DataChannelQueryFilter f2 = (originatingContext, query, filterChain) -> r2;
 
-            @Override
-            public QueryResponse onQuery(
-                    ObjectContext originatingContext,
-                    Query query,
-                    DataChannelFilterChain filterChain) {
+        domain.queryFilters.add(f1);
+        domain.queryFilters.add(f2);
 
-                return r1;
-            }
-        };
-
-        DataChannelFilter f2 = new MockDataChannelFilter() {
-
-            @Override
-            public QueryResponse onQuery(
-                    ObjectContext originatingContext,
-                    Query query,
-                    DataChannelFilterChain filterChain) {
-
-                return r2;
-            }
-        };
-
-        domain.filters.add(f1);
-        domain.filters.add(f2);
-
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
         QueryResponse response = domain.onQuery(context, query);
+
         assertSame(r2, response);
     }
 }

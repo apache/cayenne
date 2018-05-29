@@ -35,7 +35,7 @@ public class ObjectIdRelationshipBatchFaultingStrategy implements
     private ThreadLocal<List<ObjectIdBatchSourceItem>> batchSources;
 
     public ObjectIdRelationshipBatchFaultingStrategy() {
-        this.batchSources = new ThreadLocal<List<ObjectIdBatchSourceItem>>();
+        this.batchSources = new ThreadLocal<>();
     }
 
     public void afterObjectLoaded(DataObject object) {

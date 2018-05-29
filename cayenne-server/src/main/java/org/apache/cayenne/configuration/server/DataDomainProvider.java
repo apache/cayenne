@@ -21,6 +21,8 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
+import org.apache.cayenne.DataChannelQueryFilter;
+import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DataRowStoreFactory;
@@ -68,8 +70,24 @@ public class DataDomainProvider implements Provider<DataDomain> {
 	@Inject
 	protected DataChannelDescriptorLoader loader;
 
+	/**
+	 * @deprecated since 4.1, use query and sync filters instead
+	 */
+	@Deprecated
 	@Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
 	protected List<DataChannelFilter> filters;
+
+	/**
+	 * @since 4.1
+	 */
+	@Inject
+	protected List<DataChannelQueryFilter> queryFilters;
+
+	/**
+	 * @since 4.1
+	 */
+	@Inject
+	protected List<DataChannelSyncFilter> syncFilters;
 
 	@Inject(Constants.SERVER_DOMAIN_LISTENERS_LIST)
 	protected List<Object> listeners;
@@ -110,6 +128,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 		return new DataDomain(name);
 	}
 
+	@SuppressWarnings("deprecation")
 	protected DataDomain createAndInitDataDomain() throws Exception {
 
 		DataChannelDescriptor descriptor = loadDescriptor();
@@ -156,8 +175,17 @@ public class DataDomainProvider implements Provider<DataDomain> {
 			dataDomain.setDefaultNode(defaultNode);
 		}
 
+		// filters are deprecated, used here for backward compatibility
 		for (DataChannelFilter filter : filters) {
 			dataDomain.addFilter(filter);
+		}
+
+		for (DataChannelQueryFilter filter : queryFilters) {
+			dataDomain.addQueryFilter(filter);
+		}
+
+		for (DataChannelSyncFilter filter : syncFilters) {
+			dataDomain.addSyncFilter(filter);
 		}
 
 		for (Object listener : listeners) {

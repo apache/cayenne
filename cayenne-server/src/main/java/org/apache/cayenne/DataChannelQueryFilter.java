@@ -16,29 +16,17 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne;
 
-import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 
-public class MockDataChannelFilter implements DataChannelFilter {
+/**
+ * @since 4.1
+ */
+@FunctionalInterface
+public interface DataChannelQueryFilter {
 
-    public void init(DataChannel channel) {
-    }
-
-    public QueryResponse onQuery(
-            ObjectContext originatingContext,
-            Query query,
-            DataChannelFilterChain filterChain) {
-        return null;
-    }
-
-    public GraphDiff onSync(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            int syncType,
-            DataChannelFilterChain filterChain) {
-        return null;
-    }
+    QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelQueryFilterChain filterChain);
 
 }

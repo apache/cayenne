@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
 public class ObjectIdRelationshipHandlerTest {
@@ -48,9 +48,8 @@ public class ObjectIdRelationshipHandlerTest {
 
         // a filter is required to invalidate root objects after commit
         ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();
-        runtime.getDataDomain().addFilter(filter);
-        runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(
-                filter);
+        runtime.getDataDomain().addQueryFilter(filter);
+        runtime.getDataDomain().getEntityResolver().getCallbackRegistry().addListener(filter);
 
         DBHelper dbHelper = new DBHelper(runtime.getDataSource(null));
 
@@ -62,7 +61,7 @@ public class ObjectIdRelationshipHandlerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         runtime.shutdown();
     }
 
@@ -76,8 +75,7 @@ public class ObjectIdRelationshipHandlerTest {
 
         UuidRoot1 r1 = context.newObject(UuidRoot1.class);
 
-        IdCoder refHandler = new IdCoder(context
-                .getEntityResolver());
+        IdCoder refHandler = new IdCoder(context.getEntityResolver());
         ObjectIdRelationshipHandler handler = new ObjectIdRelationshipHandler(refHandler);
         handler.relate(r1, e1);
 
@@ -137,7 +135,7 @@ public class ObjectIdRelationshipHandlerTest {
         context.commitChanges();
 
         int id = Cayenne.intPKForObject(e1);
-        assertFalse(1 == id);
+        assertNotEquals(1, id);
 
         Object[] r1x = rootTable.select();
         assertEquals("E1:" + id, r1x[1]);

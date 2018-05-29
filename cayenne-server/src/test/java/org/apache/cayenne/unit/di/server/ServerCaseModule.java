@@ -170,6 +170,10 @@ public class ServerCaseModule implements Module {
                 // Should remove problems with random-failing tests (those that are GC-sensitive).
                 .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
 
+        ServerModule.contributeDomainFilters(binder);
+        ServerModule.contributeDomainSyncFilters(binder);
+        ServerModule.contributeDomainQueryFilters(binder);
+
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
         ServerModule.contributePkGenerators(binder)

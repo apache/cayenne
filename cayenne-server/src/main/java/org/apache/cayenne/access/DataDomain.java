@@ -22,7 +22,10 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
-import org.apache.cayenne.DataChannelFilterChain;
+import org.apache.cayenne.DataChannelQueryFilter;
+import org.apache.cayenne.DataChannelQueryFilterChain;
+import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
@@ -91,8 +94,20 @@ public class DataDomain implements QueryEngine, DataChannel {
 
 	/**
 	 * @since 3.1
+	 * @deprecated since 4.1 this field is unused
 	 */
+	@Deprecated
 	protected List<DataChannelFilter> filters;
+
+	/**
+	 * @since 4.1
+	 */
+	protected List<DataChannelQueryFilter> queryFilters;
+
+	/**
+	 * @since 4.1
+	 */
+	protected List<DataChannelSyncFilter> syncFilters;
 
 	protected Map<String, DataNode> nodes;
 	protected Map<String, DataNode> nodesByDataMapName;
@@ -146,7 +161,8 @@ public class DataDomain implements QueryEngine, DataChannel {
 
 	private void init(String name) {
 
-		this.filters = new CopyOnWriteArrayList<>();
+		this.queryFilters = new CopyOnWriteArrayList<>();
+		this.syncFilters = new CopyOnWriteArrayList<>();
 		this.nodesByDataMapName = new ConcurrentHashMap<>();
 		this.nodes = new ConcurrentHashMap<>();
 
@@ -388,15 +404,8 @@ public class DataDomain implements QueryEngine, DataChannel {
 	public void removeDataNode(String nodeName) {
 		DataNode removed = nodes.remove(nodeName);
 		if (removed != null) {
-
 			removed.setEntityResolver(null);
-
-			Iterator<DataNode> it = nodesByDataMapName.values().iterator();
-			while (it.hasNext()) {
-				if (it.next() == removed) {
-					it.remove();
-				}
-			}
+			nodesByDataMapName.values().removeIf(dataNode -> dataNode == removed);
 		}
 	}
 
@@ -520,13 +529,9 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 * Routes queries to appropriate DataNodes for execution.
 	 */
 	public void performQueries(final Collection<? extends Query> queries, final OperationObserver callback) {
-
-		transactionManager.performInTransaction(new TransactionalOperation<Object>() {
-			@Override
-			public Object perform() {
-				new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
-				return null;
-			}
+		transactionManager.performInTransaction(() -> {
+			new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
+			return null;
 		});
 	}
 
@@ -667,16 +672,40 @@ public class DataDomain implements QueryEngine, DataChannel {
 	}
 
 	/**
-	 * Returns an unmodifiable list of filters registered with this DataDomain.
+	 * Since 4.1 returns empty list.
+	 *
+	 * @since 3.1
+	 * @deprecated since 4.1 use {@link #getQueryFilters()} and {@link #getSyncFilters()}
+	 */
+	@Deprecated
+	public List<DataChannelFilter> getFilters() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Returns an unmodifiable list of query filters registered with this DataDomain.
 	 * <p>
 	 * Filter ordering note: filters are applied in reverse order of their
 	 * occurrence in the filter list. I.e. the last filter in the list called
 	 * first in the chain.
 	 *
-	 * @since 3.1
+	 * @since 4.1
 	 */
-	public List<DataChannelFilter> getFilters() {
-		return Collections.unmodifiableList(filters);
+	public List<DataChannelQueryFilter> getQueryFilters() {
+		return Collections.unmodifiableList(queryFilters);
+	}
+
+	/**
+	 * Returns an unmodifiable list of sync filters registered with this DataDomain.
+	 * <p>
+	 * Filter ordering note: filters are applied in reverse order of their
+	 * occurrence in the filter list. I.e. the last filter in the list called
+	 * first in the chain.
+	 *
+	 * @since 4.1
+	 */
+	public List<DataChannelSyncFilter> getSyncFilters() {
+		return Collections.unmodifiableList(syncFilters);
 	}
 
 	/**
@@ -685,20 +714,66 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 * methods have event annotations.
 	 *
 	 * @since 3.1
+	 * @deprecated since 4.1 use {@link #addQueryFilter(DataChannelQueryFilter)} and {@link #addSyncFilter(DataChannelSyncFilter)} instead
 	 */
+	@Deprecated
 	public void addFilter(DataChannelFilter filter) {
 		filter.init(this);
-		getEntityResolver().getCallbackRegistry().addListener(filter);
-		filters.add(filter);
+		addListener(filter);
+		queryFilters.add(filter);
+		syncFilters.add(filter);
+	}
+
+	/**
+	 * Adds a new query filter.
+	 * Also registers passed filter as an event listener, if any of its methods have event annotations.
+	 *
+	 * @since 4.1
+	 */
+	public void addQueryFilter(DataChannelQueryFilter filter) {
+		addListener(filter);
+		queryFilters.add(filter);
+	}
+
+	/**
+	 * Adds a new sync filter.
+	 * Also registers passed filter as an event listener, if any of its methods have event annotations.
+	 *
+	 * @since 4.1
+	 */
+	public void addSyncFilter(DataChannelSyncFilter filter) {
+		addListener(filter);
+		syncFilters.add(filter);
 	}
 
 	/**
 	 * Removes a filter from the filter chain.
 	 *
 	 * @since 3.1
+	 * @deprecated since 4.1 use {@link #removeQueryFilter(DataChannelQueryFilter)} and {@link #removeSyncFilter(DataChannelSyncFilter)} instead
 	 */
+	@Deprecated
 	public void removeFilter(DataChannelFilter filter) {
-		filters.remove(filter);
+		removeQueryFilter(filter);
+		removeSyncFilter(filter);
+	}
+
+	/**
+	 * Removes a query filter from the filter chain.
+	 *
+	 * @since 4.1
+	 */
+	public void removeQueryFilter(DataChannelQueryFilter filter) {
+		queryFilters.remove(filter);
+	}
+
+	/**
+	 * Removes a sync filter from the filter chain.
+	 *
+	 * @since 4.1
+	 */
+	public void removeSyncFilter(DataChannelSyncFilter filter) {
+		syncFilters.remove(filter);
 	}
 
 	/**
@@ -712,50 +787,35 @@ public class DataDomain implements QueryEngine, DataChannel {
 		getEntityResolver().getCallbackRegistry().addListener(listener);
 	}
 
-	abstract class DataDomainFilterChain implements DataChannelFilterChain {
+	final class DataDomainQueryFilterChain implements DataChannelQueryFilterChain {
 
-		private int i;
+		private int idx;
 
-		DataDomainFilterChain() {
-			i = filters != null ? filters.size() : 0;
-		}
-
-		DataChannelFilter nextFilter() {
-			// filters are ordered innermost to outermost
-			i--;
-			return i >= 0 ? filters.get(i) : null;
-		}
-	}
-
-	final class DataDomainQueryFilterChain extends DataDomainFilterChain {
-
-		@Override
-		public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-
-			DataChannelFilter filter = nextFilter();
-			return (filter != null) ? filter.onQuery(originatingContext, query, this) : onQueryNoFilters(
-					originatingContext, query);
-		}
-
-		@Override
-		public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
-			throw new UnsupportedOperationException("It is illegal to call 'onSync' inside 'onQuery' chain");
-		}
-	}
-
-	final class DataDomainSyncFilterChain extends DataDomainFilterChain {
-
-		@Override
-		public GraphDiff onSync(final ObjectContext originatingContext, final GraphDiff changes, int syncType) {
-
-			DataChannelFilter filter = nextFilter();
-			return (filter != null) ? filter.onSync(originatingContext, changes, syncType, this) : onSyncNoFilters(
-					originatingContext, changes, syncType);
+		DataDomainQueryFilterChain() {
+			idx = queryFilters.size();
 		}
 
 		@Override
 		public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-			throw new UnsupportedOperationException("It is illegal to call 'onQuery' inside 'onSync' chain");
+			return --idx >= 0
+					? queryFilters.get(idx).onQuery(originatingContext, query, this)
+					: onQueryNoFilters(originatingContext, query);
+		}
+	}
+
+	final class DataDomainSyncFilterChain implements DataChannelSyncFilterChain {
+
+		private int idx;
+
+		DataDomainSyncFilterChain() {
+			idx = syncFilters.size();
+		}
+
+		@Override
+		public GraphDiff onSync(ObjectContext originatingContext, final GraphDiff changes, int syncType) {
+			return --idx >= 0
+					? syncFilters.get(idx).onSync(originatingContext, changes, syncType, this)
+					: onSyncNoFilters(originatingContext, changes, syncType);
 		}
 	}
 

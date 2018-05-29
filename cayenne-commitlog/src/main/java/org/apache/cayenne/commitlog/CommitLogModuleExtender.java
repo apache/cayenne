@@ -115,9 +115,9 @@ public class CommitLogModuleExtender {
             }
 
             if (excludeFromTransaction) {
-                ServerModule.contributeDomainFilters(binder).addAfter(CommitLogFilter.class, TransactionFilter.class);
+                ServerModule.contributeDomainSyncFilters(binder).addAfter(CommitLogFilter.class, TransactionFilter.class);
             } else {
-                ServerModule.contributeDomainFilters(binder).insertBefore(CommitLogFilter.class, TransactionFilter.class);
+                ServerModule.contributeDomainSyncFilters(binder).insertBefore(CommitLogFilter.class, TransactionFilter.class);
             }
         };
     }
