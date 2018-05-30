@@ -19,12 +19,16 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataChannelQueryFilter;
+import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -144,5 +148,46 @@ public class DataDomainFiltersIT extends ServerCase {
         QueryResponse response = domain.onQuery(context, query);
 
         assertSame(r2, response);
+    }
+
+    @Test
+    public void testSyncAndQueryFilter() {
+        ComplexFilter complexFilter = new ComplexFilter();
+        DataDomain domain = runtime.getDataDomain();
+
+        domain.addQueryFilter(complexFilter);
+        domain.addSyncFilter(complexFilter);
+
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("AAA");
+
+        // testing domain.onSync indirectly
+        context.commitChanges();
+
+        assertEquals(2, complexFilter.results.size());
+        assertEquals("onSync", complexFilter.results.get(0));
+        assertEquals("postPersist", complexFilter.results.get(1));
+    }
+
+    private static class ComplexFilter implements DataChannelQueryFilter, DataChannelSyncFilter {
+
+        private List<String> results = new ArrayList<>();
+
+        @Override
+        public QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelQueryFilterChain filterChain) {
+            results.add("onQuery");
+            return filterChain.onQuery(originatingContext, query);
+        }
+
+        @Override
+        public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType, DataChannelSyncFilterChain filterChain) {
+            results.add("onSync");
+            return filterChain.onSync(originatingContext, changes, syncType);
+        }
+
+        @PostPersist
+        public void postPersist(Object object) {
+            results.add("postPersist");
+        }
     }
 }

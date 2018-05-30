@@ -22,6 +22,8 @@ package org.apache.cayenne;
 import org.apache.cayenne.query.Query;
 
 /**
+ * Interface for chain of query filters
+ *
  * @since 4.1
  */
 public interface DataChannelQueryFilterChain {
