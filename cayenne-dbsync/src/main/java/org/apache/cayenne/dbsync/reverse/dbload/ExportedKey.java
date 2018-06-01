@@ -23,10 +23,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.CompareToBuilder;
+import org.apache.cayenne.util.Util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
 /**
  * A representation of relationship between two tables in database. It can be used for creating names
@@ -228,12 +228,24 @@ public class ExportedKey implements Comparable {
                 return false;
             }
 
-            if (!Objects.equals(catalog, entity.getCatalog())) {
-                return false;
+            if(Util.isEmptyString(catalog)) {
+                if(!Util.isEmptyString(entity.getCatalog())) {
+                    return false;
+                }
+            } else {
+                if(!catalog.equals(entity.getCatalog())) {
+                    return false;
+                }
             }
 
-            if (!Objects.equals(schema, entity.getSchema())) {
-                return false;
+            if(Util.isEmptyString(schema)) {
+                if(!Util.isEmptyString(entity.getSchema())) {
+                    return false;
+                }
+            } else {
+                if(!schema.equals(entity.getSchema())) {
+                    return false;
+                }
             }
 
             return true;

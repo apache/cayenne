@@ -22,6 +22,8 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
@@ -30,6 +32,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ExportedKeyLoaderIT extends BaseLoaderIT {
+
+    @Inject
+    DbAdapter adapter;
 
     @Test
     public void testExportedKeyLoad() throws Exception {
@@ -46,19 +51,25 @@ public class ExportedKeyLoaderIT extends BaseLoaderIT {
         String schema = connection.getSchema();
 
         DbEntity artist = getDbEntity("ARTIST");
-        artist.setCatalog(catalog);
+        if(adapter.supportsCatalogsOnReverseEngineering()) {
+            artist.setCatalog(catalog);
+        }
         artist.setSchema(schema);
         DbAttribute artistId = new DbAttribute("ARTIST_ID");
         artist.addAttribute(artistId);
 
         DbEntity gallery = getDbEntity("GALLERY");
-        gallery.setCatalog(catalog);
+        if(adapter.supportsCatalogsOnReverseEngineering()) {
+            gallery.setCatalog(catalog);
+        }
         gallery.setSchema(schema);
         DbAttribute galleryId = new DbAttribute("GALLERY_ID");
         gallery.addAttribute(galleryId);
 
         DbEntity painting = getDbEntity("PAINTING");
-        painting.setCatalog(catalog);
+        if(adapter.supportsCatalogsOnReverseEngineering()) {
+            painting.setCatalog(catalog);
+        }
         painting.setSchema(schema);
         DbAttribute paintingId = new DbAttribute("PAINTING_ID");
         DbAttribute paintingArtistId = new DbAttribute("ARTIST_ID");
