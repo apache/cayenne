@@ -42,6 +42,6 @@ script:
 # prevent Travis from unneeded "mvn install" run
 install: /bin/true
 
-cache:
-  directories:
-    - $HOME/.m2
+#cache:
+#  directories:
+#    - $HOME/.m2
