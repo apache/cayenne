@@ -72,19 +72,6 @@ public class RelationshipLoader extends AbstractLoader {
                 throw new IllegalStateException();
             }
 
-            if (!new EqualsBuilder()
-                    .append(pkEntity.getCatalog(), PK.getCatalog())
-                    .append(pkEntity.getSchema(), PK.getSchema()).append(fkEntity.getCatalog(), FK.getCatalog())
-                    .append(fkEntity.getSchema(), PK.getSchema()).isEquals()) {
-
-                LOGGER.info("Skip relation: '" + key + "' because it related to objects from other catalog/schema");
-                LOGGER.info("     relation primary key: '" + PK.getCatalog() + "." + PK.getSchema() + "'");
-                LOGGER.info("       primary key entity: '" + pkEntity.getCatalog() + "." + pkEntity.getSchema() + "'");
-                LOGGER.info("     relation foreign key: '" + FK.getCatalog() + "." + FK.getSchema() + "'");
-                LOGGER.info("       foreign key entity: '" + fkEntity.getCatalog() + "." + fkEntity.getSchema() + "'");
-                continue;
-            }
-
             // forwardRelationship is a reference from table with primary key
             // it is what exactly we load from db
             DbRelationship forwardRelationship = new DbRelationship();
@@ -126,11 +113,14 @@ public class RelationshipLoader extends AbstractLoader {
     }
 
     private void checkAndAddRelationship(DbEntity entity, DbRelationship relationship){
-        TableFilter tableFilter = config.getFiltersConfig()
-                .tableFilter(entity.getCatalog(), entity.getSchema());
+        TableFilter sourceTableFilter = config.getFiltersConfig()
+                .tableFilter(relationship.getSourceEntity().getCatalog(), relationship.getSourceEntity().getSchema());
+
+        TableFilter targetTableFilter = config.getFiltersConfig()
+                .tableFilter(relationship.getTargetEntity().getCatalog(), relationship.getTargetEntity().getSchema());
 
         // check that relationship can be included
-        if(!tableFilter.getIncludeTableRelationshipFilter(entity.getName())
+        if(!sourceTableFilter.getIncludeTableRelationshipFilter(entity.getName())
                 .isIncluded(relationship.getName())) {
             return;
         }
@@ -143,8 +133,8 @@ public class RelationshipLoader extends AbstractLoader {
 
         // check that all join attributes are included
         for(DbJoin join : relationship.getJoins()) {
-            if(!tableFilter.getIncludeTableColumnFilter(entity.getName()).isIncluded(join.getSourceName()) ||
-                    !tableFilter.getIncludeTableColumnFilter(relationship.getTargetEntityName()).isIncluded(join.getTargetName())) {
+            if(!sourceTableFilter.getIncludeTableColumnFilter(entity.getName()).isIncluded(join.getSourceName()) ||
+                    !targetTableFilter.getIncludeTableColumnFilter(relationship.getTargetEntityName()).isIncluded(join.getTargetName())) {
                 return;
             }
         }
@@ -189,7 +179,6 @@ public class RelationshipLoader extends AbstractLoader {
                 LOGGER.info("no attribute for declared foreign key: " + fkName);
                 continue;
             }
-
 
             addJoin(forwardRelationship, pkName, fkName);
             addJoin(reverseRelationship, fkName, pkName);

@@ -35,6 +35,7 @@ CAY-2414 Modeler: new icon design
 CAY-2415 Transaction isolation and propagation support
 CAY-2416 Change TreeMap for HashMap to store data in Cayenne model classes
 CAY-2422 Modeler: Open driver setup window on driver load error
+CAY-2440 cdbimport: allow cross-schema relationships
 
 Bug Fixes:
 

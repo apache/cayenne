@@ -19,12 +19,14 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.apache.cayenne.util.HashCodeBuilder;
 import org.apache.cayenne.util.CompareToBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 /**
  * A representation of relationship between two tables in database. It can be used for creating names
@@ -216,5 +218,25 @@ public class ExportedKey implements Comparable {
                     .toHashCode();
         }
 
+        /**
+         * Validate that entity is for this key (exists and has same catalog/schema)
+         * @param entity to validate
+         * @return is entity matches for this key
+         */
+        public boolean validateEntity(DbEntity entity) {
+            if (entity == null) {
+                return false;
+            }
+
+            if (!Objects.equals(catalog, entity.getCatalog())) {
+                return false;
+            }
+
+            if (!Objects.equals(schema, entity.getSchema())) {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

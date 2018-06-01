@@ -58,14 +58,14 @@ class ExportedKeyLoader extends PerEntityLoader {
         ExportedKey key = new ExportedKey(rs);
 
         DbEntity pkEntity = map.getDbEntity(key.getPk().getTable());
-        if (pkEntity == null) {
-            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getPk().getTable() + "' is not found");
+        if (!key.getPk().validateEntity(pkEntity)) {
+            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getPk().getTable() + "' is not found or in different catalog/schema");
             return;
         }
 
         DbEntity fkEntity = map.getDbEntity(key.getFk().getTable());
-        if (fkEntity == null) {
-            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getFk().getTable() + "' is not found");
+        if (!key.getFk().validateEntity(fkEntity)) {
+            LOGGER.info("Skip relation: '" + key + "' because table '" + key.getFk().getTable() + "' is not found or in different catalog/schema");
             return;
         }
 
