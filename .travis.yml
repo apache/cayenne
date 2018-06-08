@@ -35,12 +35,24 @@ env:
 jdk:
   - oraclejdk8
   - oraclejdk9
+  - oraclejdk10
+
+matrix:
+  include:
+    - jdk: oraclejdk-ea
+      env: DB_PROFILE=mysql-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
+    - jdk: oraclejdk-ea
+      env: DB_PROFILE=postgres-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
+    - jdk: oraclejdk-ea
+      env: DB_PROFILE=sqlserver-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
+  allow_failures:
+    - jdk: oraclejdk-ea
 
 script:
-  - travis_wait mvn verify -q -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
+  - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
 # prevent Travis from unneeded "mvn install" run
-install: /bin/true
+install: true
 
 #cache:
 #  directories:
