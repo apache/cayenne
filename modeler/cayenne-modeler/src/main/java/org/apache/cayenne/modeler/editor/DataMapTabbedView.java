@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorController;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
+
+import javax.swing.*;
 
 
 /**
@@ -55,8 +56,11 @@ public class DataMapTabbedView extends JTabbedPane {
         // must be wrapped in a scroll pane
         JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
         JScrollPane dbImportView = new JScrollPane(new DbImportView(mediator));
+        CodeGeneratorController codeGeneratorController = new CodeGeneratorController(Application.getInstance().getFrameController(), mediator);
+        JScrollPane cgenView = new JScrollPane(codeGeneratorController.getView());
         addTab("DataMap", dataMapView);
         addTab("DbImport", dbImportView);
+        addTab("Cgen", cgenView);
     }
 }
 

@@ -25,6 +25,7 @@ import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dbsync.xml.DbImportExtension;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.DefaultActionManager;
@@ -56,6 +57,7 @@ public class CayenneModelerModule implements Module {
         ProjectModule.contributeExtensions(binder)
                 .add(InfoExtension.class)
                 .add(GraphExtension.class)
-                .add(DbImportExtension.class);
+                .add(DbImportExtension.class)
+                .add(CgenExtension.class);
     }
 }
