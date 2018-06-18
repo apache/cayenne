@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -26,7 +29,7 @@ import org.apache.velocity.VelocityContext;
  * 
  * @since 3.0
  */
-public class EmbeddableArtifact implements Artifact {
+public class EmbeddableArtifact implements Artifact, XMLSerializable {
 
     protected Embeddable embeddable;
 
@@ -64,5 +67,12 @@ public class EmbeddableArtifact implements Artifact {
 
     public void postInitContext(VelocityContext context) {
         // noop - no special keys...
+    }
+
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+        encoder.start("embeddable")
+                .simpleTag("name", embeddable.getClassName())
+                .end();
     }
 }

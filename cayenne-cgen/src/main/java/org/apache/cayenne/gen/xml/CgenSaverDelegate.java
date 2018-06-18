@@ -1,6 +1,7 @@
 package org.apache.cayenne.gen.xml;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 
@@ -14,7 +15,10 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
 
     @Override
     public Void visitDataMap(DataMap dataMap) {
-
+        ClassGenerationAction cgen = metaData.get(dataMap, ClassGenerationAction.class);
+        if(cgen != null){
+            encoder.nested(cgen, getParentDelegate());
+        }
         return null;
     }
 }

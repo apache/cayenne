@@ -50,6 +50,8 @@ public class CodeTemplateManager {
 	protected Map<String, String> customTemplates;
 	protected Map<String, String> standardTemplates;
 
+	private Map<String, String> reverseStandartTemplates;
+
 	private static Logger logger = LoggerFactory.getLogger(CodeTemplateManager.class);
 
 	public Preferences getTemplatePreferences(Application application) {
@@ -75,6 +77,14 @@ public class CodeTemplateManager {
 		standardTemplates.put(STANDARD_SERVER_SUBCLASS, ClassGenerationAction.SUBCLASS_TEMPLATE);
 		standardTemplates.put(STANDARD_CLIENT_SUBCLASS, ClientClassGenerationAction.SUBCLASS_TEMPLATE);
 		standardTemplates.put(SINGLE_SERVER_CLASS, ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+
+		reverseStandartTemplates = new HashMap<>();
+		reverseStandartTemplates.put(ClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_SERVER_SUBCLASS);
+		reverseStandartTemplates.put(ClientClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_CLIENT_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, SINGLE_SERVER_CLASS);
+		reverseStandartTemplates.put(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_CLIENT_SUPERCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_SERVER_SUPERCLASS);
+
 	}
 
 	/**
@@ -105,6 +115,15 @@ public class CodeTemplateManager {
 
 		value = standardTemplates.get(name);
 		return value != null ? value.toString() : null;
+	}
+
+	public String getNameByPath(String name) {
+		if(customTemplates.containsKey(name)){
+			return customTemplates.get(name).toString();
+		} else {
+			Object value = reverseStandartTemplates.get(name);
+			return value != null ? value.toString() : null;
+		}
 	}
 
 	public Map<String, String> getCustomTemplates() {

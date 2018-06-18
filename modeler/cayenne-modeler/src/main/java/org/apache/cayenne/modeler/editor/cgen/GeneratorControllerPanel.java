@@ -20,8 +20,7 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.File;
 
 /**
  * A generic panel that is a superclass of generator panels, defining common fields.
@@ -29,12 +28,10 @@ import java.util.Collection;
  */
 public class GeneratorControllerPanel extends JPanel {
 
-    protected Collection<StandardPanelComponent> dataMapLines;
     protected JTextField outputFolder;
     protected JButton selectOutputFolder;
 
     public GeneratorControllerPanel() {
-        this.dataMapLines = new ArrayList<>();
         this.outputFolder = new JTextField();
         this.selectOutputFolder = new JButton("Select");
     }
@@ -43,11 +40,15 @@ public class GeneratorControllerPanel extends JPanel {
         return outputFolder;
     }
 
+    public File getOutputDir(){
+        return new File(outputFolder.getText());
+    }
+
     public JButton getSelectOutputFolder() {
         return selectOutputFolder;
     }
 
-    public Collection<StandardPanelComponent> getDataMapLines() {
-        return dataMapLines;
+    public void setOutputFolder(String folder) {
+        this.outputFolder.setText(folder);
     }
 }

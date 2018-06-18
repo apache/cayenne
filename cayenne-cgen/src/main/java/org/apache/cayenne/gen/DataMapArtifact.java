@@ -137,4 +137,5 @@ public class DataMapArtifact implements Artifact {
     public DataMap getDataMap() {
     	return dataMap;
     }
+
 }

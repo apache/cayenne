@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ImageRendererColumn;
@@ -36,13 +35,18 @@ public class ClassesTabController extends CayenneController {
     protected ClassesTabPanel view;
     protected ObjectBinding tableBinding;
 
+    private BindingBuilder builder;
+
     public ClassesTabController(CodeGeneratorControllerBase parent) {
         super(parent);
 
         this.view = new ClassesTabPanel();
+        builder = new BindingBuilder(getApplication().getBindingFactory(), this);
+
+        builder.bindToAction(view.getCheckAll(), "checkAllAction()");
     }
 
-    public void startup(DataMap dataMap){
+    public void startup(){
         initBindings();
     }
 
@@ -55,13 +59,6 @@ public class ClassesTabController extends CayenneController {
     }
 
     protected void initBindings() {
-
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
-        builder.bindToAction(view.getCheckAll(), "checkAllAction()");
-
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 
         tableBuilder.addColumn(
@@ -109,6 +106,7 @@ public class ClassesTabController extends CayenneController {
         else if (selectedCount == getParentController().getClasses().size()) {
             view.getCheckAll().setSelected(true);
         }
+        updateEntities();
     }
 
     /**
@@ -118,6 +116,12 @@ public class ClassesTabController extends CayenneController {
     public void checkAllAction() {
         if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
+            updateEntities();
         }
+    }
+
+    private void updateEntities(){
+        getParentController().updateEntities();
+        getParentController().getProjectController().setDirty(true);
     }
 }

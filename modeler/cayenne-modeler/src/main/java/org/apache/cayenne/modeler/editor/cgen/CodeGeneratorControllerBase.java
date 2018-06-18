@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -171,14 +172,6 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return selected;
     }
 
-    public int getSelectedEntitiesSize() {
-        return selectedEntities.size();
-    }
-
-    public int getSelectedEmbeddablesSize() {
-        return selectedEmbeddables.size();
-    }
-
     /**
      * Returns the first encountered validation problem for an antity matching the name or
      * null if the entity is valid or the entity is not present.
@@ -250,18 +243,6 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         }
     }
 
-    public Object getCurrentClass() {
-        return currentClass;
-    }
-
-    public void setCurrentClass(Object currentClass) {
-        this.currentClass = currentClass;
-    }
-
-    public Collection<DataMap> getDataMaps() {
-        return dataMaps;
-    }
-
     public JLabel getItemName(Object obj) {
         String className;
         Icon icon;
@@ -279,6 +260,43 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return labelIcon;
     }
 
+    public void updateEntities(){
+        DataMap map = getProjectController().getCurrentDataMap();
+        ClassGenerationAction generator = projectController.getApplication().getMetaData().get(map, ClassGenerationAction.class);
+        if(generator != null) {
+            generator.resetArtifacts();
+            LinkedList<ObjEntity> objEntities = new LinkedList<>(map.getObjEntities());
+
+            Collection<ObjEntity> selected = new ArrayList<>(getSelectedEntities());
+            selected.removeIf(ObjEntity::isGeneric);
+
+            objEntities.retainAll(selected);
+            generator.addEntities(objEntities);
+
+            LinkedList<Embeddable> embeddables = new LinkedList<>(map.getEmbeddables());
+            embeddables.retainAll(getSelectedEmbeddables());
+            generator.addEmbeddables(embeddables);
+
+            generator.addQueries(map.getQueryDescriptors());
+        }
+    }
+
+    public void addToSelectedEntities(Collection<String> entities) {
+        selectedEntities.addAll(entities);
+    }
+
+    public void addToSelectedEmbeddables(Collection<String> embeddables) {
+        selectedEmbeddables.addAll(embeddables);
+    }
+
+    public int getSelectedEntitiesSize() {
+        return selectedEntities.size();
+    }
+
+    public int getSelectedEmbeddablesSize() {
+        return selectedEmbeddables.size();
+    }
+
     public DataMap getDataMap() {
         return dataMap;
     }
@@ -286,4 +304,16 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public ProjectController getProjectController() {
         return projectController;
     }
+
+    public Object getCurrentClass() {
+        return currentClass;
+    }
+
+    public void setCurrentClass(Object currentClass) {
+        this.currentClass = currentClass;
+    }
+
+//    public Collection<DataMap> getDataMaps() {
+//        return dataMaps;
+//    }
 }

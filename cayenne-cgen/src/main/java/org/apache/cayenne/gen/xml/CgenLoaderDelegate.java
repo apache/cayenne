@@ -20,9 +20,9 @@ public class CgenLoaderDelegate implements LoaderDelegate {
 
     @Override
     public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
-//        if(CgenConfigHandler.CONFIG_TAG.equals(tag)) {
-//            return new CgenConfigHandler(parent, metaData);
-//        }
+        if(CgenConfigHandler.CONFIG_TAG.equals(tag)) {
+            return new CgenConfigHandler(parent, metaData);
+        }
         return null;
     }
 }

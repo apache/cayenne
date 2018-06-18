@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
 import java.util.function.Predicate;
 
 /**
@@ -58,8 +57,11 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     private void initListeners(){
         projectController.addDataMapDisplayListener(e -> {
             super.startup(e.getDataMap());
-            classesSelector.startup(e.getDataMap());
+            classesSelector.startup();
             generatorSelector.startup(e.getDataMap());
+            GeneratorController modeController = generatorSelector.getGeneratorController();
+            ClassGenerationAction classGenerationAction = modeController.createGenerator();
+            ((CustomModeController)modeController).initForm(classGenerationAction);
         });
     }
 
@@ -125,13 +127,10 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     }
 
     public void generateAction() {
-        Collection<ClassGenerationAction> generators = generatorSelector.getGenerator();
-
-        if (generators != null) {
+        ClassGenerationAction generator = generatorSelector.getGenerator();
+        if (generator != null) {
             try {
-                for (ClassGenerationAction generator : generators) {
-                    generator.execute();
-                }
+                generator.execute();
                 JOptionPane.showMessageDialog(
                         getView(),
                         "Class generation finished");

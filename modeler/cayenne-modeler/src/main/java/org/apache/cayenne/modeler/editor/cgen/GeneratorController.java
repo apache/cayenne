@@ -48,18 +48,12 @@ import java.util.prefs.Preferences;
  */
 public abstract class GeneratorController extends CayenneController {
 
-    protected String mode = ArtifactsGenerationMode.ALL.getLabel();
+    protected String mode = ArtifactsGenerationMode.ENTITY.getLabel();
     protected Map<DataMap, DataMapDefaults> mapPreferences;
     private String outputPath;
 
     public GeneratorController(CodeGeneratorControllerBase parent) {
         super(parent);
-    }
-
-    public void startup(DataMap dataMap){
-        createDefaults();
-        createView();
-//        initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
     }
 
     public String getOutputPath() {
@@ -94,24 +88,13 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     protected void initBindings(BindingBuilder bindingBuilder) {
-
-        initOutputFolder();
-
-        JTextField outputFolder = ((GeneratorControllerPanel) getView()).getOutputFolder();
         JButton outputSelect = ((GeneratorControllerPanel) getView()).getSelectOutputFolder();
-
-        outputFolder.setText(getOutputPath());
         bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
-        bindingBuilder.bindToTextField(outputFolder, "outputPath");
     }
 
     protected CodeGeneratorControllerBase getParentController() {
         return (CodeGeneratorControllerBase) getParent();
     }
-
-    protected abstract GeneratorControllerPanel createView();
-
-    protected abstract void createDefaults();
 
     /**
      * Creates an appropriate subclass of {@link ClassGenerationAction},
@@ -123,50 +106,43 @@ public abstract class GeneratorController extends CayenneController {
     /**
      * Creates a class generator for provided selections.
      */
-    public Collection<ClassGenerationAction> createGenerator() {
+    public ClassGenerationAction createGenerator() {
+        DataMap map = getParentController().getProjectController().getCurrentDataMap();
 
-        File outputDir = getOutputDir();
-
-        // no destination folder
-        if (outputDir == null) {
-            JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
-            return null;
+        ClassGenerationAction generator = getParentController().projectController.getApplication().getMetaData().get(map, ClassGenerationAction.class);
+        if(generator != null){
+            generator.prepareArtifacts();
+            getParentController().addToSelectedEntities(generator.getEntities());
+            getParentController().addToSelectedEmbeddables(generator.getEmbeddables());
+            return generator;
         }
 
-        // no such folder
-        if (!outputDir.exists() && !outputDir.mkdirs()) {
-            JOptionPane.showMessageDialog(this.getView(), "Can't create directory " + outputDir
-                    + ". Select a different one.");
-            return null;
-        }
-
-        // not a directory
-        if (!outputDir.isDirectory()) {
-            JOptionPane.showMessageDialog(this.getView(), outputDir + " is not a valid directory.");
-            return null;
-        }
-
-        // remove generic entities...
-        Collection<ObjEntity> selectedEntities = new ArrayList<>(getParentController().getSelectedEntities());
-        selectedEntities.removeIf(ObjEntity::isGeneric);
-
-        Collection<ClassGenerationAction> generators = new ArrayList<>();
-        Collection<StandardPanelComponent> dataMapLines = ((GeneratorControllerPanel) getView()).getDataMapLines();
-        DataMap map = getParentController().getDataMap();
         try {
-            ClassGenerationAction generator = newGenerator();
-            generator.setArtifactsGenerationMode(mode);
+            generator = newGenerator();
             generator.setDataMap(map);
+            initOutputFolder();
+            File outputDir = new File(outputPath);
 
-            LinkedList<ObjEntity> objEntities = new LinkedList<>(map.getObjEntities());
-            objEntities.retainAll(selectedEntities);
-            generator.addEntities(objEntities);
+            // no destination folder
+            if (outputDir == null) {
+                JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
+                return null;
+            }
 
-            LinkedList<Embeddable> embeddables = new LinkedList<>(map.getEmbeddables());
-            embeddables.retainAll(getParentController().getSelectedEmbeddables());
-            generator.addEmbeddables(embeddables);
+            // no such folder
+            if (!outputDir.exists() && !outputDir.mkdirs()) {
+                JOptionPane.showMessageDialog(this.getView(), "Can't create directory " + outputDir
+                        + ". Select a different one.");
+                return null;
+            }
 
-            generator.addQueries(map.getQueryDescriptors());
+            // not a directory
+            if (!outputDir.isDirectory()) {
+                JOptionPane.showMessageDialog(this.getView(), outputDir + " is not a valid directory.");
+                return null;
+            }
+
+            generator.setDestDir(outputDir);
 
             Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
 
@@ -174,25 +150,13 @@ public abstract class GeneratorController extends CayenneController {
                 generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
             }
 
-            generator.setDestDir(outputDir);
-            generator.setMakePairs(true);
-            generator.setForce(true);
+            getParentController().projectController.getApplication().getMetaData().add(map, generator);
+        } catch (CayenneRuntimeException exception) {
+            JOptionPane.showMessageDialog(this.getView(), exception.getUnlabeledMessage());
+            return null;
+        }
 
-            for (StandardPanelComponent dataMapLine : dataMapLines) {
-                if (dataMapLine.getDataMap() == map && !Util.isEmptyString(dataMapLine.getSuperclassPackage().getText())) {
-                    generator.setSuperPkg(dataMapLine.getSuperclassPackage().getText());
-                    break;
-                }
-            }
-
-                generators.add(generator);
-            } catch (CayenneRuntimeException exception) {
-                JOptionPane.showMessageDialog(this.getView(), exception.getUnlabeledMessage());
-                return null;
-            }
-
-
-        return generators;
+        return generator;
     }
 
     public void validateEmbeddable(ValidationResult validationBuffer, Embeddable embeddable) {
@@ -520,7 +484,7 @@ public abstract class GeneratorController extends CayenneController {
             // update model
             String path = selected.getAbsolutePath();
             outputFolder.setText(path);
-            setOutputPath(path);
+//            setOutputPath(path);
         }
     }
 

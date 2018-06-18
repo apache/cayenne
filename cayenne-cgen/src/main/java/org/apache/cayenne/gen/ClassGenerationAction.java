@@ -20,26 +20,20 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.gen.xml.CgenExtension;
+import org.apache.cayenne.map.*;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 
-public class ClassGenerationAction {
+public class ClassGenerationAction implements Serializable, XMLSerializable {
 	static final String TEMPLATES_DIR_NAME = "templates/v4_1/";
 
 	public static final String SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "singleclass.vm";
@@ -58,6 +52,9 @@ public class ClassGenerationAction {
 	private static final String WILDCARD = "*";
 
 	protected Collection<Artifact> artifacts;
+
+	protected Collection<String> entityArtifacts;
+	protected Collection<String> embeddableArtifacts;
 
 	protected String superPkg;
 	protected DataMap dataMap;
@@ -92,6 +89,7 @@ public class ClassGenerationAction {
 	protected Map<String, Template> templateCache;
 
 	public ClassGenerationAction() {
+//		this.destDir = new File(System.getProperty("user.dir"));
 		this.outputPattern = "*.java";
 		this.timestamp = 0L;
 		this.usePkgPath = true;
@@ -99,7 +97,13 @@ public class ClassGenerationAction {
 		this.context = new VelocityContext();
 		this.templateCache = new HashMap<>(5);
 
+		this.template = SUBCLASS_TEMPLATE;
+		this.superTemplate = SUPERCLASS_TEMPLATE;
+		this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
+
 		this.artifacts = new ArrayList<>();
+		this.entityArtifacts = new ArrayList<>();
+		this.embeddableArtifacts = new ArrayList<>();
 	}
 
 	protected String defaultTemplateName(TemplateType type) {
@@ -156,14 +160,14 @@ public class ClassGenerationAction {
 	 * Returns a String used to prefix class name to create a generated
 	 * superclass. Default value is "_".
 	 */
-	protected String getSuperclassPrefix() {
+	private String getSuperclassPrefix() {
 		return ClassGenerationAction.SUPERCLASS_PREFIX;
 	}
 
 	/**
 	 * VelocityContext initialization method called once per artifact.
 	 */
-	protected void resetContextForArtifact(Artifact artifact) {
+	private void resetContextForArtifact(Artifact artifact) {
 		StringUtils stringUtils = StringUtils.getInstance();
 
 		String qualifiedClassName = artifact.getQualifiedClassName();
@@ -201,7 +205,7 @@ public class ClassGenerationAction {
 	 * VelocityContext initialization method called once per each artifact and
 	 * template type combination.
 	 */
-	protected void resetContextForArtifactTemplate(Artifact artifact, TemplateType templateType) {
+	void resetContextForArtifactTemplate(Artifact artifact, TemplateType templateType) {
 		context.put(Artifact.IMPORT_UTILS_KEY, new ImportUtils());
 		artifact.postInitContext(context);
 	}
@@ -248,7 +252,26 @@ public class ClassGenerationAction {
 		}
 	}
 
-	protected Template getTemplate(TemplateType type) {
+	public void prepareArtifacts(){
+		if(!entityArtifacts.isEmpty()) {
+			for(String name : entityArtifacts) {
+				ObjEntity objEntity = dataMap.getObjEntity(name);
+				if(objEntity != null) {
+					artifacts.add(new EntityArtifact(objEntity));
+				}
+			}
+		}
+		if(!embeddableArtifacts.isEmpty()) {
+			for(String name : embeddableArtifacts) {
+				Embeddable embeddable = dataMap.getEmbeddable(name);
+				if(embeddable != null) {
+					artifacts.add(new EmbeddableArtifact(embeddable));
+				}
+			}
+		}
+	}
+
+	private Template getTemplate(TemplateType type) {
 
 		String templateName = customTemplateName(type);
 		if (templateName == null) {
@@ -284,7 +307,7 @@ public class ClassGenerationAction {
 	 * Throws CayenneRuntimeException if it is in an inconsistent state.
 	 * Called internally from "execute".
 	 */
-	protected void validateAttributes() {
+	private void validateAttributes() {
 		if (destDir == null) {
 			throw new CayenneRuntimeException("'destDir' attribute is missing.");
 		}
@@ -391,7 +414,7 @@ public class ClassGenerationAction {
 	 * Returns a target file where a generated superclass must be saved. If null
 	 * is returned, class shouldn't be generated.
 	 */
-	protected File fileForSuperclass() throws Exception {
+	private File fileForSuperclass() throws Exception {
 
 		String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
@@ -410,7 +433,7 @@ public class ClassGenerationAction {
 	 * Returns a target file where a generated class must be saved. If null is
 	 * returned, class shouldn't be generated.
 	 */
-	protected File fileForClass() throws Exception {
+	private File fileForClass() throws Exception {
 
 		String packageName = (String) context.get(Artifact.SUB_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUB_CLASS_KEY);
@@ -470,7 +493,7 @@ public class ClassGenerationAction {
 	 * belong to <code>pkgName</code> package should reside. Creates any missing
 	 * diectories below <code>dest</code>.
 	 */
-	protected File mkpath(File dest, String pkgName) throws Exception {
+	private File mkpath(File dest, String pkgName) throws Exception {
 
 		if (!usePkgPath || pkgName == null) {
 			return dest;
@@ -550,6 +573,20 @@ public class ClassGenerationAction {
 		}
 	}
 
+	public void loadEntity(String name) {
+		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
+				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
+			entityArtifacts.add(name);
+		}
+	}
+
+	public void loadEmbeddable(String name) {
+		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
+				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
+			embeddableArtifacts.add(name);
+		}
+	}
+
 	/**
 	 * Sets an optional shared VelocityContext. Useful with tools like VPP that
 	 * can set custom values in the context, not known to Cayenne.
@@ -584,6 +621,10 @@ public class ClassGenerationAction {
 		}
 	}
 
+	public String getArtifactsGenerationMode(){
+		return artifactsGenerationMode.getLabel();
+	}
+
 	public boolean isForce() {
 		return force;
 	}
@@ -604,5 +645,96 @@ public class ClassGenerationAction {
 	 */
 	public void setCreatePKProperties(boolean createPKProperties) {
 		this.createPKProperties = createPKProperties;
+	}
+
+	public Collection<EntityArtifact> getEntityArtifacts() {
+		Collection<EntityArtifact> entityArtifacts = new ArrayList<>();
+		for(Artifact artifact : artifacts){
+			if(artifact instanceof EntityArtifact){
+				entityArtifacts.add((EntityArtifact) artifact);
+			}
+		}
+		return entityArtifacts;
+	}
+
+	public Collection<EmbeddableArtifact> getEmbeddableArtifacts() {
+		Collection<EmbeddableArtifact> embeddableArtifacts = new ArrayList<>();
+		for(Artifact artifact : artifacts){
+			if(artifact instanceof EmbeddableArtifact){
+				embeddableArtifacts.add((EmbeddableArtifact) artifact);
+			}
+		}
+		return embeddableArtifacts;
+	}
+
+	public boolean isMakePairs() {
+		return makePairs;
+	}
+
+	public boolean isOverwrite() {
+		return overwrite;
+	}
+
+	public boolean isUsePkgPath() {
+		return usePkgPath;
+	}
+
+	public boolean isCreatePropertyNames() {
+		return createPropertyNames;
+	}
+
+	public String getOutputPattern() {
+		return outputPattern;
+	}
+
+	public String getSuperclassTemplate(){
+		return superTemplate;
+	}
+
+	public DataMap getDataMap() {
+		return dataMap;
+	}
+
+	public String getDir(){
+		return destDir.getAbsolutePath();
+	}
+
+	public String getTemplate() {
+		return template;
+	}
+
+	public String getSuperPkg(){
+		return superPkg;
+	}
+
+	public void resetArtifacts(){
+		this.artifacts = new ArrayList<>();
+	}
+
+	public Collection<String> getEntities() {
+		return entityArtifacts;
+	}
+
+	public Collection<String> getEmbeddables() {
+		return embeddableArtifacts;
+	}
+
+	@Override
+	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+		encoder.start("cgen")
+				.attribute("xmlns", CgenExtension.NAMESPACE)
+				.nested(this.getEntityArtifacts(), delegate)
+				.nested(this.getEmbeddableArtifacts(), delegate)
+				.simpleTag("outputDirectory", this.destDir.getAbsolutePath())
+				.simpleTag("generationMode", this.artifactsGenerationMode.getLabel())
+				.simpleTag("subclassTemplate", this.template)
+				.simpleTag("superclassTemplate", this.superTemplate)
+				.simpleTag("outputPattern", this.outputPattern)
+				.simpleTag("makePairs", Boolean.toString(this.makePairs))
+				.simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
+				.simpleTag("overwriteSubclasses", Boolean.toString(this.overwrite))
+				.simpleTag("createPropertyNames", Boolean.toString(this.createPropertyNames))
+				.simpleTag("superPkg", this.superPkg)
+				.end();
 	}
 }

@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.PreferenceDetail;
 
 import java.awt.*;
-import java.util.Collection;
 
 /**
  */
@@ -64,7 +63,7 @@ public class GeneratorTabController extends CayenneController {
         return customModeController;
     }
 
-    public Collection<ClassGenerationAction> getGenerator() {
+    public ClassGenerationAction getGenerator() {
         GeneratorController modeController = getGeneratorController();
         return (modeController != null) ? modeController.createGenerator() : null;
     }
