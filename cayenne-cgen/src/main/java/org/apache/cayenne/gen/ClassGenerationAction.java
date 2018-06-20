@@ -89,7 +89,6 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	protected Map<String, Template> templateCache;
 
 	public ClassGenerationAction() {
-//		this.destDir = new File(System.getProperty("user.dir"));
 		this.outputPattern = "*.java";
 		this.timestamp = 0L;
 		this.usePkgPath = true;
@@ -99,6 +98,10 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 
 		this.template = SUBCLASS_TEMPLATE;
 		this.superTemplate = SUPERCLASS_TEMPLATE;
+
+		this.embeddableTemplate = EMBEDDABLE_SUBCLASS_TEMPLATE;
+		this.embeddableSuperTemplate = EMBEDDABLE_SUPERCLASS_TEMPLATE;
+
 		this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
 		this.artifacts = new ArrayList<>();
@@ -253,6 +256,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	}
 
 	public void prepareArtifacts(){
+//		resetArtifacts();
 		if(!entityArtifacts.isEmpty()) {
 			for(String name : entityArtifacts) {
 				ObjEntity objEntity = dataMap.getObjEntity(name);
@@ -621,18 +625,6 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		}
 	}
 
-	public String getArtifactsGenerationMode(){
-		return artifactsGenerationMode.getLabel();
-	}
-
-	public boolean isForce() {
-		return force;
-	}
-
-	public void setForce(boolean force) {
-		this.force = force;
-	}
-
 	/**
 	 * @since 4.1
 	 */
@@ -719,6 +711,30 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		return embeddableArtifacts;
 	}
 
+	public String getArtifactsGenerationMode(){
+		return artifactsGenerationMode.getLabel();
+	}
+
+	public boolean isForce() {
+		return force;
+	}
+
+	public void setForce(boolean force) {
+		this.force = force;
+	}
+
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public String getEmbeddableTemplate() {
+		return embeddableTemplate;
+	}
+
+	public String getEmbeddableSuperTemplate() {
+		return embeddableSuperTemplate;
+	}
+
 	@Override
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 		encoder.start("cgen")
@@ -729,12 +745,15 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 				.simpleTag("generationMode", this.artifactsGenerationMode.getLabel())
 				.simpleTag("subclassTemplate", this.template)
 				.simpleTag("superclassTemplate", this.superTemplate)
+				.simpleTag("embeddableTemplate", this.embeddableTemplate)
+				.simpleTag("embeddableSuperclassTemplate", this.embeddableSuperTemplate)
 				.simpleTag("outputPattern", this.outputPattern)
 				.simpleTag("makePairs", Boolean.toString(this.makePairs))
 				.simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
 				.simpleTag("overwriteSubclasses", Boolean.toString(this.overwrite))
 				.simpleTag("createPropertyNames", Boolean.toString(this.createPropertyNames))
 				.simpleTag("superPkg", this.superPkg)
+				.simpleTag("encoding", this.encoding)
 				.end();
 	}
 }

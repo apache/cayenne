@@ -28,19 +28,16 @@ import java.awt.*;
 
 public class CustomModePanel extends GeneratorControllerPanel {
 
-    protected JComboBox generationMode;
-    protected JComboBox subclassTemplate;
-    protected JComboBox superclassTemplate;
+    private JComboBox generationMode;
+    private JComboBox subclassTemplate;
+    private JComboBox superclassTemplate;
     protected JCheckBox pairs;
-    protected JCheckBox overwrite;
-    protected JCheckBox usePackagePath;
-    protected JTextField outputPattern;
-    protected JCheckBox createPropertyNames;
+    private JCheckBox overwrite;
+    private JCheckBox usePackagePath;
+    private JTextField outputPattern;
+    private JCheckBox createPropertyNames;
     private JTextField superclassPackage;
 
-    private JTextField additionalMaps;
-    private JButton selectAdditionalMaps;
-    private JCheckBox client;
     private JTextField encoding;
     private JComboBox embeddableTemplate;
     private JComboBox embeddableSuperTemplate;
@@ -64,9 +61,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
         this.superclassPackage = new JTextField();
 
-        this.additionalMaps = new JTextField();
-        this.selectAdditionalMaps = new JButton("Select");
-        this.client = new JCheckBox();
         this.encoding = new JTextField();
         this.embeddableTemplate = new JComboBox();
         this.embeddableSuperTemplate = new JComboBox();
@@ -79,16 +73,12 @@ public class CustomModePanel extends GeneratorControllerPanel {
         });
 
         // assemble
-
         FormLayout layout = new FormLayout(
                 "right:77dlu, 3dlu, fill:200:grow, 6dlu, fill:50dlu, 3dlu", "");
         builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
         builder.append("Output Directory:", outputFolder, selectOutputFolder);
-        builder.nextLine();
-
-        builder.append("Additional DataMaps", additionalMaps, selectAdditionalMaps);
         builder.nextLine();
 
         builder.append("Generation Mode:", generationMode);
@@ -124,9 +114,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.append("Create Property Names:", createPropertyNames);
         builder.nextLine();
 
-        builder.append("Client", client);
-        builder.nextLine();
-
         builder.append(dataMapName);
         builder.nextLine();
 
@@ -150,9 +137,11 @@ public class CustomModePanel extends GeneratorControllerPanel {
         return manageTemplatesLink;
     }
 
-    public JComboBox getSubclassTemplate() {
-        return subclassTemplate;
-    }
+    public JComboBox getSubclassTemplate() { return subclassTemplate; }
+
+    public JComboBox getEmbeddableTemplate() { return embeddableTemplate; }
+
+    public JComboBox getEmbeddableSuperTemplate() { return embeddableSuperTemplate; }
 
     public JComboBox getSuperclassTemplate() {
         return superclassTemplate;
@@ -178,10 +167,11 @@ public class CustomModePanel extends GeneratorControllerPanel {
         return createPropertyNames;
     }
 
-
     public JTextField getSuperclassPackage() {
         return superclassPackage;
     }
+
+    public JTextField getEncoding() { return encoding; }
 
     public void setDataMapName(String mapName){
         dataMapName.setText(mapName);
@@ -222,4 +212,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
     public void setGenerationMode(String mode) {
         generationMode.setSelectedItem(mode);
     }
+
+    public void setEncoding(String encoding) { this.encoding.setText(encoding); }
+
+    public void setEmbeddableTemplate(String template) { embeddableTemplate.setSelectedItem(template); }
+
+    public void setEmbeddableSuperTemplate(String template) { embeddableSuperTemplate.setSelectedItem(template); }
 }

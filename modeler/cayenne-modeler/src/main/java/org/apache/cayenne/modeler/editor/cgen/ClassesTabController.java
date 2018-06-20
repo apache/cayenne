@@ -122,6 +122,6 @@ public class ClassesTabController extends CayenneController {
 
     private void updateEntities(){
         getParentController().updateEntities();
-        getParentController().getProjectController().setDirty(true);
+//        getParentController().getProjectController().setDirty(true);
     }
 }

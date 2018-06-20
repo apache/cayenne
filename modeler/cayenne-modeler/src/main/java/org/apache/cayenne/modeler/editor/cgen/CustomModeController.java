@@ -20,10 +20,8 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
@@ -73,10 +71,6 @@ public class CustomModeController extends GeneratorController {
 
     private ClassGenerationAction classGenerationAction;
 
-    public CustomPreferencesUpdater getCustomPreferencesUpdater() {
-        return preferencesUpdater;
-    }
-
     public CustomModeController(CodeGeneratorControllerBase parent) {
         super(parent);
         this.view = new CustomModePanel();
@@ -92,27 +86,23 @@ public class CustomModeController extends GeneratorController {
         updateTemplates();
     }
 
-    public void startup(DataMap dataMap) {
-        createDefaults();
-    }
-
     protected void createDefaults() {
-        TreeMap<DataMap, DataMapDefaults> map = new TreeMap<>();
-        DataMap dataMap = getParentController().getDataMap();
-        DataMapDefaults preferences;
-        preferences = getApplication().getFrameController().getProjectController()
-                .getDataMapPreferences(this.getClass().getName().replace(".", "/"), dataMap);
-        preferences.setSuperclassPackage("");
-        preferences.updateSuperclassPackage(dataMap, false);
-
-        map.put(dataMap, preferences);
-
-        if (getOutputPath() == null) {
-            setOutputPath(preferences.getOutputPath());
-        }
-
-        setMapPreferences(map);
-        preferencesUpdater = new CustomPreferencesUpdater(map);
+//        TreeMap<DataMap, DataMapDefaults> map = new TreeMap<>();
+//        DataMap dataMap = getParentController().getDataMap();
+//        DataMapDefaults preferences;
+//        preferences = getApplication().getFrameController().getProjectController()
+//                .getDataMapPreferences(this.getClass().getName().replace(".", "/"), dataMap);
+//        preferences.setSuperclassPackage("");
+//        preferences.updateSuperclassPackage(dataMap, false);
+//
+//        map.put(dataMap, preferences);
+//
+//        if (getOutputPath() == null) {
+//            setOutputPath(preferences.getOutputPath());
+//        }
+//
+//        setMapPreferences(map);
+//        preferencesUpdater = new CustomPreferencesUpdater(map);
     }
 
     protected void updateTemplates() {
@@ -132,8 +122,19 @@ public class CustomModeController extends GeneratorController {
         Collections.sort(subTemplates);
         subTemplates.addAll(customTemplates);
 
+        List<String> embeddableTemplates = new ArrayList<>(templateManager.getStandartEmbeddableTemplates());
+        Collections.sort(embeddableTemplates);
+        embeddableTemplates.addAll(customTemplates);
+
+        List<String> embeddableSuperTemplates = new ArrayList<>(templateManager.getStandartEmbeddableSuperclassTemplates());
+        Collections.sort(embeddableSuperTemplates);
+        embeddableSuperTemplates.addAll(customTemplates);
+
         this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel(subTemplates.toArray()));
         this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel(superTemplates.toArray()));
+
+        this.view.getEmbeddableTemplate().setModel(new DefaultComboBoxModel(embeddableTemplates.toArray()));
+        this.view.getEmbeddableSuperTemplate().setModel(new DefaultComboBoxModel(embeddableSuperTemplates.toArray()));
     }
 
     public Component getView() {
@@ -196,6 +197,16 @@ public class CustomModeController extends GeneratorController {
             getParentController().getProjectController().setDirty(true);
         });
 
+        view.getEmbeddableTemplate().addActionListener(val -> {
+            classGenerationAction.setEmbeddableTemplate(getApplication().getCodeTemplateManager().getTemplatePath(String.valueOf(view.getEmbeddableTemplate().getSelectedItem())));
+            getParentController().getProjectController().setDirty(true);
+        });
+
+        view.getEmbeddableSuperTemplate().addActionListener(val -> {
+            classGenerationAction.setEmbeddableSuperTemplate(getApplication().getCodeTemplateManager().getTemplatePath(String.valueOf(view.getEmbeddableSuperTemplate().getSelectedItem())));
+            getParentController().getProjectController().setDirty(true);
+        });
+
         view.getGenerationMode().addActionListener(val -> {
             classGenerationAction.setArtifactsGenerationMode(modesByLabel.get(view.getGenerationMode().getSelectedItem()));
             getParentController().getProjectController().setDirty(true);
@@ -228,6 +239,20 @@ public class CustomModeController extends GeneratorController {
             @Override
             public void changedUpdate(DocumentEvent e) {}
         });
+
+        view.getEncoding().getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                classGenerationAction.setEncoding(view.getEncoding().getText());
+                getParentController().getProjectController().setDirty(true);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {}
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {}
+        });
     }
 
     public void initForm(ClassGenerationAction classGenerationAction){
@@ -243,5 +268,10 @@ public class CustomModeController extends GeneratorController {
         view.setOverwrite(classGenerationAction.isOverwrite());
         view.setCreatePropertyNames(classGenerationAction.isCreatePropertyNames());
         view.setSuperclassPackage(classGenerationAction.getSuperPkg());
+        view.setEncoding(classGenerationAction.getEncoding());
+        view.setEmbeddableTemplate(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getEmbeddableTemplate()));
+        view.setEmbeddableSuperTemplate(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getEmbeddableSuperTemplate()));
+
+//        getParentController().getProjectController().setDirty(false);
     }
 }

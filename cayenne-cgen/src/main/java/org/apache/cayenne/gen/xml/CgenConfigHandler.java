@@ -25,6 +25,9 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String SUPER_PKG_TAG = "superPkg";
     private static final String OBJENTITY_TAG = "objEntity";
     private static final String EMBEDDABLE_TAG = "embeddable";
+    private static final String ENCODING_TAG = "encoding";
+    private static final String EMBEDDABLE_TEMPLATE_TAG = "embeddableTemplate";
+    private static final String EMBEDDABLE_SUPERCLASS_TEMPLATE_TAG = "embeddableSuperclassTemplate";
 
     public static final String TRUE = "true";
 
@@ -96,6 +99,16 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             case SUPER_PKG_TAG:
                 createSuperPkg(data);
                 break;
+            case ENCODING_TAG:
+                createEncoding(data);
+                break;
+            case EMBEDDABLE_TEMPLATE_TAG:
+                createEmbeddableTemplate(data);
+                break;
+            case EMBEDDABLE_SUPERCLASS_TEMPLATE_TAG:
+                createEmbeddableSuperclassTemplate(data);
+                break;
+
         }
     }
 
@@ -136,6 +149,26 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
 
         if(configuration != null) {
             configuration.setSuperTemplate(template);
+        }
+    }
+
+    public void createEmbeddableTemplate(String template) {
+        if(template.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            configuration.setEmbeddableTemplate(template);
+        }
+    }
+
+    public void createEmbeddableSuperclassTemplate(String template) {
+        if(template.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            configuration.setEmbeddableSuperTemplate(template);
         }
     }
 
@@ -215,11 +248,22 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         }
     }
 
+    private void createEncoding(String data) {
+        if(data.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            configuration.setEncoding(data);
+        }
+    }
+
     private void createConfig() {
         configuration = new ClassGenerationAction();
         loaderContext.addDataMapListener(dataMap -> {
-            CgenConfigHandler.this.metaData.add(dataMap, configuration);
             configuration.setDataMap(dataMap);
+            configuration.prepareArtifacts();
+            CgenConfigHandler.this.metaData.add(dataMap, configuration);
         });
     }
 }

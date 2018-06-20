@@ -59,6 +59,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
             super.startup(e.getDataMap());
             classesSelector.startup();
             generatorSelector.startup(e.getDataMap());
+
             GeneratorController modeController = generatorSelector.getGeneratorController();
             ClassGenerationAction classGenerationAction = modeController.createGenerator();
             ((CustomModeController)modeController).initForm(classGenerationAction);

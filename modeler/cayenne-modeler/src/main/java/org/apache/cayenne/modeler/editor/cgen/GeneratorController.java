@@ -111,9 +111,10 @@ public abstract class GeneratorController extends CayenneController {
 
         ClassGenerationAction generator = getParentController().projectController.getApplication().getMetaData().get(map, ClassGenerationAction.class);
         if(generator != null){
-            generator.prepareArtifacts();
             getParentController().addToSelectedEntities(generator.getEntities());
             getParentController().addToSelectedEmbeddables(generator.getEmbeddables());
+            generator.getEntities().clear();
+            generator.getEmbeddables().clear();
             return generator;
         }
 
@@ -489,24 +490,8 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     private void initOutputFolder() {
-        String path;
-        if (getOutputPath() == null) {
-            if (System.getProperty("cayenne.cgen.destdir") != null) {
-                setOutputPath(System.getProperty("cayenne.cgen.destdir"));
-            } else {
-                // init default directory..
-                FSPath lastPath = Application.getInstance().getFrameController().getLastDirectory();
-
-                path = checkDefaultMavenResourceDir(lastPath, "test");
-
-                if (path != null || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
-                    setOutputPath(path);
-                } else {
-                    File lastDir = (lastPath != null) ? lastPath.getExistingDirectory(false) : null;
-                    setOutputPath(lastDir != null ? lastDir.getAbsolutePath() : null);
-                }
-            }
-        }
+        String pathString = System.getProperty("user.home");
+        setOutputPath(pathString);
     }
 
     private String checkDefaultMavenResourceDir(FSPath lastPath, String dirType) {

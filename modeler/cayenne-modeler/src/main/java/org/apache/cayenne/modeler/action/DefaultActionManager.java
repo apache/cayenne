@@ -167,6 +167,8 @@ public class DefaultActionManager implements ActionManager {
 
         registerAction(new LinkDataMapAction(application));
         registerAction(new LinkDataMapsAction(application));
+
+        registerAction(new CgenAction((application)));
     }
 
     private void initActions() {
@@ -195,7 +197,8 @@ public class DefaultActionManager implements ActionManager {
                 GenerateCodeAction.class.getName(),
                 GenerateDBAction.class.getName(),
                 PasteAction.class.getName(),
-                ReverseEngineeringToolMenuAction.class.getName()));
+                ReverseEngineeringToolMenuAction.class.getName(),
+                CgenAction.class.getName()));
 
         DATA_NODE_ACTIONS = new HashSet<>(DOMAIN_ACTIONS);
         DATA_NODE_ACTIONS.addAll(Arrays.asList(

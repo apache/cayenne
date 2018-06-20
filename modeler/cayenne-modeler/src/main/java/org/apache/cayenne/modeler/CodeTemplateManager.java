@@ -43,12 +43,19 @@ public class CodeTemplateManager {
 	static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
 	static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
+	public static final String STANDART_EMBEDDABLE_SUPERCLASS = "Standart Embeddable Superclass";
+	public static final String STANDART_EMBEDDABLE_SUBCLASS = "Standart Embeddable Subclass";
+	public static final String SINGLE_EMBEDDABLE_CLASS = "Single Embeddable class";
+
 	public static final String NODE_NAME = "codeTemplateManager";
 
 	protected List<String> standardSubclassTemplates;
 	protected List<String> standardSuperclassTemplates;
 	protected Map<String, String> customTemplates;
 	protected Map<String, String> standardTemplates;
+
+	protected List<String> standartEmbeddableTemplates;
+	protected List<String> standartEmbeddableSuperclassTemplates;
 
 	private Map<String, String> reverseStandartTemplates;
 
@@ -69,6 +76,13 @@ public class CodeTemplateManager {
 		standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 		standardSubclassTemplates.add(SINGLE_SERVER_CLASS);
 
+		standartEmbeddableTemplates = new ArrayList<>();
+		standartEmbeddableTemplates.add(SINGLE_EMBEDDABLE_CLASS);
+		standartEmbeddableTemplates.add(STANDART_EMBEDDABLE_SUBCLASS);
+
+		standartEmbeddableSuperclassTemplates = new ArrayList<>();
+		standartEmbeddableSuperclassTemplates.add(STANDART_EMBEDDABLE_SUPERCLASS);
+
 		updateCustomTemplates(getTemplatePreferences(application));
 
 		standardTemplates = new HashMap<>();
@@ -78,6 +92,10 @@ public class CodeTemplateManager {
 		standardTemplates.put(STANDARD_CLIENT_SUBCLASS, ClientClassGenerationAction.SUBCLASS_TEMPLATE);
 		standardTemplates.put(SINGLE_SERVER_CLASS, ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
 
+		standardTemplates.put(STANDART_EMBEDDABLE_SUPERCLASS, ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE);
+		standardTemplates.put(STANDART_EMBEDDABLE_SUBCLASS, ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
+		standardTemplates.put(SINGLE_EMBEDDABLE_CLASS, ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
+
 		reverseStandartTemplates = new HashMap<>();
 		reverseStandartTemplates.put(ClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_SERVER_SUBCLASS);
 		reverseStandartTemplates.put(ClientClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_CLIENT_SUBCLASS);
@@ -85,6 +103,9 @@ public class CodeTemplateManager {
 		reverseStandartTemplates.put(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_CLIENT_SUPERCLASS);
 		reverseStandartTemplates.put(ClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_SERVER_SUPERCLASS);
 
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUPERCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE, SINGLE_EMBEDDABLE_CLASS);
 	}
 
 	/**
@@ -136,5 +157,13 @@ public class CodeTemplateManager {
 
 	public List<String> getStandardSuperclassTemplates() {
 		return standardSuperclassTemplates;
+	}
+
+	public List<String> getStandartEmbeddableTemplates() {
+		return standartEmbeddableTemplates;
+	}
+
+	public List<String> getStandartEmbeddableSuperclassTemplates() {
+		return standartEmbeddableSuperclassTemplates;
 	}
 }

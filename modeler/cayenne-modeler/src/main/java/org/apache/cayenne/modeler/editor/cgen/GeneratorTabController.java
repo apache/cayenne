@@ -44,7 +44,7 @@ public class GeneratorTabController extends CayenneController {
     }
 
     public void startup(DataMap dataMap){
-        customModeController.startup(dataMap);
+//        customModeController.startup(dataMap);
     }
 
     public Component getView() {
