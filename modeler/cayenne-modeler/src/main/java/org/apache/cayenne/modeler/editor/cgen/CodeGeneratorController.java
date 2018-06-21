@@ -58,7 +58,6 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         projectController.addDataMapDisplayListener(e -> {
             super.startup(e.getDataMap());
             classesSelector.startup();
-            generatorSelector.startup(e.getDataMap());
 
             GeneratorController modeController = generatorSelector.getGeneratorController();
             ClassGenerationAction classGenerationAction = modeController.createGenerator();
@@ -125,6 +124,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         }
         
         view.getClassesCount().setText(label);
+        projectController.setDirty(true);
     }
 
     public void generateAction() {

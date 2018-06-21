@@ -23,6 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * @since 4.1
  */
 public class GeneratorTabPanel extends JPanel {
 

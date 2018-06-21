@@ -1,3 +1,21 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
 package org.apache.cayenne.gen.xml;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
@@ -9,6 +27,9 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 
+/**
+ * @since 4.1
+ */
 public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
 
     public static final String CONFIG_TAG = "cgen";
@@ -28,6 +49,8 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String ENCODING_TAG = "encoding";
     private static final String EMBEDDABLE_TEMPLATE_TAG = "embeddableTemplate";
     private static final String EMBEDDABLE_SUPERCLASS_TEMPLATE_TAG = "embeddableSuperclassTemplate";
+    private static final String DATAMAP_TEMPLATE_TAG = "dataMapTemplate";
+    private static final String DATAMAP_SUPERCLASS_TEMPLATE_TAG = "dataMapSuperclassTemplate";
 
     public static final String TRUE = "true";
 
@@ -108,7 +131,12 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             case EMBEDDABLE_SUPERCLASS_TEMPLATE_TAG:
                 createEmbeddableSuperclassTemplate(data);
                 break;
-
+            case DATAMAP_TEMPLATE_TAG:
+                createDataMapTemplate(data);
+                break;
+            case DATAMAP_SUPERCLASS_TEMPLATE_TAG:
+                createDataMapSuperclassTemplate(data);
+                break;
         }
     }
 
@@ -152,7 +180,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         }
     }
 
-    public void createEmbeddableTemplate(String template) {
+    private void createEmbeddableTemplate(String template) {
         if(template.trim().length() == 0) {
             return;
         }
@@ -162,7 +190,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         }
     }
 
-    public void createEmbeddableSuperclassTemplate(String template) {
+    private void createEmbeddableSuperclassTemplate(String template) {
         if(template.trim().length() == 0) {
             return;
         }
@@ -258,11 +286,30 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         }
     }
 
+    private void createDataMapTemplate(String data) {
+        if(data.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            configuration.setQueryTemplate(data);
+        }
+    }
+
+    private void createDataMapSuperclassTemplate(String data) {
+        if(data.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            configuration.setQuerySuperTemplate(data);
+        }
+    }
+
     private void createConfig() {
         configuration = new ClassGenerationAction();
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
-            configuration.prepareArtifacts();
             CgenConfigHandler.this.metaData.add(dataMap, configuration);
         });
     }

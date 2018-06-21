@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.TextAdapter;
+
 import javax.swing.*;
 import java.io.File;
 
@@ -28,27 +33,32 @@ import java.io.File;
  */
 public class GeneratorControllerPanel extends JPanel {
 
-    protected JTextField outputFolder;
+    protected TextAdapter outputFolder;
     protected JButton selectOutputFolder;
 
-    public GeneratorControllerPanel() {
-        this.outputFolder = new JTextField();
+    ProjectController projectController;
+
+    public GeneratorControllerPanel(ProjectController projectController) {
+        this.projectController = projectController;
+        JTextField outputFolderField = new JTextField();
+        this.outputFolder = new TextAdapter(outputFolderField) {
+            protected void updateModel(String text) {
+                getCgenByDataMap().setDestDir(new File(text));
+                projectController.setDirty(true);
+            }
+        };
         this.selectOutputFolder = new JButton("Select");
     }
 
-    public JTextField getOutputFolder() {
-        return outputFolder;
+    public ClassGenerationAction getCgenByDataMap() {
+        DataMap dataMap = projectController.getCurrentDataMap();
+        return projectController.getApplication().getMetaData().get(dataMap, ClassGenerationAction.class);
     }
-
-    public File getOutputDir(){
-        return new File(outputFolder.getText());
+    public TextAdapter getOutputFolder() {
+        return outputFolder;
     }
 
     public JButton getSelectOutputFolder() {
         return selectOutputFolder;
-    }
-
-    public void setOutputFolder(String folder) {
-        this.outputFolder.setText(folder);
     }
 }

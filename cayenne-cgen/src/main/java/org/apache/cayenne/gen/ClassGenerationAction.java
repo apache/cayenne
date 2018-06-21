@@ -22,7 +22,10 @@ package org.apache.cayenne.gen;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 import org.apache.velocity.Template;
@@ -101,6 +104,9 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 
 		this.embeddableTemplate = EMBEDDABLE_SUBCLASS_TEMPLATE;
 		this.embeddableSuperTemplate = EMBEDDABLE_SUPERCLASS_TEMPLATE;
+
+		this.queryTemplate = DATAMAP_SUBCLASS_TEMPLATE;
+		this.querySuperTemplate = DATAMAP_SUPERCLASS_TEMPLATE;
 
 		this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
@@ -218,6 +224,11 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	 */
 	public void execute() throws Exception {
 
+		resetArtifacts();
+		addAllEntities();
+		addAllEmbeddables();
+		addQueries(dataMap.getQueryDescriptors());
+
 		validateAttributes();
 
 		try {
@@ -250,26 +261,6 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 
 					resetContextForArtifactTemplate(artifact, type);
 					getTemplate(type).merge(context, out);
-				}
-			}
-		}
-	}
-
-	public void prepareArtifacts(){
-//		resetArtifacts();
-		if(!entityArtifacts.isEmpty()) {
-			for(String name : entityArtifacts) {
-				ObjEntity objEntity = dataMap.getObjEntity(name);
-				if(objEntity != null) {
-					artifacts.add(new EntityArtifact(objEntity));
-				}
-			}
-		}
-		if(!embeddableArtifacts.isEmpty()) {
-			for(String name : embeddableArtifacts) {
-				Embeddable embeddable = dataMap.getEmbeddable(name);
-				if(embeddable != null) {
-					artifacts.add(new EmbeddableArtifact(embeddable));
 				}
 			}
 		}
@@ -577,18 +568,34 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		}
 	}
 
-	public void loadEntity(String name) {
-		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
+    private void addAllEntities() {
+		if(artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-			entityArtifacts.add(name);
+            entityArtifacts.forEach(val ->
+                artifacts.add(new EntityArtifact(dataMap.getObjEntity(val))));
 		}
 	}
 
-	public void loadEmbeddable(String name) {
-		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
+    private void addAllEmbeddables() {
+		if(artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-			embeddableArtifacts.add(name);
+		    embeddableArtifacts.forEach(val ->
+                    artifacts.add(new EmbeddableArtifact(dataMap.getEmbeddable(val))));
 		}
+	}
+
+    /**
+     * @since 4.1
+     */
+	public void loadEntity(String name) {
+		entityArtifacts.add(name);
+	}
+
+    /**
+     * @since 4.1
+     */
+	public void loadEmbeddable(String name) {
+		embeddableArtifacts.add(name);
 	}
 
 	/**
@@ -625,21 +632,23 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		}
 	}
 
-	/**
-	 * @since 4.1
-	 */
-	public boolean isCreatePKProperties() {
-		return createPKProperties;
-	}
+    /**
+     * @since 4.1
+     */
+    public boolean isCreatePKProperties() {
+        return createPKProperties;
+    }
 
-	/**
-	 * @since 4.1
-	 */
-	public void setCreatePKProperties(boolean createPKProperties) {
-		this.createPKProperties = createPKProperties;
-	}
+    /**
+     * @since 4.1
+     */
+    public void setCreatePKProperties(boolean createPKProperties) {
+        this.createPKProperties = createPKProperties;
+    }
 
-	public Collection<EntityArtifact> getEntityArtifacts() {
+    private Collection<EntityArtifact> getEntityArtifacts() {
+		resetArtifacts();
+		addAllEntities();
 		Collection<EntityArtifact> entityArtifacts = new ArrayList<>();
 		for(Artifact artifact : artifacts){
 			if(artifact instanceof EntityArtifact){
@@ -649,7 +658,9 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		return entityArtifacts;
 	}
 
-	public Collection<EmbeddableArtifact> getEmbeddableArtifacts() {
+    private Collection<EmbeddableArtifact> getEmbeddableArtifacts() {
+		resetArtifacts();
+		addAllEmbeddables();
 		Collection<EmbeddableArtifact> embeddableArtifacts = new ArrayList<>();
 		for(Artifact artifact : artifacts){
 			if(artifact instanceof EmbeddableArtifact){
@@ -699,7 +710,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		return superPkg;
 	}
 
-	public void resetArtifacts(){
+	private void resetArtifacts(){
 		this.artifacts = new ArrayList<>();
 	}
 
@@ -735,6 +746,19 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		return embeddableSuperTemplate;
 	}
 
+	public String getQueryTemplate() {
+	    return queryTemplate;
+    }
+
+    public String getQuerySuperTemplate() {
+        return querySuperTemplate;
+    }
+
+    public void resetCollections(){
+		this.embeddableArtifacts = new ArrayList<>();
+		this.entityArtifacts = new ArrayList<>();
+	}
+
 	@Override
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 		encoder.start("cgen")
@@ -743,6 +767,8 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 				.nested(this.getEmbeddableArtifacts(), delegate)
 				.simpleTag("outputDirectory", this.destDir.getAbsolutePath())
 				.simpleTag("generationMode", this.artifactsGenerationMode.getLabel())
+                .simpleTag("dataMapTemplate", this.queryTemplate)
+                .simpleTag("dataMapSuperclassTemplate", this.querySuperTemplate)
 				.simpleTag("subclassTemplate", this.template)
 				.simpleTag("superclassTemplate", this.superTemplate)
 				.simpleTag("embeddableTemplate", this.embeddableTemplate)

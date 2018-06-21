@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CodeValidationUtil;
+import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.BeanValidationFailure;
@@ -56,10 +57,6 @@ public abstract class GeneratorController extends CayenneController {
         super(parent);
     }
 
-    public String getOutputPath() {
-        return outputPath;
-    }
-
     public void setOutputPath(String path) {
         String old = this.outputPath;
         this.outputPath = path;
@@ -77,14 +74,6 @@ public abstract class GeneratorController extends CayenneController {
                     .get(key)
                     .setOutputPath(path);
         }
-    }
-
-    public void setMapPreferences(Map<DataMap, DataMapDefaults> mapPreferences) {
-        this.mapPreferences = mapPreferences;
-    }
-
-    public Map<DataMap, DataMapDefaults> getMapPreferences() {
-        return this.mapPreferences;
     }
 
     protected void initBindings(BindingBuilder bindingBuilder) {
@@ -113,8 +102,6 @@ public abstract class GeneratorController extends CayenneController {
         if(generator != null){
             getParentController().addToSelectedEntities(generator.getEntities());
             getParentController().addToSelectedEmbeddables(generator.getEmbeddables());
-            generator.getEntities().clear();
-            generator.getEmbeddables().clear();
             return generator;
         }
 
@@ -451,20 +438,14 @@ public abstract class GeneratorController extends CayenneController {
         }
     }
 
-    public File getOutputDir() {
-        String dir = ((GeneratorControllerPanel) getView()).getOutputFolder().getText();
-        return dir != null ? new File(dir) : new File(System.getProperty("user.dir"));
-    }
-
     /**
      * An action method that pops up a file chooser dialog to pick the
      * generation directory.
      */
     public void selectOutputFolderAction() {
+        TextAdapter outputFolder = ((GeneratorControllerPanel) getView()).getOutputFolder();
 
-        JTextField outputFolder = ((GeneratorControllerPanel) getView()).getOutputFolder();
-
-        String currentDir = outputFolder.getText();
+        String currentDir = outputFolder.getComponent().getText();
 
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -484,8 +465,8 @@ public abstract class GeneratorController extends CayenneController {
 
             // update model
             String path = selected.getAbsolutePath();
-            outputFolder.setText(path);
-//            setOutputPath(path);
+            ((GeneratorControllerPanel) getView()).getOutputFolder().setText(path);
+            ((GeneratorControllerPanel) getView()).getOutputFolder().updateModel();
         }
     }
 

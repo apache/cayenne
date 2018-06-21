@@ -23,11 +23,8 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -38,17 +35,17 @@ import java.util.List;
 public class CustomModeController extends GeneratorController {
 
     // correspond to non-public constants on MapClassGenerator.
-    static final String MODE_DATAMAP = "datamap";
-    static final String MODE_ENTITY = "entity";
-    static final String MODE_ALL = "all";
+    private static final String MODE_DATAMAP = "datamap";
+    private static final String MODE_ENTITY = "entity";
+    private static final String MODE_ALL = "all";
 
-    static final String DATA_MAP_MODE_LABEL = "DataMap generation";
-    static final String ENTITY_MODE_LABEL = "Entity and Embeddable generation";
+    private static final String DATA_MAP_MODE_LABEL = "DataMap generation";
+    private static final String ENTITY_MODE_LABEL = "Entity and Embeddable generation";
     static final String ALL_MODE_LABEL = "Generate all";
 
     static final Map<String, String> modesByLabel = new HashMap<>();
 
-    static final Map<String, String> labelByMode = new HashMap<>();
+    private static final Map<String, String> labelByMode = new HashMap<>();
 
     static {
         modesByLabel.put(DATA_MAP_MODE_LABEL, MODE_DATAMAP);
@@ -60,56 +57,29 @@ public class CustomModeController extends GeneratorController {
     }
 
     protected CustomModePanel view;
-    private CodeTemplateManager templateManager;
-
-    protected ObjectBinding superTemplate;
-    protected ObjectBinding subTemplate;
-
-    private BindingBuilder builder;
-
-    private CustomPreferencesUpdater preferencesUpdater;
 
     private ClassGenerationAction classGenerationAction;
 
     public CustomModeController(CodeGeneratorControllerBase parent) {
         super(parent);
-        this.view = new CustomModePanel();
-        initListeners();
+        this.view = new CustomModePanel(parent.getProjectController());
         bind();
+        initListeners();
     }
 
     private void bind() {
         initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
-        builder = new BindingBuilder(getApplication().getBindingFactory(), this);
+        BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
         builder.bindToAction(view.getManageTemplatesLink(), "popPreferencesAction()");
 
         updateTemplates();
     }
 
-    protected void createDefaults() {
-//        TreeMap<DataMap, DataMapDefaults> map = new TreeMap<>();
-//        DataMap dataMap = getParentController().getDataMap();
-//        DataMapDefaults preferences;
-//        preferences = getApplication().getFrameController().getProjectController()
-//                .getDataMapPreferences(this.getClass().getName().replace(".", "/"), dataMap);
-//        preferences.setSuperclassPackage("");
-//        preferences.updateSuperclassPackage(dataMap, false);
-//
-//        map.put(dataMap, preferences);
-//
-//        if (getOutputPath() == null) {
-//            setOutputPath(preferences.getOutputPath());
-//        }
-//
-//        setMapPreferences(map);
-//        preferencesUpdater = new CustomPreferencesUpdater(map);
-    }
-
     protected void updateTemplates() {
         Object[] modeChoices = new Object[]{ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL, ALL_MODE_LABEL};
-        view.getGenerationMode().setModel(new DefaultComboBoxModel(modeChoices));
+        view.getGenerationMode().getComboBox().setModel(new DefaultComboBoxModel(modeChoices));
 
-        this.templateManager = getApplication().getCodeTemplateManager();
+        CodeTemplateManager templateManager = getApplication().getCodeTemplateManager();
 
         List<String> customTemplates = new ArrayList<>(templateManager.getCustomTemplates().keySet());
         Collections.sort(customTemplates);
@@ -130,11 +100,22 @@ public class CustomModeController extends GeneratorController {
         Collections.sort(embeddableSuperTemplates);
         embeddableSuperTemplates.addAll(customTemplates);
 
-        this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel(subTemplates.toArray()));
-        this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel(superTemplates.toArray()));
+        List<String> dataMapTemplates = new ArrayList<>(templateManager.getStandartDataMapTemplates());
+        Collections.sort(dataMapTemplates);
+        dataMapTemplates.addAll(customTemplates);
 
-        this.view.getEmbeddableTemplate().setModel(new DefaultComboBoxModel(embeddableTemplates.toArray()));
-        this.view.getEmbeddableSuperTemplate().setModel(new DefaultComboBoxModel(embeddableSuperTemplates.toArray()));
+        List<String> dataMapSuperTemplates = new ArrayList<>(templateManager.getStandartDataMapSuperclassTemplates());
+        Collections.sort(dataMapSuperTemplates);
+        dataMapSuperTemplates.addAll(customTemplates);
+
+        this.view.getSubclassTemplate().getComboBox().setModel(new DefaultComboBoxModel(subTemplates.toArray()));
+        this.view.getSuperclassTemplate().getComboBox().setModel(new DefaultComboBoxModel(superTemplates.toArray()));
+
+        this.view.getEmbeddableTemplate().getComboBox().setModel(new DefaultComboBoxModel(embeddableTemplates.toArray()));
+        this.view.getEmbeddableSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel(embeddableSuperTemplates.toArray()));
+
+        this.view.getDataMapTemplate().getComboBox().setModel(new DefaultComboBoxModel(dataMapTemplates.toArray()));
+        this.view.getDataMapSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel(dataMapSuperTemplates.toArray()));
     }
 
     public Component getView() {
@@ -144,6 +125,19 @@ public class CustomModeController extends GeneratorController {
     public void popPreferencesAction() {
         new PreferenceDialog(getApplication().getFrameController()).startupAction(PreferenceDialog.TEMPLATES_KEY);
         updateTemplates();
+        updateComboBoxes();
+    }
+
+    private void updateComboBoxes() {
+        view.getEmbeddableTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getEmbeddableTemplate()));
+        view.getEmbeddableSuperTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getEmbeddableSuperTemplate()));
+        view.getSubclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getTemplate()));
+        view.getSuperclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getSuperclassTemplate()));
+        view.getGenerationMode().setItem(labelByMode.get(classGenerationAction.getArtifactsGenerationMode()));
+        view.getDataMapTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getQueryTemplate()));
+        view.getDataMapSuperTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getQuerySuperTemplate()));
+
+        view.setDisableSuperComboBoxes(view.getPairs().isSelected());
     }
 
     @Override
@@ -154,19 +148,6 @@ public class CustomModeController extends GeneratorController {
     }
 
     private void initListeners(){
-        view.getOutputFolder().getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                classGenerationAction.setDestDir(view.getOutputDir());
-                getParentController().getProjectController().setDirty(true);
-            }
-            @Override
-            public void removeUpdate(DocumentEvent e) {}
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {}
-        });
-
         view.getPairs().addActionListener(val -> {
             classGenerationAction.setMakePairs(view.getPairs().isSelected());
             getParentController().getProjectController().setDirty(true);
@@ -186,92 +167,19 @@ public class CustomModeController extends GeneratorController {
             classGenerationAction.setUsePkgPath(view.getUsePackagePath().isSelected());
             getParentController().getProjectController().setDirty(true);
         });
-
-        view.getSubclassTemplate().addActionListener(val -> {
-            classGenerationAction.setTemplate(getApplication().getCodeTemplateManager().getTemplatePath(String.valueOf(view.getSubclassTemplate().getSelectedItem())));
-            getParentController().getProjectController().setDirty(true);
-        });
-
-        view.getSuperclassTemplate().addActionListener(val -> {
-            classGenerationAction.setSuperTemplate(getApplication().getCodeTemplateManager().getTemplatePath(String.valueOf(view.getSuperclassTemplate().getSelectedItem())));
-            getParentController().getProjectController().setDirty(true);
-        });
-
-        view.getEmbeddableTemplate().addActionListener(val -> {
-            classGenerationAction.setEmbeddableTemplate(getApplication().getCodeTemplateManager().getTemplatePath(String.valueOf(view.getEmbeddableTemplate().getSelectedItem())));
-            getParentController().getProjectController().setDirty(true);
-        });
-
-        view.getEmbeddableSuperTemplate().addActionListener(val -> {
-            classGenerationAction.setEmbeddableSuperTemplate(getApplication().getCodeTemplateManager().getTemplatePath(String.valueOf(view.getEmbeddableSuperTemplate().getSelectedItem())));
-            getParentController().getProjectController().setDirty(true);
-        });
-
-        view.getGenerationMode().addActionListener(val -> {
-            classGenerationAction.setArtifactsGenerationMode(modesByLabel.get(view.getGenerationMode().getSelectedItem()));
-            getParentController().getProjectController().setDirty(true);
-        });
-
-        view.getOutputPattern().getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                classGenerationAction.setOutputPattern(view.getOutputPattern().getText());
-                getParentController().getProjectController().setDirty(true);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {}
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {}
-        });
-
-        view.getSuperclassPackage().getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                classGenerationAction.setSuperPkg(view.getSuperclassPackage().getText());
-                getParentController().getProjectController().setDirty(true);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {}
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {}
-        });
-
-        view.getEncoding().getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                classGenerationAction.setEncoding(view.getEncoding().getText());
-                getParentController().getProjectController().setDirty(true);
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {}
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {}
-        });
     }
 
     public void initForm(ClassGenerationAction classGenerationAction){
         this.classGenerationAction = classGenerationAction;
-        view.setOutputFolder(classGenerationAction.getDir());
-        view.setGenerationMode(labelByMode.get(classGenerationAction.getArtifactsGenerationMode()));
-        view.setTemplate(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getTemplate()));
-        view.setSuperclassTemplate(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getSuperclassTemplate()));
+        view.getOutputFolder().setText(classGenerationAction.getDir());
         view.setDataMapName(classGenerationAction.getDataMap().getName());
-        view.setOutputPattern(classGenerationAction.getOutputPattern());
-        view.setPairs(classGenerationAction.isMakePairs());
-        view.setUsePackagePath(classGenerationAction.isUsePkgPath());
-        view.setOverwrite(classGenerationAction.isOverwrite());
-        view.setCreatePropertyNames(classGenerationAction.isCreatePropertyNames());
-        view.setSuperclassPackage(classGenerationAction.getSuperPkg());
-        view.setEncoding(classGenerationAction.getEncoding());
-        view.setEmbeddableTemplate(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getEmbeddableTemplate()));
-        view.setEmbeddableSuperTemplate(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getEmbeddableSuperTemplate()));
-
-//        getParentController().getProjectController().setDirty(false);
+        view.getOutputPattern().setText(classGenerationAction.getOutputPattern());
+        view.getPairs().setSelected(classGenerationAction.isMakePairs());
+        view.getUsePackagePath().setSelected(classGenerationAction.isUsePkgPath());
+        view.getOverwrite().setSelected(classGenerationAction.isOverwrite());
+        view.getCreatePropertyNames().setSelected(classGenerationAction.isCreatePropertyNames());
+        view.getSuperclassPackage().setText(classGenerationAction.getSuperPkg());
+        view.getEncoding().setText(classGenerationAction.getEncoding());
+        updateComboBoxes();
     }
 }

@@ -106,7 +106,7 @@ public class ClassesTabController extends CayenneController {
         else if (selectedCount == getParentController().getClasses().size()) {
             view.getCheckAll().setSelected(true);
         }
-        updateEntities();
+        getParentController().updateEntities();
     }
 
     /**
@@ -116,12 +116,7 @@ public class ClassesTabController extends CayenneController {
     public void checkAllAction() {
         if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
-            updateEntities();
+            getParentController().updateEntities();
         }
-    }
-
-    private void updateEntities(){
-        getParentController().updateEntities();
-//        getParentController().getProjectController().setDirty(true);
     }
 }

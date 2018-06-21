@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.PreferenceDetail;
 
@@ -41,10 +40,6 @@ public class GeneratorTabController extends CayenneController {
         super(parent);
         customModeController = new CustomModeController(parent);
         this.view = new GeneratorTabPanel(customModeController.getView());
-    }
-
-    public void startup(DataMap dataMap){
-//        customModeController.startup(dataMap);
     }
 
     public Component getView() {

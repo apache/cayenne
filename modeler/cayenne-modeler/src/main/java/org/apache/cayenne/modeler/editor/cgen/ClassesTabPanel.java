@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.editor.cgen;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  */
@@ -42,15 +40,12 @@ public class ClassesTabPanel extends JPanel {
         this.checkAll = new JCheckBox();
         this.checkAllLabel = new JLabel("Check All Classes");
 
-        checkAll.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent event) {
-                if (checkAll.isSelected()) {
-                    checkAllLabel.setText("Uncheck All Classess");
-                }
-                else {
-                    checkAllLabel.setText("Check All Classes");
-                }
+        checkAll.addItemListener(event -> {
+            if (checkAll.isSelected()) {
+                checkAllLabel.setText("Uncheck All Classess");
+            }
+            else {
+                checkAllLabel.setText("Check All Classes");
             }
         });
 

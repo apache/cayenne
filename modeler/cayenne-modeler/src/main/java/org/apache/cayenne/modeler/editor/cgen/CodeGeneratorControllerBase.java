@@ -264,20 +264,16 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         DataMap map = getProjectController().getCurrentDataMap();
         ClassGenerationAction generator = projectController.getApplication().getMetaData().get(map, ClassGenerationAction.class);
         if(generator != null) {
-            generator.resetArtifacts();
-            LinkedList<ObjEntity> objEntities = new LinkedList<>(map.getObjEntities());
+            generator.resetCollections();
+            for(ObjEntity entity: getSelectedEntities()) {
+                if(!entity.isGeneric()) {
+                    generator.loadEntity(entity.getName());
+                }
+            }
 
-            Collection<ObjEntity> selected = new ArrayList<>(getSelectedEntities());
-            selected.removeIf(ObjEntity::isGeneric);
-
-            objEntities.retainAll(selected);
-            generator.addEntities(objEntities);
-
-            LinkedList<Embeddable> embeddables = new LinkedList<>(map.getEmbeddables());
-            embeddables.retainAll(getSelectedEmbeddables());
-            generator.addEmbeddables(embeddables);
-
-            generator.addQueries(map.getQueryDescriptors());
+            for(Embeddable embeddable : getSelectedEmbeddables()) {
+                generator.loadEmbeddable(embeddable.getClassName());
+            }
         }
     }
 
@@ -312,8 +308,4 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public void setCurrentClass(Object currentClass) {
         this.currentClass = currentClass;
     }
-
-//    public Collection<DataMap> getDataMaps() {
-//        return dataMaps;
-//    }
 }

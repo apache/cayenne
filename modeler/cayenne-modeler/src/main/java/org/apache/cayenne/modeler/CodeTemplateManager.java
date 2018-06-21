@@ -43,19 +43,26 @@ public class CodeTemplateManager {
 	static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
 	static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
-	public static final String STANDART_EMBEDDABLE_SUPERCLASS = "Standart Embeddable Superclass";
-	public static final String STANDART_EMBEDDABLE_SUBCLASS = "Standart Embeddable Subclass";
-	public static final String SINGLE_EMBEDDABLE_CLASS = "Single Embeddable class";
+	private static final String STANDART_EMBEDDABLE_SUPERCLASS = "Standart Embeddable Superclass";
+	private static final String STANDART_EMBEDDABLE_SUBCLASS = "Standart Embeddable Subclass";
+	private static final String SINGLE_EMBEDDABLE_CLASS = "Single Embeddable class";
+
+	private static final String STANDART_DATAMAP_SUPERCLASS = "Standart DataMap Superclass";
+	private static final String STANDART_DATAMAP_SUBCLASS = "Standart DataMap Subclass";
+	private static final String SINGLE_DATAMAP_CLASS = "Single DataMap class";
 
 	public static final String NODE_NAME = "codeTemplateManager";
 
-	protected List<String> standardSubclassTemplates;
-	protected List<String> standardSuperclassTemplates;
-	protected Map<String, String> customTemplates;
-	protected Map<String, String> standardTemplates;
+	private List<String> standardSubclassTemplates;
+	private List<String> standardSuperclassTemplates;
+	private Map<String, String> customTemplates;
+	private Map<String, String> standardTemplates;
 
-	protected List<String> standartEmbeddableTemplates;
-	protected List<String> standartEmbeddableSuperclassTemplates;
+	private List<String> standartEmbeddableTemplates;
+	private List<String> standartEmbeddableSuperclassTemplates;
+
+	private List<String> standartDataMapTemplates;
+	private List<String> standartDataMapSuperclassTemplates;
 
 	private Map<String, String> reverseStandartTemplates;
 
@@ -83,6 +90,13 @@ public class CodeTemplateManager {
 		standartEmbeddableSuperclassTemplates = new ArrayList<>();
 		standartEmbeddableSuperclassTemplates.add(STANDART_EMBEDDABLE_SUPERCLASS);
 
+		standartDataMapTemplates = new ArrayList<>();
+		standartDataMapTemplates.add(STANDART_DATAMAP_SUBCLASS);
+		standartDataMapTemplates.add(SINGLE_DATAMAP_CLASS);
+
+		standartDataMapSuperclassTemplates = new ArrayList<>();
+		standartDataMapSuperclassTemplates.add(STANDART_DATAMAP_SUPERCLASS);
+
 		updateCustomTemplates(getTemplatePreferences(application));
 
 		standardTemplates = new HashMap<>();
@@ -96,6 +110,10 @@ public class CodeTemplateManager {
 		standardTemplates.put(STANDART_EMBEDDABLE_SUBCLASS, ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
 		standardTemplates.put(SINGLE_EMBEDDABLE_CLASS, ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
 
+		standardTemplates.put(STANDART_DATAMAP_SUBCLASS, ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+		standardTemplates.put(SINGLE_DATAMAP_CLASS, ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+		standardTemplates.put(STANDART_DATAMAP_SUPERCLASS, ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
+
 		reverseStandartTemplates = new HashMap<>();
 		reverseStandartTemplates.put(ClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_SERVER_SUBCLASS);
 		reverseStandartTemplates.put(ClientClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_CLIENT_SUBCLASS);
@@ -106,6 +124,10 @@ public class CodeTemplateManager {
 		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUPERCLASS);
 		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUBCLASS);
 		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE, SINGLE_EMBEDDABLE_CLASS);
+
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE, STANDART_DATAMAP_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE, SINGLE_DATAMAP_CLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE, STANDART_DATAMAP_SUPERCLASS);
 	}
 
 	/**
@@ -166,4 +188,8 @@ public class CodeTemplateManager {
 	public List<String> getStandartEmbeddableSuperclassTemplates() {
 		return standartEmbeddableSuperclassTemplates;
 	}
+
+	public List<String> getStandartDataMapTemplates() { return standartDataMapTemplates; }
+
+	public List<String> getStandartDataMapSuperclassTemplates() { return standartDataMapSuperclassTemplates; }
 }
