@@ -41,7 +41,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
     private ComboBoxAdapter embeddableSuperTemplate;
     private ComboBoxAdapter dataMapTemplate;
     private ComboBoxAdapter dataMapSuperTemplate;
-    protected JCheckBox pairs;
+    private JCheckBox pairs;
     private JCheckBox overwrite;
     private JCheckBox usePackagePath;
     private TextAdapter outputPattern;

@@ -26,13 +26,13 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
-import org.slf4j.Logger;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -288,7 +288,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setEmbeddableSuperTemplate(embeddableSuperTemplate);
 		action.setEmbeddableTemplate(embeddableTemplate);
 		action.setUsePkgPath(usePkgPath);
-        action.setCreatePropertyNames(createPropertyNames);
+		action.setCreatePropertyNames(createPropertyNames);
         action.setCreatePKProperties(createPKProperties);
 
 		return action;

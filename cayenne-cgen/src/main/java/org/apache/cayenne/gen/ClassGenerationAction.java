@@ -219,15 +219,17 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		artifact.postInitContext(context);
 	}
 
+	public void prepareArtifacts() {
+        resetArtifacts();
+        addAllEntities();
+        addAllEmbeddables();
+        addQueries(dataMap.getQueryDescriptors());
+    }
+
 	/**
 	 * Executes class generation once per each artifact.
 	 */
 	public void execute() throws Exception {
-
-		resetArtifacts();
-		addAllEntities();
-		addAllEmbeddables();
-		addQueries(dataMap.getQueryDescriptors());
 
 		validateAttributes();
 

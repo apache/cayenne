@@ -131,6 +131,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         ClassGenerationAction generator = generatorSelector.getGenerator();
         if (generator != null) {
             try {
+                generator.prepareArtifacts();
                 generator.execute();
                 JOptionPane.showMessageDialog(
                         getView(),
