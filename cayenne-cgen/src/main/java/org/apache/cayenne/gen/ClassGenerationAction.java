@@ -91,29 +91,39 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	protected VelocityContext context;
 	protected Map<String, Template> templateCache;
 
+
 	public ClassGenerationAction() {
-		this.outputPattern = "*.java";
-		this.timestamp = 0L;
-		this.usePkgPath = true;
-		this.makePairs = true;
-		this.context = new VelocityContext();
-		this.templateCache = new HashMap<>(5);
+        this.outputPattern = "*.java";
+        this.timestamp = 0L;
+        this.usePkgPath = true;
+        this.makePairs = true;
+        this.context = new VelocityContext();
+        this.templateCache = new HashMap<>(5);
 
-		this.template = SUBCLASS_TEMPLATE;
-		this.superTemplate = SUPERCLASS_TEMPLATE;
-
-		this.embeddableTemplate = EMBEDDABLE_SUBCLASS_TEMPLATE;
-		this.embeddableSuperTemplate = EMBEDDABLE_SUPERCLASS_TEMPLATE;
-
-		this.queryTemplate = DATAMAP_SUBCLASS_TEMPLATE;
-		this.querySuperTemplate = DATAMAP_SUPERCLASS_TEMPLATE;
-
-		this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
-
-		this.artifacts = new ArrayList<>();
-		this.entityArtifacts = new ArrayList<>();
-		this.embeddableArtifacts = new ArrayList<>();
+        this.artifacts = new ArrayList<>();
+        this.entityArtifacts = new ArrayList<>();
+        this.embeddableArtifacts = new ArrayList<>();
 	}
+
+	public void setDefaults() {
+        this.outputPattern = "*.java";
+        this.timestamp = 0L;
+        this.usePkgPath = true;
+        this.makePairs = true;
+        this.context = new VelocityContext();
+        this.templateCache = new HashMap<>(5);
+
+        this.template = SUBCLASS_TEMPLATE;
+        this.superTemplate = SUPERCLASS_TEMPLATE;
+
+        this.embeddableTemplate = EMBEDDABLE_SUBCLASS_TEMPLATE;
+        this.embeddableSuperTemplate = EMBEDDABLE_SUPERCLASS_TEMPLATE;
+
+        this.queryTemplate = DATAMAP_SUBCLASS_TEMPLATE;
+        this.querySuperTemplate = DATAMAP_SUPERCLASS_TEMPLATE;
+
+        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
+    }
 
 	protected String defaultTemplateName(TemplateType type) {
 		switch (type) {
@@ -703,6 +713,8 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	public String getDir(){
 		return destDir.getAbsolutePath();
 	}
+
+	public File getDestDir() { return destDir; }
 
 	public String getTemplate() {
 		return template;

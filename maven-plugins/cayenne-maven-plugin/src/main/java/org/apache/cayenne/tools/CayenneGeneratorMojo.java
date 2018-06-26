@@ -19,10 +19,12 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.gen.CgenModule;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -96,8 +98,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * with all generated code included in superclass (default is
 	 * <code>true</code>).
 	 */
-	@Parameter(defaultValue = "true")
-	private boolean makePairs;
+	@Parameter
+	private String makePairs;
 
 	/**
 	 * DataMap XML file to use as a base for class generation.
@@ -117,15 +119,15 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	/**
 	 * Name of file for generated output. (Default is &quot;*.java&quot;)
 	 */
-	@Parameter(defaultValue = "*.java")
+	@Parameter
 	private String outputPattern;
 
 	/**
 	 * If set to <code>true</code>, will overwrite older versions of generated
 	 * classes. Ignored unless makepairs is set to <code>false</code>.
 	 */
-	@Parameter(defaultValue = "false")
-	private boolean overwrite;
+	@Parameter
+	private String overwrite;
 
 	/**
 	 * Java package name of generated superclasses. Ignored unless
@@ -174,15 +176,15 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * <code>false</code>, classes will be generated in &quot;destDir&quot;
 	 * ignoring their package.
 	 */
-	@Parameter(defaultValue = "true")
-	private boolean usePkgPath;
+	@Parameter
+	private String usePkgPath;
 
     /**
      * If set to <code>true</code>, will generate String Property names.
      * Default is <code>false</code>.
      */
-    @Parameter(defaultValue = "false")
-    private boolean createPropertyNames;
+    @Parameter
+    private String createPropertyNames;
 
 	/**
 	 * If set to <code>true</code>, will skip file modification time validation and regenerate all.
@@ -203,6 +205,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 	private transient Injector injector;
 
+    private static final Logger logger = LoggerFactory.getLogger(CayenneGeneratorMojo.class);
+
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
 		// TODO: (KJM 11/2/06) The destDir really should be added as a
@@ -211,7 +215,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			destDir.mkdirs();
 		}
 
-		injector = DIBootstrap.createInjector(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorMojo.class)));
+		injector = DIBootstrap.createInjector(new CgenModule(), new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorMojo.class)));
 
 		Logger logger = new MavenLogger(this);
 		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
@@ -226,7 +230,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 			DataMap dataMap = loaderAction.getMainDataMap();
 
-			ClassGenerationAction generator = createGenerator();
+			ClassGenerationAction generator = createGenerator(dataMap);
 			generator.setLogger(logger);
 			if(force) {
 				// will (re-)generate all files
@@ -234,9 +238,13 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			}
 			generator.setTimestamp(map.lastModified());
 			generator.setDataMap(dataMap);
-			generator.addEntities(filterAction.getFilteredEntities(dataMap));
-			generator.addEmbeddables(dataMap.getEmbeddables());
-			generator.addQueries(dataMap.getQueryDescriptors());
+			if(!generator.getEntities().isEmpty() || !generator.getEmbeddables().isEmpty()){
+				generator.prepareArtifacts();
+			} else {
+				generator.addEntities(filterAction.getFilteredEntities(dataMap));
+				generator.addEmbeddables(dataMap.getEmbeddables());
+				generator.addQueries(dataMap.getQueryDescriptors());
+			}
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
@@ -265,32 +273,33 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Factory method to create internal class generator. Called from
 	 * constructor.
 	 */
-	protected ClassGenerationAction createGenerator() {
+	protected ClassGenerationAction createGenerator(DataMap dataMap) {
 
-		ClassGenerationAction action;
+	    ClassGenerationAction action = injector.getInstance(DataChannelMetaData.class).get(dataMap, ClassGenerationAction.class);
+
 		if (client) {
 			action = new ClientClassGenerationAction();
 		} else {
-			action = new ClassGenerationAction();
+            if(action == null) {
+                action = new ClassGenerationAction();
+            }
 		}
 
 		injector.injectMembers(action);
 
 		action.setDestDir(destDir);
-		action.setEncoding(encoding);
-		action.setMakePairs(makePairs);
+		action.setEncoding(encoding != null ? encoding : action.getEncoding());
+		action.setMakePairs(makePairs != null ? Boolean.valueOf(makePairs) : action.isMakePairs());
 		action.setArtifactsGenerationMode(mode);
-		action.setOutputPattern(outputPattern);
-		action.setOverwrite(overwrite);
-		action.setSuperPkg(superPkg);
-		action.setSuperTemplate(superTemplate);
-		action.setTemplate(template);
-		action.setEmbeddableSuperTemplate(embeddableSuperTemplate);
-		action.setEmbeddableTemplate(embeddableTemplate);
-		action.setUsePkgPath(usePkgPath);
-		action.setCreatePropertyNames(createPropertyNames);
-        action.setCreatePKProperties(createPKProperties);
-
+		action.setOutputPattern(outputPattern != null ? outputPattern : action.getOutputPattern());
+		action.setOverwrite(overwrite != null ? Boolean.valueOf(overwrite) : action.isOverwrite());
+		action.setSuperPkg(superPkg != null ? superPkg : action.getSuperPkg());
+		action.setSuperTemplate(superTemplate != null ? superTemplate : action.getSuperclassTemplate());
+		action.setTemplate(template != null ? template : action.getTemplate());
+		action.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? embeddableSuperTemplate : action.getEmbeddableSuperTemplate());
+		action.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : action.getEmbeddableTemplate());
+		action.setUsePkgPath(usePkgPath != null ? Boolean.valueOf(usePkgPath) : action.isUsePkgPath());
+		action.setCreatePropertyNames(createPropertyNames != null ? Boolean.valueOf(createPropertyNames) : action.isCreatePropertyNames());
 		return action;
 	}
 }

@@ -143,6 +143,7 @@ public class CustomModeController extends GeneratorController {
     @Override
     protected ClassGenerationAction newGenerator() {
         ClassGenerationAction action = new ClassGenerationAction();
+        action.setDefaults();
         getApplication().getInjector().injectMembers(action);
         return action;
     }
