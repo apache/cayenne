@@ -76,8 +76,8 @@ public class CustomModeController extends GeneratorController {
     }
 
     protected void updateTemplates() {
-        Object[] modeChoices = new Object[]{ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL, ALL_MODE_LABEL};
-        view.getGenerationMode().getComboBox().setModel(new DefaultComboBoxModel(modeChoices));
+        String[] modeChoices = new String[]{ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL, ALL_MODE_LABEL};
+        view.getGenerationMode().getComboBox().setModel(new DefaultComboBoxModel<>(modeChoices));
 
         CodeTemplateManager templateManager = getApplication().getCodeTemplateManager();
 
@@ -108,14 +108,14 @@ public class CustomModeController extends GeneratorController {
         Collections.sort(dataMapSuperTemplates);
         dataMapSuperTemplates.addAll(customTemplates);
 
-        this.view.getSubclassTemplate().getComboBox().setModel(new DefaultComboBoxModel(subTemplates.toArray()));
-        this.view.getSuperclassTemplate().getComboBox().setModel(new DefaultComboBoxModel(superTemplates.toArray()));
+        this.view.getSubclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
+        this.view.getSuperclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));
 
-        this.view.getEmbeddableTemplate().getComboBox().setModel(new DefaultComboBoxModel(embeddableTemplates.toArray()));
-        this.view.getEmbeddableSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel(embeddableSuperTemplates.toArray()));
+        this.view.getEmbeddableTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(embeddableTemplates.toArray(new String[0])));
+        this.view.getEmbeddableSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(embeddableSuperTemplates.toArray(new String[0])));
 
-        this.view.getDataMapTemplate().getComboBox().setModel(new DefaultComboBoxModel(dataMapTemplates.toArray()));
-        this.view.getDataMapSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel(dataMapSuperTemplates.toArray()));
+        this.view.getDataMapTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(dataMapTemplates.toArray(new String[0])));
+        this.view.getDataMapSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(dataMapSuperTemplates.toArray(new String[0])));
     }
 
     public Component getView() {

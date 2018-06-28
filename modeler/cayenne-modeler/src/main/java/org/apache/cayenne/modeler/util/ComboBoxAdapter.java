@@ -21,20 +21,20 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.modeler.undo.JComboBoxUndoListener;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 
 /**
  * @since 4.1
  */
-public abstract class ComboBoxAdapter {
+public abstract class ComboBoxAdapter<T> {
 
-    private JComboBox comboBox;
+    private JComboBox<T> comboBox;
     private ActionListener listener;
 
     private JComboBoxUndoListener undoListener;
 
-    protected ComboBoxAdapter(JComboBox comboBox) {
+    protected ComboBoxAdapter(JComboBox<T> comboBox) {
         this.comboBox = comboBox;
         listener = e -> updateModel();
 
@@ -57,16 +57,16 @@ public abstract class ComboBoxAdapter {
         }
     }
 
-    public JComboBox getComboBox() {
+    public JComboBox<T> getComboBox() {
         return comboBox;
     }
 
     /**
      * Updates bound model with document text.
      */
-    protected abstract void updateModel(Object item) throws ValidationException;
+    protected abstract void updateModel(T item) throws ValidationException;
 
     public void updateModel() {
-        updateModel(comboBox.getSelectedItem());
+        updateModel((T)comboBox.getSelectedItem());
     }
 }

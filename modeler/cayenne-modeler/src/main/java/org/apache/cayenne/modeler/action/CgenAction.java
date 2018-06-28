@@ -22,30 +22,6 @@ public class CgenAction extends CayenneAction{
 
     @Override
     public void performAction(ActionEvent e) {
-
         new CgenGlobalController(getApplication().getFrameController()).startup();
-
-//        Collection<DataMap> dataMaps;
-//        DataChannelMetaData metaData = getApplication().getMetaData();
-//
-//        try {
-//            Project project = getProjectController().getProject();
-//            dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
-//            for (DataMap dataMap : dataMaps) {
-//                ClassGenerationAction classGenerationAction = metaData.get(dataMap, ClassGenerationAction.class);
-//                if (classGenerationAction != null) {
-//                    classGenerationAction.prepareArtifacts();
-//                    classGenerationAction.execute();
-//                }
-//            }
-//            JOptionPane.showMessageDialog(
-//                    this.getApplication().getFrameController().getView(),
-//                    "Class generation finished");
-//        } catch (Exception ex) {
-//            logObj.error("Error generating classes", e);
-//            JOptionPane.showMessageDialog(
-//                    this.getApplication().getFrameController().getView(),
-//                    "Error generating classes - " + ex.getMessage());
-//        }
     }
 }

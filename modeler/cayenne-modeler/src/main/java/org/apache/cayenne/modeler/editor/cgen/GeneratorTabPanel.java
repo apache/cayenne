@@ -19,8 +19,9 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Component;
 
 /**
  * @since 4.1

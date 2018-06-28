@@ -23,7 +23,7 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.PreferenceDetail;
 
-import java.awt.*;
+import java.awt.Component;
 
 /**
  */

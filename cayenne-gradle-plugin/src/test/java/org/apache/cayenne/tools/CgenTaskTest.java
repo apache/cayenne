@@ -20,13 +20,14 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertSame;
 import static org.mockito.Mockito.*;
 
 /**
@@ -36,6 +37,8 @@ public class CgenTaskTest {
 
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
+
+    DataMap dataMap = new DataMap();
 
     private CgenTask createCgenTaskMock(ClassGenerationAction action) {
         CgenTask mock = mock(CgenTask.class);
@@ -57,7 +60,7 @@ public class CgenTaskTest {
         doCallRealMethod().when(mock).setUsePkgPath(anyBoolean());
         doCallRealMethod().when(mock).setTemplate(anyString());
         when(mock.newGeneratorInstance()).thenReturn(action);
-        when(mock.createGenerator()).thenCallRealMethod();
+        when(mock.createGenerator(dataMap)).thenCallRealMethod();
 
         return mock;
     }
@@ -82,7 +85,7 @@ public class CgenTaskTest {
         task.setOverwrite(true);
         task.setUsePkgPath(true);
 
-        ClassGenerationAction createdAction = task.createGenerator();
+        ClassGenerationAction createdAction = task.createGenerator(dataMap);
         assertSame(action, createdAction);
 
         verify(action).setCreatePropertyNames(true);

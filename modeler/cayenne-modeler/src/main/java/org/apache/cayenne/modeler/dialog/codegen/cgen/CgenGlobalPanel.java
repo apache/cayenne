@@ -1,25 +1,50 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
 package org.apache.cayenne.modeler.dialog.codegen.cgen;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.ProjectController;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
 
+/**
+ * @since 4.1
+ */
 public class CgenGlobalPanel extends JPanel {
 
     private JButton generateButton;
 
     private JTextField outputFolder;
     private JButton selectOutputFolder;
-    private JComboBox generationMode;
-    private JComboBox subclassTemplate;
-    private JComboBox superclassTemplate;
-    private JComboBox embeddableTemplate;
-    private JComboBox embeddableSuperTemplate;
-    private JComboBox dataMapTemplate;
-    private JComboBox dataMapSuperTemplate;
+    private JComboBox<String> generationMode;
+    private JComboBox<String> subclassTemplate;
+    private JComboBox<String> superclassTemplate;
+    private JComboBox<String> embeddableTemplate;
+    private JComboBox<String> embeddableSuperTemplate;
+    private JComboBox<String> dataMapTemplate;
+    private JComboBox<String> dataMapSuperTemplate;
     private JCheckBox pairs;
     private JCheckBox overwrite;
     private JCheckBox usePackagePath;
@@ -44,21 +69,17 @@ public class CgenGlobalPanel extends JPanel {
     private JButton resetNames;
     private JButton resetPackage;
 
-    private ProjectController projectController;
-
     CgenGlobalPanel(ProjectController projectController) {
-        this.projectController = projectController;
-
         this.generateButton = new JButton("Generate All classes");
         this.outputFolder = new JTextField();
         this.selectOutputFolder = new JButton("Select");
-        this.generationMode = new JComboBox();
-        this.subclassTemplate = new JComboBox();
-        this.superclassTemplate = new JComboBox();
-        this.embeddableTemplate = new JComboBox();
-        this.embeddableSuperTemplate = new JComboBox();
-        this.dataMapTemplate = new JComboBox();
-        this.dataMapSuperTemplate = new JComboBox();
+        this.generationMode = new JComboBox<>();
+        this.subclassTemplate = new JComboBox<>();
+        this.superclassTemplate = new JComboBox<>();
+        this.embeddableTemplate = new JComboBox<>();
+        this.embeddableSuperTemplate = new JComboBox<>();
+        this.dataMapTemplate = new JComboBox<>();
+        this.dataMapSuperTemplate = new JComboBox<>();
         this.pairs = new JCheckBox();
         this.overwrite = new JCheckBox();
         this.usePackagePath = new JCheckBox();
@@ -156,31 +177,29 @@ public class CgenGlobalPanel extends JPanel {
         return selectOutputFolder;
     }
 
-    public JComboBox getGenerationMode() {
-        return generationMode;
-    }
+    public JComboBox<String> getGenerationMode() { return generationMode; }
 
-    public JComboBox getSubclassTemplate() {
+    public JComboBox<String> getSubclassTemplate() {
         return subclassTemplate;
     }
 
-    public JComboBox getSuperclassTemplate() {
+    public JComboBox<String> getSuperclassTemplate() {
         return superclassTemplate;
     }
 
-    public JComboBox getEmbeddableTemplate() {
+    public JComboBox<String> getEmbeddableTemplate() {
         return embeddableTemplate;
     }
 
-    public JComboBox getEmbeddableSuperTemplate() {
+    public JComboBox<String> getEmbeddableSuperTemplate() {
         return embeddableSuperTemplate;
     }
 
-    public JComboBox getDataMapTemplate() {
+    public JComboBox<String> getDataMapTemplate() {
         return dataMapTemplate;
     }
 
-    public JComboBox getDataMapSuperTemplate() {
+    public JComboBox<String> getDataMapSuperTemplate() {
         return dataMapSuperTemplate;
     }
 

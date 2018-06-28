@@ -19,11 +19,12 @@
 package org.apache.cayenne.tools;
 
 import foundrylogic.vpp.VPPConfig;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
+import org.apache.cayenne.gen.CgenModule;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -50,10 +51,10 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected boolean client;
     protected File destDir;
     protected String encoding;
-    protected boolean makepairs;
+    protected Boolean makepairs;
     protected String mode;
     protected String outputPattern;
-    protected boolean overwrite;
+    protected Boolean overwrite;
     protected String superpkg;
     protected String supertemplate;
     protected String template;
@@ -61,8 +62,10 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String embeddablesupertemplate;
     protected String querytemplate;
     protected String querysupertemplate;
-    protected boolean usepkgpath;
-    protected boolean createpropertynames;
+    protected Boolean usepkgpath;
+    protected Boolean createpropertynames;
+
+    private transient Injector injector;
 
     /**
      * Create PK attributes as Properties
@@ -72,10 +75,6 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected boolean createpkproperties;
 
     public CayenneGeneratorTask() {
-        this.makepairs = true;
-        this.mode = ArtifactsGenerationMode.ENTITY.getLabel();
-        this.outputPattern = "*.java";
-        this.usepkgpath = true;
     }
 
     protected VelocityContext getVppContext() {
@@ -83,27 +82,33 @@ public class CayenneGeneratorTask extends CayenneTask {
         return vppConfig.getVelocityContext();
     }
 
-    protected ClassGenerationAction createGeneratorAction() {
-        ClassGenerationAction action = client ? new ClientClassGenerationAction() : new ClassGenerationAction();
+    protected ClassGenerationAction createGeneratorAction(DataMap dataMap) {
+        ClassGenerationAction action = injector.getInstance(DataChannelMetaData.class).get(dataMap, ClassGenerationAction.class);
+
+        if (client) {
+            action = new ClientClassGenerationAction();
+        } else {
+            if(action == null) {
+                action = new ClassGenerationAction();
+            }
+        }
 
         action.setContext(getVppContext());
         action.setDestDir(destDir);
-        action.setEncoding(encoding);
-        action.setMakePairs(makepairs);
-        action.setArtifactsGenerationMode(mode);
-        action.setOutputPattern(outputPattern);
-        action.setOverwrite(overwrite);
-        action.setSuperPkg(superpkg);
-        action.setSuperTemplate(supertemplate);
-        action.setTemplate(template);
-        action.setEmbeddableSuperTemplate(embeddablesupertemplate);
-        action.setEmbeddableTemplate(embeddabletemplate);
-        action.setQueryTemplate(querytemplate);
-        action.setQuerySuperTemplate(querysupertemplate);
-        action.setUsePkgPath(usepkgpath);
-        action.setCreatePropertyNames(createpropertynames);
-        action.setCreatePKProperties(createpkproperties);
-
+        action.setEncoding(encoding != null ? encoding : action.getEncoding());
+        action.setMakePairs(makepairs != null ? makepairs : action.isMakePairs());
+        action.setArtifactsGenerationMode(mode != null ? mode : action.getArtifactsGenerationMode());
+        action.setOutputPattern(outputPattern != null ? outputPattern : action.getOutputPattern());
+        action.setOverwrite(overwrite != null ? overwrite : action.isOverwrite());
+        action.setSuperPkg(superpkg != null ? superpkg : action.getSuperPkg());
+        action.setSuperTemplate(supertemplate != null ? supertemplate : action.getSuperclassTemplate());
+        action.setTemplate(template != null ? template : action.getTemplate());
+        action.setEmbeddableSuperTemplate(embeddablesupertemplate != null ? embeddablesupertemplate : action.getEmbeddableSuperTemplate());
+        action.setEmbeddableTemplate(embeddabletemplate != null ? embeddabletemplate : action.getEmbeddableTemplate());
+        action.setUsePkgPath(usepkgpath != null ? usepkgpath : action.isUsePkgPath());
+        action.setCreatePropertyNames(createpropertynames != null ? createpropertynames : action.isCreatePropertyNames());
+        action.setQueryTemplate(querytemplate != null ? querytemplate : action.getQueryTemplate());
+        action.setQuerySuperTemplate(querysupertemplate != null ? querysupertemplate : action.getQuerySuperTemplate());
         return action;
     }
 
@@ -114,7 +119,7 @@ public class CayenneGeneratorTask extends CayenneTask {
     public void execute() throws BuildException {
         validateAttributes();
 
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)));
+        injector = DIBootstrap.createInjector(new CgenModule(), new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)));
 
         AntLogger logger = new AntLogger(this);
         CayenneGeneratorMapLoaderAction loadAction = new CayenneGeneratorMapLoaderAction(injector);
@@ -130,13 +135,17 @@ public class CayenneGeneratorTask extends CayenneTask {
 
             DataMap dataMap = loadAction.getMainDataMap();
 
-            ClassGenerationAction generatorAction = createGeneratorAction();
+            ClassGenerationAction generatorAction = createGeneratorAction(dataMap);
             generatorAction.setLogger(logger);
             generatorAction.setTimestamp(map.lastModified());
             generatorAction.setDataMap(dataMap);
-            generatorAction.addEntities(filterAction.getFilteredEntities(dataMap));
-            generatorAction.addEmbeddables(filterAction.getFilteredEmbeddables(dataMap));
-            generatorAction.addQueries(dataMap.getQueryDescriptors());
+            if(!generatorAction.getEntities().isEmpty() || !generatorAction.getEmbeddables().isEmpty()){
+                generatorAction.prepareArtifacts();
+            } else {
+                generatorAction.addEntities(filterAction.getFilteredEntities(dataMap));
+                generatorAction.addEmbeddables(filterAction.getFilteredEmbeddables(dataMap));
+                generatorAction.addQueries(dataMap.getQueryDescriptors());
+            }
             generatorAction.execute();
         }
         catch (Exception e) {

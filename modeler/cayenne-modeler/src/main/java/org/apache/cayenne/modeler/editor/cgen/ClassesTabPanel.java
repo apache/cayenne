@@ -19,18 +19,27 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 /**
+ * @since 4.1
  */
 public class ClassesTabPanel extends JPanel {
 
     protected JTable table;
-    protected JCheckBox checkAll;
-    protected JLabel checkAllLabel;
+    private JCheckBox checkAll;
+    private JLabel checkAllLabel;
 
-    public ClassesTabPanel() {
+    ClassesTabPanel() {
 
         this.table = new JTable();
         this.table.setRowHeight(22);

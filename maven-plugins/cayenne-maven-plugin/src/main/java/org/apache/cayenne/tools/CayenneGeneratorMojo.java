@@ -99,7 +99,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * <code>true</code>).
 	 */
 	@Parameter
-	private String makePairs;
+	private Boolean makePairs;
 
 	/**
 	 * DataMap XML file to use as a base for class generation.
@@ -113,7 +113,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * iteration per datamap (This is always one iteration since cgen currently
 	 * supports specifying one-and-only-one datamap). (Default is &quot;entity&quot;)
 	 */
-	@Parameter(defaultValue = "entity")
+	@Parameter
 	private String mode;
 
 	/**
@@ -127,7 +127,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * classes. Ignored unless makepairs is set to <code>false</code>.
 	 */
 	@Parameter
-	private String overwrite;
+	private Boolean overwrite;
 
 	/**
 	 * Java package name of generated superclasses. Ignored unless
@@ -177,14 +177,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * ignoring their package.
 	 */
 	@Parameter
-	private String usePkgPath;
+	private Boolean usePkgPath;
 
     /**
      * If set to <code>true</code>, will generate String Property names.
      * Default is <code>false</code>.
      */
     @Parameter
-    private String createPropertyNames;
+    private Boolean createPropertyNames;
 
 	/**
 	 * If set to <code>true</code>, will skip file modification time validation and regenerate all.
@@ -195,15 +195,21 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false", property = "force")
 	private boolean force;
 
-	/**
-	 * If set to <code>true</code>, will generate PK attributes as Properties.
-	 * Default is <code>false</code>.
-	 * @since 4.1
-	 */
-	@Parameter(defaultValue = "false")
-	private boolean createPKProperties;
+	@Parameter
+	private String queryTemplate;
 
-	private transient Injector injector;
+	@Parameter
+	private String querySuperTemplate;
+
+    /**
+     * If set to <code>true</code>, will generate PK attributes as Properties.
+     * Default is <code>false</code>.
+     * @since 4.1
+     */
+    @Parameter(defaultValue = "false")
+    private boolean createPKProperties;
+
+    private transient Injector injector;
 
     private static final Logger logger = LoggerFactory.getLogger(CayenneGeneratorMojo.class);
 
@@ -289,17 +295,19 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 		action.setDestDir(destDir);
 		action.setEncoding(encoding != null ? encoding : action.getEncoding());
-		action.setMakePairs(makePairs != null ? Boolean.valueOf(makePairs) : action.isMakePairs());
-		action.setArtifactsGenerationMode(mode);
+		action.setMakePairs(makePairs != null ? makePairs : action.isMakePairs());
+		action.setArtifactsGenerationMode(mode != null ? mode : action.getArtifactsGenerationMode());
 		action.setOutputPattern(outputPattern != null ? outputPattern : action.getOutputPattern());
-		action.setOverwrite(overwrite != null ? Boolean.valueOf(overwrite) : action.isOverwrite());
+		action.setOverwrite(overwrite != null ? overwrite : action.isOverwrite());
 		action.setSuperPkg(superPkg != null ? superPkg : action.getSuperPkg());
 		action.setSuperTemplate(superTemplate != null ? superTemplate : action.getSuperclassTemplate());
 		action.setTemplate(template != null ? template : action.getTemplate());
 		action.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? embeddableSuperTemplate : action.getEmbeddableSuperTemplate());
 		action.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : action.getEmbeddableTemplate());
-		action.setUsePkgPath(usePkgPath != null ? Boolean.valueOf(usePkgPath) : action.isUsePkgPath());
-		action.setCreatePropertyNames(createPropertyNames != null ? Boolean.valueOf(createPropertyNames) : action.isCreatePropertyNames());
+		action.setUsePkgPath(usePkgPath != null ? usePkgPath : action.isUsePkgPath());
+		action.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : action.isCreatePropertyNames());
+		action.setQueryTemplate(queryTemplate != null ? queryTemplate : action.getQueryTemplate());
+		action.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : action.getQuerySuperTemplate());
 		return action;
 	}
 }

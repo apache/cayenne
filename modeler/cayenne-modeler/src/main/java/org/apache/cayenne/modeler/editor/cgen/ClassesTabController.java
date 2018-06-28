@@ -25,8 +25,8 @@ import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import java.awt.Component;
 
 public class ClassesTabController extends CayenneController {
 

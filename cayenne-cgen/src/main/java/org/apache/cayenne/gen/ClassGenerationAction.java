@@ -33,8 +33,16 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class ClassGenerationAction implements Serializable, XMLSerializable {
 	static final String TEMPLATES_DIR_NAME = "templates/v4_1/";
@@ -56,8 +64,8 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 
 	protected Collection<Artifact> artifacts;
 
-	protected Collection<String> entityArtifacts;
-	protected Collection<String> embeddableArtifacts;
+	private Collection<String> entityArtifacts;
+	private Collection<String> embeddableArtifacts;
 
 	protected String superPkg;
 	protected DataMap dataMap;
@@ -103,16 +111,12 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
         this.artifacts = new ArrayList<>();
         this.entityArtifacts = new ArrayList<>();
         this.embeddableArtifacts = new ArrayList<>();
+        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
+
+        this.overwrite = false;
 	}
 
 	public void setDefaults() {
-        this.outputPattern = "*.java";
-        this.timestamp = 0L;
-        this.usePkgPath = true;
-        this.makePairs = true;
-        this.context = new VelocityContext();
-        this.templateCache = new HashMap<>(5);
-
         this.template = SUBCLASS_TEMPLATE;
         this.superTemplate = SUPERCLASS_TEMPLATE;
 
@@ -121,8 +125,6 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 
         this.queryTemplate = DATAMAP_SUBCLASS_TEMPLATE;
         this.querySuperTemplate = DATAMAP_SUPERCLASS_TEMPLATE;
-
-        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
     }
 
 	protected String defaultTemplateName(TemplateType type) {
@@ -150,7 +152,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		}
 	}
 
-	protected String customTemplateName(TemplateType type) {
+	private String customTemplateName(TemplateType type) {
 		switch (type) {
 		case ENTITY_SINGLE_CLASS:
 			return template;
@@ -575,7 +577,10 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 			// TODO: andrus 10.12.2010 - why not also check for empty query list??
 			// Or create a better API for enabling DataMapArtifact
 			if (queries != null) {
-				artifacts.add(new DataMapArtifact(dataMap, queries));
+				Artifact artifact = new DataMapArtifact(dataMap, queries);
+				if(!artifacts.contains(artifact)) {
+					artifacts.add(new DataMapArtifact(dataMap, queries));
+				}
 			}
 		}
 	}
@@ -583,16 +588,24 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
     private void addAllEntities() {
 		if(artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-            entityArtifacts.forEach(val ->
-                artifacts.add(new EntityArtifact(dataMap.getObjEntity(val))));
+            entityArtifacts.forEach(val -> {
+            	Artifact artifact = new EntityArtifact(dataMap.getObjEntity(val));
+            	if(!artifacts.contains(artifact)) {
+					artifacts.add(artifact);
+				}
+			});
 		}
 	}
 
     private void addAllEmbeddables() {
 		if(artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-		    embeddableArtifacts.forEach(val ->
-                    artifacts.add(new EmbeddableArtifact(dataMap.getEmbeddable(val))));
+		    embeddableArtifacts.forEach(val -> {
+		    	Artifact artifact = new EmbeddableArtifact(dataMap.getEmbeddable(val));
+				if(!artifacts.contains(artifact)) {
+		    		artifacts.add(artifact);
+		    	}
+			});
 		}
 	}
 
@@ -711,7 +724,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	}
 
 	public String getDir(){
-		return destDir.getAbsolutePath();
+		return destDir != null ? destDir.getAbsolutePath() : null;
 	}
 
 	public File getDestDir() { return destDir; }
@@ -779,7 +792,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 				.attribute("xmlns", CgenExtension.NAMESPACE)
 				.nested(this.getEntityArtifacts(), delegate)
 				.nested(this.getEmbeddableArtifacts(), delegate)
-				.simpleTag("outputDirectory", this.destDir.getAbsolutePath())
+				.simpleTag("outputDirectory", this.destDir != null ? this.destDir.getAbsolutePath() : null)
 				.simpleTag("generationMode", this.artifactsGenerationMode.getLabel())
                 .simpleTag("dataMapTemplate", this.queryTemplate)
                 .simpleTag("dataMapSuperclassTemplate", this.querySuperTemplate)

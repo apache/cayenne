@@ -27,8 +27,8 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.util.function.Predicate;
 
 /**

@@ -1,3 +1,21 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
 package org.apache.cayenne.modeler.dialog.codegen.cgen;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -21,10 +39,13 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
+/**
+ * @since 4.1
+ */
 public class CgenGlobalPanelController extends CayenneController{
 
-    static final String ALL_MODE_LABEL = "Generate all";
-    static final Map<String, String> modesByLabel = new HashMap<>();
+    private static final String ALL_MODE_LABEL = "Generate all";
+    private static final Map<String, String> modesByLabel = new HashMap<>();
     // correspond to non-public constants on MapClassGenerator.
     private static final String MODE_DATAMAP = "datamap";
     private static final String MODE_ENTITY = "entity";
@@ -48,7 +69,7 @@ public class CgenGlobalPanelController extends CayenneController{
 
     private Collection<ClassGenerationAction> generators;
 
-    public CgenGlobalPanelController(CayenneController parent) {
+    CgenGlobalPanelController(CayenneController parent) {
         super(parent);
         this.projectController = Application.getInstance().getFrameController().getProjectController();
 
@@ -61,8 +82,8 @@ public class CgenGlobalPanelController extends CayenneController{
     }
 
     private void updateTemplates() {
-        Object[] modeChoices = new Object[]{ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL, ALL_MODE_LABEL};
-        view.getGenerationMode().setModel(new DefaultComboBoxModel(modeChoices));
+        String[] modeChoices = new String[]{ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL, ALL_MODE_LABEL};
+        view.getGenerationMode().setModel(new DefaultComboBoxModel<>(modeChoices));
 
         CodeTemplateManager templateManager = getApplication().getCodeTemplateManager();
 
@@ -93,14 +114,14 @@ public class CgenGlobalPanelController extends CayenneController{
         Collections.sort(dataMapSuperTemplates);
         dataMapSuperTemplates.addAll(customTemplates);
 
-        this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel(subTemplates.toArray()));
-        this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel(superTemplates.toArray()));
+        this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
+        this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));
 
-        this.view.getEmbeddableTemplate().setModel(new DefaultComboBoxModel(embeddableTemplates.toArray()));
-        this.view.getEmbeddableSuperTemplate().setModel(new DefaultComboBoxModel(embeddableSuperTemplates.toArray()));
+        this.view.getEmbeddableTemplate().setModel(new DefaultComboBoxModel<>(embeddableTemplates.toArray(new String[0])));
+        this.view.getEmbeddableSuperTemplate().setModel(new DefaultComboBoxModel<>(embeddableSuperTemplates.toArray(new String[0])));
 
-        this.view.getDataMapTemplate().setModel(new DefaultComboBoxModel(dataMapTemplates.toArray()));
-        this.view.getDataMapSuperTemplate().setModel(new DefaultComboBoxModel(dataMapSuperTemplates.toArray()));
+        this.view.getDataMapTemplate().setModel(new DefaultComboBoxModel<>(dataMapTemplates.toArray(new String[0])));
+        this.view.getDataMapSuperTemplate().setModel(new DefaultComboBoxModel<>(dataMapSuperTemplates.toArray(new String[0])));
 
         this.view.getOutputPattern().setText("*.java");
         this.view.getPairs().setSelected(true);
