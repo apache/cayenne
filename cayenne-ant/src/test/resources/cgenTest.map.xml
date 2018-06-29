@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+          project-version="10">
+    <embeddable className="Embeddable"/>
+    <obj-entity name="ObjEntity" className="ObjEntity"/>
+    <obj-entity name="ObjEntity1" className="ObjEntity1"/>
+    <cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+        <objEntity>
+            <name>ObjEntity1</name>
+        </objEntity>
+        <generationMode>all</generationMode>
+        <dataMapTemplate>templates/v4_1/datamap-subclass.vm</dataMapTemplate>
+        <dataMapSuperclassTemplate>templates/v4_1/datamap-superclass.vm</dataMapSuperclassTemplate>
+        <subclassTemplate>templates/v4_1/subclass.vm</subclassTemplate>
+        <superclassTemplate>templates/v4_1/superclass.vm</superclassTemplate>
+        <embeddableTemplate>templates/v4_1/embeddable-subclass.vm</embeddableTemplate>
+        <embeddableSuperclassTemplate>templates/v4_1/embeddable-superclass.vm</embeddableSuperclassTemplate>
+        <outputPattern>*.txt</outputPattern>
+        <makePairs>false</makePairs>
+        <usePkgPath>true</usePkgPath>
+        <overwriteSubclasses>false</overwriteSubclasses>
+        <createPropertyNames>false</createPropertyNames>
+        <encoding>UTF-8</encoding>
+    </cgen>
+</data-map>

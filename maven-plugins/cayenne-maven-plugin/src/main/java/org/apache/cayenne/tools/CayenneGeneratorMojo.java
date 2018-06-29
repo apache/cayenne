@@ -217,6 +217,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		// Create the destination directory if necessary.
 		// TODO: (KJM 11/2/06) The destDir really should be added as a
 		// compilation resource for maven.
+
 		if (!destDir.exists()) {
 			destDir.mkdirs();
 		}
@@ -238,6 +239,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 			ClassGenerationAction generator = createGenerator(dataMap);
 			generator.setLogger(logger);
+
 			if(force) {
 				// will (re-)generate all files
 				generator.setForce(true);
