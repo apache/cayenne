@@ -27,10 +27,13 @@
 			<artifactId>cayenne-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!--
+		Include jaxb-api to support Base64 encoding,
+		can't use new encoder from java 8 as we need to support java 7
+		-->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
-			<version>2.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
