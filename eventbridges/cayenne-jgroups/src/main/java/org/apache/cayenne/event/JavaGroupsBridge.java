@@ -197,9 +197,10 @@ public class JavaGroupsBridge extends EventBridge implements MessageListener {
                 adapter.stop();
             }
 
-            channel.close();
-        }
-        finally {
+            if(channel != null) {
+                channel.close();
+            }
+        } finally {
             adapter = null;
             channel = null;
         }

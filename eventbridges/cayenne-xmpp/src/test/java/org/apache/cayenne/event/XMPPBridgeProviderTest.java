@@ -36,13 +36,14 @@ import org.apache.cayenne.tx.TransactionManager;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class XMPPBridgeProviderTest {
 
-    private final DataDomain DOMAIN = new DataDomain("test");
-    private final EventManager EVENT_MANAGER = new DefaultEventManager();
+    private static final DataDomain DOMAIN = new DataDomain("test");
+    private static final EventManager EVENT_MANAGER = new DefaultEventManager();
     protected static final String HOST_TEST = "somehost.com";
     protected static final String CHAT_SERVICE_TEST = "conference";
     protected static final String LOGIN_TEST = "login";
@@ -89,10 +90,10 @@ public class XMPPBridgeProviderTest {
 
         assertEquals(XMPPBridge.DEFAULT_CHAT_SERVICE, bridge.getChatService());
         assertEquals(0, bridge.getXmppPort());
-        assertEquals(false, bridge.isSecureConnection());
+        assertFalse(bridge.isSecureConnection());
     }
 
-    class DefaultBindings implements Module {
+    static class DefaultBindings implements Module {
         @Override
         public void configure(Binder binder) {
             binder.bindMap(String.class, Constants.PROPERTIES_MAP);
