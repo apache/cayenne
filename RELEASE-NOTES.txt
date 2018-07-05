@@ -62,6 +62,7 @@ CAY-2429 Generate classes: Invalid template type: EMBEDDABLE_SINGLE_CLASS
 CAY-2430 Modeler: Redo throws NPE
 CAY-2435 cdbimport: procedure parameters are not imported
 CAY-2436 NPE in CayenneRuntimeException constructor
+CAY-2442 Broken EventBridge providers implementations
 
 ----------------------------------
 Release: 4.1.M1
