@@ -41,8 +41,8 @@ import static org.junit.Assert.assertTrue;
 
 public class JMSBridgeProviderTest {
 
-    private final DataDomain DOMAIN = new DataDomain("test");
-    private final EventManager EVENT_MANAGER = new DefaultEventManager();
+    private static final DataDomain DOMAIN = new DataDomain("test");
+    private static final EventManager EVENT_MANAGER = new DefaultEventManager();
     protected static final String TOPIC_CONNECTION_FACTORY_TEST = "SomeTopicConnectionFactory";
 
     @Test
@@ -72,7 +72,7 @@ public class JMSBridgeProviderTest {
         assertEquals(JMSBridge.TOPIC_CONNECTION_FACTORY_DEFAULT, bridge.getTopicConnectionFactoryName());
     }
 
-    class DefaultBindings implements Module {
+    static class DefaultBindings implements Module {
         @Override
         public void configure(Binder binder) {
             binder.bindMap(String.class, Constants.PROPERTIES_MAP);

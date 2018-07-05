@@ -37,12 +37,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class JavaGroupsBridgeProviderTest {
 
-    private final DataDomain DOMAIN = new DataDomain("test");
-    private final EventManager EVENT_MANAGER = new DefaultEventManager();
+    private static final DataDomain DOMAIN = new DataDomain("test");
+    private static final EventManager EVENT_MANAGER = new DefaultEventManager();
     protected static final String MCAST_ADDRESS_TEST = "192.168.0.0";
     protected static final String MCAST_PORT_TEST = "1521";
     protected static final String CONFIG_URL_TEST = "somehost.com";
@@ -79,10 +80,10 @@ public class JavaGroupsBridgeProviderTest {
 
         assertEquals(JavaGroupsBridge.MCAST_ADDRESS_DEFAULT, bridge.getMulticastAddress());
         assertEquals(JavaGroupsBridge.MCAST_PORT_DEFAULT, bridge.getMulticastPort());
-        assertEquals(null, bridge.getConfigURL());
+        assertNull(bridge.getConfigURL());
     }
 
-    class DefaultBindings implements Module {
+    static class DefaultBindings implements Module {
         @Override
         public void configure(Binder binder) {
             binder.bindMap(String.class, Constants.PROPERTIES_MAP);
