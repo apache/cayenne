@@ -18,6 +18,7 @@ Bug Fixes:
 
 CAY-2435 cdbimport: procedure parameters are not imported
 CAY-2436 NPE in CayenneRuntimeException constructor
+CAY-2442 Broken EventBridge providers implementations
 
 ----------------------------------
 Release: 4.0.RC1
