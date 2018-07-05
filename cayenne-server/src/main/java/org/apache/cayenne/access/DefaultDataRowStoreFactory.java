@@ -23,9 +23,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.event.NoopEventBridge;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 
 import java.util.Map;
 
@@ -36,7 +37,7 @@ import java.util.Map;
  */
 public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
-    EventBridge eventBridge;
+    Provider<EventBridge> eventBridgeProvider;
 
     EventManager eventManager;
 
@@ -44,13 +45,13 @@ public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
 
     boolean isNoopEventBridge;
 
-    public DefaultDataRowStoreFactory(@Inject EventBridge eventBridge,
+    public DefaultDataRowStoreFactory(@Inject Provider<EventBridge> eventBridgeProvider,
                                       @Inject EventManager eventManager,
                                       @Inject RuntimeProperties properties) {
-        this.eventBridge = eventBridge;
+        this.eventBridgeProvider = eventBridgeProvider;
         this.eventManager = eventManager;
         this.properties = properties;
-        isNoopEventBridge = eventBridge instanceof NoopEventBridge;
+        isNoopEventBridge = eventBridgeProvider instanceof NoopEventBridgeProvider;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class DefaultDataRowStoreFactory implements DataRowStoreFactory {
             return;
         }
         try {
-            store.setEventBridge(eventBridge);
+            store.setEventBridge(eventBridgeProvider.get());
             store.startListeners();
         } catch (Exception ex) {
             throw new CayenneRuntimeException("Error initializing DataRowStore.", ex);
