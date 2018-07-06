@@ -49,7 +49,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     public CodeGeneratorController(CayenneController parent, Collection<DataMap> dataMaps) {
         super(parent, dataMaps);
 
-        this.classesSelector = new ClassesTabController(this);
+        this.classesSelector = new ClassesTabController(this, dataMaps);
         this.generatorSelector = new GeneratorTabController(this);
     }
 
@@ -123,9 +123,21 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
             label = label + "One embeddable selected";
         }
         else {
-            label =label + sizeEmb + " embeddables selected";
+            label = label + sizeEmb + " embeddables selected";
         }
-        
+
+        label = label.concat("; ");
+
+        int sizeDataMap = getSelectedDataMapsSize();
+
+        if(sizeDataMap == 0) {
+            label = label + "No datamaps selected";
+        } else if(sizeDataMap == 1) {
+            label = label + "One datamap selected";
+        } else {
+            label = label + sizeDataMap + " datamaps selected";
+        }
+
         view.getClassesCount().setText(label);
     }
 
