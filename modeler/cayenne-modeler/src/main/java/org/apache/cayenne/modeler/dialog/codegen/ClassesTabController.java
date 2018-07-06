@@ -26,6 +26,13 @@ import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
@@ -97,7 +104,7 @@ public class ClassesTabController extends CayenneController {
                 Boolean.TRUE);
 
         tableBuilder.addColumn(
-                "Class",
+                "Entity",
                 "parent.getItemName(#item)",
                 JLabel.class,
                 false,

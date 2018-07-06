@@ -27,14 +27,10 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 /**

@@ -29,6 +29,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class CustomModePanel extends GeneratorControllerPanel {
 
@@ -55,6 +57,11 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.createPKProperties = new JCheckBox();
         this.manageTemplatesLink = new ActionLink("Customize Templates...");
         manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
+
+        pairs.addChangeListener(e -> {
+            superclassTemplate.setEnabled(pairs.isSelected());
+            overwrite.setEnabled(!pairs.isSelected());
+        });
 
         // assemble
         FormLayout layout = new FormLayout(
