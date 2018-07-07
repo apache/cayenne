@@ -20,7 +20,12 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.Project;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -70,7 +75,6 @@ public class ProjectTreeModel extends DefaultTreeModel {
 
 			for (int i = 0; i < len; i++) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent.getChildAt(i);
-
 				// remember to remove node
 				if (node == treeNode) {
 					rm = i;
@@ -108,6 +112,18 @@ public class ProjectTreeModel extends DefaultTreeModel {
 				insertNodeInto(treeNode, parent, ins);
 			} catch (NullPointerException ignored) {
 			}
+		}
+	}
+
+	public void insertNodeInto(MutableTreeNode newChild,
+							   MutableTreeNode parent, int index){
+		parent.insert(newChild, index);
+
+		int[] newIndexs = new int[1];
+
+		if(filter.pass((DefaultMutableTreeNode) newChild)) {
+			newIndexs[0] = getPositionInTreeView(parent, newChild);
+			nodesWereInserted(parent, newIndexs);
 		}
 	}
 
@@ -180,7 +196,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 		return null;
 	}
 
-	private int getCount(Object parent, Object item) {
+	private int getPositionInTreeView(Object parent, Object item) {
 		int cnt = -1;
 		for(int i = 0; i < super.getChildCount(parent); i++) {
 			DefaultMutableTreeNode child = (DefaultMutableTreeNode) super.getChild(parent, i);
@@ -204,7 +220,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 		int[] childIndex = new int[1];
 		Object[] removedArray = new Object[1];
 
-		childIndex[0] = getCount(parent, node);
+		childIndex[0] = getPositionInTreeView(parent, node);
 		parent.remove(parent.getIndex(node));
 		removedArray[0] = node;
 		nodesWereRemoved(parent, childIndex, removedArray);

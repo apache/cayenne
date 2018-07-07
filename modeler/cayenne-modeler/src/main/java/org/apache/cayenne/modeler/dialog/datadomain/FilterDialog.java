@@ -21,7 +21,8 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.swing.BindingBuilder;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JPopupMenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
