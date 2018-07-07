@@ -24,15 +24,11 @@ import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Predicate;
 
 public class ClientModeController extends StandardModeController {
 
@@ -75,27 +71,7 @@ public class ClientModeController extends StandardModeController {
 
     protected GeneratorControllerPanel createView() {
         this.view = new StandardModePanel();
-
-        Set<Entry<DataMap, DataMapDefaults>> entities = getMapPreferences().entrySet();
-        for (Entry<DataMap, DataMapDefaults> entry : entities) {
-            StandardPanelComponent dataMapLine = createDataMapLineBy(entry.getKey(), entry.getValue());
-            dataMapLine.getDataMapName().setText(dataMapLine.getDataMap().getName());
-            BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), dataMapLine);
-            builder.bindToTextField(
-                    dataMapLine.getSuperclassPackage(),
-                    "preferences.superclassPackage").updateView();
-            this.view.addDataMapLine(dataMapLine);
-        }
-
         return view;
-    }
-
-    private StandardPanelComponent createDataMapLineBy(DataMap dataMap, DataMapDefaults preferences) {
-        StandardPanelComponent dataMapLine = new StandardPanelComponent();
-        dataMapLine.setDataMap(dataMap);
-        dataMapLine.setPreferences(preferences);
-
-        return dataMapLine;
     }
 
     @Override

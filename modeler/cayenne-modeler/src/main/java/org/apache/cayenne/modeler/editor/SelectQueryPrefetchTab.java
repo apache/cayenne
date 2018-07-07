@@ -61,7 +61,9 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
 
     protected void initFromModel(){
         super.initFromModel();
-        setUpPrefetchBox(table.getColumnModel().getColumn(2));
+        if(table.getColumnModel().getColumns().hasMoreElements()) {
+            setUpPrefetchBox(table.getColumnModel().getColumn(2));
+        }
     }
 
     protected void setUpPrefetchBox(TableColumn column) {

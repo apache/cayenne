@@ -19,17 +19,13 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.swing.BindingBuilder;
 
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 
 public class StandardModeController extends GeneratorController {
@@ -65,26 +61,7 @@ public class StandardModeController extends GeneratorController {
 
     protected GeneratorControllerPanel createView() {
         this.view = new StandardModePanel();
-
-        Set<Entry<DataMap, DataMapDefaults>> entities = getMapPreferences().entrySet();
-        for (Entry<DataMap, DataMapDefaults> entry : entities) {
-            StandardPanelComponent dataMapLine = createDataMapLineBy(entry.getKey(), entry.getValue());
-            dataMapLine.getDataMapName().setText(dataMapLine.getDataMap().getName());
-            BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), dataMapLine);
-            builder.bindToTextField(
-                    dataMapLine.getSuperclassPackage(),
-                    "preferences.superclassPackage").updateView();
-            this.view.addDataMapLine(dataMapLine);
-        }
         return view;
-    }
-
-    private StandardPanelComponent createDataMapLineBy(DataMap dataMap, DataMapDefaults preferences) {
-        StandardPanelComponent dataMapLine = new StandardPanelComponent();
-        dataMapLine.setDataMap(dataMap);
-        dataMapLine.setPreferences(preferences);
-
-        return dataMapLine;
     }
 
     public Component getView() {
@@ -100,9 +77,6 @@ public class StandardModeController extends GeneratorController {
 
     @Override
     public Collection<ClassGenerationAction> createGenerator() {
-        mode = view.getCreateDataMapClass().isSelected()
-                ? ArtifactsGenerationMode.ALL.getLabel()
-                : ArtifactsGenerationMode.ENTITY.getLabel();
         return super.createGenerator();
     }
 }
