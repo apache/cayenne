@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.Map;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -35,6 +27,13 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.Project;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * ProjectTreeModel is a model of Cayenne project tree.
@@ -76,7 +75,6 @@ public class ProjectTreeModel extends DefaultTreeModel {
 
 			for (int i = 0; i < len; i++) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent.getChildAt(i);
-
 				// remember to remove node
 				if (node == treeNode) {
 					rm = i;
@@ -114,6 +112,18 @@ public class ProjectTreeModel extends DefaultTreeModel {
 				insertNodeInto(treeNode, parent, ins);
 			} catch (NullPointerException ignored) {
 			}
+		}
+	}
+
+	public void insertNodeInto(MutableTreeNode newChild,
+							   MutableTreeNode parent, int index){
+		parent.insert(newChild, index);
+
+		int[] newIndexs = new int[1];
+
+		if(filter.pass((DefaultMutableTreeNode) newChild)) {
+			newIndexs[0] = getPositionInTreeView(parent, newChild);
+			nodesWereInserted(parent, newIndexs);
 		}
 	}
 
@@ -184,6 +194,36 @@ public class ProjectTreeModel extends DefaultTreeModel {
 			}
 		}
 		return null;
+	}
+
+	private int getPositionInTreeView(Object parent, Object item) {
+		int cnt = -1;
+		for(int i = 0; i < super.getChildCount(parent); i++) {
+			DefaultMutableTreeNode child = (DefaultMutableTreeNode) super.getChild(parent, i);
+			if(filter.pass(child)) {
+				cnt++;
+			}
+			if(child == item){
+				return cnt;
+			}
+		}
+		return cnt;
+	}
+
+	public void removeNodeFromParent(MutableTreeNode node) {
+		MutableTreeNode parent = (MutableTreeNode)node.getParent();
+
+		if(parent == null) {
+			throw new IllegalArgumentException("node does not have a parent.");
+		}
+
+		int[] childIndex = new int[1];
+		Object[] removedArray = new Object[1];
+
+		childIndex[0] = getPositionInTreeView(parent, node);
+		parent.remove(parent.getIndex(node));
+		removedArray[0] = node;
+		nodesWereRemoved(parent, childIndex, removedArray);
 	}
 
 	class Filter {

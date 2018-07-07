@@ -172,7 +172,7 @@ public class FilterDialog extends JPopupMenu {
 		public void actionPerformed(ActionEvent e) {
 			filterController.getFilterMap().put(key, ((JCheckBox) e.getSource()).isSelected());
 			filterController.getTreeModel().setFiltered(filterController.getFilterMap());
-            filterController.getTree().updateUI();
+			filterController.getTree().updateUI();
             checkAllStates();
 		}
 	}
