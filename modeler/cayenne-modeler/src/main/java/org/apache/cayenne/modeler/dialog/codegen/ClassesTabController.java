@@ -28,15 +28,13 @@ import org.apache.cayenne.swing.TableBindingBuilder;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import java.awt.Component;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ClassesTabController extends CayenneController {
 
@@ -59,9 +57,10 @@ public class ClassesTabController extends CayenneController {
 
         this.objectList = new HashMap<>();
         for(DataMap dataMap : dataMaps) {
-            List<Object> list = new ArrayList<>(Arrays.asList(dataMap));
-            list.addAll(Stream.concat(dataMap.getObjEntities().stream(), dataMap.getEmbeddables().stream())
-                    .collect(Collectors.toList()));
+            List<Object> list = new ArrayList<>();
+            list.add(dataMap);
+            list.addAll(dataMap.getObjEntities());
+            list.addAll(dataMap.getEmbeddables());
             objectList.put(dataMap, list);
         }
 
@@ -112,13 +111,15 @@ public class ClassesTabController extends CayenneController {
                 "XXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         for(DataMap dataMap : dataMaps) {
-            if(view.getDataMapTables().get(dataMap) != null) {
+            JTable table = view.getDataMapTables().get(dataMap);
+            if(table != null) {
                 currentCollection = objectList.get(dataMap);
-                objectBindings.put(dataMap, tableBuilder.bindToTable(view.getDataMapTables().get(dataMap), "currentCollection"));
-                view.getDataMapTables().get(dataMap).getColumnModel().getColumn(1).setCellRenderer(new ImageRendererColumn());
+                objectBindings.put(dataMap, tableBuilder.bindToTable(table, "currentCollection"));
+                table.getColumnModel().getColumn(1).setCellRenderer(new ImageRendererColumn());
             }
-            if(view.getDataMapJCheckBoxMap().get(dataMap) != null) {
-                view.getDataMapJCheckBoxMap().get(dataMap).addActionListener(val -> checkDataMap(dataMap, ((JCheckBox)val.getSource()).isSelected()));
+            JCheckBox checkBox = view.getDataMapJCheckBoxMap().get(dataMap);
+            if(checkBox != null) {
+                checkBox.addActionListener(val -> checkDataMap(dataMap, ((JCheckBox)val.getSource()).isSelected()));
             }
         }
     }
@@ -148,7 +149,9 @@ public class ClassesTabController extends CayenneController {
      * A callback action that updates the state of Select All checkbox.
      */
     public void classSelectedAction() {
-        int selectedCount = getParentController().getSelectedEntitiesSize() + getParentController().getSelectedEmbeddablesSize() + getParentController().getSelectedDataMapsSize();
+        int selectedCount = getParentController().getSelectedEntitiesSize()
+                + getParentController().getSelectedEmbeddablesSize()
+                + getParentController().getSelectedDataMapsSize();
 
         if (selectedCount == 0) {
             view.getCheckAll().setSelected(false);
@@ -165,9 +168,10 @@ public class ClassesTabController extends CayenneController {
     public void checkAllAction() {
         if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             dataMaps.forEach(dataMap -> {
-                if(objectBindings.get(dataMap) != null) {
+                ObjectBinding binding = objectBindings.get(dataMap);
+                if(binding != null) {
                     currentCollection = objectList.get(dataMap);
-                    objectBindings.get(dataMap).updateView();
+                    binding.updateView();
                 }
             });
         }
@@ -175,9 +179,10 @@ public class ClassesTabController extends CayenneController {
 
     private void checkDataMap(DataMap dataMap, boolean selected) {
         if (getParentController().updateDataMapSelection(selected ? o -> true : o -> false, dataMap)){
-            if(objectBindings.get(dataMap) != null) {
+            ObjectBinding binding = objectBindings.get(dataMap);
+            if(binding != null) {
                 currentCollection = objectList.get(dataMap);
-                objectBindings.get(dataMap).updateView();
+                binding.updateView();
             }
             if(isAllMapsSelected()) {
                 view.getCheckAll().setSelected(true);
