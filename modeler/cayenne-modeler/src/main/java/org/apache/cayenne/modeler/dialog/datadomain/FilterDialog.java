@@ -21,8 +21,7 @@ package org.apache.cayenne.modeler.dialog.datadomain;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.swing.BindingBuilder;
 
-import javax.swing.JCheckBox;
-import javax.swing.JPopupMenu;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -172,7 +171,7 @@ public class FilterDialog extends JPopupMenu {
 		public void actionPerformed(ActionEvent e) {
 			filterController.getFilterMap().put(key, ((JCheckBox) e.getSource()).isSelected());
 			filterController.getTreeModel().setFiltered(filterController.getFilterMap());
-            filterController.getTree().updateUI();
+			filterController.getTree().updateUI();
             checkAllStates();
 		}
 	}
