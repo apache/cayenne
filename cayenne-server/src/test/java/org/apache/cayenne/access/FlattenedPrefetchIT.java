@@ -30,7 +30,6 @@ import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -115,108 +114,37 @@ public class FlattenedPrefetchIT extends ServerCase {
     public void testManyToMany() throws Exception {
         createPrefetchDataSet1();
 
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
         q.addPrefetch(Artist.GROUP_ARRAY.disjoint());
 
-        final List<Artist> objects = context.performQuery(q);
+        List<Artist> objects = context.select(q);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertEquals(3, objects.size());
-
-                for (Artist a : objects) {
-                    List<ArtGroup> list = a.getGroupArray();
-
-                    assertNotNull(list);
-                    assertFalse(
-                            "artist's groups not resolved: " + a,
-                            ((ValueHolder) list).isFault());
-                    assertTrue(list.size() > 0);
-
-                    for (ArtGroup g : list) {
-                        assertEquals(PersistenceState.COMMITTED, g.getPersistenceState());
-                    }
-
-                    // assert no duplicates
-                    Set<ArtGroup> s = new HashSet<ArtGroup>(list);
-                    assertEquals(s.size(), list.size());
-                }
-            }
-        });
+        queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
     }
 
     @Test
     public void testMultiPrefetch() throws Exception {
         createPrefetchDataSet2();
 
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
         q.addPrefetch(Painting.TO_ARTIST.disjoint());
         q.addPrefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).disjoint());
 
-        final List<Painting> objects = context.performQuery(q);
+        List<Painting> objects = context.select(q);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertEquals(3, objects.size());
-
-                for (Painting p : objects) {
-                    Artist a = p.getToArtist();
-                    assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
-
-                    List<ArtGroup> list = a.getGroupArray();
-                    assertNotNull(list);
-                    assertFalse(
-                            "artist's groups not resolved: " + a,
-                            ((ValueHolder) list).isFault());
-                    assertTrue(list.size() > 0);
-
-                    for (ArtGroup g : list) {
-                        assertEquals(PersistenceState.COMMITTED, g.getPersistenceState());
-                    }
-
-                    // assert no duplicates
-                    Set<ArtGroup> s = new HashSet<ArtGroup>(list);
-                    assertEquals(s.size(), list.size());
-                }
-            }
-        });
+        queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
     }
 
     @Test
     public void testJointManyToMany() throws Exception {
         createPrefetchDataSet1();
 
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
         q.addPrefetch(Artist.GROUP_ARRAY.joint());
 
-        final List<Artist> objects = context.performQuery(q);
+        List<Artist> objects = context.select(q);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertEquals(3, objects.size());
-
-                for (Artist a : objects) {
-                    List<ArtGroup> list = a.getGroupArray();
-
-                    assertNotNull(list);
-                    assertFalse(
-                            "artist's groups not resolved: " + a,
-                            ((ValueHolder) list).isFault());
-                    assertTrue(list.size() > 0);
-
-                    for (ArtGroup g : list) {
-                        assertEquals(PersistenceState.COMMITTED, g.getPersistenceState());
-                    }
-
-                    // assert no duplicates
-                    Set<ArtGroup> s = new HashSet<ArtGroup>(list);
-                    assertEquals(s.size(), list.size());
-                }
-            }
-        });
+        queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
 
     }
 
@@ -224,38 +152,44 @@ public class FlattenedPrefetchIT extends ServerCase {
     public void testJointMultiPrefetch() throws Exception {
         createPrefetchDataSet2();
 
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
         q.addPrefetch(Painting.TO_ARTIST.joint());
         q.addPrefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).joint());
 
-        final List<Painting> objects = context.performQuery(q);
+        List<Painting> objects = context.select(q);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
+    }
 
-            public void execute() {
-                assertEquals(3, objects.size());
+    private void assertArtistResult(List<Artist> objects) {
+        assertEquals(3, objects.size());
+        for (Artist a : objects) {
+            assertArtGroupResult(a.getGroupArray());
+        }
+    }
 
-                for (Painting p : objects) {
-                    Artist a = p.getToArtist();
-                    assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
+    private void assertPaintingResult(List<Painting> objects) {
+        assertEquals(3, objects.size());
+        for (Painting p : objects) {
+            Artist a = p.getToArtist();
+            assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
+            assertArtGroupResult(a.getGroupArray());
+        }
+    }
 
-                    List<ArtGroup> list = a.getGroupArray();
-                    assertNotNull(list);
-                    assertFalse(
-                            "artist's groups not resolved: " + a,
-                            ((ValueHolder) list).isFault());
-                    assertTrue(list.size() > 0);
+    private void assertArtGroupResult(List<ArtGroup> list) {
+        assertNotNull(list);
+        assertFalse(
+                "artist's groups not resolved: ",
+                ((ValueHolder) list).isFault());
+        assertTrue(list.size() > 0);
 
-                    for (ArtGroup g : list) {
-                        assertEquals(PersistenceState.COMMITTED, g.getPersistenceState());
-                    }
+        for (ArtGroup g : list) {
+            assertEquals(PersistenceState.COMMITTED, g.getPersistenceState());
+        }
 
-                    // assert no duplicates
-
-                    Set<ArtGroup> s = new HashSet<ArtGroup>(list);
-                    assertEquals(s.size(), list.size());
-                }
-            }
-        });
+        // assert no duplicates
+        Set<ArtGroup> s = new HashSet<>(list);
+        assertEquals(s.size(), list.size());
     }
 }
