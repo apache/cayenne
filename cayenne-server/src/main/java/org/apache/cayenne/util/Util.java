@@ -366,6 +366,18 @@ public class Util {
 	public static Document readDocument(URL url) {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 		documentBuilderFactory.setNamespaceAware(false);
+		documentBuilderFactory.setXIncludeAware(false);
+		documentBuilderFactory.setExpandEntityReferences(false);
+
+		try {
+			documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			documentBuilderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			documentBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		} catch (ParserConfigurationException ex) {
+			throw new ConfigurationException("Unable to configure DocumentBuilderFactory", ex);
+		}
+
 		try {
 			DocumentBuilder domBuilder = documentBuilderFactory.newDocumentBuilder();
 			try (InputStream inputStream = url.openStream()) {
