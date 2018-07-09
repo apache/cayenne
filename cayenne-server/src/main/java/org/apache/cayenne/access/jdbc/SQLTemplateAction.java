@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
@@ -50,6 +38,18 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.Util;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -186,15 +186,23 @@ public class SQLTemplateAction implements SQLAction {
 
 		long t1 = System.currentTimeMillis();
 		boolean iteratedResult = callback.isIteratedResult();
-		PreparedStatement statement = connection.prepareStatement(compiled.getSql());
+		PreparedStatement statement = connection.prepareStatement(compiled.getSql(),
+				query.isReturnGeneratedKeys() ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
 		try {
 			bind(statement, compiled.getBindings());
 
 			// process a mix of results
 			boolean isResultSet = statement.execute();
+
+			if(query.isReturnGeneratedKeys()) {
+				ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+				if (generatedKeysResultSet != null) {
+					processSelectResult(compiled, connection, statement, generatedKeysResultSet, callback, t1);
+				}
+			}
+
 			boolean firstIteration = true;
 			while (true) {
-
 				if (firstIteration) {
 					firstIteration = false;
 				} else {
@@ -204,7 +212,6 @@ public class SQLTemplateAction implements SQLAction {
 				if (isResultSet) {
 
 					ResultSet resultSet = statement.getResultSet();
-
 					if (resultSet != null) {
 
 						try {

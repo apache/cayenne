@@ -81,6 +81,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	protected CapsStrategy columnNamesCapitalization;
 	protected SQLResult result;
 	private String dataNodeName;
+	protected boolean returnGeneratedKeys;
 
 	SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
@@ -633,5 +634,24 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 */
 	public void setDataNodeName(String dataNodeName) {
 		this.dataNodeName = dataNodeName;
+	}
+
+	/**
+	 *
+	 * @since 4.1
+	 * @return returnGeneratedKeys flag
+	 */
+	public boolean isReturnGeneratedKeys() {
+		return returnGeneratedKeys;
+	}
+
+	/**
+	 * Sets flag to return generated keys.
+	 *
+	 * @since 4.1
+	 * @param returnGeneratedKeys
+	 */
+	public void setReturnGeneratedKeys(boolean returnGeneratedKeys) {
+		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
 }

@@ -29,6 +29,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -55,6 +56,9 @@ public class SQLTemplateIT extends ServerCase {
 
 	@Inject
 	protected DataChannelInterceptor queryInterceptor;
+
+	@Inject
+	protected UnitDbAdapter unitDbAdapter;
 
 	private TableHelper tPainting;
 
@@ -87,6 +91,24 @@ public class SQLTemplateIT extends ServerCase {
 		SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
 		List<DataRow> result = context.performQuery(q2);
 		assertEquals(1, result.size());
+	}
+
+	@Test
+	public void testReturnGeneratedKeys() {
+		if(unitDbAdapter.supportsGeneratedKeys()) {
+			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+			String sql = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')";
+			SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
+			q1.setReturnGeneratedKeys(true);
+			List<DataRow> response = context.performQuery(q1);
+			assertEquals(1, response.size());
+
+			String sql1 = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Test')";
+			SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
+			q2.setReturnGeneratedKeys(false);
+			List<DataRow> response1 = context.performQuery(q2);
+			assertEquals(0, response1.size());
+		}
 	}
 
 	@Test
