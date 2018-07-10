@@ -211,6 +211,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 break;
             case PROCEDURE:
                 action.removeProcedure(map, procedure);
+                break;
             case MAP_FROM_NODE:
                 action.removeDataMapFromDataNode(dataNode, map);
                 break;
@@ -222,6 +223,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 break;
             case EMBEDDABLE:
                 action.removeEmbeddable(map, embeddable);
+                break;
         }
     }
 
