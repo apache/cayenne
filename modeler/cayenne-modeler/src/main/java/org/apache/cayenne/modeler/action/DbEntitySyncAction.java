@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
@@ -99,6 +100,7 @@ public class DbEntitySyncAction extends CayenneAction {
 			// filter out inherited entities, as we need to add attributes only to the roots
 			filterInheritedEntities(entities);
 
+			boolean hasChanges = false;
 			for(ObjEntity entity : entities) {
 
 				DbEntitySyncUndoableEdit.EntitySyncUndoableListener listener = undoableEdit.new EntitySyncUndoableListener(
@@ -106,21 +108,26 @@ public class DbEntitySyncAction extends CayenneAction {
 
 				merger.addEntityMergeListener(listener);
 
+				Collection<DbAttribute> meaningfulFKs = merger.getMeaningfulFKs(entity);
+
 				// TODO: addition or removal of model objects should be reflected in listener callbacks...
 				// we should not be trying to introspect the merger
-				if (merger.isRemovingMeaningfulFKs()) {
-					undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, merger
-							.getMeaningfulFKs(entity)));
+				if (merger.isRemovingMeaningfulFKs() && !meaningfulFKs.isEmpty()) {
+					undoableEdit.addEdit(undoableEdit.new MeaningfulFKsUndoableEdit(entity, meaningfulFKs));
+					hasChanges = true;
 				}
 
 				if (merger.synchronizeWithDbEntity(entity)) {
 					mediator.fireObjEntityEvent(new EntityEvent(this, entity, MapEvent.CHANGE));
+					hasChanges = true;
 				}
 
 				merger.removeEntityMergeListener(listener);
 			}
 
-			application.getUndoManager().addEdit(undoableEdit);
+			if(hasChanges) {
+				application.getUndoManager().addEdit(undoableEdit);
+			}
 		}
 	}
 
