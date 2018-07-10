@@ -402,6 +402,9 @@ public class Util {
 
         // Create a JAXP SAXParser
         SAXParser saxParser = spf.newSAXParser();
+        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
         // Get the encapsulated SAX XMLReader
         XMLReader reader = saxParser.getXMLReader();

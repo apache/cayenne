@@ -59,6 +59,17 @@ class XMLUtil {
     static DocumentBuilder newBuilder() throws CayenneRuntimeException {
         if (sharedFactory == null) {
             sharedFactory = DocumentBuilderFactory.newInstance();
+            sharedFactory.setNamespaceAware(false);
+            sharedFactory.setExpandEntityReferences(false);
+            sharedFactory.setXIncludeAware(false);
+            try {
+                sharedFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                sharedFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                sharedFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                sharedFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            } catch (ParserConfigurationException ex) {
+                throw new CayenneRuntimeException("Unable to configure DocumentBuilderFactory", ex);
+            }
         }
 
         try {
