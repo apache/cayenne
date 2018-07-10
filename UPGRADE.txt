@@ -5,7 +5,11 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 UPGRADING TO 4.1.M2
-* Per CAY-2400 Cayenne-DBCP2 was deprecated
+
+* Per CAY-2438 DataChannelFilter filter was deprecated and two new independent filters are introduced:
+      DataChannelSyncFilter and DataChannelQueryFilter.
+
+* Per CAY-2400 Cayenne-DBCP2 integration was deprecated
 
 * Per CAY-2377 All code deprecated in Cayenne 4.0 was removed, please review your code before upgrading.
 

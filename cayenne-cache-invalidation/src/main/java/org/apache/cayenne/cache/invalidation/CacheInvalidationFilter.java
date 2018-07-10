@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.cache.invalidation;
 
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelFilter;
-import org.apache.cayenne.DataChannelFilterChain;
+import org.apache.cayenne.DataChannelSyncFilter;
+import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.annotation.PrePersist;
 import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
@@ -32,7 +30,6 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.query.Query;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +42,7 @@ import java.util.function.Function;
 
 /**
  * <p>
- * A {@link DataChannelFilter} that invalidates cache groups.
+ * A {@link DataChannelSyncFilter} that invalidates cache groups.
  * Use custom rules for invalidation provided via DI.
  * </p>
  * <p>
@@ -62,7 +59,7 @@ import java.util.function.Function;
  * @see InvalidationHandler
  * @since 4.0 enhanced to support custom handlers.
  */
-public class CacheInvalidationFilter implements DataChannelFilter {
+public class CacheInvalidationFilter implements DataChannelSyncFilter {
 
     private final Provider<QueryCache> cacheProvider;
     private final List<InvalidationHandler> handlers;
@@ -78,16 +75,9 @@ public class CacheInvalidationFilter implements DataChannelFilter {
         this.handlers = handlers;
     }
 
-    public void init(DataChannel channel) {
-        // noop
-    }
-
-    public QueryResponse onQuery(ObjectContext originatingContext, Query query, DataChannelFilterChain filterChain) {
-        return filterChain.onQuery(originatingContext, query);
-    }
-
+    @Override
     public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes,
-                            int syncType, DataChannelFilterChain filterChain) {
+                            int syncType, DataChannelSyncFilterChain filterChain) {
         try {
             GraphDiff result = filterChain.onSync(originatingContext, changes, syncType);
             // no exceptions, flush...
@@ -118,18 +108,16 @@ public class CacheInvalidationFilter implements DataChannelFilter {
         // TODO: for some reason we can't use Persistent as the argument type... (is it fixed in Cayenne 4.0.M4?)
         Persistent p = (Persistent) object;
 
-        Function<Persistent, Collection<CacheGroupDescriptor>> invalidationFunction = mappedHandlers.get(p.getClass());
-        if (invalidationFunction == null) {
-            invalidationFunction = skipHandler;
-            for (InvalidationHandler handler : handlers) {
-                Function<Persistent, Collection<CacheGroupDescriptor>> function = handler.canHandle(p.getClass());
-                if (function != null) {
-                    invalidationFunction = function;
-                    break;
-                }
-            }
-            mappedHandlers.put(p.getClass(), invalidationFunction);
-        }
+        Function<Persistent, Collection<CacheGroupDescriptor>> invalidationFunction = mappedHandlers
+                .computeIfAbsent(p.getClass(), cl -> {
+                    for (InvalidationHandler handler : handlers) {
+                        Function<Persistent, Collection<CacheGroupDescriptor>> function = handler.canHandle(cl);
+                        if (function != null) {
+                            return function;
+                        }
+                    }
+                    return skipHandler;
+                });
 
         Collection<CacheGroupDescriptor> objectGroups = invalidationFunction.apply(p);
         if (!objectGroups.isEmpty()) {

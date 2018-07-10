@@ -177,6 +177,8 @@ public class DataDomainProviderTest {
                     .add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
                     .add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class);
             ServerModule.contributeDomainFilters(binder);
+            ServerModule.contributeDomainQueryFilters(binder);
+            ServerModule.contributeDomainSyncFilters(binder);
             ServerModule.contributeDomainListeners(binder).add(mockListener);
             ServerModule.contributeProjectLocations(binder).add(testConfigName);
 

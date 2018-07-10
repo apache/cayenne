@@ -20,6 +20,11 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.graph.GraphDiff;
 
+/**
+ * Interface for chain of sync filters
+ *
+ * @since 4.1 (it was present, but not used before 4.1)
+ */
 public interface DataChannelSyncFilterChain {
 
     GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType);

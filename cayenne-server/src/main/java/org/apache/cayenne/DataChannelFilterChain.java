@@ -26,10 +26,15 @@ import org.apache.cayenne.query.Query;
  * the underlying DataChannel for the last chain filter.
  * 
  * @since 3.1
+ * @deprecated since 4.1 in favor of {@link DataChannelSyncFilterChain} and {@link DataChannelQueryFilterChain}
  */
 public interface DataChannelFilterChain {
 
-    QueryResponse onQuery(ObjectContext originatingContext, Query query);
+    default QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+        throw new UnsupportedOperationException();
+    }
 
-    GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType);
+    default GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+        throw new UnsupportedOperationException();
+    }
 }

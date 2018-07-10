@@ -52,7 +52,7 @@ public class CacheInvalidationModule implements Module {
         contributeInvalidationHandler(binder).add(CacheGroupsHandler.class);
 
         // want the filter to be INSIDE transaction by default
-        ServerModule.contributeDomainFilters(binder)
+        ServerModule.contributeDomainSyncFilters(binder)
                 .insertBefore(CacheInvalidationFilter.class, TransactionFilter.class);
     }
 }
