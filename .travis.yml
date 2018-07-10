@@ -60,7 +60,7 @@ matrix:
 
 script:
   # exclude JavaDocs and assembly from build, to pass on Java 11
-  - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
+  - travis_wait 30 mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
 # prevent Travis from unneeded "mvn install" run
 install: true
