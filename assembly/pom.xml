@@ -24,7 +24,7 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>4.1.M3-SNAPSHOT</version>
+		<version>4.1.M2-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.apache.cayenne.assembly</groupId>
@@ -245,10 +245,10 @@
 									<tasks>
 										<copy todir="${project.build.directory}/doc-staging">
 											<fileset dir="${basedir}/../docs/asciidoc">
-												<include name="**/target/generated-docs/*.pdf" />
-												<include name="**/target/generated-docs/*.html" />
+												<include name="**/target/generated-docs/*.pdf"/>
+												<include name="**/target/generated-docs/*.html"/>
 											</fileset>
-											<flattenmapper />
+											<flattenmapper/>
 										</copy>
 									</tasks>
 								</configuration>
