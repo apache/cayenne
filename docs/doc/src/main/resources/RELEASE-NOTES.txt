@@ -15,6 +15,7 @@ Date: not yet released
 Bug Fixes Since 3.1.2:
 
 CAY-2389 DbEntity qualifier with DbPath expression translates into wrong SQL
+CAY-2436 NPE in CayenneRuntimeException constructor
 
 ----------------------------------
 Release: 3.1.2

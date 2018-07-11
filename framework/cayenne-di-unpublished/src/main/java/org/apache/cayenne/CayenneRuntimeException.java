@@ -37,7 +37,7 @@ public class CayenneRuntimeException extends RuntimeException {
      * conventions.
      */
     public CayenneRuntimeException(String messageFormat, Object... messageArgs) {
-        super(String.format(messageFormat, messageArgs));
+        super(messageFormat == null ? null : String.format(messageFormat, messageArgs));
     }
 
     /**
@@ -55,7 +55,7 @@ public class CayenneRuntimeException extends RuntimeException {
      */
     public CayenneRuntimeException(String messageFormat, Throwable cause,
             Object... messageArgs) {
-        super(String.format(messageFormat, messageArgs), cause);
+        super(messageFormat == null ? null : String.format(messageFormat, messageArgs), cause);
     }
 
     /**
