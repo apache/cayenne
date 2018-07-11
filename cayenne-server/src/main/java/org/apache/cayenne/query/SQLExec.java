@@ -64,6 +64,7 @@ public class SQLExec extends IndirectQuery {
     protected StringBuilder sqlBuffer;
     protected Map<String, Object> params;
     protected List<Object> positionalParams;
+    protected boolean returnGeneratedKeys;
 
     public SQLExec(String sql) {
         this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
@@ -198,6 +199,26 @@ public class SQLExec extends IndirectQuery {
         return results.firstBatchUpdateCount();
     }
 
+    /**
+     * @since 4.1
+     * @return returnGeneratedKeys flag
+     */
+    public boolean isReturnGeneratedKeys() {
+        return returnGeneratedKeys;
+    }
+
+    /**
+     * Sets flag to return generated keys.
+     *
+     * @since 4.1
+     * @param returnGeneratedKeys
+     * @return SQLExec query
+     */
+    public SQLExec setReturnGeneratedKeys(boolean returnGeneratedKeys) {
+        this.returnGeneratedKeys = returnGeneratedKeys;
+        return this;
+    }
+
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -219,6 +240,7 @@ public class SQLExec extends IndirectQuery {
         template.setRoot(root);
         template.setDefaultTemplate(getSql());
         template.setFetchingDataRows(true); // in case result set will be returned
+        template.setReturnGeneratedKeys(returnGeneratedKeys);
 
         if (positionalParams != null) {
             template.setParamsList(positionalParams);

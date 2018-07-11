@@ -37,7 +37,7 @@ CAY-2416 Change TreeMap for HashMap to store data in Cayenne model classes
 CAY-2422 Modeler: Open driver setup window on driver load error
 CAY-2438 Split DataChannel filter into two independent filters
 CAY-2440 cdbimport: allow cross-schema relationships
-CAY-2439 Error deleting dbEntity when show only dbEntities filter is set
+CAY-2443 Make SqlTemplate and SqlExec possible to return generated keys
 
 Bug Fixes:
 
@@ -64,6 +64,7 @@ CAY-2429 Generate classes: Invalid template type: EMBEDDABLE_SINGLE_CLASS
 CAY-2430 Modeler: Redo throws NPE
 CAY-2435 cdbimport: procedure parameters are not imported
 CAY-2436 NPE in CayenneRuntimeException constructor
+CAY-2439 Error deleting dbEntity when show only dbEntities filter is set
 CAY-2442 Broken EventBridge providers implementations
 
 ----------------------------------

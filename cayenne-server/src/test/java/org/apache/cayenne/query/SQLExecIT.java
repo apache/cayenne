@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.DataContext;
@@ -31,6 +28,9 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLExecIT extends ServerCase {
@@ -55,6 +55,21 @@ public class SQLExecIT extends ServerCase {
     public void test_DefaultRoot() throws Exception {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(context);
         assertEquals(1, inserted);
+    }
+
+    @Test
+    public void testReturnGeneratedKeys() {
+        if(unitDbAdapter.supportsGeneratedKeys()) {
+            QueryResult response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
+                    .setReturnGeneratedKeys(true)
+                    .execute(context);
+            assertEquals(2, response.size());
+
+            QueryResult response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
+                    .setReturnGeneratedKeys(false)
+                    .execute(context);
+            assertEquals(1, response1.size());
+        }
     }
 
     @Test
