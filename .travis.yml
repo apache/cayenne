@@ -17,6 +17,13 @@ group: deprecated-2017Q2 # needed for jdk 7
 
 language: java
 
+before_install:
+  # use new maven to support "-pl" exclude option
+  - wget https://archive.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip
+  - unzip -qq apache-maven-3.5.0-bin.zip
+  - export M2_HOME=$PWD/apache-maven-3.5.0
+  - export PATH=$M2_HOME/bin:$PATH
+
 env:
   - DB_PROFILE=hsql
   - DB_PROFILE=derby
