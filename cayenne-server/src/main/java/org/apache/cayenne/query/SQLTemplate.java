@@ -637,9 +637,9 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	}
 
 	/**
+	 * @return returnGeneratedKeys flag
 	 *
 	 * @since 4.1
-	 * @return returnGeneratedKeys flag
 	 */
 	public boolean isReturnGeneratedKeys() {
 		return returnGeneratedKeys;
@@ -649,7 +649,6 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 * Sets flag to return generated keys.
 	 *
 	 * @since 4.1
-	 * @param returnGeneratedKeys
 	 */
 	public void setReturnGeneratedKeys(boolean returnGeneratedKeys) {
 		this.returnGeneratedKeys = returnGeneratedKeys;

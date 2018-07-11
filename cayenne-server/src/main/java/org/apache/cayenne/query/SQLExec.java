@@ -200,21 +200,23 @@ public class SQLExec extends IndirectQuery {
     }
 
     /**
+     * @return returnGeneratedKeys flag value
+     *
      * @since 4.1
-     * @return returnGeneratedKeys flag
      */
     public boolean isReturnGeneratedKeys() {
         return returnGeneratedKeys;
     }
 
     /**
-     * Sets flag to return generated keys.
+     * Flag indicating that generated keys should be returned by this query execution.
+     * Generated keys could be read via {@link QueryResponse#currentList()} method
      *
+     * @param returnGeneratedKeys flag value
+     * @see java.sql.Statement#RETURN_GENERATED_KEYS
      * @since 4.1
-     * @param returnGeneratedKeys
-     * @return SQLExec query
      */
-    public SQLExec setReturnGeneratedKeys(boolean returnGeneratedKeys) {
+    public SQLExec returnGeneratedKeys(boolean returnGeneratedKeys) {
         this.returnGeneratedKeys = returnGeneratedKeys;
         return this;
     }

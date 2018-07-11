@@ -61,12 +61,12 @@ public class SQLExecIT extends ServerCase {
     public void testReturnGeneratedKeys() {
         if(unitDbAdapter.supportsGeneratedKeys()) {
             QueryResult response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
-                    .setReturnGeneratedKeys(true)
+                    .returnGeneratedKeys(true)
                     .execute(context);
             assertEquals(2, response.size());
 
             QueryResult response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
-                    .setReturnGeneratedKeys(false)
+                    .returnGeneratedKeys(false)
                     .execute(context);
             assertEquals(1, response1.size());
         }

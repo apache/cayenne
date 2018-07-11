@@ -186,8 +186,8 @@ public class SQLTemplateAction implements SQLAction {
 
 		long t1 = System.currentTimeMillis();
 		boolean iteratedResult = callback.isIteratedResult();
-		PreparedStatement statement = connection.prepareStatement(compiled.getSql(),
-				query.isReturnGeneratedKeys() ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS);
+		int generatedKeys = query.isReturnGeneratedKeys() ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS;
+		PreparedStatement statement = connection.prepareStatement(compiled.getSql(), generatedKeys);
 		try {
 			bind(statement, compiled.getBindings());
 
