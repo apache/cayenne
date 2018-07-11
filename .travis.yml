@@ -35,8 +35,8 @@ jdk:
 script:
   - |
     travis_wait 30 mvn install -q -pl \
-        !docs/doc,!docs/asciidoc,!docs/asciidoc/cayenne-guide, \
-        !docs/asciidoc/getting-started-guide,!docs/asciidoc/getting-started-rop,!docs/asciidoc/upgrade-guide, \
+        !docs/doc,!docs/asciidoc,!docs/asciidoc/cayenne-guide,\
+        !docs/asciidoc/getting-started-guide,!docs/asciidoc/getting-started-rop,!docs/asciidoc/upgrade-guide,\
         !docs/asciidoc/cayenne-asciidoc-extension,!assembly \
         -DcayenneLogLevel=ERROR -DcayenneTestConnection=$DB_PROFILE
 
