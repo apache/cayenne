@@ -33,7 +33,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - travis_wait 20 mvn verify -q -DcayenneLogLevel=ERROR -DcayenneTestConnection=$DB_PROFILE
+  - travis_wait 20 mvn verify -q -DcayenneLogLevel=error -DcayenneTestConnection=$DB_PROFILE
 
 # prevent Travis from unneeded "mvn install" run
 install: true

@@ -689,7 +689,8 @@
 							<name>cayenneJdbcDriver</name>
 							<value>${cayenneJdbcDriver}</value>
 						</property>
-						<org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}</org.slf4j.simpleLogger.defaultLogLevel>
+						<org.apache.commons.logging.Log>org.apache.commons.logging.impl.SimpleLog</org.apache.commons.logging.Log>
+						<org.apache.commons.logging.simplelog.defaultlog>${cayenneLogLevel}</org.apache.commons.logging.simplelog.defaultlog>
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
