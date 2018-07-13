@@ -56,6 +56,7 @@ public class DbImportIT extends BaseTaskIT {
 
     @Test
     public void emptyDbTaskSuccess() throws Exception {
+        prepareDerbyDatabase("empty_db"); // create empty db to avoid problems on Java 11
         GradleRunner runner = createRunner("dbimport_empty_db", "cdbimport", "--info");
 
         BuildResult result = runner.build();
@@ -70,6 +71,7 @@ public class DbImportIT extends BaseTaskIT {
 
     @Test
     public void emptyDbTaskWithDependency() throws Exception {
+        prepareDerbyDatabase("empty_db"); // create empty db to avoid problems on Java 11
         GradleRunner runner = createRunner("dbimport-with-project-dependency", "cdbimport", "--info");
 
         BuildResult result = runner.build();
