@@ -22,6 +22,7 @@ CAY-2430 Modeler: Redo throws NPE
 CAY-2435 cdbimport: procedure parameters are not imported
 CAY-2436 NPE in CayenneRuntimeException constructor
 CAY-2442 Broken EventBridge providers implementations
+CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation
 
 ----------------------------------
 Release: 4.0.RC1

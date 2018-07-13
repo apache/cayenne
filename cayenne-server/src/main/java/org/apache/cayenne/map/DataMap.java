@@ -121,6 +121,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * also the URI to locate a copy of the schema document.
 	 */
 	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/9/modelMap";
+	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/9/modelMap.xsd";
 
 	protected String name;
 	protected String location;
@@ -311,11 +312,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * @since 1.1
 	 */
 	public void encodeAsXML(XMLEncoder encoder) {
-		encoder.println("<data-map xmlns=\"http://cayenne.apache.org/schema/9/modelMap\"");
+		encoder.println("<data-map xmlns=\"" + SCHEMA_XSD + "\"");
 
 		encoder.indent(1);
 		encoder.println(" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-		encoder.println(" xsi:schemaLocation=\"" + SCHEMA_XSD + " " + SCHEMA_XSD + ".xsd\"");
+		encoder.println(" xsi:schemaLocation=\"" + SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION + "\"");
 
 		encoder.printProjectVersion();
 		encoder.println(">");
