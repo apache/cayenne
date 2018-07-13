@@ -117,6 +117,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * also the URI to locate a copy of the schema document.
 	 */
 	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/10/modelMap";
+    public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/10/modelMap.xsd";
 
 	protected String name;
 	protected String location;
@@ -163,7 +164,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * Creates a new named DataMap.
 	 */
 	public DataMap(String mapName) {
-		this(mapName, Collections.<String, Object> emptyMap());
+		this(mapName, Collections.emptyMap());
 	}
 
 	public DataMap(String mapName, Map<String, Object> properties) {
@@ -237,7 +238,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	public void initWithProperties(Map<String, Object> properties) {
 		// must init defaults even if properties are empty
 		if (properties == null) {
-			properties = Collections.<String, Object> emptyMap();
+			properties = Collections.emptyMap();
 		}
 
 		Object lockType = properties.get(DEFAULT_LOCK_TYPE_PROPERTY);
@@ -254,11 +255,11 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 				: ObjEntity.LOCK_TYPE_NONE;
 
 		this.defaultPackage = (packageName != null) ? packageName.toString() : null;
-		this.quotingSQLIdentifiers = (quoteSqlIdentifier != null) ? "true".equalsIgnoreCase(quoteSqlIdentifier.toString()) : false;
+		this.quotingSQLIdentifiers = (quoteSqlIdentifier != null) && "true".equalsIgnoreCase(quoteSqlIdentifier.toString());
 		this.defaultSchema = (schema != null) ? schema.toString() : null;
 		this.defaultCatalog = (catalog != null) ? catalog.toString() : null;
 		this.defaultSuperclass = (superclass != null) ? superclass.toString() : null;
-		this.clientSupported = (clientEntities != null) ? "true".equalsIgnoreCase(clientEntities.toString()) : false;
+		this.clientSupported = (clientEntities != null) && "true".equalsIgnoreCase(clientEntities.toString());
 		this.defaultClientPackage = (clientPackageName != null) ? clientPackageName.toString() : null;
 		this.defaultClientSuperclass = (clientSuperclass != null) ? clientSuperclass.toString() : null;
 	}
@@ -302,7 +303,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		encoder.start("data-map")
 				.attribute("xmlns", SCHEMA_XSD)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
-				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD + ".xsd", true)
+				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true)
 				.projectVersion()
 				// properties
 				.property(DEFAULT_LOCK_TYPE_PROPERTY, defaultLockType)
@@ -1250,7 +1251,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
     /**
      *
-     * @param name
      * @return package + "." + name when it is possible otherwise just name
      *
      * @since 4.0

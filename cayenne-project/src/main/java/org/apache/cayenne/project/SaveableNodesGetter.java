@@ -44,6 +44,6 @@ class SaveableNodesGetter extends BaseConfigurationNodeVisitor<Collection<Config
 
     @Override
     public Collection<ConfigurationNode> visitDataMap(DataMap dataMap) {
-        return Collections.<ConfigurationNode> singletonList(dataMap);
+        return Collections.singletonList(dataMap);
     }
 }

@@ -57,7 +57,7 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
         Element dataMap = document.getDocumentElement();
         dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/9/modelMap");
         dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/9/modelMap " +
-                "http://cayenne.apache.org/schema/9/modelMap.xsd");
+                "https://cayenne.apache.org/schema/9/modelMap.xsd");
         dataMap.setAttribute("project-version", getVersion());
 
         XPath xpath = XPathFactory.newInstance().newXPath();

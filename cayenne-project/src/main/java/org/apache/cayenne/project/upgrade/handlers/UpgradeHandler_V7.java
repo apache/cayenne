@@ -67,7 +67,7 @@ public class UpgradeHandler_V7 implements UpgradeHandler {
         Element dataMap = upgradeUnit.getDocument().getDocumentElement();
         dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/7/modelMap");
         dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/7/modelMap " +
-                "http://cayenne.apache.org/schema/7/modelMap.xsd");
+                "https://cayenne.apache.org/schema/7/modelMap.xsd");
         dataMap.setAttribute("project-version", getVersion());
     }
 

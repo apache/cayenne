@@ -397,7 +397,7 @@ public class DefaultDbImportActionTest {
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<domain xmlns=\"http://cayenne.apache.org/schema/10/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain http://cayenne.apache.org/schema/10/domain.xsd\"\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain https://cayenne.apache.org/schema/10/domain.xsd\"\n" +
                 "\t project-version=\"10\">\n" +
                 "</domain>").getBytes(Charset.forName("UTF-8")));
         assertTrue(projectFile.isFile());
@@ -442,7 +442,7 @@ public class DefaultDbImportActionTest {
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<domain xmlns=\"http://cayenne.apache.org/schema/10/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain http://cayenne.apache.org/schema/10/domain.xsd\"\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain https://cayenne.apache.org/schema/10/domain.xsd\"\n" +
                 "\t project-version=\"10\">\n" +
                 "\t<map name=\"testSaveLoaded4\"/>\n" +
                 "</domain>").getBytes(Charset.forName("UTF-8")));
@@ -461,7 +461,7 @@ public class DefaultDbImportActionTest {
         Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<data-map xmlns=\"http://cayenne.apache.org/schema/10/modelMap\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd\"\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd\"\n" +
                 "\t project-version=\"10\">\n" +
                 "\t<db-entity name=\"test\">\n" +
                 "\t\t<db-attribute name=\"test\" type=\"INT\"/>\n" +
