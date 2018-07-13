@@ -67,6 +67,27 @@
                 <artifactId>apache-rat-plugin</artifactId>
                 <version>0.11</version>
             </plugin>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <outputDirectory>
+                        ${project.build.directory}/classes
+                    </outputDirectory>
+                    <resourceBundles>
+                        <resourceBundle>
+                            org.apache.cayenne.build-tools:cayenne-legal:${project.version}
+                        </resourceBundle>
+                    </resourceBundles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
