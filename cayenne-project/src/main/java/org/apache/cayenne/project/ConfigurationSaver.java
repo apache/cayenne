@@ -19,13 +19,13 @@
 package org.apache.cayenne.project;
 
 import java.io.PrintWriter;
-import java.util.Collection;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * @since 3.1
@@ -44,23 +44,20 @@ class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
 
     @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
-        XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
-        printXMLHeader(encoder);
-        delegate.setXMLEncoder(encoder);
-        node.encodeAsXML(encoder, delegate);
+        encodeNode(node);
         return null;
     }
 
     @Override
     public Void visitDataMap(DataMap node) {
-        XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
-        printXMLHeader(encoder);
-        delegate.setXMLEncoder(encoder);
-        node.encodeAsXML(encoder, delegate);
+        encodeNode(node);
         return null;
     }
 
-    private void printXMLHeader(XMLEncoder encoder) {
+    private void encodeNode(XMLSerializable node) {
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t", version);
         encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        delegate.setXMLEncoder(encoder);
+        node.encodeAsXML(encoder, delegate);
     }
 }
