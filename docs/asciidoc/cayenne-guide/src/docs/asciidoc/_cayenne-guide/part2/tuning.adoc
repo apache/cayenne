@@ -291,7 +291,7 @@ Those are arbitrary names that allow to categorize queries for the purpose of se
 
 The above API is enough for the caching to work, but by default your cache is an unmanaged LRU map. You can't control its size,
 expiration policies, etc. For the managed cache, you will need to explicitly use one of the more advanced cache providers.
-Use can use <<ext-cayenne-jcache,JCache integration module>> to enable any of JCache API compatible caching providers.
+Use can use <<ext-jcache,JCache integration module>> to enable any of JCache API compatible caching providers.
 
 Often "passive" cache expiration policies used by caching providers are not sufficient, and the users want real-time cache invalidation when the data changes.
 So in addition to those policies, the app can invalidate individual cache groups explicitly with `RefreshQuery`:
