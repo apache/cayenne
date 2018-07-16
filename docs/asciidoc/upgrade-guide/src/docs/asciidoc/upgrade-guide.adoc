@@ -22,7 +22,7 @@
 // base path to java code include
 :cayenne-root: {basedir}/../../..
 
-[small]#Copyright © 2011-2017 Apache Software Foundation and individual authors#
+[small]#Copyright © 2011-{docyear} Apache Software Foundation and individual authors#
 
 .License
 [small]#_Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.

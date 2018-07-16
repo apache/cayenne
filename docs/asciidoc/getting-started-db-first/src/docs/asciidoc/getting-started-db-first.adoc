@@ -24,7 +24,7 @@
 :java-include-dir: {cayenne-root}/tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial
 :web-include-dir: {cayenne-root}/tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial
 
-[small]#Copyright © 2011-2017 Apache Software Foundation and individual authors#
+[small]#Copyright © 2011-{docyear} Apache Software Foundation and individual authors#
 
 .License
 [small]#_Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
