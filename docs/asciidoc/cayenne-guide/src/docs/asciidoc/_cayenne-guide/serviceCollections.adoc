@@ -34,26 +34,25 @@ Note that the collection keys below are defined as constants in `org.apache.caye
 .^|`List<DataChannelFilter>`
 .^|Stores DataDomain filters.
 
+.^|`cayenne.server.domain_listeners`
+.^|`List<Object>`
+.^|Stores DataDomain listeners.
 
 .^|`cayenne.server.project_locations`
 .^|`List<String>`
 .^|Stores locations of the one of more project configuration files.
 
-
 .^|`cayenne.server.default_types`
 .^|`List<ExtendedType>`
 .^|Stores default adapter-agnostic ExtendedTypes. Default ExtendedTypes can be overridden / extended by DB-specific DbAdapters as well as by user-provided types configured in another colltecion (see `"cayenne.server.user_types"`).
-
 
 .^|`cayenne.server.user_types`
 .^|`List<ExtendedType>`
 .^|Stores a user-provided ExtendedTypes. This collection will be merged into a full list of ExtendedTypes and would override any ExtendedTypes defined in a default list, or by a DbAdapter.
 
-
 .^|`cayenne.server.type_factories`
 .^|`List<ExtendedTypeFactory>`
 .^|Stores default and user-provided ExtendedTypeFactories. ExtendedTypeFactory allows to define ExtendedTypes dynamically for the whole group of Java classes. E.g. Cayenne supplies a factory to map all Enums regardless of their type.
-
 
 .^|`cayenne.server.rop_event_bridge_properties`
 .^|`Map<String, String>`
