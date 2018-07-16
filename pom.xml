@@ -798,19 +798,12 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.0.1</version>
 					<configuration>
 						<!-- Java 8 is too strict about Javadoc omissions --> 
 						<doclint>${javadoc.doclint}</doclint>
 						<additionalOptions>${javadoc.additionalOptions}</additionalOptions>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.apache.commons</groupId>
-							<artifactId>commons-lang3</artifactId>
-							<version>3.7</version>
-						</dependency>
-					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
