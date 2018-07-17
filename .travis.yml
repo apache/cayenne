@@ -36,17 +36,11 @@ jdk:
   - oraclejdk8
   - oraclejdk9
   - oraclejdk10
+  - oraclejdk11
 
 matrix:
-  include:
-    - jdk: oraclejdk-ea
-      env: DB_PROFILE=mysql-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
-    - jdk: oraclejdk-ea
-      env: DB_PROFILE=postgres-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
-    - jdk: oraclejdk-ea
-      env: DB_PROFILE=sqlserver-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
   allow_failures:
-    - jdk: oraclejdk-ea
+    - jdk: oraclejdk11
 
 script:
   - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
