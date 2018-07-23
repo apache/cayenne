@@ -27,7 +27,6 @@ import org.apache.cayenne.access.trans.TrimmingQualifierTranslator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTIn;
 import org.apache.cayenne.exp.parser.ASTList;
-import org.apache.cayenne.exp.parser.ASTNegate;
 import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.commons.collections.Transformer;
@@ -66,7 +65,7 @@ public class OracleQualifierTranslator extends TrimmingQualifierTranslator {
                     objects,
                     maxInSize);
             if (exp instanceof ASTNotIn) {
-                return new ASTNegate(trimmed);
+                return trimmed.notExp();
             }
             return trimmed;
         }

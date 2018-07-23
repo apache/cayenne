@@ -740,18 +740,35 @@ public class SelectQueryTest extends ServerCase {
     /**
      * Tests INs with more than 1000 elements
      */
-    public void testSelectLongIn() {
+    public void testSelectLongIn() throws Exception {
+        createArtistsDataSet();
+
         // not all adapters strip INs, so we just make sure query with such qualifier
         // fires OK
-        Object[] numbers = new String[2009];
-        for (int i = 0; i < numbers.length; i++) {
-            numbers[i] = "" + i;
+        Object[] names = new String[2009];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = "artist" + i;
         }
 
-        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp(
-                "artistName",
-                numbers));
-        context.performQuery(query);
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.inExp("artistName", names));
+        List result = context.performQuery(query);
+        assertEquals(20, result.size());
+    }
+
+    /**
+     * Tests NOT INs with more than 1000 elements
+     */
+    public void testSelectLongNotIn() throws Exception {
+        createArtistsDataSet();
+
+        Object[] names = new String[1001];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = "artist" + i;
+        }
+
+        SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.notInExp("artistName", names));
+        List result = context.performQuery(query);
+        assertEquals(0, result.size());
     }
 
     public void testCacheOffsetAndLimit() throws Exception {

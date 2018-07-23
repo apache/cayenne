@@ -63,7 +63,7 @@ public class SchemaBuilder {
     public static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
     public static final String DEFAULT_CONNECTION_KEY = "internal_embedded_datasource";
 
-    public static final String SKIP_SCHEMA_KEY = "cayenne.test.schema.skip";
+    public static final String SKIP_SCHEMA_KEY = "cayenneTestSkipSchemaCreation";
 
     private static String[] DATA_MAPS_REQUIREING_SCHEMA_SETUP = {
             "testmap.map.xml", "people.map.xml", "locking.map.xml",
@@ -100,11 +100,6 @@ public class SchemaBuilder {
     // TODO - this method changes the internal state of the object ... refactor
     public void rebuildSchema() {
 
-        if ("true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
-            logger.info("skipping schema generation... ");
-            return;
-        }
-
         // generate schema combining all DataMaps that require schema support.
         // Schema generation is done like that instead of per DataMap on demand to avoid
         // conflicts when dropping and generating PK objects.
@@ -129,10 +124,14 @@ public class SchemaBuilder {
                 initNode(map);
             }
 
-            dropSchema();
-            dropPKSupport();
-            createSchema();
-            createPKSupport();
+            if (!"true".equalsIgnoreCase(System.getProperty(SKIP_SCHEMA_KEY))) {
+                dropSchema();
+                dropPKSupport();
+                createSchema();
+                createPKSupport();
+            } else {
+                logger.info("skipping schema generation... ");
+            }
         }
         catch (Exception e) {
             throw new RuntimeException("Error rebuilding schema", e);
