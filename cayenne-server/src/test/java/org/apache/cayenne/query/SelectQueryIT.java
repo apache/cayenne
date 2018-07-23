@@ -839,13 +839,13 @@ public class SelectQueryIT extends ServerCase {
 		createArtistsDataSet();
 
 		// not all adapters strip INs, so we just make sure query with such qualifier fires OK
-		Object[] numbers = new String[2009];
-		for (int i = 0; i < numbers.length; i++) {
-			numbers[i] = "artist" + i;
+		Object[] names = new String[2009];
+		for (int i = 0; i < names.length; i++) {
+			names[i] = "artist" + i;
 		}
 
 		SelectQuery<Artist> query = new SelectQuery<>(Artist.class,
-				ExpressionFactory.inExp("artistName", numbers));
+				ExpressionFactory.inExp("artistName", names));
 		List<Artist> artists = query.select(context);
 		assertEquals(20, artists.size());
 	}
@@ -857,13 +857,13 @@ public class SelectQueryIT extends ServerCase {
 	public void testSelectLongNotIn() throws Exception {
         createArtistsDataSet();
 
-		Object[] numbers = new String[1001];
-		for (int i = 0; i < numbers.length; i++) {
-			numbers[i] = "artist" + i;
+		Object[] names = new String[1001];
+		for (int i = 0; i < names.length; i++) {
+			names[i] = "artist" + i;
 		}
 
 		SelectQuery<Artist> query = new SelectQuery<>(Artist.class,
-				ExpressionFactory.notInExp("artistName", numbers));
+				ExpressionFactory.notInExp("artistName", names));
 		List<Artist> artists = query.select(context);
 		assertEquals(0, artists.size());
 	}
