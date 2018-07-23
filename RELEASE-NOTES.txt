@@ -12,8 +12,6 @@ Release: 4.0.RC2
 Date:
 ----------------------------------
 
-Changes/New Features:
-
 Bug Fixes:
 
 CAY-2418 Modeler: unable to edit entity selected via Search
@@ -23,6 +21,7 @@ CAY-2435 cdbimport: procedure parameters are not imported
 CAY-2436 NPE in CayenneRuntimeException constructor
 CAY-2442 Broken EventBridge providers implementations
 CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation
+CAY-2445 Oracle: Problem with ExpressionFactory.notInExp()
 
 ----------------------------------
 Release: 4.0.RC1
