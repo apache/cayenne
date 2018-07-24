@@ -314,7 +314,7 @@ List<Painting> paintings = SQLSelect
 
 // Selecting scalar values
 List<String> paintingNames = SQLSelect
-    .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING ESTIMATED_PRICE > #bind($price)")
+    .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > #bind($price)")
     .params("price", 100000)
     .select(context);
 ----
