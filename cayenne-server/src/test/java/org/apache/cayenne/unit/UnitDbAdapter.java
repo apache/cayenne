@@ -407,4 +407,8 @@ public class UnitDbAdapter {
     public boolean supportsSerializableTransactionIsolation() {
         return false;
     }
+
+    public boolean supportsLongIn() {
+        return true;
+    }
 }

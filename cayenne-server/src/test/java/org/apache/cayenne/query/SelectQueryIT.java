@@ -855,6 +855,12 @@ public class SelectQueryIT extends ServerCase {
 	 */
 	@Test
 	public void testSelectLongNotIn() throws Exception {
+		// Derby tries to compile SQL into Java bytecode and
+		// fails with max code length limit ...
+		if(!accessStackAdapter.supportsLongIn()) {
+			return;
+		}
+
 		createArtistsDataSet();
 
 		// not all adapters strip INs, so we just make sure query with such qualifier fires OK
