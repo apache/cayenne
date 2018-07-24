@@ -303,12 +303,19 @@ Here is example of how to use SQLSelect:
 
 [source, java]
 ----
-SQLSelect<Painting> q1 = SQLSelect
+// Selecting objects
+List<Painting> paintings = SQLSelect
     .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE LIKE #bind($title)")
     .params("title", "painting%")
     .upperColumnNames()
     .localCache()
     .limit(100)
+    .select(context);
+
+// Selecting scalar values
+List<String> paintingNames = SQLSelect
+    .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING ESTIMATED_PRICE > #bind($price)")
+    .params("price", 100000)
     .select(context);
 ----
 
