@@ -855,17 +855,23 @@ public class SelectQueryIT extends ServerCase {
 	 */
 	@Test
 	public void testSelectLongNotIn() throws Exception {
-        createArtistsDataSet();
+		// Derby tries to compile SQL into Java bytecode and
+		// fails with max code length limit ...
+		if(!accessStackAdapter.supportsLongIn()) {
+			return;
+		}
+
+		createArtistsDataSet();
 
 		Object[] names = new String[1001];
 		for (int i = 0; i < names.length; i++) {
-			names[i] = "artist" + i;
+			names[i] = "artist" + (i + 2);
 		}
 
 		SelectQuery<Artist> query = new SelectQuery<>(Artist.class,
 				ExpressionFactory.notInExp("artistName", names));
 		List<Artist> artists = query.select(context);
-		assertEquals(0, artists.size());
+		assertEquals(1, artists.size());
 	}
 
 	@Test

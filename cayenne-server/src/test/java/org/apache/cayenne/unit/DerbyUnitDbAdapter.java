@@ -67,4 +67,9 @@ public class DerbyUnitDbAdapter extends UnitDbAdapter {
         }
         return true;
     }
+
+    @Override
+    public boolean supportsLongIn() {
+        return false;
+    }
 }
