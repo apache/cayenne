@@ -89,25 +89,22 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
                 .qualifierForEntityAndSubclasses();
 
         if (entityQualifier != null) {
-            queryQualifier = (queryQualifier != null) ? queryQualifier
-                    .andExp(entityQualifier) : entityQualifier;
+            queryQualifier = (queryQualifier != null)
+                    ? queryQualifier.andExp(entityQualifier)
+                    : entityQualifier;
         }
 
         // create and configure PrefetchSelectQuery
-        PrefetchSelectQuery prefetchQuery = new PrefetchSelectQuery(
-                prefetchPath,
-                relationship);
+        PrefetchSelectQuery<?> prefetchQuery = new PrefetchSelectQuery<>(prefetchPath, relationship);
         prefetchQuery.setStatementFetchSize(query.getStatementFetchSize());
 
-        prefetchQuery.setQualifier(classDescriptor.getEntity().translateToRelatedEntity(
-                queryQualifier,
-                prefetchPath));
+        prefetchQuery.setQualifier(classDescriptor.getEntity()
+                .translateToRelatedEntity(queryQualifier, prefetchPath));
 
         if (relationship.isSourceIndependentFromTargetChange()) {
             // setup extra result columns to be able to relate result rows to the parent
             // result objects.
-            prefetchQuery.addResultPath("db:"
-                    + relationship.getReverseDbRelationshipPath());
+            prefetchQuery.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
         }
 
         // pass prefetch subtree to enable joint prefetches...

@@ -95,7 +95,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
      */
     @Override
     public String getMessage() {
-        StringBuffer buffer = new StringBuffer(super.getMessage());
+        StringBuilder buffer = new StringBuilder(super.getMessage());
 
         if (querySQL != null) {
             buffer.append(", SQL: [").append(querySQL.trim()).append("]");

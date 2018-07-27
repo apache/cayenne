@@ -663,7 +663,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		if (query instanceof PrefetchSelectQuery) {
 
 			// for each relationship path add PK of the target entity...
-			for (String path : ((PrefetchSelectQuery) query).getResultPaths()) {
+			for (String path : ((PrefetchSelectQuery<?>) query).getResultPaths()) {
 
 				ASTDbPath pathExp = (ASTDbPath) oe.translateToDbPath(ExpressionFactory.exp(path));
 

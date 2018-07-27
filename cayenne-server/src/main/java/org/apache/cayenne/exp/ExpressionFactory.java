@@ -64,6 +64,7 @@ import org.apache.cayenne.map.Entity;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,15 +85,13 @@ public class ExpressionFactory {
 	 */
 	public static final char SPLIT_SEPARATOR = '|';
 
-	private static Class<?>[] typeLookup;
+	private static Constructor<? extends SimpleNode>[] typeLookup;
 	private static volatile int autoAliasId;
 
 	private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 
 	static {
-
-		// make sure all types are small integers, then we can use
-		// them as indexes in lookup array
+		// make sure all types are small integers, then we can use them as indexes in lookup array
 		int[] allTypes = new int[] { Expression.AND, Expression.OR, Expression.NOT, Expression.EQUAL_TO,
 				Expression.NOT_EQUAL_TO, Expression.LESS_THAN, Expression.GREATER_THAN, Expression.LESS_THAN_EQUAL_TO,
 				Expression.GREATER_THAN_EQUAL_TO, Expression.BETWEEN, Expression.IN, Expression.LIKE,
@@ -104,67 +103,66 @@ public class ExpressionFactory {
 				Expression.BITWISE_RIGHT_SHIFT };
 
 		int max = 0;
-		int min = 0;
-		int allLen = allTypes.length;
-		for (int i = 0; i < allLen; i++) {
-			if (allTypes[i] > max) {
-				max = allTypes[i];
-			} else if (allTypes[i] < min) {
-				min = allTypes[i];
+		for (int type : allTypes) {
+			// sanity check....
+			if (type > 500) {
+				throw new RuntimeException("Types values are too big: " + type);
+			} else if (type < 0) {
+				throw new RuntimeException("Types values are too small: " + type);
 			}
-		}
-
-		// sanity check....
-		if (max > 500) {
-			throw new RuntimeException("Types values are too big: " + max);
-		}
-		if (min < 0) {
-			throw new RuntimeException("Types values are too small: " + min);
+			if (type > max) {
+				max = type;
+			}
 		}
 
 		// now we know that if types are used as indexes,
 		// they will fit in array "max + 1" long (though gaps are possible)
+		@SuppressWarnings("unchecked")
+		Constructor<? extends SimpleNode>[] lookupTable = (Constructor<? extends SimpleNode>[]) new Constructor[max + 1];
+		typeLookup = lookupTable;
 
-		typeLookup = new Class[max + 1];
+		try {
+			typeLookup[Expression.AND] = ASTAnd.class.getDeclaredConstructor();
+			typeLookup[Expression.OR] = ASTOr.class.getDeclaredConstructor();
+			typeLookup[Expression.BETWEEN] = ASTBetween.class.getDeclaredConstructor();
+			typeLookup[Expression.NOT_BETWEEN] = ASTNotBetween.class.getDeclaredConstructor();
 
-		typeLookup[Expression.AND] = ASTAnd.class;
-		typeLookup[Expression.OR] = ASTOr.class;
-		typeLookup[Expression.BETWEEN] = ASTBetween.class;
-		typeLookup[Expression.NOT_BETWEEN] = ASTNotBetween.class;
+			// binary types
+			typeLookup[Expression.EQUAL_TO] = ASTEqual.class.getDeclaredConstructor();
+			typeLookup[Expression.NOT_EQUAL_TO] = ASTNotEqual.class.getDeclaredConstructor();
+			typeLookup[Expression.LESS_THAN] = ASTLess.class.getDeclaredConstructor();
+			typeLookup[Expression.GREATER_THAN] = ASTGreater.class.getDeclaredConstructor();
+			typeLookup[Expression.LESS_THAN_EQUAL_TO] = ASTLessOrEqual.class.getDeclaredConstructor();
+			typeLookup[Expression.GREATER_THAN_EQUAL_TO] = ASTGreaterOrEqual.class.getDeclaredConstructor();
+			typeLookup[Expression.IN] = ASTIn.class.getDeclaredConstructor();
+			typeLookup[Expression.NOT_IN] = ASTNotIn.class.getDeclaredConstructor();
+			typeLookup[Expression.LIKE] = ASTLike.class.getDeclaredConstructor();
+			typeLookup[Expression.LIKE_IGNORE_CASE] = ASTLikeIgnoreCase.class.getDeclaredConstructor();
+			typeLookup[Expression.NOT_LIKE] = ASTNotLike.class.getDeclaredConstructor();
+			typeLookup[Expression.NOT_LIKE_IGNORE_CASE] = ASTNotLikeIgnoreCase.class.getDeclaredConstructor();
+			typeLookup[Expression.ADD] = ASTAdd.class.getDeclaredConstructor();
+			typeLookup[Expression.SUBTRACT] = ASTSubtract.class.getDeclaredConstructor();
+			typeLookup[Expression.MULTIPLY] = ASTMultiply.class.getDeclaredConstructor();
+			typeLookup[Expression.DIVIDE] = ASTDivide.class.getDeclaredConstructor();
 
-		// binary types
-		typeLookup[Expression.EQUAL_TO] = ASTEqual.class;
-		typeLookup[Expression.NOT_EQUAL_TO] = ASTNotEqual.class;
-		typeLookup[Expression.LESS_THAN] = ASTLess.class;
-		typeLookup[Expression.GREATER_THAN] = ASTGreater.class;
-		typeLookup[Expression.LESS_THAN_EQUAL_TO] = ASTLessOrEqual.class;
-		typeLookup[Expression.GREATER_THAN_EQUAL_TO] = ASTGreaterOrEqual.class;
-		typeLookup[Expression.IN] = ASTIn.class;
-		typeLookup[Expression.NOT_IN] = ASTNotIn.class;
-		typeLookup[Expression.LIKE] = ASTLike.class;
-		typeLookup[Expression.LIKE_IGNORE_CASE] = ASTLikeIgnoreCase.class;
-		typeLookup[Expression.NOT_LIKE] = ASTNotLike.class;
-		typeLookup[Expression.NOT_LIKE_IGNORE_CASE] = ASTNotLikeIgnoreCase.class;
-		typeLookup[Expression.ADD] = ASTAdd.class;
-		typeLookup[Expression.SUBTRACT] = ASTSubtract.class;
-		typeLookup[Expression.MULTIPLY] = ASTMultiply.class;
-		typeLookup[Expression.DIVIDE] = ASTDivide.class;
+			typeLookup[Expression.NOT] = ASTNot.class.getDeclaredConstructor();
+			typeLookup[Expression.NEGATIVE] = ASTNegate.class.getDeclaredConstructor();
+			typeLookup[Expression.OBJ_PATH] = ASTObjPath.class.getDeclaredConstructor();
+			typeLookup[Expression.DB_PATH] = ASTDbPath.class.getDeclaredConstructor();
+			typeLookup[Expression.LIST] = ASTList.class.getDeclaredConstructor();
 
-		typeLookup[Expression.NOT] = ASTNot.class;
-		typeLookup[Expression.NEGATIVE] = ASTNegate.class;
-		typeLookup[Expression.OBJ_PATH] = ASTObjPath.class;
-		typeLookup[Expression.DB_PATH] = ASTDbPath.class;
-		typeLookup[Expression.LIST] = ASTList.class;
+			typeLookup[Expression.TRUE] = ASTTrue.class.getDeclaredConstructor();
+			typeLookup[Expression.FALSE] = ASTFalse.class.getDeclaredConstructor();
 
-		typeLookup[Expression.TRUE] = ASTTrue.class;
-		typeLookup[Expression.FALSE] = ASTFalse.class;
-
-		typeLookup[Expression.BITWISE_NOT] = ASTBitwiseNot.class;
-		typeLookup[Expression.BITWISE_OR] = ASTBitwiseOr.class;
-		typeLookup[Expression.BITWISE_AND] = ASTBitwiseAnd.class;
-		typeLookup[Expression.BITWISE_XOR] = ASTBitwiseXor.class;
-		typeLookup[Expression.BITWISE_LEFT_SHIFT] = ASTBitwiseLeftShift.class;
-		typeLookup[Expression.BITWISE_RIGHT_SHIFT] = ASTBitwiseRightShift.class;
+			typeLookup[Expression.BITWISE_NOT] = ASTBitwiseNot.class.getDeclaredConstructor();
+			typeLookup[Expression.BITWISE_OR] = ASTBitwiseOr.class.getDeclaredConstructor();
+			typeLookup[Expression.BITWISE_AND] = ASTBitwiseAnd.class.getDeclaredConstructor();
+			typeLookup[Expression.BITWISE_XOR] = ASTBitwiseXor.class.getDeclaredConstructor();
+			typeLookup[Expression.BITWISE_LEFT_SHIFT] = ASTBitwiseLeftShift.class.getDeclaredConstructor();
+			typeLookup[Expression.BITWISE_RIGHT_SHIFT] = ASTBitwiseRightShift.class.getDeclaredConstructor();
+		} catch (NoSuchMethodException ex) {
+			throw new ExpressionException("Wrong expression type found", ex);
+		}
 	}
 
 	/**
@@ -181,15 +179,11 @@ public class ExpressionFactory {
 		}
 
 		// expected this
-		if (SimpleNode.class.isAssignableFrom(typeLookup[type])) {
-			try {
-				return (Expression) typeLookup[type].newInstance();
-			} catch (Exception ex) {
-				throw new ExpressionException("Error creating expression", ex);
-			}
+		try {
+			return typeLookup[type].newInstance();
+		} catch (Exception ex) {
+			throw new ExpressionException("Error creating expression", ex);
 		}
-
-		throw new ExpressionException("Bad expression type: " + type);
 	}
 
 	/**
@@ -216,15 +210,7 @@ public class ExpressionFactory {
 	 * join pair binary expressions.
 	 */
 	public static Expression matchAnyDbExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = new ArrayList<>(map.size());
-
-		for (Map.Entry<String, ?> entry : map.entrySet()) {
-			Expression exp = expressionOfType(pairType);
-			exp.setOperand(0, new ASTDbPath(entry.getKey()));
-			exp.setOperand(1, wrapPathOperand(entry.getValue()));
-			pairs.add(exp);
-		}
-
+		List<Expression> pairs = makeDbPathPairs(map, pairType);
 		return joinExp(Expression.OR, pairs);
 	}
 
@@ -237,16 +223,22 @@ public class ExpressionFactory {
 	 * join pair binary expressions.
 	 */
 	public static Expression matchAllDbExp(Map<String, ?> map, int pairType) {
+		List<Expression> pairs = makeDbPathPairs(map, pairType);
+		return joinExp(Expression.AND, pairs);
+	}
+
+	private static List<Expression> makeDbPathPairs(Map<String, ?> map, int pairType) {
 		List<Expression> pairs = new ArrayList<>(map.size());
 
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
+
 			Expression exp = expressionOfType(pairType);
 			exp.setOperand(0, new ASTDbPath(entry.getKey()));
 			exp.setOperand(1, wrapPathOperand(entry.getValue()));
 			pairs.add(exp);
 		}
 
-		return joinExp(Expression.AND, pairs);
+		return pairs;
 	}
 
 	/**
@@ -258,6 +250,24 @@ public class ExpressionFactory {
 	 * join pair binary expressions.
 	 */
 	public static Expression matchAnyExp(Map<String, ?> map, int pairType) {
+		List<Expression> pairs = makeObjPathPairs(map, pairType);
+		return joinExp(Expression.OR, pairs);
+	}
+
+	/**
+	 * Creates an expression that matches all key-values pairs in
+	 * <code>map</code>.
+	 * <p>
+	 * For each pair <code>pairType</code> operator is used to build a binary
+	 * expression. Key is considered to be a OBJ_PATH expression. AND is used to
+	 * join pair binary expressions.
+	 */
+	public static Expression matchAllExp(Map<String, ?> map, int pairType) {
+		List<Expression> pairs = makeObjPathPairs(map, pairType);
+		return joinExp(Expression.AND, pairs);
+	}
+
+	private static List<Expression> makeObjPathPairs(Map<String, ?> map, int pairType) {
 		List<Expression> pairs = new ArrayList<>(map.size());
 
 		for (Map.Entry<String, ?> entry : map.entrySet()) {
@@ -268,7 +278,7 @@ public class ExpressionFactory {
 			pairs.add(exp);
 		}
 
-		return joinExp(Expression.OR, pairs);
+		return pairs;
 	}
 
 	/**
@@ -281,8 +291,8 @@ public class ExpressionFactory {
 	 * most. Split must always precede a relationship. E.g.
 	 * "|exhibits.paintings", "exhibits|paintings", etc.
 	 * 
-	 * @param path
-	 * @param values
+	 * @param path expression
+	 * @param values collection to match
 	 * @since 3.0
 	 */
 	public static Expression matchAllExp(String path, Collection<?> values) {
@@ -347,28 +357,6 @@ public class ExpressionFactory {
 		}
 
 		return joinExp(Expression.AND, matches);
-	}
-
-	/**
-	 * Creates an expression that matches all key-values pairs in
-	 * <code>map</code>.
-	 * <p>
-	 * For each pair <code>pairType</code> operator is used to build a binary
-	 * expression. Key is considered to be a OBJ_PATH expression. AND is used to
-	 * join pair binary expressions.
-	 */
-	public static Expression matchAllExp(Map<String, ?> map, int pairType) {
-		List<Expression> pairs = new ArrayList<>(map.size());
-
-		for (Map.Entry<String, ?> entry : map.entrySet()) {
-
-			Expression exp = expressionOfType(pairType);
-			exp.setOperand(0, new ASTObjPath(entry.getKey()));
-			exp.setOperand(1, wrapPathOperand(entry.getValue()));
-			pairs.add(exp);
-		}
-
-		return joinExp(Expression.AND, pairs);
 	}
 
 	/**
@@ -1188,10 +1176,21 @@ public class ExpressionFactory {
 			return null;
 		}
 
-		return join(type, expressions.toArray(new Expression[len]));
+		return joinExp(type, expressions.toArray(new Expression[len]));
 	}
 
-	private static Expression join(int type, Expression... expressions) {
+	/**
+	 * Joins all expressions, making a single expression. <code>type</code> is
+	 * used as an expression type for expressions joining each one of the items
+	 * in the array. <code>type</code> must be binary expression type.
+	 * <p>
+	 * For example, if type is Expression.AND, resulting expression would match
+	 * all expressions in the list. If type is Expression.OR, resulting
+	 * expression would match any of the expressions.
+	 * </p>
+	 * @since 4.1
+	 */
+	public static Expression joinExp(int type, Expression... expressions) {
 
 		int len = expressions != null ? expressions.length : 0;
 		if (len == 0) {
@@ -1268,7 +1267,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 */
 	public static Expression and(Expression... expressions) {
-		return join(Expression.AND, expressions);
+		return joinExp(Expression.AND, expressions);
 	}
 
 	/**
@@ -1282,7 +1281,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 */
 	public static Expression or(Expression... expressions) {
-		return join(Expression.OR, expressions);
+		return joinExp(Expression.OR, expressions);
 	}
 
 	/**
