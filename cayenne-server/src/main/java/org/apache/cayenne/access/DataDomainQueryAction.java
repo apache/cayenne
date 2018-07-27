@@ -46,7 +46,6 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
@@ -57,7 +56,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -323,13 +321,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 if (domain.getSharedSnapshotCache() != null) {
                     // send an event for removed snapshots
                     domain.getSharedSnapshotCache().processSnapshotChanges(context.getObjectStore(),
-                            Collections.EMPTY_MAP, Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
+                            Collections.emptyMap(), Collections.emptyList(), ids, Collections.emptyList());
                 } else {
                     // remove snapshots from local ObjectStore only
                     context.getObjectStore()
                             .getDataRowCache()
-                            .processSnapshotChanges(context.getObjectStore(), Collections.EMPTY_MAP,
-                                    Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
+                            .processSnapshotChanges(context.getObjectStore(), Collections.emptyMap(),
+                                    Collections.emptyList(), ids, Collections.emptyList());
                 }
 
                 GenericResponse response = new GenericResponse();
@@ -372,7 +370,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     /*
      * Wraps execution in shared cache checks
      */
-    private final boolean interceptSharedCache() {
+    private boolean interceptSharedCache() {
 
         if (metadata.getCacheKey() == null) {
             return !DONE;
@@ -411,27 +409,22 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private QueryCacheEntryFactory getCacheObjectFactory() {
-        return new QueryCacheEntryFactory() {
+        return () -> {
+            runQueryInTransaction();
 
-            @Override
-            public List createObject() {
-                runQueryInTransaction();
+            List<?> list = response.firstList();
+            if (list != null) {
 
-                List list = response.firstList();
-                if (list != null) {
+                // make an immutable list to make sure callers don't mess it up
+                list = Collections.unmodifiableList(list);
 
-                    // make an immutable list to make sure callers don't mess it
-                    // up
-                    list = Collections.unmodifiableList(list);
-
-                    // include prefetches in the cached result
-                    if (prefetchResultsByPath != null) {
-                        list = new ListWithPrefetches(list, prefetchResultsByPath);
-                    }
+                // include prefetches in the cached result
+                if (prefetchResultsByPath != null) {
+                    list = new ListWithPrefetches(list, prefetchResultsByPath);
                 }
-
-                return list;
             }
+
+            return list;
         };
     }
 
@@ -439,13 +432,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
      * Gets response from the underlying DataNodes.
      */
     void runQueryInTransaction() {
-
-        domain.getTransactionManager().performInTransaction(new TransactionalOperation<Object>() {
-            @Override
-            public Object perform() {
-                runQuery();
-                return null;
-            }
+        domain.getTransactionManager().performInTransaction(() -> {
+            runQuery();
+            return null;
         });
     }
 
@@ -458,7 +447,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         // whether this is null or not will driver further decisions on how to process prefetched rows
         this.prefetchResultsByPath = metadata.getPrefetchTree() != null && !metadata.isFetchingDataRows() ?
-                new HashMap<String, List>() : null;
+                new HashMap<>() : null;
 
         // categorize queries by node and by "executable" query...
         query.route(this, domain.getEntityResolver(), null);
@@ -772,12 +761,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             if(!metadata.isSuppressingDistinct()) {
                 Set<List<?>> seen = new HashSet<>(mainRows.size());
-                Iterator<Object[]> it = mainRows.iterator();
-                while (it.hasNext()) {
-                    if (!seen.add(Arrays.asList(it.next()))) {
-                        it.remove();
-                    }
-                }
+                mainRows.removeIf(objects -> !seen.add(Arrays.asList(objects)));
             }
 
             // invoke callbacks now that all objects are resolved...

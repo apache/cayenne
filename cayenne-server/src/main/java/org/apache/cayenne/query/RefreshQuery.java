@@ -18,12 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -63,7 +62,7 @@ public class RefreshQuery implements Query {
      * its relationships.
      */
     public RefreshQuery(Persistent object) {
-        this(Arrays.asList(object));
+        this(Collections.singletonList(object));
     }
 
     /**

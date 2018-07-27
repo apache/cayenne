@@ -188,9 +188,9 @@ public class DataRowStore implements Serializable {
             processSnapshotChanges(
                     eventPostedBy,
                     modified,
-                    Collections.<ObjectId>emptyList(),
-                    Collections.<ObjectId>emptyList(),
-                    Collections.<ObjectId>emptyList());
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    Collections.emptyList());
         }
     }
 
