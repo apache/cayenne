@@ -451,9 +451,12 @@ As shown in the example above, ExtendedTypes are stored by DbAdapter. In fact Db
 
 Factory that returns `javax.sql.DataSource` object based on the configuration provided in the "nodeDescriptor".
 
-===== DataChannelFilter
+===== DataChannelSyncFilter and DataChannelQueryFilter
 
-An interface of a filter that allows to intercept DataChannel operations. Filters allow to implement chains of custom processors around a DataChannel, that can be used for security, monitoring, business logic, providing context to lifecycle event listeners, etc.
+Interfaces of filters that allow to intercept DataChannel operations.
+Filters allow to implement chains of custom processors around a DataChannel,
+that can be used for security, monitoring, business logic,
+providing context to lifecycle event listeners, etc.
 
 ===== QueryCache
 

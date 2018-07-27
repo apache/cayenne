@@ -30,10 +30,6 @@ Note that the collection keys below are defined as constants in `org.apache.caye
 .^|`List<DbAdapterDetector>`
 .^|Contains objects that can discover the type of current database and install the correct DbAdapter in runtime.
 
-.^|`cayenne.server.domain_filters`
-.^|`List<DataChannelFilter>`
-.^|Stores DataDomain filters.
-
 .^|`cayenne.server.domain_listeners`
 .^|`List<Object>`
 .^|Stores DataDomain listeners.

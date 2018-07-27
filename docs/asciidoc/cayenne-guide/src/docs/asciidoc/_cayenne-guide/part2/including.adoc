@@ -292,6 +292,11 @@ Example - creating a DB schema on a local HSQLDB database:
 .^|Yes
 .^|DataMap XML file which is the destination of the schema import. Can be an existing file. If this file does not exist, it is created when cdbimport is executed. E.g. `${project.basedir}/src/main/resources/my.map.xml`. If "overwrite" is true (the default), an existing DataMap will be used as a template for the new imported DataMap, i.e. all its entities will be cleared and recreated, but its common settings, such as default Java package, will be preserved (unless changed explicitly in the plugin configuration).
 
+.^|cayenneProject
+.^|File
+.^|No
+.^|Project XML file which will be used. Can be an existing file, in this case data map will be added to project if it's not already there. If this file does not exist, it is created when cdbimport is executed. E.g. `${project.basedir}/src/main/resources/cayenne-project.xml`.
+
 .^|adapter
 .^|String
 .^|No
@@ -526,6 +531,8 @@ Here is example of configuration for cdbimport task:
 cdbimport {
     // map can be skipped if it is defined in cayenne.defaultDataMap
     map 'datamap.map.xml'
+    // optional project file, will be created if missing
+    cayenneProject 'cayenne-project.xml'
 
     dataSource {
         driver 'com.mysql.cj.jdbc.Driver'
