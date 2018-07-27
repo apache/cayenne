@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -36,9 +37,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
     @Test
     public void testListPlist() throws Exception {
         File plistFile = new File(setupTestDirectory("testListPlist"), "test-array.plist");
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         list.add("str");
-        list.add(new Integer(5));
+        list.add(5);
 
         assertFalse(plistFile.exists());
         PropertyListSerialization.propertyListToFile(plistFile, list);
@@ -46,15 +47,15 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 
     @Test
     public void testMapPlist() throws Exception {
         File plistFile = new File(setupTestDirectory("testMapPlist"), "test-map.plist");
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("key1", "val");
-        map.put("key2", new Integer(5));
+        map.put("key2", 5);
 
         assertFalse(plistFile.exists());
         PropertyListSerialization.propertyListToFile(plistFile, map);
@@ -62,7 +63,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readMap = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readMap instanceof Map);
-        assertTrue(map.equals(readMap));
+        assertEquals(map, readMap);
     }
 
     @Test
@@ -70,7 +71,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testEmptyString"),
                 "test-empty-string.plist");
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("a", "");
 
         assertFalse(plistFile.exists());
@@ -79,7 +80,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readMap = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readMap instanceof Map);
-        assertTrue(map.equals(readMap));
+        assertEquals(map, readMap);
     }
 
     @Test
@@ -87,9 +88,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testStringWithQuotes"),
                 "test-quotes.plist");
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         list.add("s\"tr");
-        list.add(new Integer(5));
+        list.add(5);
 
         assertFalse(plistFile.exists());
         PropertyListSerialization.propertyListToFile(plistFile, list);
@@ -97,7 +98,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 
     @Test
@@ -105,13 +106,13 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testNestedPlist"),
                 "test-nested.plist");
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("key1", "val");
-        map.put("key2", new Integer(5));
+        map.put("key2", 5);
 
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add("str");
-        list.add(new Integer(5));
+        list.add(5);
         map.put("key3", list);
 
         assertFalse(plistFile.exists());
@@ -120,7 +121,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readMap = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readMap instanceof Map);
-        assertTrue(map.equals(readMap));
+        assertEquals(map, readMap);
     }
 
     @Test
@@ -128,9 +129,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testStringWithSpaces"),
                 "test-spaces.plist");
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add("s tr");
-        list.add(new Integer(5));
+        list.add(5);
 
         assertFalse(plistFile.exists());
         PropertyListSerialization.propertyListToFile(plistFile, list);
@@ -138,7 +139,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 
     @Test
@@ -146,9 +147,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testStringWithBraces"),
                 "test-braces.plist");
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add("s{t)r");
-        list.add(new Integer(5));
+        list.add(5);
 
         assertFalse(plistFile.exists());
         PropertyListSerialization.propertyListToFile(plistFile, list);
@@ -156,7 +157,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 
     @Test
@@ -164,9 +165,9 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testStringWithSlashes"),
                 "test-slashes.plist");
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add("s/t\\r");
-        list.add(new Integer(5));
+        list.add(5);
 
         assertFalse(plistFile.exists());
         PropertyListSerialization.propertyListToFile(plistFile, list);
@@ -174,7 +175,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 
     @Test
@@ -182,7 +183,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testStringWithQuotes1"),
                 "test-quotes1.plist");
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add("like");
         list.add("key");
         list.add("\"*003*\"");
@@ -193,7 +194,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 
     @Test
@@ -201,7 +202,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testStringWithPlusMinus"),
                 "test-plus-minus.plist");
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add("a+b");
         list.add("a-b");
         list.add("a+-b");
@@ -212,7 +213,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 
     @Test
@@ -220,7 +221,7 @@ public class PropertyListSerializationTest extends WOCompatCase {
         File plistFile = new File(
                 setupTestDirectory("testStringWithLessGreater"),
                 "test-less-greater.plist");
-        List list = new ArrayList();
+        List<Object> list = new ArrayList<>();
         list.add("a<b");
         list.add("a>b");
         list.add("a<>b");
@@ -231,6 +232,6 @@ public class PropertyListSerializationTest extends WOCompatCase {
 
         Object readList = PropertyListSerialization.propertyListFromFile(plistFile);
         assertTrue(readList instanceof List);
-        assertTrue(list.equals(readList));
+        assertEquals(list, readList);
     }
 }

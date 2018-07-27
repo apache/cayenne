@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.PrefetchProcessor;
@@ -40,12 +41,12 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     private LinkedList<PrefetchProcessorNode> nodeStack;
 
     private ClassDescriptor descriptor;
-    private List mainResultRows;
-    private Map extraResultsByPath;
+    private List<DataRow> mainResultRows;
+    private Map<String, List<?>> extraResultsByPath;
     private Map<ObjectId, Persistent> seen;
 
-    PrefetchProcessorTreeBuilder(HierarchicalObjectResolver objectTreeResolver, List mainResultRows,
-            Map extraResultsByPath) {
+    PrefetchProcessorTreeBuilder(HierarchicalObjectResolver objectTreeResolver, List<DataRow> mainResultRows,
+                                 Map<String, List<?>> extraResultsByPath) {
         this.context = objectTreeResolver.context;
         this.queryMetadata = objectTreeResolver.queryMetadata;
         this.mainResultRows = mainResultRows;
@@ -55,7 +56,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
     PrefetchProcessorNode buildTree(PrefetchTreeNode tree) {
         // reset state
-        this.nodeStack = new LinkedList<PrefetchProcessorNode>();
+        this.nodeStack = new LinkedList<>();
 
         // 'seen' is used to avoid re-processing objects already processed in a
         // given prefetch query (see CAY-1695 for why this is bad). It is
@@ -147,14 +148,16 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
     boolean addNode(PrefetchProcessorNode node) {
 
-        List rows;
+        List<DataRow> rows;
         ArcProperty arc;
         ClassDescriptor descriptor;
 
         PrefetchProcessorNode currentNode = getParent();
 
         if (currentNode != null) {
-            rows = (List) extraResultsByPath.get(node.getPath());
+            @SuppressWarnings("unchecked")
+            List<DataRow> dataRows = (List<DataRow>)extraResultsByPath.get(node.getPath());
+            rows = dataRows;
             arc = (ArcProperty) currentNode.getResolver().getDescriptor().getProperty(node.getName());
 
             if (arc == null) {

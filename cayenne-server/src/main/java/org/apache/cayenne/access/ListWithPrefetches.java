@@ -38,22 +38,23 @@ import java.util.Map;
 //
 // Future alternatives may include caching the entire QueryResponse... or maybe leaving
 // everything the way it is.
-class ListWithPrefetches implements List, Serializable {
+class ListWithPrefetches implements List<Object>, Serializable {
 
-    private final List list;
-    private final Map prefetchResultsByPath;
+    private final List<Object> list;
+    private final Map<String, List<?>> prefetchResultsByPath;
 
-    ListWithPrefetches(List mainList, Map prefetchResultsByPath) {
+    @SuppressWarnings("unchecked")
+    ListWithPrefetches(List<?> mainList, Map<String, List<?>> prefetchResultsByPath) {
         if (mainList == null) {
             throw new IllegalArgumentException("Main list is null");
         }
 
-        this.list = mainList;
+        this.list = (List<Object>)mainList;
         this.prefetchResultsByPath = prefetchResultsByPath != null ? Collections
                 .unmodifiableMap(prefetchResultsByPath) : null;
     }
 
-    Map getPrefetchResultsByPath() {
+    Map<String, List<?>> getPrefetchResultsByPath() {
         return prefetchResultsByPath;
     }
 
@@ -107,7 +108,7 @@ class ListWithPrefetches implements List, Serializable {
         return list.isEmpty();
     }
 
-    public Iterator iterator() {
+    public Iterator<Object> iterator() {
         return list.iterator();
     }
 
@@ -115,11 +116,11 @@ class ListWithPrefetches implements List, Serializable {
         return list.lastIndexOf(o);
     }
 
-    public ListIterator listIterator() {
+    public ListIterator<Object> listIterator() {
         return list.listIterator();
     }
 
-    public ListIterator listIterator(int index) {
+    public ListIterator<Object> listIterator(int index) {
         return list.listIterator(index);
     }
 
@@ -147,7 +148,7 @@ class ListWithPrefetches implements List, Serializable {
         return list.size();
     }
 
-    public List subList(int fromIndex, int toIndex) {
+    public List<Object> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex, toIndex);
     }
 
@@ -155,7 +156,7 @@ class ListWithPrefetches implements List, Serializable {
         return list.toArray();
     }
 
-    public Object[] toArray(Object[] a) {
+    public <T> T[] toArray(T[] a) {
         return list.toArray(a);
     }
 }

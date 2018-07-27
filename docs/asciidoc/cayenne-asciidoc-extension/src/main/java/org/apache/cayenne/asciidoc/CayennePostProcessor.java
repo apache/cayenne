@@ -58,10 +58,12 @@ public class CayennePostProcessor extends Postprocessor {
     private static final String POSITION_BODY = "body";
     private static final String POSITION_BOTTOM = "bottom";
 
+    @SuppressWarnings("unused")
     public CayennePostProcessor() {
         super();
     }
 
+    @SuppressWarnings("unused")
     public CayennePostProcessor(Map<String, Object> config) {
         super(config);
     }
@@ -145,14 +147,14 @@ public class CayennePostProcessor extends Postprocessor {
     }
 
     protected String processHeader(Document document, String output) {
-        String headerFile = (String) document.getAttr("cayenne-header", "");
-        String headerPosition = (String)document.getAttr("cayenne-header-position", POSITION_TOP);
+        String headerFile = (String) document.getAttribute("cayenne-header", "");
+        String headerPosition = (String)document.getAttribute("cayenne-header-position", POSITION_TOP);
 
         if(headerFile.isEmpty()) {
             return output;
         }
 
-        String header = "";
+        String header;
         // inject empty front matter
         if(FRONT_MATTER.equals(headerFile.trim())) {
             header = EMPTY_FRONT_MATTER ;
@@ -178,8 +180,8 @@ public class CayennePostProcessor extends Postprocessor {
     }
 
     protected String processFooter(Document document, String output) {
-        String footerFile = (String) document.getAttr("cayenne-footer", "");
-        String footerPosition = (String)document.getAttr("cayenne-footer-position", POSITION_BOTTOM);
+        String footerFile = (String) document.getAttribute("cayenne-footer", "");
+        String footerPosition = (String)document.getAttribute("cayenne-footer-position", POSITION_BOTTOM);
 
         if(footerFile.isEmpty()) {
             return output;

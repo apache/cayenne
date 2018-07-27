@@ -35,7 +35,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,8 +70,8 @@ class HierarchicalObjectResolver {
      */
     PrefetchProcessorNode synchronizedRootResultNodeFromDataRows(
             PrefetchTreeNode tree,
-            List mainResultRows,
-            Map extraResultsByPath) {
+            List<DataRow> mainResultRows,
+            Map<String, List<?>> extraResultsByPath) {
 
         synchronized (context.getObjectStore()) {
             return resolveObjectTree(tree, mainResultRows, extraResultsByPath);
@@ -81,8 +80,8 @@ class HierarchicalObjectResolver {
 
     private PrefetchProcessorNode resolveObjectTree(
             PrefetchTreeNode tree,
-            List mainResultRows,
-            Map extraResultsByPath) {
+            List<DataRow> mainResultRows,
+            Map<String, List<?>> extraResultsByPath) {
 
         // create a copy of the tree using DecoratedPrefetchNodes and then traverse it
         // resolving objects...
@@ -113,8 +112,7 @@ class HierarchicalObjectResolver {
                 return false;
             }
 
-            // ... continue with processing even if the objects list is empty to handle
-            // multi-step prefetches.
+            // continue with processing even if the objects list is empty to handle multi-step prefetches.
             if (processorNode.getDataRows().isEmpty()) {
                 return true;
             }
@@ -163,8 +161,7 @@ class HierarchicalObjectResolver {
             List<?> parentDataRows;
             
 			// note that a disjoint prefetch that has adjacent joint prefetches
-			// will be a PrefetchProcessorJointNode, so here check for
-			// semantics, not node type
+			// will be a PrefetchProcessorJointNode, so here check for semantics, not node type
 			if (parentProcessorNode.getSemantics() == PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS) {
 				parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode).getResolvedRows();
 			} else {
@@ -223,7 +220,9 @@ class HierarchicalObjectResolver {
                     query.addResultPath("db:"
                             + relationship.getReverseDbRelationshipPath());
                 }
-                dataRows.addAll((List<DataRow>)context.performQuery(query));
+                @SuppressWarnings("unchecked")
+                List<DataRow> dataRowList = context.performQuery(query);
+                dataRows.addAll(dataRowList);
             }
             processorNode.setDataRows(dataRows);
 
@@ -324,13 +323,8 @@ class HierarchicalObjectResolver {
 
                     if (objects != null && objects.size() > 1) {
 
-                        Set<Persistent> seen = new HashSet<Persistent>(objects.size());
-                        Iterator<Persistent> it = objects.iterator();
-                        while (it.hasNext()) {
-                            if (!seen.add(it.next())) {
-                                it.remove();
-                            }
-                        }
+                        Set<Persistent> seen = new HashSet<>(objects.size());
+                        objects.removeIf(persistent -> !seen.add(persistent));
                     }
                 }
             }
@@ -368,11 +362,9 @@ class HierarchicalObjectResolver {
         public boolean startJointPrefetch(PrefetchTreeNode node) {
             PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
 
-            Persistent object = null;
-
             // find existing object, if found skip further processing
             Map id = processorNode.idFromFlatRow(currentFlatRow);
-            object = processorNode.getResolved(id);
+            Persistent object = processorNode.getResolved(id);
             DataRow row = null;
             if (object == null) {
 
@@ -388,9 +380,7 @@ class HierarchicalObjectResolver {
                 processorNode.addObject(object, row);
             }
 
-            // linking by parent needed even if an object is already there
-            // (many-to-many case)
-
+            // linking by parent needed even if an object is already there (many-to-many case)
             processorNode.getParentAttachmentStrategy().linkToParent(row, object);
 
             processorNode.setLastResolved(object);

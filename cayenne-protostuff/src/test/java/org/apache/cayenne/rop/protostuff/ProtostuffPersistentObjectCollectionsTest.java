@@ -57,7 +57,7 @@ public class ProtostuffPersistentObjectCollectionsTest extends ProtostuffPropert
 
     @Test
     public void testPersistentObjectList() throws IOException {
-        PersistentObjectList list = new PersistentObjectList(object1, "test");
+        PersistentObjectList<TestObject> list = new PersistentObjectList<>(object1, "test");
         list.add(object2);
 
         byte[] bytes = serializationService.serialize(list);
@@ -73,7 +73,7 @@ public class ProtostuffPersistentObjectCollectionsTest extends ProtostuffPropert
 
     @Test
     public void testPersistentObjectListWithWrapper() throws IOException {
-        PersistentObjectList list = new PersistentObjectList(object1, "test");
+        PersistentObjectList<TestObject> list = new PersistentObjectList<>(object1, "test");
         list.add(object2);
 
         byte[] bytes = serializationService.serialize(new ListWrapper(list));

@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
@@ -35,7 +34,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -66,7 +64,6 @@ public class NestedDataContextWriteIT extends ServerCase {
 
     private TableHelper tArtist;
     private TableHelper tPainting;
-    private TableHelper tPaintingInfo;
 
     @Before
     public void setUp() throws Exception {
@@ -84,7 +81,7 @@ public class NestedDataContextWriteIT extends ServerCase {
                 Types.BIGINT,
                 Types.DECIMAL);
 
-        tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        TableHelper tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW", "IMAGE_BLOB");
     }
 
@@ -123,7 +120,7 @@ public class NestedDataContextWriteIT extends ServerCase {
      */
     // TODO : pluggable retain strategy
     private DataContext createDataContext() {
-        context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
+        context.getObjectStore().objectMap = new HashMap<>();
         return context;
     }
 
@@ -164,19 +161,16 @@ public class NestedDataContextWriteIT extends ServerCase {
         Cayenne.objectForPK(childContextPeer, Painting.class, 33001);
         childP1.setToArtist(null);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            childContext.commitChangesToParent();
+            assertEquals(PersistenceState.COMMITTED, childP1.getPersistenceState());
 
-            public void execute() {
-                childContext.commitChangesToParent();
-                assertEquals(PersistenceState.COMMITTED, childP1.getPersistenceState());
+            Painting parentP1 = (Painting) context.getGraphManager().getNode(
+                    childP1.getObjectId());
 
-                Painting parentP1 = (Painting) context.getGraphManager().getNode(
-                        childP1.getObjectId());
-
-                assertNotNull(parentP1);
-                assertEquals(PersistenceState.MODIFIED, parentP1.getPersistenceState());
-                assertNull(parentP1.getToArtist());
-            }
+            assertNotNull(parentP1);
+            assertEquals(PersistenceState.MODIFIED, parentP1.getPersistenceState());
+            assertNull(parentP1.getToArtist());
         });
     }
 
@@ -188,7 +182,7 @@ public class NestedDataContextWriteIT extends ServerCase {
         final ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
         query.addOrdering(Artist.ARTIST_NAME.asc());
         List<?> objects = childContext.performQuery(query);
 
@@ -205,53 +199,50 @@ public class NestedDataContextWriteIT extends ServerCase {
         final Artist childHollow = (Artist) objects.get(3);
         childContext.invalidateObjects(childHollow);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            childContext.commitChangesToParent();
 
-            public void execute() {
-                childContext.commitChangesToParent();
+            // * all modified child objects must be in committed state now
+            // * all modifications should be propagated to the parent
+            // * no actual commit should occur.
 
-                // * all modified child objects must be in committed state now
-                // * all modifications should be propagated to the parent
-                // * no actual commit should occur.
+            assertEquals(PersistenceState.COMMITTED, childNew.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childModified
+                    .getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childCommitted
+                    .getPersistenceState());
+            assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
 
-                assertEquals(PersistenceState.COMMITTED, childNew.getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childModified
-                        .getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childCommitted
-                        .getPersistenceState());
-                assertEquals(PersistenceState.HOLLOW, childHollow.getPersistenceState());
+            Artist parentNew = (Artist) context.getGraphManager().getNode(
+                    childNew.getObjectId());
+            Artist parentModified = (Artist) context.getGraphManager().getNode(
+                    childModified.getObjectId());
+            Artist parentCommitted = (Artist) context.getGraphManager().getNode(
+                    childCommitted.getObjectId());
+            Artist parentHollow = (Artist) context.getGraphManager().getNode(
+                    childHollow.getObjectId());
 
-                Artist parentNew = (Artist) context.getGraphManager().getNode(
-                        childNew.getObjectId());
-                Artist parentModified = (Artist) context.getGraphManager().getNode(
-                        childModified.getObjectId());
-                Artist parentCommitted = (Artist) context.getGraphManager().getNode(
-                        childCommitted.getObjectId());
-                Artist parentHollow = (Artist) context.getGraphManager().getNode(
-                        childHollow.getObjectId());
+            assertNotNull(parentNew);
+            assertEquals(PersistenceState.NEW, parentNew.getPersistenceState());
+            assertEquals("NNN", parentNew.getArtistName());
 
-                assertNotNull(parentNew);
-                assertEquals(PersistenceState.NEW, parentNew.getPersistenceState());
-                assertEquals("NNN", parentNew.getArtistName());
+            assertNotNull(parentModified);
+            assertEquals(PersistenceState.MODIFIED, parentModified
+                    .getPersistenceState());
+            assertEquals("MMM", parentModified.getArtistName());
+            assertNotNull(context.getObjectStore().getChangesByObjectId().get(
+                    parentModified.getObjectId()));
 
-                assertNotNull(parentModified);
-                assertEquals(PersistenceState.MODIFIED, parentModified
-                        .getPersistenceState());
-                assertEquals("MMM", parentModified.getArtistName());
-                assertNotNull(context.getObjectStore().getChangesByObjectId().get(
-                        parentModified.getObjectId()));
+            assertNotNull(parentCommitted);
+            assertEquals(PersistenceState.COMMITTED, parentCommitted
+                    .getPersistenceState());
 
-                assertNotNull(parentCommitted);
-                assertEquals(PersistenceState.COMMITTED, parentCommitted
-                        .getPersistenceState());
-
-                assertNotNull(parentHollow);
-                // TODO: we can assert that when we figure out how nested "invalidate"
-                // should
-                // work
-                // assertEquals(PersistenceState.HOLLOW,
-                // parentHollow.getPersistenceState());
-            }
+            assertNotNull(parentHollow);
+            // TODO: we can assert that when we figure out how nested "invalidate"
+            // should
+            // work
+            // assertEquals(PersistenceState.HOLLOW,
+            // parentHollow.getPersistenceState());
         });
     }
 
@@ -263,7 +254,7 @@ public class NestedDataContextWriteIT extends ServerCase {
         ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
         query.addOrdering(Artist.ARTIST_NAME.asc());
         List<?> objects = childContext.performQuery(query);
 
@@ -300,7 +291,7 @@ public class NestedDataContextWriteIT extends ServerCase {
         ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
         query.addOrdering(Artist.ARTIST_NAME.asc());
         List<?> objects = childContext.performQuery(query);
 
@@ -367,7 +358,7 @@ public class NestedDataContextWriteIT extends ServerCase {
         final ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery query = new SelectQuery(Painting.class);
+        SelectQuery<Painting> query = new SelectQuery<>(Painting.class);
         query.addOrdering(Painting.PAINTING_TITLE.asc());
         List<?> objects = childContext.performQuery(query);
 
@@ -385,63 +376,60 @@ public class NestedDataContextWriteIT extends ServerCase {
         childModifiedToMany.getPaintingArray().size();
         childModifiedToMany.addToPaintingArray((Painting) objects.get(3));
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Painting parentModifiedSimple;
+            Artist parentModifiedToMany;
 
-            public void execute() {
-                Painting parentModifiedSimple = null;
-                Artist parentModifiedToMany = null;
+            childContext.commitChangesToParent();
 
-                childContext.commitChangesToParent();
+            assertEquals(PersistenceState.COMMITTED, childModifiedSimple
+                    .getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childModifiedToOne
+                    .getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childModifiedToMany
+                    .getPersistenceState());
 
-                assertEquals(PersistenceState.COMMITTED, childModifiedSimple
-                        .getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childModifiedToOne
-                        .getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childModifiedToMany
-                        .getPersistenceState());
+            parentModifiedSimple = (Painting) context.getGraphManager().getNode(
+                    childModifiedSimple.getObjectId());
 
-                parentModifiedSimple = (Painting) context.getGraphManager().getNode(
-                        childModifiedSimple.getObjectId());
+            Painting parentModifiedToOne = (Painting) context
+                    .getGraphManager()
+                    .getNode(childModifiedToOne.getObjectId());
 
-                Painting parentModifiedToOne = (Painting) context
-                        .getGraphManager()
-                        .getNode(childModifiedToOne.getObjectId());
+            parentModifiedToMany = (Artist) context.getGraphManager().getNode(
+                    childModifiedToMany.getObjectId());
 
-                parentModifiedToMany = (Artist) context.getGraphManager().getNode(
-                        childModifiedToMany.getObjectId());
+            assertNotNull(parentModifiedSimple);
+            assertEquals(PersistenceState.MODIFIED, parentModifiedSimple
+                    .getPersistenceState());
+            assertEquals("C_PT", parentModifiedSimple.getPaintingTitle());
+            assertNotNull(context.getObjectStore().getChangesByObjectId().get(
+                    parentModifiedSimple.getObjectId()));
 
-                assertNotNull(parentModifiedSimple);
-                assertEquals(PersistenceState.MODIFIED, parentModifiedSimple
-                        .getPersistenceState());
-                assertEquals("C_PT", parentModifiedSimple.getPaintingTitle());
-                assertNotNull(context.getObjectStore().getChangesByObjectId().get(
-                        parentModifiedSimple.getObjectId()));
+            assertNotNull(parentModifiedToOne);
+            assertEquals(PersistenceState.MODIFIED, parentModifiedToOne
+                    .getPersistenceState());
+            assertNotNull(parentModifiedToOne.getToArtist());
+            assertEquals(33001, Cayenne.intPKForObject(parentModifiedToOne
+                    .getToArtist()));
+            assertNotNull(context.getObjectStore().getChangesByObjectId().get(
+                    parentModifiedToOne.getObjectId()));
 
-                assertNotNull(parentModifiedToOne);
-                assertEquals(PersistenceState.MODIFIED, parentModifiedToOne
-                        .getPersistenceState());
-                assertNotNull(parentModifiedToOne.getToArtist());
-                assertEquals(33001, Cayenne.intPKForObject(parentModifiedToOne
-                        .getToArtist()));
-                assertNotNull(context.getObjectStore().getChangesByObjectId().get(
-                        parentModifiedToOne.getObjectId()));
+            // indirectly modified....
+            assertNotNull(parentModifiedToMany);
+            assertEquals(PersistenceState.MODIFIED, parentModifiedToMany
+                    .getPersistenceState());
 
-                // indirectly modified....
-                assertNotNull(parentModifiedToMany);
-                assertEquals(PersistenceState.MODIFIED, parentModifiedToMany
-                        .getPersistenceState());
-
-                // here query is expected, as the parent was hollow and its to-many
-                // relationship
-                // is unresolved
-                List<?> paintings = parentModifiedToMany.getPaintingArray();
-                assertEquals(2, paintings.size());
-            }
+            // here query is expected, as the parent was hollow and its to-many
+            // relationship
+            // is unresolved
+            List<?> paintings = parentModifiedToMany.getPaintingArray();
+            assertEquals(2, paintings.size());
         });
     }
 
     @Test
-    public void testCommitChangesToParentPropagatedKey() throws Exception {
+    public void testCommitChangesToParentPropagatedKey() {
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
@@ -452,37 +440,34 @@ public class NestedDataContextWriteIT extends ServerCase {
         childDetail1.setTextReview("Detail1");
         childDetail1.setPainting(childMaster);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            childContext.commitChangesToParent();
 
-            public void execute() {
-                childContext.commitChangesToParent();
+            assertEquals(PersistenceState.COMMITTED, childMaster
+                    .getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childDetail1
+                    .getPersistenceState());
 
-                assertEquals(PersistenceState.COMMITTED, childMaster
-                        .getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childDetail1
-                        .getPersistenceState());
+            Painting parentMaster = (Painting) context.getGraphManager().getNode(
+                    childMaster.getObjectId());
 
-                Painting parentMaster = (Painting) context.getGraphManager().getNode(
-                        childMaster.getObjectId());
+            assertNotNull(parentMaster);
+            assertEquals(PersistenceState.NEW, parentMaster.getPersistenceState());
 
-                assertNotNull(parentMaster);
-                assertEquals(PersistenceState.NEW, parentMaster.getPersistenceState());
+            PaintingInfo parentDetail1 = (PaintingInfo) context
+                    .getGraphManager()
+                    .getNode(childDetail1.getObjectId());
 
-                PaintingInfo parentDetail1 = (PaintingInfo) context
-                        .getGraphManager()
-                        .getNode(childDetail1.getObjectId());
+            assertNotNull(parentDetail1);
+            assertEquals(PersistenceState.NEW, parentDetail1.getPersistenceState());
 
-                assertNotNull(parentDetail1);
-                assertEquals(PersistenceState.NEW, parentDetail1.getPersistenceState());
-
-                assertSame(parentMaster, parentDetail1.getPainting());
-                assertSame(parentDetail1, parentMaster.getToPaintingInfo());
-            }
+            assertSame(parentMaster, parentDetail1.getPainting());
+            assertSame(parentDetail1, parentMaster.getToPaintingInfo());
         });
     }
 
     @Test
-    public void testCommitChangesToParentFlattened() throws Exception {
+    public void testCommitChangesToParentFlattened() {
 
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
@@ -501,36 +486,33 @@ public class NestedDataContextWriteIT extends ServerCase {
         assertEquals(1, childO1.getGroupArray().size());
         assertEquals(1, childO2.getArtistArray().size());
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            childContext.commitChangesToParent();
 
-            public void execute() {
-                childContext.commitChangesToParent();
+            assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
 
-                assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
+            Artist parentO1 = (Artist) context.getGraphManager().getNode(
+                    childO1.getObjectId());
 
-                Artist parentO1 = (Artist) context.getGraphManager().getNode(
-                        childO1.getObjectId());
+            assertNotNull(parentO1);
+            assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
 
-                assertNotNull(parentO1);
-                assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
+            ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
+                    childO2.getObjectId());
 
-                ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
-                        childO2.getObjectId());
+            assertNotNull(parentO2);
+            assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
 
-                assertNotNull(parentO2);
-                assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
-
-                assertEquals(1, parentO1.getGroupArray().size());
-                assertEquals(1, parentO2.getArtistArray().size());
-                assertTrue(parentO2.getArtistArray().contains(parentO1));
-                assertTrue(parentO1.getGroupArray().contains(parentO2));
-            }
+            assertEquals(1, parentO1.getGroupArray().size());
+            assertEquals(1, parentO2.getArtistArray().size());
+            assertTrue(parentO2.getArtistArray().contains(parentO1));
+            assertTrue(parentO1.getGroupArray().contains(parentO2));
         });
     }
 
     @Test
-    public void testCommitChangesToParentFlattenedMultipleFlush() throws Exception {
+    public void testCommitChangesToParentFlattenedMultipleFlush() {
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
 
@@ -551,79 +533,73 @@ public class NestedDataContextWriteIT extends ServerCase {
         assertEquals(1, childO2.getArtistArray().size());
         assertEquals(1, childO3.getArtistArray().size());
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            childContext.commitChangesToParent();
 
-            public void execute() {
-                childContext.commitChangesToParent();
+            assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childO3.getPersistenceState());
 
-                assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childO3.getPersistenceState());
+            Artist parentO1 = (Artist) context.getGraphManager().getNode(
+                    childO1.getObjectId());
 
-                Artist parentO1 = (Artist) context.getGraphManager().getNode(
-                        childO1.getObjectId());
+            assertNotNull(parentO1);
+            assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
 
-                assertNotNull(parentO1);
-                assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
+            ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
+                    childO2.getObjectId());
 
-                ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
-                        childO2.getObjectId());
+            assertNotNull(parentO2);
+            assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
 
-                assertNotNull(parentO2);
-                assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
+            ArtGroup parentO3 = (ArtGroup) context.getGraphManager().getNode(
+                    childO3.getObjectId());
 
-                ArtGroup parentO3 = (ArtGroup) context.getGraphManager().getNode(
-                        childO3.getObjectId());
+            assertNotNull(parentO3);
+            assertEquals(PersistenceState.NEW, parentO3.getPersistenceState());
 
-                assertNotNull(parentO3);
-                assertEquals(PersistenceState.NEW, parentO3.getPersistenceState());
-
-                assertEquals(2, parentO1.getGroupArray().size());
-                assertEquals(1, parentO2.getArtistArray().size());
-                assertEquals(1, parentO3.getArtistArray().size());
-                assertTrue(parentO2.getArtistArray().contains(parentO1));
-                assertTrue(parentO3.getArtistArray().contains(parentO1));
-                assertTrue(parentO1.getGroupArray().contains(parentO2));
-                assertTrue(parentO1.getGroupArray().contains(parentO3));
-            }
+            assertEquals(2, parentO1.getGroupArray().size());
+            assertEquals(1, parentO2.getArtistArray().size());
+            assertEquals(1, parentO3.getArtistArray().size());
+            assertTrue(parentO2.getArtistArray().contains(parentO1));
+            assertTrue(parentO3.getArtistArray().contains(parentO1));
+            assertTrue(parentO1.getGroupArray().contains(parentO2));
+            assertTrue(parentO1.getGroupArray().contains(parentO3));
         });
 
         childO1.removeFromGroupArray(childO2);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            childContext.commitChangesToParent();
 
-            public void execute() {
-                childContext.commitChangesToParent();
+            assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, childO3.getPersistenceState());
 
-                assertEquals(PersistenceState.COMMITTED, childO1.getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childO2.getPersistenceState());
-                assertEquals(PersistenceState.COMMITTED, childO3.getPersistenceState());
+            Artist parentO1 = (Artist) context.getGraphManager().getNode(
+                    childO1.getObjectId());
 
-                Artist parentO1 = (Artist) context.getGraphManager().getNode(
-                        childO1.getObjectId());
+            assertNotNull(parentO1);
+            assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
 
-                assertNotNull(parentO1);
-                assertEquals(PersistenceState.NEW, parentO1.getPersistenceState());
+            ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
+                    childO2.getObjectId());
 
-                ArtGroup parentO2 = (ArtGroup) context.getGraphManager().getNode(
-                        childO2.getObjectId());
+            assertNotNull(parentO2);
+            assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
 
-                assertNotNull(parentO2);
-                assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
+            ArtGroup parentO3 = (ArtGroup) context.getGraphManager().getNode(
+                    childO3.getObjectId());
 
-                ArtGroup parentO3 = (ArtGroup) context.getGraphManager().getNode(
-                        childO3.getObjectId());
+            assertNotNull(parentO3);
+            assertEquals(PersistenceState.NEW, parentO3.getPersistenceState());
 
-                assertNotNull(parentO3);
-                assertEquals(PersistenceState.NEW, parentO3.getPersistenceState());
+            assertEquals(1, parentO1.getGroupArray().size());
+            assertEquals(0, parentO2.getArtistArray().size());
+            assertEquals(1, parentO3.getArtistArray().size());
 
-                assertEquals(1, parentO1.getGroupArray().size());
-                assertEquals(0, parentO2.getArtistArray().size());
-                assertEquals(1, parentO3.getArtistArray().size());
-
-                assertTrue(parentO3.getArtistArray().contains(parentO1));
-                assertTrue(parentO1.getGroupArray().contains(parentO3));
-            }
+            assertTrue(parentO3.getArtistArray().contains(parentO1));
+            assertTrue(parentO1.getGroupArray().contains(parentO3));
         });
     }
 
@@ -655,7 +631,7 @@ public class NestedDataContextWriteIT extends ServerCase {
     }
 
     @Test
-    public void testCAY1194() throws Exception {
+    public void testCAY1194() {
         DataContext context = createDataContext();
 
         Artist artist = context.newObject(Artist.class);

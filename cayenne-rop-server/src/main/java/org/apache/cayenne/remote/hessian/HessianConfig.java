@@ -76,7 +76,7 @@ public class HessianConfig {
             EntityResolver resolver) throws Exception {
 
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Class factoryClass = Class.forName(factoryName, true, loader);
+        Class<?> factoryClass = Class.forName(factoryName, true, loader);
 
         if (!AbstractSerializerFactory.class.isAssignableFrom(factoryClass)) {
             throw new IllegalArgumentException(factoryClass

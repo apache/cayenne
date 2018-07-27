@@ -115,7 +115,7 @@ public class BindDirective extends Directive {
 	protected void render(InternalContextAdapter context, Writer writer, Node node, Object value, String typeString,
 			int scale) throws IOException, ParseErrorException {
 
-		int jdbcType = TypesMapping.NOT_DEFINED;
+		int jdbcType;
 		if (typeString != null) {
 			jdbcType = TypesMapping.getSqlTypeByName(typeString);
 		} else if (value != null) {
@@ -148,8 +148,9 @@ public class BindDirective extends Directive {
 	 */
 	protected void bind(InternalContextAdapter context, ParameterBinding binding) {
 
-		Collection bindings = (Collection) context.getInternalUserContext().get(
-				VelocitySQLTemplateProcessor.BINDINGS_LIST_KEY);
+		@SuppressWarnings("unchecked")
+		Collection<ParameterBinding> bindings = (Collection<ParameterBinding>)
+				context.getInternalUserContext().get(VelocitySQLTemplateProcessor.BINDINGS_LIST_KEY);
 
 		if (bindings != null) {
 			bindings.add(binding);

@@ -24,8 +24,6 @@ import java.util.Collection;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.event.EventBridge;
-import org.apache.cayenne.remote.ClientConnection;
-import org.apache.cayenne.remote.ClientMessage;
 
 /**
  * A noop CayenneConnector used for unit testing. Accumulates commands sent via this
@@ -34,7 +32,7 @@ import org.apache.cayenne.remote.ClientMessage;
  */
 public class MockClientConnection implements ClientConnection {
 
-    protected Collection commands;
+    protected Collection<ClientMessage> commands;
     protected Object fakeResponse;
 
     public MockClientConnection() {
@@ -42,7 +40,7 @@ public class MockClientConnection implements ClientConnection {
     }
 
     public MockClientConnection(Object defaultResponse) {
-        this.commands = new ArrayList();
+        this.commands = new ArrayList<>();
         this.fakeResponse = defaultResponse;
     }
 
@@ -59,7 +57,7 @@ public class MockClientConnection implements ClientConnection {
         this.fakeResponse = fakeResponse;
     }
 
-    public Collection getCommands() {
+    public Collection<ClientMessage> getCommands() {
         return commands;
     }
 

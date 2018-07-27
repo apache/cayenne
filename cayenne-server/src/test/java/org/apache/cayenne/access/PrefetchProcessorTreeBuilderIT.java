@@ -61,7 +61,7 @@ public class PrefetchProcessorTreeBuilderIT extends ServerCase {
     public void testBuildTreeNoPrefetches() {
 
         final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
-        List<Object> dataRows = new ArrayList<Object>();
+        List<DataRow> dataRows = new ArrayList<>();
         dataRows.add(new DataRow(4));
         dataRows.add(new DataRow(4));
 
@@ -105,7 +105,7 @@ public class PrefetchProcessorTreeBuilderIT extends ServerCase {
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
                 resolver,
                 dataRows,
-                new HashMap<Object, Object>());
+                new HashMap<>());
 
         PrefetchProcessorNode processingTree = builder.buildTree(tree);
 
@@ -127,8 +127,8 @@ public class PrefetchProcessorTreeBuilderIT extends ServerCase {
         ObjEntity e4 = resolver.getObjEntity("Exhibit");
         ObjEntity e5 = resolver.getObjEntity("ArtistExhibit");
 
-        List<Object> mainRows = new ArrayList<Object>();
-        Map<Object, Object> extraRows = new HashMap<Object, Object>();
+        List<DataRow> mainRows = new ArrayList<>();
+        Map<String, List<?>> extraRows = new HashMap<>();
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
         tree.addPath(Artist.PAINTING_ARRAY.getName()).setPhantom(false);

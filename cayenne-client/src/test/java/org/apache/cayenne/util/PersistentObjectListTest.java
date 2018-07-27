@@ -57,9 +57,9 @@ public class PersistentObjectListTest {
         ClientMtTable1 owner = new ClientMtTable1();
         owner.setPersistenceState(PersistenceState.COMMITTED);
         owner.setGlobalAttribute1("a");
-        PersistentObjectList list = new PersistentObjectList(owner, "x");
+        PersistentObjectList<String> list = new PersistentObjectList<>(owner, "x");
 
-        List<Object> objects = new ArrayList<>();
+        List<String> objects = new ArrayList<>();
         objects.add("a");
         objects.add("b");
         list.setObjectList(objects);

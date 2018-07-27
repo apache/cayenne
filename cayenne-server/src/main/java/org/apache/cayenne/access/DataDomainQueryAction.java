@@ -79,7 +79,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     QueryResponse response;
     GenericResponse fullResponse;
-    Map<String, List> prefetchResultsByPath;
+    Map<String, List<?>> prefetchResultsByPath;
     Map<QueryEngine, Collection<Query>> queriesByNode;
     Map<Query, Query> queriesByExecutedQueries;
     boolean noObjectConversion;
@@ -310,6 +310,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return DONE;
             }
 
+            @SuppressWarnings("unchecked")
             Collection<Persistent> objects = (Collection<Persistent>) refreshQuery.getObjects();
             if (objects != null && !objects.isEmpty()) {
 
@@ -446,8 +447,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         this.queriesByExecutedQueries = null;
 
         // whether this is null or not will driver further decisions on how to process prefetched rows
-        this.prefetchResultsByPath = metadata.getPrefetchTree() != null && !metadata.isFetchingDataRows() ?
-                new HashMap<>() : null;
+        this.prefetchResultsByPath = metadata.getPrefetchTree() != null && !metadata.isFetchingDataRows()
+                ? new HashMap<>() : null;
 
         // categorize queries by node and by "executable" query...
         query.route(this, domain.getEntityResolver(), null);
