@@ -13,6 +13,8 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2446 Run Disjoint By Id queries outside of synchronized block
+
 Bug Fixes:
 
 CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation

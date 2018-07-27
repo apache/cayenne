@@ -59,74 +59,54 @@ class HierarchicalObjectResolver {
     }
 
     HierarchicalObjectResolver(DataContext context, QueryMetadata metadata,
-            ClassDescriptor descriptor, boolean needToSaveDuplicates) {
+                               ClassDescriptor descriptor, boolean needToSaveDuplicates) {
         this(context, metadata);
         this.descriptor = descriptor;
         this.needToSaveDuplicates = needToSaveDuplicates;
     }
 
     /**
-     * Properly synchronized version of 'resolveObjectTree'.
+     * Properly synchronized object resolution
      */
     PrefetchProcessorNode synchronizedRootResultNodeFromDataRows(
             PrefetchTreeNode tree,
             List<DataRow> mainResultRows,
             Map<String, List<?>> extraResultsByPath) {
 
+        PrefetchProcessorNode decoratedTree = decorateTree(tree, mainResultRows, extraResultsByPath);
+
+        // prepare data for disjoint by id prefetches
+        decoratedTree.traverse(new DisjointByIdProcessor());
+
+        // resolve objects under global lock to keep object graph consistent
         synchronized (context.getObjectStore()) {
-            return resolveObjectTree(tree, mainResultRows, extraResultsByPath);
+            // do a single path for disjoint prefetches, joint subtrees will be processed at
+            // each disjoint node that is a parent of joint prefetches.
+            decoratedTree.traverse(new DisjointProcessor());
+
+            // connect related objects
+            decoratedTree.traverse(new PostProcessor());
         }
-    }
-
-    private PrefetchProcessorNode resolveObjectTree(
-            PrefetchTreeNode tree,
-            List<DataRow> mainResultRows,
-            Map<String, List<?>> extraResultsByPath) {
-
-        // create a copy of the tree using DecoratedPrefetchNodes and then traverse it
-        // resolving objects...
-        PrefetchProcessorNode decoratedTree = new PrefetchProcessorTreeBuilder(
-                this,
-                mainResultRows,
-                extraResultsByPath).buildTree(tree);
-
-        // do a single path for disjoint prefetches, joint subtrees will be processed at
-        // each disjoint node that is a parent of joint prefetches.
-        decoratedTree.traverse(new DisjointProcessor());
-
-        // connect related objects
-        decoratedTree.traverse(new PostProcessor());
 
         return decoratedTree;
     }
 
-    final class DisjointProcessor implements PrefetchProcessor {
+    /**
+     * create a copy of the tree using DecoratedPrefetchNodes and then traverse it resolving objects...
+     */
+    private PrefetchProcessorNode decorateTree(PrefetchTreeNode tree,
+                                               List<DataRow> mainResultRows,
+                                               Map<String, List<?>> extraResultsByPath) {
+        return new PrefetchProcessorTreeBuilder(this, mainResultRows, extraResultsByPath)
+                .buildTree(tree);
+    }
 
-        @Override
-        public boolean startDisjointPrefetch(PrefetchTreeNode node) {
-
-            PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
-
-            // this means something bad happened during fetch
-            if (processorNode.getDataRows() == null) {
-                return false;
-            }
-
-            // continue with processing even if the objects list is empty to handle multi-step prefetches.
-            if (processorNode.getDataRows().isEmpty()) {
-                return true;
-            }
-
-            List<Persistent> objects = processorNode.getResolver().objectsFromDataRows(processorNode.getDataRows());
-            processorNode.setObjects(objects);
-
-            return true;
-        }
+    final class DisjointByIdProcessor implements PrefetchProcessor {
 
         @Override
         public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
             if (node.getParent().isPhantom()) {
-                // TODO: doing nothing in current implementation if parent node is phantom
+                // doing nothing in current implementation if parent node is phantom
                 return true;
             }
 
@@ -139,7 +119,6 @@ class HierarchicalObjectResolver {
 
             String pathPrefix = "";
             if (dbRelationships.size() > 1) {
-
                 // we need path prefix for flattened relationships
                 StringBuilder buffer = new StringBuilder();
                 for (int i = dbRelationships.size() - 1; i >= 1; i--) {
@@ -154,14 +133,14 @@ class HierarchicalObjectResolver {
             }
 
             List<DataRow> parentDataRows;
-            
-			// note that a disjoint prefetch that has adjacent joint prefetches
-			// will be a PrefetchProcessorJointNode, so here check for semantics, not node type
-			if (parentProcessorNode.getSemantics() == PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS) {
-				parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode).getResolvedRows();
-			} else {
-				parentDataRows = parentProcessorNode.getDataRows();
-			}
+
+            // note that a disjoint prefetch that has adjacent joint prefetches
+            // will be a PrefetchProcessorJointNode, so here check for semantics, not node type
+            if (parentProcessorNode.getSemantics() == PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS) {
+                parentDataRows = ((PrefetchProcessorJointNode) parentProcessorNode).getResolvedRows();
+            } else {
+                parentDataRows = parentProcessorNode.getDataRows();
+            }
 
             int maxIdQualifierSize = context.getParentDataDomain().getMaxIdQualifierSize();
             List<DbJoin> joins = lastDbRelationship.getJoins();
@@ -221,7 +200,7 @@ class HierarchicalObjectResolver {
             }
             processorNode.setDataRows(dataRows);
 
-            return startDisjointPrefetch(node);
+            return true;
         }
 
         private void createDisjointByIdPrefetchQualifier(String pathPrefix, PrefetchSelectQuery currentQuery,
@@ -246,6 +225,59 @@ class HierarchicalObjectResolver {
 
                 currentQuery.orQualifier(ExpressionFactory.joinExp(Expression.OR, qualifiers));
             }
+        }
+
+        @Override
+        public boolean startPhantomPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+        @Override
+        public boolean startDisjointPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+        @Override
+        public boolean startJointPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+        @Override
+        public boolean startUnknownPrefetch(PrefetchTreeNode node) {
+            throw new CayenneRuntimeException("Unknown prefetch node: %s", node);
+        }
+
+        @Override
+        public void finishPrefetch(PrefetchTreeNode node) {
+        }
+    }
+
+    final class DisjointProcessor implements PrefetchProcessor {
+
+        @Override
+        public boolean startDisjointPrefetch(PrefetchTreeNode node) {
+
+            PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
+
+            // this means something bad happened during fetch
+            if (processorNode.getDataRows() == null) {
+                return false;
+            }
+
+            // continue with processing even if the objects list is empty to handle multi-step prefetches.
+            if (processorNode.getDataRows().isEmpty()) {
+                return true;
+            }
+
+            List<Persistent> objects = processorNode.getResolver().objectsFromDataRows(processorNode.getDataRows());
+            processorNode.setObjects(objects);
+
+            return true;
+        }
+
+        @Override
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            return startDisjointPrefetch(node);
         }
 
         @Override
@@ -332,7 +364,7 @@ class HierarchicalObjectResolver {
 
     // a processor of a single joint result set that walks a subtree of prefetch nodes
     // that use this result set.
-    final class JointProcessor implements PrefetchProcessor {
+    final static class JointProcessor implements PrefetchProcessor {
 
         DataRow currentFlatRow;
         PrefetchProcessorNode rootNode;
