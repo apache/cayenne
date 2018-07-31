@@ -1240,8 +1240,8 @@
 			<dependencies>
 				<dependency>
 					<groupId>org.firebirdsql.jdbc</groupId>
-					<artifactId>jaybird-jdk17</artifactId>
-					<version>2.2.12</version>
+					<artifactId>jaybird-jdk18</artifactId>
+					<version>3.0.3</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
