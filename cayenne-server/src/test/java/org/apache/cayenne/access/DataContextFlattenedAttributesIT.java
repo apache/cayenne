@@ -111,29 +111,22 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
     @Test
     public void testSelectCompound1() throws Exception {
         createTestDataSet();
-        SelectQuery query = new SelectQuery(CompoundPainting.class);
-        List<?> objects = context.performQuery(query);
+        SelectQuery<CompoundPainting> query = SelectQuery.query(CompoundPainting.class);
+        List<CompoundPainting> objects = query.select(context);
 
         assertNotNull(objects);
         assertEquals(8, objects.size());
-        assertTrue(
-                "CompoundPainting expected, got " + objects.get(0).getClass(),
-                objects.get(0) instanceof CompoundPainting);
+        assertTrue("CompoundPainting expected, got null", objects.get(0) != null);
 
-        for (Iterator<?> i = objects.iterator(); i.hasNext();) {
-            CompoundPainting painting = (CompoundPainting) i.next();
-            Number id = (Number) painting
-                    .getObjectId()
-                    .getIdSnapshot()
-                    .get("PAINTING_ID");
+        for (CompoundPainting painting : objects) {
+            Number id = (Number) painting.getObjectId().getIdSnapshot().get("PAINTING_ID");
             assertEquals(
                     "CompoundPainting.getPaintingTitle(): " + painting.getPaintingTitle(),
                     "painting" + id,
                     painting.getPaintingTitle());
             if (painting.getToPaintingInfo() == null) {
                 assertNull(painting.getTextReview());
-            }
-            else {
+            } else {
                 assertEquals(
                         "CompoundPainting.getTextReview(): " + painting.getTextReview(),
                         "painting review" + id,
@@ -145,8 +138,7 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
                     painting.getArtistName());
             if (painting.getToGallery() == null) {
                 assertNull(painting.getGalleryName());
-            }
-            else {
+            } else {
                 assertEquals(
                         "CompoundPainting.getGalleryName(): " + painting.getGalleryName(),
                         painting.getToGallery().getGalleryName(),
@@ -156,25 +148,21 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
     }
 
     // TODO: andrus 1/5/2007 - CAY-952: SelectQuery uses INNER JOIN for flattened
-    // attributes, while
-    // EJBQLQuery does an OUTER JOIN... which seems like a better idea...
+    // attributes, while EJBQLQuery does an OUTER JOIN... which seems like a better idea...
     // 14/01/2010 now it uses LEFT JOIN
     @Test
     public void testSelectCompound2() throws Exception {
         createTestDataSet();
-        SelectQuery query = new SelectQuery(
+        SelectQuery<CompoundPainting> query = SelectQuery.query(
                 CompoundPainting.class,
                 ExpressionFactory.matchExp("artistName", "artist2"));
-        List<?> objects = context.performQuery(query);
+        List<CompoundPainting> objects = query.select(context);
 
         assertNotNull(objects);
         assertEquals(2, objects.size());
-        assertTrue(
-                "CompoundPainting expected, got " + objects.get(0).getClass(),
-                objects.get(0) instanceof CompoundPainting);
+        assertTrue("CompoundPainting expected, got null", objects.get(0) != null);
 
-        for (Iterator<?> i = objects.iterator(); i.hasNext();) {
-            CompoundPainting painting = (CompoundPainting) i.next();
+        for (CompoundPainting painting : objects) {
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
 
             assertEquals(
@@ -197,7 +185,7 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
     @Test
     public void testSelectCompoundLongNames() throws Exception {
         createTestDataSet();
-        SelectQuery query = new SelectQuery(CompoundPaintingLongNames.class);
+        SelectQuery<CompoundPaintingLongNames> query = SelectQuery.query(CompoundPaintingLongNames.class);
         // the error was thrown on query execution
         List<?> objects = context.performQuery(query);
         assertNotNull(objects);
@@ -215,9 +203,8 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         assertTrue(
                 "CompoundPainting expected, got " + objects.get(0).getClass(),
                 objects.get(0) instanceof CompoundPainting);
-        Iterator<?> i = objects.iterator();
-        while (i.hasNext()) {
-            CompoundPainting painting = (CompoundPainting) i.next();
+        for (Object object : objects) {
+            CompoundPainting painting = (CompoundPainting) object;
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
         }
     }

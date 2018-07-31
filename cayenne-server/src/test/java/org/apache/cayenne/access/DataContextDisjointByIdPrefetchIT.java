@@ -29,7 +29,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -115,29 +114,27 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testOneToMany() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
         query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
+        List<Artist> result = query.select(context);
 
-        final List<Artist> result = context.performQuery(query);
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            Artist b1 = result.get(0);
+            @SuppressWarnings("unchecked")
+            List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertNotNull(toMany);
+            assertFalse(((ValueHolder) toMany).isFault());
+            assertEquals(2, toMany.size());
 
-            public void execute() {
-                assertFalse(result.isEmpty());
-                Artist b1 = result.get(0);
-                List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
-                assertNotNull(toMany);
-                assertFalse(((ValueHolder) toMany).isFault());
-                assertEquals(2, toMany.size());
-
-                List<String> names = new ArrayList<String>();
-                for (Painting b : toMany) {
-                    assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
-                    names.add(b.getPaintingTitle());
-                }
-
-                assertTrue(names.contains("Y1"));
-                assertTrue(names.contains("Y2"));
+            List<String> names = new ArrayList<>();
+            for (Painting b : toMany) {
+                assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
+                names.add(b.getPaintingTitle());
             }
+
+            assertTrue(names.contains("Y1"));
+            assertTrue(names.contains("Y2"));
         });
     }
 
@@ -145,19 +142,16 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testManyToOne() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
-        SelectQuery query = new SelectQuery(Painting.class);
+        SelectQuery<Painting> query = SelectQuery.query(Painting.class);
         query.addPrefetch(Painting.TO_ARTIST.disjointById());
 
-        final List<Painting> result = context.performQuery(query);
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertFalse(result.isEmpty());
-                Painting b1 = result.get(0);
-                assertNotNull(b1.getToArtist());
-                assertEquals(PersistenceState.COMMITTED, b1.getToArtist().getPersistenceState());
-                assertEquals("X", b1.getToArtist().getArtistName());
-            }
+        final List<Painting> result = query.select(context);
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            Painting b1 = result.get(0);
+            assertNotNull(b1.getToArtist());
+            assertEquals(PersistenceState.COMMITTED, b1.getToArtist().getPersistenceState());
+            assertEquals("X", b1.getToArtist().getArtistName());
         });
     }
 
@@ -165,7 +159,7 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testFetchLimit() throws Exception {
         createThreeArtistsWithPlentyOfPaintingsDataSet();
 
-        final SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
         query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
         query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING);
 
@@ -174,22 +168,19 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         // There will be only 2 bags in a result. The first bag has 5 boxes and
         // the second has 2. So we are expecting exactly 9 snapshots in the data
         // row store after performing the query.
-        final List<Artist> bags = context.performQuery(query);
+        final List<Artist> bags = query.select(context);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
 
-            public void execute() {
+            assertEquals(2, bags.size());
 
-                assertEquals(2, bags.size());
+            assertEquals(5, bags.get(0).getPaintingArray().size());
+            assertEquals(2, bags.get(1).getPaintingArray().size());
 
-                assertEquals(5, bags.get(0).getPaintingArray().size());
-                assertEquals(2, bags.get(1).getPaintingArray().size());
-
-                for (Artist b : bags) {
-                    b.getArtistName();
-                    for (Painting bx : b.getPaintingArray()) {
-                        bx.getPaintingTitle();
-                    }
+            for (Artist b : bags) {
+                b.getArtistName();
+                for (Painting bx : b.getPaintingArray()) {
+                    bx.getPaintingTitle();
                 }
             }
         });
@@ -199,22 +190,19 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testOneToOneRelationship() throws Exception {
         createTwoPaintingsWithInfosDataSet();
 
-        SelectQuery query = new SelectQuery(Painting.class);
+        SelectQuery<Painting> query = SelectQuery.query(Painting.class);
         query.addPrefetch(Painting.TO_PAINTING_INFO.disjointById());
-        final List<Painting> result = context.performQuery(query);
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertFalse(result.isEmpty());
-                List<String> boxColors = new ArrayList<String>();
-                for (Painting box : result) {
-                    PaintingInfo info = (PaintingInfo) box.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
-                    assertNotNull(info);
-                    boxColors.add(info.getTextReview());
-                    assertEquals(PersistenceState.COMMITTED, info.getPersistenceState());
-                }
-                assertTrue(boxColors.containsAll(Arrays.asList("red", "green")));
+        final List<Painting> result = query.select(context);
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            List<String> boxColors = new ArrayList<>();
+            for (Painting box : result) {
+                PaintingInfo info = (PaintingInfo) box.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
+                assertNotNull(info);
+                boxColors.add(info.getTextReview());
+                assertEquals(PersistenceState.COMMITTED, info.getPersistenceState());
             }
+            assertTrue(boxColors.containsAll(Arrays.asList("red", "green")));
         });
     }
 

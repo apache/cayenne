@@ -35,7 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public abstract class BaseHandlerTest {
 
     protected void parse(String tag, HandlerFactory factory) throws Exception {
-        try(InputStream in = DbKeyGeneratorHandlerTest.class.getResource(getClass().getSimpleName() + ".xml").openStream()) {
+        try(InputStream in = BaseHandlerTest.class.getResource(getClass().getSimpleName() + ".xml").openStream()) {
             XMLReader parser = Util.createXmlReader();
             DefaultHandler handler = new TestRootHandler(parser, tag, factory);
             parser.setContentHandler(handler);

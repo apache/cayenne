@@ -30,7 +30,6 @@ import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.Thing;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -41,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.THINGS_PROJECT)
@@ -123,27 +123,26 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Bag.class);
+        SelectQuery<Bag> query = SelectQuery.query(Bag.class);
         query.addPrefetch(Bag.BALLS.disjointById());
-        final List<Bag> result = context.performQuery(query);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        final List<Bag> result = query.select(context);
 
-            public void execute() {
-                assertFalse(result.isEmpty());
-                Bag b1 = result.get(0);
-                List<Ball> balls = (List<Ball>) b1.readPropertyDirectly(Bag.BALLS.getName());
-                assertNotNull(balls);
-                assertFalse(((ValueHolder) balls).isFault());
-                assertEquals(6, balls.size());
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            Bag b1 = result.get(0);
+            @SuppressWarnings("unchecked")
+            List<Ball> balls = (List<Ball>) b1.readPropertyDirectly(Bag.BALLS.getName());
+            assertNotNull(balls);
+            assertFalse(((ValueHolder) balls).isFault());
+            assertEquals(6, balls.size());
 
-                List<Integer> volumes = new ArrayList<Integer>();
-                for (Ball b : balls) {
-                    assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
-                    volumes.add(b.getThingVolume());
-                }
-                assertTrue(volumes.containsAll(Arrays.asList(10, 20, 30, 40, 20, 40)));
+            List<Integer> volumes = new ArrayList<>();
+            for (Ball b : balls) {
+                assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
+                volumes.add(b.getThingVolume());
             }
+            assertThat(volumes, hasItems(10, 20, 30, 40, 20, 40));
         });
     }
 
@@ -151,27 +150,25 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testFlattenedMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Box.class);
+        SelectQuery<Box> query = new SelectQuery<>(Box.class);
         query.addPrefetch(Box.THINGS.disjointById());
-        final List<Box> result = context.performQuery(query);
+        final List<Box> result = query.select(context);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertFalse(result.isEmpty());
-                List<Integer> volumes = new ArrayList<Integer>();
-                for (Box box : result) {
-                    List<Thing> things = (List<Thing>) box.readPropertyDirectly(Box.THINGS.getName());
-                    assertNotNull(things);
-                    assertFalse(((ValueHolder) things).isFault());
-                    for (Thing t : things) {
-                        assertEquals(PersistenceState.COMMITTED, t.getPersistenceState());
-                        volumes.add(t.getVolume());
-                    }
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            List<Integer> volumes = new ArrayList<>();
+            for (Box box : result) {
+                @SuppressWarnings("unchecked")
+                List<Thing> things = (List<Thing>) box.readPropertyDirectly(Box.THINGS.getName());
+                assertNotNull(things);
+                assertFalse(((ValueHolder) things).isFault());
+                for (Thing t : things) {
+                    assertEquals(PersistenceState.COMMITTED, t.getPersistenceState());
+                    volumes.add(t.getVolume());
                 }
-                assertEquals(6, volumes.size());
-                assertTrue(volumes.containsAll(Arrays.asList(10, 20, 30, 40)));
             }
+            assertEquals(6, volumes.size());
+            assertTrue(volumes.containsAll(Arrays.asList(10, 20, 30, 40)));
         });
     }
 
@@ -179,27 +176,25 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testLongFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Bag.class);
+        SelectQuery<Bag> query = new SelectQuery<>(Bag.class);
         query.addPrefetch(Bag.THINGS.disjointById());
-        final List<Bag> result = context.performQuery(query);
+        final List<Bag> result = query.select(context);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            Bag b1 = result.get(0);
+            @SuppressWarnings("unchecked")
+            List<Thing> things = (List<Thing>) b1.readPropertyDirectly(Bag.THINGS.getName());
+            assertNotNull(things);
+            assertFalse(((ValueHolder) things).isFault());
+            assertEquals(6, things.size());
 
-            public void execute() {
-                assertFalse(result.isEmpty());
-                Bag b1 = result.get(0);
-                List<Thing> things = (List<Thing>) b1.readPropertyDirectly(Bag.THINGS.getName());
-                assertNotNull(things);
-                assertFalse(((ValueHolder) things).isFault());
-                assertEquals(6, things.size());
-
-                List<Integer> volumes = new ArrayList<Integer>();
-                for (Thing t : things) {
-                    assertEquals(PersistenceState.COMMITTED, t.getPersistenceState());
-                    volumes.add(t.getVolume());
-                }
-                assertTrue(volumes.containsAll(Arrays.asList(10, 20, 20, 30, 40, 40)));
+            List<Integer> volumes = new ArrayList<>();
+            for (Thing t : things) {
+                assertEquals(PersistenceState.COMMITTED, t.getPersistenceState());
+                volumes.add(t.getVolume());
             }
+            assertTrue(volumes.containsAll(Arrays.asList(10, 20, 20, 30, 40, 40)));
         });
     }
 
@@ -207,22 +202,19 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Ball.class);
+        SelectQuery<Ball> query = SelectQuery.query(Ball.class);
         query.orQualifier(Ball.THING_VOLUME.eq(40).andExp(Ball.THING_WEIGHT.eq(30)));
         query.orQualifier(Ball.THING_VOLUME.eq(20).andExp(Ball.THING_WEIGHT.eq(10)));
 
         query.addPrefetch(Ball.THING.disjointById());
 
-        final List<Ball> balls = context.performQuery(query);
+        final List<Ball> balls = query.select(context);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-
-                assertEquals(2, balls.size());
-
-                balls.get(0).getThing().getVolume();
-                balls.get(1).getThing().getVolume();
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertEquals(2, balls.size());
+            for(Ball next : balls) {
+                assertNotNull(balls.get(0).getThing());
+                next.getThing().getVolume();
             }
         });
     }
@@ -231,30 +223,28 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testJointPrefetchInParent() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Box.class);
+        SelectQuery<Box> query = new SelectQuery<>(Box.class);
         query.addPrefetch(Box.BALLS.disjointById());
         query.addPrefetch(Box.BALLS.dot(Ball.THING).disjointById());
-        final List<Box> result = context.performQuery(query);
+        final List<Box> result = query.select(context);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertFalse(result.isEmpty());
-                List<Integer> volumes = new ArrayList<Integer>();
-                for (Box box : result) {
-                    List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS.getName());
-                    assertNotNull(balls);
-                    assertFalse(((ValueHolder) balls).isFault());
-                    for (Ball ball : balls) {
-                        Thing thing = (Thing) ball.readPropertyDirectly(Ball.THING.getName());
-                        assertNotNull(thing);
-                        assertEquals(PersistenceState.COMMITTED, thing.getPersistenceState());
-                        volumes.add(thing.getVolume());
-                    }
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            List<Integer> volumes = new ArrayList<>();
+            for (Box box : result) {
+                @SuppressWarnings("unchecked")
+                List<Ball> balls = (List<Ball>) box.readPropertyDirectly(Box.BALLS.getName());
+                assertNotNull(balls);
+                assertFalse(((ValueHolder) balls).isFault());
+                for (Ball ball : balls) {
+                    Thing thing = (Thing) ball.readPropertyDirectly(Ball.THING.getName());
+                    assertNotNull(thing);
+                    assertEquals(PersistenceState.COMMITTED, thing.getPersistenceState());
+                    volumes.add(thing.getVolume());
                 }
-                assertEquals(6, volumes.size());
-                assertTrue(volumes.containsAll(Arrays.asList(10, 20, 30, 40)));
             }
+            assertEquals(6, volumes.size());
+            assertTrue(volumes.containsAll(Arrays.asList(10, 20, 30, 40)));
         });
     }
 
@@ -262,46 +252,44 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testJointPrefetchInChild() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery<Bag> query = new SelectQuery<Bag>(Bag.class);
+        SelectQuery<Bag> query = new SelectQuery<>(Bag.class);
         query.addPrefetch(Bag.BOXES.disjointById());
         query.addPrefetch(Bag.BOXES.dot(Box.BALLS).joint());
         final List<Bag> result = context.select(query);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
 
-        	@Override
-            public void execute() {
-                assertFalse(result.isEmpty());
+            Bag bag = result.get(0);
+            @SuppressWarnings("unchecked")
+            List<Box> boxes = (List<Box>) bag.readPropertyDirectly(Bag.BOXES.getName());
+            assertNotNull(boxes);
+            assertFalse(((ValueHolder) boxes).isFault());
+            assertEquals(2, boxes.size());
 
-                Bag bag = result.get(0);
-                List<Box> boxes = (List<Box>) bag.readPropertyDirectly(Bag.BOXES.getName());
-                assertNotNull(boxes);
-                assertFalse(((ValueHolder) boxes).isFault());
-                assertEquals(2, boxes.size());
-
-                Box big = null;
-                List<String> names = new ArrayList<String>();
-                for (Box box : boxes) {
-                    assertEquals(PersistenceState.COMMITTED, box.getPersistenceState());
-                    names.add(box.getName());
-                    if (box.getName().equals("big")) {
-                        big = box;
-                    }
+            Box big = null;
+            List<String> names = new ArrayList<>();
+            for (Box box : boxes) {
+                assertEquals(PersistenceState.COMMITTED, box.getPersistenceState());
+                names.add(box.getName());
+                if (box.getName().equals("big")) {
+                    big = box;
                 }
-                assertTrue(names.contains("big"));
-                assertTrue(names.contains("small"));
-
-                List<Ball> balls = (List<Ball>) big.readPropertyDirectly(Box.BALLS.getName());
-                assertNotNull(balls);
-                assertFalse(((ValueHolder) balls).isFault());
-                assertEquals(2, balls.size());
-                List<Integer> volumes = new ArrayList<Integer>();
-                for (Ball ball : balls) {
-                    assertEquals(PersistenceState.COMMITTED, ball.getPersistenceState());
-                    volumes.add(ball.getThingVolume());
-                }
-                assertTrue(volumes.containsAll(Arrays.asList(10, 20)));
             }
+            assertTrue(names.contains("big"));
+            assertTrue(names.contains("small"));
+
+            @SuppressWarnings("unchecked")
+            List<Ball> balls = (List<Ball>) big.readPropertyDirectly(Box.BALLS.getName());
+            assertNotNull(balls);
+            assertFalse(((ValueHolder) balls).isFault());
+            assertEquals(2, balls.size());
+            List<Integer> volumes = new ArrayList<>();
+            for (Ball ball : balls) {
+                assertEquals(PersistenceState.COMMITTED, ball.getPersistenceState());
+                volumes.add(ball.getThingVolume());
+            }
+            assertTrue(volumes.containsAll(Arrays.asList(10, 20)));
         });
     }
 }

@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 public class DefaultQuotingStrategyTest {
 
     @Test
-    public void testQuotedIdentifer() {
+    public void testQuotedIdentifier() {
 
         DataMap dm = new DataMap();
         dm.setQuotingSQLIdentifiers(true);
@@ -41,7 +41,7 @@ public class DefaultQuotingStrategyTest {
     }
 
     @Test
-    public void testUnQuotedIdentifer() {
+    public void testUnQuotedIdentifier() {
 
         DataMap dm = new DataMap();
         dm.setQuotingSQLIdentifiers(false);

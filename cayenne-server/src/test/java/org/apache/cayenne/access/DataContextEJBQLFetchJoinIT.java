@@ -128,25 +128,21 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
 
         final List<?> objects = context.performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
+        queryBlocker.runWithQueriesBlocked(() -> {
 
-            public void execute() {
+            assertEquals(2, objects.size());
 
-                assertEquals(2, objects.size());
+            for (Object object : objects) {
+                Artist a = (Artist) object;
+                List<Painting> list = a.getPaintingArray();
 
-                Iterator<?> it = objects.iterator();
-                while (it.hasNext()) {
-                    Artist a = (Artist) it.next();
-                    List<Painting> list = a.getPaintingArray();
+                assertNotNull(list);
+                assertFalse(((ValueHolder) list).isFault());
 
-                    assertNotNull(list);
-                    assertFalse(((ValueHolder) list).isFault());
-
-                    for (Painting p : list) {
-                        assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-                        // make sure properties are not null..
-                        assertNotNull(p.getPaintingTitle());
-                    }
+                for (Painting p : list) {
+                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+                    // make sure properties are not null..
+                    assertNotNull(p.getPaintingTitle());
                 }
             }
         });
@@ -164,46 +160,38 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
 
         final List<?> objects = context.performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
+        queryBlocker.runWithQueriesBlocked(() -> {
 
-            public void execute() {
+            assertEquals(1, objects.size());
 
-                assertEquals(1, objects.size());
+            Artist a = (Artist) objects.get(0);
+            assertEquals("A1", a.getArtistName());
 
-                Artist a = (Artist) objects.get(0);
-                assertEquals("A1", a.getArtistName());
+            List<Painting> paintings = a.getPaintingArray();
 
-                List<Painting> paintings = a.getPaintingArray();
+            assertNotNull(paintings);
+            assertFalse(((ValueHolder) paintings).isFault());
+            assertEquals(2, paintings.size());
 
-                assertNotNull(paintings);
-                assertFalse(((ValueHolder) paintings).isFault());
-                assertEquals(2, paintings.size());
+            List<String> expectedPaintingsNames = new ArrayList<>();
+            expectedPaintingsNames.add("P11");
+            expectedPaintingsNames.add("P12");
 
-                List<String> expectedPaintingsNames = new ArrayList<String>();
-                expectedPaintingsNames.add("P11");
-                expectedPaintingsNames.add("P12");
+            for (Painting p : paintings) {
+                assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+                assertNotNull(p.getPaintingTitle());
+                assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
+            }
 
-                Iterator<Painting> paintingsIterator = paintings.iterator();
-                while (paintingsIterator.hasNext()) {
-                    Painting p = paintingsIterator.next();
-                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-                    assertNotNull(p.getPaintingTitle());
-                    assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
-                }
+            List<ArtistExhibit> exibits = a.getArtistExhibitArray();
 
-                List<ArtistExhibit> exibits = a.getArtistExhibitArray();
+            assertNotNull(exibits);
+            assertFalse(((ValueHolder) exibits).isFault());
+            assertEquals(2, exibits.size());
 
-                assertNotNull(exibits);
-                assertFalse(((ValueHolder) exibits).isFault());
-                assertEquals(2, exibits.size());
-
-                Iterator<ArtistExhibit> exibitsIterator = exibits.iterator();
-                while (exibitsIterator.hasNext()) {
-                    ArtistExhibit ae = exibitsIterator.next();
-                    assertEquals(PersistenceState.COMMITTED, ae.getPersistenceState());
-                    assertNotNull(ae.getObjectId());
-
-                }
+            for (ArtistExhibit ae : exibits) {
+                assertEquals(PersistenceState.COMMITTED, ae.getPersistenceState());
+                assertNotNull(ae.getObjectId());
             }
         });
     }
@@ -220,14 +208,10 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
 
         final List<?> objects = context.performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-
-                assertNotNull(objects);
-                assertFalse(objects.isEmpty());
-                assertEquals(1, objects.size());
-            }
+        queryBlocker.runWithQueriesBlocked(() -> {
+            assertNotNull(objects);
+            assertFalse(objects.isEmpty());
+            assertEquals(1, objects.size());
         });
     }
 
@@ -243,71 +227,68 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
 
         final List<?> objects = context.performQuery(query);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
+        queryBlocker.runWithQueriesBlocked(() -> {
 
-            public void execute() {
+            assertEquals(2, objects.size());
 
-                assertEquals(2, objects.size());
+            Object[] firstRow = (Object[]) objects.get(0);
+            Artist a = (Artist) firstRow[0];
+            assertEquals("A1", a.getArtistName());
 
-                Object[] firstRow = (Object[]) objects.get(0);
-                Artist a = (Artist) firstRow[0];
-                assertEquals("A1", a.getArtistName());
+            List<Painting> paintings = a.getPaintingArray();
 
-                List<Painting> paintings = a.getPaintingArray();
+            assertNotNull(paintings);
+            assertFalse(((ValueHolder) paintings).isFault());
+            assertEquals(2, paintings.size());
 
-                assertNotNull(paintings);
-                assertFalse(((ValueHolder) paintings).isFault());
-                assertEquals(2, paintings.size());
+            List<String> expectedPaintingsNames = new ArrayList<>();
+            expectedPaintingsNames.add("P11");
+            expectedPaintingsNames.add("P12");
 
-                List<String> expectedPaintingsNames = new ArrayList<String>();
-                expectedPaintingsNames.add("P11");
-                expectedPaintingsNames.add("P12");
-
-                Iterator<Painting> paintingsIterator = paintings.iterator();
-                while (paintingsIterator.hasNext()) {
-                    Painting p = paintingsIterator.next();
-                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-                    assertNotNull(p.getPaintingTitle());
-                    assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
-                }
-                String artistName = (String) firstRow[1];
-                assertEquals("A1", artistName);
-
-                Gallery g1 = (Gallery) firstRow[2];
-                assertEquals("gallery1", g1.getGalleryName());
-
-                List<Exhibit> exibits = g1.getExhibitArray();
-
-                assertNotNull(exibits);
-                assertFalse(((ValueHolder) exibits).isFault());
-                assertEquals(2, exibits.size());
-
-                Object[] secondRow = (Object[]) objects.get(1);
-                a = (Artist) secondRow[0];
-                assertEquals("A2", a.getArtistName());
-
-                paintings = a.getPaintingArray();
-
-                assertNotNull(paintings);
-                assertFalse(((ValueHolder) paintings).isFault());
-                assertEquals(1, paintings.size());
-
-                expectedPaintingsNames = new ArrayList<String>();
-                expectedPaintingsNames.add("P2");
-
-                paintingsIterator = paintings.iterator();
-                while (paintingsIterator.hasNext()) {
-                    Painting p = paintingsIterator.next();
-                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-                    assertNotNull(p.getPaintingTitle());
-                    assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
-                }
-                artistName = (String) secondRow[1];
-                assertEquals("A2", artistName);
-
-                Gallery g2 = (Gallery) secondRow[2];
-                assertEquals(g1, g2);
+            Iterator<Painting> paintingsIterator = paintings.iterator();
+            while (paintingsIterator.hasNext()) {
+                Painting p = paintingsIterator.next();
+                assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+                assertNotNull(p.getPaintingTitle());
+                assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
             }
+            String artistName = (String) firstRow[1];
+            assertEquals("A1", artistName);
+
+            Gallery g1 = (Gallery) firstRow[2];
+            assertEquals("gallery1", g1.getGalleryName());
+
+            List<Exhibit> exibits = g1.getExhibitArray();
+
+            assertNotNull(exibits);
+            assertFalse(((ValueHolder) exibits).isFault());
+            assertEquals(2, exibits.size());
+
+            Object[] secondRow = (Object[]) objects.get(1);
+            a = (Artist) secondRow[0];
+            assertEquals("A2", a.getArtistName());
+
+            paintings = a.getPaintingArray();
+
+            assertNotNull(paintings);
+            assertFalse(((ValueHolder) paintings).isFault());
+            assertEquals(1, paintings.size());
+
+            expectedPaintingsNames = new ArrayList<>();
+            expectedPaintingsNames.add("P2");
+
+            paintingsIterator = paintings.iterator();
+            while (paintingsIterator.hasNext()) {
+                Painting p = paintingsIterator.next();
+                assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+                assertNotNull(p.getPaintingTitle());
+                assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
+            }
+            artistName = (String) secondRow[1];
+            assertEquals("A2", artistName);
+
+            Gallery g2 = (Gallery) secondRow[2];
+            assertEquals(g1, g2);
         });
     }
 
@@ -322,101 +303,96 @@ public class DataContextEJBQLFetchJoinIT extends ServerCase {
         EJBQLQuery query = new EJBQLQuery(ejbql);
 
         final List<?> objects = context.performQuery(query);
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
+        queryBlocker.runWithQueriesBlocked(() -> {
 
-            public void execute() {
+            assertEquals(6, objects.size());
 
-                assertEquals(6, objects.size());
+            Object[] row = (Object[]) objects.get(0);
+            Artist a1 = (Artist) row[0];
+            assertEquals("A1", a1.getArtistName());
 
-                Object[] row = (Object[]) objects.get(0);
-                Artist a1 = (Artist) row[0];
-                assertEquals("A1", a1.getArtistName());
+            List<Painting> paintings = a1.getPaintingArray();
 
-                List<Painting> paintings = a1.getPaintingArray();
+            assertNotNull(paintings);
+            assertFalse(((ValueHolder) paintings).isFault());
+            assertEquals(2, paintings.size());
 
-                assertNotNull(paintings);
-                assertFalse(((ValueHolder) paintings).isFault());
-                assertEquals(2, paintings.size());
+            List<String> expectedPaintingsNames = new ArrayList<>();
+            expectedPaintingsNames.add("P11");
+            expectedPaintingsNames.add("P12");
 
-                List<String> expectedPaintingsNames = new ArrayList<String>();
-                expectedPaintingsNames.add("P11");
-                expectedPaintingsNames.add("P12");
-
-                Iterator<Painting> paintingsIterator = paintings.iterator();
-                while (paintingsIterator.hasNext()) {
-                    Painting p = paintingsIterator.next();
-                    assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
-                    assertNotNull(p.getPaintingTitle());
-                    assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
-                }
-                String artistName1 = (String) row[1];
-                assertEquals("A1", artistName1);
-
-                Gallery g1 = (Gallery) row[2];
-                assertEquals("gallery1", g1.getGalleryName());
-
-                List<?> exibits = g1.getExhibitArray();
-
-                assertNotNull(exibits);
-                assertFalse(((ValueHolder) exibits).isFault());
-                assertEquals(2, exibits.size());
-
-                row = (Object[]) objects.get(1);
-
-                assertEquals(a1, row[0]);
-                assertEquals(artistName1, row[1]);
-
-                Gallery g2 = (Gallery) row[2];
-                assertEquals("gallery2", g2.getGalleryName());
-
-                exibits = g2.getExhibitArray();
-
-                assertTrue(exibits.isEmpty());
-
-                row = (Object[]) objects.get(2);
-
-                Artist a2 = (Artist) row[0];
-                assertEquals("A2", a2.getArtistName());
-
-                paintings = a2.getPaintingArray();
-
-                assertNotNull(paintings);
-                assertEquals(1, paintings.size());
-
-                Painting p = paintings.get(0);
+            for (Painting p : paintings) {
                 assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
                 assertNotNull(p.getPaintingTitle());
-                assertEquals("P2", p.getPaintingTitle());
-
-                String artistName2 = (String) row[1];
-                assertEquals("A2", artistName2);
-                assertEquals(g1, row[2]);
-
-                row = (Object[]) objects.get(3);
-
-                assertEquals(a2, row[0]);
-                assertEquals(artistName2, row[1]);
-                assertEquals(g2, row[2]);
-
-                row = (Object[]) objects.get(4);
-
-                Artist a3 = (Artist) row[0];
-                assertEquals("A3", a3.getArtistName());
-
-                paintings = a3.getPaintingArray();
-
-                assertTrue(paintings.isEmpty());
-
-                String artistName3 = (String) row[1];
-                assertEquals("A3", artistName3);
-                assertEquals(g1, row[2]);
-
-                row = (Object[]) objects.get(5);
-
-                assertEquals(a3, row[0]);
-                assertEquals(artistName3, row[1]);
-                assertEquals(g2, row[2]);
+                assertTrue(expectedPaintingsNames.contains(p.getPaintingTitle()));
             }
+            String artistName1 = (String) row[1];
+            assertEquals("A1", artistName1);
+
+            Gallery g1 = (Gallery) row[2];
+            assertEquals("gallery1", g1.getGalleryName());
+
+            List<?> exibits = g1.getExhibitArray();
+
+            assertNotNull(exibits);
+            assertFalse(((ValueHolder) exibits).isFault());
+            assertEquals(2, exibits.size());
+
+            row = (Object[]) objects.get(1);
+
+            assertEquals(a1, row[0]);
+            assertEquals(artistName1, row[1]);
+
+            Gallery g2 = (Gallery) row[2];
+            assertEquals("gallery2", g2.getGalleryName());
+
+            exibits = g2.getExhibitArray();
+
+            assertTrue(exibits.isEmpty());
+
+            row = (Object[]) objects.get(2);
+
+            Artist a2 = (Artist) row[0];
+            assertEquals("A2", a2.getArtistName());
+
+            paintings = a2.getPaintingArray();
+
+            assertNotNull(paintings);
+            assertEquals(1, paintings.size());
+
+            Painting p = paintings.get(0);
+            assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
+            assertNotNull(p.getPaintingTitle());
+            assertEquals("P2", p.getPaintingTitle());
+
+            String artistName2 = (String) row[1];
+            assertEquals("A2", artistName2);
+            assertEquals(g1, row[2]);
+
+            row = (Object[]) objects.get(3);
+
+            assertEquals(a2, row[0]);
+            assertEquals(artistName2, row[1]);
+            assertEquals(g2, row[2]);
+
+            row = (Object[]) objects.get(4);
+
+            Artist a3 = (Artist) row[0];
+            assertEquals("A3", a3.getArtistName());
+
+            paintings = a3.getPaintingArray();
+
+            assertTrue(paintings.isEmpty());
+
+            String artistName3 = (String) row[1];
+            assertEquals("A3", artistName3);
+            assertEquals(g1, row[2]);
+
+            row = (Object[]) objects.get(5);
+
+            assertEquals(a3, row[0]);
+            assertEquals(artistName3, row[1]);
+            assertEquals(g2, row[2]);
         });
     }
 }

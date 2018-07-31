@@ -48,9 +48,9 @@ public class DataContextCompoundRelIT extends ServerCase {
 
     @Test
     public void testInsert() {
-
         CompoundPkTestEntity master = context.newObject(CompoundPkTestEntity.class);
         CompoundFkTestEntity detail = context.newObject(CompoundFkTestEntity.class);
+
         master.addToCompoundFkArray(detail);
         master.setName("m1");
         master.setKey1("key11");
@@ -60,30 +60,24 @@ public class DataContextCompoundRelIT extends ServerCase {
         context.commitChanges();
         context.invalidateObjects(master, detail);
 
-        SelectQuery q = new SelectQuery(CompoundPkTestEntity.class);
-        List<?> objs = context1.performQuery(q);
+        SelectQuery<CompoundPkTestEntity> q = SelectQuery.query(CompoundPkTestEntity.class);
+        List<CompoundPkTestEntity> objs = q.select(context1);
+
         assertEquals(1, objs.size());
+        assertEquals("m1", objs.get(0).getName());
 
-        master = (CompoundPkTestEntity) objs.get(0);
-        assertEquals("m1", master.getName());
-
-        List<?> details = master.getCompoundFkArray();
+        List<CompoundFkTestEntity> details = objs.get(0).getCompoundFkArray();
         assertEquals(1, details.size());
-        detail = (CompoundFkTestEntity) details.get(0);
-
-        assertEquals("d1", detail.getName());
+        assertEquals("d1", details.get(0).getName());
     }
 
     @Test
     public void testFetchQualifyingToOne() {
-        CompoundPkTestEntity master = (CompoundPkTestEntity) context
-                .newObject("CompoundPkTestEntity");
-        CompoundPkTestEntity master1 = (CompoundPkTestEntity) context
-                .newObject("CompoundPkTestEntity");
-        CompoundFkTestEntity detail = (CompoundFkTestEntity) context
-                .newObject("CompoundFkTestEntity");
-        CompoundFkTestEntity detail1 = (CompoundFkTestEntity) context
-                .newObject("CompoundFkTestEntity");
+        CompoundPkTestEntity master  = context.newObject(CompoundPkTestEntity.class);
+        CompoundPkTestEntity master1 = context.newObject(CompoundPkTestEntity.class);
+        CompoundFkTestEntity detail  = context.newObject(CompoundFkTestEntity.class);
+        CompoundFkTestEntity detail1 = context.newObject(CompoundFkTestEntity.class);
+
         master.addToCompoundFkArray(detail);
         master1.addToCompoundFkArray(detail1);
 
@@ -96,31 +90,26 @@ public class DataContextCompoundRelIT extends ServerCase {
         master1.setKey2("key22");
 
         detail.setName("d1");
-
         detail1.setName("d2");
 
         context.commitChanges();
         context.invalidateObjects(master, master1, detail, detail1);
 
         Expression qual = ExpressionFactory.matchExp("toCompoundPk", master);
-        SelectQuery q = new SelectQuery(CompoundFkTestEntity.class, qual);
-        List<?> objs = context1.performQuery(q);
-        assertEquals(1, objs.size());
+        SelectQuery<CompoundFkTestEntity> q = SelectQuery.query(CompoundFkTestEntity.class, qual);
+        List<CompoundFkTestEntity> objs = q.select(context1);
 
-        detail = (CompoundFkTestEntity) objs.get(0);
-        assertEquals("d1", detail.getName());
+        assertEquals(1, objs.size());
+        assertEquals("d1", objs.get(0).getName());
     }
 
     @Test
-    public void testFetchQualifyingToMany() throws Exception {
-        CompoundPkTestEntity master = (CompoundPkTestEntity) context
-                .newObject("CompoundPkTestEntity");
-        CompoundPkTestEntity master1 = (CompoundPkTestEntity) context
-                .newObject("CompoundPkTestEntity");
-        CompoundFkTestEntity detail = (CompoundFkTestEntity) context
-                .newObject("CompoundFkTestEntity");
-        CompoundFkTestEntity detail1 = (CompoundFkTestEntity) context
-                .newObject("CompoundFkTestEntity");
+    public void testFetchQualifyingToMany() {
+        CompoundPkTestEntity master  = context.newObject(CompoundPkTestEntity.class);
+        CompoundPkTestEntity master1 = context.newObject(CompoundPkTestEntity.class);
+        CompoundFkTestEntity detail  = context.newObject(CompoundFkTestEntity.class);
+        CompoundFkTestEntity detail1 = context.newObject(CompoundFkTestEntity.class);
+
         master.addToCompoundFkArray(detail);
         master1.addToCompoundFkArray(detail1);
 
@@ -140,11 +129,10 @@ public class DataContextCompoundRelIT extends ServerCase {
         context.invalidateObjects(master, master1, detail, detail1);
 
         Expression qual = ExpressionFactory.matchExp("compoundFkArray", detail1);
-        SelectQuery q = new SelectQuery(CompoundPkTestEntity.class, qual);
-        List<?> objs = context1.performQuery(q);
-        assertEquals(1, objs.size());
+        SelectQuery<CompoundPkTestEntity> q = SelectQuery.query(CompoundPkTestEntity.class, qual);
+        List<CompoundPkTestEntity> objs = q.select(context1);
 
-        master = (CompoundPkTestEntity) objs.get(0);
-        assertEquals("m2", master.getName());
+        assertEquals(1, objs.size());
+        assertEquals("m2", objs.get(0).getName());
     }
 }

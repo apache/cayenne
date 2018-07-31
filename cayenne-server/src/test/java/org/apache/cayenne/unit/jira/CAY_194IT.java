@@ -42,8 +42,8 @@ import static org.junit.Assert.assertSame;
 /**
  * Testing qualifier translator correctness on reflexive relationships.
  */
-// TODO: this is really a qualifier translator general test... need to
-// find an appropriate place in unit tests..
+// TODO: this is really a qualifier translator general test...
+// need to find an appropriate place in unit tests..
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CAY_194IT extends ServerCase {
 
@@ -78,15 +78,12 @@ public class CAY_194IT extends ServerCase {
         context.commitChanges();
 
         Expression qualifier = ExpressionFactory.matchExp("children", o2);
-        List<?> parents = context.performQuery(new SelectQuery(
-                ReflexiveAndToOne.class,
-                qualifier));
+        List<?> parents = SelectQuery.query(ReflexiveAndToOne.class, qualifier).select(context);
         assertEquals(1, parents.size());
         assertSame(o1, parents.get(0));
 
         qualifier = ExpressionFactory.matchExp("children", o1);
-        parents = context
-                .performQuery(new SelectQuery(ReflexiveAndToOne.class, qualifier));
+        parents = SelectQuery.query(ReflexiveAndToOne.class, qualifier).select(context);
         assertEquals(0, parents.size());
     }
 
@@ -105,9 +102,7 @@ public class CAY_194IT extends ServerCase {
         context.commitChanges();
 
         Expression qualifier = ExpressionFactory.matchExp("toParent", o1);
-        List<?> children = context.performQuery(new SelectQuery(
-                ReflexiveAndToOne.class,
-                qualifier));
+        List<ReflexiveAndToOne> children = SelectQuery.query(ReflexiveAndToOne.class, qualifier).select(context);
         assertEquals(1, children.size());
         assertSame(o2, children.get(0));
 

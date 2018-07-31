@@ -101,16 +101,14 @@ public class DataContextJoinAliasesIT extends ServerCase {
         Artist picasso = Cayenne.objectForPK(context, Artist.class, 1);
         Artist dali = Cayenne.objectForPK(context, Artist.class, 2);
 
-        SelectQuery query = new SelectQuery(Gallery.class);
-        query.andQualifier(ExpressionFactory.matchAllExp(
-                "|exhibitArray.artistExhibitArray.toArtist",
-                picasso,
-                dali));
+        SelectQuery<Gallery> query = SelectQuery.query(Gallery.class);
+        query.andQualifier(ExpressionFactory.matchAllExp("|exhibitArray.artistExhibitArray.toArtist", picasso, dali));
 
-        List<Gallery> galleries = context.performQuery(query);
+        List<Gallery> galleries = query.select(context);
 
         assertEquals(1, galleries.size());
         assertEquals("G1", galleries.get(0).getGalleryName());
+
     }
 
 }

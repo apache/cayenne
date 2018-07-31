@@ -33,8 +33,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-// TODO: this mapping scenario is really unsupported ... this is just an attempt at
-// partial solution
+// TODO: this mapping scenario is really unsupported ... this is just an attempt at partial solution
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT)
 public class CDOOneToManyFKIT extends ServerCase {
 
@@ -42,17 +41,17 @@ public class CDOOneToManyFKIT extends ServerCase {
     protected DataContext context;
 
     @Test
-    public void testReadRelationship() throws Exception {
+    public void testReadRelationship() {
 
         ToManyRoot2 src2 = context.newObject(ToManyRoot2.class);
         ToManyFkRoot src = context.newObject(ToManyFkRoot.class);
 
         // this should go away when such mapping becomes fully supported
-        src.setDepId(new Integer(1));
+        src.setDepId(1);
         ToManyFkDep target = context.newObject(ToManyFkDep.class);
 
         // this should go away when such mapping becomes fully supported
-        target.setDepId(new Integer(1));
+        target.setDepId(1);
         target.setRoot2(src2);
 
         src.addToDeps(target);
@@ -60,17 +59,15 @@ public class CDOOneToManyFKIT extends ServerCase {
 
         context.invalidateObjects(src, target, src2);
 
-        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne
-                .objectForPK(context, src.getObjectId());
+        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(context, src.getObjectId());
         assertNotNull(src1.getDeps());
         assertEquals(1, src1.getDeps().size());
         // resolve HOLLOW
-        assertSame(src1, ((ToManyFkDep) src1.getDeps().get(0)).getRoot());
+        assertSame(src1, src1.getDeps().get(0).getRoot());
 
         context.invalidateObjects(src1, src1.getDeps().get(0));
 
-        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(context, target
-                .getObjectId());
+        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(context, target.getObjectId());
         assertNotNull(target2.getRoot());
 
         // resolve HOLLOW

@@ -24,6 +24,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -207,7 +208,7 @@ public class DeleteObjectIT extends ServerCase {
     public void testDeleteHollow() throws Exception {
         createHollowDataSet();
 
-        List<Painting> paintings = context.performQuery(new SelectQuery(Painting.class));
+        List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
 
         Painting p = paintings.get(0);
         Artist a = p.getToArtist();

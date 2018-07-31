@@ -74,12 +74,12 @@ public class DataContextSelectQuerySplitAliasesIT extends ServerCase {
     public void testAliasPathSplits_SinglePath() throws Exception {
         createTwoArtistsTwoPaintingsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
         query.andQualifier(ExpressionFactory.matchExp("p.paintingTitle", "X"));
 
         query.aliasPathSplits("paintingArray", "p");
 
-        List<Artist> artists = context.performQuery(query);
+        List<Artist> artists = query.select(context);
         assertEquals(1, artists.size());
         assertEquals("AA", artists.get(0).getArtistName());
     }
@@ -88,13 +88,13 @@ public class DataContextSelectQuerySplitAliasesIT extends ServerCase {
     public void testAliasPathSplits_SplitJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
         query.andQualifier(ExpressionFactory.matchExp("p1.paintingTitle", "X"));
         query.andQualifier(ExpressionFactory.matchExp("p2.paintingTitle", "Y"));
 
         query.aliasPathSplits("paintingArray", "p1", "p2");
 
-        List<Artist> artists = context.performQuery(query);
+        List<Artist> artists = query.select(context);
         assertEquals(1, artists.size());
         assertEquals("BB", artists.get(0).getArtistName());
     }

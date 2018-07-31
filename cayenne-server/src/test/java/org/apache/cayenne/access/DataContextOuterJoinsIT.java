@@ -86,7 +86,7 @@ public class DataContextOuterJoinsIT extends ServerCase {
 		missingToManyQuery.andQualifier(Artist.GROUP_ARRAY.outer().isNull());
 		missingToManyQuery.addOrdering(Artist.ARTIST_NAME.asc());
 
-		List<Artist> artists = context.performQuery(missingToManyQuery);
+		List<Artist> artists = missingToManyQuery.select(context);
 		assertEquals(1, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 	}
@@ -102,20 +102,20 @@ public class DataContextOuterJoinsIT extends ServerCase {
 		paintingHelper.insert(33001, 33001, "P1");
 		paintingHelper.insert(33002, 33002, "P2");
 
-		SelectQuery missingToManyQuery = new SelectQuery(Artist.class);
+		SelectQuery<Artist> missingToManyQuery = SelectQuery.query(Artist.class);
 		missingToManyQuery.andQualifier(Artist.PAINTING_ARRAY.outer().isNull());
 		missingToManyQuery.addOrdering(Artist.ARTIST_NAME.asc());
 
-		List<Artist> artists = context.performQuery(missingToManyQuery);
+		List<Artist> artists = missingToManyQuery.select(context);
 		assertEquals(2, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 
-		SelectQuery<Artist> mixedConditionQuery = new SelectQuery<>(Artist.class);
+		SelectQuery<Artist> mixedConditionQuery = SelectQuery.query(Artist.class);
 		mixedConditionQuery.andQualifier(Artist.PAINTING_ARRAY.outer().isNull());
 		mixedConditionQuery.orQualifier(Artist.ARTIST_NAME.eq("AA1"));
 		mixedConditionQuery.addOrdering(Artist.ARTIST_NAME.asc());
 
-		artists = context.performQuery(mixedConditionQuery);
+		artists = mixedConditionQuery.select(context);
 		assertEquals(3, artists.size());
 		assertEquals("AA1", artists.get(0).getArtistName());
 		assertEquals("BB1", artists.get(1).getArtistName());

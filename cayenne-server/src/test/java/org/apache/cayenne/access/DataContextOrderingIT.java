@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
@@ -45,7 +44,7 @@ public class DataContextOrderingIT extends ServerCase {
     private DataContext context;
 
     @Test
-    public void testMultipleOrdering() throws Exception {
+    public void testMultipleOrdering() {
 
         Calendar c = Calendar.getInstance();
 

@@ -81,13 +81,13 @@ public class SelectQueryClobIT extends ServerCase {
 
             // see CAY-1539... CLOB column causes suppression of DISTINCT in
             // SQL, and hence the offset processing is done in memory
-            SelectQuery<ClobTestEntity> query = new SelectQuery<ClobTestEntity>(ClobTestEntity.class);
+            SelectQuery<ClobTestEntity> query = new SelectQuery<>(ClobTestEntity.class);
             query.addOrdering("db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN, SortOrder.ASCENDING);
             query.setFetchLimit(1);
             query.setFetchOffset(1);
             query.setDistinct(true);
 
-            List<ClobTestEntity> objects = context.performQuery(query);
+            List<ClobTestEntity> objects = query.select(context);
             assertEquals(1, objects.size());
             assertEquals(2, Cayenne.intPKForObject(objects.get(0)));
         }
@@ -97,7 +97,7 @@ public class SelectQueryClobIT extends ServerCase {
     public void testSelectEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
-            SelectQuery<ClobTestEntity> query = new SelectQuery<ClobTestEntity>(ClobTestEntity.class);
+            SelectQuery<ClobTestEntity> query = new SelectQuery<>(ClobTestEntity.class);
             Expression qual = ExpressionFactory.matchExp("clobCol", "clob1");
             query.setQualifier(qual);
             List<?> objects = context.performQuery(query);
@@ -109,7 +109,7 @@ public class SelectQueryClobIT extends ServerCase {
     public void testSelectNotEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
-            SelectQuery query = new SelectQuery(ClobTestEntity.class);
+            SelectQuery query = new SelectQuery<>(ClobTestEntity.class);
             Expression qual = ExpressionFactory.noMatchExp("clobCol", "clob1");
             query.setQualifier(qual);
             List<?> objects = context.performQuery(query);

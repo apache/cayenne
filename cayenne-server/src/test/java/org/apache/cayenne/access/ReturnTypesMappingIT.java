@@ -764,7 +764,7 @@ public class ReturnTypesMappingIT extends ServerCase {
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2003, 1, 1, 1, 20, 30);
+        cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
         Date timeValue = new Time(cal.getTime().getTime());
         test.setTimeColumn(timeValue);
         context.commitChanges();
@@ -783,13 +783,13 @@ public class ReturnTypesMappingIT extends ServerCase {
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2003, 1, 1, 1, 20, 30);
+        cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
         Date timeValue = new Time(cal.getTime().getTime());
         test.setTimeColumn(timeValue);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(ReturnTypesMap1.class);
-        ReturnTypesMap1 testRead = (ReturnTypesMap1) context.performQuery(q).get(0);
+        SelectQuery<ReturnTypesMap1> q = new SelectQuery<>(ReturnTypesMap1.class);
+        ReturnTypesMap1 testRead = q.selectOne(context);
         Date columnValue = testRead.getTimeColumn();
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
