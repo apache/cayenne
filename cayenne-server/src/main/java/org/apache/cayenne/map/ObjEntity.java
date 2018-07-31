@@ -1010,7 +1010,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     private PathComponentIterator createPathIterator(String path) {
-        return new PathComponentIterator(ObjEntity.this, path, new HashMap<String, String>());
+        return new PathComponentIterator(ObjEntity.this, path, Collections.emptyMap());
         // TODO: do we need aliases here?
     }
 
@@ -1077,11 +1077,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
             }
 
             // convert obj_path to db_path
-
             String converted = toDbPath(createPathIterator((String) expression.getOperand(0)));
-            Expression exp = ExpressionFactory.expressionOfType(Expression.DB_PATH);
-            exp.setOperand(0, converted);
-            return exp;
+            return ExpressionFactory.dbPathExp(converted);
         }
     }
 

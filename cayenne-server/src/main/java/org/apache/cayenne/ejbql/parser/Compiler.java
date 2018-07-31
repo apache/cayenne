@@ -233,26 +233,21 @@ class Compiler {
         return compiled;
     }
 
-    private EntityResult compileEntityResultWithPrefetch(
-            EntityResult compiledResult,
-            EJBQLExpression prefetchExpression) {
-        final EntityResult result = compiledResult;
+    private EntityResult compileEntityResultWithPrefetch(EntityResult compiledResult, EJBQLExpression prefetchExpression) {
         String id = prefetchExpression.getText().toLowerCase();
         ClassDescriptor descriptor = descriptorsById.get(id);
         if (descriptor == null) {
             descriptor = descriptorsById.get(prefetchExpression.getText());
         }
-        final String prefix = prefetchExpression.getText().substring(
-                prefetchExpression.getText().indexOf(".") + 1);
-
-        final Set<String> visited = new HashSet<String>();
+        String prefix = prefetchExpression.getText().substring(prefetchExpression.getText().indexOf(".") + 1);
+        Set<String> visited = new HashSet<>();
 
         PropertyVisitor visitor = new PropertyVisitor() {
 
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
                 if (visited.add(oa.getDbAttributePath())) {
-                    result.addObjectField(oa.getEntity().getName(), "fetch."
+                    compiledResult.addObjectField(oa.getEntity().getName(), "fetch."
                             + prefix
                             + "."
                             + oa.getName(), prefix + "." + oa.getDbAttributeName());
@@ -271,7 +266,7 @@ class Compiler {
                 for (DbJoin join : dbRel.getJoins()) {
                     DbAttribute src = join.getSource();
                     if (src.isForeignKey() && visited.add(src.getName())) {
-                        result.addDbField("fetch." + prefix + "." + src.getName(), prefix
+                        compiledResult.addDbField("fetch." + prefix + "." + src.getName(), prefix
                                 + "."
                                 + src.getName());
                     }
@@ -286,7 +281,7 @@ class Compiler {
         // append id columns ... (some may have been appended already via relationships)
         for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
             if (visited.add(pkName)) {
-                result
+                compiledResult
                         .addDbField("fetch." + prefix + "." + pkName, prefix
                                 + "."
                                 + pkName);
@@ -297,13 +292,13 @@ class Compiler {
         for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
 
             if (visited.add(column.getName())) {
-                result.addDbField(
+                compiledResult.addDbField(
                         "fetch." + prefix + "." + column.getDbAttributePath(),
                         prefix + "." + column.getDbAttributePath());
             }
         }
 
-        return result;
+        return compiledResult;
     }
 
     private EntityResult compileEntityResult(EJBQLExpression expression, int position) {
@@ -321,7 +316,7 @@ class Compiler {
             0
         };
 
-        final Set<String> visited = new HashSet<String>();
+        final Set<String> visited = new HashSet<>();
 
         PropertyVisitor visitor = new PropertyVisitor() {
 

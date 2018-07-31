@@ -168,8 +168,9 @@ public class SelectAction extends BaseSQLAction {
 		// number of objects returned from Cayenne.
 
 		int fetchLimit = query.getFetchLimit();
-		int offset = translator.isSuppressingDistinct() ? query.getFetchOffset() : getInMemoryOffset(query
-				.getFetchOffset());
+		int offset = translator.isSuppressingDistinct()
+				? query.getFetchOffset()
+				: getInMemoryOffset(query.getFetchOffset());
 
 		if (fetchLimit > 0 || offset > 0) {
 			return new LimitResultIterator<>(iterator, offset, fetchLimit);

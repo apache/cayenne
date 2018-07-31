@@ -743,9 +743,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // with resolved objects
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
-
-                if (rsMapping.get(i) instanceof EntityResultSegment) {
-                    EntityResultSegment entitySegment = (EntityResultSegment) rsMapping.get(i);
+                Object mapping = rsMapping.get(i);
+                if (mapping instanceof EntityResultSegment) {
+                    EntityResultSegment entitySegment = (EntityResultSegment) mapping;
                     PrefetchProcessorNode nextResult = toResultsTree(entitySegment.getClassDescriptor(),
                             metadata.getPrefetchTree(), mainRows, i);
 

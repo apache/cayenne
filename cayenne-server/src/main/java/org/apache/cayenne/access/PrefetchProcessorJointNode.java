@@ -171,8 +171,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
             // make sure we do not include "db:" prefix
             prefix = translated.getOperand(0) + ".";
-        }
-        else {
+        } else {
             prefix = "";
         }
 

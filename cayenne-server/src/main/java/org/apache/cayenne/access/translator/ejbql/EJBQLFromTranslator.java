@@ -21,9 +21,7 @@ package org.apache.cayenne.access.translator.ejbql;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.parser.EJBQLFromItem;
-import org.apache.cayenne.ejbql.parser.EJBQLInnerFetchJoin;
 import org.apache.cayenne.ejbql.parser.EJBQLJoin;
-import org.apache.cayenne.ejbql.parser.EJBQLOuterFetchJoin;
 
 /**
  * @since 3.0
@@ -71,10 +69,10 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         joinAppender.appendInnerJoin(
                 null,
                 new EJBQLTableId(join.getLeftHandSideId()),
-                new EJBQLTableId(((EJBQLInnerFetchJoin) join).getRightHandSideId()));
+                new EJBQLTableId(join.getRightHandSideId()));
 
         context.markCurrentPosition(EJBQLJoinAppender
-                .makeJoinTailMarker(((EJBQLInnerFetchJoin) join).getRightHandSideId()));
+                .makeJoinTailMarker(join.getRightHandSideId()));
         return false;
     }
 
@@ -95,10 +93,10 @@ public class EJBQLFromTranslator extends EJBQLBaseVisitor {
         joinAppender.appendOuterJoin(
                 null,
                 new EJBQLTableId(join.getLeftHandSideId()),
-                new EJBQLTableId(((EJBQLOuterFetchJoin) join).getRightHandSideId()));
+                new EJBQLTableId(join.getRightHandSideId()));
 
         context.markCurrentPosition(EJBQLJoinAppender
-                .makeJoinTailMarker(((EJBQLOuterFetchJoin) join).getRightHandSideId()));
+                .makeJoinTailMarker(join.getRightHandSideId()));
         return false;
     }
 

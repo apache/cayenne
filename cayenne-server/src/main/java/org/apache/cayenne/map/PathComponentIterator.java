@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -32,16 +33,17 @@ import java.util.StringTokenizer;
  */
 class PathComponentIterator implements Iterator<PathComponent<Attribute, Relationship>> {
 
-    private StringTokenizer toks;
+    private final StringTokenizer toks;
+    private final String path;
+    private final Map<String, String> aliasMap;
+
     private Entity currentEntity;
-    private String path;
-    private Map<String, String> aliasMap;
 
     PathComponentIterator(Entity root, String path, Map<String, String> aliasMap) {
-        currentEntity = root;
-        toks = new StringTokenizer(path, Entity.PATH_SEPARATOR);
-        this.path = path;
-        this.aliasMap = aliasMap;
+        this.currentEntity = Objects.requireNonNull(root);
+        this.path = Objects.requireNonNull(path);
+        this.aliasMap = Objects.requireNonNull(aliasMap);
+        this.toks = new StringTokenizer(path, Entity.PATH_SEPARATOR);
     }
 
     public boolean hasNext() {
@@ -56,8 +58,7 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
         // we only support LEFT JOINS for now...
         if (pathComp.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
             relationshipJoinType = JoinType.LEFT_OUTER;
-            pathComp = pathComp.substring(0, pathComp.length()
-                    - Entity.OUTER_JOIN_INDICATOR.length());
+            pathComp = pathComp.substring(0, pathComp.length() - Entity.OUTER_JOIN_INDICATOR.length());
         }
 
         // see if this is an attribute
@@ -66,79 +67,68 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
             // do a sanity check...
             if (toks.hasMoreTokens()) {
                 throw new ExpressionException(
-                        "Attribute must be the last component of the path: '"
-                                + pathComp
-                                + "'.",
-                        path,
-                        null);
+                        "Attribute must be the last component of the path: '" + pathComp + "'.", path, null);
             }
 
-            return new AttributePathComponent<Attribute, Relationship>(attr);
+            return new AttributePathComponent<>(attr);
         }
 
         Relationship rel = currentEntity.getRelationship(pathComp);
         if (rel != null) {
             currentEntity = rel.getTargetEntity();
-            return new RelationshipPathComponent<Attribute, Relationship>(
-                    rel,
-                    relationshipJoinType,
-                    !hasNext());
+            return new RelationshipPathComponent<>(rel, relationshipJoinType, !hasNext());
         }
 
-        String aliasedPath = (aliasMap != null) ? aliasMap.get(pathComp) : null;
-        if (aliasedPath != null) {
-
-            // a few fairly arbitrary assumptions.... if we find that they restrict valid
-            // and useful cases, we can change this behavior:
-            // 
-            // 1. No nested aliases. Aliased path must contain only unaliased component
-            // names.
-            // 2. Subpath must be relationship-only. Aliasing attributes doesn't seem
-            // useful, so we don't handle this case for simplicity...
-
-            // fully resolve subpath here... since we need to know the target entity of
-            // the subpath, we have to fully traverse it, hence instead of lazy iterator
-            // we might as well reuse obtained information in the AliasPathComponent
-
-            Iterator<PathComponent<Attribute, Relationship>> subpathIt = new PathComponentIterator(
-                    currentEntity,
-                    aliasedPath,
-                    Collections.<String, String>emptyMap());
-
-            Collection<PathComponent<Attribute, Relationship>> parsedSubpath = new ArrayList<>(4);
-
-            while (subpathIt.hasNext()) {
-                PathComponent<Attribute, Relationship> subpathComponent = subpathIt.next();
-
-                Relationship subpathRelationship = subpathComponent.getRelationship();
-                if (subpathRelationship == null) {
-                    throw invalidPathException(
-                            "Expected a relationship in the aliased subpath. Alias ["
-                                    + pathComp
-                                    + "]",
-                            subpathComponent.getName());
-                }
-
-                currentEntity = subpathRelationship.getTargetEntity();
-                parsedSubpath.add(subpathComponent);
-            }
-
-            return new AliasPathComponent<>(pathComp, parsedSubpath, !hasNext());
+        PathComponent<Attribute, Relationship> aliasedPathComponent = getAliasedPathComponent(pathComp);
+        if (aliasedPathComponent != null) {
+            return aliasedPathComponent;
         }
 
         throw invalidPathException("Can't resolve path component", pathComp);
     }
 
+    private PathComponent<Attribute, Relationship> getAliasedPathComponent(String pathComp) {
+        String aliasedPath = aliasMap.get(pathComp);
+        if(aliasedPath == null) {
+            return null;
+        }
+
+        // a few fairly arbitrary assumptions.... if we find that they restrict valid
+        // and useful cases, we can change this behavior:
+        //
+        // 1. No nested aliases. Aliased path must contain only unaliased component names.
+        // 2. Subpath must be relationship-only. Aliasing attributes doesn't seem
+        // useful, so we don't handle this case for simplicity...
+
+        // fully resolve subpath here... since we need to know the target entity of
+        // the subpath, we have to fully traverse it, hence instead of lazy iterator
+        // we might as well reuse obtained information in the AliasPathComponent
+
+        Iterator<PathComponent<Attribute, Relationship>> subpathIt =
+                new PathComponentIterator(currentEntity, aliasedPath, Collections.emptyMap());
+
+        Collection<PathComponent<Attribute, Relationship>> parsedSubpath = new ArrayList<>(4);
+
+        while (subpathIt.hasNext()) {
+            PathComponent<Attribute, Relationship> subpathComponent = subpathIt.next();
+
+            Relationship subpathRelationship = subpathComponent.getRelationship();
+            if (subpathRelationship == null) {
+                throw invalidPathException(
+                        "Expected a relationship in the aliased subpath. Alias [" + pathComp + "]",
+                        subpathComponent.getName());
+            }
+
+            currentEntity = subpathRelationship.getTargetEntity();
+            parsedSubpath.add(subpathComponent);
+        }
+
+        return new AliasPathComponent<>(pathComp, parsedSubpath, !hasNext());
+    }
+
     private ExpressionException invalidPathException(String message, String pathComponent) {
-        StringBuilder buffer = new StringBuilder();
-        buffer
-                .append(message)
-                .append(": [")
-                .append(currentEntity.getName())
-                .append('.')
-                .append(pathComponent)
-                .append("].");
-        return new ExpressionException(buffer.toString(), path, null);
+        String buffer = message + ": [" + currentEntity.getName() + '.' + pathComponent + "].";
+        return new ExpressionException(buffer, path, null);
     }
 
     public void remove() {
