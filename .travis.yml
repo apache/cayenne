@@ -23,13 +23,6 @@ group: deprecated-2017Q2 # needed for jdk 7
 services:
   - docker
 
-before_install:
-  # use new maven to support "-pl" exclude option
-  - wget https://archive.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip
-  - unzip -qq apache-maven-3.5.0-bin.zip
-  - export M2_HOME=$PWD/apache-maven-3.5.0
-  - export PATH=$M2_HOME/bin:$PATH
-
 language: java
 
 env:
@@ -43,24 +36,15 @@ env:
 jdk:
   - oraclejdk7
   - oraclejdk8
-#  - oraclejdk9 -- broken version on deprecated travis image
   - oraclejdk10
+  - oraclejdk11
 
 matrix:
-  include:
-    - jdk: oraclejdk-ea
-      env: DB_PROFILE=mysql-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
-    - jdk: oraclejdk-ea
-      env: DB_PROFILE=postgres-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
-    - jdk: oraclejdk-ea
-      env: DB_PROFILE=sqlserver-docker EXCLUDE_MODULES="-pl !docs/doc,!assembly"
-
   allow_failures:
-    - jdk: oraclejdk-ea
+    - jdk: oraclejdk11
 
 script:
-  # exclude JavaDocs and assembly from build, to pass on Java 11
-  - travis_wait 30 mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
+  - travis_wait 30 mvn verify -q -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
 # prevent Travis from unneeded "mvn install" run
 install: true
