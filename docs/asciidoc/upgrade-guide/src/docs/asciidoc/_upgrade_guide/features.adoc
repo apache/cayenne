@@ -69,7 +69,7 @@ Module module = binder ->
 
 ==== Fluent Query API
 
-Fluent Query API is one of the most exciting new features in Cayenne 4.0. This syntax is "chainable" so you can write query assembly and execution code on one line. The most useful fluent queries are ObjectSelect, SQLSelect and SelectById:
+Fluent Query API is one of the most exciting new features in Cayenne 4.0. This syntax is "chainable" so you can write query assembly and execution code on one line. The most useful fluent queries are `ObjectSelect`, `SQLSelect` and `SelectById`:
 
 ===== ObjectSelect
 
@@ -97,7 +97,7 @@ List<String> names = ObjectSelect
 
 ===== SQLSelect
 
-A "chainable" analog of SQLTemplate used specifically to run selecting raw SQL:
+A "chainable" analog of `SQLTemplate` used specifically to run selecting raw SQL:
 
 [source, java]
 ----
@@ -108,7 +108,7 @@ List<Long> ids = SQLSelect
 
 ===== SelectById
 
-There's really no good analog of SelectById in Cayenne prior to 4.0. Previously available ObjectIdQuery didn't support half of the features of SelectById (e.g. caching consistent with other queries, prefetches, etc.) :
+There's really no good analog of `SelectById` in Cayenne prior to 4.0. Previously available `ObjectIdQuery` didn't support half of the features of `SelectById` (e.g. caching consistent with other queries, prefetches, etc.) :
 
 [source, java]
 ----
@@ -140,11 +140,11 @@ We finished the work of "genericizing" Cayenne APIs started in 3.1. Now all APIs
 
 ==== Property API
 
-Persistent superclasses (_MyEntity) now contain a set of static Property<T> variables generated from the model. These metadata objects make possible to create type-safe Expressions and other query parts.
+Persistent superclasses (_MyEntity) now contain a set of static `Property<T>` variables generated from the model. These metadata objects make possible to create type-safe Expressions and other query parts.
 
 ==== Positional Parameter Bindings
 
-Expressions and SQLTemplate traditionally supported binding of parameters by name as a map. Cayenne 4.0 introduces a very easy form of positional bindings. It works with the same named template format, only parameters are bound by position, left-to-right. Here we showing a more complex example with the same parameter name being used more than once in the query:
+Expressions and `SQLTemplate` traditionally supported binding of parameters by name as a map. Cayenne 4.0 introduces a very easy form of positional bindings. It works with the same named template format, only parameters are bound by position, left-to-right. Here we showing a more complex example with the same parameter name being used more than once in the query:
 
 [source, java]
 ----
@@ -154,7 +154,7 @@ Expression e = ExpressionFactory.exp(
      "price = $price or averagePrice = $price and maxPrice = $maxPrice", 23, 50);
 ----
 
-This API is supported in Expressions, SQLTemplate as well as new SQLSelect and can be used interchnageably with named parameters with a single template flavor.
+This API is supported in Expressions, SQLTemplate as well as new SQLSelect and can be used interchangeably with named parameters with a single template flavor.
 
 ==== Improved Transaction API
 
@@ -213,15 +213,15 @@ Entity callbacks on the other hand are managed in the Modeler as before.
 
 ==== cdbimport
 
-"cdbimport" has evolved from an experiment to a full-featured production tool that significantly reduces (and sometimes eliminates) the need for manual maintenance of the DataMaps in CayenneModeler. Two improvements made this possible. First, smart merge algorithm will ensure that custom changes to the model are not overridden on subsequent runs of "cdbimport". Second, the mechanism for specifing DB reverse-engineering parameters, such as name filtering, is made much more powerful with many new options. E.g. we started supporting filters by catalogs and schemas, table name filters can be added per catalog/schema or at the top level, etc.
+`cdbimport` has evolved from an experiment to a full-featured production tool that significantly reduces (and sometimes eliminates) the need for manual maintenance of the DataMaps in CayenneModeler. Two improvements made this possible. First, smart merge algorithm will ensure that custom changes to the model are not overridden on subsequent runs of "cdbimport". Second, the mechanism for specifing DB reverse-engineering parameters, such as name filtering, is made much more powerful with many new options. E.g. we started supporting filters by catalogs and schemas, table name filters can be added per catalog/schema or at the top level, etc.
 
 ==== cgen
 
-As was mentioned above, cgen now includes Property<T> static variables for expression building. It is also made smarter about its defaults for "destDir" and "superPkg".
+As was mentioned above, `cgen` now includes `Property<T>` static variables for expression building. It is also made smarter about its defaults for "destDir" and "superPkg".
 
 ==== Gradle Plugin
 
-Cayenne now provides it's own Gradle Plugin that allows you easily integrate cdbimport and cgen tools into your build process. Here is example of it's usage:
+Cayenne now provides it's own Gradle Plugin that allows you easily integrate `cdbimport` and `cgen` tools into your build process. Here is example of it's usage:
 
 [source, Groovy]
 ----
@@ -230,7 +230,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.0.B2'
+        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.0'
     }
 }
 
