@@ -8,8 +8,8 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
-Release: 4.0.RC2
-Date:
+Release: 4.0
+Date: August 01, 2018
 ----------------------------------
 
 Bug Fixes:
@@ -17,6 +17,7 @@ Bug Fixes:
 CAY-2418 Modeler: unable to edit entity selected via Search
 CAY-2427 Modeler: Undo throws exception
 CAY-2430 Modeler: Redo throws NPE
+CAY-2431 Cayenne JDK 11 compatibility
 CAY-2435 cdbimport: procedure parameters are not imported
 CAY-2436 NPE in CayenneRuntimeException constructor
 CAY-2442 Broken EventBridge providers implementations
