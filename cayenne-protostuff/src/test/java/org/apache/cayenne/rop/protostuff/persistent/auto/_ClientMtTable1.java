@@ -41,15 +41,11 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return dateAttribute;
     }
+
     public void setDateAttribute(LocalDate dateAttribute) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "dateAttribute", false);
-        }
-
-        Object oldValue = this.dateAttribute;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "dateAttribute", oldValue, dateAttribute);
+            objectContext.propertyChanged(this, "dateAttribute", this.dateAttribute, dateAttribute);
         }
         
         this.dateAttribute = dateAttribute;
@@ -62,15 +58,11 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return globalAttribute;
     }
+
     public void setGlobalAttribute(String globalAttribute) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "globalAttribute", false);
-        }
-
-        Object oldValue = this.globalAttribute;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "globalAttribute", oldValue, globalAttribute);
+            objectContext.propertyChanged(this, "globalAttribute", this.globalAttribute, globalAttribute);
         }
         
         this.globalAttribute = globalAttribute;
@@ -83,15 +75,11 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return oldDateAttribute;
     }
+
     public void setOldDateAttribute(Date oldDateAttribute) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "oldDateAttribute", false);
-        }
-
-        Object oldValue = this.oldDateAttribute;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "oldDateAttribute", oldValue, oldDateAttribute);
+            objectContext.propertyChanged(this, "oldDateAttribute", this.oldDateAttribute, oldDateAttribute);
         }
         
         this.oldDateAttribute = oldDateAttribute;
@@ -104,15 +92,11 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return serverAttribute;
     }
+
     public void setServerAttribute(String serverAttribute) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "serverAttribute", false);
-        }
-
-        Object oldValue = this.serverAttribute;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "serverAttribute", oldValue, serverAttribute);
+            objectContext.propertyChanged(this, "serverAttribute", this.serverAttribute, serverAttribute);
         }
         
         this.serverAttribute = serverAttribute;
@@ -125,15 +109,11 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return timeAttribute;
     }
+
     public void setTimeAttribute(LocalTime timeAttribute) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "timeAttribute", false);
-        }
-
-        Object oldValue = this.timeAttribute;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "timeAttribute", oldValue, timeAttribute);
+            objectContext.propertyChanged(this, "timeAttribute", this.timeAttribute, timeAttribute);
         }
         
         this.timeAttribute = timeAttribute;
@@ -146,15 +126,11 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return timestampAttribute;
     }
+
     public void setTimestampAttribute(LocalDateTime timestampAttribute) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "timestampAttribute", false);
-        }
-
-        Object oldValue = this.timestampAttribute;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "timestampAttribute", oldValue, timestampAttribute);
+            objectContext.propertyChanged(this, "timestampAttribute", this.timestampAttribute, timestampAttribute);
         }
         
         this.timestampAttribute = timestampAttribute;
@@ -169,6 +145,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return table2Array;
     }
+
     public void addToTable2Array(ClientMtTable2 object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
@@ -178,6 +155,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         this.table2Array.add(object);
     }
+
     public void removeFromTable2Array(ClientMtTable2 object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
@@ -187,5 +165,4 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         this.table2Array.remove(object);
     }
-
 }
