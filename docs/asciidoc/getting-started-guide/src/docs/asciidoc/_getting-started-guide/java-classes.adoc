@@ -12,8 +12,6 @@
 //    the specific language governing permissions and limitations under the
 //    License.
 
-include::../var.adoc[]
-
 === Creating Java Classes
 Here we'll generate the Java classes from the model that was created in the previous
 section. CayenneModeler can be used to also generate the database schema, but since we
