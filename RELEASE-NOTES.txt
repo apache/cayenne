@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.0
-Date: August 01, 2018
+Date: August 06, 2018
 ----------------------------------
 
 Bug Fixes:
