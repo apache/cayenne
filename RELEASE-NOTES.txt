@@ -19,6 +19,7 @@ Bug Fixes:
 
 CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation
 CAY-2445 Oracle: Problem with ExpressionFactory.notInExp()
+CAY-2447 Crypto support for LocalDateTime
 
 ----------------------------------
 Release: 4.1.M2
