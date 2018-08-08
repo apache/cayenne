@@ -41,7 +41,7 @@ public class LocalDateTimeConverter implements BytesConverter<LocalDateTime> {
         byte[] date = longConverter.toBytes(value.toLocalDate().toEpochDay());
         byte[] time = longConverter.toBytes(value.toLocalTime().toNanoOfDay());
 
-        byte [] datetime = (byte[]) Array.newInstance(byte.class, date.length + time.length);
+        byte [] datetime = new byte[date.length + time.length];
         System.arraycopy(date,0, datetime, 0, date.length);
         System.arraycopy(time,0, datetime, date.length, time.length);
 
