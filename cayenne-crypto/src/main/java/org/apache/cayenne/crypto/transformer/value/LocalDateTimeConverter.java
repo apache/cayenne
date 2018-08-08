@@ -1,8 +1,9 @@
 package org.apache.cayenne.crypto.transformer.value;
 
-import java.time.Instant;
+import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalTime;
 import java.util.Objects;
 
 /**
@@ -20,14 +21,30 @@ public class LocalDateTimeConverter implements BytesConverter<LocalDateTime> {
 
     @Override
     public LocalDateTime fromBytes(byte[] bytes) {
+        int dateLength = 2;
+        int timeLength = 8;
 
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(longConverter.fromBytes(bytes)),
-                ZoneOffset.ofHours(0));
+        byte[] date = new byte[dateLength];
+        byte[] time = new byte[timeLength];
+
+        System.arraycopy(bytes, 0, date, 0, dateLength);
+        System.arraycopy(bytes, dateLength, time, 0, timeLength);
+
+        LocalDate localDate = LocalDate.ofEpochDay(longConverter.fromBytes(date));
+        LocalTime localTime = LocalTime.ofNanoOfDay(longConverter.fromBytes(time));
+        return LocalDateTime.of(localDate, localTime);
     }
 
 
     @Override
     public byte[] toBytes(LocalDateTime value) {
-        return longConverter.toBytes(value.toInstant(ZoneOffset.ofHours(0)).toEpochMilli());
+        byte[] date = longConverter.toBytes(value.toLocalDate().toEpochDay());
+        byte[] time = longConverter.toBytes(value.toLocalTime().toNanoOfDay());
+
+        byte [] datetime = (byte[]) Array.newInstance(byte.class, date.length + time.length);
+        System.arraycopy(date,0, datetime, 0, date.length);
+        System.arraycopy(time,0, datetime, date.length, time.length);
+
+        return datetime;
     }
 }

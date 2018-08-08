@@ -18,12 +18,12 @@ public class LocalDateTimeConverterTest {
 
     @Test
     public void testFromBytes() throws ParseException {
-        assertEquals(localDate("2015-01-07 11:00:02"), LocalDateTimeConverter.INSTANCE.fromBytes(new byte[]{0, 0, 1, 74, -60, 13, 31, 80}));
+        assertEquals(localDate("2015-01-07 11:00:02"), LocalDateTimeConverter.INSTANCE.fromBytes(new byte[]{64, 58, 0, 0, 36, 4, -113, 36, 116, 0}));
     }
 
     @Test
     public void testToBytes() throws ParseException {
-        assertArrayEquals(new byte[]{0, 0, 1, 74, -60, 13, 31, 80},
+        assertArrayEquals(new byte[]{64, 58, 0, 0, 36, 4, -113, 36, 116, 0},
                 LocalDateTimeConverter.INSTANCE.toBytes(localDate("2015-01-07 11:00:02")));
     }
 }
