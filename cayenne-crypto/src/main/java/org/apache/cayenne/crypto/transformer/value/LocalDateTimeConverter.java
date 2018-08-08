@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
-import java.util.TimeZone;
 
 /**
  * @since 4.1.M3
@@ -23,7 +22,7 @@ public class LocalDateTimeConverter implements BytesConverter<LocalDateTime> {
     public LocalDateTime fromBytes(byte[] bytes) {
 
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(longConverter.fromBytes(bytes)),
-                        TimeZone.getDefault().toZoneId());
+                ZoneId.systemDefault());
     }
 
 
