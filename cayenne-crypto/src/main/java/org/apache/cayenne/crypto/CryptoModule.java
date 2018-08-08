@@ -45,6 +45,9 @@ import org.apache.cayenne.crypto.transformer.value.DoubleConverter;
 import org.apache.cayenne.crypto.transformer.value.FloatConverter;
 import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
 import org.apache.cayenne.crypto.transformer.value.LazyValueTransformerFactory;
+import org.apache.cayenne.crypto.transformer.value.LocalDateConverter;
+import org.apache.cayenne.crypto.transformer.value.LocalDateTimeConverter;
+import org.apache.cayenne.crypto.transformer.value.LocalTimeConverter;
 import org.apache.cayenne.crypto.transformer.value.LongConverter;
 import org.apache.cayenne.crypto.transformer.value.ShortConverter;
 import org.apache.cayenne.crypto.transformer.value.Utf8StringConverter;
@@ -57,6 +60,9 @@ import org.apache.cayenne.di.Module;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 /**
@@ -183,5 +189,10 @@ public class CryptoModule implements Module {
         mapBuilder.put(Date.class.getName(), UtilDateConverter.INSTANCE);
         mapBuilder.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
         mapBuilder.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
+
+        mapBuilder.put(LocalDate.class.getName(), LocalDateConverter.INSTANCE);
+        mapBuilder.put(LocalTime.class.getName(), LocalTimeConverter.INSTANCE);
+        mapBuilder.put(LocalDateTime.class.getName(), LocalDateTimeConverter.INSTANCE);
+
     }
 }
