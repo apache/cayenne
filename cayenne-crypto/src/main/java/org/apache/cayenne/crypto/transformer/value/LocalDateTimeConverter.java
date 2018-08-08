@@ -1,6 +1,5 @@
 package org.apache.cayenne.crypto.transformer.value;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
