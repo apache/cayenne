@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 /**
- * @since 4.1.M3
+ * @since 4.1
  */
 public class LocalTimeConverter implements BytesConverter<LocalTime> {
     public static final BytesConverter<LocalTime> INSTANCE = new LocalTimeConverter(LongConverter.INSTANCE);

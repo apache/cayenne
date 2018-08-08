@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * @since 4.1.M3
+ * @since 4.1
  */
 public class LocalDateConverter implements BytesConverter<LocalDate> {
 

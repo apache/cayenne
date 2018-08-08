@@ -6,7 +6,7 @@ import java.time.ZoneOffset;
 import java.util.Objects;
 
 /**
- * @since 4.1.M3
+ * @since 4.1
  */
 public class LocalDateTimeConverter implements BytesConverter<LocalDateTime> {
     public static final BytesConverter<LocalDateTime> INSTANCE = new LocalDateTimeConverter(LongConverter.INSTANCE);
