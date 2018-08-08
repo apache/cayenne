@@ -2,7 +2,7 @@ package org.apache.cayenne.crypto.transformer.value;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 /**
@@ -22,15 +22,12 @@ public class LocalDateTimeConverter implements BytesConverter<LocalDateTime> {
     public LocalDateTime fromBytes(byte[] bytes) {
 
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(longConverter.fromBytes(bytes)),
-                ZoneId.systemDefault());
+                ZoneOffset.ofHours(0));
     }
 
 
     @Override
     public byte[] toBytes(LocalDateTime value) {
-
-        long epochMilli = value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-
-        return longConverter.toBytes(epochMilli);
+        return longConverter.toBytes(value.toInstant(ZoneOffset.ofHours(0)).toEpochMilli());
     }
 }
