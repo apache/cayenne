@@ -43,15 +43,15 @@ public class LocalDateTimeConverterTest {
     @Test
     public void testToBytesBig() {
         byte[] bytes = LocalDateTimeConverter.INSTANCE
-                .toBytes(LocalDateTime.of(123456, 12, 31, 23, 59, 59));
-        assertArrayEquals(new byte[]{4, 2, -91, 16, -9, 0, 0, 78, -108, 85, -76, 54, 0}, bytes);
+                .toBytes(LocalDateTime.MAX);
+        assertArrayEquals(new byte[]{8, 0, 0, 0, 85, 10, 27, 72, -9, 0, 0, 78, -108, -111, 78, -1, -1}, bytes);
     }
 
     @Test
     public void testFromBytesBig() {
         LocalDateTime localDateTime = LocalDateTimeConverter.INSTANCE
-                .fromBytes(new byte[]{4, 2, -91, 16, -9, 0, 0, 78, -108, 85, -76, 54, 0});
-        assertEquals(LocalDateTime.of(123456, 12, 31, 23, 59, 59), localDateTime);
+                .fromBytes(new byte[]{8, 0, 0, 0, 85, 10, 27, 72, -9, 0, 0, 78, -108, -111, 78, -1, -1});
+        assertEquals(LocalDateTime.MAX, localDateTime);
     }
 
     @Test
