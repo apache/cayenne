@@ -66,7 +66,7 @@ import java.util.Map;
  */
 public class PasteAction extends CayenneAction implements FlavorListener {
 
-    private static final String COPY_PATTERN = "Copy of %s (%d)";
+    private static final String COPY_PATTERN = "copy of %s (%d)";
 
     /**
      * Constructor for PasteAction
