@@ -19,16 +19,14 @@
 
 package org.apache.cayenne.modeler.dialog.validator;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.List;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.action.ValidateAction;
+import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.validation.ValidationFailure;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -40,16 +38,16 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.action.ValidateAction;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.validation.ValidationFailure;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Dialog for displaying validation errors.
@@ -217,6 +215,7 @@ public class ValidatorDialog extends CayenneDialog {
             if (value != null) {
                 ValidationFailure info = (ValidationFailure) value;
                 value = info.getDescription();
+                setToolTipText(info.getDescription());
             }
 
             setBackground(error ? ERROR_COLOR : WARNING_COLOR);
