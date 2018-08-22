@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
-
 import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
@@ -30,6 +26,9 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
+
+import javax.swing.JOptionPane;
+import java.util.ArrayList;
 
 public class ProcedureParameterTableModel extends CayenneTableModel<ProcedureParameter> {
 
@@ -127,10 +126,10 @@ public class ProcedureParameterTableModel extends CayenneTableModel<ProcedurePar
                 parameter.setMaxLength(Integer.parseInt(newVal));
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
-                    null,
-                    "Invalid Max Length (" + newVal + "), only numbers are allowed",
-                    "Invalid Maximum Length",
-                    JOptionPane.ERROR_MESSAGE);
+                        null,
+                        "Invalid Max Length (" + newVal + "), only numbers are allowed",
+                        "Invalid Maximum Length",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }

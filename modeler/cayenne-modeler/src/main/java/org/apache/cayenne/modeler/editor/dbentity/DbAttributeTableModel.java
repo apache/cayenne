@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.dbentity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JOptionPane;
-
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -38,6 +29,14 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
+
+import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Model for DbEntity attributes. Allows adding/removing attributes, modifying types and names.
@@ -72,6 +71,14 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
     public int typeColumnInd() {
         return DB_ATTRIBUTE_TYPE;
+    }
+
+    public int lengthColumnId(){
+        return DB_ATTRIBUTE_MAX;
+    }
+
+    public int scaleColumnId(){
+        return DB_ATTRIBUTE_SCALE;
     }
 
     public int mandatoryColumnInd() {
