@@ -20,6 +20,7 @@ Bug Fixes:
 
 CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation
 CAY-2445 Oracle: Problem with ExpressionFactory.notInExp()
+CAY-2449 Needless scrollbar in the Modeler Menu: Tools: Generate Database Schema
 
 ----------------------------------
 Release: 4.1.M2
