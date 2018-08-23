@@ -11,6 +11,33 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-== Importing database
 
-include::part2-rr-setup.adoc[]
+include::../var.adoc[]
+
+=== Cayenne Web extension
+
+==== Description
+
+The goal of this module is to create web application with Cayenne service in it.
+
+==== Including in a project
+
+===== Maven
+
+[source, XML,subs="verbatim,attributes"]
+----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne-web</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+===== Gradle
+
+[source, Groovy,subs="verbatim,attributes"]
+----
+compile 'org.apache.cayenne:cayenne-web:{version}'
+----
+
+

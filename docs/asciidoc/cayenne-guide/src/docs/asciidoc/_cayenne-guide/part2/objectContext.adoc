@@ -347,4 +347,13 @@ Transaction tx = BaseTransaction.getThreadTransaction();
 tx.addConnection("mydatanode", myConnection);
 ----
 
+You can control transaction isolation level and propagation logic using TransactionDescriptor.
 
+[source, java]
+----
+TransactionDescriptor descriptor = new TransactionDescriptor(
+                Connection.TRANSACTION_SERIALIZABLE,
+                TransactionPropagation.REQUIRES_NEW
+        );
+transactionManager.performInTransaction(transactionalOperation, descriptor);
+----

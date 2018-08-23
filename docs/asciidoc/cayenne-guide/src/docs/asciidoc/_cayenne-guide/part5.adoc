@@ -22,8 +22,12 @@ include::part5/crypto.adoc[]
 
 include::part5/jCache.adoc[]
 
-include::part5/jodaTime.adoc[]
-
 include::part5/projectCompatibility.adoc[]
 
 include::part5/apacheVelocity.adoc[]
+
+include::part5/cayenneWeb.adoc[]
+
+include::part5/cayenneOsgi.adoc[]
+
+include::part5/cayenneRopServer.adoc[]

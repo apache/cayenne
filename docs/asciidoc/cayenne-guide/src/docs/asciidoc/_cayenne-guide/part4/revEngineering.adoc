@@ -17,19 +17,9 @@
 
 Alternative aproach to using <<cdbimport>> is doing reverse engineering from <<CayenneModeler Application, CayenneModeler>>. Currently modeler GUI doesn't support all features of ant/maven tasks but it suffice for general DB import. Especially it's a good place to quickly start working on your data model.
 
-You can find reverse engineering tool in main modeler menu *Tools > Reengineer Database Schema*
-
-==== DataSource selection
-
-First you should select DataSource. If you don't have any DataSource yet you can create one from this menu.
-
-image::../images/re-modeler-datasource-select.png[align="center"]
-
-Datasource selection dialog.
+You can find reverse engineering tool in dataMap view on *DbImport Tab*.
 
 ==== Reverse engineering options
-
-Once DataSource is selected you can proceed to reverse engineering options.
 
 image::../images/re-modeler-reverseengineering-dialog.png[align="center"]
 
@@ -37,21 +27,46 @@ Reverse Engineering dialog.
 
 Here is a list of options to tune what will be processed by reverse engineering:
 
-- *Select Catalog*: catalog to process
+- *Add Catalog*
 
-NOTE: You can only select one catalog. If you need to import multiple catalogs you need to run process several times.
+- *Add Schema*
 
-- *Table Name Pattern*: RegExp to filter tables. Default pattern .* includes all tables.
+- *Add Include Table*
 
-- *Procedure Name Pattern*: RegExp to filter procedures. Default pattern .* includes all stored procedures.
+- *Add Exclude Table*
 
-- *Naming Strategy*: Currently there is only one naming strategy available. See ant/maven tools <<namingStrategy, documentation>> for details about naming strategy.
+- *Add Include Column*
+
+- *Add Exclude Column*
+
+- *Add Include Procedure*
+
+- *Add Exclude Procedure*
 
 - *Tables with Meaningful PK Pattern*: Comma separated list of RegExp's for tables that you want to have meaningful primary keys. By default no meaningful PKs are created.
+
+- *Strip from table names*: Regex that matches the part of the table name that needs to be stripped off generating ObjEntity name.
+
+- *Skip relationships loading*: Whether to load relationships.
+
+- *Skip primary key loading*: Whether to load primary keys.
+
+- *Force datamap catalog*: will set DbEntity catalog to one in the DataMap.
+
+- *Force datamap schema*: will set DbEntity schema to one in the DataMap.
 
 - *Use Java primitive types*: Use primitive types (e.g. *int*) or Object types (e.g. *java.lang.Integer*).
 
 - *Use old java.util.Date type*: Use *java.util.Date* for all columns with *DATE/TIME/TIMESTAMP* types. By default *java.time.* types will be used.
 
+==== DataSource selection
 
+Then you click `Run Import` or `Configure Connection` to set DataSource.
+If you don't have any DataSource yet you can create one from this menu.
+
+image::../images/re-modeler-datasource-select.png[align="center"]
+
+Datasource selection dialog.
+
+Then click `continue` to start dbImport.
 

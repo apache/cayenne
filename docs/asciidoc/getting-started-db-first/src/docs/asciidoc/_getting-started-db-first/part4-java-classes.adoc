@@ -50,15 +50,8 @@ Note that Cayenne code is unrecognized, that's because we need to include Cayenn
             <artifactId>cayenne-server</artifactId>
             <version>${cayenne.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-java8</artifactId>
-            <version>${cayenne.version}</version>
-        </dependency>
     </dependencies>
 ----
-
-NOTE: `cayenne-java8` module required to support Java 8 date/time types.
 
 Additionally we need to tell `Maven compiler plugin` that our code uses Java 8: 
 [source,xml]
