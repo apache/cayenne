@@ -199,7 +199,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-src.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/assembly-src/assembly-src.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}-src</finalName>
 								</configuration>
@@ -284,7 +284,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-generic.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/assembly-generic/assembly-generic.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}</finalName>
 								</configuration>
@@ -341,7 +341,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-mac.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/assembly-mac/assembly-mac.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}-macosx</finalName>
 									<attach>false</attach>
@@ -372,7 +372,21 @@
 								</configuration>
 							</execution>
 
-							<!-- Package into .dmg -->
+							<execution>
+								<id>chmod-script</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>/bin/chmod</executable>
+									<arguments>
+										<argument>755</argument>
+										<argument>src/main/resources/assemblies/assembly-mac/createDMG.sh</argument>
+									</arguments>
+								</configuration>
+							</execution>
+
 							<execution>
 								<id>dmg-distro</id>
 								<phase>package</phase>
@@ -380,16 +394,9 @@
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>/usr/bin/hdiutil</executable>
+									<executable>src/main/resources/assemblies/assembly-mac/createDMG.sh</executable>
 									<arguments>
-										<argument>create</argument>
-										<argument>-srcfolder</argument>
-										<argument>target/cayenne-${project.version}-macosx/</argument>
-										<argument>-format</argument>
-										<argument>UDZO</argument>
-										<argument>-volname</argument>
-										<argument>cayenne-${project.version}</argument>
-										<argument>target/cayenne-${project.version}-macosx</argument>
+										<argument>${project.version}</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -442,7 +449,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-windows.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/assembly-windows/assembly-windows.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}-win</finalName>
 								</configuration>
