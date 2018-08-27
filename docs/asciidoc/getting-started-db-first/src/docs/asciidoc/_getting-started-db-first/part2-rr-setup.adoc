@@ -42,12 +42,23 @@ So let's begin, here is sample settings for the data source:
 
 NOTE: Don't forget to set your actual MySQL login and password
 
-We have told plugin where it should load data from, now let's set where it should store Cayenne model: 
+We have told plugin where cayenne-project.xml will be located.
 [source,xml]
 ----
 <configuration>
     ...
     </dataSource>
+    <cayenneProject>${project.basedir}/src/main/resources/cayenne/cayenne-project.xml</cayenneProject>
+----
+- Without cayenneProject option you should create project file manually via Cayenne Modeler.
+- If cayenneProject is set but no file exists it will be created and DataMap linked to it.
+- If cayenneProject is and file already exists then DataMap should be linked to it (if it is new) or update existing one.
+
+We have told plugin where it should load data from, now let's set where it should store Cayenne model: 
+[source,xml]
+----
+<configuration>
+    ...</cayenneProject>
     <map>${project.basedir}/src/main/resources/datamap.map.xml</map>
 ----
 
@@ -101,6 +112,6 @@ You can open created `datamap.map.xml` file and check it's content in IDEA:
 
 image::tutorial-new-datamap.png[align="center"]
 
-Great! We now have Cayenne DataMap file that describe model from our database.
+Great! We now have Cayenne DataMap file that describe model from our database and cayenne-project.xml file.
 
 NOTE: If you have some problems with configuration you can always delete `datamap.map.xml` file and try again.

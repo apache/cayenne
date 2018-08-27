@@ -138,7 +138,7 @@ If you want to do reverse engineering for specific schemas, just remove unwanted
 </dbimport>
 ----
 
-==== Including and Excluding tables, columns and procedures
+==== Including and Excluding tables, columns, procedures and relationships
 
 Cayenne reverse engineering let you fine tune table, columns and stored procedures names that you need to import to your model file. In every filter you can use regexp syntax. Here is some examples of configuration for common tasks.
 
@@ -212,7 +212,16 @@ Cayenne reverse engineering let you fine tune table, columns and stored procedur
 </excludeProcedure>
 ----
 
-All filtering tags `<includeTable>`, `<excludeTable>`, `<includeColumn>`, `<excludeColumn>`, `<includeProcedure>` and `<excludeProcedure>` have 2 ways to pass filtering RegExp.
+9) Exclude relationships:
+[source, XML]
+----
+<excludeRelationship>excludeRelationship01</excludeRelationship>
+<excludeRelationship>
+    <pattern>excludeRelationship03</pattern>
+</excludeRelationship>
+----
+
+All filtering tags `<includeTable>`, `<excludeTable>`, `<includeColumn>`, `<excludeColumn>`, `<includeProcedure>`, `<excludeProcedure>` and `<excludeRelationship>` have 2 ways to pass filtering RegExp.
 
 1) text inside tag
 
@@ -314,6 +323,12 @@ Let’s assume you have a lot of table prefixes with the same names. Cayenne all
             <pattern>excludeProcedure-02</pattern>
         </excludeProcedure>
 
+        <excludeRelationship>excludeRelationship-01</excludeRelationship>
+
+        <excludeRelationship>
+            <pattern>excludeRelationship-02</pattern>
+        </excludeRelationship>
+
     </catalog>
 </dbimport>
 ----
@@ -357,6 +372,9 @@ Here is config sample for `Ant` task:
 
     <excludeProcedure>excludeProcedure-01</excludeProcedure>
     <excludeProcedure pattern="excludeProcedure-02"/>
+
+    <excludeRelationship>excludeRelationship-01</excludeRelationship>
+    <excludeRelationship pattern="excludeRelationship-02"/>
 
 </catalog>
 ----

@@ -142,6 +142,10 @@ ${project.basedir}/src/main/resources/my.map.xml
 .^|createPropertyNames
 .^|boolean
 .^|If set to "true", will generate String Property names. Default is "false"
+
+.^|force
+.^|boolean
+.^|If set to "true", will force run from maven/gradle.
 |===
 
 Example - a typical class generation scenario, where pairs of classes are generated with default Maven source destination and superclass package:

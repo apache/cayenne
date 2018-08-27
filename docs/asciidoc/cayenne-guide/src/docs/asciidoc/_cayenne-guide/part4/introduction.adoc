@@ -40,26 +40,27 @@ Here is a simple Maven configuration of "cdbimport" (for details see xref:mavenC
 [source, XML,subs="verbatim,attributes"]
 ----
 <plugin>
-		<groupId>org.apache.cayenne.plugins</groupId>
-		<artifactId>cayenne-maven-plugin</artifactId>
-		<version>{version}</version>
+	<groupId>org.apache.cayenne.plugins</groupId>
+	<artifactId>cayenne-maven-plugin</artifactId>
+	<version>{version}</version>
 
-		<configuration>
-			<map>${project.basedir}/src/main/resources/datamap.map.xml</map>
-			<dataSource>
-				<url><!-- jdbc url --></url>
-				<driver><!-- jdbc driver class --></driver>
-				<username>username</username>
-				<password>password</password>
-			</dataSource>
-			<dbimport>
-				<defaultPackage>com.example.package</defaultPackage>
-			    <includeTable>.*</includeTable>
-			</dbimport>
-		</configuration>
-		<dependencies>
-			<!-- jdbc driver dependency -->
-		</dependencies>
+	<configuration>
+        <cayenneProject>${project.basedir}/src/main/resources/cayenne/cayenne-project.xml</cayenneProject>
+        <map>${project.basedir}/src/main/resources/datamap.map.xml</map>
+        <dataSource>
+            <url><!-- jdbc url --></url>
+            <driver><!-- jdbc driver class --></driver>
+            <username>username</username>
+            <password>password</password>
+        </dataSource>
+        <dbimport>
+            <defaultPackage>com.example.package</defaultPackage>
+            <includeTable>.*</includeTable>
+        </dbimport>
+    </configuration>
+    <dependencies>
+        <!-- jdbc driver dependency -->
+    </dependencies>
 </plugin>
 ----
 In the next chapters we will discuss various filtering and other reverse-engineering options.

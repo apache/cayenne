@@ -11,6 +11,33 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-== Importing database
 
-include::part2-rr-setup.adoc[]
+include::../var.adoc[]
+
+=== Cayenne Rop Server extension
+
+==== Description
+
+The goal of this module is to create services for the server-side of an ROP application based on Caucho Hessian.
+
+==== Including in a project
+
+===== Maven
+
+[source, XML,subs="verbatim,attributes"]
+----
+<dependency>
+    <groupId>org.apache.cayenne</groupId>
+    <artifactId>cayenne-rop-server</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+
+===== Gradle
+
+[source, Groovy,subs="verbatim,attributes"]
+----
+compile 'org.apache.cayenne:cayenne-rop-server:{version}'
+----
+
+

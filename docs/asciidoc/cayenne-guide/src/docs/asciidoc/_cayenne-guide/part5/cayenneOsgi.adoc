@@ -14,12 +14,11 @@
 
 include::../var.adoc[]
 
-[[ext-joda]]
-=== Joda time extension
+=== Cayenne OSGI extension
 
 ==== Description
 
-Joda time module allows to use `org.joda.time.LocalTime`, `org.joda.time.LocalDate`, `org.joda.time.LocalDateTime` and `org.joda.time.DateTime` types for entity attributes.
+This module helps to bootstrap Cayenne in OSGi environment.
 
 ==== Including in a project
 
@@ -29,7 +28,7 @@ Joda time module allows to use `org.joda.time.LocalTime`, `org.joda.time.LocalDa
 ----
 <dependency>
     <groupId>org.apache.cayenne</groupId>
-    <artifactId>cayenne-joda</artifactId>
+    <artifactId>cayenne-osgi</artifactId>
     <version>{version}</version>
 </dependency>
 ----
@@ -38,10 +37,7 @@ Joda time module allows to use `org.joda.time.LocalTime`, `org.joda.time.LocalDa
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
-compile 'org.apache.cayenne:cayenne-joda:{version}'
+compile 'org.apache.cayenne:cayenne-osgi:{version}'
 ----
 
-==== Usage
-
-This module doesn't require any additional setup, you can just use new data types in your model.
 

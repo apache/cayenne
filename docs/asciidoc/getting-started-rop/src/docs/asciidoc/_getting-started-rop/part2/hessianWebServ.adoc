@@ -17,8 +17,7 @@
 ==== Setting up Dependencies
 
 Now lets get back to the "tutorial" project that contains a web application and set up dependencies.
-The only extra one that we don't have yet is `resin-hessian.jar`, just like the client, so let's add it
-(and the caucho repo declaration) to the `pom.xml`.
+Let's add `resin-hessian.jar` (and the caucho repo declaration) and `cayenne-rop-server` to the `pom.xml`
 
 [source, XML]
 ----
@@ -27,6 +26,12 @@ The only extra one that we don't have yet is `resin-hessian.jar`, just like the 
     ...
     <dependencies>
         ...
+        <dependency>
+        	<groupId>org.apache.cayenne</groupId>
+        	<artifactId>cayenne-rop-server</artifactId>
+        	<!-- Here specify the version of Cayenne you are actually using -->
+            <version>{version}</version>
+        </dependency>
         <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
