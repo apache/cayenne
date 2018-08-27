@@ -20,7 +20,7 @@ Bug Fixes:
 
 CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation
 CAY-2445 Oracle: Problem with ExpressionFactory.notInExp()
-CAY-2459 Paste function is not working
+CAY-2459 Modeler: DataMap paste function is not working
 
 ----------------------------------
 Release: 4.1.M2
