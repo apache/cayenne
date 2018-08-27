@@ -1,32 +1,25 @@
 #!/bin/bash
 
-# Based on script by Andy Maloney
+# Based on https://gist.github.com/asmaloney/55d96a8c3558b2f92cb3
 
-APP_NAME="cayenne"
 VERSION="$1"
-DMG_BACKGROUND_IMG="src/main/resources/assemblies/assembly-mac/background.png"
+DMG_BACKGROUND_IMG="src/main/resources/assemblies/mac/background.png"
  
 APP_EXE="CayenneModeler.app/Contents/MacOS/CayenneModeler"
  
-VOL_NAME="${APP_NAME}-${VERSION}"
-DMG_TMP="${VOL_NAME}-temp.dmg"
-DMG_FINAL="${VOL_NAME}-macosx.dmg"
-STAGING_DIR="./Install"
+VOL_NAME="cayenne-$1-macosx"
+DMG_TMP="target/${VOL_NAME}-temp.dmg"
+DMG_FINAL="target/${VOL_NAME}.dmg"
+STAGING_DIR="target/dmg-staging"
 
 # clear out any old data
 rm -rf "${STAGING_DIR}" "${DMG_TMP}" "${DMG_FINAL}"
  
 # copy over the stuff we want in the final disk image to our staging dir
 mkdir -p "${STAGING_DIR}"
-cp -rpf "target/cayenne-${VERSION}-macosx/CayenneModeler.app" "${STAGING_DIR}"
-cp -rpf "target/cayenne-${VERSION}-macosx/README.txt" "${STAGING_DIR}"
-cp -rpf "target/cayenne-${VERSION}-macosx/cayenne-${VERSION}" "${STAGING_DIR}"
-# ... cp anything else you want in the DMG - documentation, etc.
-
-pushd "${STAGING_DIR}"
- 
-# ... perform any other stripping/compressing of libs and executables
-popd
+cp -rpf "target/${VOL_NAME}/CayenneModeler.app" "${STAGING_DIR}"
+cp -rpf "target/${VOL_NAME}/README.txt"         "${STAGING_DIR}"
+cp -rpf "target/${VOL_NAME}/cayenne-${VERSION}" "${STAGING_DIR}"
 
 # figure out how big our DMG needs to be
 #  assumes our contents are at least 1M!
@@ -37,7 +30,7 @@ if [ $? -ne 0 ]; then
    echo "Error: Cannot compute size of staging dir"
    exit
 fi
- 
+
 # create the temp DMG file
 hdiutil create -srcfolder "${STAGING_DIR}" -volname "${VOL_NAME}" -fs HFS+ \
       -fsargs "-c c=64,a=16,e=16" -format UDRW -size ${SIZE}M "${DMG_TMP}"
@@ -47,7 +40,7 @@ echo "Created DMG: ${DMG_TMP}"
 # mount it and save the device
 DEVICE=$(hdiutil attach -readwrite -noverify "${DMG_TMP}" | \
          egrep '^/dev/' | sed 1q | awk '{print $1}')
- 
+
 sleep 2
 
 # add a link to the Applications dir
@@ -91,11 +84,7 @@ hdiutil detach "${DEVICE}"
  
 # now make the final image a compressed disk image
 echo "Creating compressed image"
-hdiutil convert "${DMG_TMP}" -format UDZO -imagekey zlib-level=9 -o "target/${DMG_FINAL}"
- 
-# clean up
-rm -rf "${DMG_TMP}"
-rm -rf "${STAGING_DIR}"
+hdiutil convert "${DMG_TMP}" -format UDZO -imagekey zlib-level=9 -o "${DMG_FINAL}"
  
 echo 'Done.'
  

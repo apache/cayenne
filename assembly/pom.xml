@@ -199,7 +199,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-src/assembly-src.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/src/assembly-src.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}-src</finalName>
 								</configuration>
@@ -284,7 +284,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-generic/assembly-generic.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/generic/assembly-generic.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}</finalName>
 								</configuration>
@@ -341,7 +341,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-mac/assembly-mac.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/mac/assembly-mac.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}-macosx</finalName>
 									<attach>false</attach>
@@ -373,28 +373,13 @@
 							</execution>
 
 							<execution>
-								<id>chmod-script</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>/bin/chmod</executable>
-									<arguments>
-										<argument>755</argument>
-										<argument>src/main/resources/assemblies/assembly-mac/createDMG.sh</argument>
-									</arguments>
-								</configuration>
-							</execution>
-
-							<execution>
 								<id>dmg-distro</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>src/main/resources/assemblies/assembly-mac/createDMG.sh</executable>
+									<executable>src/main/resources/assemblies/mac/create-dmg.sh</executable>
 									<arguments>
 										<argument>${project.version}</argument>
 									</arguments>
@@ -449,7 +434,7 @@
 								</goals>
 								<configuration>
 									<descriptors>
-										<descriptor>src/main/resources/assemblies/assembly-windows/assembly-windows.xml</descriptor>
+										<descriptor>src/main/resources/assemblies/windows/assembly-windows.xml</descriptor>
 									</descriptors>
 									<finalName>cayenne-${project.version}-win</finalName>
 								</configuration>
