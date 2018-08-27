@@ -81,6 +81,7 @@ public class DataSourceWizard extends CayenneController {
 		this.view = createView(title);
 		this.view.setTitle(title);
 		this.connectionInfo = new DBConnectionInfo();
+		this.projectController = (ProjectController) parent;
 
 		initBindings();
 		initDataSourceListener();
@@ -316,9 +317,5 @@ public class DataSourceWizard extends CayenneController {
 	 */
 	public DbAdapter getAdapter() {
 		return adapter;
-	}
-
-	public void setProjectController(final ProjectController projectController) {
-		this.projectController = projectController;
 	}
 }

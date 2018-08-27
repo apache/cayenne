@@ -71,7 +71,6 @@ public class LoadDbSchemaAction extends CayenneAction {
                 DBConnectionInfo connectionInfo;
                 if (!datamapPreferencesExist()) {
                     final DataSourceWizard connectWizard = new DataSourceWizard(getProjectController(), "Load Db Schema");
-                    connectWizard.setProjectController(getProjectController());
                     if (!connectWizard.startupAction()) {
                         return;
                     }
