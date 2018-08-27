@@ -21,7 +21,7 @@ Bug Fixes:
 CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation
 CAY-2445 Oracle: Problem with ExpressionFactory.notInExp()
 CAY-2459 Modeler: DataMap paste function is not working
-CAY-2463 DB Schema generation doesn't work
+CAY-2463 Modeler: DB Schema generation doesn't work
 
 ----------------------------------
 Release: 4.1.M2
