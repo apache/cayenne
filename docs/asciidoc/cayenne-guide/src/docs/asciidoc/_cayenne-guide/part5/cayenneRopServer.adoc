@@ -18,7 +18,7 @@ include::../var.adoc[]
 
 ==== Description
 
-The goal of this module is to create services for the server-side of an ROP application based on Caucho Hessian.
+This module creates services for the server side of an xref:introduction-to-rop[ROP] application.
 
 ==== Including in a project
 

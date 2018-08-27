@@ -18,7 +18,7 @@ include::../var.adoc[]
 
 ==== Description
 
-The goal of this module is to create web application with Cayenne service in it.
+This module provides basic utilities to bootstrap Cayenne service inside web application.
 
 ==== Including in a project
 
