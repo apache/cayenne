@@ -23,6 +23,7 @@ CAY-2445 Oracle: Problem with ExpressionFactory.notInExp()
 CAY-2449 Modeler: Needless scrollbar in Generate DB Schema result menu
 CAY-2450 Modeler: Impossible to update Attribute title after syncing ObjEntity
 CAY-2451 Modeler: ObjEntity "Edit" button doesn't open editor for Relationship
+CAY-2454 Modeler: Unable to read validation message if it's truncated
 CAY-2459 Modeler: DataMap paste function is not working
 CAY-2463 Modeler: DB Schema generation doesn't work
 
