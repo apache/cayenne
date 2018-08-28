@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.modeler.action;
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -43,6 +31,20 @@ import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.swing.control.FileMenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OpenProjectAction extends ProjectAction {
 
@@ -70,6 +72,7 @@ public class OpenProjectAction extends ProjectAction {
     public OpenProjectAction(Application application) {
         super(getActionName(), application);
         this.fileChooser = new ProjectOpener();
+        resetClipboard();
     }
 
     @Override
@@ -190,5 +193,21 @@ public class OpenProjectAction extends ProjectAction {
                 "Upgrade Needed",
                 JOptionPane.YES_NO_OPTION);
         return returnCode != JOptionPane.NO_OPTION;
+    }
+
+    private void resetClipboard() {
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new Transferable() {
+            public DataFlavor[] getTransferDataFlavors() {
+                return new DataFlavor[0];
+            }
+
+            public boolean isDataFlavorSupported(DataFlavor flavor) {
+                return false;
+            }
+
+            public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+                throw new UnsupportedFlavorException(flavor);
+            }
+        }, null);
     }
 }
