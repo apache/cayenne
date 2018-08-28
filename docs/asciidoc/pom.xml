@@ -46,6 +46,7 @@
         <asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>1.5.0-alpha.16</asciidoctorj.pdf.version>
         <jruby.version>9.2.0.0</jruby.version>
+        <cayenne.version>${project.version}</cayenne.version>
         <cayenne.major.version>4.1</cayenne.major.version>
     </properties>
 
@@ -93,7 +94,7 @@
 
                         <basedir>${project.basedir}</basedir>
                         <sourcedir>${project.build.sourceDirectory}</sourcedir>
-                        <project-version>${project.version}</project-version>
+                        <project-version>${cayenne.version}</project-version>
                         <project-major-version>${cayenne.major.version}</project-major-version>
 
                         <imagesdir>images</imagesdir>
