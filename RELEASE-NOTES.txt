@@ -26,6 +26,7 @@ CAY-2451 Modeler: ObjEntity "Edit" button doesn't open editor for Relationship
 CAY-2454 Modeler: Unable to read validation message if it's truncated
 CAY-2459 Modeler: DataMap paste function is not working
 CAY-2463 Modeler: DB Schema generation doesn't work
+CAY-2464 ClassCastException when returning PRUNED_NODE in expression transformer
 
 ----------------------------------
 Release: 4.1.M2
