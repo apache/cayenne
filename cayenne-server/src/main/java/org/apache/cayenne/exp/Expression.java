@@ -620,7 +620,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 		}
 
 		// all the children are processed, only now transform this copy
-		return (transformer != null) ? (Expression) transformer.apply(copy) : copy;
+		return (transformer != null) ? transformer.apply(copy) : copy;
 	}
 
 	/**
