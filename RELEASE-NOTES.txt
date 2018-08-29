@@ -17,7 +17,8 @@ Bug Fixes:
 CAY-2449 Modeler: Needless scrollbar in Generate DB Schema result menu
 CAY-2450 Modeler: Impossible to update Attribute title after syncing ObjEntity
 CAY-2451 Modeler: ObjEntity "Edit" button doesn't open editor for Relationship
-CAY-2459 Paste function is not working
+CAY-2454 Modeler: Unable to read validation message if it's truncated
+CAY-2459 Modeler: DataMap Paste function is not working
 CAY-2464 ClassCastException when returning PRUNED_NODE in expression transformer
 
 ----------------------------------
