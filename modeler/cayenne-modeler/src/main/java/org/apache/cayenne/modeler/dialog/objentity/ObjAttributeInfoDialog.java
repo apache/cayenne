@@ -354,7 +354,9 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	public boolean setPath(boolean isChange) {
 
 		if (isChange()) {
-			attributeSaved.setType(view.getTypeComboBox().getSelectedItem().toString());
+			if(view.getTypeComboBox().getSelectedItem() != null) {
+				attributeSaved.setType(view.getTypeComboBox().getSelectedItem().toString());
+			}
 			attributeSaved.setName(view.getAttributeName().getText());
 		}
 
@@ -392,7 +394,8 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 			view.getCurrentPathLabel().setText(pathStr.toString());
 
 			if (attribute.getDbAttributePath() != null
-					&& !embeddableNames.contains(view.getTypeComboBox().getSelectedItem().toString())) {
+					 && ((view.getTypeComboBox().getSelectedItem() != null && !embeddableNames.contains(view.getTypeComboBox().getSelectedItem().toString()))
+			|| view.getTypeComboBox().getSelectedItem() == null)) {
 				if (!attribute.getDbAttributePath().equals(attributePath.toString())) {
 					attributeSaved.setDbAttributePath(attributePath.toString());
 
