@@ -18,6 +18,7 @@ CAY-2447 Crypto support for LocalDateTime
 
 Bug Fixes:
 
+CAY-2320 Modeler: Limit input into numeric fields to 10 digits
 CAY-2444 Change URI from http:// to https:// in xsi:schemaLocation
 CAY-2445 Oracle: Problem with ExpressionFactory.notInExp()
 CAY-2449 Modeler: Needless scrollbar in Generate DB Schema result menu

@@ -39,7 +39,7 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.cayenne.swing.components.LimitedJTextField;
+import org.apache.cayenne.swing.components.LimitedTextField;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -182,11 +182,11 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
         col.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));
 
         TableColumn lengthColumn = table.getColumnModel().getColumn(model.lengthColumnId());
-        LimitedJTextField limitedLengthField = new LimitedJTextField(10);
+        LimitedTextField limitedLengthField = new LimitedTextField(10);
         lengthColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedLengthField));
 
         TableColumn scaleColumn = table.getColumnModel().getColumn(model.scaleColumnId());
-        LimitedJTextField limitedScaleField = new LimitedJTextField(10);
+        LimitedTextField limitedScaleField = new LimitedTextField(10);
         scaleColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedScaleField));
 
         tablePreferences.bind(table, null, null, null, model.nameColumnInd(), true);

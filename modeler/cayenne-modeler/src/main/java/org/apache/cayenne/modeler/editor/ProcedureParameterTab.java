@@ -47,7 +47,7 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
-import org.apache.cayenne.swing.components.LimitedJTextField;
+import org.apache.cayenne.swing.components.LimitedTextField;
 import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 
 import javax.swing.Icon;
@@ -304,11 +304,11 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
         directionColumn.setCellEditor(new CayenneCellEditor(directionEditor));
 
         TableColumn precisionColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_PRECISION);
-        LimitedJTextField limitedPrecisionField = new LimitedJTextField(10);
+        LimitedTextField limitedPrecisionField = new LimitedTextField(10);
         precisionColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedPrecisionField));
 
         TableColumn lengthColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_LENGTH);
-        LimitedJTextField limitedLengthField = new LimitedJTextField(10);
+        LimitedTextField limitedLengthField = new LimitedTextField(10);
         lengthColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedLengthField));
 
         moveUp.setEnabled(false);
