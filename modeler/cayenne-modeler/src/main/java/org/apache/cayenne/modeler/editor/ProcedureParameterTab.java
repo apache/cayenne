@@ -19,26 +19,6 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.EventObject;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.ProcedureEvent;
 import org.apache.cayenne.configuration.event.ProcedureParameterEvent;
@@ -67,7 +47,27 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.swing.components.LimitedTextField;
 import org.apache.cayenne.swing.components.image.FilteredIconFactory;
+
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.EventObject;
+import java.util.List;
 
 public class ProcedureParameterTab extends JPanel implements ProcedureParameterListener,
         ProcedureDisplayListener, ExistingSelectionProcessor, ActionListener {
@@ -302,6 +302,14 @@ public class ProcedureParameterTab extends JPanel implements ProcedureParameterL
                 .createComboBox(ProcedureParameterTableModel.PARAMETER_DIRECTION_NAMES, false);
         directionEditor.setEditable(false);
         directionColumn.setCellEditor(new CayenneCellEditor(directionEditor));
+
+        TableColumn precisionColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_PRECISION);
+        LimitedTextField limitedPrecisionField = new LimitedTextField(10);
+        precisionColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedPrecisionField));
+
+        TableColumn lengthColumn = table.getColumnModel().getColumn(ProcedureParameterTableModel.PARAMETER_LENGTH);
+        LimitedTextField limitedLengthField = new LimitedTextField(10);
+        lengthColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(limitedLengthField));
 
         moveUp.setEnabled(false);
         moveDown.setEnabled(false);
