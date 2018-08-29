@@ -26,8 +26,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.exp.parser.ASTFalse;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.commons.collections.Transformer;
 import org.junit.Test;
 
 public class ExpressionTest {
@@ -427,6 +429,21 @@ public class ExpressionTest {
 
 		e1.appendAsString(buffer);
 		assertEquals("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO", buffer.toString());
+	}
+
+	@Test
+	public void testCustomPruneTransform() {
+		Expression exp = ExpressionFactory.exp("(false and true) and true");
+		Expression transformed = exp.transform(new Transformer() {
+			@Override
+			public Object transform(Object node) {
+				if (node instanceof ASTFalse) {
+					return Expression.PRUNED_NODE;
+				}
+				return node;
+			}
+		});
+		assertEquals("true and true", transformed.toString());
 	}
 
 }
