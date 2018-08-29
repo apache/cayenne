@@ -41,11 +41,12 @@ import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -701,6 +702,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
 
         if (getStartEntity() == null) {
+            JOptionPane.showMessageDialog(getView(), "Can't map relationship without source DbEntity. Set source DbEntity.");
             throw new CayenneRuntimeException("Can't map relationship without source DbEntity.");
         }
     }
