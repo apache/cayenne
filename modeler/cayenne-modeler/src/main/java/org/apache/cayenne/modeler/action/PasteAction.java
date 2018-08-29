@@ -49,9 +49,9 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.modeler.util.CayenneTransferable;
 import org.apache.cayenne.query.Query;
 
-import javax.swing.*;
+import javax.swing.KeyStroke;
 import javax.swing.undo.UndoableEdit;
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.datatransfer.FlavorEvent;
 import java.awt.datatransfer.FlavorListener;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -66,7 +66,7 @@ import java.util.Map;
  */
 public class PasteAction extends CayenneAction implements FlavorListener {
 
-    private static final String COPY_PATTERN = "Copy of %s (%d)";
+    private static final String COPY_PATTERN = "copy of %s (%d)";
 
     /**
      * Constructor for PasteAction
@@ -105,6 +105,10 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                     CayenneTransferable.CAYENNE_FLAVOR);
 
             Object currentObject = getProjectController().getCurrentObject();
+
+            if(content instanceof DataMap) {
+                currentObject = getProjectController().getProject().getRootNode();
+            }
 
             if (content != null && currentObject != null) {
                 DataChannelDescriptor domain = (DataChannelDescriptor) getProjectController()
@@ -514,6 +518,9 @@ public class PasteAction extends CayenneAction implements FlavorListener {
                     ||
 
                     (currentObject instanceof DataMap && isTreeLeaf(content))
+                    ||
+
+                    (currentObject instanceof DataMap && content instanceof DataMap)
                     ||
 
                     (currentObject instanceof DbEntity && (content instanceof DbAttribute
