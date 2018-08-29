@@ -20,6 +20,9 @@
 package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -56,6 +59,7 @@ public class OpenProjectAction extends ProjectAction {
     public OpenProjectAction(Application application) {
         super(getActionName(), application);
         this.fileChooser = new ProjectOpener();
+        resetClipboard();
     }
 
     @Override
@@ -192,5 +196,21 @@ public class OpenProjectAction extends ProjectAction {
                 "Upgrade Needed",
                 JOptionPane.YES_NO_OPTION);
         return returnCode != JOptionPane.NO_OPTION;
+    }
+
+    private void resetClipboard() {
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new Transferable() {
+            public DataFlavor[] getTransferDataFlavors() {
+                return new DataFlavor[0];
+            }
+
+            public boolean isDataFlavorSupported(DataFlavor flavor) {
+                return false;
+            }
+
+            public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+                throw new UnsupportedFlavorException(flavor);
+            }
+        }, null);
     }
 }
