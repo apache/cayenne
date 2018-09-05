@@ -83,7 +83,7 @@ public class SAXNestedTagHandler extends DefaultHandler {
 
         List<String> expected = tagsExpected != null
                 ? Arrays.asList(tagsExpected)
-                : Collections.<String> emptyList();
+                : Collections.emptyList();
 
         return String.format("tag <%s> is unexpected at [%d,%d]. The following tags are allowed here: %s",
                 tagFound,

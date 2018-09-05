@@ -109,7 +109,7 @@ public class DbKeyGeneratorHandler extends NamespaceAwareNestedTagHandler {
             return;
         }
         try {
-            pkGenerator.setKeyCacheSize(new Integer(size.trim()));
+            pkGenerator.setKeyCacheSize(Integer.valueOf(size.trim()));
         } catch (Exception ex) {
             pkGenerator.setKeyCacheSize(null);
         }
