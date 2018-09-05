@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * @since 3.1
@@ -49,7 +50,13 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
 	private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
-	static final String CURRENT_PROJECT_VERSION = "10";
+	/**
+	 * Versions of project XML files that this loader can read.
+	 */
+	static final String[] SUPPORTED_PROJECT_VERSIONS = {"10"};
+	static {
+		Arrays.sort(SUPPORTED_PROJECT_VERSIONS);
+	}
 
 	/**
 	 * @deprecated the caller should use password resolving strategy instead of

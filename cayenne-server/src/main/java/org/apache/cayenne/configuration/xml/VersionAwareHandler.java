@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.configuration.xml;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -44,7 +45,7 @@ public abstract class VersionAwareHandler extends NamespaceAwareNestedTagHandler
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         if(rootTag.equals(localName)) {
-            validateVersion(attributes);
+            validateVersion(attributes, XMLDataChannelDescriptorLoader.SUPPORTED_PROJECT_VERSIONS);
             validateNamespace(namespaceURI);
         } else {
             throw new CayenneRuntimeException("Illegal XML root tag: %s, expected: %s", localName, rootTag);
@@ -52,9 +53,9 @@ public abstract class VersionAwareHandler extends NamespaceAwareNestedTagHandler
         return false;
     }
 
-    protected void validateVersion(Attributes attributes) {
+    protected void validateVersion(Attributes attributes, String[] supportedVersions) {
         String version = attributes.getValue("project-version");
-        if(!XMLDataChannelDescriptorLoader.CURRENT_PROJECT_VERSION.equals(version)) {
+        if(Arrays.binarySearch(supportedVersions, version) < 0) {
             throw new CayenneRuntimeException("Unsupported project version: %s, please upgrade project using Modeler or " +
                     "include cayenne-project-compatibility module v%s",
                     version, LocalizedStringsHandler.getString("cayenne.version"));
