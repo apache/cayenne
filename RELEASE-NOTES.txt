@@ -22,6 +22,7 @@ CAY-2454 Modeler: Unable to read validation message if it's truncated
 CAY-2459 Modeler: DataMap Paste function is not working
 CAY-2462 Modeler: Clipboard holds old content after application was reloaded
 CAY-2464 ClassCastException when returning PRUNED_NODE in expression transformer
+CAY-2470 Can't bind SQLExec parameters in a loop
 
 ----------------------------------
 Release: 4.0

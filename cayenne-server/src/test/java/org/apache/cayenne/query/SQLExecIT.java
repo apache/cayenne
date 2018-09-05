@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
@@ -31,6 +31,9 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLExecIT extends ServerCase {
@@ -99,5 +102,28 @@ public class SQLExecIT extends ServerCase {
         assertEquals(1, inserted);
         assertEquals(55l, dbHelper.getLong("ARTIST", "ARTIST_ID"));
         assertEquals("a3", dbHelper.getString("ARTIST", "ARTIST_NAME").trim());
+    }
+
+    @Test
+    public void test_Execute_MultipleArrayBind() throws Exception {
+        SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
+        for(int i = 0; i < 2; i++) {
+            QueryResult<?> result = inserter.paramsArray(i, "artist " + i).execute(context);
+            assertEquals(1, result.firstUpdateCount());
+        }
+        assertEquals(2, dbHelper.getRowCount("ARTIST"));
+    }
+
+    @Test
+    public void test_Execute_MultipleMapBind() throws Exception {
+        SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
+        for(int i = 0; i < 2; i++) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("id", i);
+            params.put("name", "artist " + i);
+            QueryResult<?> result = inserter.params(params).execute(context);
+            assertEquals(1, result.firstUpdateCount());
+        }
+        assertEquals(2, dbHelper.getRowCount("ARTIST"));
     }
 }

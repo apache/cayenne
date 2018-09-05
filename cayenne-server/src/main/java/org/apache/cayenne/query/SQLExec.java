@@ -94,14 +94,12 @@ public class SQLExec extends IndirectQuery {
         if (this.params == null) {
             this.params = new HashMap<>(parameters);
         } else {
-            Map bareMap = parameters;
-            this.params.putAll(bareMap);
+            this.params.putAll(parameters);
         }
 
         this.replacementQuery = null;
 
-        // since named parameters are specified, resetting positional
-        // parameters
+        // since named parameters are specified, resetting positional parameters
         this.positionalParams = null;
         return this;
     }
@@ -133,10 +131,11 @@ public class SQLExec extends IndirectQuery {
      * parameters.
      */
     public SQLExec paramsList(List<Object> params) {
+        this.positionalParams = params;
+        this.replacementQuery = null;
+
         // since named parameters are specified, resetting positional parameters
         this.params = null;
-
-        this.positionalParams = params;
         return this;
     }
 
