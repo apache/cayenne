@@ -255,6 +255,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         where = ExpressionFactory.and(all);
+        replacementQuery = null;
         return this;
     }
 
@@ -292,6 +293,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         where = ExpressionFactory.or(all);
+        replacementQuery = null;
         return this;
     }
 
@@ -334,6 +336,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         Collections.addAll(this.orderings, orderings);
+        replacementQuery = null;
 
         return this;
     }
@@ -354,6 +357,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         this.orderings.addAll(orderings);
+        replacementQuery = null;
 
         return this;
     }
@@ -374,6 +378,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         prefetches.merge(prefetch);
+        replacementQuery = null;
         return this;
     }
 
@@ -394,6 +399,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         prefetches.addPath(path).setSemantics(semantics);
+        replacementQuery = null;
         return this;
     }
 
@@ -533,7 +539,10 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      */
     @SuppressWarnings("unchecked")
     public ObjectSelect<DataRow> fetchDataRows() {
-        this.fetchingDataRows = true;
+        if(!fetchingDataRows) {
+            fetchingDataRows = true;
+            replacementQuery = null;
+        }
         return (ObjectSelect<DataRow>) this;
     }
 

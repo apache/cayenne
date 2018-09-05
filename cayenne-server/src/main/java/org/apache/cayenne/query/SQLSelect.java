@@ -173,17 +173,14 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SQLSelect<T> params(Map<String, ?> parameters) {
-
 		if (this.params == null) {
 			this.params = new HashMap<>(parameters);
 		} else {
 			this.params.putAll(parameters);
 		}
-
 		this.replacementQuery = null;
 
-		// since named parameters are specified, resetting positional
-		// parameters
+		// since named parameters are specified, resetting positional parameters
 		this.positionalParams = null;
 		return this;
 	}
@@ -215,11 +212,11 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * parameters.
 	 */
 	public SQLSelect<T> paramsList(List<Object> params) {
-		// since named parameters are specified, resetting positional
-		// parameters
-		this.params = null;
-
 		this.positionalParams = params;
+		this.replacementQuery = null;
+
+		// since named parameters are specified, resetting positional parameters
+		this.params = null;
 		return this;
 	}
 

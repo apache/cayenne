@@ -142,7 +142,8 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         this.entityType = entityType;
         this.entityName = entityName;
         this.dbEntityName = dbEntityName;
-        return (ColumnSelect<T>)this;
+        this.replacementQuery = null;
+        return this;
     }
 
     /**
@@ -232,7 +233,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         }
 
         Collections.addAll(this.orderings, orderings);
-
+        replacementQuery = null;
         return this;
     }
 
@@ -252,7 +253,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         }
 
         this.orderings.addAll(orderings);
-
+        replacementQuery = null;
         return this;
     }
 
@@ -272,6 +273,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         }
 
         prefetches.merge(prefetch);
+        replacementQuery = null;
         return this;
     }
 
@@ -292,6 +294,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         }
 
         prefetches.addPath(path).setSemantics(semantics);
+        replacementQuery = null;
         return this;
     }
 
@@ -448,6 +451,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         columns.add(firstProperty);
         Collections.addAll(columns, otherProperties);
         singleColumn = false;
+        replacementQuery = null;
         return (ColumnSelect<Object[]>)this;
     }
 
@@ -474,6 +478,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
         columns.addAll(properties);
         singleColumn = false;
+        replacementQuery = null;
         return (ColumnSelect<Object[]>)this;
     }
 
@@ -485,6 +490,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
             this.columns.clear(); // if we don't clear then return type will be incorrect
         }
         this.columns.add(property);
+        this.replacementQuery = null;
         return (ColumnSelect<E>) this;
     }
 
@@ -616,6 +622,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     public ColumnSelect<T> distinct() {
         this.suppressDistinct = false;
         this.distinct = true;
+        this.replacementQuery = null;
         return this;
     }
 
@@ -625,6 +632,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     public ColumnSelect<T> suppressDistinct() {
         this.suppressDistinct = true;
         this.distinct = false;
+        this.replacementQuery = null;
         return this;
     }
 
@@ -634,6 +642,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         } else {
             where = exp;
         }
+        replacementQuery = null;
     }
 
     private Expression getActiveExpression() {

@@ -32,6 +32,7 @@ CAY-2462 Modeler: Clipboard holds old content after application was reloaded
 CAY-2463 Modeler: DB Schema generation doesn't work
 CAY-2464 ClassCastException when returning PRUNED_NODE in expression transformer
 CAY-2470 Can't bind SQLExec parameters in a loop
+CAY-2472 Clear cached replacement query on mutation in all indirect queries
 
 ----------------------------------
 Release: 4.1.M2
