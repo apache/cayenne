@@ -50,9 +50,7 @@ public interface UpgradeHandler {
      * using this method will make upgrade process not future proof and
      * will require refactoring if model should change.
      */
-    void processModel(DataChannelDescriptor dataChannelDescriptor);
-    // should be this really, but no Java 8 yet:
-    //default void processModel(DataChannelDescriptor dataChannelDescriptor) {}
-
+    default void processModel(DataChannelDescriptor dataChannelDescriptor) {
+    }
 
 }

@@ -24,7 +24,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
@@ -70,16 +69,14 @@ public class UpgradeHandler_V9 implements UpgradeHandler {
 
                 File file = new File(directoryPath + "/" + reFileName);
                 if (file.exists()) {
-                    file.delete();
+                    if(!file.delete()) {
+                        logger.warn("Can't delete file " + file);
+                    }
                 }
                 dataMap.removeChild(reNode);
             }
         } catch (Exception ex) {
             logger.warn("Can't process dataMap DOM: ", ex);
         }
-    }
-
-    @Override
-    public void processModel(DataChannelDescriptor dataChannelDescriptor) {
     }
 }

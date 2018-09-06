@@ -24,7 +24,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.w3c.dom.Element;
@@ -90,10 +89,5 @@ public class UpgradeHandler_V8 implements UpgradeHandler {
             queryElement.setAttribute("type", queryType);
             queryElement.removeAttribute("factory");
         }
-    }
-
-    @Override
-    public void processModel(DataChannelDescriptor dataChannelDescriptor) {
-
     }
 }

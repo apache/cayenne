@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.w3c.dom.Element;
 
@@ -59,10 +58,5 @@ public class UpgradeHandler_V10 implements UpgradeHandler {
                 "https://cayenne.apache.org/schema/10/modelMap.xsd");
         // update version
         dataMap.setAttribute("project-version", getVersion());
-    }
-
-    @Override
-    public void processModel(DataChannelDescriptor dataChannelDescriptor) {
-        // noop
     }
 }
