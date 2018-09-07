@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static java.util.Collections.emptyList;
+import static org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader.DEFAULT_PROJECT_VERSION;
 
 /**
  * Stores a collection of related mapping objects that describe database and
@@ -116,8 +117,8 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * The namespace in which the data map XML file will be created. This is
 	 * also the URI to locate a copy of the schema document.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/10/modelMap";
-    public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/10/modelMap.xsd";
+	private String schemaXsd;
+    private String schemaXsdLocation;
 
 	protected String name;
 	protected String location;
@@ -176,6 +177,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		results = new HashMap<>();
 		setName(mapName);
 		initWithProperties(properties);
+		setProjectVersion(DEFAULT_PROJECT_VERSION);
 	}
 
 	/**
@@ -301,9 +303,9 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 */
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 		encoder.start("data-map")
-				.attribute("xmlns", SCHEMA_XSD)
+				.attribute("xmlns", schemaXsd)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
-				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true)
+				.attribute("xsi:schemaLocation", schemaXsd + " " + schemaXsdLocation, true)
 				.projectVersion()
 				// properties
 				.property(DEFAULT_LOCK_TYPE_PROPERTY, defaultLockType)
@@ -1269,4 +1271,17 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         return subObjectEntities;
     }
 
+
+	public String getSchemaXsd() {
+		return schemaXsd;
+	}
+
+	public void setProjectVersion(String projectVersion) {
+		this.schemaXsd = getSchemaXsdForVersion(projectVersion);
+		this.schemaXsdLocation = "https://cayenne.apache.org/schema/" + projectVersion + "/modelMap.xsd";
+	}
+
+	public static String getSchemaXsdForVersion(String projectVersion) {
+    	return "http://cayenne.apache.org/schema/" + projectVersion + "/modelMap";
+	}
 }

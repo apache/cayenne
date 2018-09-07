@@ -87,8 +87,10 @@ public class DefaultUpgradeService implements UpgradeService {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultUpgradeService.class);
 
-    public static final String UNKNOWN_VERSION = "0";
-    public static final String MIN_SUPPORTED_VERSION = "6";
+    private static final String UNKNOWN_VERSION = "0";
+    private static final String MIN_INTERMEDIATE_SUPPORTED_VERSION = "6";
+    private static final String MIN_SUPPORTED_VERSION = "10";
+    private static final String MAX_SUPPORTED_VERSION = "11";
 
     TreeMap<String, UpgradeHandler> handlers = new TreeMap<>(VersionComparator.INSTANCE);
 
@@ -110,28 +112,26 @@ public class DefaultUpgradeService implements UpgradeService {
 
         String version = loadProjectVersion(resource);
         metaData.setProjectVersion(version);
-        metaData.setSupportedVersion(String.valueOf(Project.VERSION));
 
-        int c1 = VersionComparator.INSTANCE.compare(version, MIN_SUPPORTED_VERSION);
+        int c1 = VersionComparator.INSTANCE.compare(version, MIN_INTERMEDIATE_SUPPORTED_VERSION);
         if (c1 < 0) {
-            metaData.setIntermediateUpgradeVersion(MIN_SUPPORTED_VERSION);
             metaData.setUpgradeType(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED);
             return metaData;
         }
 
-        int c2 = VersionComparator.INSTANCE.compare(String.valueOf(Project.VERSION), version);
-        if (c2 < 0) {
-            metaData.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
-        } else if (c2 == 0) {
-            metaData.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
-        } else {
+        if (VersionComparator.INSTANCE.compare(version, MIN_SUPPORTED_VERSION) < 0) {
             metaData.setUpgradeType(UpgradeType.UPGRADE_NEEDED);
+        } else if (VersionComparator.INSTANCE.compare(version, MAX_SUPPORTED_VERSION) > 0) {
+            metaData.setUpgradeType(UpgradeType.DOWNGRADE_NEEDED);
+        } else {
+            metaData.setUpgradeType(UpgradeType.UPGRADE_NOT_NEEDED);
         }
+
         return metaData;
     }
 
     protected List<UpgradeHandler> getHandlersForVersion(String version) {
-        boolean found = MIN_SUPPORTED_VERSION.equals(version);
+        boolean found = MIN_INTERMEDIATE_SUPPORTED_VERSION.equals(version);
         List<UpgradeHandler> handlerList = new ArrayList<>();
 
         for(Map.Entry<String, UpgradeHandler> entry : handlers.entrySet()) {

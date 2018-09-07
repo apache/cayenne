@@ -28,8 +28,6 @@ public class UpgradeMetaData {
 
     protected UpgradeType upgradeType;
     protected String projectVersion;
-    protected String supportedVersion;
-    protected String intermediateUpgradeVersion;
 
     public UpgradeType getUpgradeType() {
         return upgradeType;
@@ -45,22 +43,6 @@ public class UpgradeMetaData {
 
     public void setProjectVersion(String projectVersion) {
         this.projectVersion = projectVersion;
-    }
-
-    public String getSupportedVersion() {
-        return supportedVersion;
-    }
-
-    public void setSupportedVersion(String supportedVersion) {
-        this.supportedVersion = supportedVersion;
-    }
-
-    public String getIntermediateUpgradeVersion() {
-        return intermediateUpgradeVersion;
-    }
-
-    public void setIntermediateUpgradeVersion(String intermediateUpgradeVersion) {
-        this.intermediateUpgradeVersion = intermediateUpgradeVersion;
     }
 
 }

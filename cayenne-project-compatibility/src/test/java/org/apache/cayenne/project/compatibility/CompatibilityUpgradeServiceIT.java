@@ -52,7 +52,7 @@ public class CompatibilityUpgradeServiceIT {
         Document domainDocument = documentProvider.getDocument(resourceUrl);
 
         assertNotNull(domainDocument);
-        assertEquals("10", domainDocument.getDocumentElement().getAttribute("project-version"));
+        assertEquals("11", domainDocument.getDocumentElement().getAttribute("project-version"));
 
         URL dataMapUrl = getClass().getResource("test-map-v6.map.xml");
         Document dataMapDocument = documentProvider.getDocument(dataMapUrl);

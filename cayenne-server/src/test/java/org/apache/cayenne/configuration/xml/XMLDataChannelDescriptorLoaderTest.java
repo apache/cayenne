@@ -184,4 +184,56 @@ public class XMLDataChannelDescriptorLoaderTest {
 
         assertEquals("testConfigMap3_2", node1.getDataMapNames().iterator().next());
     }
+
+    @Test
+    public void testProjectVersion11() {
+
+        // create and initialize loader instance to test
+        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        injector.injectMembers(loader);
+
+        String testConfigName = "testConfig6";
+        URL url = getClass().getResource("cayenne-" + testConfigName + ".xml");
+
+        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
+
+        assertNotNull(tree);
+
+        DataChannelDescriptor descriptor = tree.getRootNode();
+
+        assertNotNull(descriptor);
+        assertEquals(testConfigName, descriptor.getName());
+
+        Collection<DataMap> maps = descriptor.getDataMaps();
+        assertEquals(2, maps.size());
+
+        Iterator<DataMap> mapsIt = maps.iterator();
+
+        DataMap map1 = mapsIt.next();
+        DataMap map2 = mapsIt.next();
+
+        assertEquals("testConfigMap3_1", map1.getName());
+        assertEquals("testConfigMap3_2", map2.getName());
+
+        Collection<DataNodeDescriptor> nodes = descriptor.getNodeDescriptors();
+        assertEquals(1, nodes.size());
+
+        DataNodeDescriptor node1 = nodes.iterator().next();
+        assertEquals("testConfigNode6", node1.getName());
+        assertNull(node1.getParameters());
+        assertNotNull(node1.getDataSourceDescriptor());
+        assertEquals(1, node1.getDataSourceDescriptor().getMinConnections());
+        assertEquals(1, node1.getDataSourceDescriptor().getMaxConnections());
+        assertEquals(2000, node1.getDataSourceDescriptor().getMaxQueueWaitTime());
+        assertEquals("SELECT 1 FROM VALIDATE", node1.getDataSourceDescriptor().getValidationQuery());
+
+        assertEquals("org.example.test.Adapter", node1.getAdapterType());
+        assertEquals("org.example.test.DataSourceFactory", node1.getDataSourceFactoryType());
+        assertEquals("org.example.test.SchemaUpdateStrategy", node1.getSchemaUpdateStrategyType());
+        assertNotNull(node1.getDataMapNames());
+
+        assertEquals(1, node1.getDataMapNames().size());
+
+        assertEquals("testConfigMap3_2", node1.getDataMapNames().iterator().next());
+    }
 }

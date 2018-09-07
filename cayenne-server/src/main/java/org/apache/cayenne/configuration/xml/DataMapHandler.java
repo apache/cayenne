@@ -55,7 +55,6 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
     public DataMapHandler(LoaderContext loaderContext) {
         super(loaderContext);
-        setTargetNamespace(DataMap.SCHEMA_XSD);
     }
 
     @Override
@@ -68,6 +67,8 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
 
             case DATA_MAP_TAG:
                 this.dataMap = new DataMap();
+                dataMap.setProjectVersion(attributes.getValue("project-version"));
+                setTargetNamespace(dataMap.getSchemaXsd());
                 return true;
         }
 
