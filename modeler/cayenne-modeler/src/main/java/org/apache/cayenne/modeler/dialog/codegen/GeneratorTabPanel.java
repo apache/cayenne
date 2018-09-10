@@ -27,8 +27,6 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  */
@@ -43,12 +41,7 @@ public class GeneratorTabPanel extends JPanel {
         this.modeLayout = new CardLayout();
         this.modesPanel = new JPanel(modeLayout);
 
-        generationMode.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent e) {
-                modeLayout.show(modesPanel, generationMode.getSelectedItem().toString());
-            }
-        });
+        generationMode.addItemListener(e -> modeLayout.show(modesPanel, generationMode.getSelectedItem().toString()));
 
         // assemble
         FormLayout layout = new FormLayout("right:70dlu, 3dlu, fill:300, fill:100dlu:grow", "");

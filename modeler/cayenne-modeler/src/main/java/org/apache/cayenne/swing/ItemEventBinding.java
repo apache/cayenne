@@ -20,8 +20,6 @@
 package org.apache.cayenne.swing;
 
 import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.AbstractButton;
 
@@ -37,12 +35,7 @@ public class ItemEventBinding extends BindingBase {
         super(expression);
         this.boundItem = boundItem;
 
-        boundItem.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent e) {
-                updateModel();
-            }
-        });
+        boundItem.addItemListener(e -> updateModel());
     }
 
     public Component getView() {
@@ -56,9 +49,8 @@ public class ItemEventBinding extends BindingBase {
         // convert to boolean
         if (value != null) {
             if (value instanceof Boolean) {
-                b = ((Boolean) value).booleanValue();
-            }
-            else if (value instanceof Number) {
+                b = (Boolean) value;
+            } else if (value instanceof Number) {
                 b = ((Number) value).intValue() != 0;
             }
         }
@@ -66,8 +58,7 @@ public class ItemEventBinding extends BindingBase {
         modelUpdateDisabled = true;
         try {
             boundItem.setSelected(b);
-        }
-        finally {
+        } finally {
             modelUpdateDisabled = false;
         }
     }

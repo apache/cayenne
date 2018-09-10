@@ -39,8 +39,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
@@ -105,28 +103,20 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         projectController.addDomainDisplayListener(this);
 
         // add item listener to checkboxes
-        objectValidation.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                String value = objectValidation.isSelected() ? "true" : "false";
-                setDomainProperty(
-                        DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
-                        value,
-                        Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
-            }
+        objectValidation.addItemListener(e -> {
+            String value = objectValidation.isSelected() ? "true" : "false";
+            setDomainProperty(
+                    DataDomain.VALIDATING_OBJECTS_ON_COMMIT_PROPERTY,
+                    value,
+                    Boolean.toString(DataDomain.VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
         });
 
-        sharedCache.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                String value = sharedCache.isSelected() ? "true" : "false";
-                setDomainProperty(
-                        DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
-                        value,
-                        Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT));
-            }
+        sharedCache.addItemListener(e -> {
+            String value = sharedCache.isSelected() ? "true" : "false";
+            setDomainProperty(
+                    DataDomain.SHARED_CACHE_ENABLED_PROPERTY,
+                    value,
+                    Boolean.toString(DataDomain.SHARED_CACHE_ENABLED_DEFAULT));
         });
 
     }
@@ -155,8 +145,8 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             value = null;
         }
 
-        Map properties = domain.getProperties();
-        Object oldValue = properties.get(property);
+        Map<String, String> properties = domain.getProperties();
+        String oldValue = properties.get(property);
         if (!Util.nullSafeEquals(value, oldValue)) {
             properties.put(property, value);
 
@@ -175,7 +165,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
             return null;
         }
 
-        String value = (String) domain.getProperties().get(property);
+        String value = domain.getProperties().get(property);
         return value != null ? value : defaultValue;
     }
 

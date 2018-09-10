@@ -93,20 +93,14 @@ public class EntitySyncController extends CayenneController {
 
         view = new EntitySyncDialog();
 
-        view.getUpdateButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                removeFKs[0] = view.getRemoveFKs().isSelected();
-                view.dispose();
-            }
+        view.getUpdateButton().addActionListener(e -> {
+            removeFKs[0] = view.getRemoveFKs().isSelected();
+            view.dispose();
         });
 
-        view.getCancelButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                cancel[0] = true;
-                view.dispose();
-            }
+        view.getCancelButton().addActionListener(e -> {
+            cancel[0] = true;
+            view.dispose();
         });
 
         view.pack();

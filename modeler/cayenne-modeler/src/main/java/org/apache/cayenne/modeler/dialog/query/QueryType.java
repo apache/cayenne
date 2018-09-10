@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.query;
 
+import java.awt.Component;
+
+import javax.swing.WindowConstants;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -28,12 +32,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.event.QueryDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateQueryUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 
 public class QueryType extends CayenneController{
 
@@ -63,42 +61,12 @@ public class QueryType extends CayenneController{
     } 
     
     private void initController() {
-        view.getCancelButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                view.dispose();
-            }
-        });
-        view.getSaveButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                createQuery();
-            }
-        });
-        view.getObjectSelect().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                 setObjectSelectQuery();
-            }
-        });
-        view.getSqlSelect().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-               setRawSQLQuery();
-            }
-        });
-        view.getProcedureSelect().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                setProcedureQuery();
-            }
-        });
-        view.getEjbqlSelect().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                setEjbqlQuery();
-            }
-        });
+        view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getSaveButton().addActionListener(e -> createQuery());
+        view.getObjectSelect().addActionListener(e -> setObjectSelectQuery());
+        view.getSqlSelect().addActionListener(e -> setRawSQLQuery());
+        view.getProcedureSelect().addActionListener(e -> setProcedureQuery());
+        view.getEjbqlSelect().addActionListener(e -> setEjbqlQuery());
     }
     
     public void startupAction() {

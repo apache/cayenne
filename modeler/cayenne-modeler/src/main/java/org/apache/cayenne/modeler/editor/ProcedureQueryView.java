@@ -139,12 +139,7 @@ public class ProcedureQueryView extends JPanel {
             }
         });
 
-        mediator.addQueryDisplayListener(new QueryDisplayListener() {
-
-            public void currentQueryChanged(QueryDisplayEvent e) {
-                initFromModel();
-            }
-        });
+        mediator.addQueryDisplayListener(e -> initFromModel());
     }
 
     /**
@@ -282,12 +277,9 @@ public class ProcedureQueryView extends JPanel {
         protected PanelBuilder createPanelBuilder() {
             labelCase = Application.getWidgetFactory().createUndoableComboBox();
             labelCase.setRenderer(new LabelCapsRenderer());
-            labelCase.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent event) {
-                    String value = labelCase.getModel().getSelectedItem().toString();
-                    setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
-                }
+            labelCase.addActionListener(event -> {
+                String value = labelCase.getModel().getSelectedItem().toString();
+                setQueryProperty(ProcedureQuery.COLUMN_NAME_CAPITALIZATION_PROPERTY, value);
             });
 
             PanelBuilder builder = super.createPanelBuilder();

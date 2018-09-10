@@ -30,16 +30,14 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @since 4.1
  */
 public class DbLoadResultDialog extends JDialog {
 
-    private static int TABLE_ROW_HIGH = 24;
-    private static int TABLE_ROW_MARGIN = 3;
+    private static final int TABLE_ROW_HIGH = 24;
+    private static final int TABLE_ROW_MARGIN = 3;
 
     private DefaultTableModel tableModel;
     private JTable table;
@@ -76,12 +74,7 @@ public class DbLoadResultDialog extends JDialog {
         table.setRowMargin(TABLE_ROW_MARGIN);
         tableModel.addColumn("");
         okButton = new JButton("OK");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DbLoadResultDialog.this.setVisible(false);
-            }
-        });
+        okButton.addActionListener(e -> DbLoadResultDialog.this.setVisible(false));
     }
 
     private void buildElements() {

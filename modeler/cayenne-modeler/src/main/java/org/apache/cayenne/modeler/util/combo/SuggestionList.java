@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.util.combo;
 
 import java.awt.Color;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -150,9 +149,7 @@ public class SuggestionList extends BasicComboPopup {
      */
     @Override
     protected ItemListener createItemListener() {
-        return new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {}
-        };
+        return e -> {};
     }
     
     /**

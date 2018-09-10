@@ -19,9 +19,6 @@
 package org.apache.cayenne.modeler.dialog.datamap;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.WindowConstants;
 
 import org.apache.cayenne.configuration.event.ProcedureEvent;
@@ -64,19 +61,8 @@ public class CatalogUpdateController extends DefaultsPreferencesController {
     }
 
     private void initController() {
-        view.getUpdateButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent arg0) {
-                updateCatalog();
-            }
-        });
-
-        view.getCancelButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent arg0) {
-                view.dispose();
-            }
-        });
+        view.getUpdateButton().addActionListener(e -> updateCatalog());
+        view.getCancelButton().addActionListener(e -> view.dispose());
     }
 
     protected void updateCatalog() {

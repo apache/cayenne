@@ -34,16 +34,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
@@ -130,27 +126,15 @@ public class ValidatorDialog extends CayenneDialog {
     private void initController() {
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        problemsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        problemsTable.getSelectionModel().addListSelectionListener(e -> showFailedObject());
 
-            public void valueChanged(ListSelectionEvent e) {
-                showFailedObject();
-            }
+        closeButton.addActionListener(e -> {
+            setVisible(false);
+            dispose();
         });
 
-        closeButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                dispose();
-            }
-        });
-
-        refreshButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                Application.getInstance().getActionManager().getAction(ValidateAction.class).actionPerformed(e);
-            }
-        });
+        refreshButton.addActionListener(e -> Application.getInstance().getActionManager()
+                .getAction(ValidateAction.class).actionPerformed(e));
 
         this.problemsTable.addMouseListener(new MouseAdapter() {
 

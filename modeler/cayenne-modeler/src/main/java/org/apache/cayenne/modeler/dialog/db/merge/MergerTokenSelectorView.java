@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.dialog.db.merge;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -51,15 +49,11 @@ public class MergerTokenSelectorView extends JPanel {
         this.checkAllLabel = new JLabel("Check All Operations");
         this.reverseAll = new JButton("Reverse All Operations");
 
-        checkAll.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent event) {
-                if (checkAll.isSelected()) {
-                    checkAllLabel.setText("Uncheck All Operations");
-                }
-                else {
-                    checkAllLabel.setText("Check All Operations");
-                }
+        checkAll.addItemListener(event -> {
+            if (checkAll.isSelected()) {
+                checkAllLabel.setText("Uncheck All Operations");
+            } else {
+                checkAllLabel.setText("Check All Operations");
             }
         });
 

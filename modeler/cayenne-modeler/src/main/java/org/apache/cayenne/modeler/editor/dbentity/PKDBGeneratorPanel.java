@@ -42,7 +42,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
-    private JComboBox attributes;
+    private JComboBox<Object> attributes;
 
     public PKDBGeneratorPanel(ProjectController mediator) {
         super(mediator);
@@ -51,7 +51,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
 
     private void initView() {
 
-        attributes = new JComboBox();
+        attributes = new JComboBox<>();
         attributes.setEditable(false);
         attributes.setRenderer(new AttributeRenderer());
 
@@ -104,7 +104,7 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
         else {
 
             attributes.setEnabled(true);
-            MutableComboBoxModel model = new DefaultComboBoxModel(pkAttributes.toArray());
+            MutableComboBoxModel<Object> model = new DefaultComboBoxModel<>(pkAttributes.toArray());
             String noSelection = "<Select Generated Column>";
             model.insertElementAt(noSelection, 0);
             model.setSelectedItem(noSelection);
@@ -118,19 +118,16 @@ public class PKDBGeneratorPanel extends PKGeneratorPanel {
             }
 
             // listen for selection changes of the new entity
-            attributes.addItemListener(new ItemListener() {
+            attributes.addItemListener(e -> {
+                Object item = e.getItem();
+                if (item instanceof DbAttribute) {
 
-                public void itemStateChanged(ItemEvent e) {
-                    Object item = e.getItem();
-                    if (item instanceof DbAttribute) {
+                    boolean generated = e.getStateChange() == ItemEvent.SELECTED;
+                    DbAttribute a = (DbAttribute) item;
 
-                        boolean generated = e.getStateChange() == ItemEvent.SELECTED;
-                        DbAttribute a = (DbAttribute) item;
-
-                        if (a.isGenerated() != generated) {
-                            a.setGenerated(generated);
-                            mediator.fireDbEntityEvent(new EntityEvent(this, entity));
-                        }
+                    if (a.isGenerated() != generated) {
+                        a.setGenerated(generated);
+                        mediator.fireDbEntityEvent(new EntityEvent(this, entity));
                     }
                 }
             });

@@ -20,8 +20,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 
@@ -80,13 +78,9 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
     protected void initController() {
         super.initController();
 
-        dataRows.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                Boolean b = dataRows.isSelected() ? Boolean.TRUE : Boolean.FALSE;
-                setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(b));
-            }
+        dataRows.addItemListener(e -> {
+            Boolean b = dataRows.isSelected() ? Boolean.TRUE : Boolean.FALSE;
+            setQueryProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY, String.valueOf(b));
         });
     }
 

@@ -30,8 +30,6 @@ import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @since 4.1
@@ -60,54 +58,22 @@ public class RootPopUpMenu extends DefaultPopUpMenu {
     }
 
     private void initListeners() {
-        addCatalog.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddCatalogAction.class).actionPerformed(e);
-            }
-        });
-        addSchema.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddSchemaAction.class).actionPerformed(e);
-            }
-        });
-        addIncludeTable.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddIncludeTableAction.class).actionPerformed(e);
-            }
-        });
-        addExcludeTable.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddExcludeTableAction.class).actionPerformed(e);
-            }
-        });
-        addIncludeColumn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddIncludeColumnAction.class).actionPerformed(e);
-            }
-        });
-        addExcludeColumn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddExcludeColumnAction.class).actionPerformed(e);
-            }
-        });
-        addIncludeProcedure.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddIncludeProcedureAction.class).actionPerformed(e);
-            }
-        });
-        addExcludeProcedure.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                projectController.getApplication().getActionManager().getAction(AddExcludeProcedureAction.class).actionPerformed(e);
-            }
-        });
+        addCatalog.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddCatalogAction.class).actionPerformed(e));
+        addSchema.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddSchemaAction.class).actionPerformed(e));
+        addIncludeTable.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddIncludeTableAction.class).actionPerformed(e));
+        addExcludeTable.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddExcludeTableAction.class).actionPerformed(e));
+        addIncludeColumn.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddIncludeColumnAction.class).actionPerformed(e));
+        addExcludeColumn.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddExcludeColumnAction.class).actionPerformed(e));
+        addIncludeProcedure.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddIncludeProcedureAction.class).actionPerformed(e));
+        addExcludeProcedure.addActionListener(e -> projectController.getApplication().getActionManager()
+                .getAction(AddExcludeProcedureAction.class).actionPerformed(e));
     }
 
     private void initPopUpMenuElements() {

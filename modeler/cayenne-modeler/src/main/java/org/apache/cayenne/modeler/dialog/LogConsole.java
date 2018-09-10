@@ -27,8 +27,6 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -139,25 +137,13 @@ public class LogConsole extends CayenneController {
     }
     
     protected void initBindings() {
-        view.getClearItem().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                clear();
-            }
-        });
-        
-        view.getCopyItem().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                copy();
-            }
-        });
-        
-        view.getDockItem().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Log console should be visible
-                disappear();
-                setConsoleProperty(DOCKED_PROPERTY, !getConsoleProperty(DOCKED_PROPERTY));
-                appear();
-            }
+        view.getClearItem().addActionListener(e -> clear());
+        view.getCopyItem().addActionListener(e -> copy());
+        view.getDockItem().addActionListener(e -> {
+            // Log console should be visible
+            disappear();
+            setConsoleProperty(DOCKED_PROPERTY, !getConsoleProperty(DOCKED_PROPERTY));
+            appear();
         });
     }
     /*public void showMenu(){

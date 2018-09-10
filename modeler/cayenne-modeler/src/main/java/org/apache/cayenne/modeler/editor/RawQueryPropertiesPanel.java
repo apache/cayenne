@@ -20,12 +20,7 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
@@ -54,7 +49,7 @@ import org.apache.cayenne.query.QueryMetadata;
 public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected JCheckBox dataObjects;
-    protected JComboBox entities;
+    protected JComboBox<ObjEntity> entities;
 
     public RawQueryPropertiesPanel(ProjectController mediator) {
         super(mediator);
@@ -62,20 +57,11 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
 
     protected void initController() {
         super.initController();
-        dataObjects.addItemListener(new ItemListener() {
+        dataObjects.addItemListener(e -> setFetchingDataObjects(dataObjects.isSelected()));
 
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setFetchingDataObjects(dataObjects.isSelected());
-            }
-        });
-
-        entities.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent event) {
-                ObjEntity entity = (ObjEntity) entities.getModel().getSelectedItem();
-                setEntity(entity);
-            }
+        entities.addActionListener(event -> {
+            ObjEntity entity = (ObjEntity) entities.getModel().getSelectedItem();
+            setEntity(entity);
         });
     }
 
@@ -134,15 +120,14 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         // making it impossible to reference other DataMaps.
 
         DataMap map = mediator.getCurrentDataMap();
-        List objEntities = new ArrayList();
-        objEntities.addAll(map.getObjEntities());
+        List<ObjEntity> objEntities = new ArrayList<>(map.getObjEntities());
 
         if (objEntities.size() > 1) {
-            Collections.sort(objEntities, Comparators.getDataMapChildrenComparator());
+            objEntities.sort(Comparators.getDataMapChildrenComparator());
         }
 
         entities.setEnabled(fetchingDO && isEnabled());
-        DefaultComboBoxModel model = new DefaultComboBoxModel(objEntities.toArray());
+        DefaultComboBoxModel<ObjEntity> model = new DefaultComboBoxModel<>(objEntities.toArray(new ObjEntity[0]));
         model.setSelectedItem(getEntity(query));
         entities.setModel(model);
     }

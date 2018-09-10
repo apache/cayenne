@@ -21,8 +21,6 @@
 package org.apache.cayenne.modeler.dialog.objentity;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
@@ -163,29 +161,21 @@ public class ClassNameUpdater extends CayenneController {
             final String suggestedServerName,
             final String suggestedClientName) {
 
-        view.getUpdateButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                if (view.getClientClass().isSelected()) {
-                    entity.setClientClassName(suggestedClientName);
-                    updatePerformed = true;
-                }
-
-                if (view.getServerClass().isSelected()) {
-                    entity.setClassName(suggestedServerName);
-                    updatePerformed = true;
-                }
-
-                view.dispose();
+        view.getUpdateButton().addActionListener(e -> {
+            if (view.getClientClass().isSelected()) {
+                entity.setClientClassName(suggestedClientName);
+                updatePerformed = true;
             }
+
+            if (view.getServerClass().isSelected()) {
+                entity.setClassName(suggestedServerName);
+                updatePerformed = true;
+            }
+
+            view.dispose();
         });
 
-        view.getCancelButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                view.dispose();
-            }
-        });
+        view.getCancelButton().addActionListener(e -> view.dispose());
     }
 
     public Component getView() {

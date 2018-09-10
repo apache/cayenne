@@ -22,16 +22,10 @@ package org.apache.cayenne.modeler.editor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -236,144 +230,118 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         mediator.addObjEntityDisplayListener(this);
 
-        dbEntityCombo.addActionListener(new ActionListener() {
+        dbEntityCombo.addActionListener(e -> {
+            // Change DbEntity for current ObjEntity
+            ObjEntity entity = mediator.getCurrentObjEntity();
+            DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
 
-            public void actionPerformed(ActionEvent e) {
-                // Change DbEntity for current ObjEntity
-                ObjEntity entity = mediator.getCurrentObjEntity();
-                DbEntity dbEntity = (DbEntity) dbEntityCombo.getSelectedItem();
-       
 
-                if (dbEntity != entity.getDbEntity()) {
-                    entity.setDbEntity(dbEntity);
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                }
+            if (dbEntity != entity.getDbEntity()) {
+                entity.setDbEntity(dbEntity);
+                mediator.fireObjEntityEvent(new EntityEvent(ObjEntityTab.this, entity));
             }
         });
 
-        superEntityCombo.addActionListener(new ActionListener() {
+        superEntityCombo.addActionListener(e -> {
+            // Change super-entity
+            ObjEntity superEntity = (ObjEntity) superEntityCombo.getSelectedItem();
+            String name = (superEntity == null || superEntity == NO_INHERITANCE)
+                    ? null
+                    : superEntity.getName();
 
-            public void actionPerformed(ActionEvent e) {
-                // Change super-entity
-                ObjEntity superEntity = (ObjEntity) superEntityCombo.getSelectedItem();
-                String name = (superEntity == null || superEntity == NO_INHERITANCE)
-                        ? null
-                        : superEntity.getName();
+            ObjEntity entity = mediator.getCurrentObjEntity();
 
-                ObjEntity entity = mediator.getCurrentObjEntity();
+            if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
+                List<ObjAttribute> duplicateAttributes = null;
+                if (name != null) {
+                    duplicateAttributes = getDuplicatedAttributes(superEntity);
+                }
 
-                if (!Util.nullSafeEquals(name, entity.getSuperEntityName())) {
-                    List<ObjAttribute> duplicateAttributes = null;
-                    if (name != null) {
-                        duplicateAttributes = getDuplicatedAttributes(superEntity);
+                if (duplicateAttributes != null && duplicateAttributes.size() > 0) {
+                    DuplicatedAttributesDialog.showDialog(
+                            Application.getFrame(), duplicateAttributes, superEntity, entity);
+                    if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
+                        superEntityCombo.setSelectedItem(entity.getSuperEntity());
+                        superClassName.setText(entity.getSuperClassName());
+                        return;
                     }
+                }
+                entity.setSuperEntityName(name);
 
-                    if (duplicateAttributes != null && duplicateAttributes.size() > 0) {
-                        DuplicatedAttributesDialog.showDialog(
-                                Application.getFrame(), duplicateAttributes, superEntity, entity);
-                        if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
-                            superEntityCombo.setSelectedItem(entity.getSuperEntity());
-                            superClassName.setText(entity.getSuperClassName());
-                            return;
+                // drop not valid dbAttributePath
+                if (name == null) {
+                    for (ObjAttribute objAttribute : entity.getAttributes()) {
+                        if (objAttribute.getDbAttribute() == null) {
+                            objAttribute.setDbAttributePath(null);
                         }
                     }
-                    entity.setSuperEntityName(name);
-
-                    // drop not valid dbAttributePath
-                    if (name == null) {
-                        for (ObjAttribute objAttribute : entity.getAttributes()) {
-                            if (objAttribute.getDbAttribute() == null) {
-                                objAttribute.setDbAttributePath(null);
-                            }
-                        }
-                    }
-                    
-                    if (name == null) {
-                        dbEntityCombo.setEnabled(true);
-                    } else {
-                        dbEntityCombo.setEnabled(false);
-                        dbEntityCombo.getModel().setSelectedItem(null);
-                    }
-
-                    // if a super-entity selected, disable table selection
-                    // and also update parent DbEntity selection...
-                    toggleEnabled(name == null, !serverOnly.isSelected());
-                    dbEntityCombo.getModel().setSelectedItem(entity.getDbEntity());
-                    superClassName.setText(entity.getSuperClassName());
-
-                    // fire both EntityEvent and EntityDisplayEvent;
-                    // the later is to update attribute and relationship display
-
-                    DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
-                    DataMap map = mediator.getCurrentDataMap();
-
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                    mediator.fireObjEntityDisplayEvent(new EntityDisplayEvent(this, entity, map, domain));
                 }
+
+                if (name == null) {
+                    dbEntityCombo.setEnabled(true);
+                } else {
+                    dbEntityCombo.setEnabled(false);
+                    dbEntityCombo.getModel().setSelectedItem(null);
+                }
+
+                // if a super-entity selected, disable table selection
+                // and also update parent DbEntity selection...
+                toggleEnabled(name == null, !serverOnly.isSelected());
+                dbEntityCombo.getModel().setSelectedItem(entity.getDbEntity());
+                superClassName.setText(entity.getSuperClassName());
+
+                // fire both EntityEvent and EntityDisplayEvent;
+                // the later is to update attribute and relationship display
+
+                DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
+                DataMap map = mediator.getCurrentDataMap();
+
+                mediator.fireObjEntityEvent(new EntityEvent(this, entity));
+                mediator.fireObjEntityDisplayEvent(new EntityDisplayEvent(this, entity, map, domain));
             }
         });
 
-        tableLabel.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                // Jump to DbEntity of the current ObjEntity
-                DbEntity entity = mediator.getCurrentObjEntity().getDbEntity();
-                if (entity != null) {
-                    DataChannelDescriptor dom = (DataChannelDescriptor) mediator.getProject().getRootNode();
-                    mediator.fireDbEntityDisplayEvent(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
-                }
+        tableLabel.addActionListener(e -> {
+            // Jump to DbEntity of the current ObjEntity
+            DbEntity entity = mediator.getCurrentObjEntity().getDbEntity();
+            if (entity != null) {
+                DataChannelDescriptor dom = (DataChannelDescriptor) mediator.getProject().getRootNode();
+                mediator.fireDbEntityDisplayEvent(new EntityDisplayEvent(this, entity, entity.getDataMap(), dom));
             }
         });
 
- 
-
-        readOnly.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                ObjEntity entity = mediator.getCurrentObjEntity();
-                if (entity != null) {
-                    entity.setReadOnly(readOnly.isSelected());
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                }
+        readOnly.addItemListener(e -> {
+            ObjEntity entity = mediator.getCurrentObjEntity();
+            if (entity != null) {
+                entity.setReadOnly(readOnly.isSelected());
+                mediator.fireObjEntityEvent(new EntityEvent(this, entity));
             }
         });
 
-        optimisticLocking.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                ObjEntity entity = mediator.getCurrentObjEntity();
-                if (entity != null) {
-                    entity.setDeclaredLockType(optimisticLocking.isSelected()
-                            ? ObjEntity.LOCK_TYPE_OPTIMISTIC
-                            : ObjEntity.LOCK_TYPE_NONE);
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                }
+        optimisticLocking.addItemListener(e -> {
+            ObjEntity entity = mediator.getCurrentObjEntity();
+            if (entity != null) {
+                entity.setDeclaredLockType(optimisticLocking.isSelected()
+                        ? ObjEntity.LOCK_TYPE_OPTIMISTIC
+                        : ObjEntity.LOCK_TYPE_NONE);
+                mediator.fireObjEntityEvent(new EntityEvent(this, entity));
             }
         });
 
-        serverOnly.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                ObjEntity entity = mediator.getCurrentObjEntity();
-                if (entity != null) {
-                    entity.setServerOnly(serverOnly.isSelected());
-                    toggleEnabled(dbEntityCombo.isEnabled(), !serverOnly.isSelected());
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                }
+        serverOnly.addItemListener(e -> {
+            ObjEntity entity = mediator.getCurrentObjEntity();
+            if (entity != null) {
+                entity.setServerOnly(serverOnly.isSelected());
+                toggleEnabled(dbEntityCombo.isEnabled(), !serverOnly.isSelected());
+                mediator.fireObjEntityEvent(new EntityEvent(this, entity));
             }
         });
 
-        isAbstract.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                ObjEntity entity = mediator.getCurrentObjEntity();
-                if (entity != null) {
-                    entity.setAbstract(isAbstract.isSelected());
-                    mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-                }
+        isAbstract.addItemListener(e -> {
+            ObjEntity entity = mediator.getCurrentObjEntity();
+            if (entity != null) {
+                entity.setAbstract(isAbstract.isSelected());
+                mediator.fireObjEntityEvent(new EntityEvent(this, entity));
             }
         });
     }

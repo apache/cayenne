@@ -20,9 +20,6 @@
 package org.apache.cayenne.modeler.dialog.datamap;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.WindowConstants;
 
 import org.apache.cayenne.map.DataMap;
@@ -69,19 +66,8 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
     }
     
     private void initController() {
-        view.getUpdateButton().addActionListener(new ActionListener() {
-            
-            public void actionPerformed(ActionEvent e) {
-                updateSuperclass();
-            }
-        });
-        
-        view.getCancelButton().addActionListener(new ActionListener() {
-            
-            public void actionPerformed(ActionEvent arg0) {
-                view.dispose();
-            }
-        });
+        view.getUpdateButton().addActionListener(e -> updateSuperclass());
+        view.getCancelButton().addActionListener(e -> view.dispose());
     }
 
     protected void updateSuperclass() {

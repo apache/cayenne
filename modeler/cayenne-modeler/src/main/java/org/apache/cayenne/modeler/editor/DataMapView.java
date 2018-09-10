@@ -35,8 +35,6 @@ import org.apache.cayenne.modeler.dialog.datamap.LockingUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.PackageUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.SchemaUpdateController;
 import org.apache.cayenne.modeler.dialog.datamap.SuperclassUpdateController;
-import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
-import org.apache.cayenne.modeler.event.DataMapDisplayListener;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -54,10 +52,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Arrays;
 
 /**
@@ -219,97 +213,26 @@ public class DataMapView extends JPanel {
     }
 
     private void initController() {
-        eventController.addDataMapDisplayListener(new DataMapDisplayListener() {
-
-            public void currentDataMapChanged(DataMapDisplayEvent e) {
-                DataMap map = e.getDataMap();
-                if (map != null) {
-                    initFromModel(map);
-                }
+        eventController.addDataMapDisplayListener(e -> {
+            DataMap map = e.getDataMap();
+            if (map != null) {
+                initFromModel(map);
             }
         });
 
-        nodeSelector.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                setDataNode();
-            }
-        });
-
-        quoteSQLIdentifiers.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected());
-            }
-        });
-
-        defaultLockType.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setDefaultLockType(defaultLockType.isSelected()
-                        ? ObjEntity.LOCK_TYPE_OPTIMISTIC
-                        : ObjEntity.LOCK_TYPE_NONE);
-            }
-        });
-
-        clientSupport.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setClientSupport(clientSupport.isSelected());
-            }
-        });
-
-        updateDefaultClientPackage.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateDefaultClientPackage();
-            }
-        });
-
-        updateDefaultClientSuperclass.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateDefaultClientSuperclass();
-            }
-        });
-
-        updateDefaultCatalog.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateDefaultCatalog();
-            }
-        });
-
-        updateDefaultSchema.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateDefaultSchema();
-            }
-        });
-
-        updateDefaultPackage.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateDefaultPackage();
-            }
-        });
-
-        updateDefaultSuperclass.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateDefaultSuperclass();
-            }
-        });
-
-        updateDefaultLockType.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateDefaultLockType();
-            }
-        });
+        nodeSelector.addActionListener(e -> setDataNode());
+        quoteSQLIdentifiers.addItemListener(e -> setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected()));
+        defaultLockType.addItemListener(e -> setDefaultLockType(defaultLockType.isSelected()
+                ? ObjEntity.LOCK_TYPE_OPTIMISTIC
+                : ObjEntity.LOCK_TYPE_NONE));
+        clientSupport.addItemListener(e -> setClientSupport(clientSupport.isSelected()));
+        updateDefaultClientPackage.addActionListener(e -> updateDefaultClientPackage());
+        updateDefaultClientSuperclass.addActionListener(e -> updateDefaultClientSuperclass());
+        updateDefaultCatalog.addActionListener(e -> updateDefaultCatalog());
+        updateDefaultSchema.addActionListener(e -> updateDefaultSchema());
+        updateDefaultPackage.addActionListener(e -> updateDefaultPackage());
+        updateDefaultSuperclass.addActionListener(e -> updateDefaultSuperclass());
+        updateDefaultLockType.addActionListener(e -> updateDefaultLockType());
     }
 
     /**

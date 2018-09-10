@@ -20,8 +20,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -133,19 +131,13 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
     }
 
     private void initController() {
-
-        distinct.addItemListener(new ItemListener() {
-
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                QueryDescriptor query = getQuery();
-                if (query != null) {
-                    query.setProperty(SelectQuery.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
-                    mediator.fireQueryEvent(new QueryEvent(this, query));
-                }
+        distinct.addItemListener(e -> {
+            QueryDescriptor query = getQuery();
+            if (query != null) {
+                query.setProperty(SelectQuery.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
+                mediator.fireQueryEvent(new QueryEvent(this, query));
             }
         });
-
     }
 
     /**

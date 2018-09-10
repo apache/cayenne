@@ -20,8 +20,6 @@
 package org.apache.cayenne.modeler.editor;
 
 import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.EventObject;
 
 import javax.swing.JCheckBox;
@@ -114,14 +112,11 @@ public class ProcedureTab extends JPanel implements ProcedureDisplayListener, Ex
     }
 
     private void initController() {
-        returnsValue.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent e) {
-                Procedure procedure = eventController.getCurrentProcedure();
-                if (procedure != null && !ignoreChange) {
-                    procedure.setReturningValue(returnsValue.isSelected());
-                    eventController.fireProcedureEvent(new ProcedureEvent(ProcedureTab.this, procedure));
-                }
+        returnsValue.addItemListener(e -> {
+            Procedure procedure = eventController.getCurrentProcedure();
+            if (procedure != null && !ignoreChange) {
+                procedure.setReturningValue(returnsValue.isSelected());
+                eventController.fireProcedureEvent(new ProcedureEvent(ProcedureTab.this, procedure));
             }
         });
 

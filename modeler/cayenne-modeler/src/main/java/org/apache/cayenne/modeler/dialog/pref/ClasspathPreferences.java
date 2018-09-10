@@ -20,8 +20,6 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,27 +126,9 @@ public class ClasspathPreferences extends CayenneController {
 
     protected void initBindings() {
         view.getTable().setModel(tableModel);
-
-        view.getAddDirButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                addClassDirectoryAction();
-            }
-        });
-
-        view.getRemoveEntryButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                removeEntryAction();
-            }
-        });
-
-        view.getAddJarButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                addJarOrZipAction();
-            }
-        });
+        view.getAddDirButton().addActionListener(e -> addClassDirectoryAction());
+        view.getRemoveEntryButton().addActionListener(e -> removeEntryAction());
+        view.getAddJarButton().addActionListener(e -> addJarOrZipAction());
     }
 
     protected void addJarOrZipAction() {

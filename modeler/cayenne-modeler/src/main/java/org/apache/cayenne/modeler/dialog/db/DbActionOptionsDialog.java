@@ -23,8 +23,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 
 import javax.swing.DefaultComboBoxModel;
@@ -92,18 +90,8 @@ public class DbActionOptionsDialog extends CayenneDialog {
     }
 
     protected void initController() {
-        selectButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                processSelect();
-            }
-        });
-        cancelButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                processCancel();
-            }
-        });
+        selectButton.addActionListener(e -> processSelect());
+        cancelButton.addActionListener(e -> processCancel());
     }
 
     protected void initFromModel(Collection<String> catalogs, Collection<String> schemas, String currentCatalog, String currentSchema) {

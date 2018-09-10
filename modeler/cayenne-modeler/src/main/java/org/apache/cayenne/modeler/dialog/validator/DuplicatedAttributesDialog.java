@@ -124,23 +124,17 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
     private void initController() {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        cancelButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                result = CANCEL_RESULT;
-                setVisible(false);
-                dispose();
-            }
+        cancelButton.addActionListener(e -> {
+            result = CANCEL_RESULT;
+            setVisible(false);
+            dispose();
         });
 
-        proceedButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                applyChanges();
-                result = PROCEEDED_RESULT;
-                setVisible(false);
-                dispose();
-            }
+        proceedButton.addActionListener(e -> {
+            applyChanges();
+            result = PROCEEDED_RESULT;
+            setVisible(false);
+            dispose();
         });
     }
 
@@ -246,10 +240,7 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
         }
 
         public boolean isCellEditable(int row, int column) {
-            if (column == ACTION || column == ATTRIBUTE_NAME) {
-                return true;
-            }
-            return false;
+            return column == ACTION || column == ATTRIBUTE_NAME;
         }
 
         public String getColumnName(int column) {

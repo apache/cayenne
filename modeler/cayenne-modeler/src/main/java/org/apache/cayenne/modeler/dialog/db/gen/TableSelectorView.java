@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.dialog.db.gen;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -47,15 +45,11 @@ public class TableSelectorView extends JPanel {
         this.checkAll = new JCheckBox();
         this.checkAllLabel = new JLabel("Check All Tables");
 
-        checkAll.addItemListener(new ItemListener() {
-
-            public void itemStateChanged(ItemEvent event) {
-                if (checkAll.isSelected()) {
-                    checkAllLabel.setText("Uncheck All Tables");
-                }
-                else {
-                    checkAllLabel.setText("Check All Tables");
-                }
+        checkAll.addItemListener(event -> {
+            if (checkAll.isSelected()) {
+                checkAllLabel.setText("Uncheck All Tables");
+            } else {
+                checkAllLabel.setText("Check All Tables");
             }
         });
 

@@ -26,8 +26,6 @@ import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @since 4.1
@@ -50,20 +48,14 @@ public class DefaultPopUpMenu extends JPopupMenu {
     }
 
     private void initListeners() {
-        rename.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((selectedElement != null) && (parentElement != null)) {
-                    projectController.getApplication().getActionManager().getAction(EditNodeAction.class).actionPerformed(e);
-                }
+        rename.addActionListener(e -> {
+            if ((selectedElement != null) && (parentElement != null)) {
+                projectController.getApplication().getActionManager().getAction(EditNodeAction.class).actionPerformed(e);
             }
         });
-        delete.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((selectedElement != null) && (parentElement != null)) {
-                    projectController.getApplication().getActionManager().getAction(DeleteNodeAction.class).actionPerformed(e);
-                }
+        delete.addActionListener(e -> {
+            if ((selectedElement != null) && (parentElement != null)) {
+                projectController.getApplication().getActionManager().getAction(DeleteNodeAction.class).actionPerformed(e);
             }
         });
     }
