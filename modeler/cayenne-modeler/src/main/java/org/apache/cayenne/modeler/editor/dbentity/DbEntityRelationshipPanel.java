@@ -139,7 +139,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         this.mediator.addDbRelationshipListener(this);
 
         resolver = new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
                 int row = table.getSelectedRow();
                 if (row < 0) {

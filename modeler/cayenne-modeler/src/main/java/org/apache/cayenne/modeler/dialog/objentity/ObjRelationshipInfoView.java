@@ -48,9 +48,9 @@ public class ObjRelationshipInfoView extends JDialog{
     protected WidgetFactory widgetFactory;
 
     protected Component collectionTypeLabel;
-    protected JComboBox collectionTypeCombo;
+    protected JComboBox<String> collectionTypeCombo;
     protected Component mapKeysLabel;
-    protected JComboBox mapKeysCombo;
+    protected JComboBox<String> mapKeysCombo;
 
     protected JButton saveButton;
     protected JButton cancelButton;
@@ -60,7 +60,7 @@ public class ObjRelationshipInfoView extends JDialog{
     protected JTextField relationshipName;
     protected JLabel currentPathLabel;
     protected JLabel sourceEntityLabel;
-    protected JComboBox targetCombo;
+    protected JComboBox<String> targetCombo;
     
     ProjectController mediator;
     
@@ -104,18 +104,22 @@ public class ObjRelationshipInfoView extends JDialog{
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("ObjRelationship Information", cc.xywh(1, 1, 5, 1));
-        builder.addLabel("Relationship:", cc.xy(1, 3));
-        builder.add(relationshipName, cc.xywh(3, 3, 1, 1));
 
-        builder.addLabel("Current Db Path:", cc.xy(1, 5));
-        builder.add(currentPathLabel, cc.xywh(3, 5, 5, 1));
+        builder.addLabel("Source Entity:", cc.xy(1, 3));
+        builder.add(sourceEntityLabel, cc.xywh(3, 3, 1, 1));
 
-        builder.addLabel("Source:", cc.xy(1, 7));
-        builder.add(sourceEntityLabel, cc.xywh(3, 7, 1, 1));
-        builder.addLabel("Target:", cc.xy(1, 9));
-        builder.add(targetCombo, cc.xywh(3, 9, 1, 1));
+        builder.addLabel("Target Entity:", cc.xy(1, 5));
+        builder.add(targetCombo, cc.xywh(3, 5, 1, 1));
+
+        builder.addLabel("Relationship Name:", cc.xy(1, 7));
+        builder.add(relationshipName, cc.xywh(3, 7, 1, 1));
+
+        builder.addLabel("Current Db Path:", cc.xy(1, 9));
+        builder.add(currentPathLabel, cc.xywh(3, 9, 5, 1));
+
         collectionTypeLabel = builder.addLabel("Collection Type:", cc.xy(1, 11));
         builder.add(collectionTypeCombo, cc.xywh(3, 11, 1, 1));
+
         mapKeysLabel = builder.addLabel("Map Key:", cc.xy(1, 13));
         builder.add(mapKeysCombo, cc.xywh(3, 13, 1, 1));
 
@@ -132,9 +136,8 @@ public class ObjRelationshipInfoView extends JDialog{
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), cc.xywh(1, 19, 5, 3));
 
         add(builder.getPanel(), BorderLayout.CENTER);
-        add(PanelFactory.createButtonPanel(new JButton[] {
-                saveButton, cancelButton
-            }), BorderLayout.SOUTH);        
+        JButton[] buttons = {cancelButton, saveButton};
+        add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
     }
 
     public JButton getSaveButton()

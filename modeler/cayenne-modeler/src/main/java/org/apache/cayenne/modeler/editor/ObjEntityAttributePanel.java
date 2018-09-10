@@ -153,7 +153,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         // Create and install a popup
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        resolveMenu = new CayenneAction.CayenneMenuItem("Database Mapping", ico);
+        resolveMenu = new CayenneAction.CayenneMenuItem("Edit Attribute", ico);
 
         JPopupMenu popup = new JPopupMenu();
         popup.add(resolveMenu);

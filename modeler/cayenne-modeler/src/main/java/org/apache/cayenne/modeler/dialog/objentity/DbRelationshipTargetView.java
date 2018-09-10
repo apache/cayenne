@@ -41,10 +41,10 @@ public class DbRelationshipTargetView extends JDialog {
     protected WidgetFactory widgetFactory;
     protected JCheckBox toManyCheckBox ;
     protected JButton saveButton;
-    protected JButton cancelButton ;
+    protected JButton cancelButton;
     protected JRadioButton source1Button;
     protected JRadioButton source2Button;
-    protected JComboBox targetCombo;
+    protected JComboBox<String> targetCombo;
     
     public DbRelationshipTargetView(DbEntity source1, DbEntity source2) {
         
@@ -93,9 +93,8 @@ public class DbRelationshipTargetView extends JDialog {
         builder.add(toManyCheckBox, cc.xywh(3, 7, 1, 1));
         
         add(builder.getPanel(), BorderLayout.CENTER);
-        add(PanelFactory.createButtonPanel(new JButton[] {
-                saveButton, cancelButton
-            }), BorderLayout.SOUTH);
+        JButton[] buttons = {cancelButton, saveButton};
+        add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
     }
     
     public JRadioButton getSource1Button() {

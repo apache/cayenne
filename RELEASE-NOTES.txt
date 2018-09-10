@@ -12,6 +12,11 @@ Release: 4.0.1
 Date:
 ----------------------------------
 
+=======
+Changes/New Features:
+
+CAY-2473 Modeler: cleanup attributes and relationship editors
+
 Bug Fixes:
 
 CAY-2320 Modeler: Limit input into numeric fields to 10 digits
