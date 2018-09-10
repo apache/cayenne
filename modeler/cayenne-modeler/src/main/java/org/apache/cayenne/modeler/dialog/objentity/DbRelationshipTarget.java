@@ -19,38 +19,32 @@
 package org.apache.cayenne.modeler.dialog.objentity;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.Comparators;
 
-public class DbRelationshipTarget extends CayenneController{
-    
+public class DbRelationshipTarget extends CayenneController {
+
     private DbEntity source1;
     private DbEntity source2;
     protected DbEntity relTarget;
     protected List<DbEntity> relTargets;
-    
+
     protected DbEntity source;
     protected ProjectController mediator;
     protected boolean source1Selected;
     protected DbRelationshipTargetView view;
     protected boolean toMany;
     protected boolean savePressed;
-    
-    @SuppressWarnings("unchecked")
-    public DbRelationshipTarget(ProjectController mediator,DbEntity source1, DbEntity source2) {
+
+    public DbRelationshipTarget(ProjectController mediator, DbEntity source1, DbEntity source2) {
         super(mediator);
         view = new DbRelationshipTargetView(source1, source2);
         initController();
@@ -60,8 +54,8 @@ public class DbRelationshipTarget extends CayenneController{
         this.mediator = mediator;
         this.source1 = source1;
         this.source2 = source2;
-        this.relTargets = new ArrayList<DbEntity>(source1.getDataMap().getDbEntities());
-        Collections.sort(relTargets, Comparators.getNamedObjectComparator());
+        this.relTargets = new ArrayList<>(source1.getDataMap().getDbEntities());
+        relTargets.sort(Comparators.getNamedObjectComparator());
         view.targetCombo.removeAllItems();
         for (DbEntity d : relTargets) {
             view.targetCombo.addItem(d.getName());
@@ -69,39 +63,11 @@ public class DbRelationshipTarget extends CayenneController{
     }
         
     private void initController() {
-        view.getCancelButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                view.dispose();
-            }
-        });
-        view.getSaveButton().addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                save();
-            }
-        });
-        view.getSource1Button().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setSource(source1, true);
-            }
-        });     
-        view.getSource2Button().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setSource(source2, false);
-            }
-        });   
-        view.getToManyCheckBox().addChangeListener(new ChangeListener() {
-            
-            public void stateChanged(ChangeEvent e) {
-                if (view.getToManyCheckBox().isSelected()) {
-                    toMany = true;
-                }
-                else {
-                    toMany = false;
-                }
-            }
-        });
+        view.getCancelButton().addActionListener(e -> view.dispose());
+        view.getSaveButton().addActionListener(e -> save());
+        view.getSource1Button().addActionListener(e -> setSource(source1, true));
+        view.getSource2Button().addActionListener(e -> setSource(source2, false));
+        view.getToManyCheckBox().addChangeListener(e -> toMany = view.getToManyCheckBox().isSelected());
     }
     
     @Override
@@ -110,12 +76,11 @@ public class DbRelationshipTarget extends CayenneController{
     }
     
     protected void save() {
-             
-        this.relTarget = relTargets.get(view.targetCombo.getSelectedIndex());   
+        this.relTarget = relTargets.get(view.targetCombo.getSelectedIndex());
         DbEntity target = getTarget();
-             
+
         if (target == null) {
-            JOptionPane.showMessageDialog((Component) getView(), "Please select target entity first.",
+            JOptionPane.showMessageDialog(getView(), "Please select target entity first.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }

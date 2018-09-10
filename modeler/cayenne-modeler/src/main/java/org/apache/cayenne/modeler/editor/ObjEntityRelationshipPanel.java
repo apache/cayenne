@@ -46,7 +46,6 @@ import org.apache.cayenne.modeler.util.DbRelationshipPathComboBoxEditor;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
-import org.apache.cayenne.swing.components.image.FilteredIconFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,6 @@ import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
@@ -151,29 +149,22 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         mediator.addObjEntityListener(this);
         mediator.addObjRelationshipListener(this);
 
-        resolver = new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                if (row < 0) {
-                    return;
-                }
-
-                ObjRelationshipTableModel model = (ObjRelationshipTableModel) table
-                        .getModel();
-                new ObjRelationshipInfo(mediator, model.getRelationship(row)).startupAction();
-
-                /**
-                 * This is required for a table to be updated properly
-                 */
-                table.cancelEditing();
-
-                // need to refresh selected row... do this by unselecting/selecting the
-                // row
-                table.getSelectionModel().clearSelection();
-                table.select(row);
-                enabledResolve = false;
+        resolver = e -> {
+            int row = table.getSelectedRow();
+            if (row < 0) {
+                return;
             }
+
+            ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
+            new ObjRelationshipInfo(mediator, model.getRelationship(row)).startupAction();
+
+            // This is required for a table to be updated properly
+            table.cancelEditing();
+
+            // need to refresh selected row... do this by unselecting/selecting the row
+            table.getSelectionModel().clearSelection();
+            table.select(row);
+            enabledResolve = false;
         };
         resolveMenu.addActionListener(resolver);
 

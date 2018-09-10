@@ -138,21 +138,18 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         this.mediator.addDbEntityListener(this);
         this.mediator.addDbRelationshipListener(this);
 
-        resolver = new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                int row = table.getSelectedRow();
-                if (row < 0) {
-                    return;
-                }
-
-                // Get DbRelationship
-                DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
-                DbRelationship rel = model.getRelationship(row);
-                ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(rel);
-                dialog.setVisible(true);
-                dialog.dispose();
+        resolver = e -> {
+            int row = table.getSelectedRow();
+            if (row < 0) {
+                return;
             }
+
+            // Get DbRelationship
+            DbRelationshipTableModel model = (DbRelationshipTableModel) table.getModel();
+            DbRelationship rel = model.getRelationship(row);
+            ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(rel);
+            dialog.setVisible(true);
+            dialog.dispose();
         };
         resolveMenu.addActionListener(resolver);
 
