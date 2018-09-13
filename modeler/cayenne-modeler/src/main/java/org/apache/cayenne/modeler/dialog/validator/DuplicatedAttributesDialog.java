@@ -30,9 +30,15 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.TableColumn;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
