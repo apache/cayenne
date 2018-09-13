@@ -19,11 +19,12 @@
 
 package org.apache.cayenne.modeler.dialog.db.merge;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.factories.Borders;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.swing.components.TopBorder;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,14 +37,11 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-
-import com.jgoodies.forms.factories.Borders;
-import org.apache.cayenne.modeler.Application;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.swing.components.TopBorder;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 /**
  * Wizard for altering the database to match the data map.
@@ -75,6 +73,7 @@ public class MergerOptionsView extends JDialog {
         sql.setLineWrap(true);
         sql.setWrapStyleWord(true);
 
+        getRootPane().setDefaultButton(generateButton);
         JPanel sqlTextPanel = new JPanel(new BorderLayout());
         sqlTextPanel.add(new JScrollPane(
                 sql,

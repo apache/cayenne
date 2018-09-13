@@ -18,18 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.query;
 
-import java.awt.BorderLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.PanelFactory;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JRadioButton;
-
-import org.apache.cayenne.modeler.util.PanelFactory;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
 
 public class QueryTypeView extends JDialog {
     
@@ -64,7 +62,9 @@ public class QueryTypeView extends JDialog {
 
         cancelButton = new JButton("Cancel");
         cancelButton.setEnabled(true);
- 
+
+        getRootPane().setDefaultButton(createButton);
+
         // assemble
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
@@ -82,7 +82,7 @@ public class QueryTypeView extends JDialog {
         add(builder.getPanel(), BorderLayout.CENTER);
 
         add(PanelFactory.createButtonPanel(new JButton[] {
-                createButton, cancelButton
+                cancelButton, createButton
         }), BorderLayout.SOUTH);
 
         setTitle("Select New Query Type");

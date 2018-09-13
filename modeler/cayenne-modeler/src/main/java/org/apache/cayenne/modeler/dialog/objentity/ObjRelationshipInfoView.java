@@ -18,10 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
+import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.modeler.util.WidgetFactory;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -29,15 +34,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
-import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.modeler.util.WidgetFactory;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 public class ObjRelationshipInfoView extends JDialog{
     
@@ -79,6 +79,7 @@ public class ObjRelationshipInfoView extends JDialog{
         this.sourceEntityLabel=new JLabel();
         
         cancelButton.setEnabled(true);
+        getRootPane().setDefaultButton(saveButton);
         saveButton.setEnabled(true);
         newRelButton.setEnabled(true);
         collectionTypeCombo = widgetFactory.createComboBox();

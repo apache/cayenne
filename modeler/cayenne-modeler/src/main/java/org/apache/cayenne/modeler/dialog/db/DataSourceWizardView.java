@@ -50,6 +50,8 @@ public class DataSourceWizardView extends JDialog {
         this.cancelButton = new JButton("Cancel");
         this.connectionInfo = new DBConnectionInfoEditor(controller);
 
+        getRootPane().setDefaultButton(okButton);
+
         CellConstraints cc = new CellConstraints();
         PanelBuilder builder = new PanelBuilder(new FormLayout(
                 "20dlu:grow, pref, 3dlu, fill:max(150dlu;pref), 3dlu, fill:20dlu",

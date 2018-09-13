@@ -20,17 +20,16 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
 
 public class ClassNameUpdaterView extends JDialog {
 
@@ -52,6 +51,7 @@ public class ClassNameUpdaterView extends JDialog {
         updateButton = new JButton("Update");
         cancelButton = new JButton("Cancel");
 
+        getRootPane().setDefaultButton(updateButton);
         // assemble
 
         FormLayout layout = new FormLayout("left:200dlu", "");

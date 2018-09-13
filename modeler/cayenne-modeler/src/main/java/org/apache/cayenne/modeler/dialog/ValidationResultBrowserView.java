@@ -69,6 +69,8 @@ public class ValidationResultBrowserView extends JDialog {
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 5));
 
+        getRootPane().setDefaultButton(closeButton);
+
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(closeButton);
 

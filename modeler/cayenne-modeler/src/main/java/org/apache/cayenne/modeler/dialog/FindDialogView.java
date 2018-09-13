@@ -74,6 +74,7 @@ public class FindDialogView extends JDialog {
 
         JPanel okPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         okButton = new JButton("OK");
+        getRootPane().setDefaultButton(okButton);
         okPanel.setBorder(TopBorder.create());
         okPanel.add(okButton);
 
