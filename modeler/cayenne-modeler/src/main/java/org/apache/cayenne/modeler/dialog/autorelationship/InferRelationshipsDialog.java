@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.autorelationship;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
@@ -30,9 +28,10 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FlowLayout;
 
 public class InferRelationshipsDialog extends JDialog {
     public static final int SELECT = 1;
@@ -52,6 +51,8 @@ public class InferRelationshipsDialog extends JDialog {
         this.cancelButton = new JButton("Cancel");
         this.entityCount = new JLabel("No DbRelationships selected");
         entityCount.setFont(entityCount.getFont().deriveFont(10f));
+
+        getRootPane().setDefaultButton(generateButton);
 
         this.strategyCombo = new JComboBox();
         strategyCombo.setEditable(true);

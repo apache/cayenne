@@ -19,19 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
 
 public class EntitySyncDialog extends JDialog {
 
@@ -46,6 +45,8 @@ public class EntitySyncDialog extends JDialog {
 
         updateButton = new JButton("Continue");
         cancelButton = new JButton("Cancel");
+
+        getRootPane().setDefaultButton(updateButton);
 
         // assemble
 

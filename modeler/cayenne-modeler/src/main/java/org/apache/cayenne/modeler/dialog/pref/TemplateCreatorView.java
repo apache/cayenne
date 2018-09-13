@@ -19,19 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.swing.control.FileChooser;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import org.apache.cayenne.swing.control.FileChooser;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 public class TemplateCreatorView extends JDialog {
 
@@ -62,6 +60,8 @@ public class TemplateCreatorView extends JDialog {
         builder.add(templateName, cc.xy(3, 1));
         builder.addLabel("Template File:", cc.xy(1, 3));
         builder.add(templateChooser, cc.xywh(3, 3, 3, 1));
+
+        getRootPane().setDefaultButton(okButton);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);

@@ -21,15 +21,6 @@ package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.swing.components.TopBorder;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Frame;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
@@ -39,6 +30,15 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Frame;
 
 /**
  */
@@ -90,6 +90,8 @@ public class PreferenceDialogView extends JDialog {
         split.setLeftComponent(leftContainer);
         split.setRightComponent(detailPanel);
         split.setDividerSize(3);
+
+        getRootPane().setDefaultButton(saveButton);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);

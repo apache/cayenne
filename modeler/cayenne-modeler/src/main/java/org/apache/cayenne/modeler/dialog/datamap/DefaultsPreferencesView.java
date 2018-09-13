@@ -19,18 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 /**
  */
@@ -59,10 +58,11 @@ public class DefaultsPreferencesView extends JDialog {
         updateButton = new JButton("Update");
         cancelButton = new JButton("Cancel");
 
+        getRootPane().setDefaultButton(updateButton);
         // assemble
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(updateButton);
         buttonPanel.add(cancelButton);
+        buttonPanel.add(updateButton);
 
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout("left:max(180dlu;pref)", "p, 3dlu, p, 3dlu");

@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -45,6 +36,14 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple non-editable tree browser with multiple columns for display and
@@ -129,7 +128,7 @@ public class MultiColumnBrowser extends JPanel {
      * Returns current selection path or null if no selection is made.
      */
     public TreePath getSelectionPath() {
-        return new TreePath(selectionPath);
+        return selectionPath != null ? new TreePath(selectionPath) : null;
     }
 
     /**

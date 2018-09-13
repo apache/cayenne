@@ -20,6 +20,23 @@
 
 package org.apache.cayenne.modeler.dialog;
 
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.CayenneModelerFrame;
+import org.apache.cayenne.modeler.util.CayenneDialog;
+import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.util.LocalizedStringsHandler;
+import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.HeadlessException;
@@ -30,24 +47,6 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.CayenneModelerFrame;
-import org.apache.cayenne.modeler.util.CayenneDialog;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.util.LocalizedStringsHandler;
-import org.apache.cayenne.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Displays CayenneModeler exceptions and warning messages.
@@ -184,7 +183,9 @@ public class ErrorDebugDialog extends CayenneDialog implements ActionListener {
         close = new JButton("Close");
         close.addActionListener(this);
 
-        JButton[] buttons = (showHide != null) ? new JButton[] { showHide, close }
+        getRootPane().setDefaultButton(showHide);
+
+        JButton[] buttons = (showHide != null) ? new JButton[] { close, showHide }
         : new JButton[] { close };
         pane.add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
         
