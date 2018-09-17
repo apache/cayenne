@@ -12,6 +12,11 @@ Release: 4.0.1
 Date:
 ----------------------------------
 
+=======
+Changes/New Features:
+
+CAY-2475 Modeler: move inheritance icon to name column in objAttr table and objRel table
+
 Bug Fixes:
 
 CAY-2320 Modeler: Limit input into numeric fields to 10 digits
