@@ -41,6 +41,9 @@ ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType("java.io.IOException")}##
 ${importUtils.addType("java.io.ObjectInputStream")}##
 ${importUtils.addType("java.io.ObjectOutputStream")}##
+#if( $object.DbEntity )
+${importUtils.addType("org.apache.cayenne.exp.ExpressionFactory")}##
+#end
 #if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) || (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}))
 ${importUtils.addType('org.apache.cayenne.exp.Property')}##
 #end
@@ -79,7 +82,9 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
 #if( $object.DbEntity )
 #foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
-    public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";
+    #if(!$object.DeclaredAttributes.toString().contains($idAttr.Name))
+    public static final Property<Integer> ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = Property.create(ExpressionFactory.dbPathExp("db:${idAttr.Name}"), Integer.class);
+    #end
 #end
 #end
 
