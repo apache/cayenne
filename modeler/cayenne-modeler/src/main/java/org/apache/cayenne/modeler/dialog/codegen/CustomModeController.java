@@ -175,19 +175,20 @@ public class CustomModeController extends GeneratorController {
 	public Collection<ClassGenerationAction> createGenerator() {
 
 		Collection<ClassGenerationAction> generators = super.createGenerator();
+		boolean selected = view.getPairs().isSelected();
 
 		String superKey = Objects.requireNonNull(view.getSuperclassTemplate().getSelectedItem()).toString();
-		String superTemplate = templateManager.getTemplatePath(superKey);
+		String superTemplate = selected ? templateManager.getTemplatePath(superKey) : ClassGenerationAction.SINGLE_CLASS_TEMPLATE;
 
 		String subKey = Objects.requireNonNull(view.getSubclassTemplate().getSelectedItem()).toString();
-		String subTemplate = templateManager.getTemplatePath(subKey);
+		String subTemplate = selected ? templateManager.getTemplatePath(subKey) : null;
 
 		for (ClassGenerationAction generator : generators) {
 			generator.setSuperTemplate(superTemplate);
 			generator.setTemplate(subTemplate);
 			generator.setOverwrite(view.getOverwrite().isSelected());
 			generator.setUsePkgPath(view.getUsePackagePath().isSelected());
-			generator.setMakePairs(view.getPairs().isSelected());
+			generator.setMakePairs(selected);
 			generator.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
 
 			if (!Util.isEmptyString(view.getOutputPattern().getText())) {

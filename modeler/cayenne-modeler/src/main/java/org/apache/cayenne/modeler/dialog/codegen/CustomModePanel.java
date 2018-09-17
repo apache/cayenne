@@ -54,9 +54,11 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.manageTemplatesLink = new ActionLink("Customize Templates...");
         manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
 
+        updateClassTemplatesSelection();
         pairs.addChangeListener(e -> {
-            superclassTemplate.setEnabled(pairs.isSelected());
-            overwrite.setEnabled(!pairs.isSelected());
+            boolean selected = pairs.isSelected();
+            updateClassTemplatesSelection();
+            overwrite.setEnabled(!selected);
         });
 
         // assemble
@@ -129,5 +131,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     public JCheckBox getCreatePropertyNames() {
         return createPropertyNames;
+    }
+
+    private void updateClassTemplatesSelection() {
+        superclassTemplate.setEnabled(pairs.isSelected());
+        subclassTemplate.setEnabled(pairs.isSelected());
     }
 }
