@@ -86,6 +86,8 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
     private static Logger logObj = LoggerFactory.getLogger(ObjEntityRelationshipPanel.class);
 
+    private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
+
     private static final Object[] DELETE_RULES = new Object[]{
             DeleteRule.deleteRuleName(DeleteRule.NO_ACTION),
             DeleteRule.deleteRuleName(DeleteRule.NULLIFY),
@@ -444,8 +446,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                     && relationship.getSourceEntity() != model.getEntity()) {
                 setForeground(isSelected ? new Color(0xCECECE) : Color.GRAY);
                 if(column == ObjRelationshipTableModel.REL_NAME) {
-                    ImageIcon icon = ModelerUtil.buildIcon("icon-inheritance.png");
-                    setIcon(icon);
+                    setIcon(INHERITANCE_ICON);
                 }
             } else {
                 setForeground(isSelected && !hasFocus
@@ -461,8 +462,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
 
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
-            ImageIcon icon = ModelerUtil.buildIcon("icon-inheritance.png");
-            if(point.x - x <= icon.getIconWidth()) {
+            if(point.x - x <= INHERITANCE_ICON.getIconWidth()) {
                 ActionManager actionManager = Application.getInstance().getActionManager();
                 actionManager.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }

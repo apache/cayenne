@@ -95,6 +95,8 @@ import java.util.Map;
 public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayListener,
         ObjEntityListener, ObjAttributeListener, ProjectOnSaveListener {
 
+    private static final ImageIcon INHERITANCE_ICON = ModelerUtil.buildIcon("icon-inheritance.png");
+
     private ProjectController mediator;
     private CayenneTable table;
     private TableColumnPreferences tablePreferences;
@@ -460,8 +462,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
                 Font newFont = font.deriveFont(Font.ITALIC);
                 setFont(newFont);
                 if(column == ObjAttributeTableModel.OBJ_ATTRIBUTE) {
-                    ImageIcon icon = ModelerUtil.buildIcon("icon-inheritance.png");
-                    setIcon(icon);
+                    setIcon(INHERITANCE_ICON);
                 }
             }
 
@@ -473,8 +474,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         public void mouseClicked(MouseEvent event, int x) {
             Point point = event.getPoint();
-            ImageIcon icon = ModelerUtil.buildIcon("icon-inheritance.png");
-            if(point.x - x <= icon.getIconWidth()) {
+            if(point.x - x <= INHERITANCE_ICON.getIconWidth()) {
                 ActionManager actionManager = Application.getInstance().getActionManager();
                 actionManager.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
             }
