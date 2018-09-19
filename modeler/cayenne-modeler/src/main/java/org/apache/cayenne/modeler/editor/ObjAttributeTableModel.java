@@ -25,7 +25,6 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -60,14 +59,13 @@ import java.util.List;
 public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrapper> {
 
     // Columns
-    public static final int INHERITED = 0;
-    public static final int OBJ_ATTRIBUTE = 1;
-    public static final int OBJ_ATTRIBUTE_TYPE = 2;
-    public static final int DB_ATTRIBUTE = 3;
-    public static final int DB_ATTRIBUTE_TYPE = 4;
-    public static final int LOCKING = 5;
-    public static final int COMMENT = 6;
-    public static final int COLUMN_COUNT = 7;
+    public static final int OBJ_ATTRIBUTE = 0;
+    public static final int OBJ_ATTRIBUTE_TYPE = 1;
+    public static final int DB_ATTRIBUTE = 2;
+    public static final int DB_ATTRIBUTE_TYPE = 3;
+    public static final int LOCKING = 4;
+    public static final int COMMENT = 5;
+    public static final int COLUMN_COUNT = 6;
 
     private ObjEntity entity;
     private DbEntity dbEntity;
@@ -154,8 +152,6 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
     public String getColumnName(int column) {
         switch (column) {
-            case INHERITED:
-                return "In";
             case OBJ_ATTRIBUTE:
                 return "Name";
             case OBJ_ATTRIBUTE_TYPE:
@@ -178,8 +174,6 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         DbAttribute dbAttribute = attribute.getDbAttribute();
 
         switch (column) {
-            case INHERITED:
-                return attribute.isInherited();
             case OBJ_ATTRIBUTE:
                 return attribute.getName();
             case OBJ_ATTRIBUTE_TYPE:
@@ -399,7 +393,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
             return col == DB_ATTRIBUTE;
         }
 
-        return col != DB_ATTRIBUTE_TYPE && col != INHERITED;
+        return col != DB_ATTRIBUTE_TYPE;
     }
 
     public ObjEntity getEntity() {
@@ -426,9 +420,6 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     @Override
     public void sortByColumn(final int sortCol, boolean isAscent) {
         switch (sortCol) {
-            case INHERITED:
-                sortByElementProperty("inherited", isAscent);
-                break;
             case OBJ_ATTRIBUTE:
                 sortByElementProperty("name", isAscent);
                 break;
