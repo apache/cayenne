@@ -454,7 +454,7 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             column = table.getColumnModel().getColumn(column).getModelIndex();
             if (relationship != null
                     && relationship.getSourceEntity() != model.getEntity()) {
-                setForeground(isSelected ? new Color(0xCECECE) : Color.GRAY);
+                setForeground(isSelected ? new Color(0xEEEEEE) : Color.GRAY);
                 if(column == ObjRelationshipTableModel.REL_NAME) {
                     ImageIcon icon = ModelerUtil.buildIcon("icon-inheritance.png");
                     setIcon(icon);
