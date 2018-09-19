@@ -173,7 +173,7 @@ public class CustomModeController extends GeneratorController {
 
 		JCheckBox pairs = this.view.getPairs();
 		updateView();
-		pairs.addChangeListener(e -> updateView());
+		pairs.addItemListener(e -> updateView());
 
 		superTemplate.updateView();
 		subTemplate.updateView();

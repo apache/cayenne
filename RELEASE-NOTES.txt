@@ -36,6 +36,7 @@ CAY-2463 Modeler: DB Schema generation doesn't work
 CAY-2464 ClassCastException when returning PRUNED_NODE in expression transformer
 CAY-2470 Can't bind SQLExec parameters in a loop
 CAY-2472 Clear cached replacement query on mutation in all indirect queries
+CAY-2476 Modeller: Fixed wrong behaviour of code generation dialog
 
 ----------------------------------
 Release: 4.1.M2
