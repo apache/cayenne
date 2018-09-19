@@ -37,8 +37,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-/**
- */
 public class CodeGeneratorDialog extends JDialog {
 
     protected JTabbedPane tabs;

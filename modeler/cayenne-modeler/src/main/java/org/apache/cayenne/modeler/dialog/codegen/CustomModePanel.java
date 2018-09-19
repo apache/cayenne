@@ -27,8 +27,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
@@ -56,16 +54,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.manageTemplatesLink = new ActionLink("Customize Templates...");
         manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
 
-        pairs.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                superclassTemplate.setEnabled(pairs.isSelected());
-                overwrite.setEnabled(!pairs.isSelected());
-            }
-        });
-
         // assemble
-
         FormLayout layout = new FormLayout(
                 "right:77dlu, 1dlu, fill:100:grow, 1dlu, left:80dlu, 1dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
@@ -136,4 +125,5 @@ public class CustomModePanel extends GeneratorControllerPanel {
     public JCheckBox getCreatePropertyNames() {
         return createPropertyNames;
     }
+
 }

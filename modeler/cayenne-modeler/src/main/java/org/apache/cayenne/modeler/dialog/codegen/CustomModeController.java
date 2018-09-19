@@ -29,7 +29,11 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import java.awt.Component;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,11 +43,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
+import static org.apache.cayenne.modeler.CodeTemplateManager.*;
+import static org.apache.cayenne.modeler.dialog.pref.PreferenceDialog.TEMPLATES_KEY;
+
 /**
  * A controller for the custom generation mode.
  */
 public class CustomModeController extends GeneratorController {
-
 	// correspond to non-public constants on MapClassGenerator.
 	private static final String MODE_ENTITY = "entity";
 
@@ -69,11 +75,11 @@ public class CustomModeController extends GeneratorController {
 		for (Entry<DataMap, DataMapDefaults> entry : entities) {
 
 			if (Util.isEmptyString(entry.getValue().getSuperclassTemplate())) {
-				entry.getValue().setSuperclassTemplate(CodeTemplateManager.STANDARD_SERVER_SUPERCLASS);
+				entry.getValue().setSuperclassTemplate(STANDARD_SERVER_SUPERCLASS);
 			}
 
 			if (Util.isEmptyString(entry.getValue().getSubclassTemplate())) {
-				entry.getValue().setSubclassTemplate(CodeTemplateManager.STANDARD_SERVER_SUBCLASS);
+				entry.getValue().setSubclassTemplate(STANDARD_SERVER_SUBCLASS);
 			}
 
 			if (Util.isEmptyString(entry.getValue().getProperty("mode"))) {
@@ -144,11 +150,10 @@ public class CustomModeController extends GeneratorController {
 
 	protected GeneratorControllerPanel createView() {
 		this.view = new CustomModePanel();
-
 		return view;
 	}
 
-	protected void updateTemplates() {
+	private void updateTemplates() {
 		this.templateManager = getApplication().getCodeTemplateManager();
 
 		List<String> customTemplates = new ArrayList<>(templateManager.getCustomTemplates().keySet());
@@ -165,8 +170,25 @@ public class CustomModeController extends GeneratorController {
 		this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
 		this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));
 
+		JCheckBox pairs = this.view.getPairs();
+		updateView();
+		pairs.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				updateView();
+			}
+		});
+
 		superTemplate.updateView();
 		subTemplate.updateView();
+	}
+
+	private void updateView() {
+		boolean selected = view.getPairs().isSelected();
+		JComboBox<String> subclassTemplate = view.getSubclassTemplate();
+		subclassTemplate.setSelectedItem(selected ? STANDARD_SERVER_SUBCLASS : SINGLE_SERVER_CLASS);
+		view.getSuperclassTemplate().setEnabled(selected);
+		view.getOverwrite().setEnabled(!selected);
 	}
 
 	public Component getView() {
@@ -200,12 +222,16 @@ public class CustomModeController extends GeneratorController {
 	}
 
 	public void popPreferencesAction() {
-		new PreferenceDialog(getApplication().getFrameController()).startupAction(PreferenceDialog.TEMPLATES_KEY);
+		new PreferenceDialog(getApplication().getFrameController()).startupAction(TEMPLATES_KEY);
 		updateTemplates();
 	}
 
 	@Override
 	protected ClassGenerationAction newGenerator() {
-		return new ClassGenerationAction();
+		ClassGenerationAction action = new ClassGenerationAction();
+		getApplication().getInjector().injectMembers(action);
+		return action;
 	}
+
+
 }
