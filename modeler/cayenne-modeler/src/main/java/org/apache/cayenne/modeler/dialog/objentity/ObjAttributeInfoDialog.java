@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ObjAttributeInfoDialog extends CayenneController implements TreeSelectionListener {
 
@@ -411,9 +412,10 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 		boolean isOverrideTableChange = ((OverrideEmbeddableAttributeTableModel) view.getOverrideAttributeTable()
 				.getModel()).isAttributeOverrideChange();
-		return isOverrideTableChange || !attribute.getName().equals(view.getAttributeName().getText())
-				|| (attribute.getType() == null && view.getTypeComboBox().getSelectedItem().toString() != null)
-				|| !attribute.getType().equals(view.getTypeComboBox().getSelectedItem().toString());
+		return isOverrideTableChange
+				|| !attribute.getName().equals(view.getAttributeName().getText())
+				|| (attribute.getType() == null && view.getTypeComboBox().getSelectedItem() != null)
+				|| !Objects.equals(attribute.getType(), view.getTypeComboBox().getSelectedItem());
 	}
 
 	public void saveMapping() {
