@@ -54,11 +54,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.manageTemplatesLink = new ActionLink("Customize Templates...");
         manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
 
-        pairs.addChangeListener(e -> {
-            superclassTemplate.setEnabled(pairs.isSelected());
-            overwrite.setEnabled(!pairs.isSelected());
-        });
-
         // assemble
         FormLayout layout = new FormLayout(
                 "right:77dlu, 1dlu, fill:100:grow, 1dlu, left:80dlu, 1dlu", "");
@@ -130,4 +125,5 @@ public class CustomModePanel extends GeneratorControllerPanel {
     public JCheckBox getCreatePropertyNames() {
         return createPropertyNames;
     }
+
 }
