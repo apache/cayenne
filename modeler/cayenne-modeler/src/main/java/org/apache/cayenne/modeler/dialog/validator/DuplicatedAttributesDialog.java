@@ -18,21 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.validator;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.TableColumn;
-
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
@@ -42,9 +30,17 @@ import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Dialog for resolving name collision.
@@ -54,8 +50,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
 
     protected static DuplicatedAttributesDialog instance;
 
-    static final String DELETE_ACTION = "delete";
-    static final String RENAME_ACTION = "rename";
+    private static final String DELETE_ACTION = "delete";
+    private static final String RENAME_ACTION = "rename";
 
     public static final String CANCEL_RESULT = "cancel";
     public static final String PROCEEDED_RESULT = "proceeded";
@@ -98,6 +94,8 @@ public class DuplicatedAttributesDialog extends CayenneDialog {
     private void initView() {
         cancelButton = new JButton("Cancel");
         proceedButton = new JButton("Continue");
+
+        getRootPane().setDefaultButton(proceedButton);
 
         attributesTable = new JTable();
 

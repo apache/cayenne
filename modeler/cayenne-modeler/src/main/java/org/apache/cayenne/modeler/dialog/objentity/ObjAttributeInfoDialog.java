@@ -351,8 +351,8 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 			StringBuilder attributePath = new StringBuilder();
 			StringBuilder pathStr = new StringBuilder();
-			if (attribute.getEntity().getDbEntity() != null) {
-				TreePath path = view.getPathBrowser().getSelectionPath();
+			TreePath path = view.getPathBrowser().getSelectionPath();
+			if (attribute.getEntity().getDbEntity() != null && path != null) {
 
 				if (path.getLastPathComponent() instanceof DbAttribute) {
 					Object[] pathComponents = path.getPath();
@@ -418,7 +418,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 	public void saveMapping() {
 
-		if (setPath(false)) {
+ 		if (setPath(false)) {
 
 			if (JOptionPane.showConfirmDialog(getView(),
 					"You have changed Db Attribute path. Do you want it to be saved?", "Save ObjAttribute",

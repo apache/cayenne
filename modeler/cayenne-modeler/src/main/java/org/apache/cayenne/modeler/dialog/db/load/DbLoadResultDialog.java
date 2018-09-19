@@ -78,6 +78,8 @@ public class DbLoadResultDialog extends JDialog {
     }
 
     private void buildElements() {
+        getRootPane().setDefaultButton(okButton);
+
         FormLayout layout = new FormLayout("fill:200dlu");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.append(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,

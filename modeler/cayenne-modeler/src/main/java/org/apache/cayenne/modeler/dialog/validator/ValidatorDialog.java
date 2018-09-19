@@ -111,9 +111,11 @@ public class ValidatorDialog extends CayenneDialog {
         builder.addLabel("Click on any row below to go to the object that has a validation problem:", cc.xy(1, 1));
         builder.add(new JScrollPane(problemsTable), cc.xy(1, 3));
 
+        getRootPane().setDefaultButton(refreshButton);
+
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(refreshButton);
         buttons.add(closeButton);
+        buttons.add(refreshButton);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);

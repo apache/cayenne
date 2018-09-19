@@ -19,18 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.datamap;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
 
 public class LockingUpdateView extends JDialog {
 
@@ -68,9 +67,11 @@ public class LockingUpdateView extends JDialog {
         builder.add(attributes, cc.xy(1, 3));
         builder.add(relationships, cc.xy(1, 5));
 
+        getRootPane().setDefaultButton(updateButton);
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(updateButton);
         buttonPanel.add(cancelButton);
+        buttonPanel.add(updateButton);
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());

@@ -18,7 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import java.awt.BorderLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
+import org.apache.cayenne.modeler.util.PanelFactory;
+import org.apache.cayenne.modeler.util.WidgetFactory;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -26,15 +32,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JRadioButton;
-
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
-import org.apache.cayenne.modeler.util.PanelFactory;
-import org.apache.cayenne.modeler.util.WidgetFactory;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
 
 public class DbRelationshipTargetView extends JDialog {
     
@@ -63,7 +61,9 @@ public class DbRelationshipTargetView extends JDialog {
         source1Button = new JRadioButton();
         source2Button = new JRadioButton();
         source2Button.setEnabled(source2 != null);
-        
+
+        getRootPane().setDefaultButton(saveButton);
+
         ButtonGroup bg = new ButtonGroup();
         bg.add(source1Button);
         bg.add(source2Button);
