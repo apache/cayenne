@@ -100,7 +100,7 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
 
                     //we need object target to save it in model
                     DbEntity lastEntity = ((DbRelationship) currentNode).getTargetEntity();
-                    if(lastEntity == null) {
+                    if(lastEntity != null) {
                         Collection<ObjEntity> objEntities = ((DbRelationship) currentNode).getTargetEntity().
                                 getDataMap().getMappedEntities(lastEntity);
                         ObjEntity objectTarget = objEntities.isEmpty() ? null : objEntities.iterator().next();
