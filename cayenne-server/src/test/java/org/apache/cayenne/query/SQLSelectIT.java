@@ -39,10 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLSelectIT extends ServerCase {
@@ -74,12 +71,40 @@ public class SQLSelectIT extends ServerCase {
 
 		createPaintingsDataSet();
 
-		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("testmap", "SELECT * FROM PAINTING");
+		SQLSelect<DataRow> q1 = SQLSelect.	dataRowQuery("testmap", "SELECT * FROM PAINTING");
 		assertTrue(q1.isFetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
+	}
+
+	@Test
+	public void test_Column_AllColumns() throws Exception {
+
+		createPaintingsDataSet();
+
+		SQLSelect<Object[]> q1 = SQLSelect.columnQuery("testmap","SELECT * FROM PAINTING");
+		assertTrue(q1.isFetchingDataRows());
+
+		List<Object[]> result = context.select(q1);
+		assertEquals(6, result.get(0).length);
+		assertTrue(result.get(0) instanceof Object[]);
+
+	}
+
+	@Test
+	public void test_Column_SpecifiedColumns() throws Exception {
+
+		createPaintingsDataSet();
+
+		SQLSelect<Object[]> q1 = SQLSelect.columnQuery("testmap","SELECT PAINTING_ID, ARTIST_ID, ESTIMATED_PRICE FROM PAINTING");
+		assertTrue(q1.isFetchingDataRows());
+
+		List<Object[]> result = context.select(q1);
+		assertEquals(3, result.get(0).length);
+		assertTrue(result.get(0) instanceof Object[]);
+
 	}
 
 	@Test

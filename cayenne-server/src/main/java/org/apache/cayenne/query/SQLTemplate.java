@@ -82,6 +82,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	protected SQLResult result;
 	private String dataNodeName;
 	protected boolean returnGeneratedKeys;
+	protected boolean distinct;
+	protected boolean asObjectArray;
 
 	SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
@@ -653,4 +655,23 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	public void setReturnGeneratedKeys(boolean returnGeneratedKeys) {
 		this.returnGeneratedKeys = returnGeneratedKeys;
 	}
+
+	/**
+	 * @return asObjectArray
+	 *
+	 * @since 4.1
+	 */
+	public boolean isAsObjectArray() {
+		return asObjectArray;
+	}
+
+	/**
+	 * Sets flag to return DataRows as Object[].
+	 *
+	 * @since 4.1
+	 */
+	public void setAsObjectArray(boolean asObjectArray) {
+		this.asObjectArray = asObjectArray;
+	}
+
 }

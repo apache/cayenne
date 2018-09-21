@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -283,8 +284,7 @@ public class SQLTemplateAction implements SQLAction {
 			List<DataRow> resultRows = (List<DataRow>) it.allRows();
 
 			dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
-
-			callback.nextRows(query, resultRows);
+			callback.nextRows(query, query.isAsObjectArray() ? resultRows.stream().map(r -> r.values().toArray()).collect(Collectors.toList()) : resultRows);
 		}
 	}
 
