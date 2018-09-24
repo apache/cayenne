@@ -70,7 +70,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 				return createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
 						postProcessorFactory);
 			} else {
-				return new ScalarRowReader<Object>(descriptor, (ScalarResultSegment) segment);
+				return new ScalarRowReader<>(descriptor, (ScalarResultSegment) segment);
 			}
 		} else {
 			CompoundRowReader reader = new CompoundRowReader(resultWidth);
@@ -96,7 +96,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 			EntityResultSegment resultMetadata, PostprocessorFactory postProcessorFactory) {
 
 		if (queryMetadata.getPageSize() > 0) {
-			return new IdRowReader<Object>(descriptor, queryMetadata, resultMetadata, postProcessorFactory.get());
+			return new IdRowReader<>(descriptor, queryMetadata, resultMetadata, postProcessorFactory.get());
 		} else if (resultMetadata.getClassDescriptor() != null && resultMetadata.getClassDescriptor().hasSubclasses()) {
 			return new InheritanceAwareEntityRowReader(descriptor, resultMetadata, postProcessorFactory.get());
 		} else {
@@ -108,7 +108,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 			PostprocessorFactory postProcessorFactory) {
 
 		if (queryMetadata.getPageSize() > 0) {
-			return new IdRowReader<Object>(descriptor, queryMetadata, null, postProcessorFactory.get());
+			return new IdRowReader<>(descriptor, queryMetadata, null, postProcessorFactory.get());
 		} else if (queryMetadata.getClassDescriptor() != null && queryMetadata.getClassDescriptor().hasSubclasses()) {
 			return new InheritanceAwareRowReader(descriptor, queryMetadata, postProcessorFactory.get());
 		} else {
@@ -184,13 +184,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
 				ExtendedType converter = extendedTypes.getRegisteredType(attribute.getType());
 
-				Collection<ColumnOverride> overrides = columnOverrides.get(entity.getName());
-
-				if (overrides == null) {
-					overrides = new ArrayList<>(3);
-					columnOverrides.put(entity.getName(), overrides);
-				}
-
+				Collection<ColumnOverride> overrides = columnOverrides.computeIfAbsent(entity.getName(), k -> new ArrayList<>(3));
 				overrides.add(new ColumnOverride(index, key, converter, jdbcType));
 			}
 

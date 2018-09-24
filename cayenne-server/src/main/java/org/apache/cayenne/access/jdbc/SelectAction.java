@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -36,7 +35,6 @@ import org.apache.cayenne.query.SelectQuery;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -46,8 +44,7 @@ import java.util.List;
  */
 public class SelectAction extends BaseSQLAction {
 
-	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
-			throws SQLException, Exception {
+	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings) throws Exception {
 
 		for (DbAttributeBinding b : bindings) {
 
@@ -80,9 +77,8 @@ public class SelectAction extends BaseSQLAction {
 		this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes", "resource" })
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 
 		final long t1 = System.currentTimeMillis();
 
@@ -116,7 +112,7 @@ public class SelectAction extends BaseSQLAction {
 
 		RowReader<?> rowReader = dataNode.rowReader(descriptor, queryMetadata, translator.getAttributeOverrides());
 
-		ResultIterator it = new JDBCResultIterator(statement, rs, rowReader);
+		ResultIterator<?> it = new JDBCResultIterator<>(statement, rs, rowReader);
 		it = forIteratedResult(it, observer, connection, t1, sql);
 		it = forSuppressedDistinct(it, translator);
 		it = forFetchLimit(it, translator);
@@ -133,7 +129,7 @@ public class SelectAction extends BaseSQLAction {
 				throw ex;
 			}
 		} else {
-			List<DataRow> resultRows;
+			List<?> resultRows;
 			try {
 				resultRows = it.allRows();
 			} finally {

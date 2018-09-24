@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.CayenneException;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -254,7 +253,7 @@ public class SQLTemplateAction implements SQLAction {
 		RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
 		RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
 
-		ResultIterator it = new JDBCResultIterator(statement, resultSet, rowReader);
+		ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
 
 		if (iteratedResult) {
 
@@ -267,7 +266,7 @@ public class SQLTemplateAction implements SQLAction {
 			};
 		}
 
-		it = new LimitResultIterator(it, getFetchOffset(), query.getFetchLimit());
+		it = new LimitResultIterator<>(it, getFetchOffset(), query.getFetchLimit());
 
 		if (iteratedResult) {
 			try {
@@ -280,7 +279,7 @@ public class SQLTemplateAction implements SQLAction {
 			// note that we are not closing the iterator here, relying on caller
 			// to close the underlying ResultSet on its own... this is a hack,
 			// maybe a cleaner flow is due here.
-			List<DataRow> resultRows = (List<DataRow>) it.allRows();
+			List<?> resultRows = it.allRows();
 
 			dataNode.getJdbcEventLogger().logSelectCount(resultRows.size(), System.currentTimeMillis() - startTime);
 
