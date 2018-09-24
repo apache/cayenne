@@ -22,9 +22,9 @@ no problem we can simply run `cdbimport` again and all changes will be loaded to
 We use following SQL script to alter our demo database: 
 [source,sql]
 ----
-CREATE TABLE cayenne_demo.PAINTING_INFO (INFO VARCHAR(255) NULL, PAINTING_ID INT NOT NULL, PRIMARY KEY (PAINTING_ID)) ENGINE=InnoDB;
-ALTER TABLE cayenne_demo.GALLERY ADD COLUMN FOUNDED_DATE DATE;
-ALTER TABLE cayenne_demo.PAINTING_INFO ADD FOREIGN KEY (PAINTING_ID) REFERENCES cayenne_demo.PAINTING (ID);
+CREATE TABLE cayenne_demo.painting_info (INFO VARCHAR(255) NULL, PAINTING_ID INT NOT NULL, PRIMARY KEY (PAINTING_ID)) ENGINE=InnoDB;
+ALTER TABLE cayenne_demo.gallery ADD COLUMN FOUNDED_DATE DATE;
+ALTER TABLE cayenne_demo.painting_info ADD FOREIGN KEY (PAINTING_ID) REFERENCES cayenne_demo.painting (ID);
 ----
 
 ==== Run cdbimport
@@ -37,21 +37,21 @@ $ mvn cayenne:cdbimport
 You should see output similar to this: 
 ----
 ...
-[INFO]   Table: cayenne_demo.ARTIST
-[INFO]   Table: cayenne_demo.GALLERY
-[INFO]   Table: cayenne_demo.PAINTING
-[INFO]   Table: cayenne_demo.PAINTING_INFO
-[INFO]     Db Relationship : toOne  (PAINTING_INFO.PAINTING_ID, PAINTING.ID)
-[INFO]     Db Relationship : toOne  (PAINTING.ID, PAINTING_INFO.PAINTING_ID)
-[INFO]     Db Relationship : toOne  (PAINTING.GALLERY_ID, GALLERY.ID)
-[INFO]     Db Relationship : toMany (GALLERY.ID, PAINTING.GALLERY_ID)
-[INFO]     Db Relationship : toOne  (PAINTING.ARTIST_ID, ARTIST.ID)
-[INFO]     Db Relationship : toMany (ARTIST.ID, PAINTING.ARTIST_ID)
+[INFO]   Table: cayenne_demo.artist
+[INFO]   Table: cayenne_demo.gallery
+[INFO]   Table: cayenne_demo.painting
+[INFO]   Table: cayenne_demo.painting_info
+[INFO]     Db Relationship : toOne  (painting_info.PAINTING_ID, painting.ID)
+[INFO]     Db Relationship : toOne  (painting.ID, painting_info.PAINTING_ID)
+[INFO]     Db Relationship : toOne  (painting.GALLERY_ID, gallery.ID)
+[INFO]     Db Relationship : toMany (gallery.ID, painting.GALLERY_ID)
+[INFO]     Db Relationship : toOne  (painting.ARTIST_ID, artist.ID)
+[INFO]     Db Relationship : toMany (artist.ID, painting.ARTIST_ID)
 [INFO]
 [INFO] Detected changes:
-[INFO]     Create Table         PAINTING_INFO
-[INFO]     Add Column           GALLERY.FOUNDED_DATE
-[INFO]     Add Relationship     paintingInfo PAINTING->PAINTING_INFO.PAINTING_ID
+[INFO]     Create Table         painting_info
+[INFO]     Add Column           gallery.FOUNDED_DATE
+[INFO]     Add Relationship     paintingInfo painting->painting_info.PAINTING_ID
 [INFO]
 [INFO] Migration Complete Successfully.
 ----

@@ -178,6 +178,12 @@ compile cayenne.dependency('server')
 ```java
 ServerRuntime cayenneRuntime = ServerRuntime.builder()
     .addConfig("cayenne-demo.xml")
+    .dataSource(DataSourceBuilder
+             .url("jdbc:mysql://localhost:3306/cayenne_demo")
+             .driver("com.mysql.jdbc.Driver")
+             .userName("username")
+             .password("password")
+             .build())
     .build();
 ```
 

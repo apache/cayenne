@@ -104,7 +104,7 @@ In the console you'll see output similar to this, indicating that Cayenne stack 
 ...
 [main] INFO org.apache.cayenne.datasource.DriverDataSource - +++ Connecting: SUCCESS.
 [main] INFO org.apache.cayenne.log.JdbcEventLogger - --- transaction started.
-[main] INFO org.apache.cayenne.log.JdbcEventLogger - INSERT INTO cayenne_demo.ARTIST (DATE_OF_BIRTH, NAME) VALUES (?, ?)
+[main] INFO org.apache.cayenne.log.JdbcEventLogger - INSERT INTO cayenne_demo.artist (DATE_OF_BIRTH, NAME) VALUES (?, ?)
 [main] INFO org.apache.cayenne.log.JdbcEventLogger - [bind: 1->DATE_OF_BIRTH:NULL, 2->NAME:'Picasso']
 [main] INFO org.apache.cayenne.log.JdbcEventLogger - Generated PK: ARTIST.ID = 2
 [main] INFO org.apache.cayenne.log.JdbcEventLogger - === updated 1 row.

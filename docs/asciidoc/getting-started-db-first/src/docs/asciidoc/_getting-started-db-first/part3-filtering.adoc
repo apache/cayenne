@@ -20,10 +20,10 @@ Final part of our tutorial is about fine-tuning what you load from DB into your 
 Let's add some information to our database, that we don't need in our model: 
 [source,sql]
 ----
-CREATE TABLE cayenne_demo.LEGACY_PAINTING_INFO (ID INT NOT NULL AUTO_INCREMENT, INFO VARCHAR(255) NULL, PAINTING_ID INT NOT NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
-ALTER TABLE cayenne_demo.ARTIST ADD COLUMN __service_column INT;
-ALTER TABLE cayenne_demo.GALLERY ADD COLUMN __service_column INT;
-ALTER TABLE cayenne_demo.PAINTING ADD COLUMN __service_column INT;
+CREATE TABLE cayenne_demo.legacy_painting_info (ID INT NOT NULL AUTO_INCREMENT, INFO VARCHAR(255) NULL, PAINTING_ID INT NOT NULL, PRIMARY KEY (ID)) ENGINE=InnoDB;
+ALTER TABLE cayenne_demo.artist ADD COLUMN __service_column INT;
+ALTER TABLE cayenne_demo.gallery ADD COLUMN __service_column INT;
+ALTER TABLE cayenne_demo.painting ADD COLUMN __service_column INT;
 ----
 
 ==== Configure filtering
@@ -31,7 +31,7 @@ ALTER TABLE cayenne_demo.PAINTING ADD COLUMN __service_column INT;
 Now we need to tell `cdbimport` what we don't need in our model, for that we'll just add following into ``<configuration>`` section:
 [source,xml]
 ----
-<excludeTable>LEGACY_PAINTING_INFO</excludeTable>
+<excludeTable>legacy_painting_info</excludeTable>
 <excludeColumn>__service_column</excludeColumn>
 ----
 
