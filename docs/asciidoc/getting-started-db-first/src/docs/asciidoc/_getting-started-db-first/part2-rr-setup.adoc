@@ -77,25 +77,25 @@ If everything was setup properly you should see output like this:
 ...
 [INFO] +++ Connecting: SUCCESS.
 [INFO] Detected and installed adapter: org.apache.cayenne.dba.mysql.MySQLAdapter
-[INFO]   Table: cayenne_demo.ARTIST
-[INFO]   Table: cayenne_demo.GALLERY
-[INFO]   Table: cayenne_demo.PAINTING
-[INFO]     Db Relationship : toOne  (PAINTING.GALLERY_ID, GALLERY.ID)
-[INFO]     Db Relationship : toMany (GALLERY.ID, PAINTING.GALLERY_ID)
-[INFO]     Db Relationship : toOne  (PAINTING.ARTIST_ID, ARTIST.ID)
-[INFO]     Db Relationship : toMany (ARTIST.ID, PAINTING.ARTIST_ID)
+[INFO]   Table: cayenne_demo.artist
+[INFO]   Table: cayenne_demo.gallery
+[INFO]   Table: cayenne_demo.painting
+[INFO]     Db Relationship : toOne  (painting.GALLERY_ID, gallery.ID)
+[INFO]     Db Relationship : toMany (gallery.ID, painting.GALLERY_ID)
+[INFO]     Db Relationship : toOne  (painting.ARTIST_ID, artist.ID)
+[INFO]     Db Relationship : toMany (artist.ID, painting.ARTIST_ID)
 [INFO]
 [INFO] Map file does not exist. Loaded db model will be saved into '~/work/cayenne/db-first-tutorial/src/main/resources/datamap.map.xml'
 [INFO]
 [INFO] Detected changes:
-[INFO]     Create Table         ARTIST
-[INFO]     Create Table         PAINTING
-[INFO]     Create Table         GALLERY
+[INFO]     Create Table         artist
+[INFO]     Create Table         painting
+[INFO]     Create Table         gallery
 [INFO]
-[WARNING] Can't find ObjEntity for PAINTING
-[WARNING] Db Relationship (Db Relationship : toMany (ARTIST.ID, PAINTING.ARTIST_ID)) will have GUESSED Obj Relationship reflection.
-[WARNING] Can't find ObjEntity for GALLERY
-[WARNING] Db Relationship (Db Relationship : toOne  (PAINTING.GALLERY_ID, GALLERY.ID)) will have GUESSED Obj Relationship reflection.
+[WARNING] Can't find ObjEntity for painting
+[WARNING] Db Relationship (Db Relationship : toMany (artist.ID, painting.ARTIST_ID)) will have GUESSED Obj Relationship reflection.
+[WARNING] Can't find ObjEntity for gallery
+[WARNING] Db Relationship (Db Relationship : toOne  (painting.GALLERY_ID, gallery.ID)) will have GUESSED Obj Relationship reflection.
 [INFO] Migration Complete Successfully.
 ----
 

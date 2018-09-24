@@ -47,6 +47,49 @@ To use JCache provider in your app you need to include this module and caching p
 
 For advanced configuration and management please use provider specific options and tools.
 
+JCache module supports custom configuration files for cache managers.
+[source, java]
+----
+ServerRuntime.builder()
+        .addModule(module ->
+                JCacheModule
+                    .contributeJCacheProviderConfig(module, "cache-config.xml"));
+----
+
+Also JCache module supports contribution of preconfigured cache manager.
+
+[source, java]
+----
+ServerRuntime.builder()
+        .addModule(module ->
+                module.bind(CacheManager.class).toInstance(customCacheManager));
+----
+
 NOTE: You can read about using cache in Cayenne in xref:caching[this] chapter.
 
 You may else be interested in <<Cache invalidation extension>>.
+
+===== Ehcache setup example
+Here is an example of using `ehcache` as cache manager.
+
+First you need to include `ehcache` dependency:
+[source, XML,subs="verbatim,attributes"]
+----
+<dependency>
+    <groupId>org.ehcache</groupId>
+    <artifactId>ehcache</artifactId>
+    <version>{ehcache-version}</version>
+</dependency>
+----
+
+If you need custom configuration you can contribute configuration file to JCache module:
+
+[source, java]
+----
+ServerRuntime.builder()
+        .addModule(module ->
+                JCacheModule
+                    .contributeJCacheProviderConfig(module, "file:/ehcache.xml"));
+----
+
+As a result you will have `ehcache` manager as your default cache manager.
