@@ -60,6 +60,18 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		return query;
 	}
 
+    /**
+     * Creates a query that selects Object[] and uses routing based on the
+     * provided DataMap name.
+     * @since 4.1
+     */
+	public static SQLSelect<Object[]> columnQuery(String dataMapName, String sql) {
+		SQLSelect<Object[]> objectSQLSelect = new SQLSelect<>(sql);
+		objectSQLSelect.dataMapName = dataMapName;
+		objectSQLSelect.asObjectArray = true;
+		return objectSQLSelect;
+	}
+
 	/**
 	 * Creates a query that selects DataObjects.
 	 */
@@ -101,6 +113,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	protected int pageSize;
 	protected int statementFetchSize;
 	protected PrefetchTreeNode prefetches;
+	protected boolean asObjectArray;
 
 	public SQLSelect(String sql) {
 		this(null, sql);
@@ -244,11 +257,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		if (persistentType != null) {
 			root = persistentType;
 		} else if (dataMapName != null) {
+
 			DataMap map = resolver.getDataMap(dataMapName);
 			if (map == null) {
 				throw new CayenneRuntimeException("Invalid dataMapName '%s'", dataMapName);
 			}
-			root = map;
+				root = map;
 		} else {
 			// will route via default node. TODO: allow explicit node name?
 			root = null;
@@ -257,6 +271,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		SQLTemplate template = new SQLTemplate();
 		template.setFetchingDataRows(isFetchingDataRows());
 		template.setRoot(root);
+		template.setAsObjectArray(asObjectArray);
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroup(cacheGroup);
 		template.setCacheStrategy(cacheStrategy);
