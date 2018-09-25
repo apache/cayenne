@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen;
 
 import java.util.Collection;
+import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -261,6 +262,15 @@ public class EntityUtils {
         }
 
         return attribute.getType();
+    }
+
+    /**
+     * @since 4.1
+     * Checks is the db attribute declared for some object attribute.
+     * @param id - db attribute
+     */
+    public boolean declaresDbAttribute(String id) {
+        return objEntity.getAttributes().stream().filter(Objects::nonNull).anyMatch(a -> id.equals(a.getDbAttributePath()));
     }
 
     /**

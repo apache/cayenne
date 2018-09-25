@@ -74,7 +74,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #end
 #if( $object.DbEntity )
 #foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
-    #if(!$object.DeclaredAttributes.toString().contains($idAttr.Name))
+    #if(!${entityUtils.declaresDbAttribute($idAttr.Name)})
     public static final Property<Integer> ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = Property.create(ExpressionFactory.dbPathExp("db:${idAttr.Name}"), Integer.class);
     #end
 #end
