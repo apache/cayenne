@@ -34,24 +34,20 @@ import java.awt.FlowLayout;
 
 public class CustomModePanel extends GeneratorControllerPanel {
 
-    protected JComboBox generationMode;
-    protected JComboBox subclassTemplate;
-    protected JComboBox superclassTemplate;
+    private JComboBox<String> subclassTemplate;
+    private JComboBox<String> superclassTemplate;
     protected JCheckBox pairs;
-    protected JCheckBox overwrite;
-    protected JCheckBox usePackagePath;
-    protected JTextField outputPattern;
-    protected JCheckBox createPropertyNames;
+    private JCheckBox overwrite;
+    private JCheckBox usePackagePath;
+    private JTextField outputPattern;
+    private JCheckBox createPropertyNames;
 
-    private DefaultFormBuilder builder;
-
-    protected ActionLink manageTemplatesLink;
+    private ActionLink manageTemplatesLink;
 
     public CustomModePanel() {
 
-        this.generationMode = new JComboBox();
-        this.superclassTemplate = new JComboBox();
-        this.subclassTemplate = new JComboBox();
+        this.superclassTemplate = new JComboBox<>();
+        this.subclassTemplate = new JComboBox<>();
         this.pairs = new JCheckBox();
         this.overwrite = new JCheckBox();
         this.usePackagePath = new JCheckBox();
@@ -71,14 +67,11 @@ public class CustomModePanel extends GeneratorControllerPanel {
         // assemble
 
         FormLayout layout = new FormLayout(
-                "right:77dlu, 3dlu, fill:200:grow, 6dlu, fill:50dlu, 3dlu", "");
-        builder = new DefaultFormBuilder(layout);
+                "right:77dlu, 1dlu, fill:100:grow, 1dlu, left:80dlu, 1dlu", "");
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
         builder.append("Output Directory:", outputFolder, selectOutputFolder);
-        builder.nextLine();
-
-        builder.append("Generation Mode:", generationMode);
         builder.nextLine();
 
         builder.append("Subclass Template:", subclassTemplate);
@@ -105,32 +98,22 @@ public class CustomModePanel extends GeneratorControllerPanel {
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
 
-        JPanel links = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+        JPanel links = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         links.add(manageTemplatesLink);
         add(links, BorderLayout.SOUTH);
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public void addDataMapLine(StandardPanelComponent dataMapLine) {
-        dataMapLines.add(dataMapLine);
-        builder.append(dataMapLine, 4);
-        builder.nextLine();
-    }
-
-    public JComboBox getGenerationMode() {
-        return generationMode;
-    }
-
     public ActionLink getManageTemplatesLink() {
         return manageTemplatesLink;
     }
 
-    public JComboBox getSubclassTemplate() {
+    public JComboBox<String> getSubclassTemplate() {
         return subclassTemplate;
     }
 
-    public JComboBox getSuperclassTemplate() {
+    public JComboBox<String> getSuperclassTemplate() {
         return superclassTemplate;
     }
 

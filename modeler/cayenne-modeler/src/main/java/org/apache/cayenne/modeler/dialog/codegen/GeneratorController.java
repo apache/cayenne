@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
@@ -50,7 +50,6 @@ import javax.swing.JTextField;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -160,10 +159,9 @@ public abstract class GeneratorController extends CayenneController {
 
         // remove generic entities...
         Collection<ObjEntity> selectedEntities = new ArrayList<>(getParentController().getSelectedEntities());
-        Iterator<ObjEntity> it = selectedEntities.iterator();
-        while (it.hasNext()) {
-            if (it.next().isGeneric()) {
-                it.remove();
+        for(ObjEntity objEntity : selectedEntities) {
+            if(objEntity.isGeneric()) {
+                selectedEntities.remove(objEntity);
             }
         }
 
@@ -172,6 +170,13 @@ public abstract class GeneratorController extends CayenneController {
         for (DataMap map : getParentController().getDataMaps()) {
             try {
                 ClassGenerationAction generator = newGenerator();
+
+                if(getParentController().getSelectedDataMaps().contains(map)) {
+                    mode = ArtifactsGenerationMode.ALL.getLabel();
+                } else {
+                    mode = ArtifactsGenerationMode.ENTITY.getLabel();
+                }
+
                 generator.setArtifactsGenerationMode(mode);
                 generator.setDataMap(map);
 
@@ -195,15 +200,8 @@ public abstract class GeneratorController extends CayenneController {
                 generator.setDestDir(outputDir);
                 generator.setMakePairs(true);
 
-                for (StandardPanelComponent dataMapLine : dataMapLines) {
-                    if (dataMapLine.getDataMap() == map && !Util.isEmptyString(dataMapLine.getSuperclassPackage().getText())) {
-                        generator.setSuperPkg(dataMapLine.getSuperclassPackage().getText());
-                        break;
-                    }
-                }
-
                 generators.add(generator);
-            } catch (CayenneException exception) {
+            } catch (CayenneRuntimeException exception) {
                 JOptionPane.showMessageDialog(this.getView(), exception.getUnlabeledMessage());
                 return null;
             }
@@ -258,7 +256,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateEmbeddable(Embeddable embeddable) {
+    private ValidationFailure validateEmbeddable(Embeddable embeddable) {
 
         String name = embeddable.getClassName();
 
@@ -314,7 +312,7 @@ public abstract class GeneratorController extends CayenneController {
         }
     }
 
-    protected ValidationFailure validateEntity(ObjEntity entity) {
+    private ValidationFailure validateEntity(ObjEntity entity) {
 
         String name = entity.getName();
 
@@ -344,7 +342,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateAttribute(ObjAttribute attribute) {
+    private ValidationFailure validateAttribute(ObjAttribute attribute) {
 
         String name = attribute.getEntity().getName();
 
@@ -375,7 +373,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateEmbeddedAttribute(ObjAttribute attribute) {
+    private ValidationFailure validateEmbeddedAttribute(ObjAttribute attribute) {
 
         String name = attribute.getEntity().getName();
 
@@ -424,7 +422,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateRelationship(ObjRelationship relationship, boolean clientValidation) {
+    private ValidationFailure validateRelationship(ObjRelationship relationship, boolean clientValidation) {
 
         String name = relationship.getSourceEntity().getName();
 
@@ -473,55 +471,23 @@ public abstract class GeneratorController extends CayenneController {
      * Returns a predicate for default entity selection in a given mode.
      */
     public Predicate getDefaultClassFilter() {
-        final ObjEntity selectedEntity = Application.getInstance().getFrameController().getProjectController()
-                .getCurrentObjEntity();
-
-        final Embeddable selectedEmbeddable = Application.getInstance().getFrameController().getProjectController()
-                .getCurrentEmbeddable();
-
-        // select a single entity
-        if (selectedEntity != null) {
-            final boolean hasProblem = getParentController().getProblem(selectedEntity.getName()) != null;
-
-            return new Predicate() {
-
-                public boolean evaluate(Object object) {
-                    return !hasProblem && object == selectedEntity;
+        return new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                if (o instanceof ObjEntity) {
+                    return GeneratorController.this.getParentController().getProblem(((ObjEntity) o).getName()) == null;
                 }
-            };
-        }
-        // select a single embeddable
-        else if (selectedEmbeddable != null) {
-            final boolean hasProblem = getParentController().getProblem(selectedEmbeddable.getClassName()) != null;
 
-            return new Predicate() {
-
-                public boolean evaluate(Object object) {
-                    return !hasProblem && object == selectedEmbeddable;
+                if (o instanceof Embeddable) {
+                    return GeneratorController.this.getParentController().getProblem(((Embeddable) o).getClassName()) == null;
                 }
-            };
-        }
-        // select all entities
-        else {
 
-            return new Predicate() {
-
-                public boolean evaluate(Object object) {
-                    if (object instanceof ObjEntity) {
-                        return getParentController().getProblem(((ObjEntity) object).getName()) == null;
-                    }
-
-                    if (object instanceof Embeddable) {
-                        return getParentController().getProblem(((Embeddable) object).getClassName()) == null;
-                    }
-
-                    return false;
-                }
-            };
-        }
+                return false;
+            }
+        };
     }
 
-    public File getOutputDir() {
+    private File getOutputDir() {
         String dir = ((GeneratorControllerPanel) getView()).getOutputFolder().getText();
         return dir != null ? new File(dir) : new File(System.getProperty("user.dir"));
     }
@@ -600,4 +566,5 @@ public abstract class GeneratorController extends CayenneController {
         }
         return path.toString();
     }
+
 }

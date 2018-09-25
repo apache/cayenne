@@ -19,17 +19,21 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.Component;
-
-import javax.swing.JLabel;
-
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.PredicateUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class ClassesTabController extends CayenneController {
 
@@ -37,11 +41,28 @@ public class ClassesTabController extends CayenneController {
 
     protected ClassesTabPanel view;
     protected ObjectBinding tableBinding;
+    protected Collection<DataMap> dataMaps;
+    protected Map<DataMap, List<Object>> objectList;
+    private Map<DataMap, ObjectBinding> objectBindings;
+    private List<Object> currentCollection;
 
-    public ClassesTabController(CodeGeneratorControllerBase parent) {
+    public ClassesTabController(CodeGeneratorControllerBase parent, Collection<DataMap> dataMaps) {
         super(parent);
 
-        this.view = new ClassesTabPanel();
+        currentCollection = new ArrayList<>();
+
+        this.objectList = new HashMap<>();
+        for (DataMap dataMap : dataMaps) {
+            List<Object> list = new ArrayList<>();
+            list.add(dataMap);
+            list.addAll(dataMap.getObjEntities());
+            list.addAll(dataMap.getEmbeddables());
+            objectList.put(dataMap, list);
+        }
+
+        this.objectBindings = new HashMap<>();
+        this.dataMaps = dataMaps;
+        this.view = new ClassesTabPanel(dataMaps);
         initBindings();
     }
 
@@ -62,7 +83,7 @@ public class ClassesTabController extends CayenneController {
         builder.bindToAction(view.getCheckAll(), "checkAllAction()");
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
-        
+
         tableBuilder.addColumn(
                 "",
                 "parent.setCurrentClass(#item), selected",
@@ -81,10 +102,27 @@ public class ClassesTabController extends CayenneController {
                 "parent.getProblem(#item)",
                 String.class,
                 false,
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-       
-        this.tableBinding = tableBuilder.bindToTable(view.getTable(), "parent.classes");
-        view.getTable().getColumnModel().getColumn(1).setCellRenderer(new ImageRendererColumn());
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
+        for (final DataMap dataMap : dataMaps) {
+            if (view.getDataMapTables().get(dataMap) != null) {
+                currentCollection = objectList.get(dataMap);
+                objectBindings.put(dataMap, tableBuilder.bindToTable(view.getDataMapTables().get(dataMap), "currentCollection"));
+                view.getDataMapTables().get(dataMap).getColumnModel().getColumn(1).setCellRenderer(new ImageRendererColumn());
+            }
+            if (view.getDataMapJCheckBoxMap().get(dataMap) != null) {
+                view.getDataMapJCheckBoxMap().get(dataMap).addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent val) {
+                        ClassesTabController.this.checkDataMap(dataMap, ((JCheckBox) val.getSource()).isSelected());
+                    }
+                });
+            }
+        }
+    }
+
+    public List<Object> getCurrentCollection() {
+        return currentCollection;
     }
 
     public boolean isSelected() {
@@ -94,18 +132,25 @@ public class ClassesTabController extends CayenneController {
     public void setSelected(boolean selected) {
         getParentController().setSelected(selected);
         classSelectedAction();
+
+        for (DataMap dataMap : dataMaps) {
+            if (view.isAllCheckBoxesFromDataMapSelected(dataMap)) {
+                view.getDataMapJCheckBoxMap().get(dataMap).setSelected(true);
+            } else {
+                view.getDataMapJCheckBoxMap().get(dataMap).setSelected(false);
+            }
+        }
     }
 
     /**
      * A callback action that updates the state of Select All checkbox.
      */
     public void classSelectedAction() {
-        int selectedCount = getParentController().getSelectedEntitiesSize() + getParentController().getSelectedEmbeddablesSize() ;
+        int selectedCount = getParentController().getSelectedEntitiesSize() + getParentController().getSelectedEmbeddablesSize() + getParentController().getSelectedDataMapsSize();
 
         if (selectedCount == 0) {
             view.getCheckAll().setSelected(false);
-        }
-        else if (selectedCount == getParentController().getClasses().size()) {
+        } else if (selectedCount == getParentController().getClasses().size()) {
             view.getCheckAll().setSelected(true);
         }
     }
@@ -116,11 +161,57 @@ public class ClassesTabController extends CayenneController {
      */
     public void checkAllAction() {
 
-        Predicate predicate = view.getCheckAll().isSelected() ? PredicateUtils
-                .truePredicate() : PredicateUtils.falsePredicate();
-
-        if (getParentController().updateSelection(predicate)) {
-            tableBinding.updateView();
+        if (getParentController().updateSelection(view.getCheckAll().isSelected() ?
+                new Predicate() {
+                    @Override
+                    public boolean evaluate(Object o) {
+                        return true;
+                    }
+                } : new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return false;
+            }
+        })) {
+            for (DataMap dataMap : dataMaps) {
+                if (objectBindings.get(dataMap) != null) {
+                    currentCollection = objectList.get(dataMap);
+                    objectBindings.get(dataMap).updateView();
+                }
+            }
         }
+    }
+
+    private void checkDataMap(DataMap dataMap, boolean selected) {
+        if (getParentController().updateDataMapSelection(selected ? new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return true;
+            }
+        } : new Predicate() {
+            @Override
+            public boolean evaluate(Object o) {
+                return false;
+            }
+        }, dataMap)) {
+            if (objectBindings.get(dataMap) != null) {
+                currentCollection = objectList.get(dataMap);
+                objectBindings.get(dataMap).updateView();
+            }
+            if (isAllMapsSelected()) {
+                view.getCheckAll().setSelected(true);
+            }
+        }
+    }
+
+    private boolean isAllMapsSelected() {
+        for (DataMap dataMap : dataMaps) {
+            if (view.getDataMapJCheckBoxMap().get(dataMap) != null) {
+                if (!view.getDataMapJCheckBoxMap().get(dataMap).isSelected()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

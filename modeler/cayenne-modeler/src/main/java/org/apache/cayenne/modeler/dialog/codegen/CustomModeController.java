@@ -28,15 +28,14 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultComboBoxModel;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -46,27 +45,13 @@ import java.util.TreeMap;
 public class CustomModeController extends GeneratorController {
 
 	// correspond to non-public constants on MapClassGenerator.
-	static final String MODE_DATAMAP = "datamap";
-	static final String MODE_ENTITY = "entity";
-	static final String MODE_ALL = "all";
-
-	static final String DATA_MAP_MODE_LABEL = "DataMap generation";
-	static final String ENTITY_MODE_LABEL = "Entity and Embeddable generation";
-	static final String ALL_MODE_LABEL = "Generate all";
-
-	static final Map<String, String> modesByLabel = new HashMap<>();
-
-	static {
-		modesByLabel.put(DATA_MAP_MODE_LABEL, MODE_DATAMAP);
-		modesByLabel.put(ENTITY_MODE_LABEL, MODE_ENTITY);
-		modesByLabel.put(ALL_MODE_LABEL, MODE_ALL);
-	}
+	private static final String MODE_ENTITY = "entity";
 
 	protected CustomModePanel view;
-	protected CodeTemplateManager templateManager;
+	private CodeTemplateManager templateManager;
 
-	protected ObjectBinding superTemplate;
-	protected ObjectBinding subTemplate;
+	private ObjectBinding superTemplate;
+	private ObjectBinding subTemplate;
 
 	private CustomPreferencesUpdater preferencesUpdater;
 
@@ -76,9 +61,6 @@ public class CustomModeController extends GeneratorController {
 
 	public CustomModeController(CodeGeneratorControllerBase parent) {
 		super(parent);
-
-		Object[] modeChoices = new Object[] { ENTITY_MODE_LABEL, DATA_MAP_MODE_LABEL, ALL_MODE_LABEL };
-		view.getGenerationMode().setModel(new DefaultComboBoxModel(modeChoices));
 
 		// bind preferences and init defaults...
 
@@ -118,8 +100,6 @@ public class CustomModeController extends GeneratorController {
 		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
 
 		builder.bindToAction(view.getManageTemplatesLink(), "popPreferencesAction()");
-
-		builder.bindToComboSelection(view.getGenerationMode(), "customPreferencesUpdater.mode").updateView();
 
 		builder.bindToStateChange(view.getOverwrite(), "customPreferencesUpdater.overwrite").updateView();
 
@@ -165,23 +145,7 @@ public class CustomModeController extends GeneratorController {
 	protected GeneratorControllerPanel createView() {
 		this.view = new CustomModePanel();
 
-		Set<Entry<DataMap, DataMapDefaults>> entities = getMapPreferences().entrySet();
-		for (Entry<DataMap, DataMapDefaults> entry : entities) {
-			StandardPanelComponent dataMapLine = createDataMapLineBy(entry.getKey(), entry.getValue());
-			dataMapLine.getDataMapName().setText(dataMapLine.getDataMap().getName());
-			BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), dataMapLine);
-			builder.bindToTextField(dataMapLine.getSuperclassPackage(), "preferences.superclassPackage").updateView();
-			this.view.addDataMapLine(dataMapLine);
-		}
 		return view;
-	}
-
-	private StandardPanelComponent createDataMapLineBy(DataMap dataMap, DataMapDefaults preferences) {
-		StandardPanelComponent dataMapLine = new StandardPanelComponent();
-		dataMapLine.setDataMap(dataMap);
-		dataMapLine.setPreferences(preferences);
-
-		return dataMapLine;
 	}
 
 	protected void updateTemplates() {
@@ -198,8 +162,8 @@ public class CustomModeController extends GeneratorController {
 		Collections.sort(subTemplates);
 		subTemplates.addAll(customTemplates);
 
-		this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel(subTemplates.toArray()));
-		this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel(superTemplates.toArray()));
+		this.view.getSubclassTemplate().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
+		this.view.getSuperclassTemplate().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));
 
 		superTemplate.updateView();
 		subTemplate.updateView();
@@ -211,14 +175,12 @@ public class CustomModeController extends GeneratorController {
 
 	public Collection<ClassGenerationAction> createGenerator() {
 
-		mode = modesByLabel.get(view.getGenerationMode().getSelectedItem()).toString();
-
 		Collection<ClassGenerationAction> generators = super.createGenerator();
 
-		String superKey = view.getSuperclassTemplate().getSelectedItem().toString();
+		String superKey = Objects.requireNonNull(view.getSuperclassTemplate().getSelectedItem()).toString();
 		String superTemplate = templateManager.getTemplatePath(superKey);
 
-		String subKey = view.getSubclassTemplate().getSelectedItem().toString();
+		String subKey = Objects.requireNonNull(view.getSubclassTemplate().getSelectedItem()).toString();
 		String subTemplate = templateManager.getTemplatePath(subKey);
 
 		for (ClassGenerationAction generator : generators) {

@@ -22,37 +22,21 @@ package org.apache.cayenne.modeler.dialog.codegen;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-import javax.swing.JCheckBox;
 import java.awt.BorderLayout;
 
 public class StandardModePanel extends GeneratorControllerPanel {
 
     private DefaultFormBuilder builder;
-    protected JCheckBox createDataMapClass;
 
     public StandardModePanel() {
         FormLayout layout = new FormLayout(
-                "right:77dlu, 3dlu, fill:200:grow, 6dlu, fill:50dlu, 3dlu", "");
+                "right:77dlu, 1dlu, fill:100:grow, 1dlu, left:80dlu, 1dlu", "");
 
         builder = new DefaultFormBuilder(layout);
         builder.append("Output Directory:", outputFolder, selectOutputFolder);
         builder.nextLine();
 
-        createDataMapClass = new JCheckBox();
-        builder.append("Create DataMap class:", createDataMapClass);
-        builder.nextLine();
-
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
-    }
-
-    public void addDataMapLine(StandardPanelComponent dataMapLine) {
-        dataMapLines.add(dataMapLine);
-        builder.append(dataMapLine, 4);
-        builder.nextLine();
-    }
-
-    public JCheckBox getCreateDataMapClass() {
-        return createDataMapClass;
     }
 }
