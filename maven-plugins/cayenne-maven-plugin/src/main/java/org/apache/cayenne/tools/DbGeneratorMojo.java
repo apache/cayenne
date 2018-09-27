@@ -48,9 +48,7 @@ import java.io.File;
 import java.sql.Driver;
 
 /**
- * Maven mojo to perform class generation from data map. This class is a Maven
- * adapter to DefaultClassGenerator class.
- *
+ * Maven mojo to drop and/or generate tables in a database on Cayenne DataMap.
  * @since 3.0
  */
 @Mojo(name = "cdbgen", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresDependencyResolution = ResolutionScope.COMPILE)
