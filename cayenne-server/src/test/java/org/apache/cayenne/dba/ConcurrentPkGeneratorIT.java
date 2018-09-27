@@ -54,7 +54,6 @@ public class ConcurrentPkGeneratorIT extends ServerCase {
      */
     @Test
     public void testConcurrentInserts() {
-
     	if(!unitDbAdapter.supportsPKGeneratorConcurrency()) {
     		return;
 		}

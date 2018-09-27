@@ -25,14 +25,14 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.WeakReferenceStrategyServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ObjectStoreGCIT extends ServerCase {
+public class ObjectStoreGCIT extends WeakReferenceStrategyServerCase {
 
     @Inject
     private DataContext context;
