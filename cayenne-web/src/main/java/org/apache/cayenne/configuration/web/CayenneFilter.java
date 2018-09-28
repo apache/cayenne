@@ -60,6 +60,7 @@ public class CayenneFilter implements Filter {
 
     protected ServletContext servletContext;
 
+    @Override
     public void init(FilterConfig config) throws ServletException {
 
         checkAlreadyConfigured(config.getServletContext());
@@ -103,6 +104,7 @@ public class CayenneFilter implements Filter {
         }
     }
 
+    @Override
     public void destroy() {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(servletContext);
 
@@ -111,6 +113,7 @@ public class CayenneFilter implements Filter {
         }
     }
 
+    @Override
     public void doFilter(
             ServletRequest request,
             ServletResponse response,
