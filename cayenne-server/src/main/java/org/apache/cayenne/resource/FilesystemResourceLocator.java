@@ -43,7 +43,10 @@ import java.util.Collection;
  * </pre>
  * 
  * @since 3.1
+ * @deprecated since 4.1. This can be implemented as a custom strategy outside Cayenne. There's no need for this object
+ * to be in Cayenne.
  */
+@Deprecated
 public class FilesystemResourceLocator implements ResourceLocator {
 
     protected File[] roots;
