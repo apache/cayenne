@@ -22,6 +22,7 @@ CAY-2479 Modeler: update cgen dialog
 
 Bug Fixes:
 
+CAY-2419 Not changing highlight on selecting search results within one entity
 CAY-2320 Modeler: Limit input into numeric fields to 10 digits
 CAY-2449 Modeler: Needless scrollbar in Generate DB Schema result menu
 CAY-2450 Modeler: Impossible to update Attribute title after syncing ObjEntity

@@ -279,8 +279,10 @@ public class FindAction extends CayenneAction {
             event.setMainTabFocus(true);
             if(searchResultEntry.getObject() instanceof DbAttribute) {
                 editor.getDbDetailView().currentDbAttributeChanged(event);
+                editor.getDbDetailView().repaint();
             } else {
                 editor.getObjDetailView().currentObjAttributeChanged(event);
+                editor.getObjDetailView().repaint();
             }
         } else if (searchResultEntry.getObject() instanceof Relationship) {
             RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor.getProjectTreeView(),
@@ -288,8 +290,10 @@ public class FindAction extends CayenneAction {
             event.setMainTabFocus(true);
             if(searchResultEntry.getObject() instanceof DbRelationship) {
                 editor.getDbDetailView().currentDbRelationshipChanged(event);
+                editor.getDbDetailView().repaint();
             } else {
                 editor.getObjDetailView().currentObjRelationshipChanged(event);
+                editor.getObjDetailView().repaint();
             }
         }
     }
@@ -302,6 +306,7 @@ public class FindAction extends CayenneAction {
                 embeddable, attribute, map, domain);
         event.setMainTabFocus(true);
         editor.getEmbeddableView().currentEmbeddableAttributeChanged(event);
+        editor.getEmbeddableView().repaint();
     }
 
     private static void jumpToEmbeddableResult(Embeddable embeddable, EditorView editor, DataChannelDescriptor domain) {
@@ -337,6 +342,7 @@ public class FindAction extends CayenneAction {
         buildAndSelectTreePath(map, procedure, editor);
         ProcedureDisplayEvent event = new ProcedureDisplayEvent(editor.getProjectTreeView(), procedure, map, domain);
         editor.getProcedureView().currentProcedureChanged(event);
+        editor.getProcedureView().repaint();
     }
 
     private static void jumpToProcedureResult(ProcedureParameter parameter, EditorView editor, DataChannelDescriptor domain) {
@@ -346,6 +352,7 @@ public class FindAction extends CayenneAction {
         ProcedureParameterDisplayEvent event =
                 new ProcedureParameterDisplayEvent(editor.getProjectTreeView(), parameter, procedure, map, domain);
         editor.getProcedureView().currentProcedureParameterChanged(event);
+        editor.getProcedureView().repaint();
     }
 
     /**
