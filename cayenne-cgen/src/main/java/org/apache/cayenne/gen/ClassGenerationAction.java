@@ -524,7 +524,7 @@ public class ClassGenerationAction {
 	 *
 	 * @since 4.0 throws exception
 	 */
-	public void addEntities(Collection<ObjEntity> entities) throws CayenneException {
+	public void addEntities(Collection<ObjEntity> entities) throws CayenneRuntimeException {
 		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
 				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
 			if (entities != null) {

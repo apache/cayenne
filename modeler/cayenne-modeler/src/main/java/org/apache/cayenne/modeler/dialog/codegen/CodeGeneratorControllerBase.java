@@ -52,8 +52,9 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     protected List<Object> classes;
 
-    protected Set selectedEntities;
-    protected Set selectedEmbeddables;
+    private Set<String> selectedEntities;
+    private Set<String> selectedEmbeddables;
+    private Set<String> selectedDataMaps;
 
     protected transient Object currentClass;
 
@@ -61,14 +62,16 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         super(parent);
 
         this.dataMaps = dataMaps;
-        this.classes = new ArrayList();
+        this.classes = new ArrayList<>();
 
         for(DataMap dataMap:dataMaps){
-            this.classes.addAll(new ArrayList(dataMap.getObjEntities()));
-            this.classes.addAll(new ArrayList(dataMap.getEmbeddables()));
+            this.classes.addAll(dataMap.getObjEntities());
+            this.classes.addAll(dataMap.getEmbeddables());
+            this.classes.add(dataMap);
         }
-        this.selectedEntities = new HashSet();
-        this.selectedEmbeddables = new HashSet();
+        this.selectedEntities = new HashSet<>();
+        this.selectedEmbeddables = new HashSet<>();
+        this.selectedDataMaps = new HashSet<>();
     }
 
     public List<Object> getClasses() {
@@ -98,6 +101,62 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
         this.validation = validationBuffer;
     }
+
+    public boolean updateDataMapSelection(Predicate predicate, DataMap dataMap) {
+
+        boolean modified = false;
+
+        for (Object classObj : classes) {
+            boolean select = predicate.evaluate(classObj);
+            if (classObj instanceof ObjEntity) {
+                if(dataMap.getObjEntities().contains(classObj)) {
+                    if (select) {
+                        if (selectedEntities.add(((ObjEntity) classObj).getName())) {
+                            modified = true;
+                        }
+                    } else {
+                        if (selectedEntities.remove(((ObjEntity) classObj).getName())) {
+                            modified = true;
+                        }
+                    }
+                }
+            }
+            else if (classObj instanceof Embeddable) {
+                if(dataMap.getEmbeddables().contains(classObj)) {
+                    if (select) {
+                        if (selectedEmbeddables.add(((Embeddable) classObj).getClassName())) {
+                            modified = true;
+                        }
+                    } else {
+                        if (selectedEmbeddables
+                                .remove(((Embeddable) classObj).getClassName())) {
+                            modified = true;
+                        }
+                    }
+                }
+            } else {
+                if(dataMap == classObj) {
+                    if (select) {
+                        if (selectedDataMaps.add(((DataMap) classObj).getName())) {
+                            modified = true;
+                        }
+                    } else {
+                        if (selectedDataMaps.remove(((DataMap) classObj).getName())) {
+                            modified = true;
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if (modified) {
+            firePropertyChange(SELECTED_PROPERTY, null, null);
+        }
+
+        return modified;
+    }
+
 
     public boolean updateSelection(Predicate predicate) {
 
@@ -130,6 +189,16 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
                         modified = true;
                     }
                 }
+            } else if(classObj instanceof DataMap) {
+                if(select) {
+                    if(selectedDataMaps.add(((DataMap) classObj).getName())) {
+                        modified = true;
+                    }
+                } else {
+                    if(selectedDataMaps.remove(((DataMap) classObj).getName())) {
+                        modified = true;
+                    }
+                }
             }
 
         }
@@ -139,6 +208,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         }
 
         return modified;
+
     }
 
     public List<Embeddable> getSelectedEmbeddables() {
@@ -168,12 +238,27 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return selected;
     }
 
+    public List<DataMap> getSelectedDataMaps() {
+        List<DataMap> selected = new ArrayList<>(selectedDataMaps.size());
+        for(Object classObj : classes) {
+            if(classObj instanceof DataMap
+                    && selectedDataMaps.contains(((DataMap) classObj).getName())) {
+                selected.add((DataMap) classObj);
+            }
+        }
+        return selected;
+    }
+
     public int getSelectedEntitiesSize() {
         return selectedEntities.size();
     }
 
     public int getSelectedEmbeddablesSize() {
         return selectedEmbeddables.size();
+    }
+
+    public int getSelectedDataMapsSize() {
+        return selectedDataMaps.size();
     }
 
     /**
@@ -183,14 +268,14 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public String getProblem(Object obj) {
 
         String name = null;
-        
+
         if (obj instanceof ObjEntity) {
             name = ((ObjEntity) obj).getName();
         }
         else if (obj instanceof Embeddable) {
             name = ((Embeddable) obj).getClassName();
         }
-        
+
         if (validation == null) {
             return null;
         }
@@ -205,12 +290,16 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public boolean isSelected() {
         if (currentClass instanceof ObjEntity) {
-            return currentClass != null ? selectedEntities
-                    .contains(((ObjEntity) currentClass).getName()) : false;
+            return selectedEntities
+                    .contains(((ObjEntity) currentClass).getName());
         }
         if (currentClass instanceof Embeddable) {
-            return currentClass != null ? selectedEmbeddables
-                    .contains(((Embeddable) currentClass).getClassName()) : false;
+            return selectedEmbeddables
+                    .contains(((Embeddable) currentClass).getClassName());
+        }
+        if(currentClass instanceof DataMap) {
+            return selectedDataMaps
+                    .contains(((DataMap) currentClass).getName());
         }
         return false;
 
@@ -245,6 +334,17 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
                 }
             }
         }
+        if(currentClass instanceof DataMap) {
+            if(selectedFlag) {
+                if(selectedDataMaps.add(((DataMap) currentClass).getName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
+            } else {
+                if(selectedDataMaps.remove(((DataMap) currentClass).getName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
+            }
+        }
     }
 
     public Object getCurrentClass() {
@@ -261,13 +361,16 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public JLabel getItemName(Object obj) {
         String className;
-        Icon icon = null;
+        Icon icon;
         if (obj instanceof Embeddable) {
             className = ((Embeddable) obj).getClassName();
             icon = CellRenderers.iconForObject(new Embeddable());
-        } else {
+        } else if(obj instanceof ObjEntity) {
             className = ((ObjEntity) obj).getName();
             icon = CellRenderers.iconForObject(new ObjEntity());
+        } else {
+            className = ((DataMap) obj).getName();
+            icon = CellRenderers.iconForObject(new DataMap());
         }
         JLabel labelIcon = new JLabel();
         labelIcon.setIcon(icon);

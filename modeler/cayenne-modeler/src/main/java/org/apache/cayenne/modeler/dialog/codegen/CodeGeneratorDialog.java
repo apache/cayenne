@@ -28,32 +28,32 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
-/**
- */
 public class CodeGeneratorDialog extends JDialog {
 
     protected JTabbedPane tabs;
 
-    protected JButton generateButton;
+    private JButton generateButton;
     protected JButton cancelButton;
-    protected JLabel classesCount;
+    private JLabel classesCount;
 
-    public CodeGeneratorDialog(Component generatorPanel, Component entitySelectorPanel) {
+    CodeGeneratorDialog(Component generatorPanel, Component entitySelectorPanel) {
         super(Application.getFrame());
 
-        this.tabs = new JTabbedPane(SwingConstants.TOP);
-        this.tabs.setFocusable(false);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setFocusable(false);
+
         this.generateButton = new JButton("Generate");
         getRootPane().setDefaultButton(generateButton);
+
         this.cancelButton = new JButton("Cancel");
         this.classesCount = new JLabel("No classes selected");
         classesCount.setFont(classesCount.getFont().deriveFont(10f));
@@ -62,12 +62,12 @@ public class CodeGeneratorDialog extends JDialog {
                 generatorPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setPreferredSize(new Dimension(630, 500));
 
         // assemble
 
-        tabs.addTab("Code Generator", scrollPane);
-        tabs.addTab("Classes", entitySelectorPanel);
+        splitPane.setLeftComponent(entitySelectorPanel);
+        splitPane.setRightComponent(scrollPane);
 
         JPanel messages = new JPanel(new BorderLayout());
         messages.add(classesCount, BorderLayout.WEST);
@@ -81,7 +81,7 @@ public class CodeGeneratorDialog extends JDialog {
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.add(tabs, BorderLayout.CENTER);
+        contentPane.add(splitPane, BorderLayout.CENTER);
         contentPane.add(buttons, BorderLayout.SOUTH);
 
         setTitle("Code Generation");

@@ -19,12 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog.codegen;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import org.apache.cayenne.map.DataMap;
 
+import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,6 +29,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  */
@@ -41,7 +48,13 @@ public class ClassesTabPanel extends JPanel {
     protected JCheckBox checkAll;
     protected JLabel checkAllLabel;
 
-    public ClassesTabPanel() {
+    private Map<DataMap, JTable> dataMapTables;
+
+    private Map<DataMap, JCheckBox> dataMapJCheckBoxMap;
+
+    public ClassesTabPanel(Collection<DataMap> dataMaps) {
+        dataMapTables = new HashMap<>();
+        dataMapJCheckBoxMap = new HashMap<>();
 
         this.table = new JTable();
         this.table.setRowHeight(22);
@@ -52,39 +65,87 @@ public class ClassesTabPanel extends JPanel {
         this.checkAllLabel = new JLabel("Check All Classes");
 
         checkAll.addItemListener(new ItemListener() {
-
+            @Override
             public void itemStateChanged(ItemEvent event) {
                 if (checkAll.isSelected()) {
                     checkAllLabel.setText("Uncheck All Classess");
-                }
-                else {
+                    for(DataMap dataMap : dataMapJCheckBoxMap.keySet()) {
+                        dataMapJCheckBoxMap.get(dataMap).setSelected(true);
+                    }
+                } else {
                     checkAllLabel.setText("Check All Classes");
+                    for(DataMap dataMap : dataMapJCheckBoxMap.keySet()) {
+                        dataMapJCheckBoxMap.get(dataMap).setSelected(false);
+                    }
                 }
             }
         });
 
         // assemble
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.setBorder(UIManager.getBorder("ToolBar.border"));
         topPanel.add(checkAll);
         topPanel.add(checkAllLabel);
 
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        for(DataMap dataMap : dataMaps) {
+            JTable table = new JTable();
+            table.setRowHeight(22);
+            dataMapTables.put(dataMap, table);
+            JPanel scrollTable = new JPanel(new BorderLayout());
+            scrollTable.add(dataMapTables.get(dataMap).getTableHeader(), BorderLayout.NORTH);
+            scrollTable.add(dataMapTables.get(dataMap), BorderLayout.CENTER);
+            scrollTable.setPreferredSize(new Dimension(dataMapTables.get(dataMap).getPreferredSize().width,
+                    (dataMap.getEmbeddables().size() + dataMap.getObjEntities().size()) * dataMapTables.get(dataMap).getRowHeight() + 45));
+            JPanel labelPanel = new JPanel(new BorderLayout());
+            labelPanel.setPreferredSize(new Dimension(dataMapTables.get(dataMap).getPreferredSize().width, 20));
+            JLabel dataMapLabel = new JLabel(dataMap.getName());
+            dataMapLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            dataMapLabel.setBorder(new EmptyBorder(8, 8, 8, 0));
+            labelPanel.add(dataMapLabel, BorderLayout.CENTER);
+
+            JCheckBox dataMapCheckBox = new JCheckBox();
+            dataMapJCheckBoxMap.put(dataMap, dataMapCheckBox);
+            labelPanel.add(dataMapCheckBox, BorderLayout.WEST);
+
+            JPanel currPanel = new JPanel(new BorderLayout());
+            currPanel.add(labelPanel, BorderLayout.NORTH);
+            currPanel.add(scrollTable, BorderLayout.CENTER);
+
+            panel.add(currPanel);
+        }
+
         JScrollPane tablePanel = new JScrollPane(
-                table,
+                panel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         // set some minimal preferred size, so that it is smaller than other forms used in
         // the dialog... this way we get the right automated overall size
-        tablePanel.setPreferredSize(new Dimension(300, 200));
+        tablePanel.setPreferredSize(new Dimension(450, 400));
 
         setLayout(new BorderLayout());
         add(topPanel, BorderLayout.NORTH);
         add(tablePanel, BorderLayout.CENTER);
     }
 
-    public JTable getTable() {
-        return table;
+    public boolean isAllCheckBoxesFromDataMapSelected(DataMap dataMap) {
+        JTable table = dataMapTables.get(dataMap);
+        for(int i = 0; i < table.getRowCount(); i++) {
+            if(!(Boolean)table.getModel().getValueAt(i, 0)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Map<DataMap, JTable> getDataMapTables() {
+        return dataMapTables;
+    }
+
+    public Map<DataMap, JCheckBox> getDataMapJCheckBoxMap() {
+        return dataMapJCheckBoxMap;
     }
 
     public JCheckBox getCheckAll() {

@@ -19,11 +19,12 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
+
+import java.util.Collection;
 
 /**
  * @since 3.0
@@ -77,9 +78,9 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
      * @since 4.0 throws exception
      */
     @Override
-    public void addEntities(Collection<ObjEntity> entities) throws CayenneException {
+    public void addEntities(Collection<ObjEntity> entities) throws CayenneRuntimeException {
         if (!dataMap.isClientSupported()) {
-            throw new CayenneException("Can't create client classes. Check client supported option on DataMap configuration.");
+            throw new CayenneRuntimeException("Can't create client classes. Check client supported option on DataMap configuration.");
         }
         if (entities != null) {
             for (ObjEntity entity : entities) {
