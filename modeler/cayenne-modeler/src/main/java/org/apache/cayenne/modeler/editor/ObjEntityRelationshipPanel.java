@@ -153,24 +153,20 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         mediator.addObjRelationshipListener(this);
 
         resolver = new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
                 int row = table.getSelectedRow();
                 if (row < 0) {
                     return;
                 }
 
-                ObjRelationshipTableModel model = (ObjRelationshipTableModel) table
-                        .getModel();
+                ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
                 new ObjRelationshipInfo(mediator, model.getRelationship(row)).startupAction();
 
-                /**
-                 * This is required for a table to be updated properly
-                 */
+                // This is required for a table to be updated properly
                 table.cancelEditing();
 
-                // need to refresh selected row... do this by unselecting/selecting the
-                // row
+                // need to refresh selected row... do this by unselecting/selecting the row
                 table.getSelectionModel().clearSelection();
                 table.select(row);
                 enabledResolve = false;

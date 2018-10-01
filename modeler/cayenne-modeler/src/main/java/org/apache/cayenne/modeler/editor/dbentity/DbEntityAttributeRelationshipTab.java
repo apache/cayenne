@@ -113,7 +113,7 @@ public class DbEntityAttributeRelationshipTab extends JPanel implements DbEntity
         toolBar.addSeparator();
 
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
-        resolve.setToolTipText("Database Mapping");
+        resolve.setToolTipText("Edit Relationship");
         resolve.setIcon(ico);
         resolve.setDisabledIcon(FilteredIconFactory.createDisabledIcon(ico));
         toolBar.add(resolve).setEnabled(false);

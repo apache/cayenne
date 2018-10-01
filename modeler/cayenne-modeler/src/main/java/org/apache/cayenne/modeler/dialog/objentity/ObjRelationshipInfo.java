@@ -51,12 +51,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Vector;
+import java.util.*;
 
 public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
 
@@ -106,7 +101,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             targetCollection = ObjRelationship.DEFAULT_COLLECTION_TYPE;
         }
 
-        this.objectTarget = (ObjEntity) relationship.getTargetEntity();
+        this.objectTarget = relationship.getTargetEntity();
         if (objectTarget != null) {
             updateTargetCombo(objectTarget.getDbEntity());
             view.targetCombo.setSelectedItem(objectTarget.getName());
@@ -117,7 +112,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         // and target entities present, with DbEntities chosen.
         validateCanMap();
 
-        this.targetCollections = new ArrayList<String>(4);
+        this.targetCollections = new ArrayList<>(4);
         targetCollections.add(COLLECTION_TYPE_COLLECTION);
         targetCollections.add(ObjRelationship.DEFAULT_COLLECTION_TYPE);
         targetCollections.add(COLLECTION_TYPE_MAP);
@@ -127,11 +122,11 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             view.collectionTypeCombo.addItem(s);
         }
 
-        this.mapKeys = new ArrayList<String>();
+        this.mapKeys = new ArrayList<>();
         initMapKeys();
 
         // setup path
-        dbRelationships = new ArrayList<DbRelationship>(relationship.getDbRelationships());
+        dbRelationships = new ArrayList<>(relationship.getDbRelationships());
         selectPath();
         updateCollectionChoosers();
 
@@ -143,39 +138,39 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
     private void initController() {
         view.getCancelButton().addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
                 view.dispose();
             }
         });
         view.getSaveButton().addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
-                saveMapping();
+                ObjRelationshipInfo.this.saveMapping();
             }
         });
         view.getNewRelButton().addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
-                createRelationship();
+                ObjRelationshipInfo.this.createRelationship();
             }
         });
         view.getSelectPathButton().addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
-                selectPath();
+                ObjRelationshipInfo.this.selectPath();
             }
         });
         view.getCollectionTypeCombo().addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
-                setCollectionType();
+                ObjRelationshipInfo.this.setCollectionType();
             }
         });
         view.getMapKeysCombo().addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
-                setMapKey();
+                ObjRelationshipInfo.this.setMapKey();
             }
         });
         view.getTargetCombo().addItemListener(new ItemListener() {
@@ -185,7 +180,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
                     Object targetName = e.getItem();
                     for (ObjEntity target : objectTargets) {
                         if (Objects.equals(target.getName(), targetName)) {
-                            setObjectTarget(target);
+                            ObjRelationshipInfo.this.setObjectTarget(target);
                             return;
                         }
                     }
@@ -257,7 +252,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     }
 
     public void selectPath() {
-        setSavedDbRelationships(new ArrayList<DbRelationship>(dbRelationships));
+        setSavedDbRelationships(new ArrayList<>(dbRelationships));
     }
 
     /**
@@ -298,7 +293,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
     protected void saveMapping() {
         if (!getDbRelationships().equals(getSavedDbRelationships())) {
-            if (JOptionPane.showConfirmDialog((Component) getView(),
+            if (JOptionPane.showConfirmDialog(getView(),
                     "You have changed Db Relationship path. Do you want it to be saved?", "Save ObjRelationship",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 selectPath();
@@ -358,12 +353,11 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             targetModel.getSource().removeRelationship(dbRelationship.getName());
         } else {
             MultiColumnBrowser pathBrowser = getPathBrowser();
-            Object[] oldPath = targetModel.isSource1Selected() ? new Object[] { getStartEntity() } : pathBrowser
-                    .getSelectionPath().getPath();
+            Object[] oldPath = targetModel.isSource1Selected()
+                    ? new Object[] { getStartEntity() }
+                    : pathBrowser.getSelectionPath().getPath();
 
-            /**
-             * Update the view
-             */
+            // Update the view
             EntityTreeModel treeModel = (EntityTreeModel) pathBrowser.getModel();
             treeModel.invalidate();
 
@@ -383,10 +377,8 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     public ObjectNameGenerator createNamingStrategy(String strategyClass) {
         try {
             ClassLoadingService classLoader = application.getClassLoadingService();
-
             return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).newInstance();
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             JOptionPane.showMessageDialog(
                     view,
                     "Naming Strategy Initialization Error: " + th.getMessage(),
@@ -408,14 +400,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             return;
         }
 
-        Relationship rel = (Relationship) selectedPath.getLastPathComponent();
-        DbEntity target = (DbEntity) rel.getTargetEntity();
-        /**
-         * Initialize root with one of mapped ObjEntities.
-         */
-        Collection<ObjEntity> objEntities = target.getDataMap().getMappedEntities(target);
-
-        List<DbRelationship> relPath = new Vector<DbRelationship>(selectedPath.getPathCount() - 1);
+        List<DbRelationship> relPath = new ArrayList<>(selectedPath.getPathCount() - 1);
         for (int i = 1; i < selectedPath.getPathCount(); i++) {
             relPath.add((DbRelationship) selectedPath.getPathComponent(i));
         }
@@ -438,10 +423,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         mapKeys.add(DEFAULT_MAP_KEY);
 
-        /**
-         * Object target can be null when selected target DbEntity has no
-         * ObjEntities
-         */
+        // Object target can be null when selected target DbEntity has no ObjEntities
         if (objectTarget == null) {
             return;
         }
@@ -466,7 +448,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     protected void updateTargetCombo(DbEntity dbTarget) {
         // copy those that have DbEntities mapped to dbTarget, and then sort
 
-        this.objectTargets = new ArrayList<ObjEntity>();
+        this.objectTargets = new ArrayList<>();
 
         if (dbTarget != null) {
             objectTargets.addAll(dbTarget.getDataMap().getMappedEntities(dbTarget));
@@ -510,8 +492,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     public void setDbRelationships(List<DbRelationship> rels) {
         this.dbRelationships = rels;
 
-        updateTargetCombo(rels.size() > 0 ? (DbEntity) rels.get(rels.size() - 1).getTargetEntity() : null);
-
+        updateTargetCombo(rels.size() > 0 ? rels.get(rels.size() - 1).getTargetEntity() : null);
         updateCollectionChoosers();
     }
 
@@ -577,11 +558,10 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
 
         if (savedDbRelationships.size() > 0) {
-            DbEntity lastEntity = (DbEntity) savedDbRelationships.get(savedDbRelationships.size() - 1)
-                    .getTargetEntity();
+            DbEntity lastEntity = savedDbRelationships.get(savedDbRelationships.size() - 1).getTargetEntity();
 
             if (objectTarget == null || objectTarget.getDbEntity() != lastEntity) {
-                /**
+                /*
                  * Entities in combobox and path browser do not match. In this
                  * case, we rely on the browser and automatically select one of
                  * lastEntity's ObjEntities
@@ -632,7 +612,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             relationship.setMapKey(mapKey);
         }
 
-        /**
+        /*
          * As of CAY-436 here we check if to-many property has changed during
          * the editing, and if so, delete rule must be reset to default value
          */
@@ -657,7 +637,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
     private void breakChain(int index) {
         // strip everything starting from the index
-
         while (dbRelationships.size() > (index + 1)) {
             // remove last
             dbRelationships.remove(dbRelationships.size() - 1);
@@ -678,12 +657,9 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         if (target != null && (last == null || last.getTargetEntity() != target)) {
             // try to connect automatically, if we can't use dummy connector
-
             Entity source = (last == null) ? getStartEntity() : last.getTargetEntity();
             if (source != null) {
-
-                Relationship anyConnector = source != null ? source.getAnyRelationship(target) : null;
-
+                Relationship anyConnector = source.getAnyRelationship(target);
                 if (anyConnector != null) {
                     dbRelationships.add((DbRelationship) anyConnector);
                 }
@@ -708,11 +684,11 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     }
 
     public DbEntity getStartEntity() {
-        return ((ObjEntity) relationship.getSourceEntity()).getDbEntity();
+        return relationship.getSourceEntity().getDbEntity();
     }
 
     public DbEntity getEndEntity() {
-        /**
+        /*
          * Object target can be null when selected target DbEntity has no
          * ObjEntities
          */
