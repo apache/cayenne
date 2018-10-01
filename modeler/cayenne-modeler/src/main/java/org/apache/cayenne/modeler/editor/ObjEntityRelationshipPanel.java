@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.CopyAttributeRelationshipAction;
 import org.apache.cayenne.modeler.action.CutAttributeRelationshipAction;
+import org.apache.cayenne.modeler.action.ObjEntityToSuperEntityAction;
 import org.apache.cayenne.modeler.action.PasteAction;
 import org.apache.cayenne.modeler.action.RemoveAttributeRelationshipAction;
 import org.apache.cayenne.modeler.dialog.objentity.ObjRelationshipInfo;
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -65,12 +67,17 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.List;
 
@@ -129,6 +136,24 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
         tablePreferences = new TableColumnPreferences(
                 ObjRelationshipTableModel.class,
                 "objEntity/relationshipTable");
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                ObjRelationshipTableModel tableModel = ((ObjRelationshipTableModel) table.getModel());
+                ObjRelationship relationship = tableModel.getRelationship(row);
+                int columnFromModel = table.getColumnModel().getColumn(col).getModelIndex();
+                if (row >= 0 && columnFromModel == ObjRelationshipTableModel.REL_NAME) {
+                    if(relationship.getSourceEntity() != tableModel.getEntity()) {
+                        TableCellRenderer renderer = table.getCellRenderer(row, col);
+                        Rectangle rectangle = table.getCellRect(row, col, false);
+                        ((StringRenderer) renderer).mouseClicked(e, rectangle.x);
+                    }
+                }
+            }
+        });
 
         // Create and install a popup
         Icon ico = ModelerUtil.buildIcon("icon-edit.png");
@@ -420,18 +445,35 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
                     .getModel();
             ObjRelationship relationship = model.getRelationship(row);
 
+            setIcon(null);
+
+            column = table.getColumnModel().getColumn(column).getModelIndex();
             if (relationship != null
                     && relationship.getSourceEntity() != model.getEntity()) {
-                setForeground(Color.GRAY);
+                setForeground(isSelected ? new Color(0xEEEEEE) : Color.GRAY);
+                if(column == ObjRelationshipTableModel.REL_NAME) {
+                    ImageIcon icon = ModelerUtil.buildIcon("icon-inheritance.png");
+                    setIcon(icon);
+                }
             } else {
                 setForeground(isSelected && !hasFocus
                         ? table.getSelectionForeground()
                         : table.getForeground());
             }
+
             setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
             setFont(UIManager.getFont("Label.font"));
 
             return this;
+        }
+
+        public void mouseClicked(MouseEvent event, int x) {
+            Point point = event.getPoint();
+            ImageIcon icon = ModelerUtil.buildIcon("icon-inheritance.png");
+            if(point.x - x <= icon.getIconWidth()) {
+                ActionManager actionManager = Application.getInstance().getActionManager();
+                actionManager.getAction(ObjEntityToSuperEntityAction.class).performAction(null);
+            }
         }
     }
 

@@ -16,6 +16,7 @@ Date:
 Changes/New Features:
 
 CAY-2473 Modeler: cleanup attributes and relationship editors
+CAY-2475 Modeler: move inheritance icon to name column in objAttr table and objRel table
 
 Bug Fixes:
 

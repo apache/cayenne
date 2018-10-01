@@ -22,9 +22,11 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.ObjRelationshipTableModel;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.text.JTextComponent;
 import java.awt.Component;
@@ -98,12 +100,14 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
 
                     //we need object target to save it in model
                     DbEntity lastEntity = ((DbRelationship) currentNode).getTargetEntity();
-                    Collection<ObjEntity> objEntities = ((DbRelationship) currentNode).getTargetEntity().
-                            getDataMap().getMappedEntities(lastEntity);
-                    ObjEntity objectTarget = objEntities.isEmpty() ? null : objEntities.iterator().next();
-                    model.getRelationship(row).setTargetEntityName(objectTarget);
-                    model.setUpdatedValueAt(dbRelationshipPath, row, REL_TARGET_PATH_COLUMN);
-                    model.getRelationship(row).setDbRelationshipPath(dbRelationshipPath);
+                    if(lastEntity != null) {
+                        Collection<ObjEntity> objEntities = ((DbRelationship) currentNode).getTargetEntity().
+                                getDataMap().getMappedEntities(lastEntity);
+                        ObjEntity objectTarget = objEntities.isEmpty() ? null : objEntities.iterator().next();
+                        model.getRelationship(row).setTargetEntityName(objectTarget);
+                        model.setUpdatedValueAt(dbRelationshipPath, row, REL_TARGET_PATH_COLUMN);
+                        model.getRelationship(row).setDbRelationshipPath(dbRelationshipPath);
+                    }
                     model.getRelationship(row).setMapKey(null);
                 }
                 table.repaint();
@@ -154,17 +158,21 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
         return pathString.replaceAll(lastStringInPath + '$', "");
     }
 
-    private void changeObjEntity(String path){
+    private boolean changeObjEntity(String path){
         Object currentNode = getCurrentNode(path);
         if (currentNode instanceof DbEntity){
-            return;
+            return false;
         }
         DbEntity lastEntity = ((DbRelationship) currentNode).getTargetEntity();
+        if(lastEntity == null) {
+            return false;
+        }
         Collection<ObjEntity> objEntities = ((DbRelationship) currentNode).getTargetEntity().
                 getDataMap().getMappedEntities(lastEntity);
         ObjEntity objectTarget = objEntities.isEmpty() ? null : objEntities.iterator().next();
         model.getRelationship(row).setTargetEntityName(objectTarget);
         table.repaint();
+        return true;
     }
 
     @Override
@@ -174,6 +182,12 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
     @Override
     public void focusLost(FocusEvent focusEvent) {
         String path = model.getRelationship(row).getDbRelationshipPath();
-        changeObjEntity(path);
+        if(!changeObjEntity(path)) {
+            JOptionPane.showMessageDialog(
+                    Application.getFrame(),
+                    "Can't set dbAttribute path. At first set target entity in dbEntity.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
