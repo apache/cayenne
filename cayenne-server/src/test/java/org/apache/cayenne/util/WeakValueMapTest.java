@@ -143,10 +143,15 @@ public class WeakValueMapTest {
     @Test
     public void testSerializationSupport() throws Exception {
         WeakValueMap<String, Object> map = new WeakValueMap<>();
+
+        // hold references so gc won't clean them
+        Integer val1 = Integer.valueOf(543);
+        TestSerializable val2 = new TestSerializable();
+
         map.put("key_1", 123);
         map.put("key_2", 42);
-        map.put("key_3", 543);
-        map.put("key_4", new TestSerializable());
+        map.put("key_3", val1);
+        map.put("key_4", val2);
         assertEquals(4, map.size());
 
         WeakValueMap<String, Object> clone = Util.cloneViaSerialization(map);
