@@ -26,12 +26,17 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.qualified.Qualified1;
+import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,13 +53,29 @@ public class ConcurrentPkGeneratorIT extends ServerCase {
 
 	@Inject
 	private UnitDbAdapter unitDbAdapter;
-    
+
+	@Before
+	public void prepareDerbyDb() {
+		//use to fix random test failures on derby db
+		if(unitDbAdapter instanceof DerbyUnitDbAdapter) {
+			try(Connection connection = runtime.getDataDomain().getDataNode("qualified").getDataSource().getConnection()){
+				CallableStatement cs =
+						connection.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");
+				cs.setString(1, "derby.language.sequence.preallocator");
+				cs.setString(2, "200");
+				cs.execute();
+				cs.close();
+			} catch (SQLException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+	}
+
     /*
      * Attempts to discover any problems regarding thread locking in the PkGenerator
      */
     @Test
     public void testConcurrentInserts() {
-
     	if(!unitDbAdapter.supportsPKGeneratorConcurrency()) {
     		return;
 		}
