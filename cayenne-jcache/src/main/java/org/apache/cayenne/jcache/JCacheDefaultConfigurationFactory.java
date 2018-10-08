@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.jcache;
 
-import java.util.List;
 import javax.cache.configuration.Configuration;
 import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
