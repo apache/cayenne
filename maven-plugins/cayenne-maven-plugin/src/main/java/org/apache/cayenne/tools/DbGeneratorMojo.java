@@ -48,7 +48,9 @@ import java.io.File;
 import java.sql.Driver;
 
 /**
- * Maven mojo to drop and/or generate tables in a database on Cayenne DataMap.
+ * Maven mojo that generates database schema based on Cayenne mapping.
+ * It is a logical counterpart of cdbimport mojo.
+ *
  * @since 3.0
  */
 @Mojo(name = "cdbgen", defaultPhase = LifecyclePhase.PRE_INTEGRATION_TEST, requiresDependencyResolution = ResolutionScope.COMPILE)
