@@ -19,13 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.CayenneDialog;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -33,10 +29,13 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.util.CayenneDialog;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collection;
 
 /**
  * @since 4.0
@@ -75,6 +74,8 @@ public class DbActionOptionsDialog extends CayenneDialog {
         catalogSelector = new JComboBox<>();
         schemaSelector = new JComboBox<>();
 
+        getRootPane().setDefaultButton(selectButton);
+
         FormLayout layout = new FormLayout(
                 "right:pref, 3dlu, fill:max(170dlu;pref):grow",
                 "");
@@ -82,10 +83,9 @@ public class DbActionOptionsDialog extends CayenneDialog {
         builder.setDefaultDialogBorder();
 
         initForm(builder);
-
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttons.add(selectButton);
         buttons.add(cancelButton);
+        buttons.add(selectButton);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);

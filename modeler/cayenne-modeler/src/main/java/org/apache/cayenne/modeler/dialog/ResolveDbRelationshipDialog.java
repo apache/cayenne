@@ -141,6 +141,8 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablePreferences = new TableColumnPreferences(getClass(), "dbentity/dbjoinTable");
 
+        getRootPane().setDefaultButton(saveButton);
+
         // assemble
         getContentPane().setLayout(new BorderLayout());
 

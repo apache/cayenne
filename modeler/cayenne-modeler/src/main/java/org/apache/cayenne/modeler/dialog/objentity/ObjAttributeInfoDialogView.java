@@ -94,7 +94,8 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
         overrideAttributeTable = new CayenneTable();
         tablePreferences = new TableColumnPreferences(getClass(), "overrideAttributeTable");
-        
+
+        getRootPane().setDefaultButton(saveButton);
         saveButton.setEnabled(false);
         cancelButton.setEnabled(true);
         selectPathButton.setEnabled(false);

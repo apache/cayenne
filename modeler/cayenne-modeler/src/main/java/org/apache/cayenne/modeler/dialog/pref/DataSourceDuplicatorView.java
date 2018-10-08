@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
 /**
  */
@@ -44,6 +43,8 @@ public class DataSourceDuplicatorView extends JDialog {
         this.dataSourceName = new JTextField();
         this.okButton = new JButton("Create");
         this.cancelButton = new JButton("Cancel");
+
+        getRootPane().setDefaultButton(okButton);
 
         // assemble
         FormLayout layout = new FormLayout("right:pref, 3dlu, fill:250", "");

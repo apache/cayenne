@@ -16,6 +16,7 @@ Date:
 Changes/New Features:
 
 CAY-2473 Modeler: cleanup attributes and relationship editors
+CAY-2474 Modeler: swap buttons in dialog toolbar
 CAY-2475 Modeler: move inheritance icon to name column in objAttr table and objRel table
 CAY-2476 Modeler: Fixed wrong behaviour of code generation dialog
 CAY-2479 Modeler: update cgen dialog

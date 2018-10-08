@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.modeler.util;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.FlowLayout;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -30,10 +30,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
-
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.FlowLayout;
 
 /**
  * A dialog rendering a progress bar. It is normally controlled by a subclass of
@@ -67,6 +66,7 @@ public class ProgressDialog extends JDialog {
         builder.add(progressBar, cc.xy(1, 3));
         builder.add(statusLabel, cc.xy(1, 5));
 
+        getRootPane().setDefaultButton(cancelButton);
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
 
