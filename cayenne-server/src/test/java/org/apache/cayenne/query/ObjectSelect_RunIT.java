@@ -18,19 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
@@ -44,6 +37,12 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectSelect_RunIT extends ServerCase {
@@ -76,33 +75,29 @@ public class ObjectSelect_RunIT extends ServerCase {
 	}
 
 	@Test
-	public void test_SelectObjects() throws Exception {
+	public void test_SelectObjects() {
 		List<Artist> result = ObjectSelect.query(Artist.class).select(context);
 		assertEquals(20, result.size());
 		assertThat(result.get(0), instanceOf(Artist.class));
 
-		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist14")).selectOne(context);
+		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.in("artist14", "at1", "12", "asdas")).selectOne(context);
 		assertNotNull(a);
 		assertEquals("artist14", a.getArtistName());
 	}
 
 	@Test
-	public void test_Iterate() throws Exception {
+	public void test_Iterate() {
 		final int[] count = new int[1];
-		ObjectSelect.query(Artist.class).iterate(context, new ResultIteratorCallback<Artist>() {
-
-			@Override
-			public void next(Artist object) {
-				assertNotNull(object.getArtistName());
-				count[0]++;
-			}
+		ObjectSelect.query(Artist.class).iterate(context, object -> {
+			assertNotNull(object.getArtistName());
+			count[0]++;
 		});
 
 		assertEquals(20, count[0]);
 	}
 
 	@Test
-	public void test_Iterator() throws Exception {
+	public void test_Iterator() {
 		try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
 			int count = 0;
 
@@ -115,7 +110,7 @@ public class ObjectSelect_RunIT extends ServerCase {
 	}
 
 	@Test
-	public void test_BatchIterator() throws Exception {
+	public void test_BatchIterator() {
 		try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5);) {
 			int count = 0;
 
@@ -129,7 +124,7 @@ public class ObjectSelect_RunIT extends ServerCase {
 	}
 
 	@Test
-	public void test_SelectDataRows() throws Exception {
+	public void test_SelectDataRows() {
 		List<DataRow> result = ObjectSelect.dataRowQuery(Artist.class).select(context);
 		assertEquals(20, result.size());
 		assertThat(result.get(0), instanceOf(DataRow.class));
@@ -140,32 +135,32 @@ public class ObjectSelect_RunIT extends ServerCase {
 	}
 
 	@Test
-	public void test_SelectOne() throws Exception {
+	public void test_SelectOne() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13")).selectOne(context);
 		assertNotNull(a);
 		assertEquals("artist13", a.getArtistName());
 	}
 
 	@Test
-	public void test_SelectOne_NoMatch() throws Exception {
+	public void test_SelectOne_NoMatch() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist33")).selectOne(context);
 		assertNull(a);
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void test_SelectOne_MoreThanOneMatch() throws Exception {
+	public void test_SelectOne_MoreThanOneMatch() {
 		ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%")).selectOne(context);
 	}
 
 	@Test
-	public void test_SelectFirst() throws Exception {
+	public void test_SelectFirst() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13")).selectFirst(context);
 		assertNotNull(a);
 		assertEquals("artist13", a.getArtistName());
 	}
 
 	@Test
-	public void test_SelectFirstByContext() throws Exception {
+	public void test_SelectFirstByContext() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist13"));
 		Artist a = context.selectFirst(q);
 		assertNotNull(a);
@@ -173,13 +168,13 @@ public class ObjectSelect_RunIT extends ServerCase {
 	}
 
 	@Test
-	public void test_SelectFirst_NoMatch() throws Exception {
+	public void test_SelectFirst_NoMatch() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist33")).selectFirst(context);
 		assertNull(a);
 	}
 
 	@Test
-	public void test_SelectFirst_MoreThanOneMatch() throws Exception {
+	public void test_SelectFirst_MoreThanOneMatch() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%"))
 				.orderBy("db:ARTIST_ID").selectFirst(context);
 		assertNotNull(a);
@@ -187,7 +182,7 @@ public class ObjectSelect_RunIT extends ServerCase {
 	}
 
 	@Test
-	public void test_SelectFirst_TrimInWhere() throws Exception {
+	public void test_SelectFirst_TrimInWhere() {
 		Expression exp = FunctionExpressionFactory.trimExp(Artist.ARTIST_NAME.path());
 		Property<String> trimmedName = Property.create("trimmed", exp, String.class);
 		Artist a = ObjectSelect.query(Artist.class).where(trimmedName.likeIgnoreCase("artist%"))
@@ -197,7 +192,7 @@ public class ObjectSelect_RunIT extends ServerCase {
 	}
 
 	@Test
-	public void test_SelectFirst_SubstringInWhere() throws Exception {
+	public void test_SelectFirst_SubstringInWhere() {
 		Expression exp = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.path(), 2, 3);
 		Property<String> substrName = Property.create("substr", exp, String.class);
 		Artist a = ObjectSelect.query(Artist.class).where(substrName.eq("rti"))
