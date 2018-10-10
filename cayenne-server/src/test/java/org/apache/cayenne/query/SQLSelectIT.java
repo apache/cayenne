@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
@@ -34,15 +35,14 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLSelectIT extends ServerCase {
@@ -55,12 +55,16 @@ public class SQLSelectIT extends ServerCase {
 
 	private TableHelper tPainting;
 
+	private TableHelper tArtistCt;
+
 	@Before
 	public void before() {
-
 		tPainting = new TableHelper(dbHelper, "PAINTING")
 				.setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(Types.INTEGER,
 						Types.VARCHAR, Types.DECIMAL);
+
+		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT");
+		tArtistCt.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}
 
 	protected void createPaintingsDataSet() throws Exception {
@@ -106,6 +110,45 @@ public class SQLSelectIT extends ServerCase {
 		List<Painting> result = context.select(q1);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof Painting);
+	}
+
+	@Test
+	public void test_ObjectArrayQuery() throws Exception {
+		createPaintingsDataSet();
+		List<Object[]> result = SQLSelect.scalarQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class, Double.class)
+				.select(context);
+
+		assertEquals(20, result.size());
+		assertEquals(3, result.get(0).length);
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void test_ObjectArrayQueryException() throws Exception {
+		createPaintingsDataSet();
+		SQLSelect<Object[]> query = SQLSelect.scalarQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
+		context.performQuery(query);
+	}
+
+	@Test
+	public void test_SingleObjectQuery() throws Exception {
+		createPaintingsDataSet();
+		List<Integer> result = SQLSelect.scalarQuery("SELECT PAINTING_ID FROM PAINTING", Integer.class)
+				.select(context);
+		assertEquals(20, result.size());
+		assertTrue(result.get(0) instanceof Integer);
+	}
+
+	@Test
+	public void testObjectArrayWithCustomType() throws SQLException {
+		tArtistCt.insert(1, "Test", "2018-10-10");
+		tArtistCt.insert(2, "Test1", "2017-09-09");
+
+		List<Object[]> results = SQLSelect.scalarQuery("SELECT * FROM ARTIST_CT",
+				Integer.class, String.class, LocalDateTime.class).select(context);
+
+		assertEquals(2, results.size());
+		assertEquals(3, results.get(0).length);
+		assertTrue(results.get(0)[2] instanceof LocalDateTime);
 	}
 
 	@Test
