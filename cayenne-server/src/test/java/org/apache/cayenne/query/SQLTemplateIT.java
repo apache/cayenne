@@ -37,13 +37,12 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SQLTemplateIT extends ServerCase {
@@ -64,6 +63,8 @@ public class SQLTemplateIT extends ServerCase {
 
 	private TableHelper tArtist;
 
+	private TableHelper tArtistCt;
+
 	@Before
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
@@ -71,6 +72,9 @@ public class SQLTemplateIT extends ServerCase {
 
 		tPainting = new TableHelper(dbHelper, "PAINTING");
 		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");
+
+		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT");
+		tArtistCt.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 	}
 
 	@Test
@@ -129,6 +133,60 @@ public class SQLTemplateIT extends ServerCase {
 				gotRuntimeException);
 	}
 
+	@Test(expected = CayenneRuntimeException.class)
+	public void testObjectArrayReturnWithException() {
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
+		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
+		context.performNonSelectingQuery(q1);
+		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", true)
+				.resultColumnsTypes(Integer.class);
+		context.performQuery(q3);
+	}
+
+	@Test
+	public void testObjectArrayReturn() throws SQLException {
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
+		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
+		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
+		context.performNonSelectingQuery(q1);
+		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
+		context.performNonSelectingQuery(q2);
+
+		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", true)
+				.resultColumnsTypes(Integer.class, String.class);
+		List<Object[]> artists = context.performQuery(q3);
+		assertEquals(2, artists.size());
+		assertEquals(2, artists.get(0).length);
+	}
+
+	@Test
+	public void testObjectArrayReturnWithCustomType() throws SQLException {
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
+		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST_CT", true)
+				.resultColumnsTypes(Integer.class, String.class, LocalDateTime.class);
+		List dates = context.performQuery(q5);
+		assertEquals(2, dates.size());
+		assertTrue(dates.get(0) instanceof Object[]);
+		assertEquals(3, ((Object[])dates.get(0)).length);
+		assertTrue(((Object[])dates.get(0))[2] instanceof LocalDateTime);
+	}
+
+	@Test
+	public void testSingleObjectReturn() throws SQLException {
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT ARTIST_NAME FROM ARTIST_CT", true)
+				.resultColumnsTypes(String.class);
+		List dates = context.performQuery(q5);
+		assertEquals(1, dates.size());
+		assertTrue(dates.get(0) instanceof String);
+		assertEquals("Test", dates.get(0));
+	}
+
 	@Test
 	public void testSQLTemplate_PositionalParams() throws SQLException {
 
@@ -160,7 +218,7 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testSQLTemplate_PositionalParams_ToFewParams() throws SQLException {
+	public void testSQLTemplate_PositionalParams_ToFewParams() {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
 				+ "VALUES ($b, '$n', #bind($c 'INTEGER'))";
@@ -238,7 +296,7 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testSQLTemplateWithDisjointPrefetch() throws Exception {
+	public void testSQLTemplateWithDisjointPrefetch() {
 		String sql = "SELECT p.* FROM PAINTING p";
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
 		q1.addPrefetch(Painting.TO_ARTIST.disjoint());

@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.types.ExtendedType;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -28,12 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A builder class that helps to assemble {@link RowDescriptor} instances from various
@@ -56,6 +56,8 @@ public class RowDescriptorBuilder {
 
     protected Function<String, String> caseTransformer;
     protected Map<String, String> typeOverrides;
+
+    private boolean mergeColumnsWithRsMetadata;
 
     protected boolean validateDuplicateColumnNames;
 
@@ -102,7 +104,9 @@ public class RowDescriptorBuilder {
 
         if (rsLen < columnLen) {
             throw new CayenneRuntimeException("'ResultSetMetadata' has less elements then 'columns'.");
-        } else if (rsLen == columnLen) {
+        } else if(mergeColumnsWithRsMetadata && rsLen != columnLen) {
+            throw new CayenneRuntimeException("Size of elements from 'ResultSetMetadata' isn't equals to resultTypesColumns size from query.");
+        } else if (rsLen == columnLen && !mergeColumnsWithRsMetadata) {
             // 'columns' contains ColumnDescriptor for every column
             // in resultSetMetadata. This return is for optimization.
             return columns;
@@ -160,14 +164,18 @@ public class RowDescriptorBuilder {
         // go through columnArray to find ColumnDescriptor for specified column
         for (int i = 0; i < len; i++) {
             if (columnArray[i] != null) {
-                String columnRowKey = columnArray[i].getDataRowKey();
-                
-                // TODO: andrus, 10/14/2009 - 'equalsIgnoreCase' check can result in
-                // subtle bugs in DBs with case-sensitive column names (or when quotes are
-                // used to force case sensitivity). Alternatively using 'equals' may miss
-                // columns in case-insensitive situations.
-                if (columnRowKey != null && columnRowKey.equalsIgnoreCase(rowKey)) {
-                    return columnArray[i];
+                if(mergeColumnsWithRsMetadata) {
+                    return new ColumnDescriptor(rowKey, resultSetMetadata.getColumnType(position), columnArray[position - 1].getJavaClass());
+                } else {
+                    String columnRowKey = columnArray[i].getDataRowKey();
+
+                    // TODO: andrus, 10/14/2009 - 'equalsIgnoreCase' check can result in
+                    // subtle bugs in DBs with case-sensitive column names (or when quotes are
+                    // used to force case sensitivity). Alternatively using 'equals' may miss
+                    // columns in case-insensitive situations.
+                    if (columnRowKey != null && columnRowKey.equalsIgnoreCase(rowKey)) {
+                        return columnArray[i];
+                    }
                 }
             }
         }
@@ -255,5 +263,13 @@ public class RowDescriptorBuilder {
 
     public boolean isOverriden(String columnName) {
         return typeOverrides != null && typeOverrides.containsKey(columnName);
+    }
+
+    public boolean isMergeColumnsWithRsMetadata() {
+        return mergeColumnsWithRsMetadata;
+    }
+
+    public void setMergeColumnsWithRsMetadata(boolean mergeColumnsWithRsMetadata) {
+        this.mergeColumnsWithRsMetadata = mergeColumnsWithRsMetadata;
     }
 }

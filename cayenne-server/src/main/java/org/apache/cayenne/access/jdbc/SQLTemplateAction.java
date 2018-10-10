@@ -248,9 +248,11 @@ public class SQLTemplateAction implements SQLAction {
 									   ResultSet resultSet, OperationObserver callback, final long startTime) throws Exception {
 
 		boolean iteratedResult = callback.isIteratedResult();
-
 		ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
 		RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
+		if(query.getResultColumnsTypes() != null) {
+			addColumnDescriptorsToBuilder(builder);
+		}
 		RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
 
 		ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
@@ -285,6 +287,20 @@ public class SQLTemplateAction implements SQLAction {
 
 			callback.nextRows(query, resultRows);
 		}
+	}
+
+	private void addColumnDescriptorsToBuilder(RowDescriptorBuilder builder) {
+		builder.setMergeColumnsWithRsMetadata(true);
+		List<Class<?>> typesList = (List<Class<?>>)query.getResultColumnsTypes();
+		int size = typesList.size();
+		ColumnDescriptor[] columnDescriptors = new ColumnDescriptor[size];
+		for(int i = 0; i < size; i++) {
+			ColumnDescriptor columnDescriptor = new ColumnDescriptor();
+			columnDescriptor.setJavaClass(typesList.get(i).getName());
+			columnDescriptors[i] = columnDescriptor;
+		}
+		builder.setColumns(columnDescriptors);
+
 	}
 
 	/**

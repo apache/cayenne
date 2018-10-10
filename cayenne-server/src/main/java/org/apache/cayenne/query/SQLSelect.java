@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -32,7 +26,14 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.SQLResult;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A selecting query based on raw SQL and featuring fluent API.
@@ -42,6 +43,8 @@ import org.apache.cayenne.map.SQLResult;
 public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
 	private static final long serialVersionUID = -7074293371883740872L;
+
+	private Collection<Class<?>> resultColumnsTypes;
 
 	/**
 	 * Creates a query that selects DataRows and uses default routing.
@@ -71,9 +74,34 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates a query that selects scalar values and uses default routing.
 	 */
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String sql) {
+		return scalarQuery(sql, type);
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> SQLSelect<T> scalarQuery(String sql, Class<T> type) {
 		SQLSelect<T> query = new SQLSelect<>(sql);
-		query.scalarType = type;
-		return query;
+		return (SQLSelect<T>) query.resultColumnsTypes(type);
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	@SuppressWarnings("unchecked")
+	public static SQLSelect<Object[]> scalarQuery(String sql, Class<?>... types) {
+		SQLSelect<Object[]> query = new SQLSelect<>(sql);
+		return (SQLSelect<Object[]>) query.resultColumnsTypes(types);
+	}
+
+	@SuppressWarnings("unchecked")
+	private SQLSelect resultColumnsTypes(Class<?>... types) {
+		if(resultColumnsTypes == null) {
+			resultColumnsTypes = new ArrayList<>(types.length);
+		}
+		Collections.addAll(resultColumnsTypes, types);
+		return this;
 	}
 
 	/**
@@ -83,12 +111,10 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String dataMapName, String sql) {
 		SQLSelect<T> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
-		query.scalarType = type;
-		return query;
+		return query.resultColumnsTypes(type);
 	}
 
 	protected Class<T> persistentType;
-	protected Class<T> scalarType;
 	protected String dataMapName;
 	protected StringBuilder sqlBuffer;
 	protected QueryCacheStrategy cacheStrategy;
@@ -146,10 +172,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
 	public boolean isFetchingDataRows() {
 		return persistentType == null;
-	}
-
-	public boolean isFetchingScalars() {
-		return scalarType != null;
 	}
 
 	public String getSql() {
@@ -260,6 +282,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroup(cacheGroup);
 		template.setCacheStrategy(cacheStrategy);
+		template.setResultColumnsTypes(resultColumnsTypes);
 		if (prefetches != null) {
 			template.addPrefetch(prefetches);
 		}
@@ -275,12 +298,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setFetchOffset(offset);
 		template.setPageSize(pageSize);
 		template.setStatementFetchSize(statementFetchSize);
-
-		if (isFetchingScalars()) {
-			SQLResult resultMap = new SQLResult();
-			resultMap.addColumnResult("x");
-			template.setResult(resultMap);
-		}
 
 		return template;
 	}
