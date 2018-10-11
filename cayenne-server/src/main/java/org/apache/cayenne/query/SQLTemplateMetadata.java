@@ -20,6 +20,7 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SQLResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
 
 		if (super.resolve(root, resolver)) {
 
+			buildResultSetMappingForColumns(query);
 			resultSetMapping = query.getResult() != null ? query.getResult().getResolvedComponents(resolver) : null;
 
 			// generate unique cache key...
@@ -88,5 +90,16 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
 		}
 
 		return false;
+	}
+
+	private void buildResultSetMappingForColumns(SQLTemplate query) {
+		if(query.getResultColumnsTypes() == null || query.getResultColumnsTypes().isEmpty()) {
+			return;
+		}
+		SQLResult result = new SQLResult();
+		for(int i = 0; i < query.getResultColumnsTypes().size(); i++) {
+			result.addColumnResult(String.valueOf(i));
+		}
+		query.setResult(result);
 	}
 }

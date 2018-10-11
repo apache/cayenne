@@ -83,6 +83,8 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	private String dataNodeName;
 	protected boolean returnGeneratedKeys;
 
+	private Collection<Class<?>> resultColumnsTypes;
+
 	SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
 	/**
@@ -104,6 +106,14 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 		setDefaultTemplate(defaultTemplate);
 		setRoot(null);
 		setFetchingDataRows(isFetchingDataRows);
+	}
+
+	public SQLTemplate resultColumnsTypes(Class<?> ...types) {
+		if(resultColumnsTypes == null) {
+			resultColumnsTypes = new ArrayList<>(types.length);
+		}
+		Collections.addAll(resultColumnsTypes, types);
+		return this;
 	}
 
 	@Override
@@ -652,5 +662,13 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 */
 	public void setReturnGeneratedKeys(boolean returnGeneratedKeys) {
 		this.returnGeneratedKeys = returnGeneratedKeys;
+	}
+
+	public Collection<Class<?>> getResultColumnsTypes() {
+		return resultColumnsTypes;
+	}
+
+	public void setResultColumnsTypes(Collection<Class<?>> resultColumnsTypes) {
+		this.resultColumnsTypes = resultColumnsTypes;
 	}
 }
