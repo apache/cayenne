@@ -102,10 +102,10 @@ public class RowDescriptorBuilder {
 
         int columnLen = (columns != null) ? columns.length : 0;
 
-        if (rsLen < columnLen) {
+        if(mergeColumnsWithRsMetadata && rsLen != columnLen) {
+            throw new CayenneRuntimeException("Size of 'ResultSetMetadata' not equals to size of 'columns'.");
+        } else if (rsLen < columnLen) {
             throw new CayenneRuntimeException("'ResultSetMetadata' has less elements then 'columns'.");
-        } else if(mergeColumnsWithRsMetadata && rsLen != columnLen) {
-            throw new CayenneRuntimeException("Size of elements from 'ResultSetMetadata' isn't equals to resultTypesColumns size from query.");
         } else if (rsLen == columnLen && !mergeColumnsWithRsMetadata) {
             // 'columns' contains ColumnDescriptor for every column
             // in resultSetMetadata. This return is for optimization.
@@ -265,11 +265,8 @@ public class RowDescriptorBuilder {
         return typeOverrides != null && typeOverrides.containsKey(columnName);
     }
 
-    public boolean isMergeColumnsWithRsMetadata() {
-        return mergeColumnsWithRsMetadata;
-    }
-
-    public void setMergeColumnsWithRsMetadata(boolean mergeColumnsWithRsMetadata) {
-        this.mergeColumnsWithRsMetadata = mergeColumnsWithRsMetadata;
+    public RowDescriptorBuilder mergeColumnsWithRsMetadata() {
+        this.mergeColumnsWithRsMetadata = true;
+        return this;
     }
 }

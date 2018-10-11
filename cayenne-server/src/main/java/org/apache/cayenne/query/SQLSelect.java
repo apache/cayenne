@@ -44,7 +44,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
 	private static final long serialVersionUID = -7074293371883740872L;
 
-	private Collection<Class<?>> resultColumnsTypes;
+	private List<Class<?>> resultColumnsTypes;
 
 	/**
 	 * Creates a query that selects DataRows and uses default routing.
@@ -78,33 +78,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * @since 4.1
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> SQLSelect<T> scalarQuery(String sql, Class<T> type) {
-		SQLSelect<T> query = new SQLSelect<>(sql);
-		return (SQLSelect<T>) query.resultColumnsTypes(type);
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	@SuppressWarnings("unchecked")
-	public static SQLSelect<Object[]> scalarQuery(String sql, Class<?>... types) {
-		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		return (SQLSelect<Object[]>) query.resultColumnsTypes(types);
-	}
-
-	@SuppressWarnings("unchecked")
-	private SQLSelect resultColumnsTypes(Class<?>... types) {
-		if(resultColumnsTypes == null) {
-			resultColumnsTypes = new ArrayList<>(types.length);
-		}
-		Collections.addAll(resultColumnsTypes, types);
-		return this;
-	}
-
-	/**
 	 * Creates a query that selects scalar values and uses routing based on the
 	 * provided DataMap name.
 	 */
@@ -112,6 +85,47 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		SQLSelect<T> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
 		return query.resultColumnsTypes(type);
+	}
+
+	/**
+	 * Creates query that selects scalar value and uses default routing
+	 *
+	 * @since 4.1
+	 */
+	public static <T> SQLSelect<T> scalarQuery(String sql, Class<T> type) {
+		SQLSelect<T> query = new SQLSelect<>(sql);
+		return query.resultColumnsTypes(type);
+	}
+
+	/**
+	 * Creates query that selects scalar values (as Object[]) and uses default routing
+	 *
+	 * @since 4.1
+	 */
+	public static SQLSelect<Object[]> scalarQuery(String sql, Class<?> firstType, Class<?>... types) {
+		SQLSelect<Object[]> query = new SQLSelect<>(sql);
+		return query.resultColumnsTypes(firstType).resultColumnsTypes(types);
+	}
+
+	/**
+	 * Creates query that selects scalar values (as Object[]) and uses routing based on the
+	 * provided DataMap name.
+	 *
+	 * @since 4.1
+	 */
+	public static SQLSelect<Object[]> scalarQuery(String sql, String dataMapName, Class<?> firstType, Class<?>... types) {
+		SQLSelect<Object[]> query = new SQLSelect<>(sql);
+		query.dataMapName = dataMapName;
+		return query.resultColumnsTypes(firstType).resultColumnsTypes(types);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <E> SQLSelect<E> resultColumnsTypes(Class<?>... types) {
+		if(resultColumnsTypes == null) {
+			resultColumnsTypes = new ArrayList<>(types.length);
+		}
+		Collections.addAll(resultColumnsTypes, types);
+		return (SQLSelect<E>)this;
 	}
 
 	protected Class<T> persistentType;

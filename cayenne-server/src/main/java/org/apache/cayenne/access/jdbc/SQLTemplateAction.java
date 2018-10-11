@@ -250,9 +250,6 @@ public class SQLTemplateAction implements SQLAction {
 		boolean iteratedResult = callback.isIteratedResult();
 		ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
 		RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
-		if(query.getResultColumnsTypes() != null) {
-			addColumnDescriptorsToBuilder(builder);
-		}
 		RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
 
 		ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
@@ -289,18 +286,28 @@ public class SQLTemplateAction implements SQLAction {
 		}
 	}
 
-	private void addColumnDescriptorsToBuilder(RowDescriptorBuilder builder) {
-		builder.setMergeColumnsWithRsMetadata(true);
-		List<Class<?>> typesList = (List<Class<?>>)query.getResultColumnsTypes();
-		int size = typesList.size();
+	/**
+	 * Creates column descriptors based on compiled statement and query metadata
+	 */
+	private ColumnDescriptor[] createColumnDescriptors(SQLStatement compiled) {
+		// SQLTemplate #result columns take precedence over other ways to determine the type
+		if (compiled.getResultColumns().length > 0) {
+			return compiled.getResultColumns();
+		}
+
+		// check explicitly set column types
+		if(query.getResultColumnsTypes() == null) {
+			return null;
+		}
+
+		int size = query.getResultColumnsTypes().size();
 		ColumnDescriptor[] columnDescriptors = new ColumnDescriptor[size];
 		for(int i = 0; i < size; i++) {
 			ColumnDescriptor columnDescriptor = new ColumnDescriptor();
-			columnDescriptor.setJavaClass(typesList.get(i).getName());
+			columnDescriptor.setJavaClass(query.getResultColumnsTypes().get(i).getName());
 			columnDescriptors[i] = columnDescriptor;
 		}
-		builder.setColumns(columnDescriptors);
-
+		return columnDescriptors;
 	}
 
 	/**
@@ -310,11 +317,11 @@ public class SQLTemplateAction implements SQLAction {
 			throws SQLException {
 		RowDescriptorBuilder builder = new RowDescriptorBuilder()
 				.setResultSet(resultSet)
+				.setColumns(createColumnDescriptors(compiled))
 				.validateDuplicateColumnNames();
 
-		// SQLTemplate #result columns take precedence over other ways to determine the type
-		if (compiled.getResultColumns().length > 0) {
-			builder.setColumns(compiled.getResultColumns());
+		if(query.getResultColumnsTypes() != null) {
+			builder.mergeColumnsWithRsMetadata();
 		}
 
 		ObjEntity entity = queryMetadata.getObjEntity();
