@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDateTime;
@@ -140,8 +141,8 @@ public class SQLSelectIT extends ServerCase {
 
 	@Test
 	public void testObjectArrayWithCustomType() throws SQLException {
-		tArtistCt.insert(1, "Test", "2018-10-10");
-		tArtistCt.insert(2, "Test1", "2017-09-09");
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
 
 		List<Object[]> results = SQLSelect.scalarQuery("SELECT * FROM ARTIST_CT",
 				Integer.class, String.class, LocalDateTime.class).select(context);

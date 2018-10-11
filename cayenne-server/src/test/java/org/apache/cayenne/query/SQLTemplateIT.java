@@ -37,6 +37,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -163,8 +164,8 @@ public class SQLTemplateIT extends ServerCase {
 	@Test
 	public void testObjectArrayReturnWithCustomType() throws SQLException {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		tArtistCt.insert(1, "Test", "2018-10-10");
-		tArtistCt.insert(2, "Test1", "2017-09-09");
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
 		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST_CT", true)
 				.resultColumnsTypes(Integer.class, String.class, LocalDateTime.class);
 		List dates = context.performQuery(q5);
@@ -177,7 +178,7 @@ public class SQLTemplateIT extends ServerCase {
 	@Test
 	public void testSingleObjectReturn() throws SQLException {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		tArtistCt.insert(1, "Test", "2018-10-10");
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
 		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT ARTIST_NAME FROM ARTIST_CT", true)
 				.resultColumnsTypes(String.class);
 		List dates = context.performQuery(q5);
