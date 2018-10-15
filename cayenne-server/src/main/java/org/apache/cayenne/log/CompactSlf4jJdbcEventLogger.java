@@ -35,14 +35,14 @@ import java.util.stream.Collectors;
 /**
  * @since 4.1
  */
-public class CompactSl4jJdbcEventLogger extends Slf4jJdbcEventLogger {
+public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
 
     private static final String UNION = "UNION";
     private static final String SELECT = "SELECT";
     private static final String FROM = "FROM";
     private static final String SPACE = " ";
 
-    public CompactSl4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
+    public CompactSlf4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
         super(runtimeProperties);
     }
 
@@ -56,24 +56,18 @@ public class CompactSl4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         if (sql.toUpperCase().contains(UNION)) {
             str = processUnionSql(sql);
         } else {
-            str = formatSqlSelectColumns(sql);
+            str = trimSqlSelectColumns(sql);
         }
 
-        StringBuilder stringBuilder = new StringBuilder(str);
-        appendParameters(stringBuilder, "bind", bindings);
-        if (stringBuilder.length() < 0) {
-            return;
-        }
-
-        super.logQuery(stringBuilder.toString(), new ParameterBinding[0]);
+        super.logQuery(str, bindings);
     }
 
-    private String processUnionSql(String sql) {
+    protected String processUnionSql(String sql) {
 
         String modified = Pattern.compile(UNION.toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(sql).replaceAll(UNION);
         String[] queries = modified.split(
                 UNION);
-        List<String> formattedQueries = Arrays.stream(queries).map(this::formatSqlSelectColumns).collect(Collectors.toList());
+        List<String> formattedQueries = Arrays.stream(queries).map(this::trimSqlSelectColumns).collect(Collectors.toList());
         StringBuilder buffer = new StringBuilder();
         boolean used =  false;
         for (String q: formattedQueries) {
@@ -87,7 +81,7 @@ public class CompactSl4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         return buffer.toString();
     }
 
-    private String formatSqlSelectColumns(String sql) {
+    protected String trimSqlSelectColumns(String sql) {
         int selectIndex = sql.toUpperCase().indexOf(SELECT);
         if (selectIndex == -1) {
             return sql;
@@ -109,7 +103,8 @@ public class CompactSl4jJdbcEventLogger extends Slf4jJdbcEventLogger {
                 .toString();
     }
 
-    private void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
+    @Override
+    protected void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
         int bindingLength = bindings.length;
         if (bindingLength == 0) {
             return;
@@ -161,7 +156,7 @@ public class CompactSl4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         for (String k : bindingsMap.keySet()) {
             if (!hasIncluded) {
                 hasIncluded = true;
-                buffer.append(" [").append(label).append(": ");
+                buffer.append("[").append(label).append(": ");
             } else {
                 buffer.append(", ");
             }
