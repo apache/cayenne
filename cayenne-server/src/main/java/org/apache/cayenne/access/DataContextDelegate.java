@@ -37,7 +37,7 @@ public interface DataContextDelegate {
 
     /**
      * Invoked before a Query is executed via <em>DataContext.performQuery</em>. The
-     * delegate may subsitute the Query with a different one or may return null to discard
+     * delegate may substitute the Query with a different one or may return null to discard
      * the query.
      * 
      * @since 1.2
@@ -46,7 +46,7 @@ public interface DataContextDelegate {
 
     /**
      * Invoked before a Query is executed via <em>DataContext.performGenericQuery</em>.
-     * The delegate may subsitute the Query with a different one or may return null to
+     * The delegate may substitute the Query with a different one or may return null to
      * discard the query.
      * 
      * @since 1.2
