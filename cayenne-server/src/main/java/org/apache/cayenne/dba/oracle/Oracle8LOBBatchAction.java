@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.CayenneException;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
@@ -81,7 +80,7 @@ class Oracle8LOBBatchAction implements SQLAction {
 			translator = new Oracle8LOBUpdateBatchTranslator((UpdateBatchQuery) query, adapter,
 					OracleAdapter.TRIM_FUNCTION);
 		} else {
-			throw new CayenneException("Unsupported batch type for special LOB processing: " + query);
+			throw new CayenneRuntimeException("Unsupported batch type for special LOB processing: " + query);
 		}
 
 		translator.setNewBlobFunction(OracleAdapter.NEW_BLOB_FUNCTION);

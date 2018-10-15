@@ -34,14 +34,14 @@ public class ConfigExceptionTest {
     public void testConstructor1() throws Exception {
         ConfigurationException ex = new ConfigurationException();
         assertNull(ex.getCause());
-        assertTrue(ex.getMessage().startsWith(CayenneException.getExceptionLabel()));
+        assertTrue(ex.getMessage().startsWith(CayenneRuntimeException.getExceptionLabel()));
     }
 
     @Test
     public void testConstructor2() throws Exception {
         ConfigurationException ex = new ConfigurationException("abc");
         assertNull(ex.getCause());
-        assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
+        assertEquals(CayenneRuntimeException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class ConfigExceptionTest {
         ConfigurationException ex = new ConfigurationException(cause);
         assertSame(cause, ex.getCause());
         assertEquals(
-            CayenneException.getExceptionLabel() + cause.toString(),
+                CayenneRuntimeException.getExceptionLabel() + cause.toString(),
             ex.getMessage());
     }
 
@@ -59,6 +59,6 @@ public class ConfigExceptionTest {
         Throwable cause = new Throwable();
         ConfigurationException ex = new ConfigurationException("abc", cause);
         assertSame(cause, ex.getCause());
-        assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
+        assertEquals(CayenneRuntimeException.getExceptionLabel() + "abc", ex.getMessage());
     }
 }

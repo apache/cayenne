@@ -35,14 +35,14 @@ public class CayenneRuntimeExceptionTest {
     public void testConstructor1() {
         CayenneRuntimeException ex = new CayenneRuntimeException();
         assertNull(ex.getCause());
-        assertTrue(ex.getMessage().startsWith(CayenneException.getExceptionLabel()));
+        assertTrue(ex.getMessage().startsWith(CayenneRuntimeException.getExceptionLabel()));
     }
 
     @Test
     public void testConstructor2() {
         CayenneRuntimeException ex = new CayenneRuntimeException("abc");
         assertNull(ex.getCause());
-        assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
+        assertEquals(CayenneRuntimeException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class CayenneRuntimeExceptionTest {
         CayenneRuntimeException ex = new CayenneRuntimeException(cause);
         assertSame(cause, ex.getCause());
         assertEquals(
-            CayenneException.getExceptionLabel() + cause.toString(),
+                CayenneRuntimeException.getExceptionLabel() + cause.toString(),
             ex.getMessage());
     }
 
@@ -60,7 +60,7 @@ public class CayenneRuntimeExceptionTest {
         Throwable cause = new Throwable();
         CayenneRuntimeException ex = new CayenneRuntimeException("abc", cause);
         assertSame(cause, ex.getCause());
-        assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
+        assertEquals(CayenneRuntimeException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
     @Test
@@ -69,12 +69,12 @@ public class CayenneRuntimeExceptionTest {
 
         CayenneRuntimeException ex = new CayenneRuntimeException(null, cause);
         assertSame(cause, ex.getCause());
-        assertEquals(CayenneException.getExceptionLabel() + "(no message)", ex.getMessage());
+        assertEquals(CayenneRuntimeException.getExceptionLabel() + "(no message)", ex.getMessage());
         assertNull(ex.getUnlabeledMessage());
 
         CayenneRuntimeException ex2 = new CayenneRuntimeException((String)null);
         assertNull(ex2.getCause());
-        assertEquals(CayenneException.getExceptionLabel() + "(no message)", ex2.getMessage());
+        assertEquals(CayenneRuntimeException.getExceptionLabel() + "(no message)", ex2.getMessage());
         assertNull(ex2.getUnlabeledMessage());
     }
 

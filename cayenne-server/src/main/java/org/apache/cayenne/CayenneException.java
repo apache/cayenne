@@ -23,9 +23,12 @@ import org.apache.cayenne.util.LocalizedStringsHandler;
 
 
 /**
+ * @deprecated please @since 4.1 use {@link CayenneRuntimeException}
+ *
  * A generic checked exception that may be thrown by Cayenne framework. All checked
  * exceptions in Cayenne inherit from this class.
  */
+@Deprecated
 public class CayenneException extends Exception {
 
     private static String exceptionLabel;
@@ -36,6 +39,10 @@ public class CayenneException extends Exception {
         exceptionLabel = "[v." + version + " " + date + "] ";
     }
 
+    /**
+     *   @deprecated please @since 4.1 use {@link CayenneRuntimeException#getExceptionLabel()}
+     */
+    @Deprecated
     public static String getExceptionLabel() {
         return exceptionLabel;
     }

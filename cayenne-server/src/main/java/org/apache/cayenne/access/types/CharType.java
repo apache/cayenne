@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -72,7 +72,7 @@ public class CharType implements ExtendedType<String> {
 
 		if (type == Types.CLOB || type == Types.NCLOB) {
 			if (!isUsingClobs()) {
-				throw new CayenneException("Character streams are not supported in stored procedure parameters.");
+				throw new CayenneRuntimeException("Character streams are not supported in stored procedure parameters.");
 			}
 
 			return readClob(cs.getClob(index));
