@@ -42,7 +42,7 @@ public class DbRelationshipTargetView extends JDialog {
     protected JButton cancelButton;
     protected JRadioButton source1Button;
     protected JRadioButton source2Button;
-    protected JComboBox<String> targetCombo;
+    protected JComboBox<DbEntity> targetCombo;
     
     public DbRelationshipTargetView(DbEntity source1, DbEntity source2) {
         
