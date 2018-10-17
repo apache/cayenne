@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -29,6 +26,9 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.Iterator;
+import java.util.List;
 
 class ObjRelationshipValidator extends ConfigurationNodeValidator {
 
@@ -123,6 +123,17 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
                             "ObjRelationship '%s' has a Nullify delete rule and a mandatory reverse relationship",
                             toString(relationship));
                 }
+            }
+        }
+
+        if(!relationship.isToPK()) {
+            ObjRelationship reverseRelationship = relationship.getReverseRelationship();
+            if(reverseRelationship == null || !reverseRelationship.isToPK()) {
+                addFailure(
+                        validationResult,
+                        relationship,
+                        "ObjRelationship '%s' has join not to PK. Cayenne doesn't allow this type of relashioships",
+                        toString(relationship));
             }
         }
 
