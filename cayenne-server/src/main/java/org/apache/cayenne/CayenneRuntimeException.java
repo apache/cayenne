@@ -35,6 +35,9 @@ public class CayenneRuntimeException extends RuntimeException {
         exceptionLabel = "[v." + version + " " + date + "] ";
     }
 
+    /**
+     * @since 4.1 moved from deprecated {@link CayenneException}
+     */
     public static String getExceptionLabel() {
         return exceptionLabel;
     }

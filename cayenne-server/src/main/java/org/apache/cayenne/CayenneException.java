@@ -19,32 +19,22 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.util.LocalizedStringsHandler;
-
 
 /**
- * @deprecated please @since 4.1 use {@link CayenneRuntimeException}
- *
  * A generic checked exception that may be thrown by Cayenne framework. All checked
  * exceptions in Cayenne inherit from this class.
+ *
+ * @deprecated since 4.1 use {@link CayenneRuntimeException} instead
  */
 @Deprecated
 public class CayenneException extends Exception {
 
-    private static String exceptionLabel;
-
-    static {
-        String version = LocalizedStringsHandler.getString("cayenne.version");
-        String date = LocalizedStringsHandler.getString("cayenne.build.date");
-        exceptionLabel = "[v." + version + " " + date + "] ";
-    }
-
     /**
-     *   @deprecated please @since 4.1 use {@link CayenneRuntimeException#getExceptionLabel()}
+     * @deprecated since 4.1 use {@link CayenneRuntimeException#getExceptionLabel()}
      */
     @Deprecated
     public static String getExceptionLabel() {
-        return exceptionLabel;
+        return CayenneRuntimeException.getExceptionLabel();
     }
 
     /**

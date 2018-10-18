@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.BatchAction;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
@@ -38,7 +37,7 @@ class OracleBatchAction extends BatchAction {
     }
 
     @Override
-    protected BatchTranslator createTranslator() throws CayenneRuntimeException {
+    protected BatchTranslator createTranslator() {
         return dataNode.batchTranslator(query, OracleAdapter.TRIM_FUNCTION);
     }
 }

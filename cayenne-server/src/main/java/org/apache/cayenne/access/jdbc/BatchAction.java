@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -36,7 +35,11 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -88,7 +91,7 @@ public class BatchAction extends BaseSQLAction {
 		}
 	}
 
-	protected BatchTranslator createTranslator() throws CayenneRuntimeException {
+	protected BatchTranslator createTranslator() {
 		return dataNode.batchTranslator(query, null);
 	}
 
@@ -219,7 +222,7 @@ public class BatchAction extends BaseSQLAction {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
-			throws SQLException, CayenneRuntimeException {
+			throws SQLException {
 
 		ResultSet keysRS = statement.getGeneratedKeys();
 
