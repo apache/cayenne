@@ -238,12 +238,12 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
                 return false;
             }
 
-            if (target.isPrimaryKey()) {
-                return true;
+            if (!target.isPrimaryKey()) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     /**

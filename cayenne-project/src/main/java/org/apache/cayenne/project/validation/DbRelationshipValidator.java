@@ -71,6 +71,17 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
             }
         }
 
+        if(!relationship.isToPK()) {
+            DbRelationship reverseRelationship = relationship.getReverseRelationship();
+            if(reverseRelationship == null || !reverseRelationship.isToPK()) {
+                addFailure(
+                        validationResult,
+                        relationship,
+                        "DbRelationship '%s' has join not to PK. Cayenne doesn't allow this type of relashionships",
+                        toString(relationship));
+            }
+        }
+
         if (Util.isEmptyString(relationship.getName())) {
             addFailure(validationResult, relationship, "Unnamed DbRelationship");
         } else if (relationship.getSourceEntity().getAttribute(relationship.getName()) != null) {

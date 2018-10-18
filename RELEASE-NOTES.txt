@@ -21,6 +21,7 @@ CAY-2474 Modeler: swap buttons in dialog toolbar
 CAY-2475 Modeler: move inheritance icon to name column in objAttr table and objRel table
 CAY-2481 Support for Object[] as return type in SQLTemplate and SQLExec
 CAY-2487 Removed usage of CayenneException.
+CAY-2489 Add validation to the case of not to PK relationships
 
 Bug Fixes:
 
