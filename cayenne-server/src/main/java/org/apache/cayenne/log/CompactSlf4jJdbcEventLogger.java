@@ -65,8 +65,7 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     protected String processUnionSql(String sql) {
 
         String modified = Pattern.compile(UNION.toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(sql).replaceAll(UNION);
-        String[] queries = modified.split(
-                UNION);
+        String[] queries = modified.split(UNION);
         List<String> formattedQueries = Arrays.stream(queries).map(this::trimSqlSelectColumns).collect(Collectors.toList());
         StringBuilder buffer = new StringBuilder();
         boolean used =  false;
@@ -119,9 +118,7 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
 
         String key = null;
         String value;
-        for (int i = 0; i < bindings.length; i++) {
-            ParameterBinding b = bindings[i];
-
+        for (ParameterBinding b : bindings) {
             if (b.isExcluded()) {
                 continue;
             }
@@ -135,12 +132,12 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
 
             if (b.getExtendedType() != null) {
                 value = b.getExtendedType().toString(b.getValue());
-            } else if(b.getValue() == null) {
+            } else if (b.getValue() == null) {
                 value = "NULL";
             } else {
-                value = new StringBuilder(b.getValue().getClass().getName())
-                        .append("@")
-                        .append(System.identityHashCode(b.getValue())).toString();
+                value = b.getValue().getClass().getName() +
+                        "@" +
+                        System.identityHashCode(b.getValue());
             }
 
             List<String> objects = bindingsMap.computeIfAbsent(key, k -> new ArrayList<>());

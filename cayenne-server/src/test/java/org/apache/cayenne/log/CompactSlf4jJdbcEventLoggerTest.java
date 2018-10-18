@@ -25,32 +25,54 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.IntegerType;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.map.DbAttribute;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 public class CompactSlf4jJdbcEventLoggerTest {
 
+    private CompactSlf4jJdbcEventLogger logger;
+
+    @Before
+    public void createLogger() {
+        logger = new CompactSlf4jJdbcEventLogger(new DefaultRuntimeProperties(Collections.emptyMap()));
+    }
+
     @Test
-    public void logWithCompact_Union() {
+    public void compactSimpleSql() {
+        String processesSelectSql = logger.trimSqlSelectColumns(
+                "SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.F_KEY2 AS ec0_2," +
+                        " t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST " +
+                        "t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) WHERE t1.NAME LIKE ?");
 
-        CompactSlf4jJdbcEventLogger compactSl4jJdbcEventLogger = new CompactSlf4jJdbcEventLogger(new DefaultRuntimeProperties(Collections.emptyMap()));
-        DbAttributeBinding[] bindings = createBindings();
-
-        String processesSelectSql = compactSl4jJdbcEventLogger.trimSqlSelectColumns("SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.F_KEY2 AS ec0_2," +
-                " t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST " +
-                "t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) WHERE t1.NAME LIKE ?");
         assertEquals(processesSelectSql, "SELECT (4 columns) FROM COMPOUND_FK_TEST t0 " +
                 "INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
-                        "WHERE t1.NAME LIKE ?");
+                "WHERE t1.NAME LIKE ?");
+    }
 
-        StringBuilder buffer = new StringBuilder();
-        compactSl4jJdbcEventLogger.appendParameters(buffer, "bind", bindings);
-        assertThat(buffer.toString(), is("[bind: 1->t0.NAME: {'', 52, 'true'}, 2->t0.F_KEY1: 'true']"));
-        String processedUnionSql = compactSl4jJdbcEventLogger.processUnionSql(
+
+    @Test
+    public void compactNotSelect() {
+        String processedSql = logger.trimSqlSelectColumns(
+                "UPDATE test SET name = 'abc', value = 123 WHERE id = 321");
+
+        assertEquals("UPDATE test SET name = 'abc', value = 123 WHERE id = 321", processedSql);
+    }
+
+    @Test
+    public void compactSubSelect() {
+        String processedSql = logger.trimSqlSelectColumns(
+                "INSERT INTO test1 SELECT column1, column2, column3, column4, column5, column6 FROM test2 WHERE id = 321");
+
+        assertEquals("INSERT INTO test1 SELECT (6 columns) FROM test2 WHERE id = 321", processedSql);
+    }
+
+    @Test
+    public void compactUnion() {
+        String processedUnionSql = logger.processUnionSql(
                 "SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, " +
                         "t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST " +
                         "t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) WHERE t1.NAME LIKE ?" +
@@ -63,31 +85,35 @@ public class CompactSlf4jJdbcEventLoggerTest {
                         " t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST " +
                         "t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) WHERE t1.NAME LIKE ?");
 
-        assertThat(processedUnionSql, is("SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 " +
+        assertEquals(processedUnionSql,
+                "SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.PKEY AS ec0_3 FROM COMPOUND_FK_TEST t0 " +
                 "INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
                 "WHERE t1.NAME LIKE ? UNION ALL SELECT t0.NAME AS ec0_0, t0.F_KEY1 AS ec0_1, t0.PKEY AS ec0_3 " +
                 "FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
-                "WHERE t1.NAME LIKE ? UNION all SELECT (4 columns) FROM COMPOUND_FK_TEST t0 INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
-                "WHERE t1.NAME LIKE ?"));
-
+                "WHERE t1.NAME LIKE ? UNION all SELECT (4 columns) FROM COMPOUND_FK_TEST t0 " +
+                "INNER JOIN COMPOUND_PK_TEST t1 ON (t0.F_KEY1 = t1.KEY1 AND t0.F_KEY2 = t1.KEY2) " +
+                "WHERE t1.NAME LIKE ?");
     }
 
-    private DbAttributeBinding [] createBindings() {
-        return new DbAttributeBinding[] { createBinding("t0.NAME", 1, "", new CharType(false, false)),
-                                            createBinding("t0.NAME", 2, 52, new IntegerType()),
-                                            createBinding("t0.NAME", 3, true, new BooleanType()),
-                                            createBinding("t0.F_KEY1", 4, true, new BooleanType())};
+    @Test
+    public void compactBindings() {
+        StringBuilder buffer = new StringBuilder();
+        DbAttributeBinding[] bindings = new DbAttributeBinding[] {
+                createBinding("t0.NAME", 1, "", new CharType(false, false)),
+                createBinding("t0.NAME", 2, 52, new IntegerType()),
+                createBinding("t0.NAME", 3, true, new BooleanType()),
+                createBinding("t0.F_KEY1", 4, true, new BooleanType())
+        };
+        logger.appendParameters(buffer, "bind", bindings);
+
+        assertEquals(buffer.toString(), "[bind: 1->t0.NAME: {'', 52, 'true'}, 2->t0.F_KEY1: 'true']");
     }
 
     private DbAttributeBinding createBinding(String name, int position, Object object, ExtendedType type){
-
         DbAttributeBinding dbAttributeBinding = new DbAttributeBinding(new DbAttribute(name));
         dbAttributeBinding.setValue(object);
         dbAttributeBinding.setStatementPosition(position);
-        if (type != null) {
-            dbAttributeBinding.setExtendedType(type);
-        }
-
+        dbAttributeBinding.setExtendedType(type);
         return dbAttributeBinding;
     }
 }
