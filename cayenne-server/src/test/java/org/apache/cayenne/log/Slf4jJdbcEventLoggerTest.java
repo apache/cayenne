@@ -18,14 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.util.IDUtil;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class Slf4jJdbcEventLoggerTest {
 

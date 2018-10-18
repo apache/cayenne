@@ -91,7 +91,7 @@ public class Slf4jJdbcEventLogger implements JdbcEventLogger {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
+	protected void appendParameters(StringBuilder buffer, String label, ParameterBinding[] bindings) {
 
 		int len = bindings.length;
 		if (len > 0) {
