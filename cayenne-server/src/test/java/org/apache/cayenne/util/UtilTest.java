@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -267,14 +267,14 @@ public class UtilTest {
 
 	@Test
 	public void testUnwindException2() throws Exception {
-		CayenneException e = new CayenneException();
+		CayenneRuntimeException e = new CayenneRuntimeException();
 		assertSame(e, Util.unwindException(e));
 	}
 
 	@Test
 	public void testUnwindException3() throws Exception {
 		Throwable root = new Throwable();
-		CayenneException e = new CayenneException(root);
+		CayenneRuntimeException e = new CayenneRuntimeException(root);
 		assertSame(root, Util.unwindException(e));
 	}
 

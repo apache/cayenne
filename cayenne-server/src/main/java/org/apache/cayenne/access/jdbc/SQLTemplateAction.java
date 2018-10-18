@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.jdbc;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -96,7 +96,7 @@ public class SQLTemplateAction implements SQLAction {
 
 		// sanity check - misconfigured templates
 		if (template == null) {
-			throw new CayenneException("No template string configured for adapter " + dbAdapter.getClass().getName());
+			throw new CayenneRuntimeException("No template string configured for adapter " + dbAdapter.getClass().getName());
 		}
 
 		boolean loggable = dataNode.getJdbcEventLogger().isLoggable();

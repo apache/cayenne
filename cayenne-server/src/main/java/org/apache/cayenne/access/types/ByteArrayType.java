@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.MemoryBlob;
 
@@ -123,7 +123,7 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 
 		if (type == Types.BLOB) {
 			if (!isUsingBlobs()) {
-				throw new CayenneException("Binary streams are not supported in stored procedure parameters.");
+				throw new CayenneRuntimeException("Binary streams are not supported in stored procedure parameters.");
 			}
 			bytes = readBlob(cs.getBlob(index));
 		} else {
