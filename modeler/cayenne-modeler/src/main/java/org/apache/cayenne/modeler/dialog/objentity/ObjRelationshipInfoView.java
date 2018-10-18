@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog.objentity;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
@@ -65,6 +66,7 @@ public class ObjRelationshipInfoView extends JDialog{
     ProjectController mediator;
     
     public ObjRelationshipInfoView(final ProjectController mediator) {
+        super(Application.getFrame());
 
         this.mediator = mediator;
         
