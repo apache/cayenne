@@ -114,6 +114,13 @@ public class CgenTask extends BaseCayenneTask {
     @Input
     private boolean force;
 
+    /**
+     * If set to <code>true</code>, will generate PK attributes as Properties.
+     * Default is <code>false</code>.
+     * @since 4.1
+     */
+    private boolean createPKProperties;
+
     private String destDirName;
 
     @TaskAction
@@ -185,6 +192,7 @@ public class CgenTask extends BaseCayenneTask {
         action.setEmbeddableTemplate(embeddableTemplate);
         action.setUsePkgPath(usePkgPath);
         action.setCreatePropertyNames(createPropertyNames);
+        action.setCreatePKProperties(createPKProperties);
 
         return action;
     }
@@ -463,6 +471,14 @@ public class CgenTask extends BaseCayenneTask {
 
     public void force(boolean force) {
         setForce(force);
+    }
+
+    public void setCreatePKProperties(boolean createPKProperties) {
+        this.createPKProperties = createPKProperties;
+    }
+
+    public void createPKProperties(boolean createPKProperties) {
+        setCreatePKProperties(createPKProperties);
     }
 
 }

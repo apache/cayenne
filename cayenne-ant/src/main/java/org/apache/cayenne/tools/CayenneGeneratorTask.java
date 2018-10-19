@@ -64,6 +64,13 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected boolean usepkgpath;
     protected boolean createpropertynames;
 
+    /**
+     * Create PK attributes as Properties
+     *
+     * @since 4.1
+     */
+    protected boolean createpkproperties;
+
     public CayenneGeneratorTask() {
         this.makepairs = true;
         this.mode = ArtifactsGenerationMode.ENTITY.getLabel();
@@ -95,6 +102,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         action.setQuerySuperTemplate(querysupertemplate);
         action.setUsePkgPath(usepkgpath);
         action.setCreatePropertyNames(createpropertynames);
+        action.setCreatePKProperties(createpkproperties);
 
         return action;
     }
@@ -288,6 +296,13 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     public void setEmbeddablesupertemplate(String embeddablesupertemplate) {
         this.embeddablesupertemplate = embeddablesupertemplate;
+    }
+
+    /**
+     * @since 4.1
+     */
+    public void setCreatepkproperties(boolean createpkproperties) {
+        this.createpkproperties = createpkproperties;
     }
 
     /**

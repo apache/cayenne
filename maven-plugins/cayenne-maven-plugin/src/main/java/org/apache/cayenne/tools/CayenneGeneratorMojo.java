@@ -193,7 +193,15 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false", property = "force")
 	private boolean force;
 
-    private transient Injector injector;
+	/**
+	 * If set to <code>true</code>, will generate PK attributes as Properties.
+	 * Default is <code>false</code>.
+	 * @since 4.1
+	 */
+	@Parameter(defaultValue = "false")
+	private boolean createPKProperties;
+
+	private transient Injector injector;
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
@@ -281,6 +289,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setEmbeddableTemplate(embeddableTemplate);
 		action.setUsePkgPath(usePkgPath);
         action.setCreatePropertyNames(createPropertyNames);
+        action.setCreatePKProperties(createPKProperties);
 
 		return action;
 	}
