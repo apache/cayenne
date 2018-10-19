@@ -21,6 +21,8 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.junit.After;
@@ -78,17 +80,24 @@ public class EntityUtilsTest {
     @Test
     public void testDeclaresDbAttribute() throws Exception {
 
-        String existKey = "testKey";
-        String notExistKey = "testKey1";
+        DbEntity dbEntity = new DbEntity("test");
+        DbAttribute exists = new DbAttribute("testKey");
+        DbAttribute notExists = new DbAttribute("testKey1");
+        dbEntity.addAttribute(exists);
 
-        ObjAttribute attribute = new ObjAttribute(existKey);
-        attribute.setDbAttributePath(existKey);
+        ObjAttribute attribute = new ObjAttribute("exists");
+        attribute.setDbAttributePath("testKey");
         objEntity.addAttribute(attribute);
+
+        objEntity.setName("test");
+        objEntity.setDbEntity(dbEntity);
+        dataMap.addDbEntity(dbEntity);
+        dataMap.addObjEntity(objEntity);
 
         entityUtils = new EntityUtils(dataMap, objEntity, "TestBaseClass", "TestSuperClass", "TestSubClass");
 
-        assertTrue(entityUtils.declaresDbAttribute(existKey));
-        assertFalse(entityUtils.declaresDbAttribute(notExistKey));
+        assertTrue(entityUtils.declaresDbAttribute(exists));
+        assertFalse(entityUtils.declaresDbAttribute(notExists));
 
     }
 }
