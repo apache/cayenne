@@ -77,7 +77,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ###########################
 #if( $object.DbEntity )
     #foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
-        #if( $createPKProperties && !${importUtils.declaresDbAttribute($idAttr.Name)})
+        #if( $createPKProperties && !${entityUtils.declaresDbAttribute($idAttr)})
             #set ( $type = "$importUtils.dbAttributeToJavaType($idAttr)")
     public static final Property<$type> ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = Property.create(ExpressionFactory.dbPathExp("db:${idAttr.Name}"), ${type}.class});
         #else

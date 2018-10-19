@@ -20,11 +20,9 @@
 package org.apache.cayenne.gen;
 
 import java.util.Collection;
-import java.util.Objects;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -268,12 +266,12 @@ public class EntityUtils {
 
     /**
      * Checks is the db attribute declared for some object attribute.
-     * @param id - db attribute
+     * @param pkAttribute - db attribute for PK
      *
      * @since 4.1
      */
-    public boolean declaresDbAttribute(String id) {
-        return objEntity.getAttributes().stream().filter(Objects::nonNull).anyMatch(a -> id.equals(a.getDbAttributePath()));
+    public boolean declaresDbAttribute(DbAttribute pkAttribute) {
+        return objEntity.getAttributeForDbAttribute(pkAttribute) != null;
     }
 
     /**
