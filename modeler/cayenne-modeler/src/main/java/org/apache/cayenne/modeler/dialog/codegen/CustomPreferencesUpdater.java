@@ -36,7 +36,8 @@ public class CustomPreferencesUpdater {
         USE_PACKAGE_PATH,
         MODE,
         OUTPUT_PATTERN,
-        CREATE_PROPERTY_NAMES
+        CREATE_PROPERTY_NAMES,
+        CREATE_PK_PROPERTIES
     }
 
     private static final String OVERWRITE = "overwrite";
@@ -45,6 +46,7 @@ public class CustomPreferencesUpdater {
     private static final String MODE = "mode";
     private static final String OUTPUT_PATTERN = "outputPattern";
     private static final String CREATE_PROPERTY_NAMES = "createPropertyNames";
+    private static final String CREATE_PK_PROPERTIES = "createPKProperties";
 
     private Map<DataMap, DataMapDefaults> mapPreferences;
 
@@ -117,6 +119,14 @@ public class CustomPreferencesUpdater {
         updatePreferences(Property.CREATE_PROPERTY_NAMES, createPropertyNames);
     }
 
+    public Boolean getCreatePKProperties() {
+        return (Boolean) getProperty(Property.CREATE_PK_PROPERTIES);
+    }
+
+    public void setCreatePKProperties(Boolean createPKProperties) {
+        updatePreferences(Property.CREATE_PK_PROPERTIES, createPKProperties);
+    }
+
     private Object getProperty(Property property) {
         Object obj = null;
 
@@ -147,6 +157,9 @@ public class CustomPreferencesUpdater {
                     break;
                 case CREATE_PROPERTY_NAMES:
                     obj = entry.getValue().getBooleanProperty(CREATE_PROPERTY_NAMES);
+                    break;
+                case CREATE_PK_PROPERTIES:
+                    obj = entry.getValue().getBooleanProperty(CREATE_PK_PROPERTIES);
                     break;
                 default:
                     throw new IllegalArgumentException("Bad type property: " + property);
@@ -184,6 +197,9 @@ public class CustomPreferencesUpdater {
                     break;
                 case CREATE_PROPERTY_NAMES:
                     entry.getValue().setBooleanProperty(CREATE_PROPERTY_NAMES, (Boolean) value);
+                    break;
+                case CREATE_PK_PROPERTIES:
+                    entry.getValue().setBooleanProperty(CREATE_PK_PROPERTIES, (Boolean) value);
                     break;
                 default:
                     throw new IllegalArgumentException("Bad type property: " + property);

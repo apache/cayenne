@@ -82,6 +82,11 @@ public class ClassGenerationAction {
 	protected boolean createPropertyNames;
 	protected boolean force; // force run generator
 
+	/**
+	 * @since 4.1
+	 */
+	protected boolean createPKProperties;
+
 	// runtime ivars
 	protected VelocityContext context;
 	protected Map<String, Template> templateCache;
@@ -189,6 +194,7 @@ public class ClassGenerationAction {
 		context.put(Artifact.STRING_UTILS_KEY, stringUtils);
 
 		context.put(Artifact.CREATE_PROPERTY_NAMES, createPropertyNames);
+		context.put(Artifact.CREATE_PK_PROPERTIES, createPKProperties);
 	}
 
 	/**
@@ -584,5 +590,19 @@ public class ClassGenerationAction {
 
 	public void setForce(boolean force) {
 		this.force = force;
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public boolean isCreatePKProperties() {
+		return createPKProperties;
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public void setCreatePKProperties(boolean createPKProperties) {
+		this.createPKProperties = createPKProperties;
 	}
 }

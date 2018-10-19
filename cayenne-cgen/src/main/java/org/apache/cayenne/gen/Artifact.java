@@ -28,20 +28,21 @@ import org.apache.velocity.VelocityContext;
  */
 public interface Artifact {
 
-    public static String STRING_UTILS_KEY = "stringUtils";
-    public static String IMPORT_UTILS_KEY = "importUtils";
+    String STRING_UTILS_KEY = "stringUtils";
+    String IMPORT_UTILS_KEY = "importUtils";
 
     /**
      * Root object, such as ObjEntity or Embeddable, etc.
      */
-    public static String OBJECT_KEY = "object";
-    public static String SUPER_CLASS_KEY = "superClassName";
-    public static String SUPER_PACKAGE_KEY = "superPackageName";
-    public static String SUB_CLASS_KEY = "subClassName";
-    public static String SUB_PACKAGE_KEY = "subPackageName";
-    public static String BASE_CLASS_KEY = "baseClassName";
-    public static String BASE_PACKAGE_KEY = "basePackageName";
-    public static String CREATE_PROPERTY_NAMES = "createPropertyNames";
+    String OBJECT_KEY = "object";
+    String SUPER_CLASS_KEY = "superClassName";
+    String SUPER_PACKAGE_KEY = "superPackageName";
+    String SUB_CLASS_KEY = "subClassName";
+    String SUB_PACKAGE_KEY = "subPackageName";
+    String BASE_CLASS_KEY = "baseClassName";
+    String BASE_PACKAGE_KEY = "basePackageName";
+    String CREATE_PROPERTY_NAMES = "createPropertyNames";
+    String CREATE_PK_PROPERTIES = "createPKProperties";
 
     TemplateType[] getTemplateTypes(ArtifactGenerationMode mode);
 

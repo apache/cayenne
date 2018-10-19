@@ -39,7 +39,7 @@ ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType("java.io.IOException")}##
 ${importUtils.addType("java.io.ObjectInputStream")}##
 ${importUtils.addType("java.io.ObjectOutputStream")}##
-#if( $object.DbEntity )
+#if( $createPKProperties )
 ${importUtils.addType("org.apache.cayenne.exp.ExpressionFactory")}##
 #end
 #if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) || (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}))
@@ -72,12 +72,18 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #end
 
 #end
+###########################
+## Create PK properties  ##
+###########################
 #if( $object.DbEntity )
-#foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
-    #if(!${entityUtils.declaresDbAttribute($idAttr.Name)})
-    public static final Property<Integer> ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = Property.create(ExpressionFactory.dbPathExp("db:${idAttr.Name}"), Integer.class);
+    #foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
+        #if( $createPKProperties && !${importUtils.declaresDbAttribute($idAttr.Name)})
+            #set ( $type = "$importUtils.dbAttributeToJavaType($idAttr)")
+    public static final Property<$type> ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = Property.create(ExpressionFactory.dbPathExp("db:${idAttr.Name}"), ${type}.class});
+        #else
+    public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";
+        #end
     #end
-#end
 #end
 
 #######################

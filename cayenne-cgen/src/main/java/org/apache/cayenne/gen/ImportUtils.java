@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.util.Util;
 
@@ -276,5 +278,16 @@ public class ImportUtils {
 		}
 
 		return outputBuffer.toString();
+	}
+
+	/**
+	 * @param attribute db attribute
+	 * @return name of the java type
+	 *
+	 * @since 4.1
+	 */
+	public String dbAttributeToJavaType(DbAttribute attribute) {
+		String javaTypeName = TypesMapping.getJavaBySqlType(attribute.getType());
+		return formatJavaType(javaTypeName);
 	}
 }

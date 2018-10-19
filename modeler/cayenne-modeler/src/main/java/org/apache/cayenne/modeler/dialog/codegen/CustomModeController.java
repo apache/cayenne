@@ -125,6 +125,9 @@ public class CustomModeController extends GeneratorController {
 		builder.bindToStateChange(view.getCreatePropertyNames(), "customPreferencesUpdater.createPropertyNames")
 				.updateView();
 
+		builder.bindToStateChange(view.getCreatePKProperties(), "customPreferencesUpdater.createPKProperties")
+				.updateView();
+
 		updateTemplates();
 	}
 
@@ -208,6 +211,7 @@ public class CustomModeController extends GeneratorController {
 			generator.setUsePkgPath(view.getUsePackagePath().isSelected());
 			generator.setMakePairs(view.getPairs().isSelected());
 			generator.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
+			generator.setCreatePKProperties(view.getCreatePKProperties().isSelected());
 
 			if (!Util.isEmptyString(view.getOutputPattern().getText())) {
 				generator.setOutputPattern(view.getOutputPattern().getText());
