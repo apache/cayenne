@@ -21,6 +21,7 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -71,5 +73,22 @@ public class EntityUtilsTest {
         }
         
         assertTrue("Contains duplicate callback names.", hasNoDuplicates);
+    }
+
+    @Test
+    public void testDeclaresDbAttribute() throws Exception {
+
+        String existKey = "testKey";
+        String notExistKey = "testKey1";
+
+        ObjAttribute attribute = new ObjAttribute(existKey);
+        attribute.setDbAttributePath(existKey);
+        objEntity.addAttribute(attribute);
+
+        entityUtils = new EntityUtils(dataMap, objEntity, "TestBaseClass", "TestSuperClass", "TestSubClass");
+
+        assertTrue(entityUtils.declaresDbAttribute(existKey));
+        assertFalse(entityUtils.declaresDbAttribute(notExistKey));
+
     }
 }
