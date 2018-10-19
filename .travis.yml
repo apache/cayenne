@@ -34,13 +34,12 @@ env:
 
 jdk:
   - oraclejdk8
-  - oraclejdk9
-  - oraclejdk10
   - oraclejdk11
+  - openjdk-ea
 
 matrix:
   allow_failures:
-    - jdk: oraclejdk11
+    - jdk: openjdk-ea
 
 script:
   - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
