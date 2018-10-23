@@ -22,12 +22,15 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 
 public class DbRelationshipTarget extends CayenneController {
@@ -38,7 +41,7 @@ public class DbRelationshipTarget extends CayenneController {
     protected List<DbEntity> relTargets;
 
     protected DbEntity source;
-    protected ProjectController mediator;
+    protected CayenneController mediator;
     protected boolean source1Selected;
     protected DbRelationshipTargetView view;
     protected boolean toMany;
@@ -54,12 +57,17 @@ public class DbRelationshipTarget extends CayenneController {
         this.mediator = mediator;
         this.source1 = source1;
         this.source2 = source2;
-        this.relTargets = new ArrayList<>(source1.getDataMap().getDbEntities());
+
+        EntityResolver resolver = mediator.getEntityResolver();
+        this.relTargets = new ArrayList<>(resolver.getDbEntities());
         relTargets.sort(Comparators.getNamedObjectComparator());
+
+        DbEntity[] dbEntities = relTargets.toArray(new DbEntity[0]);
+
+        DefaultComboBoxModel<DbEntity> dbModel = new DefaultComboBoxModel<>(dbEntities);
+        view.targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(mediator.getCurrentDataMap()));
         view.targetCombo.removeAllItems();
-        for (DbEntity d : relTargets) {
-            view.targetCombo.addItem(d.getName());
-        }
+        view.targetCombo.setModel(dbModel);
     }
         
     private void initController() {

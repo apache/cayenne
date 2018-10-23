@@ -22,6 +22,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
 import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.WidgetFactory;
@@ -42,10 +43,11 @@ public class DbRelationshipTargetView extends JDialog {
     protected JButton cancelButton;
     protected JRadioButton source1Button;
     protected JRadioButton source2Button;
-    protected JComboBox<String> targetCombo;
+    protected JComboBox<DbEntity> targetCombo;
     
     public DbRelationshipTargetView(DbEntity source1, DbEntity source2) {
-        
+        super(Application.getFrame());
+
         widgetFactory = new DefaultWidgetFactory();
         
         // create widgets
