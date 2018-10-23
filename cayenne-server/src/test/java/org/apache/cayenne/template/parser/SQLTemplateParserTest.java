@@ -186,6 +186,15 @@ public class SQLTemplateParserTest {
     }
 
     @Test
+    public void testMethodCallArray2() throws Exception {
+        String tpl = "$a.arrayMethod(['1', '2', '3'])";
+        Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));
+
+        String sql = parseString(tpl, context);
+        assertEquals("array_3", sql);
+    }
+
+    @Test
     public void testMethodCallInt() throws Exception {
         String tpl = "$a.intMethod(42)";
         Context context = contextFactory.createContext(Collections.singletonMap("a", new TestBean(5)));

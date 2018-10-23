@@ -573,20 +573,13 @@ public class SQLTemplateParser/*@bgen(jjtree)*/implements SQLTemplateParserTreeC
           jj_consume_token(-1);
           throw new ParseException();
         }
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case COMMA:
-          jj_consume_token(COMMA);
-          break;
-        default:
-          jj_la1[14] = jj_gen;
-          ;
-        }
         label_5:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case DOLLAR:
           case TRUE:
           case FALSE:
+          case COMMA:
           case SINGLE_QUOTED_STRING:
           case DOUBLE_QUOTED_STRING:
           case INT_LITERAL:
@@ -594,8 +587,16 @@ public class SQLTemplateParser/*@bgen(jjtree)*/implements SQLTemplateParserTreeC
             ;
             break;
           default:
-            jj_la1[15] = jj_gen;
+            jj_la1[14] = jj_gen;
             break label_5;
+          }
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case COMMA:
+            jj_consume_token(COMMA);
+            break;
+          default:
+            jj_la1[15] = jj_gen;
+            ;
           }
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case TRUE:
@@ -659,10 +660,10 @@ public class SQLTemplateParser/*@bgen(jjtree)*/implements SQLTemplateParserTreeC
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x320,0x320,0x0,0x40,0x90006e00,0x2000,0x90004e00,0x90004e00,0x90000c00,0x20000,0x90006e00,0x2000,0x90004e00,0x90000e00,0x2000,0x90000e00,0x90000e00,0x90000e00,};
+      jj_la1_0 = new int[] {0x320,0x320,0x0,0x40,0x90006e00,0x2000,0x90004e00,0x90004e00,0x90000c00,0x20000,0x90006e00,0x2000,0x90004e00,0x90000e00,0x90002e00,0x2000,0x90000e00,0x90000e00,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0xc0,0xc0,0xc0,0x0,0x3,0x0,0x3,0x3,0x3,0x0,0x3,0x0,0x3,0x3,0x0,0x3,0x3,0x3,};
+      jj_la1_1 = new int[] {0xc0,0xc0,0xc0,0x0,0x3,0x0,0x3,0x3,0x3,0x0,0x3,0x0,0x3,0x3,0x3,0x0,0x3,0x3,};
    }
 
   /** Constructor with InputStream. */

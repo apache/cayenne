@@ -222,7 +222,7 @@ void array() #Array : {}
     <LSBRACKET>
     (
         ( scalar() | variable() )
-        ( (<COMMA>)? ( scalar() | variable() )* )
+        ( (<COMMA>)? ( scalar() | variable() ) )*
     )?
     <RSBRACKET>
 }
