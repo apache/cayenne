@@ -296,8 +296,9 @@ Artist artistWithId1 = SelectById.query(Artist.class, 1)
 
 `SQLSelect` and `SQLExec` are essentially a "fluent" versions of older `SQLTemplate` query.
 `SQLSelect` can be used (as name suggests) to select custom data in form of entities,
-separate columns or collection of `DataRow`. `SQLExec` is designed to just execute any raw SQL code
-(e.g. updates, deletes, DDLs, etc.) This queries support all directives described in <<SQLTemplate>> section.
+separate columns, collection of `DataRow` or Object[]. `SQLExec` is designed to just execute any raw SQL code
+(e.g. updates, deletes, DDLs, etc.) This queries support all directives described in <<SQLTemplate>> section. Also you can predefine
+result type of columns.
 
 Here is example of how to use SQLSelect:
 
@@ -316,6 +317,16 @@ List<Painting> paintings = SQLSelect
 List<String> paintingNames = SQLSelect
     .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > #bind($price)")
     .params("price", 100000)
+    .select(context);
+
+// Selecting DataRow with predefined types
+List<DataRow> result = SQLSelect
+    .dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
+    .select(context);
+
+// Selecting Object[] with predefined types
+List<Object[]> result = SQLSelect
+    .scalarQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
     .select(context);
 ----
 
@@ -871,6 +882,22 @@ query.setResult(resultDescriptor);
 
 // List of Object[]
 List<Object[]> data = context.performQuery(query);
+----
+
+You can fetch list of scalars, list of Object[] or list of DataRow with predefined result column types or using default types.
+[source, Java]
+----
+// Selecting Object[] with predefined types
+SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
+ 		q3.setResultColumnsTypes(Double.class, String.class);
+ 		q3.setUseScalar(true);
+List<Object[]> result = context.performQuery(q3);
+
+// Selecting DataRow with predefined types
+SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
+        q3.setResultColumnsTypes(Double.class, String.class);
+        q3.setFetchingDataRows(true);
+List<DataRow> result = context.performQuery(q3);
 ----
 
 Another trick related to mapping result sets is making Cayenne recognize prefetched entities in the result set.
