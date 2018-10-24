@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -114,13 +115,88 @@ public class SQLSelectIT extends ServerCase {
 	}
 
 	@Test
-	public void test_ObjectArrayQuery() throws Exception {
+	public void test_DataRowWithTypes() throws Exception {
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
+		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
+				.columnNameCaps(CapsStrategy.UPPER)
+				.select(context);
+		assertEquals(2, result.size());
+		assertTrue(result.get(0) instanceof DataRow);
+		assertThat(result.get(0).get("DATE_OF_BIRTH"), instanceOf(LocalDateTime.class));
+	}
+
+	@Test
+	public void test_DataRowWithDirectives() throws Exception {
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
+		List<DataRow> result = SQLSelect.dataRowQuery("SELECT #result('ARTIST_ID' 'java.lang.Double'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
+				.select(context);
+		assertEquals(2, result.size());
+		assertTrue(result.get(0) instanceof DataRow);
+		assertTrue(result.get(0).get("ARTIST_ID") instanceof Double);
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void test_DataRowWithTypesException() throws Exception {
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		SQLSelect.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class)
+				.select(context);
+	}
+
+	@Test
+	public void testObjectArrayWithDefaultTypesReturnAndDirectives() throws Exception {
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
+		List<Object[]> result = SQLSelect.scalarQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
+				.select(context);
+
+		assertEquals(2, result.size());
+		assertTrue(result.get(0) instanceof Object[]);
+		assertEquals(2, result.get(0).length);
+		assertTrue(result.get(0)[0] instanceof Long);
+		assertTrue(result.get(0)[1] instanceof String);
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void testObjectArrayReturnAndDirectives() throws Exception {
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
+		SQLSelect.scalarQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT",
+				Integer.class, String.class).select(context);
+	}
+
+	@Test
+	public void testObjectArrayWithOneObjectDefaultTypesReturnAndDirectives() throws Exception {
+		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
+		List<Object[]> result = SQLSelect.scalarQuery("SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST_CT")
+				.select(context);
+
+		assertEquals(2, result.size());
+		assertTrue(result.get(0) instanceof Object[]);
+		assertEquals(1, result.get(0).length);
+		assertTrue(result.get(0)[0] instanceof Long);
+	}
+
+	@Test
+	public void test_ObjectArrayQueryWithDefaultTypes() throws Exception {
 		createPaintingsDataSet();
-		List<Object[]> result = SQLSelect.scalarQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class, Double.class)
+		List<Object[]> result = SQLSelect.scalarQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
 				.select(context);
 
 		assertEquals(20, result.size());
 		assertEquals(3, result.get(0).length);
+	}
+
+	@Test
+	public void test_ObjectQueryWithDefaultType() throws Exception {
+		createPaintingsDataSet();
+		List<Object[]> result = SQLSelect.scalarQuery("SELECT PAINTING_ID FROM PAINTING")
+				.select(context);
+		assertEquals(20, result.size());
+		assertTrue(result.get(0) instanceof Object[]);
+		assertTrue(result.get(0)[0] instanceof Integer);
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
@@ -148,6 +224,7 @@ public class SQLSelectIT extends ServerCase {
 				Integer.class, String.class, LocalDateTime.class).select(context);
 
 		assertEquals(2, results.size());
+		assertTrue(results.get(0) instanceof Object[]);
 		assertEquals(3, results.get(0).length);
 		assertTrue(results.get(0)[2] instanceof LocalDateTime);
 	}
@@ -353,8 +430,7 @@ public class SQLSelectIT extends ServerCase {
 
 		createPaintingsDataSet();
 
-		int c = SQLSelect.scalarQuery(Integer.class, "SELECT #result('COUNT(*)' 'int') FROM PAINTING").selectOne(
-				context);
+		int c = SQLSelect.scalarQuery("SELECT COUNT(*) FROM PAINTING", Integer.class).selectOne(context);
 
 		assertEquals(20, c);
 	}

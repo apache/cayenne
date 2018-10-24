@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.CayenneException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -31,6 +32,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DefaultScalarResultSegment;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.QueryMetadata;
@@ -250,8 +252,8 @@ public class SQLTemplateAction implements SQLAction {
 		boolean iteratedResult = callback.isIteratedResult();
 		ExtendedTypeMap types = dataNode.getAdapter().getExtendedTypes();
 		RowDescriptorBuilder builder = configureRowDescriptorBuilder(compiled, resultSet);
+		recreateQueryMetadata(resultSet);
 		RowReader<?> rowReader = dataNode.rowReader(builder.getDescriptor(types), queryMetadata);
-
 		ResultIterator<?> it = new JDBCResultIterator<>(statement, resultSet, rowReader);
 
 		if (iteratedResult) {
@@ -286,13 +288,25 @@ public class SQLTemplateAction implements SQLAction {
 		}
 	}
 
+	private void recreateQueryMetadata(ResultSet resultSet) throws SQLException {
+		if(query.isUseScalar() && queryMetadata.getResultSetMapping() != null && queryMetadata.getResultSetMapping().isEmpty()){
+			for(int i = 0; i < resultSet.getMetaData().getColumnCount(); i++) {
+				queryMetadata.getResultSetMapping().add(new DefaultScalarResultSegment(String.valueOf(i), i));
+			}
+		}
+	}
+
 	/**
 	 * Creates column descriptors based on compiled statement and query metadata
 	 */
 	private ColumnDescriptor[] createColumnDescriptors(SQLStatement compiled) {
 		// SQLTemplate #result columns take precedence over other ways to determine the type
 		if (compiled.getResultColumns().length > 0) {
-			return compiled.getResultColumns();
+			if(query.getResultColumnsTypes() != null) {
+				throw new CayenneRuntimeException("Caused by setting return types by directives and by parameters in query.");
+			} else {
+				return compiled.getResultColumns();
+			}
 		}
 
 		// check explicitly set column types
@@ -325,7 +339,7 @@ public class SQLTemplateAction implements SQLAction {
 		}
 
 		ObjEntity entity = queryMetadata.getObjEntity();
-		if (entity != null) {
+		if (entity != null && isResultColumnTypesEmpty()) {
 			// TODO: andrus 2008/03/28 support flattened attributes with aliases...
 			for (ObjAttribute attribute : entity.getAttributes()) {
 				String column = attribute.getDbAttributePath();
@@ -339,7 +353,7 @@ public class SQLTemplateAction implements SQLAction {
 		// override numeric Java types based on JDBC defaults for DbAttributes, as Oracle
 		// ResultSetMetadata is not very precise about NUMERIC distinctions...
 		// (BigDecimal vs Long vs. Integer)
-		if (dbEntity != null) {
+		if (dbEntity != null && isResultColumnTypesEmpty()) {
 			for (DbAttribute attribute : dbEntity.getAttributes()) {
 				if (!builder.isOverriden(attribute.getName()) && TypesMapping.isNumeric(attribute.getType())) {
 					builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute.getType()));
@@ -357,6 +371,10 @@ public class SQLTemplateAction implements SQLAction {
 		}
 
 		return builder;
+	}
+
+	private boolean isResultColumnTypesEmpty(){
+		return query.getResultColumnsTypes() == null || query.getResultColumnsTypes().isEmpty();
 	}
 
 	/**
