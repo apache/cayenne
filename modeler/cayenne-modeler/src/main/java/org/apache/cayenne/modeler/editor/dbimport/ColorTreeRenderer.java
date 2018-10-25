@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 
@@ -81,6 +82,18 @@ public class ColorTreeRenderer extends DbImportTreeCellRenderer {
 
         int traverseResult = handler.traverseTree(root);
         if (traverseResult > 0) {
+
+            if (root.getUserObject().getClass() == IncludeColumn.class) {
+                if (handler.nodesIsEqual(root)) {
+                    setForeground(handler.getColorByNodeType(root));
+                    node.setColorized(true);
+                    return this;
+                } else {
+                    setForeground(NON_INCLUDE_COLOR);
+                    node.setColorized(false);
+                    return this;
+                }
+            }
             // Case on IncludeProcedure on zero level is selected
             if (root.getUserObject().getClass() == IncludeProcedure.class) {
                 if (handler.nodesIsEqual(root)) {
@@ -95,7 +108,7 @@ public class ColorTreeRenderer extends DbImportTreeCellRenderer {
             }
             // If ReverseEngineering doesn't have catalogs or schemas on zero level
             if (!handler.isExistCatalogsOrSchemas()) {
-                if ((root.isExcludeTable()) || (root.isExcludeProcedure())) {
+                if ((root.isExcludeTable()) || (root.isExcludeProcedure() || root.isExcludeColumn())) {
                     if (handler.nodesIsEqual(root)) {
                         setForeground(handler.getColorByNodeType(root));
                         node.setColorized(true);

@@ -19,20 +19,24 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
-import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.dbsync.reverse.dbimport.*;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.action.LoadDbSchemaAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.dialog.db.load.TransferableNode;
 
 import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+
+import static org.apache.cayenne.modeler.action.LoadDbSchemaAction.LOAD_COLUMN_COMMAND;
 
 /**
  * @since 4.1
@@ -61,14 +65,92 @@ public class DbImportTree extends JTree {
         printParams(reverseEngineering.getExcludeColumns(), root);
         printParams(reverseEngineering.getIncludeProcedures(), root);
         printParams(reverseEngineering.getExcludeProcedures(), root);
+        createTreeExpandListener();
         model.reload();
+    }
+
+    public void updateTableColumns(ReverseEngineering reverseEngineering) {
+        DbImportModel model = (DbImportModel) this.getModel();
+
+        DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
+        Iterator<Catalog> catalogs = reverseEngineering.getCatalogs().iterator();
+        while (catalogs.hasNext()) {
+            Catalog newCatalog = catalogs.next();
+            DbImportTreeNode catalog = findNodeInParent(root, newCatalog);
+
+            if (catalog == null) {
+                continue;
+            }
+
+            Iterator<IncludeTable> includeTables = newCatalog.getIncludeTables().iterator();
+            while (includeTables.hasNext()) {
+                IncludeTable newTable = includeTables.next();
+                DbImportTreeNode table = findNodeInParent(catalog, newTable);
+                if (table == null) {
+                    continue;
+                }
+                table.removeAllChildren();
+                newTable.getIncludeColumns().forEach(column ->
+                    table.add(new DbImportTreeNode(column)));
+                table.setLoaded(true);
+                model.reload(table);
+            }
+        }
+
+    }
+
+
+
+    private DbImportTreeNode findNodeInParent(DbImportTreeNode parent, Object object) {
+       for(int i = 0; i<= parent.getChildCount(); i++) {
+           DbImportTreeNode node = (DbImportTreeNode) parent.getChildAt(i);
+           Object userObject = node.getUserObject();
+
+           if (object instanceof Catalog) {
+               Catalog catalog = (Catalog) object;
+               if (!(userObject instanceof Catalog)) {
+                   continue;
+               }
+
+               Catalog currentCatalog = (Catalog) userObject;
+               if(currentCatalog.getName().equals(catalog.getName())  ) {
+                   return node;
+               }
+           }
+
+           if (object instanceof IncludeTable) {
+               IncludeTable table = (IncludeTable) object;
+               if (!(userObject instanceof IncludeTable)) {
+                   continue;
+               }
+
+               IncludeTable currentTable = (IncludeTable) userObject;
+               if (currentTable.getPattern().equals(table.getPattern())) {
+                   return node;
+               }
+           }
+
+           if (object instanceof ExcludeTable) {
+               ExcludeTable table = (ExcludeTable) object;
+               if (!(userObject instanceof ExcludeTable)) {
+                   continue;
+               }
+
+               ExcludeTable currentTable = (ExcludeTable) userObject;
+               if (currentTable.getPattern().equals(table.getPattern())) {
+                   return node;
+               }
+           }
+       }
+
+       return null;
     }
 
     public DbImportTreeNode findNodeByParentsChain(DbImportTreeNode rootNode, DbImportTreeNode movedNode, int depth) {
         String parentName = ((DbImportTreeNode) movedNode.getParent()).getSimpleNodeName();
         if ((rootNode.parentsIsEqual(((DbImportTreeNode) movedNode.getParent())))
                 && (rootNode.getSimpleNodeName().equals(parentName))
-                && ((rootNode.isCatalog()) || (rootNode.isSchema()))) {
+                && ((rootNode.isCatalog()) || (rootNode.isSchema()) || (rootNode.isIncludeTable()))) {
             return rootNode;
         }
         for (int i = 0; i < rootNode.getChildCount(); i++) {
@@ -184,6 +266,38 @@ public class DbImportTree extends JTree {
             }
         }
     }
+
+    private void createTreeExpandListener() {
+        TreeExpansionListener treeExpansionListener = new TreeExpansionListener() {
+
+            @Override
+            public void treeExpanded(TreeExpansionEvent event) {
+                TreePath path = event.getPath();
+                Object lastPathComponent = path.getLastPathComponent();
+                if (!(lastPathComponent instanceof TransferableNode)) {
+                    return;
+                }
+
+                DbImportTreeNode node = (DbImportTreeNode) lastPathComponent;
+                Object userObject = node.getUserObject();
+                if (userObject.getClass() == IncludeTable.class && !node.isLoaded()) {
+                    //reload columns action.
+
+                    LoadDbSchemaAction action = Application.getInstance().getActionManager().getAction(LoadDbSchemaAction.class);
+                    action.performAction(new ActionEvent(path, 1000, LOAD_COLUMN_COMMAND ));
+                }
+
+
+            }
+
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+
+            }
+        };
+        this.addTreeExpansionListener(treeExpansionListener);
+    }
+
 
     public DbImportTreeNode getSelectedNode() {
         return (DbImportTreeNode) this.getSelectionPath().getLastPathComponent();

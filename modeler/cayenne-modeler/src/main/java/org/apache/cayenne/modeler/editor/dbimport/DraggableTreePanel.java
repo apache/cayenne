@@ -238,6 +238,12 @@ public class DraggableTreePanel extends JScrollPane {
             if (selectedElement == null) {
                 return false;
             }
+            if (selectedElement.isIncludeColumn() || selectedElement.isExcludeColumn()) {
+                DbImportTreeNode node = targetTree.findNode(targetTree.getRootNode(), (DbImportTreeNode) selectedElement.getParent(), 0);
+                if(node != null && node.isExcludeTable()) {
+                    return false;
+                }
+            }
             Class draggableElementClass = selectedElement.getUserObject().getClass();
             Class reverseEngineeringElementClass;
             if (targetTree.getSelectionPath() != null) {

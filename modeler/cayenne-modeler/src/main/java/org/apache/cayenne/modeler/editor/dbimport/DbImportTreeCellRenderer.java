@@ -58,6 +58,7 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
         transferableTreeIcons.put(Schema.class, "icon-dbi-schema.png");
         transferableTreeIcons.put(IncludeTable.class, "icon-dbentity.png");
         transferableTreeIcons.put(IncludeProcedure.class, "icon-stored-procedure.png");
+        transferableTreeIcons.put(IncludeColumn.class, "icon-dbi-column.png");
     }
 
     private void initIcons() {
