@@ -19,7 +19,15 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.*;
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 
 import javax.swing.tree.TreePath;
@@ -325,7 +333,7 @@ class DbImportNodeHandler {
     }
 
     public boolean getHasEntitiesInEmptyContainer() {
-        return true;
+        return hasEntitiesInEmptyContainer;
     }
 
     public void setHasEntitiesInEmptyContainer(boolean newFlag) {

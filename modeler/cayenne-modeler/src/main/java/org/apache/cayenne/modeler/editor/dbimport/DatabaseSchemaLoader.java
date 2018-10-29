@@ -19,7 +19,12 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.*;
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
@@ -44,7 +49,6 @@ public class DatabaseSchemaLoader {
     }
 
     public ReverseEngineering load(DBConnectionInfo connectionInfo, ClassLoadingService loadingService) throws SQLException {
-        String columnName = "Loading...";
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
             String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
             try (ResultSet rs = connection.getMetaData().getCatalogs()) {
@@ -65,10 +69,9 @@ public class DatabaseSchemaLoader {
                         tableName = resultSet.getString(TABLE_INDEX);
                         schemaName = resultSet.getString(SCHEMA_INDEX);
                         catalogName = resultSet.getString(CATALOG_INDEX);
-                        packTable(tableName, catalogName, schemaName, columnName);
+                        packTable(tableName, catalogName, schemaName, null);
                     }
                     packFunctions(connection);
-                    columnName = null;
                 }
             }
         }
@@ -81,10 +84,7 @@ public class DatabaseSchemaLoader {
         String tableName = path.getPathComponent(2).toString();
 
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
-            String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
-            try (ResultSet rs = connection.getMetaData().getColumns(catalogName, schemaName, tableName, "");) {
-                String defaultCatalog = connection.getCatalog();
-
+            try (ResultSet rs = connection.getMetaData().getColumns(catalogName, schemaName, tableName, "")) {
                 while (rs.next()) {
                     String column = rs.getString(4);
                     packTable(tableName, catalogName, schemaName, column);
@@ -94,7 +94,6 @@ public class DatabaseSchemaLoader {
         }
         return databaseReverseEngineering;
     }
-
 
     private void packFunctions(Connection connection) throws SQLException {
         Collection<Catalog> catalogs = databaseReverseEngineering.getCatalogs();
@@ -133,10 +132,6 @@ public class DatabaseSchemaLoader {
                 }
             }
         }
-    }
-
-    private void packTable(String tableName, String catalogName, String schemaName) {
-        packTable(tableName,catalogName, schemaName, null);
     }
 
     private void packTable(String tableName, String catalogName, String schemaName, String columnName) {
