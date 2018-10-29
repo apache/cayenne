@@ -24,7 +24,6 @@ import javax.swing.JTabbedPane;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 
-
 /**
  * Data map editing tabs container
  *
@@ -56,7 +55,7 @@ public class DataMapTabbedView extends JTabbedPane {
         JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
         JScrollPane dbImportView = new JScrollPane(new DbImportView(mediator));
         addTab("DataMap", dataMapView);
-        addTab("DbImport", dbImportView);
+        addTab("DB Import", dbImportView);
     }
 }
 

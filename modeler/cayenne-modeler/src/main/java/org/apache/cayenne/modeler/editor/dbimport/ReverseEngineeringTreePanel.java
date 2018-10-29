@@ -39,6 +39,7 @@ import org.apache.cayenne.modeler.dialog.db.load.SchemaPopUpMenu;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;

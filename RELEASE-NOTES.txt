@@ -24,6 +24,7 @@ CAY-2481 Support for Object[] as return type in SQLTemplate and SQLExec
 CAY-2485 Compact Slf4j Logger
 CAY-2487 Removed usage of CayenneException.
 CAY-2489 Add validation to the case of not to PK relationships
+CAY-2491 Remaster Db Import View
 
 Bug Fixes:
 
