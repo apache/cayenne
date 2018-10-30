@@ -88,6 +88,10 @@ public class DefaultDbImportAction implements DbImportAction {
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
     private final DataChannelDescriptorLoader dataChannelDescriptorLoader;
     private final DataChannelMetaData metaData;
+    private boolean hasChanges;
+    private FiltersConfig filters;
+    private Collection<MergerToken> tokens;
+    private DataMap loadedDataMap;
 
     public DefaultDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
@@ -140,13 +144,28 @@ public class DefaultDbImportAction implements DbImportAction {
 
     @Override
     public void execute(DbImportConfiguration config) throws Exception {
+        commit(config, loadDataMap(config));
+    }
 
+    protected void commit(DbImportConfiguration config, DataMap sourceDataMap) throws Exception{
+        if (hasChanges) {
+            DataMap targetDataMap = loadedDataMap;
+
+            syncDataMapProperties(targetDataMap, config);
+            applyTokens(targetDataMap, tokens, config);
+            syncProcedures(targetDataMap, sourceDataMap, filters);
+
+            saveLoaded(targetDataMap, config);
+            this.loadedDataMap = null;
+        }
+    }
+
+    protected DataMap loadDataMap(DbImportConfiguration config) throws Exception {
         if (logger.isDebugEnabled()) {
             logger.debug("DB connection: " + config.getDataSourceInfo());
             logger.debug(String.valueOf(config));
         }
 
-        boolean hasChanges = false;
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
         DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
@@ -179,29 +198,30 @@ public class DefaultDbImportAction implements DbImportAction {
             hasChanges = true;
             targetDataMap = newTargetDataMap(config);
         }
+        this.loadedDataMap = targetDataMap;
 
+        // In that moment our data map fills with sorce map
         // transform source DataMap before merging
         transformSourceBeforeMerge(sourceDataMap, targetDataMap, config);
 
         MergerTokenFactory mergerTokenFactory = mergerTokenFactoryProvider.get(adapter);
 
         DbLoaderConfiguration loaderConfig = config.getDbLoaderConfig();
-        Collection<MergerToken> tokens = DataMapMerger.builder(mergerTokenFactory)
-                .filters(loaderConfig.getFiltersConfig())
-                .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
-                .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
-                .build()
-                .createMergeTokens(targetDataMap, sourceDataMap);
+        tokens = DataMapMerger.builder(mergerTokenFactory)
+           .filters(loaderConfig.getFiltersConfig())
+           .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
+           .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
+           .build()
+           .createMergeTokens(targetDataMap, sourceDataMap);
         tokens = log(sort(reverse(mergerTokenFactory, tokens)));
+        filters = loaderConfig.getFiltersConfig();
 
-        hasChanges |= syncDataMapProperties(targetDataMap, config);
-        hasChanges |= applyTokens(targetDataMap, tokens, config);
-        hasChanges |= syncProcedures(targetDataMap, sourceDataMap, loaderConfig.getFiltersConfig());
-
-        if (hasChanges) {
-            saveLoaded(targetDataMap, config);
-        }
+        hasChanges |= checkDataMapProperties(targetDataMap, config);
+        hasChanges |= hasTokensToImport(tokens);
+        hasChanges |= checkIncludedProcedures(sourceDataMap, filters);
+        return sourceDataMap;
     }
+
     private void putReverseEngineeringToConfig(ReverseEngineering reverseEngineering, DbImportConfiguration config) {
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
@@ -233,18 +253,52 @@ public class DefaultDbImportAction implements DbImportAction {
         }
     }
 
-    private boolean syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
+    public boolean hasTokensToImport(Collection<MergerToken> tokens) {
+
+        if (tokens.isEmpty()) {
+            logger.info("");
+            logger.info("Detected changes: No changes to import.");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private boolean checkDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
         String defaultPackage = config.getDefaultPackage();
         if (defaultPackage == null || isBlank(defaultPackage)) {
             return false;
         }
 
-        if (defaultPackage.equals(targetDataMap.getDefaultPackage())) {
+        if(!defaultPackage.equals(targetDataMap.getDefaultPackage())) {
             return false;
         }
 
-        targetDataMap.setDefaultPackage(defaultPackage);
         return true;
+    }
+
+    private boolean checkIncludedProcedures(DataMap loadedDataMap, FiltersConfig filters) {
+        Collection<Procedure> procedures = loadedDataMap.getProcedures();
+        boolean hasChanges = false;
+        for (Procedure procedure : procedures) {
+            PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
+            if (proceduresFilter == null || !proceduresFilter.isIncluded(procedure.getName())) {
+                continue;
+            }
+            hasChanges = true;
+        }
+        return hasChanges;
+    }
+
+
+    private void syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
+        String defaultPackage = config.getDefaultPackage();
+        if (defaultPackage == null || isBlank(defaultPackage)) {
+            return;
+        }
+
+        targetDataMap.setDefaultPackage(defaultPackage);
     }
 
     private void relationshipsSanity(DataMap executed) {
@@ -284,7 +338,6 @@ public class DefaultDbImportAction implements DbImportAction {
             DataMap dataMap = mapLoader.load(configurationResource);
             dataMap.setNamespace(new EntityResolver(Collections.singleton(dataMap)));
             dataMap.setConfigurationSource(configurationResource);
-
             return dataMap;
         }
 
@@ -343,12 +396,11 @@ public class DefaultDbImportAction implements DbImportAction {
         return tokens;
     }
 
-    private boolean applyTokens(DataMap targetDataMap, Collection<MergerToken> tokens, DbImportConfiguration config) {
+    private void applyTokens(DataMap targetDataMap, Collection<MergerToken> tokens, DbImportConfiguration config) {
 
         if (tokens.isEmpty()) {
             logger.info("");
             logger.info("Detected changes: No changes to import.");
-            return false;
         }
 
         final Collection<ObjEntity> loadedObjEntities = new LinkedList<>();
@@ -394,7 +446,6 @@ public class DefaultDbImportAction implements DbImportAction {
 
         flattenManyToManyRelationships(targetDataMap, loadedObjEntities, nameGenerator);
         relationshipsSanity(targetDataMap);
-        return true;
     }
 
     protected void addMessageToLogs(String message, List<String> messages) {
@@ -405,11 +456,11 @@ public class DefaultDbImportAction implements DbImportAction {
         messages.forEach(logger::info);
     }
 
-    protected boolean syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
+
+    protected void syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
         Collection<Procedure> procedures = loadedDataMap.getProcedures();
         List<String> messages = new LinkedList<>();
 
-        boolean hasChanges = false;
         for (Procedure procedure : procedures) {
             PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
             if (proceduresFilter == null || !proceduresFilter.isIncluded(procedure.getName())) {
@@ -425,10 +476,8 @@ public class DefaultDbImportAction implements DbImportAction {
                 addMessageToLogs("Add new procedure " + procedure.getName(), messages);
             }
             targetDataMap.addProcedure(procedure);
-            hasChanges = true;
         }
         logMessages(messages);
-        return hasChanges;
     }
 
     /**

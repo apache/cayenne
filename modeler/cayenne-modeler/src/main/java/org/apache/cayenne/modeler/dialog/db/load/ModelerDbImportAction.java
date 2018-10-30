@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
@@ -31,6 +32,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 
 import javax.swing.JDialog;
@@ -46,6 +48,10 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Inject
     private DataMap targetMap;
 
+    DataMap sourceDataMap;
+    DbImportConfiguration config;
+    DbImportConfiguration tmpConfig;
+
     private DbLoadResultDialog resultDialog;
     private boolean isNothingChanged;
 
@@ -58,6 +64,17 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  @Inject DataChannelMetaData metaData,
                                  @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
         super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData);
+    }
+
+    @Override
+    public void execute(DbImportConfiguration config) throws Exception {
+        this.config = config;
+        this.sourceDataMap = loadDataMap(config);
+    }
+
+
+    public void commit() throws Exception {
+        commit(config, sourceDataMap);
     }
 
     @Override
@@ -79,8 +96,18 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         }
 
         logger.info("");
-        resultDialog.setVisible(true);
+        resultDialog.getOkButton().addActionListener(e -> {
+            try {
+                commit();
+            } catch (Exception ex) {
+                throw new CayenneRuntimeException("Nothing to commit.");
+            } finally {
+                resultDialog.setVisible(false);
+            }
+        });
 
+        resultDialog.getRevertButton().addActionListener(e -> resultDialog.setVisible(false));
+        resultDialog.setVisible(true);
         return tokens;
     }
 
