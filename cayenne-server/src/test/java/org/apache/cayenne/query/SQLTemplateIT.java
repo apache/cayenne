@@ -71,13 +71,18 @@ public class SQLTemplateIT extends ServerCase {
 	@Before
 	public void setUp() throws Exception {
 		tArtist = new TableHelper(dbHelper, "ARTIST");
-		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+		tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
 		tPainting = new TableHelper(dbHelper, "PAINTING");
 		tPainting.setColumns("PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE", "ESTIMATED_PRICE");
 
 		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT");
 		tArtistCt.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+	}
+
+	private void createArtistDataSet() throws SQLException {
+		tArtist.insert(15, "Surikov", new Date(System.currentTimeMillis()));
+		tArtist.insert(16, "Ivanov", new Date(System.currentTimeMillis()));
 	}
 
 	@Test
@@ -89,15 +94,13 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testSQLTemplateForDataMapWithInsert() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
+	public void testSQLTemplateForDataMapWithInsert() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
 		List<DataRow> result = context.performQuery(q2);
-		assertEquals(1, result.size());
+		assertEquals(2, result.size());
 	}
 
 	@Test
@@ -119,12 +122,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testSQLTemplateForDataMapWithInsertException() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
+	public void testSQLTemplateForDataMapWithInsertException() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
 		boolean gotRuntimeException = false;
 		try {
@@ -137,11 +138,9 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testExceptionWhenUsingColumnsTypesAndSQLResult(){
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
+	public void testExceptionWhenUsingColumnsTypesAndSQLResult() throws SQLException {
+		createArtistDataSet();
+
 		SQLTemplate query = new SQLTemplate("SELECT ARTIST_ID P FROM ARTIST", true);
 		query.setResultColumnsTypes(Float.class);
 		SQLResult resultDescriptor = new SQLResult();
@@ -151,11 +150,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testExceptionWhenUsingColumnsTypesAndSQLResultUsingScalar() {
+	public void testExceptionWhenUsingColumnsTypesAndSQLResultUsingScalar() throws SQLException {
+		createArtistDataSet();
+
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
 		SQLTemplate query = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME P FROM ARTIST", false);
 		query.setResultColumnsTypes(Float.class, String.class);
 		query.setUseScalar(true);
@@ -167,14 +165,9 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testWithRootUsingScalar() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testWithRootUsingScalar() throws SQLException {
+		createArtistDataSet();
+
 		SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 		q3.setResultColumnsTypes(Double.class, String.class);
 		q3.setUseScalar(true);
@@ -185,14 +178,9 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testWithRootUsingDataRow() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testWithRootUsingDataRow() throws SQLException {
+		createArtistDataSet();
+
 		SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 		q3.setResultColumnsTypes(Double.class, String.class);
 		q3.setFetchingDataRows(true);
@@ -204,22 +192,18 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testWithRootException() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
+	public void testWithRootException() throws SQLException {
+		createArtistDataSet();
+
 		SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 		q3.setResultColumnsTypes(Double.class, String.class);
 		context.performQuery(q3);
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testUsingScalarAndDataRow() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
+	public void testUsingScalarAndDataRow() throws SQLException {
+		createArtistDataSet();
+
 		SQLTemplate q3 = new SQLTemplate(Artist.class, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 		q3.setUseScalar(true);
 		q3.setFetchingDataRows(true);
@@ -227,15 +211,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testDataRowWithTypes() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testDataRowWithTypes() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", true);
 		q3.setResultColumnsTypes(Double.class, String.class);
 		q3.setColumnNamesCapitalization(CapsStrategy.UPPER);
@@ -246,15 +225,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testDataRowReturnAndDirectives() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testDataRowReturnAndDirectives() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
 		List<DataRow> result = context.performQuery(q3);
 		assertEquals(2, result.size());
@@ -265,26 +239,20 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testDataRowReturnAndDirectivesExc() {
+	public void testDataRowReturnAndDirectivesExc() throws SQLException {
+		createArtistDataSet();
+
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
 		q3.setResultColumnsTypes(Integer.class, String.class);
 		context.performQuery(q3);
 	}
 
 	@Test
-	public void testObjectArrayReturnAndDirectives() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testObjectArrayReturnAndDirectives() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
 		q3.setUseScalar(true);
 		List<Object[]> result = context.performQuery(q3);
@@ -296,15 +264,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testObjectArrayReturnAndDirectivesException() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testObjectArrayReturnAndDirectivesException() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
 		q3.setResultColumnsTypes(Integer.class, String.class);
 		q3.setUseScalar(true);
@@ -312,15 +275,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testObjectArrayWithSingleObjectReturnAndDirectives() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testObjectArrayWithSingleObjectReturnAndDirectives() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST", false);
 		q3.setUseScalar(true);
 		List<Object[]> result = context.performQuery(q3);
@@ -331,11 +289,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
-	public void testObjectArrayReturnWithException() {
+	public void testObjectArrayReturnWithException() throws SQLException {
+		createArtistDataSet();
+
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
 		q3.setResultColumnsTypes(Integer.class);
 		q3.setUseScalar(true);
@@ -343,15 +300,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testObjectArrayWithSingleObjectReturn() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testObjectArrayWithSingleObjectReturn() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID FROM ARTIST", false);
 		q3.setUseScalar(true);
 		List<Object[]> artists = context.performQuery(q3);
@@ -362,15 +314,10 @@ public class SQLTemplateIT extends ServerCase {
 	}
 
 	@Test
-	public void testObjectArrayReturnWithDefaultTypes() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
-		String sql1 = "INSERT INTO ARTIST VALUES (16, 'Ivanov', null)";
-		SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
-		context.performNonSelectingQuery(q1);
-		SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
-		context.performNonSelectingQuery(q2);
+	public void testObjectArrayReturnWithDefaultTypes() throws SQLException {
+		createArtistDataSet();
 
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
 		q3.setUseScalar(true);
 		List<Object[]> artists = context.performQuery(q3);
@@ -382,10 +329,10 @@ public class SQLTemplateIT extends ServerCase {
 
 	@Test
 	public void testObjectArrayReturn() throws SQLException {
+		createArtistDataSet();
+
 		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
-		tArtistCt.insert(2, "Test1", new Date(System.currentTimeMillis()));
-		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST_CT", false);
+		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
 		q5.setResultColumnsTypes(Float.class, String.class, LocalDateTime.class);
 		q5.setUseScalar(true);
 		List dates = context.performQuery(q5);
@@ -397,8 +344,9 @@ public class SQLTemplateIT extends ServerCase {
 
 	@Test
 	public void testSingleObjectReturn() throws SQLException {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
+
+		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT ARTIST_NAME FROM ARTIST_CT", false);
 		q5.setResultColumnsTypes(String.class);
 		q5.setUseScalar(true);
@@ -471,7 +419,6 @@ public class SQLTemplateIT extends ServerCase {
 	public void testSQLTemplateSelectNullObjects() throws Exception {
 		tPainting.insert(1, null, "p1", 10);
 
-
 		String sql = "SELECT p.GALLERY_ID FROM PAINTING p";
 		SQLTemplate q1 = new SQLTemplate(Gallery.class, sql);
 		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
@@ -495,8 +442,8 @@ public class SQLTemplateIT extends ServerCase {
 
 	@Test
 	public void testSQLTemplateWithDisjointByIdPrefetch() throws Exception {
-		tArtist.insert(1, "artist1");
-		tArtist.insert(2, "artist2");
+		tArtist.insert(1, "artist1", null);
+		tArtist.insert(2, "artist2", null);
 
 		tPainting.insert(1, 1, "p1", 10);
 		tPainting.insert(2, 2, "p2", 20);
