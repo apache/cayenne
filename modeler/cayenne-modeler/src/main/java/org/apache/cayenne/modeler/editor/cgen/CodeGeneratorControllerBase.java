@@ -44,35 +44,44 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public static final String SELECTED_PROPERTY = "selected";
 
-    protected Collection<DataMap> dataMaps;
-
     protected DataMap dataMap;
-
     protected ValidationResult validation;
-
     protected List<Object> classes;
-
-    protected Set<String> selectedEntities;
-    protected Set<String> selectedEmbeddables;
-
+    private Set<String> selectedEntities;
+    private Set<String> selectedEmbeddables;
+    private Set<String> isDataMapSelected;
+    private Map<DataMap, Set<String>> selectedEntitiesForDataMap;
+    private Map<DataMap, Set<String>> selectedEmbeddablesForDataMap;
+    private Map<DataMap, Set<String>> selectedDataMaps;
     protected transient Object currentClass;
-
     protected ProjectController projectController;
 
     public CodeGeneratorControllerBase(CayenneController parent, ProjectController projectController) {
         super(parent);
         this.projectController = projectController;
         this.classes = new ArrayList<>();
-
-        this.selectedEntities = new HashSet<>();
-        this.selectedEmbeddables = new HashSet<>();
+        this.selectedEntitiesForDataMap = new HashMap<>();
+        this.selectedEmbeddablesForDataMap = new HashMap<>();
+        this.selectedDataMaps = new HashMap<>();
     }
 
     public void startup(DataMap dataMap){
         this.dataMap = dataMap;
         classes.clear();
+        this.classes.add(dataMap);
         this.classes.addAll(dataMap.getObjEntities());
         this.classes.addAll(dataMap.getEmbeddables());
+
+        initCollectionsForSelection(dataMap);
+    }
+
+    private void initCollectionsForSelection(DataMap dataMap) {
+        selectedEntities = selectedEntitiesForDataMap.compute(dataMap, (key,value) ->
+                value == null ? new HashSet<>() : value);
+        selectedEmbeddables = selectedEmbeddablesForDataMap.compute(dataMap, (key, value) ->
+                value == null ? new HashSet<>() : value);
+        isDataMapSelected = selectedDataMaps.compute(dataMap, (key, value) ->
+                value == null ? new HashSet<>() : value);
     }
 
     public List<Object> getClasses() {
@@ -104,7 +113,6 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     }
 
     public boolean updateSelection(Predicate<Object> predicate) {
-
         boolean modified = false;
 
         for (Object classObj : classes) {
@@ -112,25 +120,35 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
             if (classObj instanceof ObjEntity) {
 
                 if (select) {
-                    if (selectedEntities.add(((ObjEntity) classObj).getName())) {
+                    if(selectedEntities.add(((ObjEntity) classObj).getName())) {
                         modified = true;
                     }
                 }
                 else {
-                    if (selectedEntities.remove(((ObjEntity) classObj).getName())) {
+                    if(selectedEntities.remove(((ObjEntity) classObj).getName())) {
                         modified = true;
                     }
                 }
             }
             else if (classObj instanceof Embeddable) {
                 if (select) {
-                    if (selectedEmbeddables.add(((Embeddable) classObj).getClassName())) {
+                    if(selectedEmbeddables.add(((Embeddable) classObj).getClassName())) {
                         modified = true;
                     }
                 }
                 else {
-                    if (selectedEmbeddables
-                            .remove(((Embeddable) classObj).getClassName())) {
+                    if(selectedEmbeddables.remove(((Embeddable) classObj).getClassName())) {
+                        modified = true;
+                    }
+                }
+            } else if (classObj instanceof DataMap) {
+                updateArtifactGenerationMode(classObj, select);
+                if(select) {
+                    if(isDataMapSelected.add(((DataMap) classObj).getName())) {
+                        modified = true;
+                    }
+                } else {
+                    if(isDataMapSelected.remove(((DataMap) classObj).getName())) {
                         modified = true;
                     }
                 }
@@ -208,8 +226,11 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
             return selectedEmbeddables
                     .contains(((Embeddable) currentClass).getClassName());
         }
+        if(currentClass instanceof DataMap) {
+            return isDataMapSelected
+                    .contains(((DataMap) currentClass).getName());
+        }
         return false;
-
     }
 
     public void setSelected(boolean selectedFlag) {
@@ -221,8 +242,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
                 if (selectedEntities.add(((ObjEntity) currentClass).getName())) {
                     firePropertyChange(SELECTED_PROPERTY, null, null);
                 }
-            }
-            else {
+            } else {
                 if (selectedEntities.remove(((ObjEntity) currentClass).getName())) {
                     firePropertyChange(SELECTED_PROPERTY, null, null);
                 }
@@ -233,13 +253,35 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
                 if (selectedEmbeddables.add(((Embeddable) currentClass).getClassName())) {
                     firePropertyChange(SELECTED_PROPERTY, null, null);
                 }
-            }
-            else {
+            } else {
                 if (selectedEmbeddables
                         .remove(((Embeddable) currentClass).getClassName())) {
                     firePropertyChange(SELECTED_PROPERTY, null, null);
                 }
             }
+        }
+        if(currentClass instanceof DataMap) {
+            updateArtifactGenerationMode(currentClass, selectedFlag);
+            if(selectedFlag) {
+                if(isDataMapSelected.add(dataMap.getName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
+            } else {
+                if(isDataMapSelected
+                        .remove(((DataMap) currentClass).getName())) {
+                    firePropertyChange(SELECTED_PROPERTY, null, null);
+                }
+            }
+        }
+    }
+
+    private void updateArtifactGenerationMode(Object classObj, boolean selected) {
+        DataMap dataMap = (DataMap) classObj;
+        ClassGenerationAction generator = projectController.getApplication().getMetaData().get(dataMap, ClassGenerationAction.class);
+        if(selected) {
+            generator.setArtifactsGenerationMode("all");
+        } else {
+            generator.setArtifactsGenerationMode("entity");
         }
     }
 
@@ -249,9 +291,12 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         if (obj instanceof Embeddable) {
             className = ((Embeddable) obj).getClassName();
             icon = CellRenderers.iconForObject(new Embeddable());
-        } else {
+        } else if(obj instanceof ObjEntity) {
             className = ((ObjEntity) obj).getName();
             icon = CellRenderers.iconForObject(new ObjEntity());
+        } else {
+            className = ((DataMap) obj).getName();
+            icon = CellRenderers.iconForObject(new DataMap());
         }
         JLabel labelIcon = new JLabel();
         labelIcon.setIcon(icon);
@@ -270,27 +315,36 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
                     generator.loadEntity(entity.getName());
                 }
             }
-
             for(Embeddable embeddable : getSelectedEmbeddables()) {
                 generator.loadEmbeddable(embeddable.getClassName());
             }
         }
     }
 
-    public void addToSelectedEntities(Collection<String> entities) {
+    public void addToSelectedEntities(DataMap dataMap, Collection<String> entities) {
+        if(selectedEntities == null) {
+            initCollectionsForSelection(dataMap);
+        }
         selectedEntities.addAll(entities);
     }
 
-    public void addToSelectedEmbeddables(Collection<String> embeddables) {
+    public void addToSelectedEmbeddables(DataMap dataMap, Collection<String> embeddables) {
+        if(selectedEmbeddables == null) {
+            initCollectionsForSelection(dataMap);
+        }
         selectedEmbeddables.addAll(embeddables);
     }
 
     public int getSelectedEntitiesSize() {
-        return selectedEntities.size();
+        return selectedEntities != null ? selectedEntities.size() : 0;
     }
 
     public int getSelectedEmbeddablesSize() {
-        return selectedEmbeddables.size();
+        return selectedEmbeddables != null ? selectedEmbeddables.size() : 0;
+    }
+
+    public boolean isDataMapSelected() {
+        return isDataMapSelected != null && isDataMapSelected.size() == 1;
     }
 
     public DataMap getDataMap() {

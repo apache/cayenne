@@ -26,7 +26,7 @@ import org.apache.cayenne.pref.PreferenceDetail;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
 
-import java.awt.*;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Collection;
 import java.util.HashMap;

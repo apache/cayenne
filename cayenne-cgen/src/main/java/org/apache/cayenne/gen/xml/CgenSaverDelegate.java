@@ -23,6 +23,11 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * @since 4.1
  */
@@ -38,8 +43,26 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
     public Void visitDataMap(DataMap dataMap) {
         ClassGenerationAction cgen = metaData.get(dataMap, ClassGenerationAction.class);
         if(cgen != null){
+            resolveOutputDir(cgen);
             encoder.nested(cgen, getParentDelegate());
         }
         return null;
+    }
+
+    private void resolveOutputDir(ClassGenerationAction classGenerationAction) {
+        Path prevPath = classGenerationAction.buildPath();
+        URL url = getBaseDirectory().getURL();
+        if(url != null) {
+            Path resourcePath = Paths.get(url.getPath());
+            if(Files.isRegularFile(resourcePath)) {
+                resourcePath = resourcePath.getParent();
+            }
+
+            if(prevPath != null && resourcePath.compareTo(prevPath) != 0) {
+                classGenerationAction.setRootPath(resourcePath);
+                Path relPath = resourcePath.relativize(prevPath);
+                classGenerationAction.setRelPath(relPath);
+            }
+        }
     }
 }

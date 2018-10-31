@@ -21,25 +21,47 @@ package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.pref.PreferenceDetail;
+import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.util.Util;
 
-import java.awt.Component;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  */
 public class GeneratorTabController extends CayenneController {
 
+    private static final String STANDARD_OBJECTS_MODE = "Standard Persistent Objects";
+    private static final String CLIENT_OBJECTS_MODE = "Client Persistent Objects";
+    private static final String ADVANCED_MODE = "Advanced";
+
     public static final String GENERATOR_PROPERTY = "generator";
 
-    protected GeneratorTabPanel view;
-    protected PreferenceDetail preferences;
+    private static final String[] GENERATION_MODES = new String[] {
+            STANDARD_OBJECTS_MODE, CLIENT_OBJECTS_MODE, ADVANCED_MODE
+    };
 
-    protected CustomModeController customModeController;
+    protected GeneratorTabPanel view;
+    protected Map<String, GeneratorController> controllers;
+    protected PreferenceDetail preferences;
 
     public GeneratorTabController(CodeGeneratorControllerBase parent) {
         super(parent);
-        customModeController = new CustomModeController(parent);
-        this.view = new GeneratorTabPanel(customModeController.getView());
+        this.controllers = new HashMap<>(3);
+        controllers.put(STANDARD_OBJECTS_MODE, new StandardModeController(parent));
+        controllers.put(CLIENT_OBJECTS_MODE, new ClientModeController(parent));
+        controllers.put(ADVANCED_MODE, new CustomModeController(parent));
+        Component[] modePanels = new Component[GENERATION_MODES.length];
+        for (int i = 0; i < GENERATION_MODES.length; i++) {
+            modePanels[i] = controllers.get(GENERATION_MODES[i])
+                    .getView();
+        }
+        this.view = new GeneratorTabPanel(GENERATION_MODES, modePanels);
+        initBindings();
+        view.setPreferredSize(new Dimension(600, 480));
     }
 
     public Component getView() {
@@ -54,8 +76,36 @@ public class GeneratorTabController extends CayenneController {
         return preferences;
     }
 
-    public GeneratorController getGeneratorController() {
-        return customModeController;
+    protected void initBindings() {
+
+        // bind actions
+        BindingBuilder builder = new BindingBuilder(
+                getApplication().getBindingFactory(),
+                this);
+
+        CayenneProjectPreferences cayPrPref = application.getCayenneProjectPreferences();
+
+        this.preferences = (PreferenceDetail) cayPrPref.getProjectDetailObject(
+                PreferenceDetail.class,
+                getViewPreferences().node("controller"));
+
+        if (Util.isEmptyString(preferences.getProperty("mode"))) {
+            preferences.setProperty("mode", STANDARD_OBJECTS_MODE);
+        }
+
+        builder.bindToComboSelection(
+                view.getGenerationMode(),
+                "preferences.property['mode']").updateView();
+
+        view.getGenerationMode().addActionListener(action -> {
+            String name = (String)view.getGenerationMode().getSelectedItem();
+            controllers.get(name).initForm(getGenerator());
+        });
+    }
+
+    GeneratorController getGeneratorController() {
+        String name = (String)view.getGenerationMode().getSelectedItem();
+        return controllers.get(name);
     }
 
     public ClassGenerationAction getGenerator() {

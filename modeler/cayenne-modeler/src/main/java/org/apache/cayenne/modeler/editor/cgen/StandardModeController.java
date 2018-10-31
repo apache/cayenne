@@ -19,28 +19,43 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.*;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.modeler.pref.DataMapDefaults;
+
 import java.awt.*;
 
-/**
- */
-public class CodeGeneratorPane extends JSplitPane {
+public class StandardModeController extends GeneratorController {
 
-    public CodeGeneratorPane(Component generatorPanel, Component entitySelectorPanel) {
-        super();
+    protected StandardModePanel view;
+    protected DataMapDefaults preferences;
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        JScrollPane scrollPane = new JScrollPane(
-                generatorPanel,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
+    public StandardModeController(CodeGeneratorControllerBase parent) {
+        super(parent);
+    }
 
-        // assemble
-        splitPane.setRightComponent(scrollPane);
-        splitPane.setLeftComponent(entitySelectorPanel);
+    protected GeneratorControllerPanel createView() {
+        this.view = new StandardModePanel();
+        return view;
+    }
 
-        setLayout(new BorderLayout());
-        add(splitPane, BorderLayout.CENTER);
+    public Component getView() {
+        return view;
+    }
+
+    @Override
+    protected ClassGenerationAction newGenerator() {
+        ClassGenerationAction action = new ClassGenerationAction();
+        getApplication().getInjector().injectMembers(action);
+        return action;
+    }
+
+    @Override
+    protected void initForm(ClassGenerationAction classGenerationAction) {
+        super.initForm(classGenerationAction);
+    }
+
+    @Override
+    public ClassGenerationAction createGenerator() {
+        return super.createGenerator();
     }
 }

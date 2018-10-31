@@ -33,6 +33,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -45,6 +46,8 @@ public class BaseSaverDelegate implements SaverDelegate {
     protected XMLEncoder encoder;
 
     protected SaverDelegate parentDelegate;
+
+    protected Resource baseDirectory;
 
     @Override
     public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
@@ -129,6 +132,16 @@ public class BaseSaverDelegate implements SaverDelegate {
     @Override
     public SaverDelegate getParentDelegate() {
         return parentDelegate;
+    }
+
+    @Override
+    public Resource getBaseDirectory() {
+        return baseDirectory;
+    }
+
+    @Override
+    public void setBaseDirectory(Resource baseDirectory) {
+        this.baseDirectory = baseDirectory;
     }
 
     protected boolean isStandalone() {

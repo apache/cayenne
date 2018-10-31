@@ -17,33 +17,24 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.project.extension;
+package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 
-/**
- * Delegate that handles saving XML of extension.
- * {@link BaseSaverDelegate} should be used as a base class for custom delegates.
- *
- * @since 4.1
- */
-public interface SaverDelegate extends ConfigurationNodeVisitor<Void> {
+public class ClientModeController extends StandardModeController {
 
-    /**
-     * @param encoder provided by caller
-     */
-    void setXMLEncoder(XMLEncoder encoder);
+    public ClientModeController(CodeGeneratorControllerBase parent) {
+        super(parent);
+    }
 
-    /**
-     * @param parentDelegate parent delegate, provided by caller
-     */
-    void setParentDelegate(SaverDelegate parentDelegate);
+    protected GeneratorControllerPanel createView() {
+        this.view = new StandardModePanel();
+        return view;
+    }
 
-    SaverDelegate getParentDelegate();
-
-    Resource getBaseDirectory();
-
-    void setBaseDirectory(Resource baseDirectory);
+    @Override
+    protected ClassGenerationAction newGenerator() {
+        return new ClientClassGenerationAction();
+    }
 }

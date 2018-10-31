@@ -22,10 +22,9 @@ import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import java.io.File;
+import java.nio.file.Paths;
 
 /**
  * @since 4.1
@@ -43,14 +42,9 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String USE_PKG_PATH_TAG = "usePkgPath";
     private static final String OVERWRITE_SUBCLASSES_TAG = "overwriteSubclasses";
     private static final String CREATE_PROPERTY_NAMES_TAG = "createPropertyNames";
-    private static final String SUPER_PKG_TAG = "superPkg";
-    private static final String OBJENTITY_TAG = "objEntity";
-    private static final String EMBEDDABLE_TAG = "embeddable";
-    private static final String ENCODING_TAG = "encoding";
-    private static final String EMBEDDABLE_TEMPLATE_TAG = "embeddableTemplate";
-    private static final String EMBEDDABLE_SUPERCLASS_TEMPLATE_TAG = "embeddableSuperclassTemplate";
-    private static final String DATAMAP_TEMPLATE_TAG = "dataMapTemplate";
-    private static final String DATAMAP_SUPERCLASS_TEMPLATE_TAG = "dataMapSuperclassTemplate";
+    private static final String EXCLUDE_ENTITIES_TAG = "excludeEntities";
+    private static final String EXCLUDE_EMBEDDABLES_TAG = "excludeEmbeddables";
+    private static final String CREATE_PK_PROPERTIES = "createPKProperties";
 
     public static final String TRUE = "true";
 
@@ -74,22 +68,6 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     }
 
     @Override
-    protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
-                                                   String qName, Attributes attributes) {
-
-        if (namespaceURI.equals(targetNamespace)) {
-            switch (localName) {
-                case OBJENTITY_TAG:
-                    return new ObjEntityHandler(this, configuration);
-                case EMBEDDABLE_TAG:
-                    return new EmbeddableHandler(this, configuration);
-            }
-        }
-
-        return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
-    }
-
-    @Override
     protected void processCharData(String localName, String data) {
         switch (localName) {
             case OUTPUT_DIRECTORY_TAG:
@@ -97,6 +75,12 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
                 break;
             case GENERATION_MODE_TAG:
                 createGenerationMode(data);
+                break;
+            case EXCLUDE_ENTITIES_TAG:
+                createExcludeEntities(data);
+                break;
+            case EXCLUDE_EMBEDDABLES_TAG:
+                createExcludeEmbeddables(data);
                 break;
             case SUBCLASS_TEMPLATE_TAG:
                 createSubclassTemplate(data);
@@ -119,23 +103,8 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             case CREATE_PROPERTY_NAMES_TAG:
                 createPropertyNamesTag(data);
                 break;
-            case SUPER_PKG_TAG:
-                createSuperPkg(data);
-                break;
-            case ENCODING_TAG:
-                createEncoding(data);
-                break;
-            case EMBEDDABLE_TEMPLATE_TAG:
-                createEmbeddableTemplate(data);
-                break;
-            case EMBEDDABLE_SUPERCLASS_TEMPLATE_TAG:
-                createEmbeddableSuperclassTemplate(data);
-                break;
-            case DATAMAP_TEMPLATE_TAG:
-                createDataMapTemplate(data);
-                break;
-            case DATAMAP_SUPERCLASS_TEMPLATE_TAG:
-                createDataMapSuperclassTemplate(data);
+            case CREATE_PK_PROPERTIES:
+                createPkPropertiesTag(data);
                 break;
         }
     }
@@ -146,7 +115,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         }
 
         if(configuration != null) {
-            configuration.setDestDir(new File(path));
+            configuration.setRelPath(Paths.get(path));
         }
     }
 
@@ -157,6 +126,26 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
 
         if(configuration != null) {
             configuration.setArtifactsGenerationMode(mode);
+        }
+    }
+
+    private void createExcludeEntities(String entities) {
+        if(entities.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            configuration.loadEntities(entities);
+        }
+    }
+
+    private void createExcludeEmbeddables(String embeddables) {
+        if(embeddables.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            configuration.loadEmbeddables(embeddables);
         }
     }
 
@@ -177,26 +166,6 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
 
         if(configuration != null) {
             configuration.setSuperTemplate(template);
-        }
-    }
-
-    private void createEmbeddableTemplate(String template) {
-        if(template.trim().length() == 0) {
-            return;
-        }
-
-        if(configuration != null) {
-            configuration.setEmbeddableTemplate(template);
-        }
-    }
-
-    private void createEmbeddableSuperclassTemplate(String template) {
-        if(template.trim().length() == 0) {
-            return;
-        }
-
-        if(configuration != null) {
-            configuration.setEmbeddableSuperTemplate(template);
         }
     }
 
@@ -266,43 +235,17 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         }
     }
 
-    private void createSuperPkg(String data) {
+    private void createPkPropertiesTag(String data) {
         if(data.trim().length() == 0) {
             return;
         }
 
         if(configuration != null) {
-            configuration.setSuperPkg(data);
-        }
-    }
-
-    private void createEncoding(String data) {
-        if(data.trim().length() == 0) {
-            return;
-        }
-
-        if(configuration != null) {
-            configuration.setEncoding(data);
-        }
-    }
-
-    private void createDataMapTemplate(String data) {
-        if(data.trim().length() == 0) {
-            return;
-        }
-
-        if(configuration != null) {
-            configuration.setQueryTemplate(data);
-        }
-    }
-
-    private void createDataMapSuperclassTemplate(String data) {
-        if(data.trim().length() == 0) {
-            return;
-        }
-
-        if(configuration != null) {
-            configuration.setQuerySuperTemplate(data);
+            if(data.equals(TRUE)) {
+                configuration.setCreatePKProperties(true);
+            } else {
+                configuration.setCreatePKProperties(false);
+            }
         }
     }
 
@@ -310,6 +253,8 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         configuration = new ClassGenerationAction();
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
+            configuration.resolveExcludeEntities();
+            configuration.resolveExcludeEmbeddables();
             CgenConfigHandler.this.metaData.add(dataMap, configuration);
         });
     }

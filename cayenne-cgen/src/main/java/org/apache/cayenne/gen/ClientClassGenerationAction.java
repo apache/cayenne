@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
+
+import java.util.Collection;
 
 /**
  * @since 3.0
@@ -88,8 +88,7 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
     @Override
     public void addQueries(Collection<QueryDescriptor> queries) {
-        if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP
-                || artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
+        if (artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
             if (queries != null) {
                 artifacts.add(new ClientDataMapArtifact(dataMap, queries));
             }

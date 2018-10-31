@@ -23,7 +23,7 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
-import java.awt.*;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
@@ -38,7 +38,7 @@ public class StandardModeController extends GeneratorController {
     }
 
     protected void createDefaults() {
-        TreeMap<DataMap, DataMapDefaults> treeMap = new TreeMap<DataMap, DataMapDefaults>();
+        TreeMap<DataMap, DataMapDefaults> treeMap = new TreeMap<>();
         ArrayList<DataMap> dataMaps = (ArrayList<DataMap>) getParentController().getDataMaps();
 
         for (DataMap dataMap : dataMaps) {

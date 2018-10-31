@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.codegen;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
 public class StandardModePanel extends GeneratorControllerPanel {
 

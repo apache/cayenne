@@ -17,33 +17,26 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.project.extension;
+package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.XMLEncoder;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.Application;
 
-/**
- * Delegate that handles saving XML of extension.
- * {@link BaseSaverDelegate} should be used as a base class for custom delegates.
- *
- * @since 4.1
- */
-public interface SaverDelegate extends ConfigurationNodeVisitor<Void> {
+import java.awt.*;
 
-    /**
-     * @param encoder provided by caller
-     */
-    void setXMLEncoder(XMLEncoder encoder);
+public class StandardModePanel extends GeneratorControllerPanel {
 
-    /**
-     * @param parentDelegate parent delegate, provided by caller
-     */
-    void setParentDelegate(SaverDelegate parentDelegate);
+    public StandardModePanel() {
+        super(Application.getInstance().getFrameController().getProjectController());
+        FormLayout layout = new FormLayout(
+                "right:88dlu, 1dlu, fill:300:grow, 1dlu, left:100dlu, 100dlu", "");
 
-    SaverDelegate getParentDelegate();
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
+        builder.append("Output Directory:", outputFolder.getComponent(), selectOutputFolder);
+        builder.nextLine();
 
-    Resource getBaseDirectory();
-
-    void setBaseDirectory(Resource baseDirectory);
+        setLayout(new BorderLayout());
+        add(builder.getPanel(), BorderLayout.CENTER);
+    }
 }

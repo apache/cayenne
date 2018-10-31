@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -27,8 +28,9 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JOptionPane;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collections;
 import java.util.function.Predicate;
 
 /**
@@ -47,22 +49,25 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
 
     public CodeGeneratorController(CayenneController parent, ProjectController projectController) {
         super(parent, projectController);
-        initListeners();
         this.classesSelector = new ClassesTabController(this);
         this.generatorSelector = new GeneratorTabController(this);
         view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
         initBindings();
+        initListeners();
+    }
+
+    public void startup(DataMap dataMap) {
+        super.startup(dataMap);
+        classesSelectedAction();
+        GeneratorController modeController = generatorSelector.getGeneratorController();
+        ClassGenerationAction classGenerationAction = modeController.createGenerator();
+        modeController.initForm(classGenerationAction);
+        classesSelector.startup();
     }
 
     private void initListeners(){
-        projectController.addDataMapDisplayListener(e -> {
-            super.startup(e.getDataMap());
-            classesSelector.startup();
-
-            GeneratorController modeController = generatorSelector.getGeneratorController();
-            ClassGenerationAction classGenerationAction = modeController.createGenerator();
-            ((CustomModeController)modeController).initForm(classGenerationAction);
-        });
+        projectController.addObjEntityDisplayListener(e -> super.addToSelectedEntities(e.getEntity().getDataMap(), Collections.singleton(e.getEntity().getName())));
+        projectController.addEmbeddableDisplayListener(e -> super.addToSelectedEmbeddables(e.getEmbeddable().getDataMap(), Collections.singleton(e.getEmbeddable().getClassName())));
     }
 
     @Override
@@ -75,7 +80,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
                 getApplication().getBindingFactory(),
                 this);
 
-        builder.bindToAction(view.getGenerateButton(), "generateAction()");
+        builder.bindToAction(((GeneratorTabPanel)generatorSelector.getView()).getGenerateButton(), "generateAction()");
         builder.bindToAction(this, "classesSelectedAction()", SELECTED_PROPERTY);
         builder.bindToAction(generatorSelector, "generatorSelectedAction()",
                 GeneratorTabController.GENERATOR_PROPERTY);
@@ -120,26 +125,35 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
             label = label + "One embeddable selected";
         }
         else {
-            label =label + sizeEmb + " embeddables selected";
+            label = label + sizeEmb + " embeddables selected";
         }
-        
-        view.getClassesCount().setText(label);
+
+        label = label.concat("; ");
+
+        if(isDataMapSelected()) {
+            label = label + "DataMap selected";
+        } else {
+            label = label + "No dataMap selected";
+        }
+
+        ((GeneratorTabPanel)generatorSelector.getView()).getClassesCount().setText(label);
         projectController.setDirty(true);
     }
 
     public void generateAction() {
         ClassGenerationAction generator = generatorSelector.getGenerator();
+
         if (generator != null) {
             try {
                 generator.prepareArtifacts();
                 generator.execute();
                 JOptionPane.showMessageDialog(
-                        getView(),
+                        this.getView(),
                         "Class generation finished");
             } catch (Exception e) {
                 logObj.error("Error generating classes", e);
                 JOptionPane.showMessageDialog(
-                        getView(),
+                        this.getView(),
                         "Error generating classes - " + e.getMessage());
             }
         }

@@ -29,48 +29,24 @@ import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.swing.control.ActionLink;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 
 public class CustomModePanel extends GeneratorControllerPanel {
 
-    private ComboBoxAdapter<String> generationMode;
     private ComboBoxAdapter<String> subclassTemplate;
     private ComboBoxAdapter<String> superclassTemplate;
-    private ComboBoxAdapter<String> embeddableTemplate;
-    private ComboBoxAdapter<String> embeddableSuperTemplate;
-    private ComboBoxAdapter<String> dataMapTemplate;
-    private ComboBoxAdapter<String> dataMapSuperTemplate;
     private JCheckBox pairs;
     private JCheckBox overwrite;
     private JCheckBox usePackagePath;
     private TextAdapter outputPattern;
     private JCheckBox createPropertyNames;
-    private TextAdapter superclassPackage;
-
-    private TextAdapter encoding;
-
-    private JLabel dataMapName;
+    private JCheckBox pkProperties;
 
     private ActionLink manageTemplatesLink;
 
     CustomModePanel(ProjectController projectController) {
         super(projectController);
-
-        JComboBox<String> modeField = new JComboBox<>();
-        this.generationMode = new ComboBoxAdapter<String>(modeField) {
-            @Override
-            protected void updateModel(String item) throws ValidationException {
-                getCgenByDataMap().setArtifactsGenerationMode(CustomModeController.modesByLabel.get(item));
-                projectController.setDirty(true);
-            }
-        };
-
         JComboBox<String> superclassField = new JComboBox<>();
         this.superclassTemplate = new ComboBoxAdapter<String>(superclassField) {
             @Override
@@ -89,24 +65,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
             }
         };
 
-        JComboBox<String> dataMapField = new JComboBox<>();
-        this.dataMapTemplate = new ComboBoxAdapter<String>(dataMapField) {
-            @Override
-            protected void updateModel(String item) throws ValidationException {
-                getCgenByDataMap().setQueryTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(String.valueOf(item)));
-                projectController.setDirty(true);
-            }
-        };
-
-        JComboBox<String> dataMapSuperField = new JComboBox<>();
-        this.dataMapSuperTemplate = new ComboBoxAdapter<String>(dataMapSuperField) {
-            @Override
-            protected void updateModel(String item) throws ValidationException {
-                getCgenByDataMap().setQuerySuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(String.valueOf(item)));
-                projectController.setDirty(true);
-            }
-        };
-
         this.pairs = new JCayenneCheckBox();
         this.overwrite = new JCayenneCheckBox();
         this.usePackagePath = new JCayenneCheckBox();
@@ -114,51 +72,14 @@ public class CustomModePanel extends GeneratorControllerPanel {
         JTextField outputPatternField = new JTextField();
         this.outputPattern = new TextAdapter(outputPatternField) {
             protected void updateModel(String text) {
-                getCgenByDataMap().setOutputPattern(text);
-                projectController.setDirty(true);
+
             }
         };
 
         this.createPropertyNames = new JCayenneCheckBox();
+        this.pkProperties = new JCayenneCheckBox();
         this.manageTemplatesLink = new ActionLink("Customize Templates...");
         this.manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
-
-        JTextField superclassPackageField = new JTextField();
-        this.superclassPackage = new TextAdapter(superclassPackageField) {
-            protected void updateModel(String text) {
-                getCgenByDataMap().setSuperPkg(text);
-                projectController.setDirty(true);
-            }
-        };
-
-        JTextField encodingField = new JTextField();
-        this.encoding = new TextAdapter(encodingField) {
-            protected void updateModel(String text) {
-                getCgenByDataMap().setEncoding(text);
-                projectController.setDirty(true);
-            }
-        };
-
-        JComboBox<String> embeddableField = new JComboBox<>();
-        this.embeddableTemplate = new ComboBoxAdapter<String>(embeddableField) {
-            @Override
-            protected void updateModel(String item) throws ValidationException {
-                getCgenByDataMap().setEmbeddableTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(String.valueOf(item)));
-                projectController.setDirty(true);
-            }
-        };
-
-        JComboBox<String> embeddableSuperclassField = new JComboBox<>();
-        this.embeddableSuperTemplate = new ComboBoxAdapter<String>(embeddableSuperclassField) {
-            @Override
-            protected void updateModel(String item) throws ValidationException {
-                getCgenByDataMap().setEmbeddableSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(String.valueOf(item)));
-                projectController.setDirty(true);
-            }
-        };
-
-        this.dataMapName = new JLabel();
-        this.dataMapName.setFont(dataMapName.getFont().deriveFont(1));
 
         pairs.addChangeListener(e -> {
            setDisableSuperComboBoxes(pairs.isSelected());
@@ -167,20 +88,11 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         // assemble
         FormLayout layout = new FormLayout(
-                "right:100dlu, 3dlu, fill:100:grow, 6dlu, fill:50dlu, 3dlu", "");
+                "right:79dlu, 1dlu, fill:300:grow, 1dlu, left:100dlu, 100dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
         builder.append("Output Directory:", outputFolder.getComponent(), selectOutputFolder);
-        builder.nextLine();
-
-        builder.append("Generation Mode:", generationMode.getComboBox());
-        builder.nextLine();
-
-        builder.append("DataMap Template:", dataMapTemplate.getComboBox());
-        builder.nextLine();
-
-        builder.append("DataMap Superclass Template", dataMapSuperTemplate.getComboBox());
         builder.nextLine();
 
         builder.append("Subclass Template:", subclassTemplate.getComboBox());
@@ -189,16 +101,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.append("Superclass Template:", superclassTemplate.getComboBox());
         builder.nextLine();
 
-        builder.append("Embeddable Template", embeddableTemplate.getComboBox());
-        builder.nextLine();
-
-        builder.append("Embeddable Super Template", embeddableSuperTemplate.getComboBox());
-        builder.nextLine();
-
         builder.append("Output Pattern:", outputPattern.getComponent());
-        builder.nextLine();
-
-        builder.append("Encoding", encoding.getComponent());
         builder.nextLine();
 
         builder.append("Make Pairs:", pairs);
@@ -213,10 +116,8 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.append("Create Property Names:", createPropertyNames);
         builder.nextLine();
 
-        builder.append(dataMapName);
+        builder.append("Create PK properties:", pkProperties);
         builder.nextLine();
-
-        builder.append("Superclass package", superclassPackage.getComponent());
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
@@ -230,12 +131,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     public void setDisableSuperComboBoxes(boolean val){
         superclassTemplate.getComboBox().setEnabled(val);
-        embeddableSuperTemplate.getComboBox().setEnabled(val);
-        dataMapSuperTemplate.getComboBox().setEnabled(val);
-    }
-
-    public ComboBoxAdapter<String> getGenerationMode() {
-        return generationMode;
     }
 
     public ActionLink getManageTemplatesLink() {
@@ -244,17 +139,9 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     public ComboBoxAdapter<String> getSubclassTemplate() { return subclassTemplate; }
 
-    public ComboBoxAdapter<String> getEmbeddableTemplate() { return embeddableTemplate; }
-
-    public ComboBoxAdapter<String> getEmbeddableSuperTemplate() { return embeddableSuperTemplate; }
-
     public ComboBoxAdapter<String> getSuperclassTemplate() {
         return superclassTemplate;
     }
-
-    public ComboBoxAdapter<String> getDataMapTemplate() { return dataMapTemplate; }
-
-    public ComboBoxAdapter<String> getDataMapSuperTemplate() { return dataMapSuperTemplate; }
 
     public JCheckBox getOverwrite() {
         return overwrite;
@@ -276,13 +163,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         return createPropertyNames;
     }
 
-    public TextAdapter getSuperclassPackage() {
-        return superclassPackage;
-    }
-
-    public TextAdapter getEncoding() { return encoding; }
-
-    public void setDataMapName(String mapName){
-        dataMapName.setText(mapName);
+    public JCheckBox getPkProperties() {
+        return pkProperties;
     }
 }

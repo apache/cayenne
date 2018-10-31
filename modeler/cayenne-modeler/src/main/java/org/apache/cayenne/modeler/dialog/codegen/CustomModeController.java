@@ -28,13 +28,22 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.util.Util;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import java.awt.Component;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 
-import static org.apache.cayenne.modeler.CodeTemplateManager.*;
+import static org.apache.cayenne.modeler.CodeTemplateManager.SINGLE_SERVER_CLASS;
+import static org.apache.cayenne.modeler.CodeTemplateManager.STANDARD_SERVER_SUBCLASS;
+import static org.apache.cayenne.modeler.CodeTemplateManager.STANDARD_SERVER_SUPERCLASS;
 import static org.apache.cayenne.modeler.dialog.pref.PreferenceDialog.TEMPLATES_KEY;
 
 /**

@@ -22,7 +22,13 @@ package org.apache.cayenne.modeler.dialog.codegen;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -36,15 +42,22 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 
 /**
  * A mode-specific part of the code generation dialog.
- * 
+ *
  */
 public abstract class GeneratorController extends CayenneController {
 
@@ -149,7 +162,6 @@ public abstract class GeneratorController extends CayenneController {
         selectedEntities.removeIf(ObjEntity::isGeneric);
 
         Collection<ClassGenerationAction> generators = new ArrayList<>();
-        Collection<StandardPanelComponent> dataMapLines = ((GeneratorControllerPanel) getView()).getDataMapLines();
         for (DataMap map : getParentController().getDataMaps()) {
             try {
                 ClassGenerationAction generator = newGenerator();
@@ -180,7 +192,7 @@ public abstract class GeneratorController extends CayenneController {
 
                 }
 
-                generator.setDestDir(outputDir);
+//                generator.setDestDir(outputDir);
                 generator.setMakePairs(true);
                 generator.setForce(true);
 

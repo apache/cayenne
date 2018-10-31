@@ -27,7 +27,7 @@ import java.util.Collection;
 
 /**
  * A generic panel that is a superclass of generator panels, defining common fields.
- * 
+ *
  */
 public class GeneratorControllerPanel extends JPanel {
 

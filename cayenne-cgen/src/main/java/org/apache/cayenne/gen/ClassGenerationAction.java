@@ -33,16 +33,12 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClassGenerationAction implements Serializable, XMLSerializable {
 	static final String TEMPLATES_DIR_NAME = "templates/v4_1/";
@@ -62,10 +58,11 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
 
-	protected Collection<Artifact> artifacts;
-
+	Collection<Artifact> artifacts;
 	private Collection<String> entityArtifacts;
+	private Collection<String> excludeEntityArtifacts;
 	private Collection<String> embeddableArtifacts;
+	private Collection<String> excludeEmbeddableArtifacts;
 
 	protected String superPkg;
 	protected DataMap dataMap;
@@ -74,7 +71,10 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	protected boolean makePairs;
 
 	protected Logger logger;
-	protected File destDir;
+
+	protected Path rootPath;
+	protected Path relPath;
+
 	protected boolean overwrite;
 	protected boolean usePkgPath;
 
@@ -110,22 +110,20 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 
         this.artifacts = new ArrayList<>();
         this.entityArtifacts = new ArrayList<>();
+        this.excludeEntityArtifacts = new ArrayList<>();
         this.embeddableArtifacts = new ArrayList<>();
+        this.excludeEmbeddableArtifacts = new ArrayList<>();
         this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
         this.overwrite = false;
+		this.template = SUBCLASS_TEMPLATE;
+		this.superTemplate = SUPERCLASS_TEMPLATE;
+		this.embeddableTemplate = EMBEDDABLE_SUBCLASS_TEMPLATE;
+		this.embeddableSuperTemplate = EMBEDDABLE_SUPERCLASS_TEMPLATE;
+
+		this.queryTemplate = DATAMAP_SUBCLASS_TEMPLATE;
+		this.querySuperTemplate = DATAMAP_SUPERCLASS_TEMPLATE;
 	}
-
-	public void setDefaults() {
-        this.template = SUBCLASS_TEMPLATE;
-        this.superTemplate = SUPERCLASS_TEMPLATE;
-
-        this.embeddableTemplate = EMBEDDABLE_SUBCLASS_TEMPLATE;
-        this.embeddableSuperTemplate = EMBEDDABLE_SUPERCLASS_TEMPLATE;
-
-        this.queryTemplate = DATAMAP_SUBCLASS_TEMPLATE;
-        this.querySuperTemplate = DATAMAP_SUPERCLASS_TEMPLATE;
-    }
 
 	protected String defaultTemplateName(TemplateType type) {
 		switch (type) {
@@ -178,14 +176,6 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * Returns a String used to prefix class name to create a generated
-	 * superclass. Default value is "_".
-	 */
-	private String getSuperclassPrefix() {
-		return ClassGenerationAction.SUPERCLASS_PREFIX;
-	}
-
-	/**
 	 * VelocityContext initialization method called once per artifact.
 	 */
 	private void resetContextForArtifact(Artifact artifact) {
@@ -232,7 +222,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	}
 
 	public void prepareArtifacts() {
-        resetArtifacts();
+		this.artifacts.clear();
         addAllEntities();
         addAllEmbeddables();
         addQueries(dataMap.getQueryDescriptors());
@@ -317,81 +307,18 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	 * Called internally from "execute".
 	 */
 	private void validateAttributes() {
-		if (destDir == null) {
-			throw new CayenneRuntimeException("'destDir' attribute is missing.");
+		Path dir = buildPath();
+		if (dir == null) {
+			throw new CayenneRuntimeException("'rootPath' attribute is missing.");
 		}
 
-		if (!destDir.isDirectory()) {
+		if (!Files.isDirectory(dir)) {
 			throw new CayenneRuntimeException("'destDir' is not a directory.");
 		}
 
-		if (!destDir.canWrite()) {
-			throw new CayenneRuntimeException("Do not have write permissions for %s", destDir);
+		if (!Files.isWritable(dir)) {
+			throw new CayenneRuntimeException("Do not have write permissions for %s", dir);
 		}
-	}
-
-	/**
-	 * Sets the destDir.
-	 */
-	public void setDestDir(File destDir) {
-		this.destDir = destDir;
-	}
-
-	/**
-	 * Sets <code>overwrite</code> property.
-	 */
-	public void setOverwrite(boolean overwrite) {
-		this.overwrite = overwrite;
-	}
-
-	/**
-	 * Sets <code>makepairs</code> property.
-	 */
-	public void setMakePairs(boolean makePairs) {
-		this.makePairs = makePairs;
-	}
-
-	/**
-	 * Sets <code>template</code> property.
-	 */
-	public void setTemplate(String template) {
-		this.template = template;
-	}
-
-	/**
-	 * Sets <code>superTemplate</code> property.
-	 */
-	public void setSuperTemplate(String superTemplate) {
-		this.superTemplate = superTemplate;
-	}
-
-	public void setQueryTemplate(String queryTemplate) {
-		this.queryTemplate = queryTemplate;
-	}
-
-	public void setQuerySuperTemplate(String querySuperTemplate) {
-		this.querySuperTemplate = querySuperTemplate;
-	}
-
-	/**
-	 * Sets <code>usepkgpath</code> property.
-	 */
-	public void setUsePkgPath(boolean usePkgPath) {
-		this.usePkgPath = usePkgPath;
-	}
-
-	/**
-	 * Sets <code>outputPattern</code> property.
-	 */
-	public void setOutputPattern(String outputPattern) {
-		this.outputPattern = outputPattern;
-	}
-
-	/**
-	 * Sets <code>createPropertyNames</code> property.
-	 */
-	public void setCreatePropertyNames(boolean createPropertyNames) {
-		this.createPropertyNames = createPropertyNames;
 	}
 
 	/**
@@ -429,7 +356,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
 		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
-		File dest = new File(mkpath(destDir, packageName), filename);
+		File dest = new File(mkpath(new File(getDir()), packageName), filename);
 
 		if (dest.exists() && !fileNeedUpdate(dest, superTemplate)) {
 			return null;
@@ -448,7 +375,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
 		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
-		File dest = new File(mkpath(destDir, packageName), filename);
+		File dest = new File(mkpath(new File(Objects.requireNonNull(buildPath()).toString()), packageName), filename);
 
 		if (dest.exists()) {
 			// no overwrite of subclasses
@@ -517,31 +444,6 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		return fullPath;
 	}
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	/**
-	 * Sets file encoding. If set to null, default system encoding will be used.
-	 */
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
-	/**
-	 * Sets "superPkg" property value.
-	 */
-	public void setSuperPkg(String superPkg) {
-		this.superPkg = superPkg;
-	}
-
-	/**
-	 * @param dataMap The dataMap to set.
-	 */
-	public void setDataMap(DataMap dataMap) {
-		this.dataMap = dataMap;
-	}
-
 	/**
 	 * Adds entities to the internal entity list.
 	 * @param entities collection
@@ -549,64 +451,50 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	 * @since 4.0 throws exception
 	 */
 	public void addEntities(Collection<ObjEntity> entities) {
-		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
-				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-			if (entities != null) {
-				for (ObjEntity entity : entities) {
-					artifacts.add(new EntityArtifact(entity));
-				}
+		if (entities != null) {
+			for (ObjEntity entity : entities) {
+				artifacts.add(new EntityArtifact(entity));
 			}
 		}
 	}
 
 	public void addEmbeddables(Collection<Embeddable> embeddables) {
-		if (artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
-				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-			if (embeddables != null) {
-				for (Embeddable embeddable : embeddables) {
-					artifacts.add(new EmbeddableArtifact(embeddable));
-				}
+		if (embeddables != null) {
+			for (Embeddable embeddable : embeddables) {
+				artifacts.add(new EmbeddableArtifact(embeddable));
 			}
 		}
 	}
 
 	public void addQueries(Collection<QueryDescriptor> queries) {
-		if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP
-				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-
+		if (artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
 			// TODO: andrus 10.12.2010 - why not also check for empty query list??
 			// Or create a better API for enabling DataMapArtifact
 			if (queries != null) {
 				Artifact artifact = new DataMapArtifact(dataMap, queries);
 				if(!artifacts.contains(artifact)) {
-					artifacts.add(new DataMapArtifact(dataMap, queries));
+					artifacts.add(artifact);
 				}
 			}
 		}
 	}
 
     private void addAllEntities() {
-		if(artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
-				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-            entityArtifacts.forEach(val -> {
-            	Artifact artifact = new EntityArtifact(dataMap.getObjEntity(val));
-            	if(!artifacts.contains(artifact)) {
-					artifacts.add(artifact);
-				}
-			});
-		}
+		entityArtifacts.forEach(val -> {
+			Artifact artifact = new EntityArtifact(dataMap.getObjEntity(val));
+			if(!artifacts.contains(artifact)) {
+				artifacts.add(artifact);
+			}
+		});
 	}
 
     private void addAllEmbeddables() {
-		if(artifactsGenerationMode == ArtifactsGenerationMode.ENTITY
-				|| artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-		    embeddableArtifacts.forEach(val -> {
-		    	Artifact artifact = new EmbeddableArtifact(dataMap.getEmbeddable(val));
-				if(!artifacts.contains(artifact)) {
-		    		artifacts.add(artifact);
-		    	}
-			});
-		}
+		embeddableArtifacts.forEach(val -> {
+			Artifact artifact = new EmbeddableArtifact(dataMap.getEmbeddable(val));
+			if(!artifacts.contains(artifact)) {
+				artifacts.add(artifact);
+			}
+		});
 	}
 
     /**
@@ -616,83 +504,89 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		entityArtifacts.add(name);
 	}
 
-    /**
-     * @since 4.1
-     */
+	/**
+	 * @since 4.1
+	 */
 	public void loadEmbeddable(String name) {
 		embeddableArtifacts.add(name);
-	}
-
-	/**
-	 * Sets an optional shared VelocityContext. Useful with tools like VPP that
-	 * can set custom values in the context, not known to Cayenne.
-	 */
-	public void setContext(VelocityContext context) {
-		this.context = context;
-	}
-
-	/**
-	 * Injects an optional logger that will be used to trace generated files at
-	 * the info level.
-	 */
-	public void setLogger(Logger logger) {
-		this.logger = logger;
-	}
-
-	public void setEmbeddableTemplate(String embeddableTemplate) {
-		this.embeddableTemplate = embeddableTemplate;
-	}
-
-	public void setEmbeddableSuperTemplate(String embeddableSuperTemplate) {
-		this.embeddableSuperTemplate = embeddableSuperTemplate;
 	}
 
 	public void setArtifactsGenerationMode(String mode) {
 		if (ArtifactsGenerationMode.ENTITY.getLabel().equalsIgnoreCase(mode)) {
 			this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
-		} else if (ArtifactsGenerationMode.DATAMAP.getLabel().equalsIgnoreCase(mode)) {
-			this.artifactsGenerationMode = ArtifactsGenerationMode.DATAMAP;
 		} else {
 			this.artifactsGenerationMode = ArtifactsGenerationMode.ALL;
 		}
 	}
 
-    /**
-     * @since 4.1
-     */
-    public boolean isCreatePKProperties() {
-        return createPKProperties;
-    }
-
-    /**
-     * @since 4.1
-     */
-    public void setCreatePKProperties(boolean createPKProperties) {
-        this.createPKProperties = createPKProperties;
-    }
-
-    private Collection<EntityArtifact> getEntityArtifacts() {
-		resetArtifacts();
-		addAllEntities();
-		Collection<EntityArtifact> entityArtifacts = new ArrayList<>();
-		for(Artifact artifact : artifacts){
-			if(artifact instanceof EntityArtifact){
-				entityArtifacts.add((EntityArtifact) artifact);
-			}
-		}
-		return entityArtifacts;
+	public Path buildPath() {
+		return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : null;
 	}
 
-    private Collection<EmbeddableArtifact> getEmbeddableArtifacts() {
-		resetArtifacts();
-		addAllEmbeddables();
-		Collection<EmbeddableArtifact> embeddableArtifacts = new ArrayList<>();
-		for(Artifact artifact : artifacts){
-			if(artifact instanceof EmbeddableArtifact){
-				embeddableArtifacts.add((EmbeddableArtifact) artifact);
-			}
-		}
+	public void loadEntities(String entities) {
+		excludeEntityArtifacts.addAll(Arrays.asList(entities.split(",")));
+	}
+
+	public void resolveExcludeEntities() {
+		entityArtifacts = dataMap.getObjEntities()
+				.stream()
+				.filter(entity -> !excludeEntityArtifacts.contains(entity.getName()))
+				.map(ObjEntity::getName)
+				.collect(Collectors.toList());
+	}
+
+	public void loadEmbeddables(String embeddables) {
+		excludeEmbeddableArtifacts.addAll(Arrays.asList(embeddables.split(",")));
+	}
+
+	public void resolveExcludeEmbeddables() {
+    	embeddableArtifacts = dataMap.getEmbeddables()
+				.stream()
+				.filter(embeddable -> !excludeEmbeddableArtifacts.contains(embeddable.getClassName()))
+				.map(Embeddable::getClassName)
+				.collect(Collectors.toList());
+	}
+
+    public void resetCollections(){
+		this.embeddableArtifacts.clear();
+		this.entityArtifacts.clear();
+	}
+
+	private String getExcludeEntites() {
+		Collection<String> excludeEntities = dataMap.getObjEntities()
+				.stream()
+				.filter(entity -> !entityArtifacts.contains(entity.getName()))
+				.map(ObjEntity::getName)
+				.collect(Collectors.toList());
+		return org.apache.commons.lang3.StringUtils.join(excludeEntities, ",");
+	}
+
+	private String getExcludeEmbeddables() {
+		Collection<String> excludeEmbeddable = dataMap.getEmbeddables()
+				.stream()
+				.filter(embeddable -> !embeddableArtifacts.contains(embeddable.getClassName()))
+				.map(Embeddable::getClassName)
+				.collect(Collectors.toList());
+		return org.apache.commons.lang3.StringUtils.join(excludeEmbeddable, ",");
+	}
+
+	/**
+	 * Returns a String used to prefix class name to create a generated
+	 * superclass. Default value is "_".
+	 */
+	private String getSuperclassPrefix() {
+		return ClassGenerationAction.SUPERCLASS_PREFIX;
+	}
+
+	public Collection<String> getEmbeddables() {
 		return embeddableArtifacts;
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public boolean isCreatePKProperties() {
+		return createPKProperties;
 	}
 
 	public boolean isMakePairs() {
@@ -724,10 +618,8 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	}
 
 	public String getDir(){
-		return destDir != null ? destDir.getAbsolutePath() : null;
+		return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize().toString() : rootPath.toString() : null;
 	}
-
-	public File getDestDir() { return destDir; }
 
 	public String getTemplate() {
 		return template;
@@ -737,16 +629,15 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		return superPkg;
 	}
 
-	private void resetArtifacts(){
-		this.artifacts = new ArrayList<>();
-	}
-
 	public Collection<String> getEntities() {
 		return entityArtifacts;
 	}
 
-	public Collection<String> getEmbeddables() {
-		return embeddableArtifacts;
+	public String getRelPath() {
+    	if(relPath == null || relPath.toString().isEmpty()) {
+    		return ".";
+		}
+		return relPath.toString();
 	}
 
 	public String getArtifactsGenerationMode(){
@@ -774,39 +665,155 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	}
 
 	public String getQueryTemplate() {
-	    return queryTemplate;
-    }
+		return queryTemplate;
+	}
 
-    public String getQuerySuperTemplate() {
-        return querySuperTemplate;
-    }
+	public String getQuerySuperTemplate() {
+		return querySuperTemplate;
+	}
 
-    public void resetCollections(){
-		this.embeddableArtifacts = new ArrayList<>();
-		this.entityArtifacts = new ArrayList<>();
+	/**
+	 * Sets an optional shared nVelocityContext. Useful with tools like VPP that
+	 * can set custom values in the context, not known to Cayenne.
+	 */
+	public void setContext(VelocityContext context) {
+		this.context = context;
+	}
+
+	/**
+	 * Injects an optional logger that will be used to trace generated files at
+	 * the info level.
+	 */
+	public void setLogger(Logger logger) {
+		this.logger = logger;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	/**
+	 * Sets file encoding. If set to null, default system encoding will be used.
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
+	/**
+	 * Sets "superPkg" property value.
+	 */
+	public void setSuperPkg(String superPkg) {
+		this.superPkg = superPkg;
+	}
+
+	/**
+	 * @param dataMap The dataMap to set.
+	 */
+	public void setDataMap(DataMap dataMap) {
+		this.dataMap = dataMap;
+	}
+
+	public void setEmbeddableTemplate(String embeddableTemplate) {
+		this.embeddableTemplate = embeddableTemplate;
+	}
+
+	public void setEmbeddableSuperTemplate(String embeddableSuperTemplate) {
+		this.embeddableSuperTemplate = embeddableSuperTemplate;
+	}
+
+	/**
+	 * Sets <code>overwrite</code> property.
+	 */
+	public void setOverwrite(boolean overwrite) {
+		this.overwrite = overwrite;
+	}
+
+	/**
+	 * Sets <code>makepairs</code> property.
+	 */
+	public void setMakePairs(boolean makePairs) {
+		this.makePairs = makePairs;
+	}
+
+	/**
+	 * Sets <code>template</code> property.
+	 */
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
+	/**
+	 * Sets <code>superTemplate</code> property.
+	 */
+	public void setSuperTemplate(String superTemplate) {
+		this.superTemplate = superTemplate;
+	}
+
+	public void setQueryTemplate(String queryTemplate) {
+		this.queryTemplate = queryTemplate;
+	}
+
+	public void setQuerySuperTemplate(String querySuperTemplate) {
+		this.querySuperTemplate = querySuperTemplate;
+	}
+
+	/**
+	 * Sets <code>usepkgpath</code> property.
+	 */
+	public void setUsePkgPath(boolean usePkgPath) {
+		this.usePkgPath = usePkgPath;
+	}
+
+	/**
+	 * Sets <code>outputPattern</code> property.
+	 */
+	public void setOutputPattern(String outputPattern) {
+		this.outputPattern = outputPattern;
+	}
+
+	/**
+	 * Sets <code>createPropertyNames</code> property.
+	 */
+	public void setCreatePropertyNames(boolean createPropertyNames) {
+		this.createPropertyNames = createPropertyNames;
+	}
+
+	/**
+	 * @since 4.1
+	 */
+	public void setCreatePKProperties(boolean createPKProperties) {
+		this.createPKProperties = createPKProperties;
+	}
+
+	public void setRootPath(Path rootPath) {
+		this.rootPath = rootPath;
+	}
+
+	public void setRelPath(Path relPath) {
+		this.relPath = relPath;
+	}
+
+	public void setRelPath(String path) {
+		this.relPath = rootPath.relativize(Paths.get(path));
 	}
 
 	@Override
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 		encoder.start("cgen")
 				.attribute("xmlns", CgenExtension.NAMESPACE)
-				.nested(this.getEntityArtifacts(), delegate)
-				.nested(this.getEmbeddableArtifacts(), delegate)
-				.simpleTag("outputDirectory", this.destDir != null ? this.destDir.getAbsolutePath() : null)
+				.simpleTag("excludeEntities", getExcludeEntites())
+				.simpleTag("excludeEmbeddables",getExcludeEmbeddables())
+				.simpleTag("outputDirectory", getRelPath())
 				.simpleTag("generationMode", this.artifactsGenerationMode.getLabel())
-                .simpleTag("dataMapTemplate", this.queryTemplate)
-                .simpleTag("dataMapSuperclassTemplate", this.querySuperTemplate)
 				.simpleTag("subclassTemplate", this.template)
 				.simpleTag("superclassTemplate", this.superTemplate)
-				.simpleTag("embeddableTemplate", this.embeddableTemplate)
-				.simpleTag("embeddableSuperclassTemplate", this.embeddableSuperTemplate)
 				.simpleTag("outputPattern", this.outputPattern)
 				.simpleTag("makePairs", Boolean.toString(this.makePairs))
 				.simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
 				.simpleTag("overwriteSubclasses", Boolean.toString(this.overwrite))
 				.simpleTag("createPropertyNames", Boolean.toString(this.createPropertyNames))
 				.simpleTag("superPkg", this.superPkg)
-				.simpleTag("encoding", this.encoding)
+				.simpleTag("createPKProperties", Boolean.toString(this.createPKProperties))
 				.end();
 	}
 }

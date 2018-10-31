@@ -19,19 +19,11 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.map.EmbeddedAttribute;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CodeValidationUtil;
@@ -43,14 +35,15 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.io.File;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 /**
  * A mode-specific part of the code generation dialog.
@@ -59,30 +52,13 @@ import java.util.prefs.Preferences;
 public abstract class GeneratorController extends CayenneController {
 
     protected String mode = ArtifactsGenerationMode.ENTITY.getLabel();
-    protected Map<DataMap, DataMapDefaults> mapPreferences;
-    private String outputPath;
+    protected ClassGenerationAction classGenerationAction;
 
     public GeneratorController(CodeGeneratorControllerBase parent) {
         super(parent);
-    }
 
-    public void setOutputPath(String path) {
-        String old = this.outputPath;
-        this.outputPath = path;
-        if (this.outputPath != null && !this.outputPath.equals(old)) {
-            updatePreferences(path);
-        }
-    }
-
-    public void updatePreferences(String path) {
-        if (mapPreferences == null)
-            return;
-        Set<DataMap> keys = mapPreferences.keySet();
-        for (DataMap key : keys) {
-            mapPreferences
-                    .get(key)
-                    .setOutputPath(path);
-        }
+        createView();
+        initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
     }
 
     protected void initBindings(BindingBuilder bindingBuilder) {
@@ -94,6 +70,8 @@ public abstract class GeneratorController extends CayenneController {
         return (CodeGeneratorControllerBase) getParent();
     }
 
+    protected abstract GeneratorControllerPanel createView();
+
     /**
      * Creates an appropriate subclass of {@link ClassGenerationAction},
      * returning it in an unconfigured state. Configuration is performed by
@@ -101,55 +79,64 @@ public abstract class GeneratorController extends CayenneController {
      */
     protected abstract ClassGenerationAction newGenerator();
 
+    protected void initForm(ClassGenerationAction classGenerationAction) {
+        this.classGenerationAction = classGenerationAction;
+        classGenerationAction.setRootPath(Paths.get(initOutputFolder()));
+        ((GeneratorControllerPanel)getView()).getOutputFolder().setText(classGenerationAction.getDir());
+    }
+
     /**
      * Creates a class generator for provided selections.
      */
     public ClassGenerationAction createGenerator() {
         DataMap map = getParentController().getProjectController().getCurrentDataMap();
-
         ClassGenerationAction generator = getParentController().projectController.getApplication().getMetaData().get(map, ClassGenerationAction.class);
         if(generator != null){
-            getParentController().addToSelectedEntities(generator.getEntities());
-            getParentController().addToSelectedEmbeddables(generator.getEmbeddables());
+            getParentController().addToSelectedEntities(generator.getDataMap(), generator.getEntities());
+            getParentController().addToSelectedEmbeddables(generator.getDataMap(), generator.getEmbeddables());
             return generator;
         }
 
         try {
             generator = newGenerator();
             generator.setDataMap(map);
-            initOutputFolder();
-            File outputDir = new File(outputPath);
+
+            Path basePath = Paths.get(initOutputFolder());
 
             // no destination folder
-            if (outputDir == null) {
+            if (basePath == null) {
                 JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
                 return null;
             }
 
             // no such folder
-            if (!outputDir.exists() && !outputDir.mkdirs()) {
-                JOptionPane.showMessageDialog(this.getView(), "Can't create directory " + outputDir
-                        + ". Select a different one.");
-                return null;
+            if (!Files.exists(basePath)) {
+                Files.createDirectories(basePath);
             }
 
             // not a directory
-            if (!outputDir.isDirectory()) {
-                JOptionPane.showMessageDialog(this.getView(), outputDir + " is not a valid directory.");
+            if (!Files.isDirectory(basePath)) {
+                JOptionPane.showMessageDialog(this.getView(), basePath + " is not a valid directory.");
                 return null;
             }
 
-            generator.setDestDir(outputDir);
-
+            generator.setRootPath(basePath);
             Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
-
             if (preferences != null) {
                 generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
             }
-
+            getParentController().addToSelectedEntities(map, map.getObjEntities()
+                    .stream()
+                    .map(Entity::getName)
+                    .collect(Collectors.toList()));
+            getParentController().addToSelectedEmbeddables(map, map.getEmbeddables()
+                    .stream()
+                    .map(Embeddable::getClassName)
+                    .collect(Collectors.toList()));
             getParentController().projectController.getApplication().getMetaData().add(map, generator);
-        } catch (CayenneRuntimeException exception) {
-            JOptionPane.showMessageDialog(this.getView(), exception.getUnlabeledMessage());
+        } catch (IOException exception) {
+            JOptionPane.showMessageDialog(this.getView(), "Can't create directory. " +
+                    ". Select a different one.");
             return null;
         }
 
@@ -202,7 +189,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateEmbeddable(Embeddable embeddable) {
+    private ValidationFailure validateEmbeddable(Embeddable embeddable) {
 
         String name = embeddable.getClassName();
 
@@ -258,7 +245,7 @@ public abstract class GeneratorController extends CayenneController {
         }
     }
 
-    protected ValidationFailure validateEntity(ObjEntity entity) {
+    private ValidationFailure validateEntity(ObjEntity entity) {
 
         String name = entity.getName();
 
@@ -288,7 +275,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateAttribute(ObjAttribute attribute) {
+    private ValidationFailure validateAttribute(ObjAttribute attribute) {
 
         String name = attribute.getEntity().getName();
 
@@ -319,7 +306,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateEmbeddedAttribute(ObjAttribute attribute) {
+    private ValidationFailure validateEmbeddedAttribute(ObjAttribute attribute) {
 
         String name = attribute.getEntity().getName();
 
@@ -368,7 +355,7 @@ public abstract class GeneratorController extends CayenneController {
         return null;
     }
 
-    protected ValidationFailure validateRelationship(ObjRelationship relationship, boolean clientValidation) {
+    private ValidationFailure validateRelationship(ObjRelationship relationship, boolean clientValidation) {
 
         String name = relationship.getSourceEntity().getName();
 
@@ -417,34 +404,17 @@ public abstract class GeneratorController extends CayenneController {
      * Returns a predicate for default entity selection in a given mode.
      */
     public Predicate getDefaultClassFilter() {
-        final ObjEntity selectedEntity = Application.getInstance().getFrameController().getProjectController()
-                .getCurrentObjEntity();
+        return object -> {
+            if (object instanceof ObjEntity) {
+                return getParentController().getProblem(((ObjEntity) object).getName()) == null;
+            }
 
-        final Embeddable selectedEmbeddable = Application.getInstance().getFrameController().getProjectController()
-                .getCurrentEmbeddable();
+            if (object instanceof Embeddable) {
+                return getParentController().getProblem(((Embeddable) object).getClassName()) == null;
+            }
 
-        if (selectedEntity != null) {
-            // select a single entity
-            final boolean hasProblem = getParentController().getProblem(selectedEntity.getName()) != null;
-            return object -> !hasProblem && object == selectedEntity;
-        } else if (selectedEmbeddable != null) {
-            // select a single embeddable
-            final boolean hasProblem = getParentController().getProblem(selectedEmbeddable.getClassName()) != null;
-            return object -> !hasProblem && object == selectedEmbeddable;
-        } else {
-            // select all entities
-            return object -> {
-                if (object instanceof ObjEntity) {
-                    return getParentController().getProblem(((ObjEntity) object).getName()) == null;
-                }
-
-                if (object instanceof Embeddable) {
-                    return getParentController().getProblem(((Embeddable) object).getClassName()) == null;
-                }
-
-                return false;
-            };
-        }
+            return false;
+        };
     }
 
     /**
@@ -452,6 +422,7 @@ public abstract class GeneratorController extends CayenneController {
      * generation directory.
      */
     public void selectOutputFolderAction() {
+
         TextAdapter outputFolder = ((GeneratorControllerPanel) getView()).getOutputFolder();
 
         String currentDir = outputFolder.getComponent().getText();
@@ -479,9 +450,23 @@ public abstract class GeneratorController extends CayenneController {
         }
     }
 
-    private void initOutputFolder() {
-        String pathString = System.getProperty("user.home");
-        setOutputPath(pathString);
+    private String initOutputFolder() {
+        String path;
+        if (System.getProperty("cayenne.cgen.destdir") != null) {
+            return System.getProperty("cayenne.cgen.destdir");
+        } else {
+            // init default directory..
+            FSPath lastPath = Application.getInstance().getFrameController().getLastDirectory();
+
+            path = checkDefaultMavenResourceDir(lastPath, "test");
+
+            if (path != null || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
+                return path;
+            } else {
+                File lastDir = lastPath.getExistingDirectory(false);
+                return lastDir != null ? lastDir.getAbsolutePath() : ".";
+            }
+        }
     }
 
     private String checkDefaultMavenResourceDir(FSPath lastPath, String dirType) {

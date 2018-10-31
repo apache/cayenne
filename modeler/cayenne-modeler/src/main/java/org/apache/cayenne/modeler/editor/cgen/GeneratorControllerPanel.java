@@ -23,11 +23,11 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.io.File;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A generic panel that is a superclass of generator panels, defining common fields.
@@ -35,32 +35,34 @@ import java.io.File;
  */
 public class GeneratorControllerPanel extends JPanel {
 
+    protected Collection<StandardPanelComponent> dataMapLines;
     protected TextAdapter outputFolder;
     protected JButton selectOutputFolder;
-
-    ProjectController projectController;
+    protected ProjectController projectController;
 
     public GeneratorControllerPanel(ProjectController projectController) {
+        this.dataMapLines = new ArrayList<>();
         this.projectController = projectController;
-        JTextField outputFolderField = new JTextField();
-        this.outputFolder = new TextAdapter(outputFolderField) {
-            protected void updateModel(String text) {
-                getCgenByDataMap().setDestDir(new File(text));
+        this.outputFolder = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+                getCgenByDataMap().setRelPath(text);
                 projectController.setDirty(true);
             }
         };
         this.selectOutputFolder = new JButton("Select");
     }
 
-    public ClassGenerationAction getCgenByDataMap() {
-        DataMap dataMap = projectController.getCurrentDataMap();
-        return projectController.getApplication().getMetaData().get(dataMap, ClassGenerationAction.class);
-    }
     public TextAdapter getOutputFolder() {
         return outputFolder;
     }
 
     public JButton getSelectOutputFolder() {
         return selectOutputFolder;
+    }
+
+    public ClassGenerationAction getCgenByDataMap() {
+        DataMap dataMap = projectController.getCurrentDataMap();
+        return projectController.getApplication().getMetaData().get(dataMap, ClassGenerationAction.class);
     }
 }

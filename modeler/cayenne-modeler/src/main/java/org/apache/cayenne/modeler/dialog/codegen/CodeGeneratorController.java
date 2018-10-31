@@ -113,7 +113,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         }
 
         label = label.concat("; ");
-        
+
         int sizeEmb = getSelectedEmbeddablesSize();
 
         if (sizeEmb == 0) {

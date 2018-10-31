@@ -27,10 +27,14 @@ import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -212,7 +216,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         for (Object classObj : classes) {
             if (classObj instanceof Embeddable
                     && selectedEmbeddables.contains(((Embeddable) classObj)
-                            .getClassName())) {
+                    .getClassName())) {
                 selected.add((Embeddable) classObj);
             }
         }
@@ -262,14 +266,14 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public String getProblem(Object obj) {
 
         String name = null;
-        
+
         if (obj instanceof ObjEntity) {
             name = ((ObjEntity) obj).getName();
         }
         else if (obj instanceof Embeddable) {
             name = ((Embeddable) obj).getClassName();
         }
-        
+
         if (validation == null) {
             return null;
         }

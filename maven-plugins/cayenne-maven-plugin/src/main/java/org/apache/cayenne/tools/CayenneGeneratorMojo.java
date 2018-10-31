@@ -207,7 +207,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
      * @since 4.1
      */
     @Parameter(defaultValue = "false")
-    private boolean createPKProperties;
+    private Boolean createPKProperties;
 
     private transient Injector injector;
 
@@ -295,7 +295,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 		injector.injectMembers(action);
 
-		action.setDestDir(destDir);
+//		action.setDestDir(destDir.toPath());
 		action.setEncoding(encoding != null ? encoding : action.getEncoding());
 		action.setMakePairs(makePairs != null ? makePairs : action.isMakePairs());
 		action.setArtifactsGenerationMode(mode != null ? mode : action.getArtifactsGenerationMode());
@@ -310,6 +310,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		action.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : action.isCreatePropertyNames());
 		action.setQueryTemplate(queryTemplate != null ? queryTemplate : action.getQueryTemplate());
 		action.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : action.getQuerySuperTemplate());
+		action.setCreatePKProperties(createPKProperties != null ? createPKProperties : action.isCreatePropertyNames());
 		return action;
 	}
 }

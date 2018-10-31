@@ -25,12 +25,10 @@ import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 
-import javax.swing.JLabel;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 public class ClassesTabController extends CayenneController {
-
-    public static final String GENERATE_PROPERTY = "generate";
 
     protected ClassesTabPanel view;
     protected ObjectBinding tableBinding;
@@ -48,6 +46,7 @@ public class ClassesTabController extends CayenneController {
 
     public void startup(){
         initBindings();
+        classSelectedAction();
     }
 
     protected CodeGeneratorControllerBase getParentController() {
@@ -98,9 +97,11 @@ public class ClassesTabController extends CayenneController {
      * A callback action that updates the state of Select All checkbox.
      */
     public void classSelectedAction() {
-        int selectedCount = getParentController().getSelectedEntitiesSize() + getParentController().getSelectedEmbeddablesSize() ;
+        int selectedCount = getParentController().getSelectedEntitiesSize()
+                + getParentController().getSelectedEmbeddablesSize()
+                + (getParentController().isDataMapSelected() ? 1 : 0);
 
-        if (selectedCount == 0) {
+        if (selectedCount < getParentController().getClasses().size()) {
             view.getCheckAll().setSelected(false);
         }
         else if (selectedCount == getParentController().getClasses().size()) {
