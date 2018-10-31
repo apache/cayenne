@@ -17,32 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.action;
+plugins {
+    id 'org.apache.cayenne'
+}
 
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.DomainDisplayEvent;
-import org.apache.cayenne.modeler.util.CayenneAction;
-
-import java.awt.event.ActionEvent;
-
-
-public class GenerateCodeAction extends CayenneAction {
-
-    public static String getActionName() {
-        return "Generate Classes";
-    }
-
-    public GenerateCodeAction(Application application) {
-        super(getActionName(), application);
-    }
-
-    public String getIconName() {
-        return "icon-gen_java.png";
-    }
-
-    public void performAction(ActionEvent e) {
-        getProjectController().fireDomainDisplayEvent(new DomainDisplayEvent(this, (DataChannelDescriptor) getProjectController().getProject().getRootNode()));
-    }
+cgen {
+    map dataMap
+    destDir = './customDirectory'
+    makePairs false
+    outputPattern = '*.groovy'
+    excludeEntities = 'ObjEntity1'
+    overwrite = false
+    mode = 'all'
 }

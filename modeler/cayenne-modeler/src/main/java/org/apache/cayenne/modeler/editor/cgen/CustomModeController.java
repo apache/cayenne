@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
@@ -85,57 +86,70 @@ public class CustomModeController extends GeneratorController {
     }
 
     private void updateComboBoxes() {
-        view.getSubclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getTemplate()));
-        view.getSuperclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(classGenerationAction.getSuperclassTemplate()));
+        view.getSubclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(cgenConfiguration.getTemplate()));
+        view.getSuperclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(cgenConfiguration.getSuperTemplate()));
         view.setDisableSuperComboBoxes(view.getPairs().isSelected());
     }
 
     @Override
-    protected ClassGenerationAction newGenerator() {
-        ClassGenerationAction action = new ClassGenerationAction();
-        getApplication().getInjector().injectMembers(action);
-        return action;
+    public CgenConfiguration createConfiguration() {
+        return super.createConfiguration();
     }
 
     private void initListeners(){
         view.getPairs().addActionListener(val -> {
-            classGenerationAction.setMakePairs(view.getPairs().isSelected());
+            cgenConfiguration.setMakePairs(view.getPairs().isSelected());
+            if(!view.getPairs().isSelected()) {
+                cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+            } else {
+                cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
+                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+            }
+            initForm(cgenConfiguration);
             getParentController().getProjectController().setDirty(true);
         });
 
         view.getOverwrite().addActionListener(val -> {
-            classGenerationAction.setOverwrite(view.getOverwrite().isSelected());
+            cgenConfiguration.setOverwrite(view.getOverwrite().isSelected());
             getParentController().getProjectController().setDirty(true);
         });
 
         view.getCreatePropertyNames().addActionListener(val -> {
-            classGenerationAction.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
+            cgenConfiguration.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
             getParentController().getProjectController().setDirty(true);
         });
 
         view.getUsePackagePath().addActionListener(val -> {
-            classGenerationAction.setUsePkgPath(view.getUsePackagePath().isSelected());
+            cgenConfiguration.setUsePkgPath(view.getUsePackagePath().isSelected());
             getParentController().getProjectController().setDirty(true);
         });
 
         view.getPkProperties().addActionListener(val -> {
-            classGenerationAction.setCreatePKProperties(view.getPkProperties().isSelected());
+            cgenConfiguration.setCreatePKProperties(view.getPkProperties().isSelected());
             getParentController().getProjectController().setDirty(true);
         });
     }
 
-    public void initForm(ClassGenerationAction classGenerationAction){
-        super.initForm(classGenerationAction);
-        view.getOutputPattern().setText(classGenerationAction.getOutputPattern());
-        view.getPairs().setSelected(classGenerationAction.isMakePairs());
-        view.getUsePackagePath().setSelected(classGenerationAction.isUsePkgPath());
-        view.getOverwrite().setSelected(classGenerationAction.isOverwrite());
-        view.getCreatePropertyNames().setSelected(classGenerationAction.isCreatePropertyNames());
-        view.getPkProperties().setSelected(classGenerationAction.isCreatePKProperties());
-        if(classGenerationAction.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
-            ((CodeGeneratorControllerBase)parent).setCurrentClass(classGenerationAction.getDataMap());
-            ((CodeGeneratorControllerBase)parent).setSelected(true);
+    public void initForm(CgenConfiguration cgenConfiguration){
+        super.initForm(cgenConfiguration);
+        view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
+        view.getPairs().setSelected(cgenConfiguration.isMakePairs());
+        view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
+        view.getOverwrite().setSelected(cgenConfiguration.isOverwrite());
+        view.getCreatePropertyNames().setSelected(cgenConfiguration.isCreatePropertyNames());
+        view.getPkProperties().setSelected(cgenConfiguration.isCreatePKProperties());
+        if(cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
+            ((CodeGeneratorControllerBase) parent).setCurrentClass(cgenConfiguration.getDataMap());
+            ((CodeGeneratorControllerBase) parent).setSelected(true);
         }
         updateComboBoxes();
+    }
+
+    @Override
+    public void updateConfiguration(CgenConfiguration cgenConfiguration) {
+        cgenConfiguration.setClient(false);
     }
 }

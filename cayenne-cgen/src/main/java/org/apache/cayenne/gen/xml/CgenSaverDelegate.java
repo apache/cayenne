@@ -19,7 +19,7 @@
 package org.apache.cayenne.gen.xml;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 
@@ -41,7 +41,7 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
 
     @Override
     public Void visitDataMap(DataMap dataMap) {
-        ClassGenerationAction cgen = metaData.get(dataMap, ClassGenerationAction.class);
+        CgenConfiguration cgen = metaData.get(dataMap, CgenConfiguration.class);
         if(cgen != null){
             resolveOutputDir(cgen);
             encoder.nested(cgen, getParentDelegate());
@@ -49,8 +49,11 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
         return null;
     }
 
-    private void resolveOutputDir(ClassGenerationAction classGenerationAction) {
-        Path prevPath = classGenerationAction.buildPath();
+    private void resolveOutputDir(CgenConfiguration cgenConfiguration) {
+        if(cgenConfiguration.getRootPath() == null) {
+            return;
+        }
+        Path prevPath = cgenConfiguration.buildPath();
         URL url = getBaseDirectory().getURL();
         if(url != null) {
             Path resourcePath = Paths.get(url.getPath());
@@ -59,9 +62,8 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
             }
 
             if(prevPath != null && resourcePath.compareTo(prevPath) != 0) {
-                classGenerationAction.setRootPath(resourcePath);
                 Path relPath = resourcePath.relativize(prevPath);
-                classGenerationAction.setRelPath(relPath);
+                cgenConfiguration.setRelPath(relPath);
             }
         }
     }

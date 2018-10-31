@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -31,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 
 /**
@@ -46,12 +50,14 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
 
     protected ClassesTabController classesSelector;
     protected GeneratorTabController generatorSelector;
+    private ConcurrentMap<DataMap, GeneratorController> prevGeneratorController;
 
     public CodeGeneratorController(CayenneController parent, ProjectController projectController) {
         super(parent, projectController);
         this.classesSelector = new ClassesTabController(this);
         this.generatorSelector = new GeneratorTabController(this);
         view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
+        this.prevGeneratorController = new ConcurrentHashMap<>();
         initBindings();
         initListeners();
     }
@@ -59,10 +65,14 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     public void startup(DataMap dataMap) {
         super.startup(dataMap);
         classesSelectedAction();
-        GeneratorController modeController = generatorSelector.getGeneratorController();
-        ClassGenerationAction classGenerationAction = modeController.createGenerator();
-        modeController.initForm(classGenerationAction);
+        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ? prevGeneratorController.get(dataMap) : generatorSelector.getStandartController();
+        CgenConfiguration cgenConfiguration = modeController.createConfiguration();
+        if(cgenConfiguration.isClient()) {
+            modeController = generatorSelector.getClientGeneratorController();
+        }
         classesSelector.startup();
+        prevGeneratorController.put(dataMap, modeController);
+        generatorSelector.setSelectedController(modeController);
     }
 
     private void initListeners(){
@@ -141,21 +151,26 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     }
 
     public void generateAction() {
-        ClassGenerationAction generator = generatorSelector.getGenerator();
+        CgenConfiguration cgenConfiguration = generatorSelector.getConfiguration();
+        ClassGenerationAction generator = cgenConfiguration.isClient() ?
+                new ClientClassGenerationAction(cgenConfiguration) :
+                new ClassGenerationAction(cgenConfiguration);
 
-        if (generator != null) {
-            try {
-                generator.prepareArtifacts();
-                generator.execute();
-                JOptionPane.showMessageDialog(
-                        this.getView(),
-                        "Class generation finished");
-            } catch (Exception e) {
-                logObj.error("Error generating classes", e);
-                JOptionPane.showMessageDialog(
-                        this.getView(),
-                        "Error generating classes - " + e.getMessage());
-            }
+        try {
+            generator.prepareArtifacts();
+            generator.execute();
+            JOptionPane.showMessageDialog(
+                    this.getView(),
+                    "Class generation finished");
+        } catch (Exception e) {
+            logObj.error("Error generating classes", e);
+            JOptionPane.showMessageDialog(
+                    this.getView(),
+                    "Error generating classes - " + e.getMessage());
         }
+    }
+
+    public ConcurrentMap<DataMap, GeneratorController> getPrevGeneratorController() {
+        return prevGeneratorController;
     }
 }

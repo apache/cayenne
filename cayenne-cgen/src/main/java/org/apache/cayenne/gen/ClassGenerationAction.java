@@ -20,14 +20,9 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -36,12 +31,12 @@ import org.slf4j.Logger;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ClassGenerationAction implements Serializable, XMLSerializable {
-	static final String TEMPLATES_DIR_NAME = "templates/v4_1/";
+public class ClassGenerationAction {
+
+	private static final String TEMPLATES_DIR_NAME = "templates/v4_1/";
 
 	public static final String SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "singleclass.vm";
 	public static final String SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "subclass.vm";
@@ -58,159 +53,105 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
 
-	Collection<Artifact> artifacts;
-	private Collection<String> entityArtifacts;
-	private Collection<String> excludeEntityArtifacts;
-	private Collection<String> embeddableArtifacts;
-	private Collection<String> excludeEmbeddableArtifacts;
-
-	protected String superPkg;
-	protected DataMap dataMap;
-
-	protected ArtifactsGenerationMode artifactsGenerationMode;
-	protected boolean makePairs;
-
+	protected CgenConfiguration cgenConfiguration;
 	protected Logger logger;
 
-	protected Path rootPath;
-	protected Path relPath;
+    // runtime ivars
+    protected VelocityContext context;
+    protected Map<String, Template> templateCache;
 
-	protected boolean overwrite;
-	protected boolean usePkgPath;
-
-	protected String template;
-	protected String superTemplate;
-	protected String embeddableTemplate;
-	protected String embeddableSuperTemplate;
-	protected String queryTemplate;
-	protected String querySuperTemplate;
-	protected long timestamp;
-	protected String outputPattern;
-	protected String encoding;
-	protected boolean createPropertyNames;
-	protected boolean force; // force run generator
-
-	/**
-	 * @since 4.1
-	 */
-	protected boolean createPKProperties;
-
-	// runtime ivars
-	protected VelocityContext context;
-	protected Map<String, Template> templateCache;
-
-
-	public ClassGenerationAction() {
-        this.outputPattern = "*.java";
-        this.timestamp = 0L;
-        this.usePkgPath = true;
-        this.makePairs = true;
-        this.context = new VelocityContext();
-        this.templateCache = new HashMap<>(5);
-
-        this.artifacts = new ArrayList<>();
-        this.entityArtifacts = new ArrayList<>();
-        this.excludeEntityArtifacts = new ArrayList<>();
-        this.embeddableArtifacts = new ArrayList<>();
-        this.excludeEmbeddableArtifacts = new ArrayList<>();
-        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
-
-        this.overwrite = false;
-		this.template = SUBCLASS_TEMPLATE;
-		this.superTemplate = SUPERCLASS_TEMPLATE;
-		this.embeddableTemplate = EMBEDDABLE_SUBCLASS_TEMPLATE;
-		this.embeddableSuperTemplate = EMBEDDABLE_SUPERCLASS_TEMPLATE;
-
-		this.queryTemplate = DATAMAP_SUBCLASS_TEMPLATE;
-		this.querySuperTemplate = DATAMAP_SUPERCLASS_TEMPLATE;
+	public ClassGenerationAction(CgenConfiguration cgenConfiguration) {
+		this.context = new VelocityContext();
+		this.templateCache = new HashMap<>(5);
+		this.cgenConfiguration = cgenConfiguration;
 	}
 
-	protected String defaultTemplateName(TemplateType type) {
+	public String defaultTemplateName(TemplateType type) {
 		switch (type) {
-		case ENTITY_SINGLE_CLASS:
-			return ClassGenerationAction.SINGLE_CLASS_TEMPLATE;
-		case ENTITY_SUBCLASS:
-			return ClassGenerationAction.SUBCLASS_TEMPLATE;
-		case ENTITY_SUPERCLASS:
-			return ClassGenerationAction.SUPERCLASS_TEMPLATE;
-		case EMBEDDABLE_SUBCLASS:
-			return ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
-		case EMBEDDABLE_SUPERCLASS:
-			return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
-		case EMBEDDABLE_SINGLE_CLASS:
-			return ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE;
-		case DATAMAP_SINGLE_CLASS:
-			return ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE;
-		case DATAMAP_SUPERCLASS:
-			return ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
-		case DATAMAP_SUBCLASS:
-			return ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
-		default:
-			throw new IllegalArgumentException("Invalid template type: " + type);
+			case ENTITY_SINGLE_CLASS:
+				return SINGLE_CLASS_TEMPLATE;
+			case ENTITY_SUBCLASS:
+				return SUBCLASS_TEMPLATE;
+			case ENTITY_SUPERCLASS:
+				return SUPERCLASS_TEMPLATE;
+			case EMBEDDABLE_SUBCLASS:
+				return EMBEDDABLE_SUBCLASS_TEMPLATE;
+			case EMBEDDABLE_SUPERCLASS:
+				return EMBEDDABLE_SUPERCLASS_TEMPLATE;
+			case EMBEDDABLE_SINGLE_CLASS:
+				return EMBEDDABLE_SINGLE_CLASS_TEMPLATE;
+			case DATAMAP_SINGLE_CLASS:
+				return DATAMAP_SINGLE_CLASS_TEMPLATE;
+			case DATAMAP_SUPERCLASS:
+				return DATAMAP_SUPERCLASS_TEMPLATE;
+			case DATAMAP_SUBCLASS:
+				return DATAMAP_SUBCLASS_TEMPLATE;
+			default:
+				throw new IllegalArgumentException("Invalid template type: " + type);
 		}
 	}
 
-	private String customTemplateName(TemplateType type) {
+	public String customTemplateName(TemplateType type) {
 		switch (type) {
-		case ENTITY_SINGLE_CLASS:
-			return template;
-		case ENTITY_SUBCLASS:
-			return template;
-		case ENTITY_SUPERCLASS:
-			return superTemplate;
-		case EMBEDDABLE_SINGLE_CLASS:
-			return embeddableTemplate;
-		case EMBEDDABLE_SUBCLASS:
-			return embeddableTemplate;
-		case EMBEDDABLE_SUPERCLASS:
-			return embeddableSuperTemplate;
-		case DATAMAP_SINGLE_CLASS:
-			return queryTemplate;
-		case DATAMAP_SUPERCLASS:
-			return querySuperTemplate;
-		case DATAMAP_SUBCLASS:
-			return queryTemplate;
-		default:
-			throw new IllegalArgumentException("Invalid template type: " + type);
+			case ENTITY_SINGLE_CLASS:
+				return cgenConfiguration.getTemplate();
+			case ENTITY_SUBCLASS:
+				return cgenConfiguration.getTemplate();
+			case ENTITY_SUPERCLASS:
+				return cgenConfiguration.getSuperTemplate();
+			case EMBEDDABLE_SINGLE_CLASS:
+				return cgenConfiguration.getEmbeddableTemplate();
+			case EMBEDDABLE_SUBCLASS:
+				return cgenConfiguration.getEmbeddableTemplate();
+			case EMBEDDABLE_SUPERCLASS:
+				return cgenConfiguration.getEmbeddableSuperTemplate();
+			case DATAMAP_SINGLE_CLASS:
+				return cgenConfiguration.getQueryTemplate();
+			case DATAMAP_SUPERCLASS:
+				return cgenConfiguration.getQuerySuperTemplate();
+			case DATAMAP_SUBCLASS:
+				return cgenConfiguration.getQueryTemplate();
+			default:
+				throw new IllegalArgumentException("Invalid template type: " + type);
 		}
 	}
 
-	/**
-	 * VelocityContext initialization method called once per artifact.
-	 */
-	private void resetContextForArtifact(Artifact artifact) {
-		StringUtils stringUtils = StringUtils.getInstance();
+    /**
+     * VelocityContext initialization method called once per artifact.
+     */
+    public void resetContextForArtifact(Artifact artifact) {
+        StringUtils stringUtils = StringUtils.getInstance();
 
-		String qualifiedClassName = artifact.getQualifiedClassName();
-		String packageName = stringUtils.stripClass(qualifiedClassName);
-		String className = stringUtils.stripPackageName(qualifiedClassName);
+        String qualifiedClassName = artifact.getQualifiedClassName();
+        String packageName = stringUtils.stripClass(qualifiedClassName);
+        String className = stringUtils.stripPackageName(qualifiedClassName);
 
-		String qualifiedBaseClassName = artifact.getQualifiedBaseClassName();
-		String basePackageName = stringUtils.stripClass(qualifiedBaseClassName);
-		String baseClassName = stringUtils.stripPackageName(qualifiedBaseClassName);
+        String qualifiedBaseClassName = artifact.getQualifiedBaseClassName();
+        String basePackageName = stringUtils.stripClass(qualifiedBaseClassName);
+        String baseClassName = stringUtils.stripPackageName(qualifiedBaseClassName);
 
-		String superClassName = getSuperclassPrefix() + stringUtils.stripPackageName(qualifiedClassName);
+        String superClassName = SUPERCLASS_PREFIX + stringUtils.stripPackageName(qualifiedClassName);
 
-		String superPackageName = this.superPkg;
-		if (superPackageName == null) {
-			superPackageName = packageName + ".auto";
-		}
+        String superPackageName = cgenConfiguration.getSuperPkg();
+        if (superPackageName == null) {
+            superPackageName = packageName + ".auto";
+        }
 
-		context.put(Artifact.BASE_CLASS_KEY, baseClassName);
-		context.put(Artifact.BASE_PACKAGE_KEY, basePackageName);
+        context.put(Artifact.BASE_CLASS_KEY, baseClassName);
+        context.put(Artifact.BASE_PACKAGE_KEY, basePackageName);
 
-		context.put(Artifact.SUB_CLASS_KEY, className);
-		context.put(Artifact.SUB_PACKAGE_KEY, packageName);
+        context.put(Artifact.SUB_CLASS_KEY, className);
+        context.put(Artifact.SUB_PACKAGE_KEY, packageName);
 
-		context.put(Artifact.SUPER_CLASS_KEY, superClassName);
-		context.put(Artifact.SUPER_PACKAGE_KEY, superPackageName);
+        context.put(Artifact.SUPER_CLASS_KEY, superClassName);
+        context.put(Artifact.SUPER_PACKAGE_KEY, superPackageName);
 
-		context.put(Artifact.OBJECT_KEY, artifact.getObject());
-		context.put(Artifact.STRING_UTILS_KEY, stringUtils);
+        context.put(Artifact.OBJECT_KEY, artifact.getObject());
+        context.put(Artifact.STRING_UTILS_KEY, stringUtils);
 
-		context.put(Artifact.CREATE_PROPERTY_NAMES, createPropertyNames);
-		context.put(Artifact.CREATE_PK_PROPERTIES, createPKProperties);
-	}
+        context.put(Artifact.CREATE_PROPERTY_NAMES, cgenConfiguration.isCreatePropertyNames());
+        context.put(Artifact.CREATE_PK_PROPERTIES, cgenConfiguration.isCreatePKProperties());
+    }
 
 	/**
 	 * VelocityContext initialization method called once per each artifact and
@@ -221,11 +162,50 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		artifact.postInitContext(context);
 	}
 
+	/**
+	 * Adds entities to the internal entity list.
+	 * @param entities collection
+	 *
+	 * @since 4.0 throws exception
+	 */
+	public void addEntities(Collection<ObjEntity> entities) {
+		if (entities != null) {
+			for (ObjEntity entity : entities) {
+				cgenConfiguration.addArtifact(new EntityArtifact(entity));
+			}
+		}
+	}
+
+	public void addEmbeddables(Collection<Embeddable> embeddables) {
+		if (embeddables != null) {
+			for (Embeddable embeddable : embeddables) {
+				cgenConfiguration.addArtifact(new EmbeddableArtifact(embeddable));
+			}
+		}
+	}
+
+	public void addQueries(Collection<QueryDescriptor> queries) {
+		if (cgenConfiguration.getArtifactsGenerationMode().equals(ArtifactsGenerationMode.ALL.getLabel())) {
+			// TODO: andrus 10.12.2010 - why not also check for empty query list??
+			// Or create a better API for enabling DataMapArtifact
+			if (queries != null) {
+				Artifact artifact = new DataMapArtifact(cgenConfiguration.getDataMap(), queries);
+				if(!cgenConfiguration.getArtifacts().contains(artifact)) {
+					cgenConfiguration.addArtifact(artifact);
+				}
+			}
+		}
+	}
+
 	public void prepareArtifacts() {
-		this.artifacts.clear();
-        addAllEntities();
-        addAllEmbeddables();
-        addQueries(dataMap.getQueryDescriptors());
+		cgenConfiguration.getArtifacts().clear();
+		addEntities(cgenConfiguration.getEntities().stream()
+				.map(entity -> cgenConfiguration.getDataMap().getObjEntity(entity))
+				.collect(Collectors.toList()));
+		addEmbeddables(cgenConfiguration.getEmbeddables().stream()
+				.map(embeddable -> cgenConfiguration.getDataMap().getEmbeddable(embeddable))
+				.collect(Collectors.toList()));
+		addQueries(cgenConfiguration.getDataMap().getQueryDescriptors());
     }
 
 	/**
@@ -236,14 +216,14 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		validateAttributes();
 
 		try {
-			for (Artifact artifact : artifacts) {
+			for (Artifact artifact : cgenConfiguration.getArtifacts()) {
 				execute(artifact);
 			}
 		} finally {
 			// must reset engine at the end of class generator run to avoid
 			// memory
 			// leaks and stale templates
-			this.templateCache.clear();
+			templateCache.clear();
 		}
 	}
 
@@ -254,7 +234,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 
 		resetContextForArtifact(artifact);
 
-		ArtifactGenerationMode artifactMode = makePairs ? ArtifactGenerationMode.GENERATION_GAP
+		ArtifactGenerationMode artifactMode = cgenConfiguration.isMakePairs() ? ArtifactGenerationMode.GENERATION_GAP
 				: ArtifactGenerationMode.SINGLE_CLASS;
 
 		TemplateType[] templateTypes = artifact.getTemplateTypes(artifactMode);
@@ -307,9 +287,16 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	 * Called internally from "execute".
 	 */
 	private void validateAttributes() {
-		Path dir = buildPath();
+		Path dir = cgenConfiguration.buildPath();
 		if (dir == null) {
 			throw new CayenneRuntimeException("'rootPath' attribute is missing.");
+		}
+		if(Files.notExists(dir)) {
+			try {
+				Files.createDirectories(dir);
+			} catch (IOException e) {
+				throw new CayenneRuntimeException("can't create directory");
+			}
 		}
 
 		if (!Files.isDirectory(dir)) {
@@ -343,7 +330,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		// return writer with specified encoding
 		FileOutputStream out = new FileOutputStream(outFile);
 
-		return (encoding != null) ? new OutputStreamWriter(out, encoding) : new OutputStreamWriter(out);
+		return (cgenConfiguration.getEncoding() != null) ? new OutputStreamWriter(out, cgenConfiguration.getEncoding()) : new OutputStreamWriter(out);
 	}
 
 	/**
@@ -355,10 +342,10 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
-		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
-		File dest = new File(mkpath(new File(getDir()), packageName), filename);
+		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
+		File dest = new File(mkpath(new File(cgenConfiguration.buildPath().toString()), packageName), filename);
 
-		if (dest.exists() && !fileNeedUpdate(dest, superTemplate)) {
+		if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate())) {
 			return null;
 		}
 
@@ -374,21 +361,21 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		String packageName = (String) context.get(Artifact.SUB_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
-		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, outputPattern, className);
-		File dest = new File(mkpath(new File(Objects.requireNonNull(buildPath()).toString()), packageName), filename);
+		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
+		File dest = new File(mkpath(new File(Objects.requireNonNull(cgenConfiguration.buildPath()).toString()), packageName), filename);
 
 		if (dest.exists()) {
 			// no overwrite of subclasses
-			if (makePairs) {
+			if (cgenConfiguration.isMakePairs()) {
 				return null;
 			}
 
 			// skip if said so
-			if (!overwrite) {
+			if (!cgenConfiguration.isOverwrite()) {
 				return null;
 			}
 
-			if (!fileNeedUpdate(dest, template)) {
+			if (!fileNeedUpdate(dest, cgenConfiguration.getTemplate())) {
 				return null;
 			}
 		}
@@ -402,7 +389,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	 * last saved AND the template is older than the destination file
 	 */
 	protected boolean fileNeedUpdate(File dest, String templateFileName) {
-		if(force) {
+		if(cgenConfiguration.isForce()) {
 			return true;
 		}
 
@@ -421,7 +408,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	 * Is file modified after internal timestamp (usually equal to mtime of datamap file)
 	 */
 	protected boolean isOld(File file) {
-		return file.lastModified() > timestamp;
+		return file.lastModified() > cgenConfiguration.getTimestamp();
 	}
 
 	/**
@@ -431,7 +418,7 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	 */
 	private File mkpath(File dest, String pkgName) throws Exception {
 
-		if (!usePkgPath || pkgName == null) {
+		if (!cgenConfiguration.isUsePkgPath() || pkgName == null) {
 			return dest;
 		}
 
@@ -445,242 +432,6 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * Adds entities to the internal entity list.
-	 * @param entities collection
-	 *
-	 * @since 4.0 throws exception
-	 */
-	public void addEntities(Collection<ObjEntity> entities) {
-		if (entities != null) {
-			for (ObjEntity entity : entities) {
-				artifacts.add(new EntityArtifact(entity));
-			}
-		}
-	}
-
-	public void addEmbeddables(Collection<Embeddable> embeddables) {
-		if (embeddables != null) {
-			for (Embeddable embeddable : embeddables) {
-				artifacts.add(new EmbeddableArtifact(embeddable));
-			}
-		}
-	}
-
-	public void addQueries(Collection<QueryDescriptor> queries) {
-		if (artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
-			// TODO: andrus 10.12.2010 - why not also check for empty query list??
-			// Or create a better API for enabling DataMapArtifact
-			if (queries != null) {
-				Artifact artifact = new DataMapArtifact(dataMap, queries);
-				if(!artifacts.contains(artifact)) {
-					artifacts.add(artifact);
-				}
-			}
-		}
-	}
-
-    private void addAllEntities() {
-		entityArtifacts.forEach(val -> {
-			Artifact artifact = new EntityArtifact(dataMap.getObjEntity(val));
-			if(!artifacts.contains(artifact)) {
-				artifacts.add(artifact);
-			}
-		});
-	}
-
-    private void addAllEmbeddables() {
-		embeddableArtifacts.forEach(val -> {
-			Artifact artifact = new EmbeddableArtifact(dataMap.getEmbeddable(val));
-			if(!artifacts.contains(artifact)) {
-				artifacts.add(artifact);
-			}
-		});
-	}
-
-    /**
-     * @since 4.1
-     */
-	public void loadEntity(String name) {
-		entityArtifacts.add(name);
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	public void loadEmbeddable(String name) {
-		embeddableArtifacts.add(name);
-	}
-
-	public void setArtifactsGenerationMode(String mode) {
-		if (ArtifactsGenerationMode.ENTITY.getLabel().equalsIgnoreCase(mode)) {
-			this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
-		} else {
-			this.artifactsGenerationMode = ArtifactsGenerationMode.ALL;
-		}
-	}
-
-	public Path buildPath() {
-		return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : null;
-	}
-
-	public void loadEntities(String entities) {
-		excludeEntityArtifacts.addAll(Arrays.asList(entities.split(",")));
-	}
-
-	public void resolveExcludeEntities() {
-		entityArtifacts = dataMap.getObjEntities()
-				.stream()
-				.filter(entity -> !excludeEntityArtifacts.contains(entity.getName()))
-				.map(ObjEntity::getName)
-				.collect(Collectors.toList());
-	}
-
-	public void loadEmbeddables(String embeddables) {
-		excludeEmbeddableArtifacts.addAll(Arrays.asList(embeddables.split(",")));
-	}
-
-	public void resolveExcludeEmbeddables() {
-    	embeddableArtifacts = dataMap.getEmbeddables()
-				.stream()
-				.filter(embeddable -> !excludeEmbeddableArtifacts.contains(embeddable.getClassName()))
-				.map(Embeddable::getClassName)
-				.collect(Collectors.toList());
-	}
-
-    public void resetCollections(){
-		this.embeddableArtifacts.clear();
-		this.entityArtifacts.clear();
-	}
-
-	private String getExcludeEntites() {
-		Collection<String> excludeEntities = dataMap.getObjEntities()
-				.stream()
-				.filter(entity -> !entityArtifacts.contains(entity.getName()))
-				.map(ObjEntity::getName)
-				.collect(Collectors.toList());
-		return org.apache.commons.lang3.StringUtils.join(excludeEntities, ",");
-	}
-
-	private String getExcludeEmbeddables() {
-		Collection<String> excludeEmbeddable = dataMap.getEmbeddables()
-				.stream()
-				.filter(embeddable -> !embeddableArtifacts.contains(embeddable.getClassName()))
-				.map(Embeddable::getClassName)
-				.collect(Collectors.toList());
-		return org.apache.commons.lang3.StringUtils.join(excludeEmbeddable, ",");
-	}
-
-	/**
-	 * Returns a String used to prefix class name to create a generated
-	 * superclass. Default value is "_".
-	 */
-	private String getSuperclassPrefix() {
-		return ClassGenerationAction.SUPERCLASS_PREFIX;
-	}
-
-	public Collection<String> getEmbeddables() {
-		return embeddableArtifacts;
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	public boolean isCreatePKProperties() {
-		return createPKProperties;
-	}
-
-	public boolean isMakePairs() {
-		return makePairs;
-	}
-
-	public boolean isOverwrite() {
-		return overwrite;
-	}
-
-	public boolean isUsePkgPath() {
-		return usePkgPath;
-	}
-
-	public boolean isCreatePropertyNames() {
-		return createPropertyNames;
-	}
-
-	public String getOutputPattern() {
-		return outputPattern;
-	}
-
-	public String getSuperclassTemplate(){
-		return superTemplate;
-	}
-
-	public DataMap getDataMap() {
-		return dataMap;
-	}
-
-	public String getDir(){
-		return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize().toString() : rootPath.toString() : null;
-	}
-
-	public String getTemplate() {
-		return template;
-	}
-
-	public String getSuperPkg(){
-		return superPkg;
-	}
-
-	public Collection<String> getEntities() {
-		return entityArtifacts;
-	}
-
-	public String getRelPath() {
-    	if(relPath == null || relPath.toString().isEmpty()) {
-    		return ".";
-		}
-		return relPath.toString();
-	}
-
-	public String getArtifactsGenerationMode(){
-		return artifactsGenerationMode.getLabel();
-	}
-
-	public boolean isForce() {
-		return force;
-	}
-
-	public void setForce(boolean force) {
-		this.force = force;
-	}
-
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public String getEmbeddableTemplate() {
-		return embeddableTemplate;
-	}
-
-	public String getEmbeddableSuperTemplate() {
-		return embeddableSuperTemplate;
-	}
-
-	public String getQueryTemplate() {
-		return queryTemplate;
-	}
-
-	public String getQuerySuperTemplate() {
-		return querySuperTemplate;
-	}
-
-	/**
-	 * Sets an optional shared nVelocityContext. Useful with tools like VPP that
-	 * can set custom values in the context, not known to Cayenne.
-	 */
-	public void setContext(VelocityContext context) {
-		this.context = context;
-	}
-
-	/**
 	 * Injects an optional logger that will be used to trace generated files at
 	 * the info level.
 	 */
@@ -688,132 +439,20 @@ public class ClassGenerationAction implements Serializable, XMLSerializable {
 		this.logger = logger;
 	}
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public CgenConfiguration getCgenConfiguration() {
+		return cgenConfiguration;
 	}
 
 	/**
-	 * Sets file encoding. If set to null, default system encoding will be used.
+	 * Sets an optional shared VelocityContext. Useful with tools like VPP that
+	 * can set custom values in the context, not known to Cayenne.
 	 */
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
+	public void setContext(VelocityContext context) {
+		this.context = context;
 	}
 
-	/**
-	 * Sets "superPkg" property value.
-	 */
-	public void setSuperPkg(String superPkg) {
-		this.superPkg = superPkg;
+	public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
+		this.cgenConfiguration = cgenConfiguration;
 	}
 
-	/**
-	 * @param dataMap The dataMap to set.
-	 */
-	public void setDataMap(DataMap dataMap) {
-		this.dataMap = dataMap;
-	}
-
-	public void setEmbeddableTemplate(String embeddableTemplate) {
-		this.embeddableTemplate = embeddableTemplate;
-	}
-
-	public void setEmbeddableSuperTemplate(String embeddableSuperTemplate) {
-		this.embeddableSuperTemplate = embeddableSuperTemplate;
-	}
-
-	/**
-	 * Sets <code>overwrite</code> property.
-	 */
-	public void setOverwrite(boolean overwrite) {
-		this.overwrite = overwrite;
-	}
-
-	/**
-	 * Sets <code>makepairs</code> property.
-	 */
-	public void setMakePairs(boolean makePairs) {
-		this.makePairs = makePairs;
-	}
-
-	/**
-	 * Sets <code>template</code> property.
-	 */
-	public void setTemplate(String template) {
-		this.template = template;
-	}
-
-	/**
-	 * Sets <code>superTemplate</code> property.
-	 */
-	public void setSuperTemplate(String superTemplate) {
-		this.superTemplate = superTemplate;
-	}
-
-	public void setQueryTemplate(String queryTemplate) {
-		this.queryTemplate = queryTemplate;
-	}
-
-	public void setQuerySuperTemplate(String querySuperTemplate) {
-		this.querySuperTemplate = querySuperTemplate;
-	}
-
-	/**
-	 * Sets <code>usepkgpath</code> property.
-	 */
-	public void setUsePkgPath(boolean usePkgPath) {
-		this.usePkgPath = usePkgPath;
-	}
-
-	/**
-	 * Sets <code>outputPattern</code> property.
-	 */
-	public void setOutputPattern(String outputPattern) {
-		this.outputPattern = outputPattern;
-	}
-
-	/**
-	 * Sets <code>createPropertyNames</code> property.
-	 */
-	public void setCreatePropertyNames(boolean createPropertyNames) {
-		this.createPropertyNames = createPropertyNames;
-	}
-
-	/**
-	 * @since 4.1
-	 */
-	public void setCreatePKProperties(boolean createPKProperties) {
-		this.createPKProperties = createPKProperties;
-	}
-
-	public void setRootPath(Path rootPath) {
-		this.rootPath = rootPath;
-	}
-
-	public void setRelPath(Path relPath) {
-		this.relPath = relPath;
-	}
-
-	public void setRelPath(String path) {
-		this.relPath = rootPath.relativize(Paths.get(path));
-	}
-
-	@Override
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-		encoder.start("cgen")
-				.attribute("xmlns", CgenExtension.NAMESPACE)
-				.simpleTag("excludeEntities", getExcludeEntites())
-				.simpleTag("excludeEmbeddables",getExcludeEmbeddables())
-				.simpleTag("outputDirectory", getRelPath())
-				.simpleTag("generationMode", this.artifactsGenerationMode.getLabel())
-				.simpleTag("subclassTemplate", this.template)
-				.simpleTag("superclassTemplate", this.superTemplate)
-				.simpleTag("outputPattern", this.outputPattern)
-				.simpleTag("makePairs", Boolean.toString(this.makePairs))
-				.simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
-				.simpleTag("overwriteSubclasses", Boolean.toString(this.overwrite))
-				.simpleTag("createPropertyNames", Boolean.toString(this.createPropertyNames))
-				.simpleTag("superPkg", this.superPkg)
-				.simpleTag("createPKProperties", Boolean.toString(this.createPKProperties))
-				.end();
-	}
 }

@@ -64,9 +64,7 @@ public class CgenWithConfigTest {
         File mapDir = new File(baseDir, "cgenConfigTest");
         assertTrue(mapDir.mkdirs());
 
-        task.setDestDir(mapDir);
         task.setMap(map);
-        task.setMode("entity");
 
         // run task
         task.execute();
@@ -75,14 +73,49 @@ public class CgenWithConfigTest {
         File entity = new File(mapDir, convertPath("ObjEntity1.txt"));
         assertTrue(entity.isFile());
 
-        File datamap = new File(mapDir, convertPath("TestCgenMap.txt"));
-        assertFalse(datamap.exists());
+        File datamap = new File(mapDir, convertPath("Antmap_cgen_xml.txt"));
+        assertTrue(datamap.isFile());
 
         File notIncludedEntity = new File(mapDir, "ObjEntity.txt");
         assertFalse(notIncludedEntity.exists());
 
-        File notIncludeSuperDatamap = new File("_TestCgenMap.txt");
+        File notIncludeSuperDatamap = new File("_Antmap_cgen_xml.txt");
         assertFalse(notIncludeSuperDatamap.exists());
+    }
+
+    @Test
+    public void testCgenWithDmAndPomConfigs() throws Exception {
+        File mapDir = new File(baseDir, "cgenDmPomTest");
+        assertTrue(mapDir.mkdirs());
+
+        task.setDestDir(mapDir);
+        task.setMap(map);
+        task.setExcludeEntities("ObjEntity1");
+        task.setMode("entity");
+        task.setMakepairs(false);
+        task.setOutputPattern("*.txt");
+
+        // run task
+        task.execute();
+
+        // check results
+        File entity = new File(mapDir, convertPath("ObjEntity.txt"));
+        assertTrue(entity.isFile());
+
+        File embeddable = new File(mapDir, convertPath("Embeddable.txt"));
+        assertTrue(embeddable.isFile());
+
+        File datamap = new File(mapDir, convertPath("Antmap_cgen_xml.txt"));
+        assertFalse(datamap.exists());
+
+        File notIncludedEntity = new File(mapDir, "ObjEntity1.txt");
+        assertFalse(notIncludedEntity.exists());
+
+        File notIncludeSuperDatamap = new File("_Antmap_cgen_xml.txt");
+        assertFalse(notIncludeSuperDatamap.exists());
+
+        File notIncludedSuperEntity = new File(mapDir, convertPath("_ObjEntity.txt"));
+        assertFalse(notIncludedSuperEntity.exists());
     }
 
     private String convertPath(String unixPath) {

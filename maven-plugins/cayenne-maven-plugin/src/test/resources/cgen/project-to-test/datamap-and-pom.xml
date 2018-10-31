@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 	http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <name>Test CayenneCgenMojo</name>
+    <name>Test CayenneGeneratorMojo</name>
 
     <dependencies>
         <dependency>
@@ -37,7 +37,15 @@
             <plugin>
                 <artifactId>cayenne-maven-plugin</artifactId>
                 <configuration>
-                    <map>src/test/resources/cgen/testCgenMap.map.xml</map>
+                    <map>src/test/resources/cgen/testCgen.map.xml</map>
+                    <destDir>target/resultClasses</destDir>
+                    <outputPattern>*.txt</outputPattern>
+                    <makePairs>false</makePairs>
+                    <usePkgPath>true</usePkgPath>
+                    <superPkg>superPkg</superPkg>
+                    <encoding>UTF-8</encoding>
+                    <excludeEntities>ObjEntity</excludeEntities>
+                    <mode>all</mode>
                 </configuration>
             </plugin>
         </plugins>

@@ -20,13 +20,14 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.*;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CodeValidationUtil;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
 public abstract class GeneratorController extends CayenneController {
 
     protected String mode = ArtifactsGenerationMode.ENTITY.getLabel();
-    protected ClassGenerationAction classGenerationAction;
+    protected CgenConfiguration cgenConfiguration;
 
     public GeneratorController(CodeGeneratorControllerBase parent) {
         super(parent);
@@ -72,36 +73,31 @@ public abstract class GeneratorController extends CayenneController {
 
     protected abstract GeneratorControllerPanel createView();
 
-    /**
-     * Creates an appropriate subclass of {@link ClassGenerationAction},
-     * returning it in an unconfigured state. Configuration is performed by
-     * {@link #createGenerator()} method.
-     */
-    protected abstract ClassGenerationAction newGenerator();
-
-    protected void initForm(ClassGenerationAction classGenerationAction) {
-        this.classGenerationAction = classGenerationAction;
-        classGenerationAction.setRootPath(Paths.get(initOutputFolder()));
-        ((GeneratorControllerPanel)getView()).getOutputFolder().setText(classGenerationAction.getDir());
+    protected void initForm(CgenConfiguration cgenConfiguration) {
+        this.cgenConfiguration = cgenConfiguration;
+        ((GeneratorControllerPanel)getView()).getOutputFolder().setText(cgenConfiguration.getDir());
     }
+
+    public abstract void updateConfiguration(CgenConfiguration cgenConfiguration);
 
     /**
      * Creates a class generator for provided selections.
      */
-    public ClassGenerationAction createGenerator() {
+    public CgenConfiguration createConfiguration() {
         DataMap map = getParentController().getProjectController().getCurrentDataMap();
-        ClassGenerationAction generator = getParentController().projectController.getApplication().getMetaData().get(map, ClassGenerationAction.class);
-        if(generator != null){
-            getParentController().addToSelectedEntities(generator.getDataMap(), generator.getEntities());
-            getParentController().addToSelectedEmbeddables(generator.getDataMap(), generator.getEmbeddables());
-            return generator;
+        CgenConfiguration cgenConfiguration = getParentController().projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+        if(cgenConfiguration != null){
+            getParentController().addToSelectedEntities(cgenConfiguration.getDataMap(), cgenConfiguration.getEntities());
+            getParentController().addToSelectedEmbeddables(cgenConfiguration.getDataMap(), cgenConfiguration.getEmbeddables());
+            cgenConfiguration.setRootPath(Paths.get(ModelerUtil.initOutputFolder()));
+            return cgenConfiguration;
         }
 
         try {
-            generator = newGenerator();
-            generator.setDataMap(map);
+            cgenConfiguration = new CgenConfiguration();
+            cgenConfiguration.setDataMap(map);
 
-            Path basePath = Paths.get(initOutputFolder());
+            Path basePath = Paths.get(ModelerUtil.initOutputFolder());
 
             // no destination folder
             if (basePath == null) {
@@ -120,10 +116,10 @@ public abstract class GeneratorController extends CayenneController {
                 return null;
             }
 
-            generator.setRootPath(basePath);
+            cgenConfiguration.setRootPath(basePath);
             Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
             if (preferences != null) {
-                generator.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+                cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
             }
             getParentController().addToSelectedEntities(map, map.getObjEntities()
                     .stream()
@@ -133,14 +129,14 @@ public abstract class GeneratorController extends CayenneController {
                     .stream()
                     .map(Embeddable::getClassName)
                     .collect(Collectors.toList()));
-            getParentController().projectController.getApplication().getMetaData().add(map, generator);
+            getParentController().projectController.getApplication().getMetaData().add(map, cgenConfiguration);
         } catch (IOException exception) {
             JOptionPane.showMessageDialog(this.getView(), "Can't create directory. " +
                     ". Select a different one.");
             return null;
         }
 
-        return generator;
+        return cgenConfiguration;
     }
 
     public void validateEmbeddable(ValidationResult validationBuffer, Embeddable embeddable) {
@@ -448,45 +444,5 @@ public abstract class GeneratorController extends CayenneController {
             ((GeneratorControllerPanel) getView()).getOutputFolder().setText(path);
             ((GeneratorControllerPanel) getView()).getOutputFolder().updateModel();
         }
-    }
-
-    private String initOutputFolder() {
-        String path;
-        if (System.getProperty("cayenne.cgen.destdir") != null) {
-            return System.getProperty("cayenne.cgen.destdir");
-        } else {
-            // init default directory..
-            FSPath lastPath = Application.getInstance().getFrameController().getLastDirectory();
-
-            path = checkDefaultMavenResourceDir(lastPath, "test");
-
-            if (path != null || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
-                return path;
-            } else {
-                File lastDir = lastPath.getExistingDirectory(false);
-                return lastDir != null ? lastDir.getAbsolutePath() : ".";
-            }
-        }
-    }
-
-    private String checkDefaultMavenResourceDir(FSPath lastPath, String dirType) {
-        String path = lastPath.getPath();
-        String resourcePath = buildFilePath("src", dirType, "resources");
-        int idx = path.indexOf(resourcePath);
-        if (idx < 0) {
-            return null;
-        }
-        return path.substring(0, idx) + buildFilePath("src", dirType, "java");
-    }
-
-    private static String buildFilePath(String... pathElements) {
-        if (pathElements.length == 0) {
-            return "";
-        }
-        StringBuilder path = new StringBuilder(pathElements[0]);
-        for (int i = 1; i < pathElements.length; i++) {
-            path.append(File.separator).append(pathElements[i]);
-        }
-        return path.toString();
     }
 }

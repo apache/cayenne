@@ -7,7 +7,7 @@
     <obj-entity name="ObjEntity" className="ObjEntity"/>
     <obj-entity name="ObjEntity1" className="ObjEntity1"/>
     <cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
-        <destDir>./customDirectory</destDir>
+        <destDir>./customDirectory1</destDir>
         <excludeEntities>ObjEntity</excludeEntities>
         <excludeEmbeddables>Embeddable</excludeEmbeddables>
         <mode>entity</mode>

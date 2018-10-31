@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
@@ -61,8 +61,8 @@ public class GeneratorControllerPanel extends JPanel {
         return selectOutputFolder;
     }
 
-    public ClassGenerationAction getCgenByDataMap() {
+    public CgenConfiguration getCgenByDataMap() {
         DataMap dataMap = projectController.getCurrentDataMap();
-        return projectController.getApplication().getMetaData().get(dataMap, ClassGenerationAction.class);
+        return projectController.getApplication().getMetaData().get(dataMap, CgenConfiguration.class);
     }
 }

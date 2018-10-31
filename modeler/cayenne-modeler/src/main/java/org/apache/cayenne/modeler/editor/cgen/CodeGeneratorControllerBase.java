@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -67,11 +67,14 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public void startup(DataMap dataMap){
         this.dataMap = dataMap;
+        prepareClasses(dataMap);
+    }
+
+    private void prepareClasses(DataMap dataMap) {
         classes.clear();
         this.classes.add(dataMap);
         this.classes.addAll(dataMap.getObjEntities());
         this.classes.addAll(dataMap.getEmbeddables());
-
         initCollectionsForSelection(dataMap);
     }
 
@@ -277,11 +280,11 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     private void updateArtifactGenerationMode(Object classObj, boolean selected) {
         DataMap dataMap = (DataMap) classObj;
-        ClassGenerationAction generator = projectController.getApplication().getMetaData().get(dataMap, ClassGenerationAction.class);
+        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(dataMap, CgenConfiguration.class);
         if(selected) {
-            generator.setArtifactsGenerationMode("all");
+            cgenConfiguration.setArtifactsGenerationMode("all");
         } else {
-            generator.setArtifactsGenerationMode("entity");
+            cgenConfiguration.setArtifactsGenerationMode("entity");
         }
     }
 
@@ -307,32 +310,30 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
     public void updateEntities(){
         DataMap map = getProjectController().getCurrentDataMap();
-        ClassGenerationAction generator = projectController.getApplication().getMetaData().get(map, ClassGenerationAction.class);
-        if(generator != null) {
-            generator.resetCollections();
+        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+        if(cgenConfiguration != null) {
+            cgenConfiguration.resetCollections();
             for(ObjEntity entity: getSelectedEntities()) {
                 if(!entity.isGeneric()) {
-                    generator.loadEntity(entity.getName());
+                    cgenConfiguration.loadEntity(entity.getName());
                 }
             }
             for(Embeddable embeddable : getSelectedEmbeddables()) {
-                generator.loadEmbeddable(embeddable.getClassName());
+                cgenConfiguration.loadEmbeddable(embeddable.getClassName());
             }
         }
     }
 
-    public void addToSelectedEntities(DataMap dataMap, Collection<String> entities) {
-        if(selectedEntities == null) {
-            initCollectionsForSelection(dataMap);
-        }
+    void addToSelectedEntities(DataMap dataMap, Collection<String> entities) {
+        prepareClasses(dataMap);
         selectedEntities.addAll(entities);
+        updateEntities();
     }
 
-    public void addToSelectedEmbeddables(DataMap dataMap, Collection<String> embeddables) {
-        if(selectedEmbeddables == null) {
-            initCollectionsForSelection(dataMap);
-        }
+    void addToSelectedEmbeddables(DataMap dataMap, Collection<String> embeddables) {
+        prepareClasses(dataMap);
         selectedEmbeddables.addAll(embeddables);
+        updateEntities();
     }
 
     public int getSelectedEntitiesSize() {

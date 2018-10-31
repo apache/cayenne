@@ -24,6 +24,7 @@ import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenModule;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
@@ -38,9 +39,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
- * Maven mojo to perform class generation from data map. This class is an Maven
+ * Maven mojo to perform class generation from data cgenConfiguration. This class is an Maven
  * adapter to DefaultClassGenerator class.
  * 
  * @since 3.0
@@ -92,6 +97,13 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 */
 	@Parameter
 	private String includeEntities;
+
+	/**
+	 * Embeddables (expressed as a perl5 regex) to exclude from template
+	 * generation. (Default is to include all embeddables in the DataMap).
+	 */
+	@Parameter
+	private String excludeEmbeddables;
 
 	/**
 	 * If set to <code>true</code>, will generate subclass/superclass pairs,
@@ -207,20 +219,18 @@ public class CayenneGeneratorMojo extends AbstractMojo {
      * @since 4.1
      */
     @Parameter(defaultValue = "false")
-    private Boolean createPKProperties;
+    private boolean createPKProperties;
 
     private transient Injector injector;
 
     private static final Logger logger = LoggerFactory.getLogger(CayenneGeneratorMojo.class);
 
+    private boolean useConfigFromDataMap;
+
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Create the destination directory if necessary.
 		// TODO: (KJM 11/2/06) The destDir really should be added as a
 		// compilation resource for maven.
-
-		if (!destDir.exists()) {
-			destDir.mkdirs();
-		}
 
 		injector = DIBootstrap.createInjector(new CgenModule(), new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorMojo.class)));
 
@@ -228,9 +238,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
 		loaderAction.setMainDataMapFile(map);
 
-		CayenneGeneratorEntityFilterAction filterAction = new CayenneGeneratorEntityFilterAction();
-		filterAction.setClient(client);
-		filterAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
+		CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
+		filterEntityAction.setClient(client);
+		filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
+
+		CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
+		filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddables));
 
 		try {
 			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
@@ -242,17 +255,17 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 			if(force) {
 				// will (re-)generate all files
-				generator.setForce(true);
+				generator.getCgenConfiguration().setForce(true);
 			}
-			generator.setTimestamp(map.lastModified());
-			generator.setDataMap(dataMap);
-			if(!generator.getEntities().isEmpty() || !generator.getEmbeddables().isEmpty()){
+			generator.getCgenConfiguration().setTimestamp(map.lastModified());
+			if(!hasConfig() && useConfigFromDataMap) {
 				generator.prepareArtifacts();
 			} else {
-				generator.addEntities(filterAction.getFilteredEntities(dataMap));
-				generator.addEmbeddables(dataMap.getEmbeddables());
+				generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
+				generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
 				generator.addQueries(dataMap.getQueryDescriptors());
 			}
+			URL dataName = dataMap.getConfigurationSource().getURL();
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
@@ -260,7 +273,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	}
 
 	/**
-	 * Loads and returns DataMap based on <code>map</code> attribute.
+	 * Loads and returns DataMap based on <code>cgenConfiguration</code> attribute.
 	 */
 	protected File[] convertAdditionalDataMaps() throws Exception {
 
@@ -277,40 +290,78 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		);
 	}
 
+	private boolean hasConfig() {
+		return encoding != null || client || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
+				makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
+				superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
+				usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
+				querySuperTemplate != null || createPKProperties;
+	}
+
 	/**
 	 * Factory method to create internal class generator. Called from
 	 * constructor.
 	 */
-	protected ClassGenerationAction createGenerator(DataMap dataMap) {
+	private ClassGenerationAction createGenerator(DataMap dataMap) {
+		CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
+		ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction(cgenConfiguration) :
+				new ClassGenerationAction(cgenConfiguration);
+		injector.injectMembers(classGenerationAction);
 
-	    ClassGenerationAction action = injector.getInstance(DataChannelMetaData.class).get(dataMap, ClassGenerationAction.class);
+		return classGenerationAction;
+	}
 
-		if (client) {
-			action = new ClientClassGenerationAction();
+	private CgenConfiguration buildConfiguration(DataMap dataMap) {
+		CgenConfiguration cgenConfiguration = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfiguration.class);
+		if(hasConfig()) {
+			return cgenConfigFromPom(dataMap);
+		} else if(cgenConfiguration != null) {
+			useConfigFromDataMap = true;
+			Path resourcePath = Paths.get(map.getPath());
+			if(Files.isRegularFile(resourcePath)) {
+				resourcePath = resourcePath.getParent();
+			}
+			cgenConfiguration.setRelPath(resourcePath.resolve(cgenConfiguration.getRelPath()));
+			return cgenConfiguration;
 		} else {
-            if(action == null) {
-                action = new ClassGenerationAction();
-            }
+			cgenConfiguration = new CgenConfiguration();
+			cgenConfiguration.setDataMap(dataMap);
+			cgenConfiguration.setRelPath(destDir.getPath());
+			return cgenConfiguration;
 		}
+	}
 
-		injector.injectMembers(action);
-
-//		action.setDestDir(destDir.toPath());
-		action.setEncoding(encoding != null ? encoding : action.getEncoding());
-		action.setMakePairs(makePairs != null ? makePairs : action.isMakePairs());
-		action.setArtifactsGenerationMode(mode != null ? mode : action.getArtifactsGenerationMode());
-		action.setOutputPattern(outputPattern != null ? outputPattern : action.getOutputPattern());
-		action.setOverwrite(overwrite != null ? overwrite : action.isOverwrite());
-		action.setSuperPkg(superPkg != null ? superPkg : action.getSuperPkg());
-		action.setSuperTemplate(superTemplate != null ? superTemplate : action.getSuperclassTemplate());
-		action.setTemplate(template != null ? template : action.getTemplate());
-		action.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? embeddableSuperTemplate : action.getEmbeddableSuperTemplate());
-		action.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : action.getEmbeddableTemplate());
-		action.setUsePkgPath(usePkgPath != null ? usePkgPath : action.isUsePkgPath());
-		action.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : action.isCreatePropertyNames());
-		action.setQueryTemplate(queryTemplate != null ? queryTemplate : action.getQueryTemplate());
-		action.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : action.getQuerySuperTemplate());
-		action.setCreatePKProperties(createPKProperties != null ? createPKProperties : action.isCreatePropertyNames());
-		return action;
+	private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
+		CgenConfiguration cgenConfiguration = new CgenConfiguration();
+		cgenConfiguration.setDataMap(dataMap);
+		cgenConfiguration.setRelPath(destDir != null ? destDir.getPath() : cgenConfiguration.getRelPath());
+		cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
+		cgenConfiguration.setMakePairs(makePairs != null ? makePairs : cgenConfiguration.isMakePairs());
+		cgenConfiguration.setArtifactsGenerationMode(mode != null ? mode : cgenConfiguration.getArtifactsGenerationMode());
+		cgenConfiguration.setOutputPattern(outputPattern != null ? outputPattern : cgenConfiguration.getOutputPattern());
+		cgenConfiguration.setOverwrite(overwrite != null ? overwrite : cgenConfiguration.isOverwrite());
+		cgenConfiguration.setSuperPkg(superPkg != null ? superPkg : cgenConfiguration.getSuperPkg());
+		cgenConfiguration.setSuperTemplate(superTemplate != null ? superTemplate : cgenConfiguration.getSuperTemplate());
+		cgenConfiguration.setTemplate(template != null ? template :  cgenConfiguration.getTemplate());
+		cgenConfiguration.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? embeddableSuperTemplate : cgenConfiguration.getEmbeddableSuperTemplate());
+		cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : cgenConfiguration.getEmbeddableTemplate());
+		cgenConfiguration.setUsePkgPath(usePkgPath != null ? usePkgPath : cgenConfiguration.isUsePkgPath());
+		cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : cgenConfiguration.isCreatePropertyNames());
+		cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
+		cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
+		cgenConfiguration.setCreatePKProperties(createPKProperties);
+		cgenConfiguration.setClient(client);
+		if(!cgenConfiguration.isMakePairs()) {
+			if(template == null) {
+				cgenConfiguration.setTemplate(client ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+			}
+			if(embeddableTemplate == null) {
+				cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
+			}
+			if(queryTemplate == null) {
+				cgenConfiguration.setQueryTemplate(client ? ClientClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE : ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+			}
+		}
+		return cgenConfiguration;
 	}
 }

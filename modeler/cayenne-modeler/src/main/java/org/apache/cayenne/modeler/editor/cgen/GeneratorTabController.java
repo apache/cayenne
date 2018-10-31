@@ -19,12 +19,9 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.pref.PreferenceDetail;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.util.Util;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -77,30 +74,22 @@ public class GeneratorTabController extends CayenneController {
     }
 
     protected void initBindings() {
-
-        // bind actions
-        BindingBuilder builder = new BindingBuilder(
-                getApplication().getBindingFactory(),
-                this);
-
-        CayenneProjectPreferences cayPrPref = application.getCayenneProjectPreferences();
-
-        this.preferences = (PreferenceDetail) cayPrPref.getProjectDetailObject(
-                PreferenceDetail.class,
-                getViewPreferences().node("controller"));
-
-        if (Util.isEmptyString(preferences.getProperty("mode"))) {
-            preferences.setProperty("mode", STANDARD_OBJECTS_MODE);
-        }
-
-        builder.bindToComboSelection(
-                view.getGenerationMode(),
-                "preferences.property['mode']").updateView();
-
         view.getGenerationMode().addActionListener(action -> {
             String name = (String)view.getGenerationMode().getSelectedItem();
-            controllers.get(name).initForm(getGenerator());
+            GeneratorController modeController = getGeneratorController();
+            CgenConfiguration cgenConfiguration = modeController.createConfiguration();
+            modeController.updateConfiguration(cgenConfiguration);
+            controllers.get(name).initForm(cgenConfiguration);
+            ((CodeGeneratorController)getParentController()).getPrevGeneratorController().put(cgenConfiguration.getDataMap(), modeController);
         });
+    }
+
+    public void setSelectedController(GeneratorController generatorController) {
+        for(String key : controllers.keySet()) {
+            if(generatorController.equals(controllers.get(key))) {
+                ((GeneratorTabPanel)getView()).getGenerationMode().setSelectedItem(key);
+            }
+        }
     }
 
     GeneratorController getGeneratorController() {
@@ -108,8 +97,16 @@ public class GeneratorTabController extends CayenneController {
         return controllers.get(name);
     }
 
-    public ClassGenerationAction getGenerator() {
+    GeneratorController getStandartController() {
+        return controllers.get(STANDARD_OBJECTS_MODE);
+    }
+
+    GeneratorController getClientGeneratorController() {
+        return controllers.get(CLIENT_OBJECTS_MODE);
+    }
+
+    public CgenConfiguration getConfiguration() {
         GeneratorController modeController = getGeneratorController();
-        return (modeController != null) ? modeController.createGenerator() : null;
+        return (modeController != null) ? modeController.createConfiguration() : null;
     }
 }

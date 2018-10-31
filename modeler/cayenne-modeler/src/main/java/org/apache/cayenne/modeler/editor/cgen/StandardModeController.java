@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
 import java.awt.*;
@@ -43,19 +43,18 @@ public class StandardModeController extends GeneratorController {
     }
 
     @Override
-    protected ClassGenerationAction newGenerator() {
-        ClassGenerationAction action = new ClassGenerationAction();
-        getApplication().getInjector().injectMembers(action);
-        return action;
+    public CgenConfiguration createConfiguration() {
+        return super.createConfiguration();
     }
 
     @Override
-    protected void initForm(ClassGenerationAction classGenerationAction) {
-        super.initForm(classGenerationAction);
+    protected void initForm(CgenConfiguration cgenConfiguration) {
+        super.initForm(cgenConfiguration);
     }
 
     @Override
-    public ClassGenerationAction createGenerator() {
-        return super.createGenerator();
+    public void updateConfiguration(CgenConfiguration cgenConfiguration) {
+        cgenConfiguration.setClient(false);
     }
+
 }

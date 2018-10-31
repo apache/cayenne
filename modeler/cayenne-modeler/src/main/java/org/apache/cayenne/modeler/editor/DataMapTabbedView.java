@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorController;
+import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 
 import javax.swing.*;
@@ -30,9 +31,11 @@ import javax.swing.*;
  * Data map editing tabs container
  *
  */
-public class DataMapTabbedView extends JTabbedPane {
+public class DataMapTabbedView extends JTabbedPane{
     ProjectController mediator;
     private CodeGeneratorController codeGeneratorController;
+    JScrollPane cgenView;
+
 
     /**
      * constructor
@@ -57,7 +60,7 @@ public class DataMapTabbedView extends JTabbedPane {
         JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
         JScrollPane dbImportView = new JScrollPane(new DbImportView(mediator));
         this.codeGeneratorController = new CodeGeneratorController(Application.getInstance().getFrameController(), mediator);
-        JScrollPane cgenView = new JScrollPane(codeGeneratorController.getView());
+        cgenView = new JScrollPane(codeGeneratorController.getView());
         addTab("DataMap", dataMapView);
         addTab("DbImport", dbImportView);
         addTab("Class Generation", cgenView);
@@ -70,13 +73,14 @@ public class DataMapTabbedView extends JTabbedPane {
         mediator.addDataMapDisplayListener(e -> {
             if(isCgenTabActive()) {
                 fireStateChanged();
+            } else if(e.getSource() instanceof CgenTab){
+                setSelectedComponent(cgenView);
             }
         });
     }
 
     private boolean isCgenTabActive() {
-        return getSelectedIndex() == 2;
+        return getSelectedComponent() == cgenView;
     }
-
 }
 

@@ -20,7 +20,7 @@ package org.apache.cayenne.gen.xml;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -33,23 +33,24 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
 
     public static final String CONFIG_TAG = "cgen";
 
-    private static final String OUTPUT_DIRECTORY_TAG = "outputDirectory";
-    private static final String GENERATION_MODE_TAG = "generationMode";
-    private static final String SUBCLASS_TEMPLATE_TAG = "subclassTemplate";
+    private static final String OUTPUT_DIRECTORY_TAG = "destDir";
+    private static final String GENERATION_MODE_TAG = "mode";
+    private static final String SUBCLASS_TEMPLATE_TAG = "template";
     private static final String SUPERCLASS_TEMPLATE_TAG = "superclassTemplate";
     private static final String OUTPUT_PATTERN_TAG = "outputPattern";
     private static final String MAKE_PAIRS_TAG = "makePairs";
     private static final String USE_PKG_PATH_TAG = "usePkgPath";
-    private static final String OVERWRITE_SUBCLASSES_TAG = "overwriteSubclasses";
+    private static final String OVERWRITE_SUBCLASSES_TAG = "overwrite";
     private static final String CREATE_PROPERTY_NAMES_TAG = "createPropertyNames";
     private static final String EXCLUDE_ENTITIES_TAG = "excludeEntities";
     private static final String EXCLUDE_EMBEDDABLES_TAG = "excludeEmbeddables";
     private static final String CREATE_PK_PROPERTIES = "createPKProperties";
+    private static final String CLIENT_TAG = "client";
 
     public static final String TRUE = "true";
 
     private DataChannelMetaData metaData;
-    private ClassGenerationAction configuration;
+    private CgenConfiguration configuration;
 
     CgenConfigHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
         super(parentHandler);
@@ -105,6 +106,9 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
                 break;
             case CREATE_PK_PROPERTIES:
                 createPkPropertiesTag(data);
+                break;
+            case CLIENT_TAG:
+                createClient(data);
                 break;
         }
     }
@@ -249,8 +253,22 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         }
     }
 
+    private void createClient(String data) {
+        if(data.trim().length() == 0) {
+            return;
+        }
+
+        if(configuration != null) {
+            if(data.equals(TRUE)) {
+                configuration.setClient(true);
+            } else {
+                configuration.setClient(false);
+            }
+        }
+    }
+
     private void createConfig() {
-        configuration = new ClassGenerationAction();
+        configuration = new CgenConfiguration();
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
             configuration.resolveExcludeEntities();
