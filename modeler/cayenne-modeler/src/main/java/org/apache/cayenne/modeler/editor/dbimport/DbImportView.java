@@ -33,6 +33,8 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.BorderLayout;
 
 /**
@@ -65,25 +67,37 @@ public class DbImportView extends JPanel {
     }
 
     private void initListeners() {
-        projectController.addDataMapDisplayListener(e -> {
-            DataMap map = e.getDataMap();
-            treePanel.getReverseEngineeringTree().stopEditing();
-            if (map != null) {
-                treeToolbar.unlockButtons();
-                ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication().
-                        getMetaData().get(map, ReverseEngineering.class);
-                if (reverseEngineering == null) {
-                    reverseEngineering = new ReverseEngineering();
-                    DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
+
+        treePanel.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent evPent) {
+                DataMap map = projectController.getCurrentDataMap();
+                treePanel.getReverseEngineeringTree().stopEditing();
+                if (map != null) {
+                    treeToolbar.unlockButtons();
+                    ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication().
+                            getMetaData().get(map, ReverseEngineering.class);
+                    if (reverseEngineering == null) {
+                        reverseEngineering = new ReverseEngineering();
+                        DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
+                    }
+                    configPanel.fillCheckboxes(reverseEngineering);
+                    configPanel.initializeTextFields(reverseEngineering);
+                    treePanel.updateTree();
+                    DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
+                    root.removeAllChildren();
+                    draggableTreePanel.updateTree(projectController.getCurrentDataMap());
+                    draggableTreePanel.getMoveButton().setEnabled(false);
+                    draggableTreePanel.getMoveInvertButton().setEnabled(false);
                 }
-                configPanel.fillCheckboxes(reverseEngineering);
-                configPanel.initializeTextFields(reverseEngineering);
-                treePanel.updateTree();
-                DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
-                root.removeAllChildren();
-                draggableTreePanel.updateTree(projectController.getCurrentDataMap());
-                draggableTreePanel.getMoveButton().setEnabled(false);
-                draggableTreePanel.getMoveInvertButton().setEnabled(false);
+            }
+
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {
+            }
+
+            @Override
+            public void ancestorMoved(AncestorEvent event) {
             }
         });
     }

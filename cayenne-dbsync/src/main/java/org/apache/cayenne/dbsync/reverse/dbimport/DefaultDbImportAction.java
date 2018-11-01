@@ -147,7 +147,7 @@ public class DefaultDbImportAction implements DbImportAction {
         commit(config, loadDataMap(config));
     }
 
-    protected void commit(DbImportConfiguration config, DataMap sourceDataMap) throws Exception{
+    protected void commit(DbImportConfiguration config, DataMap sourceDataMap) throws Exception {
         if (hasChanges) {
             DataMap targetDataMap = loadedDataMap;
 
@@ -157,6 +157,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
             saveLoaded(targetDataMap, config);
             this.loadedDataMap = null;
+            this.hasChanges = false;
         }
     }
 
