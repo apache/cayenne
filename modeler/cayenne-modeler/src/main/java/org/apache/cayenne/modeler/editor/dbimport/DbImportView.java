@@ -48,7 +48,7 @@ public class DbImportView extends JPanel {
     private static final String MAIN_LAYOUT = "fill:160dlu:grow, 5dlu, fill:50dlu, 5dlu, fill:160dlu:grow";
     private static final String HEADER_LAYOUT = "fill:80dlu:grow";
     private static final String BUTTON_PANEL_LAYOUT = "fill:50dlu";
-    private static final String PROGRESS_PANEL_LAYOUT = "fill:160dlu, 60dlu, fill:160dlu";
+    private static final String PROGRESS_PANEL_LAYOUT = "fill:160dlu:grow, 60dlu, fill:160dlu:grow";
     private static final int ALL_LINE_SPAN = 5;
     private static final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
     private static final ImageIcon downArrow = ModelerUtil.buildIcon("icon-arrow-open.png");
