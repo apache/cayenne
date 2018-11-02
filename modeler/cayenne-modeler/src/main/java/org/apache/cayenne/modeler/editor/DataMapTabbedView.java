@@ -31,6 +31,8 @@ import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
  */
 public class DataMapTabbedView extends JTabbedPane {
     ProjectController mediator;
+    private int lastSelectionIndex;
+    private DbImportView dbImportView1;
 
     /**
      * constructor
@@ -53,10 +55,23 @@ public class DataMapTabbedView extends JTabbedPane {
         // add panels to tabs
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
-        JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
-        JScrollPane dbImportView = new JScrollPane(new DbImportView(mediator));
-        addTab("DataMap", dataMapView);
-        addTab("DbImport", dbImportView);
+        JScrollPane dataMapScrollPane = new JScrollPane(new DataMapView(mediator));
+        dbImportView1 = new DbImportView(mediator);
+        JScrollPane dbImportScrollPane = new JScrollPane(dbImportView1);
+        addTab("DataMap", dataMapScrollPane);
+        addTab("DbImport", dbImportScrollPane);
+        addChangeListener(e -> {
+            lastSelectionIndex = getSelectedIndex();
+            updateTabs();
+        });
+    }
+
+    private void updateTabs() {
+        switch (lastSelectionIndex) {
+            case 1:
+                dbImportView1.initFromModel();
+            break;
+        }
     }
 }
 
