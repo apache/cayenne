@@ -96,7 +96,6 @@ public class DbImportTree extends JTree {
                         table.add(new DbImportTreeNode(column)));
                 table.setLoaded(true);
                 model.reload(table);
-                System.out.println(table.getChildCount());
             });
         });
     }
