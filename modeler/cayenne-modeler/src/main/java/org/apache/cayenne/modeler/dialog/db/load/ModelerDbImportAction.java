@@ -32,7 +32,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
-import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 
 import javax.swing.JDialog;
@@ -50,7 +49,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
     DataMap sourceDataMap;
     DbImportConfiguration config;
-    DbImportConfiguration tmpConfig;
 
     private DbLoadResultDialog resultDialog;
     private boolean isNothingChanged;
