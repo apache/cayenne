@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.modeler.editor.dbimport;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -66,33 +65,8 @@ public class DbImportView extends JPanel {
     public DbImportView(ProjectController projectController) {
         this.projectController = projectController;
         initFormElements();
-        initListeners();
         buildForm();
         draggableTreePanel.getSourceTree().repaint();
-    }
-
-    private void initListeners() {
-        projectController.addDataMapDisplayListener(e -> {
-            DataMap map = e.getDataMap();
-            treePanel.getReverseEngineeringTree().stopEditing();
-            if (map != null) {
-                treeToolbar.unlockButtons();
-                ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication().
-                        getMetaData().get(map, ReverseEngineering.class);
-                if (reverseEngineering == null) {
-                    reverseEngineering = new ReverseEngineering();
-                    DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
-                }
-                configPanel.fillCheckboxes(reverseEngineering);
-                configPanel.initializeTextFields(reverseEngineering);
-                treePanel.updateTree();
-                DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
-                root.removeAllChildren();
-                draggableTreePanel.updateTree(projectController.getCurrentDataMap());
-                draggableTreePanel.getMoveButton().setEnabled(false);
-                draggableTreePanel.getMoveInvertButton().setEnabled(false);
-            }
-        });
     }
 
     private void buildForm() {
@@ -209,6 +183,28 @@ public class DbImportView extends JPanel {
         configPanel = new ReverseEngineeringConfigPanel(projectController);
         configPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         configPanel.setVisible(false);
+    }
+
+    public void initFromModel() {
+        DataMap map = projectController.getCurrentDataMap();
+        treePanel.getReverseEngineeringTree().stopEditing();
+        if (map != null) {
+            treeToolbar.unlockButtons();
+            ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication().
+                    getMetaData().get(map, ReverseEngineering.class);
+            if (reverseEngineering == null) {
+                reverseEngineering = new ReverseEngineering();
+                DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
+            }
+            configPanel.fillCheckboxes(reverseEngineering);
+            configPanel.initializeTextFields(reverseEngineering);
+            treePanel.updateTree();
+            DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
+            root.removeAllChildren();
+            draggableTreePanel.updateTree(projectController.getCurrentDataMap());
+            draggableTreePanel.getMoveButton().setEnabled(false);
+            draggableTreePanel.getMoveInvertButton().setEnabled(false);
+        }
     }
 
     public boolean isSkipRelationshipsLoading() {

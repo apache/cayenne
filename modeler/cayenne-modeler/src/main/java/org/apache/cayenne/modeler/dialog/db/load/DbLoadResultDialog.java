@@ -42,6 +42,7 @@ public class DbLoadResultDialog extends JDialog {
     private DefaultTableModel tableModel;
     private JTable table;
     private JButton okButton;
+    private JButton revertButton;
     private String title;
 
     DbLoadResultDialog(String title) {
@@ -73,8 +74,8 @@ public class DbLoadResultDialog extends JDialog {
         table.setRowHeight(TABLE_ROW_HIGH);
         table.setRowMargin(TABLE_ROW_MARGIN);
         tableModel.addColumn("");
+        revertButton = new JButton("Revert");
         okButton = new JButton("OK");
-        okButton.addActionListener(e -> DbLoadResultDialog.this.setVisible(false));
     }
 
     private void buildElements() {
@@ -85,6 +86,7 @@ public class DbLoadResultDialog extends JDialog {
         builder.append(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.add(revertButton);
         panel.add(okButton);
         builder.append(panel);
         this.add(builder.getPanel());
@@ -96,5 +98,13 @@ public class DbLoadResultDialog extends JDialog {
 
     public int getTableRowCount() {
         return tableModel.getRowCount();
+    }
+
+    public JButton getOkButton() {
+        return okButton;
+    }
+
+    public JButton getRevertButton() {
+        return revertButton;
     }
 }
