@@ -23,12 +23,12 @@ import org.apache.cayenne.query.ScalarResultSegment;
 /**
  * @since 3.0
  */
-class DefaultScalarResultSegment implements ScalarResultSegment {
+public class DefaultScalarResultSegment implements ScalarResultSegment {
 
     private String column;
     private int offset;
 
-    DefaultScalarResultSegment(String column, int offset) {
+    public DefaultScalarResultSegment(String column, int offset) {
         this.column = column;
         this.offset = offset;
     }

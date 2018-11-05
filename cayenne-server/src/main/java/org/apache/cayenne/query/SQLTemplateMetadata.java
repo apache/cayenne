@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SQLResult;
@@ -30,14 +31,36 @@ import java.util.Map;
 /**
  * @since 3.0
  */
-class SQLTemplateMetadata extends BaseQueryMetadata {
+public class SQLTemplateMetadata extends BaseQueryMetadata {
+
+	private boolean isSingleResultSetMapping;
+
+	@Override
+	public boolean isSingleResultSetMapping() {
+		return isSingleResultSetMapping;
+	}
 
 	boolean resolve(Object root, EntityResolver resolver, SQLTemplate query) {
 
 		if (super.resolve(root, resolver)) {
 
+			if((!query.isUseScalar() && !query.isFetchingDataRows()) && (query.getResultColumnsTypes() != null && !query.getResultColumnsTypes().isEmpty())) {
+				throw new CayenneRuntimeException("Error caused by using root in query with resultColumnTypes without scalar or dataRow.");
+			}
+
+			if(query.getResult() != null && query.getResultColumnsTypes() != null) {
+				throw new CayenneRuntimeException("Caused by trying to override result column types of query.");
+			}
+
+			if(query.isFetchingDataRows() && query.isUseScalar()) {
+				throw new CayenneRuntimeException("Can't set both use scalar and fetching data rows.");
+			}
+
 			buildResultSetMappingForColumns(query);
-			resultSetMapping = query.getResult() != null ? query.getResult().getResolvedComponents(resolver) : null;
+			resultSetMapping = query.getResult() != null ?
+					query.getResult().getResolvedComponents(resolver) :
+					query.isUseScalar() ? new ArrayList<>() : null;
+			isSingleResultSetMapping = resultSetMapping != null && resultSetMapping.size() == 1;
 
 			// generate unique cache key...
 			if (QueryCacheStrategy.NO_CACHE == getCacheStrategy()) {
@@ -93,7 +116,7 @@ class SQLTemplateMetadata extends BaseQueryMetadata {
 	}
 
 	private void buildResultSetMappingForColumns(SQLTemplate query) {
-		if(query.getResultColumnsTypes() == null || query.getResultColumnsTypes().isEmpty()) {
+		if(query.getResultColumnsTypes() == null || query.getResultColumnsTypes().isEmpty() || !query.isUseScalar()) {
 			return;
 		}
 		SQLResult result = new SQLResult();

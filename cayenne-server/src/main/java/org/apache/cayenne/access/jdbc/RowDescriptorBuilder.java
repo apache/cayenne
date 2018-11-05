@@ -106,7 +106,7 @@ public class RowDescriptorBuilder {
             throw new CayenneRuntimeException("Size of 'ResultSetMetadata' not equals to size of 'columns'.");
         } else if (rsLen < columnLen) {
             throw new CayenneRuntimeException("'ResultSetMetadata' has less elements then 'columns'.");
-        } else if (rsLen == columnLen && !mergeColumnsWithRsMetadata) {
+        } else if(rsLen == columnLen && !mergeColumnsWithRsMetadata) {
             // 'columns' contains ColumnDescriptor for every column
             // in resultSetMetadata. This return is for optimization.
             return columns;

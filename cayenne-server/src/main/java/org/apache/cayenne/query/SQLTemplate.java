@@ -84,6 +84,7 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	protected boolean returnGeneratedKeys;
 
 	private List<Class<?>> resultColumnsTypes;
+	private boolean useScalar;
 
 	SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
@@ -108,12 +109,11 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 		setFetchingDataRows(isFetchingDataRows);
 	}
 
-	public SQLTemplate resultColumnsTypes(Class<?> ...types) {
+	public void setResultColumnsTypes(Class<?> ...types) {
 		if(resultColumnsTypes == null) {
 			resultColumnsTypes = new ArrayList<>(types.length);
 		}
 		Collections.addAll(resultColumnsTypes, types);
-		return this;
 	}
 
 	@Override
@@ -670,5 +670,18 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 
 	public void setResultColumnsTypes(List<Class<?>> resultColumnsTypes) {
 		this.resultColumnsTypes = resultColumnsTypes;
+	}
+
+	/**
+	 * Sets flag to use scalars.
+	 *
+	 * @since 4.1
+	 */
+	public void setUseScalar(boolean useScalar) {
+	    this.useScalar = useScalar;
+	}
+
+	public boolean isUseScalar() {
+		return useScalar;
 	}
 }
