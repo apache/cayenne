@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.editor.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
@@ -27,6 +28,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
+import javax.swing.tree.TreePath;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -67,10 +69,27 @@ public class DatabaseSchemaLoader {
                         tableName = resultSet.getString(TABLE_INDEX);
                         schemaName = resultSet.getString(SCHEMA_INDEX);
                         catalogName = resultSet.getString(CATALOG_INDEX);
-                        packTable(tableName, catalogName, schemaName);
+                        packTable(tableName, catalogName, schemaName, null);
                     }
                     packFunctions(connection);
                 }
+            }
+        }
+        return databaseReverseEngineering;
+    }
+
+    public ReverseEngineering loadColumns(DBConnectionInfo connectionInfo, ClassLoadingService loadingService, TreePath path) throws SQLException {
+        String catalogName = path.getPathComponent(1).toString();
+        String schemaName = null;
+        String tableName = path.getPathComponent(2).toString();
+
+        try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
+            try (ResultSet rs = connection.getMetaData().getColumns(catalogName, schemaName, tableName, "")) {
+                while (rs.next()) {
+                    String column = rs.getString(4);
+                    packTable(tableName, catalogName, schemaName, column);
+                }
+
             }
         }
         return databaseReverseEngineering;
@@ -115,58 +134,74 @@ public class DatabaseSchemaLoader {
         }
     }
 
-    private void packTable(String tableName, String catalogName, String schemaName) {
-        IncludeTable newTable = new IncludeTable();
-        newTable.setPattern(tableName);
+    private void packTable(String tableName, String catalogName, String schemaName, String columnName) {
+        IncludeTable table = new IncludeTable();
+        table.setPattern(tableName);
+
         if ((catalogName == null) && (schemaName == null)) {
-            if (!databaseReverseEngineering.getIncludeTables().contains(newTable)) {
-                databaseReverseEngineering.addIncludeTable(newTable);
+            if (!databaseReverseEngineering.getIncludeTables().contains(table)) {
+                databaseReverseEngineering.addIncludeTable(table);
             }
         }
+
         if ((catalogName != null) && (schemaName == null)) {
             Catalog parentCatalog = getCatalogByName(databaseReverseEngineering.getCatalogs(), catalogName);
+
             if (parentCatalog != null) {
-                if (!parentCatalog.getIncludeTables().contains(newTable)) {
-                    parentCatalog.addIncludeTable(newTable);
+
+
+                if (!parentCatalog.getIncludeTables().contains(table)) {
+                    parentCatalog.addIncludeTable(table);
                 }
             } else {
                 parentCatalog = new Catalog();
                 parentCatalog.setName(catalogName);
-                if (!parentCatalog.getIncludeTables().contains(newTable)) {
-                    parentCatalog.addIncludeTable(newTable);
+                if (!parentCatalog.getIncludeTables().contains(table)) {
+                    parentCatalog.addIncludeTable(table);
                 }
                 databaseReverseEngineering.addCatalog(parentCatalog);
+            }
+
+            IncludeTable foundTable = getTableByName(parentCatalog.getIncludeTables(), tableName);
+            table = foundTable != null ? foundTable : table;
+            if (columnName != null ) {
+                IncludeColumn includeColumn = new IncludeColumn(columnName);
+                table.addIncludeColumn(includeColumn);
             }
         }
         if ((catalogName == null) && (schemaName != null)) {
             Schema parentSchema = getSchemaByName(databaseReverseEngineering.getSchemas(), schemaName);
             if (parentSchema != null) {
-                if (!parentSchema.getIncludeTables().contains(newTable)) {
-                    parentSchema.addIncludeTable(newTable);
+                if (!parentSchema.getIncludeTables().contains(table)) {
+                    parentSchema.addIncludeTable(table);
                 }
             } else {
                 parentSchema = new Schema();
                 parentSchema.setName(schemaName);
-                if (!parentSchema.getIncludeTables().contains(newTable)) {
-                    parentSchema.addIncludeTable(newTable);
+                if (!parentSchema.getIncludeTables().contains(table)) {
+                    parentSchema.addIncludeTable(table);
                 }
                 databaseReverseEngineering.addSchema(parentSchema);
             }
         }
         if ((catalogName != null) && (schemaName != null)) {
             Catalog parentCatalog = getCatalogByName(databaseReverseEngineering.getCatalogs(), catalogName);
+
+
+
             Schema parentSchema;
             if (parentCatalog != null) {
+
                 parentSchema = getSchemaByName(parentCatalog.getSchemas(), schemaName);
                 if (parentSchema != null) {
-                    if (!parentSchema.getIncludeTables().contains(newTable)) {
-                        parentSchema.addIncludeTable(newTable);
+                    if (!parentSchema.getIncludeTables().contains(table)) {
+                        parentSchema.addIncludeTable(table);
                     }
                 } else {
                     parentSchema = new Schema();
                     parentSchema.setName(schemaName);
-                    if (!parentSchema.getIncludeTables().contains(newTable)) {
-                        parentSchema.addIncludeTable(newTable);
+                    if (!parentSchema.getIncludeTables().contains(table)) {
+                        parentSchema.addIncludeTable(table);
                     }
                     parentCatalog.addSchema(parentSchema);
                 }
@@ -175,8 +210,8 @@ public class DatabaseSchemaLoader {
                 parentCatalog.setName(catalogName);
                 parentSchema = new Schema();
                 parentSchema.setName(schemaName);
-                if (!parentSchema.getIncludeTables().contains(newTable)) {
-                    parentSchema.addIncludeTable(newTable);
+                if (!parentSchema.getIncludeTables().contains(table)) {
+                    parentSchema.addIncludeTable(table);
                 }
                 databaseReverseEngineering.addCatalog(parentCatalog);
             }
@@ -187,6 +222,15 @@ public class DatabaseSchemaLoader {
         for (Catalog catalog : catalogs) {
             if (catalog.getName().equals(catalogName)) {
                 return catalog;
+            }
+        }
+        return null;
+    }
+
+    private IncludeTable getTableByName(Collection<IncludeTable> tables, String catalogName) {
+        for (IncludeTable table : tables) {
+            if (table.getPattern().equals(catalogName)) {
+                return table;
             }
         }
         return null;

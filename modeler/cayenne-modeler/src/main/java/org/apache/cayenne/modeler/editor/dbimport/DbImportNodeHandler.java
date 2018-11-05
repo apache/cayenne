@@ -20,8 +20,10 @@
 package org.apache.cayenne.modeler.editor.dbimport;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
@@ -98,7 +100,7 @@ class DbImportNodeHandler {
         for (int i = 0; i < childCount; i++) {
             if (((DbImportTreeNode) reverseEngineeringTree.getRootNode().getChildAt(i)).
                     getUserObject().getClass() == Catalog.class) {
-                if (dbNode.getUserObject().getClass() == Catalog.class) {
+                if (dbNode.getUserObject().getClass() == Catalog.class || dbNode.getUserObject().getClass() == IncludeTable.class) {
                     return true;
                 } else {
                     return false;
@@ -167,6 +169,7 @@ class DbImportNodeHandler {
     *  Return 0, if rendered node not found.
     */
     int traverseTree(DbImportTreeNode rootNode) {
+        hasEntitiesInEmptyContainer = false;
         int traverseResult = 0;
         int childCount = rootNode.getChildCount();
         boolean hasProcedures = false;
@@ -217,7 +220,7 @@ class DbImportNodeHandler {
                 }
             }
             if ((!rootNode.isExcludeTable()) && (!nodesIsEqual(rootNode))
-                    && (!dbSchemaNode.isIncludeProcedure())) {
+                    && (!dbSchemaNode.isIncludeProcedure()) &&(!dbSchemaNode.isIncludeColumn())) {
                 traverseResult++;
             } else {
                 if ((!hasProcedures) && (!dbSchemaNode.isIncludeProcedure())) {
@@ -255,7 +258,7 @@ class DbImportNodeHandler {
             for (TreePath path : reverseEngineeringTree.getSelectionPaths()) {
                 DbImportTreeNode pathNode = (DbImportTreeNode) path.getLastPathComponent();
                 if (pathNode.getSimpleNodeName().equals(dbSchemaNode.getSimpleNodeName())) {
-                    if (pathNode.isExcludeTable() || pathNode.isExcludeProcedure()) {
+                    if (pathNode.isExcludeTable() || pathNode.isExcludeProcedure() || node.isExcludeColumn()) {
                         return EXCLUDE_COLOR;
                     } else {
                         return ACCEPT_COLOR;
@@ -263,7 +266,7 @@ class DbImportNodeHandler {
                 }
             }
         }
-        if (node.isExcludeTable() || node.isExcludeProcedure()) {
+        if (node.isExcludeTable() || node.isExcludeProcedure() || node.isExcludeColumn()) {
             return EXCLUDE_COLOR;
         } else {
             return ACCEPT_COLOR;
@@ -314,6 +317,12 @@ class DbImportNodeHandler {
             return true;
         }
         if ((firstClass.equals(ExcludeProcedure.class)) && (secondClass.equals(IncludeProcedure.class))) {
+            return true;
+        }
+        if ((firstClass.equals(ExcludeColumn.class)) && (secondClass.equals(IncludeColumn.class))) {
+            return true;
+        }
+        if ((firstClass.equals(IncludeColumn.class)) && (secondClass.equals(ExcludeColumn.class))) {
             return true;
         }
         return false;

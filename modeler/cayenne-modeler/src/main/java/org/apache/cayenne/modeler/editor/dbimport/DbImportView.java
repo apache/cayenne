@@ -29,22 +29,29 @@ import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.dialog.db.load.TransferableNode;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 
 /**
  * @since 4.1
  */
 public class DbImportView extends JPanel {
 
-    private static final String MAIN_LAYOUT = "fill:160dlu, 5dlu, fill:50dlu, 5dlu, fill:160dlu";
-    private static final String HEADER_LAYOUT = "fill:70dlu, 15dlu, fill:75dlu";
+    private static final String MAIN_LAYOUT = "fill:160dlu:grow, 5dlu, fill:50dlu, 5dlu, fill:160dlu:grow";
+    private static final String HEADER_LAYOUT = "fill:80dlu:grow";
     private static final String BUTTON_PANEL_LAYOUT = "fill:50dlu";
-    private static final String PROGRESS_PANEL_LAYOUT = "fill:160dlu, 60dlu, fill:160dlu";
+    private static final String PROGRESS_PANEL_LAYOUT = "fill:160dlu:grow, 60dlu, fill:160dlu:grow";
     private static final int ALL_LINE_SPAN = 5;
+    private static final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
+    private static final ImageIcon downArrow = ModelerUtil.buildIcon("icon-arrow-open.png");
 
     private TreeToolbarPanel treeToolbar;
     private ReverseEngineeringTreePanel treePanel;
@@ -104,14 +111,6 @@ public class DbImportView extends JPanel {
 
         DefaultFormBuilder reverseEngineeringHeaderBuilder = new DefaultFormBuilder(headerLayout);
         reverseEngineeringHeaderBuilder.append("Import Configuration");
-        ReverseEngineeringAction reverseEngineeringAction = projectController.getApplication().getActionManager().
-                getAction(ReverseEngineeringAction.class);
-        reverseEngineeringAction.setView(this);
-        CayenneAction.CayenneToolbarButton reverseEngineeringButton = (CayenneAction.CayenneToolbarButton)
-                reverseEngineeringAction.buildButton(0);
-        reverseEngineeringButton.setShowingText(true);
-        reverseEngineeringButton.setText("Run Import");
-        reverseEngineeringHeaderBuilder.append(reverseEngineeringButton);
         builder.append(reverseEngineeringHeaderBuilder.getPanel());
 
         DefaultFormBuilder databaseHeaderBuilder = new DefaultFormBuilder(headerLayout);
@@ -120,12 +119,26 @@ public class DbImportView extends JPanel {
                 getAction(LoadDbSchemaAction.class);
         loadDbSchemaAction.setDraggableTreePanel(draggableTreePanel);
         loadDbSchemaButton = (CayenneAction.CayenneToolbarButton) loadDbSchemaAction.buildButton(0);
-        loadDbSchemaButton.setShowingText(true);
+        loadDbSchemaButton.setShowingText(false);
         loadDbSchemaButton.setText("Refresh DB Schema");
-        databaseHeaderBuilder.append(loadDbSchemaButton);
+        treeToolbar.add(loadDbSchemaButton);
+
+        ReverseEngineeringAction reverseEngineeringAction = projectController.getApplication().getActionManager().
+                getAction(ReverseEngineeringAction.class);
+        reverseEngineeringAction.setView(this);
+        CayenneAction.CayenneToolbarButton reverseEngineeringButton = (CayenneAction.CayenneToolbarButton)
+                reverseEngineeringAction.buildButton(0);
+        reverseEngineeringButton.setShowingText(true);
+        reverseEngineeringButton.setText("Run Import");
+        JPanel reverseEngineeringButtonPanel = new JPanel();
+        reverseEngineeringButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        reverseEngineeringButtonPanel.add(reverseEngineeringButton);
+        treeToolbar.addSeparator();
+        treeToolbar.add(reverseEngineeringButtonPanel);
 
         builder.append("");
         builder.append(databaseHeaderBuilder.getPanel());
+
         builder.append(treePanel);
         builder.append(buttonBuilder.getPanel());
         builder.append(draggableTreePanel);
@@ -142,9 +155,29 @@ public class DbImportView extends JPanel {
         progressBarBuilder.append(loadDbSchemaProgress);
         builder.append(progressBarBuilder.getPanel(), ALL_LINE_SPAN);
 
+        createAdvancedOptionsHiderPanel(builder);
+
         builder.append(configPanel, ALL_LINE_SPAN);
         this.setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
+    }
+
+    private void createAdvancedOptionsHiderPanel(DefaultFormBuilder builder) {
+        JPanel advancedOptionsPanel = new JPanel();
+        advancedOptionsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JButton hideButton = new JButton("Advanced Options");
+        hideButton.setIcon(configPanel.isVisible() ? downArrow : rightArrow);
+        hideButton.setBorderPainted(false);
+        hideButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                configPanel.setVisible(!configPanel.isVisible());
+                hideButton.setIcon(configPanel.isVisible() ? downArrow : rightArrow);
+            }
+        });
+        advancedOptionsPanel.add(hideButton);
+
+        builder.append(advancedOptionsPanel, ALL_LINE_SPAN);
     }
 
     private void initFormElements() {
@@ -168,13 +201,14 @@ public class DbImportView extends JPanel {
         treeToolbar = new TreeToolbarPanel(projectController, reverseEngineeringTree, draggableTreePanel);
         treePanel = new ReverseEngineeringTreePanel(projectController, reverseEngineeringTree, draggableTree);
         treePanel.setTreeToolbar(treeToolbar);
-
         model.setDbSchemaTree(draggableTree);
         draggableTreeModel.setDbSchemaTree(draggableTree);
         ((ColorTreeRenderer) draggableTreePanel.getSourceTree().getCellRenderer()).
                 setReverseEngineeringTree(reverseEngineeringTree);
 
         configPanel = new ReverseEngineeringConfigPanel(projectController);
+        configPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        configPanel.setVisible(false);
     }
 
     public boolean isSkipRelationshipsLoading() {

@@ -20,9 +20,11 @@
 package org.apache.cayenne.modeler.dialog.db.load;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     private boolean isColorized;
+    private boolean isLoaded;
 
     public DbImportTreeNode() {
         this(null);
@@ -57,6 +60,14 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     public boolean isExcludeTable() {
         return (getUserObject().getClass() == ExcludeTable.class);
+    }
+
+    public boolean isIncludeColumn() {
+        return (getUserObject().getClass() == IncludeColumn.class);
+    }
+
+    public boolean isExcludeColumn() {
+        return (getUserObject().getClass() == ExcludeColumn.class);
     }
 
     public boolean isExcludeProcedure() {
@@ -190,5 +201,13 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     public void setColorized(boolean colorized) {
         isColorized = colorized;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        isLoaded = loaded;
     }
 }

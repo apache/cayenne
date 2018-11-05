@@ -39,6 +39,7 @@ import org.apache.cayenne.modeler.dialog.db.load.SchemaPopUpMenu;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
@@ -126,12 +127,31 @@ class ReverseEngineeringTreePanel extends JScrollPane {
                         popupMenu.show(e.getComponent(), e.getX(), e.getY());
                     }
                 } else if (reverseEngineeringTree.getSelectionPath() != null) {
-                    DbImportTreeNode findedNode = dbSchemaTree.findNode(
-                            dbSchemaTree.getRootNode(), reverseEngineeringTree.getSelectedNode(), 0
-                    );
-                    if (findedNode != null) {
-                        dbSchemaTree.expandPath(new TreePath(((DbImportTreeNode) findedNode.getParent()).getPath()));
-                        scrollToNode(dbSchemaTree, findedNode);
+                    DbImportTreeNode selectedNode = reverseEngineeringTree.getSelectedNode();
+
+                    if( selectedNode.isExcludeColumn() || selectedNode.isIncludeColumn()) {
+                        DbImportTreeNode expandNode = (DbImportTreeNode) selectedNode.getParent();
+
+                        DbImportTreeNode parentPath = dbSchemaTree.findNode(
+                                dbSchemaTree.getRootNode(), expandNode, 0
+                        );
+
+                        if (parentPath != null) {
+                            dbSchemaTree.expandPath(new TreePath((parentPath).getPath()));
+                            scrollToNode(dbSchemaTree, parentPath);
+                        }
+
+                    } else {
+
+                        DbImportTreeNode findNode = dbSchemaTree.findNode(
+                                dbSchemaTree.getRootNode(), selectedNode, 0
+                        );
+
+
+                        if (findNode != null) {
+                            dbSchemaTree.expandPath(new TreePath(((DbImportTreeNode) findNode.getParent()).getPath()));
+                            scrollToNode(dbSchemaTree, findNode);
+                        }
                     }
                 }
             }

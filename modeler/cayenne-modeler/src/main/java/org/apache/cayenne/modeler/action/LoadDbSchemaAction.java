@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 
@@ -59,6 +60,10 @@ public class LoadDbSchemaAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
+        performAction(e, null);
+    }
+
+    public void performAction(ActionEvent e, TreePath tablePath) {
         final DbImportView rootParent = ((DbImportView) draggableTreePanel.getParent().getParent());
         rootParent.getLoadDbSchemaProgress().setVisible(true);
         rootParent.getLoadDbSchemaButton().setEnabled(false);
@@ -80,15 +85,23 @@ public class LoadDbSchemaAction extends CayenneAction {
                     connectionInfo = getConnectionInfoFromPreferences();
                 }
 
-                ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
-                        .load(connectionInfo, getApplication().getClassLoadingService());
-                draggableTreePanel.getSourceTree()
-                        .setEnabled(true);
-                draggableTreePanel.getSourceTree()
-                        .translateReverseEngineeringToTree(databaseReverseEngineering, true);
-                draggableTreePanel
-                        .bindReverseEngineeringToDatamap(getProjectController().getCurrentDataMap(), databaseReverseEngineering);
-                ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
+                if (tablePath != null) {
+                    ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+                            .loadColumns(connectionInfo, getApplication().getClassLoadingService(), tablePath);
+                    draggableTreePanel.getSourceTree().updateTableColumns(databaseReverseEngineering);
+                } else {
+                    ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+                            .load(connectionInfo, getApplication().getClassLoadingService());
+                    draggableTreePanel.getSourceTree()
+                            .setEnabled(true);
+                    draggableTreePanel.getSourceTree()
+                            .translateReverseEngineeringToTree(databaseReverseEngineering, true);
+                    draggableTreePanel
+                            .bindReverseEngineeringToDatamap(getProjectController().getCurrentDataMap(), databaseReverseEngineering);
+                    ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
+                }
+
+
             } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(
                         Application.getFrame(),
