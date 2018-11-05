@@ -284,8 +284,7 @@ public class DbImportTree extends JTree {
                 }
 
                 DbImportTreeNode node = (DbImportTreeNode) lastPathComponent;
-                Object userObject = node.getUserObject();
-                if (userObject.getClass() == IncludeTable.class && !node.isLoaded()) {
+                if (node.isIncludeColumn() && !node.isLoaded()) {
                     //reload columns action.
 
                     LoadDbSchemaAction action = Application.getInstance().getActionManager().getAction(LoadDbSchemaAction.class);
