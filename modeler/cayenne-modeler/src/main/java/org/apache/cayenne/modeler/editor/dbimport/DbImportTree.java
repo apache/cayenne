@@ -52,6 +52,7 @@ public class DbImportTree extends JTree {
 
     public DbImportTree(TreeNode node) {
         super(node);
+        createTreeExpandListener();
     }
 
     public void translateReverseEngineeringToTree(ReverseEngineering reverseEngineering, boolean isTransferable) {
@@ -69,7 +70,6 @@ public class DbImportTree extends JTree {
         printParams(reverseEngineering.getExcludeColumns(), root);
         printParams(reverseEngineering.getIncludeProcedures(), root);
         printParams(reverseEngineering.getExcludeProcedures(), root);
-        createTreeExpandListener();
         model.reload();
     }
 
@@ -89,11 +89,14 @@ public class DbImportTree extends JTree {
                 if (table == null) {
                     return;
                 }
-                table.removeAllChildren();
+                if (table.getChildCount() != 0) {
+                    table.removeAllChildren();
+                }
                 newTable.getIncludeColumns().forEach(column ->
                         table.add(new DbImportTreeNode(column)));
                 table.setLoaded(true);
                 model.reload(table);
+                System.out.println(table.getChildCount());
             });
         });
     }
