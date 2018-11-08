@@ -18,20 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorController;
+import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
+
+import javax.swing.*;
 
 /**
  * Data map editing tabs container
  *
  */
-public class DataMapTabbedView extends JTabbedPane {
+public class DataMapTabbedView extends JTabbedPane{
     ProjectController mediator;
     private int lastSelectionIndex;
     private DbImportView dbImportView1;
+
+    private CodeGeneratorController codeGeneratorController;
+    JScrollPane cgenView;
 
     /**
      * constructor
@@ -40,7 +45,6 @@ public class DataMapTabbedView extends JTabbedPane {
      */
     public DataMapTabbedView(ProjectController mediator) {
         this.mediator = mediator;
-
         initView();
     }
 
@@ -71,6 +75,30 @@ public class DataMapTabbedView extends JTabbedPane {
                 dbImportView1.initFromModel();
             break;
         }
+        JScrollPane dataMapView = new JScrollPane(new DataMapView(mediator));
+        JScrollPane dbImportView = new JScrollPane(new DbImportView(mediator));
+        this.codeGeneratorController = new CodeGeneratorController(Application.getInstance().getFrameController(), mediator);
+        cgenView = new JScrollPane(codeGeneratorController.getView());
+        addTab("DataMap", dataMapView);
+        addTab("DbImport", dbImportView);
+        addTab("Class Generation", cgenView);
+
+        addChangeListener(tab -> {
+            if(isCgenTabActive()) {
+                codeGeneratorController.startup(mediator.getCurrentDataMap());
+            }
+        });
+        mediator.addDataMapDisplayListener(e -> {
+            if(isCgenTabActive()) {
+                fireStateChanged();
+            } else if(e.getSource() instanceof CgenTab){
+                setSelectedComponent(cgenView);
+            }
+        });
+    }
+
+    private boolean isCgenTabActive() {
+        return getSelectedComponent() == cgenView;
     }
 }
 

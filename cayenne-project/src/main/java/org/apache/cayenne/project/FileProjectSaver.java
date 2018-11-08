@@ -97,6 +97,8 @@ public class FileProjectSaver implements ProjectSaver {
 		Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(saveableNodesGetter);
 		Collection<SaveUnit> units = new ArrayList<>(nodes.size());
 
+		delegate.setBaseDirectory(baseResource);
+
 		for(ConfigurationNode node : nodes) {
 			String targetLocation = nameMapper.configurationLocation(node);
 			Resource targetResource = baseResource.getRelativeResource(targetLocation);

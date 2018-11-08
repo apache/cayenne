@@ -103,7 +103,6 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
     private SQLTemplateTabbedView sqlTemplateView;
     private EjbqlTabbedView ejbqlQueryView;
     private JTabbedPane dataNodeView;
-    
 
     protected ActionManager actionManager;
 	private FilterController filterController;
@@ -162,7 +161,7 @@ public class EditorView extends JPanel implements ObjEntityDisplayListener,
 
     public EditorView(ProjectController eventController) {
         this.eventController = eventController;
-        this.actionManager= eventController.getApplication().getActionManager();
+        this.actionManager = eventController.getApplication().getActionManager();
         initView();
         initController();
        

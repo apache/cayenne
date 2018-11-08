@@ -28,6 +28,7 @@ import org.apache.cayenne.modeler.ModelerConstants;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.MultipleObjectsAction;
+import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -36,6 +37,7 @@ import javax.swing.ImageIcon;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Window;
+import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -212,4 +214,45 @@ public final class ModelerUtil {
 
         child.setLocation(x, y);
     }
+
+    public static String initOutputFolder() {
+        String path;
+        if (System.getProperty("cayenne.cgen.destdir") != null) {
+            return System.getProperty("cayenne.cgen.destdir");
+        } else {
+            // init default directory..
+            FSPath lastPath = Application.getInstance().getFrameController().getLastDirectory();
+
+            path = checkDefaultMavenResourceDir(lastPath, "test");
+
+            if (path != null || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
+                return path;
+            } else {
+                File lastDir = lastPath.getExistingDirectory(false);
+                return lastDir != null ? lastDir.getAbsolutePath() : ".";
+            }
+        }
+    }
+
+    private static String checkDefaultMavenResourceDir(FSPath lastPath, String dirType) {
+        String path = lastPath.getPath();
+        String resourcePath = buildFilePath("src", dirType, "resources");
+        int idx = path.indexOf(resourcePath);
+        if (idx < 0) {
+            return null;
+        }
+        return path.substring(0, idx) + buildFilePath("src", dirType, "java");
+    }
+
+    private static String buildFilePath(String... pathElements) {
+        if (pathElements.length == 0) {
+            return "";
+        }
+        StringBuilder path = new StringBuilder(pathElements[0]);
+        for (int i = 1; i < pathElements.length; i++) {
+            path.append(File.separator).append(pathElements[i]);
+        }
+        return path.toString();
+    }
+
 }
