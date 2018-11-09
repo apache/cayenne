@@ -146,6 +146,10 @@ ${project.basedir}/src/main/resources/my.map.xml
 .^|force
 .^|boolean
 .^|If set to "true", will force run from maven/gradle.
+
+.^|createPKProperties
+.^|boolean
+.^|If set to "true", will generate PK attributes as Properties. Default is "false".
 |===
 
 Example - a typical class generation scenario, where pairs of classes are generated with default Maven source destination and superclass package:
