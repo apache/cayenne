@@ -22,18 +22,27 @@ package org.apache.cayenne.modeler.editor.cgen;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 /**
  * A base superclass of a top controller for the code generator. Defines all common model
@@ -56,6 +65,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     protected transient Object currentClass;
     protected ProjectController projectController;
 
+    protected boolean initFromModel;
+
     public CodeGeneratorControllerBase(CayenneController parent, ProjectController projectController) {
         super(parent);
         this.projectController = projectController;
@@ -66,6 +77,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     }
 
     public void startup(DataMap dataMap){
+        initFromModel = true;
         this.dataMap = dataMap;
         prepareClasses(dataMap);
     }
@@ -85,6 +97,65 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
                 value == null ? new HashSet<>() : value);
         isDataMapSelected = selectedDataMaps.compute(dataMap, (key, value) ->
                 value == null ? new HashSet<>() : value);
+    }
+
+    /**
+     * Creates a class generator for provided selections.
+     */
+    public CgenConfiguration createConfiguration() {
+        DataMap map = projectController.getCurrentDataMap();
+        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+        if(cgenConfiguration != null){
+            addToSelectedEntities(cgenConfiguration.getDataMap(), cgenConfiguration.getEntities());
+            addToSelectedEmbeddables(cgenConfiguration.getDataMap(), cgenConfiguration.getEmbeddables());
+            return cgenConfiguration;
+        }
+
+        try {
+            cgenConfiguration = new CgenConfiguration();
+            cgenConfiguration.setDataMap(map);
+
+            Path basePath = Paths.get(ModelerUtil.initOutputFolder());
+
+            // no destination folder
+            if (basePath == null) {
+                JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
+                return null;
+            }
+
+            // no such folder
+            if (!Files.exists(basePath)) {
+                Files.createDirectories(basePath);
+            }
+
+            // not a directory
+            if (!Files.isDirectory(basePath)) {
+                JOptionPane.showMessageDialog(this.getView(), basePath + " is not a valid directory.");
+                return null;
+            }
+
+            cgenConfiguration.setRootPath(basePath);
+            Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
+            if (preferences != null) {
+                cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+            }
+            addToSelectedEntities(map, map.getObjEntities()
+                    .stream()
+                    .map(Entity::getName)
+                    .collect(Collectors.toList()));
+            addToSelectedEmbeddables(map, map.getEmbeddables()
+                    .stream()
+                    .map(Embeddable::getClassName)
+                    .collect(Collectors.toList()));
+           getApplication().getMetaData().add(map, cgenConfiguration);
+           projectController.setDirty(true);
+        } catch (IOException exception) {
+            JOptionPane.showMessageDialog(this.getView(), "Can't create directory. " +
+                    ". Select a different one.");
+            return null;
+        }
+
+        return cgenConfiguration;
     }
 
     public List<Object> getClasses() {
@@ -363,4 +434,15 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public void setCurrentClass(Object currentClass) {
         this.currentClass = currentClass;
     }
+
+    public boolean isInitFromModel() {
+        return initFromModel;
+    }
+
+    public void setInitFromModel(boolean initFromModel) {
+        this.initFromModel = initFromModel;
+    }
+
+
+    public abstract void enableGenerateButton(boolean enabled);
 }

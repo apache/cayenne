@@ -20,7 +20,6 @@ package org.apache.cayenne.tools;
 
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 
 import java.net.MalformedURLException;
@@ -37,18 +36,6 @@ class CayenneGeneratorEntityFilterAction {
 
     private NameFilter nameFilter;
     private boolean client;
-
-    Collection<Embeddable> getFilteredEmbeddables(DataMap mainDataMap) {
-        Collection<Embeddable> embeddables = new ArrayList<>(mainDataMap.getEmbeddables());
-
-        // filter out excluded entities...
-
-        // note that unlike entity, embeddable is matched by class name as it doesn't
-        // have a symbolic name...
-        embeddables.removeIf(e -> !nameFilter.isIncluded(e.getClassName()));
-
-        return embeddables;
-    }
 
     Collection<ObjEntity> getFilteredEntities(DataMap mainDataMap)
             throws MalformedURLException {

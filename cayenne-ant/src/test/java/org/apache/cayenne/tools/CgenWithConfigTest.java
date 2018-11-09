@@ -60,7 +60,7 @@ public class CgenWithConfigTest {
     }
 
     @Test
-    public void testCgen() throws Exception {
+    public void testCgenWithDmConfig() {
         File mapDir = new File(baseDir, "cgenConfigTest");
         assertTrue(mapDir.mkdirs());
 
@@ -84,7 +84,7 @@ public class CgenWithConfigTest {
     }
 
     @Test
-    public void testCgenWithDmAndPomConfigs() throws Exception {
+    public void testCgenWithDmAndPomConfigs() {
         File mapDir = new File(baseDir, "cgenDmPomTest");
         assertTrue(mapDir.mkdirs());
 

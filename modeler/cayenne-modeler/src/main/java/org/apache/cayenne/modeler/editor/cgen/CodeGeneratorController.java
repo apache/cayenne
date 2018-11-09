@@ -65,14 +65,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
     public void startup(DataMap dataMap) {
         super.startup(dataMap);
         classesSelectedAction();
-        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ? prevGeneratorController.get(dataMap) : generatorSelector.getStandartController();
-        CgenConfiguration cgenConfiguration = modeController.createConfiguration();
-        if(cgenConfiguration.isClient()) {
-            modeController = generatorSelector.getClientGeneratorController();
-        }
-        classesSelector.startup();
+        CgenConfiguration cgenConfiguration = createConfiguration();
+        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ? prevGeneratorController.get(dataMap) : cgenConfiguration.isClient() ?
+                generatorSelector.getClientGeneratorController() : generatorSelector.getStandartController();
         prevGeneratorController.put(dataMap, modeController);
         generatorSelector.setSelectedController(modeController);
+        classesSelector.startup();
+        initFromModel = false;
     }
 
     private void initListeners(){
@@ -147,11 +146,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         }
 
         ((GeneratorTabPanel)generatorSelector.getView()).getClassesCount().setText(label);
-        projectController.setDirty(true);
+        if(!isInitFromModel()) {
+            getProjectController().setDirty(true);
+        }
     }
 
     public void generateAction() {
-        CgenConfiguration cgenConfiguration = generatorSelector.getConfiguration();
+        CgenConfiguration cgenConfiguration = createConfiguration();
         ClassGenerationAction generator = cgenConfiguration.isClient() ?
                 new ClientClassGenerationAction(cgenConfiguration) :
                 new ClassGenerationAction(cgenConfiguration);
@@ -172,5 +173,9 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
 
     public ConcurrentMap<DataMap, GeneratorController> getPrevGeneratorController() {
         return prevGeneratorController;
+    }
+
+    public void enableGenerateButton(boolean enable) {
+        ((GeneratorTabPanel)generatorSelector.getView()).getGenerateButton().setEnabled(enable);
     }
 }

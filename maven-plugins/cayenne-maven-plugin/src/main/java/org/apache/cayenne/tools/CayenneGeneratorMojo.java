@@ -39,10 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Maven mojo to perform class generation from data cgenConfiguration. This class is an Maven
@@ -65,13 +61,19 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Whether we are generating classes for the client tier in a Remote Object
 	 * Persistence application. Default is <code>false</code>.
 	 */
-	@Parameter(defaultValue = "false")
-	private boolean client;
+	@Parameter
+	private Boolean client;
+
+	/**
+	 * Default destination directory for Java classes (ignoring their package names).
+	 */
+	@Parameter(defaultValue = "${project.build.sourceDirectory}")
+	private File defaultDir;
 
 	/**
 	 * Destination directory for Java classes (ignoring their package names).
 	 */
-	@Parameter(defaultValue = "${project.build.sourceDirectory}")
+	@Parameter
 	private File destDir;
 
 	/**
@@ -99,6 +101,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private String includeEntities;
 
 	/**
+	 * @since 4.1
 	 * Embeddables (expressed as a perl5 regex) to exclude from template
 	 * generation. (Default is to include all embeddables in the DataMap).
 	 */
@@ -218,8 +221,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
      * Default is <code>false</code>.
      * @since 4.1
      */
-    @Parameter(defaultValue = "false")
-    private boolean createPKProperties;
+    @Parameter
+    private Boolean createPKProperties;
 
     private transient Injector injector;
 
@@ -239,7 +242,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		loaderAction.setMainDataMapFile(map);
 
 		CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
-		filterEntityAction.setClient(client);
 		filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
 
 		CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
@@ -249,8 +251,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
 
 			DataMap dataMap = loaderAction.getMainDataMap();
-
 			ClassGenerationAction generator = createGenerator(dataMap);
+			filterEntityAction.setClient(generator.getCgenConfiguration().isClient());
 			generator.setLogger(logger);
 
 			if(force) {
@@ -265,7 +267,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 				generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
 				generator.addQueries(dataMap.getQueryDescriptors());
 			}
-			URL dataName = dataMap.getConfigurationSource().getURL();
 			generator.execute();
 		} catch (Exception e) {
 			throw new MojoExecutionException("Error generating classes: ", e);
@@ -291,11 +292,11 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	}
 
 	private boolean hasConfig() {
-		return encoding != null || client || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
+		return destDir != null || encoding != null || client != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
 				makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
 				superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
 				usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
-				querySuperTemplate != null || createPKProperties;
+				querySuperTemplate != null || createPKProperties != null;
 	}
 
 	/**
@@ -317,16 +318,11 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			return cgenConfigFromPom(dataMap);
 		} else if(cgenConfiguration != null) {
 			useConfigFromDataMap = true;
-			Path resourcePath = Paths.get(map.getPath());
-			if(Files.isRegularFile(resourcePath)) {
-				resourcePath = resourcePath.getParent();
-			}
-			cgenConfiguration.setRelPath(resourcePath.resolve(cgenConfiguration.getRelPath()));
 			return cgenConfiguration;
 		} else {
 			cgenConfiguration = new CgenConfiguration();
 			cgenConfiguration.setDataMap(dataMap);
-			cgenConfiguration.setRelPath(destDir.getPath());
+			cgenConfiguration.setRelPath(defaultDir.getPath());
 			return cgenConfiguration;
 		}
 	}
@@ -334,7 +330,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
 		CgenConfiguration cgenConfiguration = new CgenConfiguration();
 		cgenConfiguration.setDataMap(dataMap);
-		cgenConfiguration.setRelPath(destDir != null ? destDir.getPath() : cgenConfiguration.getRelPath());
+		cgenConfiguration.setRelPath(destDir != null ? destDir.getPath() : defaultDir.getPath());
 		cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
 		cgenConfiguration.setMakePairs(makePairs != null ? makePairs : cgenConfiguration.isMakePairs());
 		cgenConfiguration.setArtifactsGenerationMode(mode != null ? mode : cgenConfiguration.getArtifactsGenerationMode());
@@ -349,17 +345,17 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : cgenConfiguration.isCreatePropertyNames());
 		cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
 		cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
-		cgenConfiguration.setCreatePKProperties(createPKProperties);
-		cgenConfiguration.setClient(client);
+		cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
+		cgenConfiguration.setClient(client != null ? client : cgenConfiguration.isClient());
 		if(!cgenConfiguration.isMakePairs()) {
 			if(template == null) {
-				cgenConfiguration.setTemplate(client ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+				cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
 			}
 			if(embeddableTemplate == null) {
 				cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
 			}
 			if(queryTemplate == null) {
-				cgenConfiguration.setQueryTemplate(client ? ClientClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE : ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+				cgenConfiguration.setQueryTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE : ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
 			}
 		}
 		return cgenConfiguration;

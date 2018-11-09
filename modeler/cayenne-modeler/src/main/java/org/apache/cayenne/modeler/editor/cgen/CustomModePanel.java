@@ -45,14 +45,16 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     private ActionLink manageTemplatesLink;
 
-    CustomModePanel(ProjectController projectController) {
-        super(projectController);
+    CustomModePanel(ProjectController projectController, CodeGeneratorControllerBase codeGeneratorControllerBase) {
+        super(projectController, codeGeneratorControllerBase);
         JComboBox<String> superclassField = new JComboBox<>();
         this.superclassTemplate = new ComboBoxAdapter<String>(superclassField) {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 getCgenByDataMap().setSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(String.valueOf(item)));
-                projectController.setDirty(true);
+                if(!codeGeneratorControllerBase.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
             }
         };
 
@@ -61,7 +63,9 @@ public class CustomModePanel extends GeneratorControllerPanel {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 getCgenByDataMap().setTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(String.valueOf(item)));
-                projectController.setDirty(true);
+                if(!codeGeneratorControllerBase.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
             }
         };
 
@@ -72,7 +76,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
         JTextField outputPatternField = new JTextField();
         this.outputPattern = new TextAdapter(outputPatternField) {
             protected void updateModel(String text) {
-
+                getCgenByDataMap().setOutputPattern(text);
+                if(!codeGeneratorControllerBase.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
             }
         };
 

@@ -45,7 +45,7 @@ public class CgenTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_default_config",
                 "cgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
+                "-PdataMap=test_datamap.map.xml"
         );
 
         BuildResult result = runner.forwardOutput().build();
@@ -68,7 +68,7 @@ public class CgenTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_custom_config",
                 "cgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
+                "-PdataMap=test_datamap.map.xml"
         );
         BuildResult result = runner.build();
 
@@ -92,11 +92,11 @@ public class CgenTaskIT extends BaseTaskIT {
     }
 
     @Test
-    public void cgenWithConfig() throws Exception {
+    public void cgenWithConfigInDm() throws Exception {
         GradleRunner runner = createRunner(
                 "cgen_with_config",
                 "cgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("cgenConfig.map.xml").getFile(), "UTF-8")
+                "-PdataMap=cgen_with_config.map.xml"
         );
 
         BuildResult result = runner.forwardOutput().build();
@@ -121,11 +121,11 @@ public class CgenTaskIT extends BaseTaskIT {
     }
 
     @Test
-    public void testWithConfigs() throws Exception {
+    public void testWithConfigsInDmAndPom() throws Exception {
         GradleRunner runner = createRunner(
                 "cgen_with_configs",
                 "cgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("cgenMap.map.xml").getFile(), "UTF-8")
+                "-PdataMap=cgenMap.map.xml"
         );
 
         BuildResult result = runner.forwardOutput().build();

@@ -21,9 +21,13 @@ package org.apache.cayenne.gen.xml;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -271,9 +275,19 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         configuration = new CgenConfiguration();
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
+            configuration.setRootPath(buildRootPath(dataMap));
             configuration.resolveExcludeEntities();
             configuration.resolveExcludeEmbeddables();
             CgenConfigHandler.this.metaData.add(dataMap, configuration);
         });
+    }
+
+    private Path buildRootPath(DataMap dataMap) {
+        URL url = dataMap.getConfigurationSource().getURL();
+        Path resourcePath = Paths.get(url.getPath());
+        if(Files.isRegularFile(resourcePath)) {
+            resourcePath = resourcePath.getParent();
+        }
+        return resourcePath;
     }
 }

@@ -19,10 +19,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 import org.apache.velocity.VelocityContext;
 
 /**
@@ -30,7 +27,7 @@ import org.apache.velocity.VelocityContext;
  * 
  * @since 3.0
  */
-public class EntityArtifact implements Artifact, XMLSerializable {
+public class EntityArtifact implements Artifact {
 
     public static String ENTITY_UTILS_KEY = "entityUtils";
 
@@ -96,12 +93,5 @@ public class EntityArtifact implements Artifact, XMLSerializable {
                 (String) context.get(SUB_PACKAGE_KEY));
 
         context.put(ENTITY_UTILS_KEY, metadata);
-    }
-
-    @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("objEntity")
-                .simpleTag("name", entity.getName())
-                .end();
     }
 }

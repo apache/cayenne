@@ -39,8 +39,8 @@ public class DataDomainTabbedView extends JTabbedPane
     ProjectController mediator;
     
     DataDomainGraphTab graphTab;
-    JScrollPane cgenView;
-    CgenTabController cgenTabController;
+    private JScrollPane cgenView;
+    private CgenTabController cgenTabController;
 
     /**
      * constructor

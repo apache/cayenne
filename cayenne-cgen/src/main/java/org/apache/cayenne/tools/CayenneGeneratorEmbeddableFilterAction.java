@@ -7,6 +7,11 @@ import org.apache.cayenne.map.Embeddable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ *  Performs embeddable filtering to build a collection of embedables that should be used in
+ *  class generation.
+ * @since 4.1
+ */
 class CayenneGeneratorEmbeddableFilterAction {
 
     private NameFilter nameFilter;

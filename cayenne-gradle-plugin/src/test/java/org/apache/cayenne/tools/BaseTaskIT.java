@@ -21,6 +21,7 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +52,7 @@ public class BaseTaskIT {
 
     protected GradleRunner createRunner(String projectName, String... args) throws Exception {
         prepareBuildScript(projectName);
+        prepareDataMap(args);
 
         List<String> gradleArguments = new ArrayList<>();
         gradleArguments.addAll(Arrays.asList(args));
@@ -66,5 +68,18 @@ public class BaseTaskIT {
         Path src = new File(getClass().getResource(name + ".gradle").toURI()).toPath();
         Path dst = FileSystems.getDefault().getPath(projectDir.getAbsolutePath(), "build.gradle");
         Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    private void prepareDataMap(String... args) throws Exception {
+        String pattern = "-PdataMap=";
+        for(String arg : args) {
+            if(arg.startsWith(pattern)) {
+                String path = arg.substring(pattern.length());
+                Path src = new File(getClass().getResource(path).toURI()).toPath();
+                Path dst = FileSystems.getDefault().getPath(projectDir.getAbsolutePath(), path);
+                Files.copy(src, dst, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+
     }
 }

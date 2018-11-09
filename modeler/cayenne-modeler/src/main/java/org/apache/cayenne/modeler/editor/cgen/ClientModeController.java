@@ -28,13 +28,8 @@ public class ClientModeController extends StandardModeController {
     }
 
     protected GeneratorControllerPanel createView() {
-        this.view = new StandardModePanel();
+        this.view = new StandardModePanel(getParentController());
         return view;
-    }
-
-    @Override
-    public CgenConfiguration createConfiguration() {
-        return super.createConfiguration();
     }
 
     @Override

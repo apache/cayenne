@@ -26,8 +26,6 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * A generic panel that is a superclass of generator panels, defining common fields.
@@ -35,19 +33,19 @@ import java.util.Collection;
  */
 public class GeneratorControllerPanel extends JPanel {
 
-    protected Collection<StandardPanelComponent> dataMapLines;
     protected TextAdapter outputFolder;
     protected JButton selectOutputFolder;
     protected ProjectController projectController;
 
-    public GeneratorControllerPanel(ProjectController projectController) {
-        this.dataMapLines = new ArrayList<>();
+    public GeneratorControllerPanel(ProjectController projectController, CodeGeneratorControllerBase codeGeneratorControllerBase) {
         this.projectController = projectController;
         this.outputFolder = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) throws ValidationException {
                 getCgenByDataMap().setRelPath(text);
-                projectController.setDirty(true);
+                if(!codeGeneratorControllerBase.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
             }
         };
         this.selectOutputFolder = new JButton("Select");

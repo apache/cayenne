@@ -46,7 +46,7 @@ public class CustomModeController extends GeneratorController {
 
     @Override
     protected GeneratorControllerPanel createView() {
-        this.view = new CustomModePanel(getApplication().getFrameController().getProjectController());
+        this.view = new CustomModePanel(getApplication().getFrameController().getProjectController(), getParentController());
         return view;
     }
 
@@ -91,11 +91,6 @@ public class CustomModeController extends GeneratorController {
         view.setDisableSuperComboBoxes(view.getPairs().isSelected());
     }
 
-    @Override
-    public CgenConfiguration createConfiguration() {
-        return super.createConfiguration();
-    }
-
     private void initListeners(){
         view.getPairs().addActionListener(val -> {
             cgenConfiguration.setMakePairs(view.getPairs().isSelected());
@@ -109,27 +104,37 @@ public class CustomModeController extends GeneratorController {
                 cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
             }
             initForm(cgenConfiguration);
-            getParentController().getProjectController().setDirty(true);
+            if(!getParentController().isInitFromModel()) {
+                getParentController().getProjectController().setDirty(true);
+            }
         });
 
         view.getOverwrite().addActionListener(val -> {
             cgenConfiguration.setOverwrite(view.getOverwrite().isSelected());
-            getParentController().getProjectController().setDirty(true);
+            if(!getParentController().isInitFromModel()) {
+                getParentController().getProjectController().setDirty(true);
+            }
         });
 
         view.getCreatePropertyNames().addActionListener(val -> {
             cgenConfiguration.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
-            getParentController().getProjectController().setDirty(true);
+            if(!getParentController().isInitFromModel()) {
+                getParentController().getProjectController().setDirty(true);
+            }
         });
 
         view.getUsePackagePath().addActionListener(val -> {
             cgenConfiguration.setUsePkgPath(view.getUsePackagePath().isSelected());
-            getParentController().getProjectController().setDirty(true);
+            if(!getParentController().isInitFromModel()) {
+                getParentController().getProjectController().setDirty(true);
+            }
         });
 
         view.getPkProperties().addActionListener(val -> {
             cgenConfiguration.setCreatePKProperties(view.getPkProperties().isSelected());
-            getParentController().getProjectController().setDirty(true);
+            if(!getParentController().isInitFromModel()) {
+                getParentController().getProjectController().setDirty(true);
+            }
         });
     }
 
@@ -146,6 +151,7 @@ public class CustomModeController extends GeneratorController {
             ((CodeGeneratorControllerBase) parent).setSelected(true);
         }
         updateComboBoxes();
+        getParentController().setInitFromModel(false);
     }
 
     @Override

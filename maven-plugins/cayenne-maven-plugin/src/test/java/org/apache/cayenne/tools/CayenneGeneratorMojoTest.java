@@ -90,7 +90,7 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertFalse(notIncludedEmbeddable.exists());
     }
 
-    public void testDataMapPomCgen() throws Exception {
+    public void testCgenWithDmAndPomConfigs() throws Exception {
         File pom = getTestFile("src/test/resources/cgen/project-to-test/datamap-and-pom.xml");
         assertNotNull(pom);
         assertTrue(pom.exists());

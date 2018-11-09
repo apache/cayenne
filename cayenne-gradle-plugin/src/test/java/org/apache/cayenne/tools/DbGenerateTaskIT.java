@@ -58,7 +58,7 @@ public class DbGenerateTaskIT extends BaseTaskIT {
                 "cdbgen_simple",
                 "cdbgen",
                 "-PdbUrl=" + dbUrl,
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8"),
+                "-PdataMap=test_datamap.map.xml",
                 "--info"
         );
 
@@ -84,7 +84,7 @@ public class DbGenerateTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cdbgen_custom",
                 "customCdbgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8"),
+                "-PdataMap=test_datamap.map.xml",
                 "--info"
         );
 

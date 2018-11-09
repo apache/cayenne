@@ -100,7 +100,11 @@ public class ClassesTabController extends CayenneController {
         int selectedCount = getParentController().getSelectedEntitiesSize()
                 + getParentController().getSelectedEmbeddablesSize()
                 + (getParentController().isDataMapSelected() ? 1 : 0);
-
+        if(selectedCount == 0) {
+            getParentController().enableGenerateButton(false);
+        } else {
+            getParentController().enableGenerateButton(true);
+        }
         if (selectedCount < getParentController().getClasses().size()) {
             view.getCheckAll().setSelected(false);
         }
@@ -118,6 +122,11 @@ public class ClassesTabController extends CayenneController {
         if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
             getParentController().updateEntities();
+            if(view.getCheckAll().isSelected()) {
+                getParentController().enableGenerateButton(true);
+            } else {
+                getParentController().enableGenerateButton(false);
+            }
         }
     }
 }

@@ -27,8 +27,8 @@ import java.awt.*;
 
 public class StandardModePanel extends GeneratorControllerPanel {
 
-    public StandardModePanel() {
-        super(Application.getInstance().getFrameController().getProjectController());
+    public StandardModePanel(CodeGeneratorControllerBase codeGeneratorControllerBase) {
+        super(Application.getInstance().getFrameController().getProjectController(), codeGeneratorControllerBase);
         FormLayout layout = new FormLayout(
                 "right:88dlu, 1dlu, fill:300:grow, 1dlu, left:100dlu, 100dlu", "");
 

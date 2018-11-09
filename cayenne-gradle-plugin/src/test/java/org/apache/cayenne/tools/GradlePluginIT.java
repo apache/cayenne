@@ -43,7 +43,7 @@ public class GradlePluginIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_default_config",
                 "cgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
+                "-PdataMap=test_datamap.map.xml"
         );
         runner.withGradleVersion(version);
         runner.build();

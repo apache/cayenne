@@ -215,6 +215,9 @@ public final class ModelerUtil {
         child.setLocation(x, y);
     }
 
+    /**
+     * @since 4.1
+     */
     public static String initOutputFolder() {
         String path;
         if (System.getProperty("cayenne.cgen.destdir") != null) {

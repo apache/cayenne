@@ -45,6 +45,7 @@ public class GeneratorTabPanel extends JPanel {
         this.generateButton = new JButton("Generate");
         generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
         generateButton.setPreferredSize(new Dimension(180, 30));
+        generateButton.setEnabled(false);
         this.classesCount = new JLabel("No classes selected");
         classesCount.setFont(classesCount.getFont().deriveFont(10f));
         JPanel messages = new JPanel(new BorderLayout());

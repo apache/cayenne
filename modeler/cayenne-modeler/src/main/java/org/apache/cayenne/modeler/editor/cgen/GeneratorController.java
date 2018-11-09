@@ -23,11 +23,9 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.*;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CodeValidationUtil;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.Util;
@@ -38,13 +36,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.function.Predicate;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 /**
  * A mode-specific part of the code generation dialog.
@@ -75,69 +67,10 @@ public abstract class GeneratorController extends CayenneController {
 
     protected void initForm(CgenConfiguration cgenConfiguration) {
         this.cgenConfiguration = cgenConfiguration;
-        ((GeneratorControllerPanel)getView()).getOutputFolder().setText(cgenConfiguration.getDir());
+        ((GeneratorControllerPanel)getView()).getOutputFolder().setText(cgenConfiguration.buildPath().toString());
     }
 
     public abstract void updateConfiguration(CgenConfiguration cgenConfiguration);
-
-    /**
-     * Creates a class generator for provided selections.
-     */
-    public CgenConfiguration createConfiguration() {
-        DataMap map = getParentController().getProjectController().getCurrentDataMap();
-        CgenConfiguration cgenConfiguration = getParentController().projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
-        if(cgenConfiguration != null){
-            getParentController().addToSelectedEntities(cgenConfiguration.getDataMap(), cgenConfiguration.getEntities());
-            getParentController().addToSelectedEmbeddables(cgenConfiguration.getDataMap(), cgenConfiguration.getEmbeddables());
-            cgenConfiguration.setRootPath(Paths.get(ModelerUtil.initOutputFolder()));
-            return cgenConfiguration;
-        }
-
-        try {
-            cgenConfiguration = new CgenConfiguration();
-            cgenConfiguration.setDataMap(map);
-
-            Path basePath = Paths.get(ModelerUtil.initOutputFolder());
-
-            // no destination folder
-            if (basePath == null) {
-                JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
-                return null;
-            }
-
-            // no such folder
-            if (!Files.exists(basePath)) {
-                Files.createDirectories(basePath);
-            }
-
-            // not a directory
-            if (!Files.isDirectory(basePath)) {
-                JOptionPane.showMessageDialog(this.getView(), basePath + " is not a valid directory.");
-                return null;
-            }
-
-            cgenConfiguration.setRootPath(basePath);
-            Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
-            if (preferences != null) {
-                cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
-            }
-            getParentController().addToSelectedEntities(map, map.getObjEntities()
-                    .stream()
-                    .map(Entity::getName)
-                    .collect(Collectors.toList()));
-            getParentController().addToSelectedEmbeddables(map, map.getEmbeddables()
-                    .stream()
-                    .map(Embeddable::getClassName)
-                    .collect(Collectors.toList()));
-            getParentController().projectController.getApplication().getMetaData().add(map, cgenConfiguration);
-        } catch (IOException exception) {
-            JOptionPane.showMessageDialog(this.getView(), "Can't create directory. " +
-                    ". Select a different one.");
-            return null;
-        }
-
-        return cgenConfiguration;
-    }
 
     public void validateEmbeddable(ValidationResult validationBuffer, Embeddable embeddable) {
         ValidationFailure embeddableFailure = validateEmbeddable(embeddable);

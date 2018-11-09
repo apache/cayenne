@@ -28,10 +28,18 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class ClassGenerationAction {
@@ -53,6 +61,9 @@ public class ClassGenerationAction {
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
 
+	/**
+	 * @since 4.1
+	 */
 	protected CgenConfiguration cgenConfiguration;
 	protected Logger logger;
 
@@ -197,6 +208,9 @@ public class ClassGenerationAction {
 		}
 	}
 
+	/**
+	 * @since 4.1
+	 */
 	public void prepareArtifacts() {
 		cgenConfiguration.getArtifacts().clear();
 		addEntities(cgenConfiguration.getEntities().stream()
@@ -439,6 +453,9 @@ public class ClassGenerationAction {
 		this.logger = logger;
 	}
 
+	/**
+	 * @since 4.1
+	 */
 	public CgenConfiguration getCgenConfiguration() {
 		return cgenConfiguration;
 	}
@@ -451,6 +468,9 @@ public class ClassGenerationAction {
 		this.context = context;
 	}
 
+	/**
+	 * @since 4.1
+	 */
 	public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
 		this.cgenConfiguration = cgenConfiguration;
 	}
