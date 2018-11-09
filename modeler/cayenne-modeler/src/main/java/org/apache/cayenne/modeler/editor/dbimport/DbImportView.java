@@ -195,6 +195,7 @@ public class DbImportView extends JPanel {
             if (reverseEngineering == null) {
                 reverseEngineering = new ReverseEngineering();
                 DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
+                projectController.setDirty(true);
             }
             configPanel.fillCheckboxes(reverseEngineering);
             configPanel.initializeTextFields(reverseEngineering);
