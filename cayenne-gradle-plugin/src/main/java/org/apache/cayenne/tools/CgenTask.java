@@ -60,7 +60,7 @@ public class CgenTask extends BaseCayenneTask {
 
     @Input
     @Optional
-    private String client;
+    private Boolean client;
 
     private File destDir;
 
@@ -85,7 +85,7 @@ public class CgenTask extends BaseCayenneTask {
 
     @Input
     @Optional
-    private String makePairs;
+    private Boolean makePairs;
 
     @Input
     @Optional
@@ -97,7 +97,7 @@ public class CgenTask extends BaseCayenneTask {
 
     @Input
     @Optional
-    private String overwrite;
+    private Boolean overwrite;
 
     @Input
     @Optional
@@ -121,11 +121,11 @@ public class CgenTask extends BaseCayenneTask {
 
     @Input
     @Optional
-    private String usePkgPath;
+    private Boolean usePkgPath;
 
     @Input
     @Optional
-    private String createPropertyNames;
+    private Boolean createPropertyNames;
 
     /**
      * Force run (skip check for files modification time)
@@ -149,7 +149,7 @@ public class CgenTask extends BaseCayenneTask {
      */
     @Input
     @Optional
-    private String createPKProperties;
+    private Boolean createPKProperties;
 
     private String destDirName;
 
@@ -240,21 +240,21 @@ public class CgenTask extends BaseCayenneTask {
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.setRelPath(getDestDirFile() != null ? getDestDirFile().toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
-        cgenConfiguration.setMakePairs(makePairs != null ? Boolean.valueOf(makePairs) : cgenConfiguration.isMakePairs());
+        cgenConfiguration.setMakePairs(makePairs != null ? makePairs : cgenConfiguration.isMakePairs());
         cgenConfiguration.setArtifactsGenerationMode(mode != null ? mode : cgenConfiguration.getArtifactsGenerationMode());
         cgenConfiguration.setOutputPattern(outputPattern != null ? outputPattern : cgenConfiguration.getOutputPattern());
-        cgenConfiguration.setOverwrite(overwrite != null ? Boolean.valueOf(overwrite) : cgenConfiguration.isOverwrite());
+        cgenConfiguration.setOverwrite(overwrite != null ? overwrite : cgenConfiguration.isOverwrite());
         cgenConfiguration.setSuperPkg(superPkg != null ? superPkg : cgenConfiguration.getSuperPkg());
         cgenConfiguration.setSuperTemplate(superTemplate != null ? superTemplate : cgenConfiguration.getSuperTemplate());
         cgenConfiguration.setTemplate(template != null ? template :  cgenConfiguration.getTemplate());
         cgenConfiguration.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? embeddableSuperTemplate : cgenConfiguration.getEmbeddableSuperTemplate());
         cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : cgenConfiguration.getEmbeddableTemplate());
-        cgenConfiguration.setUsePkgPath(usePkgPath != null ? Boolean.valueOf(usePkgPath) : cgenConfiguration.isUsePkgPath());
-        cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? Boolean.valueOf(createPropertyNames) : cgenConfiguration.isCreatePropertyNames());
+        cgenConfiguration.setUsePkgPath(usePkgPath != null ? usePkgPath : cgenConfiguration.isUsePkgPath());
+        cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : cgenConfiguration.isCreatePropertyNames());
         cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
         cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
-        cgenConfiguration.setCreatePKProperties(createPKProperties != null ? Boolean.valueOf(createPKProperties) : cgenConfiguration.isCreatePKProperties());
-        cgenConfiguration.setClient(client != null ? Boolean.valueOf(client) : cgenConfiguration.isClient());
+        cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
+        cgenConfiguration.setClient(client != null ? client : cgenConfiguration.isClient());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
                 cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
@@ -361,12 +361,12 @@ public class CgenTask extends BaseCayenneTask {
         setAdditionalMaps(additionalMaps);
     }
 
-    public boolean isClient() {
-        return Boolean.valueOf(client);
+    public Boolean isClient() {
+        return client;
     }
 
-    public void setClient(boolean client) {
-        this.client = String.valueOf(client);
+    public void setClient(Boolean client) {
+        this.client = client;
     }
 
     public void client(boolean client) {
@@ -425,12 +425,12 @@ public class CgenTask extends BaseCayenneTask {
         setExcludeEmbeddables(excludeEmbeddables);
     }
 
-    public boolean isMakePairs() {
-        return Boolean.valueOf(makePairs);
+    public Boolean isMakePairs() {
+        return makePairs;
     }
 
-    public void setMakePairs(boolean makePairs) {
-        this.makePairs = String.valueOf(makePairs);
+    public void setMakePairs(Boolean makePairs) {
+        this.makePairs = makePairs;
     }
 
     public void makePairs(boolean makePairs) {
@@ -461,12 +461,12 @@ public class CgenTask extends BaseCayenneTask {
         setOutputPattern(outputPattern);
     }
 
-    public boolean isOverwrite() {
-        return Boolean.valueOf(overwrite);
+    public Boolean isOverwrite() {
+        return overwrite;
     }
 
-    public void setOverwrite(boolean overwrite) {
-        this.overwrite = String.valueOf(overwrite);
+    public void setOverwrite(Boolean overwrite) {
+        this.overwrite = overwrite;
     }
 
     public void overwrite(boolean overwrite) {
@@ -533,24 +533,24 @@ public class CgenTask extends BaseCayenneTask {
         setEmbeddableTemplate(embeddableTemplate);
     }
 
-    public boolean isUsePkgPath() {
-        return Boolean.valueOf(usePkgPath);
+    public Boolean isUsePkgPath() {
+        return usePkgPath;
     }
 
-    public void setUsePkgPath(boolean usePkgPath) {
-        this.usePkgPath = String.valueOf(usePkgPath);
+    public void setUsePkgPath(Boolean usePkgPath) {
+        this.usePkgPath = usePkgPath;
     }
 
     public void usePkgPath(boolean usePkgPath) {
         setUsePkgPath(usePkgPath);
     }
 
-    public boolean isCreatePropertyNames() {
-        return Boolean.valueOf(createPropertyNames);
+    public Boolean isCreatePropertyNames() {
+        return createPropertyNames;
     }
 
-    public void setCreatePropertyNames(boolean createPropertyNames) {
-        this.createPropertyNames = String.valueOf(createPropertyNames);
+    public void setCreatePropertyNames(Boolean createPropertyNames) {
+        this.createPropertyNames = createPropertyNames;
     }
 
     public void createPropertyNames(boolean createPropertyNames) {
@@ -569,8 +569,8 @@ public class CgenTask extends BaseCayenneTask {
         setForce(force);
     }
 
-    public void setCreatePKProperties(boolean createPKProperties) {
-        this.createPKProperties = String.valueOf(createPKProperties);
+    public void setCreatePKProperties(Boolean createPKProperties) {
+        this.createPKProperties = createPKProperties;
     }
 
     public void createPKProperties(boolean createPKProperties) {

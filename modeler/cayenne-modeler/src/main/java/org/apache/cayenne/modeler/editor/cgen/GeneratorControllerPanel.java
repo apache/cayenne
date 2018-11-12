@@ -25,11 +25,13 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
+ * @since 4.1
  * A generic panel that is a superclass of generator panels, defining common fields.
- * 
  */
 public class GeneratorControllerPanel extends JPanel {
 

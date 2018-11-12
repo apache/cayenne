@@ -19,8 +19,16 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 /**
  * @since 4.1
@@ -35,9 +43,6 @@ public class ClassesTabPanel extends JPanel {
 
         this.table = new JTable();
         this.table.setRowHeight(22);
-
-        // TODO: andrus 04/07/2006 - is there an easy way to stick that checkbox in the
-        // table header????
         this.checkAll = new JCheckBox();
         this.checkAllLabel = new JLabel("Check All Classes");
 

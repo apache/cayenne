@@ -60,6 +60,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         super(parentHandler);
         this.metaData = metaData;
         this.targetNamespace = CgenExtension.NAMESPACE;
+        this.configuration = new CgenConfiguration();
     }
 
     @Override
@@ -121,70 +122,49 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         if(path.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            configuration.setRelPath(Paths.get(path));
-        }
+        configuration.setRelPath(Paths.get(path));
     }
 
     private void createGenerationMode(String mode) {
         if(mode.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            configuration.setArtifactsGenerationMode(mode);
-        }
+        configuration.setArtifactsGenerationMode(mode);
     }
 
     private void createExcludeEntities(String entities) {
         if(entities.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            configuration.loadEntities(entities);
-        }
+        configuration.loadEntities(entities);
     }
 
     private void createExcludeEmbeddables(String embeddables) {
         if(embeddables.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            configuration.loadEmbeddables(embeddables);
-        }
+        configuration.loadEmbeddables(embeddables);
     }
 
     private void createSubclassTemplate(String template) {
         if(template.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            configuration.setTemplate(template);
-        }
+        configuration.setTemplate(template);
     }
 
     private void createSuperclassTemplate(String template) {
         if(template.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            configuration.setSuperTemplate(template);
-        }
+        configuration.setSuperTemplate(template);
     }
 
     private void createOutputPattern(String pattern) {
         if(pattern.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            configuration.setOutputPattern(pattern);
-        }
+        configuration.setOutputPattern(pattern);
     }
 
     private void createMakePairs(String makePairs) {
@@ -192,12 +172,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             return;
         }
 
-        if (configuration != null) {
-            if (makePairs.equals(TRUE)) {
-                configuration.setMakePairs(true);
-            } else {
-                configuration.setMakePairs(false);
-            }
+        if (makePairs.equals(TRUE)) {
+            configuration.setMakePairs(true);
+        } else {
+            configuration.setMakePairs(false);
         }
     }
 
@@ -205,13 +183,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         if(data.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            if(data.equals(TRUE)) {
-                configuration.setUsePkgPath(true);
-            } else {
-                configuration.setUsePkgPath(false);
-            }
+        if(data.equals(TRUE)) {
+            configuration.setUsePkgPath(true);
+        } else {
+            configuration.setUsePkgPath(false);
         }
     }
 
@@ -220,12 +195,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             return;
         }
 
-        if(configuration != null) {
-            if(data.equals(TRUE)) {
-                configuration.setOverwrite(true);
-            } else {
-                configuration.setOverwrite(false);
-            }
+        if(data.equals(TRUE)) {
+            configuration.setOverwrite(true);
+        } else {
+            configuration.setOverwrite(false);
         }
     }
 
@@ -233,13 +206,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         if(data.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            if(data.equals(TRUE)) {
-                configuration.setCreatePropertyNames(true);
-            } else {
-                configuration.setCreatePropertyNames(false);
-            }
+        if(data.equals(TRUE)) {
+            configuration.setCreatePropertyNames(true);
+        } else {
+            configuration.setCreatePropertyNames(false);
         }
     }
 
@@ -248,12 +218,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             return;
         }
 
-        if(configuration != null) {
-            if(data.equals(TRUE)) {
-                configuration.setCreatePKProperties(true);
-            } else {
-                configuration.setCreatePKProperties(false);
-            }
+        if(data.equals(TRUE)) {
+            configuration.setCreatePKProperties(true);
+        } else {
+            configuration.setCreatePKProperties(false);
         }
     }
 
@@ -261,18 +229,14 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         if(data.trim().length() == 0) {
             return;
         }
-
-        if(configuration != null) {
-            if(data.equals(TRUE)) {
-                configuration.setClient(true);
-            } else {
-                configuration.setClient(false);
-            }
+        if(data.equals(TRUE)) {
+            configuration.setClient(true);
+        } else {
+            configuration.setClient(false);
         }
     }
 
     private void createConfig() {
-        configuration = new CgenConfiguration();
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
             configuration.setRootPath(buildRootPath(dataMap));

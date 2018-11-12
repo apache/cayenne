@@ -25,9 +25,12 @@ import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import java.awt.Component;
 
+/**
+ * @since 4.1
+ */
 public class ClassesTabController extends CayenneController {
 
     protected ClassesTabPanel view;
@@ -111,7 +114,7 @@ public class ClassesTabController extends CayenneController {
         else if (selectedCount == getParentController().getClasses().size()) {
             view.getCheckAll().setSelected(true);
         }
-        getParentController().updateEntities();
+        getParentController().updateSelectedEntities();
     }
 
     /**
@@ -121,7 +124,7 @@ public class ClassesTabController extends CayenneController {
     public void checkAllAction() {
         if (getParentController().updateSelection(view.getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
-            getParentController().updateEntities();
+            getParentController().updateSelectedEntities();
             if(view.getCheckAll().isSelected()) {
                 getParentController().enableGenerateButton(true);
             } else {

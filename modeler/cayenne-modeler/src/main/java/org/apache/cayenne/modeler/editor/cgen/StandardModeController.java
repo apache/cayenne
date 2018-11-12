@@ -22,8 +22,11 @@ package org.apache.cayenne.modeler.editor.cgen;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
-import java.awt.*;
+import java.awt.Component;
 
+/**
+ * @since 4.1
+ */
 public class StandardModeController extends GeneratorController {
 
     protected StandardModePanel view;

@@ -32,19 +32,27 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 /**
+ * @since 4.1
  * A base superclass of a top controller for the code generator. Defines all common model
  * parts used in class generation.
  *
@@ -108,11 +116,13 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         if(cgenConfiguration != null){
             addToSelectedEntities(cgenConfiguration.getDataMap(), cgenConfiguration.getEntities());
             addToSelectedEmbeddables(cgenConfiguration.getDataMap(), cgenConfiguration.getEmbeddables());
+            cgenConfiguration.setForce(true);
             return cgenConfiguration;
         }
 
         try {
             cgenConfiguration = new CgenConfiguration();
+            cgenConfiguration.setForce(true);
             cgenConfiguration.setDataMap(map);
 
             Path basePath = Paths.get(ModelerUtil.initOutputFolder());
@@ -238,9 +248,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     }
 
     public List<Embeddable> getSelectedEmbeddables() {
-
         List<Embeddable> selected = new ArrayList<>(selectedEmbeddables.size());
-
         for (Object classObj : classes) {
             if (classObj instanceof Embeddable
                     && selectedEmbeddables.contains(((Embeddable) classObj)
@@ -379,16 +387,29 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return labelIcon;
     }
 
-    public void updateEntities(){
+    public void updateSelectedEntities(){
+        updateEntities();
+        updateEmbeddables();
+    }
+
+    public void updateEntities() {
         DataMap map = getProjectController().getCurrentDataMap();
         CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
         if(cgenConfiguration != null) {
-            cgenConfiguration.resetCollections();
+            cgenConfiguration.getEntities().clear();
             for(ObjEntity entity: getSelectedEntities()) {
                 if(!entity.isGeneric()) {
                     cgenConfiguration.loadEntity(entity.getName());
                 }
             }
+        }
+    }
+
+    public void updateEmbeddables() {
+        DataMap map = getProjectController().getCurrentDataMap();
+        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+        if(cgenConfiguration != null) {
+            cgenConfiguration.getEmbeddables().clear();
             for(Embeddable embeddable : getSelectedEmbeddables()) {
                 cgenConfiguration.loadEmbeddable(embeddable.getClassName());
             }
@@ -404,7 +425,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     void addToSelectedEmbeddables(DataMap dataMap, Collection<String> embeddables) {
         prepareClasses(dataMap);
         selectedEmbeddables.addAll(embeddables);
-        updateEntities();
+        updateEmbeddables();
     }
 
     public int getSelectedEntitiesSize() {

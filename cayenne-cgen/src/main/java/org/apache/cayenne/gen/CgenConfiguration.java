@@ -328,7 +328,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .filter(entity -> !entityArtifacts.contains(entity.getName()))
                 .map(ObjEntity::getName)
                 .collect(Collectors.toList());
-        return org.apache.commons.lang3.StringUtils.join(excludeEntities, ",");
+        return String.join(",", excludeEntities);
     }
 
     public void loadEmbeddables(String embeddables) {
@@ -341,7 +341,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .filter(embeddable -> !embeddableArtifacts.contains(embeddable.getClassName()))
                 .map(Embeddable::getClassName)
                 .collect(Collectors.toList());
-        return org.apache.commons.lang3.StringUtils.join(excludeEmbeddable, ",");
+        return String.join(",", excludeEmbeddable);
     }
 
 	public void resolveExcludeEntities() {
@@ -365,7 +365,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         encoder.start("cgen")
                 .attribute("xmlns", CgenExtension.NAMESPACE)
                 .simpleTag("excludeEntities", getExcludeEntites())
-                .simpleTag("excludeEmbeddables",getExcludeEmbeddables())
+                .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
                 .simpleTag("destDir", buildRelPath())
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
                 .simpleTag("template", this.template)

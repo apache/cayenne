@@ -23,8 +23,11 @@ import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
 
-import java.awt.*;
+import java.awt.BorderLayout;
 
+/**
+ * @since 4.1
+ */
 public class StandardModePanel extends GeneratorControllerPanel {
 
     public StandardModePanel(CodeGeneratorControllerBase codeGeneratorControllerBase) {

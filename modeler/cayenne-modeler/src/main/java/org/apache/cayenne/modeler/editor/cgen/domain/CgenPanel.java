@@ -27,9 +27,15 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
+/**
+ * @since 4.1
+ */
 public class CgenPanel extends JPanel {
 
     private JCheckBox checkConfig;

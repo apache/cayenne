@@ -23,11 +23,13 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.PreferenceDetail;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * @since 4.1
  */
 public class GeneratorTabController extends CayenneController {
 

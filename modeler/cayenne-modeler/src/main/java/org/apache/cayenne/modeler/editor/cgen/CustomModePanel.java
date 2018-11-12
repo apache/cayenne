@@ -29,9 +29,16 @@ import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.swing.control.ActionLink;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 
+/**
+ * @since 4.1
+ */
 public class CustomModePanel extends GeneratorControllerPanel {
 
     private ComboBoxAdapter<String> subclassTemplate;

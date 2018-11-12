@@ -21,6 +21,9 @@ package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 
+/**
+ * @since 4.1
+ */
 public class ClientModeController extends StandardModeController {
 
     public ClientModeController(CodeGeneratorControllerBase parent) {

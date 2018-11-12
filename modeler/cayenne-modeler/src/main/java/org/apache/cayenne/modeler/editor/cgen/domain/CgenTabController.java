@@ -35,7 +35,7 @@ import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.awt.event.ItemEvent;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,6 +48,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.prefs.Preferences;
 
+/**
+ * @since 4.1
+ */
 public class CgenTabController {
 
     private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);

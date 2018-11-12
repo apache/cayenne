@@ -30,14 +30,15 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 
 /**
+ * @since 4.1
  * A controller for the class generator dialog.
  */
 public class CodeGeneratorController extends CodeGeneratorControllerBase {

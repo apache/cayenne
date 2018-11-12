@@ -19,10 +19,15 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ScrollPaneConstants;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 
 /**
+ * @since 4.1
  */
 public class CodeGeneratorPane extends JSplitPane {
 
