@@ -22,6 +22,7 @@
            xmlns:dbi="http://cayenne.apache.org/schema/10/dbimport"
            xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="10">
 
+    <xs:element name="dbImport" substitutionGroup="dbi:config"/>
     <xs:element name="config">
         <xs:complexType>
             <xs:complexContent>
