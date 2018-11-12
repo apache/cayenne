@@ -103,6 +103,10 @@ public class GeneratorTabController extends CayenneController {
         return controllers.get(STANDARD_OBJECTS_MODE);
     }
 
+    GeneratorController getCustomModeController() {
+        return controllers.get(ADVANCED_MODE);
+    }
+
     GeneratorController getClientGeneratorController() {
         return controllers.get(CLIENT_OBJECTS_MODE);
     }

@@ -56,6 +56,7 @@ public class CodeTemplateManager {
 	private List<String> standardSubclassTemplates;
 	private List<String> standardSuperclassTemplates;
 	private Map<String, String> customTemplates;
+	private Map<String, String> reverseCustomTemplate;
 	private Map<String, String> standardTemplates;
 
 	private List<String> standartEmbeddableTemplates;
@@ -98,6 +99,10 @@ public class CodeTemplateManager {
 		standartDataMapSuperclassTemplates.add(STANDART_DATAMAP_SUPERCLASS);
 
 		updateCustomTemplates(getTemplatePreferences(application));
+		reverseCustomTemplate = new HashMap<>();
+		for(Map.Entry<String, String> entry : customTemplates.entrySet()){
+			reverseCustomTemplate.put(entry.getValue(), entry.getKey());
+		}
 
 		standardTemplates = new HashMap<>();
 		standardTemplates.put(STANDARD_SERVER_SUPERCLASS, ClassGenerationAction.SUPERCLASS_TEMPLATE);
@@ -161,8 +166,8 @@ public class CodeTemplateManager {
 	}
 
 	public String getNameByPath(String name) {
-		if(customTemplates.containsKey(name)){
-			return customTemplates.get(name).toString();
+		if(reverseCustomTemplate.containsKey(name)){
+			return reverseCustomTemplate.get(name);
 		} else {
 			Object value = reverseStandartTemplates.get(name);
 			return value != null ? value.toString() : null;

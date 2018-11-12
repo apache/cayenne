@@ -68,11 +68,21 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase {
         classesSelectedAction();
         CgenConfiguration cgenConfiguration = createConfiguration();
         GeneratorController modeController = prevGeneratorController.get(dataMap) != null ? prevGeneratorController.get(dataMap) : cgenConfiguration.isClient() ?
-                generatorSelector.getClientGeneratorController() : generatorSelector.getStandartController();
+                generatorSelector.getClientGeneratorController() : isDefaultConfig(cgenConfiguration) ?
+                generatorSelector.getStandartController() : generatorSelector.getCustomModeController();
         prevGeneratorController.put(dataMap, modeController);
         generatorSelector.setSelectedController(modeController);
         classesSelector.startup();
         initFromModel = false;
+    }
+
+    private boolean isDefaultConfig(CgenConfiguration cgenConfiguration) {
+        return cgenConfiguration.isMakePairs() && cgenConfiguration.isUsePkgPath() && !cgenConfiguration.isOverwrite() &&
+                !cgenConfiguration.isCreatePKProperties() && !cgenConfiguration.isCreatePropertyNames() &&
+                cgenConfiguration.getOutputPattern().equals("*.java") &&
+                cgenConfiguration.getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE) &&
+                cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+
     }
 
     private void initListeners(){

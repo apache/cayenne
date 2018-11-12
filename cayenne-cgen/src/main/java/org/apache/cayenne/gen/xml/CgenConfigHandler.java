@@ -40,7 +40,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String OUTPUT_DIRECTORY_TAG = "destDir";
     private static final String GENERATION_MODE_TAG = "mode";
     private static final String SUBCLASS_TEMPLATE_TAG = "template";
-    private static final String SUPERCLASS_TEMPLATE_TAG = "superclassTemplate";
+    private static final String SUPERCLASS_TEMPLATE_TAG = "superTemplate";
     private static final String OUTPUT_PATTERN_TAG = "outputPattern";
     private static final String MAKE_PAIRS_TAG = "makePairs";
     private static final String USE_PKG_PATH_TAG = "usePkgPath";

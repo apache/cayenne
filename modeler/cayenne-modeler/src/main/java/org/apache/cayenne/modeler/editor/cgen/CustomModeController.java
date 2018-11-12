@@ -25,8 +25,10 @@ import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.swing.BindingBuilder;
 
-import javax.swing.DefaultComboBoxModel;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,9 +89,15 @@ public class CustomModeController extends GeneratorController {
     }
 
     private void updateComboBoxes() {
-        view.getSubclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(cgenConfiguration.getTemplate()));
-        view.getSuperclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(cgenConfiguration.getSuperTemplate()));
+        view.getSubclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(
+                getAbsoluteTemplatePath(cgenConfiguration.getTemplate(), cgenConfiguration.getRootPath())));
+        view.getSuperclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(
+                getAbsoluteTemplatePath(cgenConfiguration.getSuperTemplate(), cgenConfiguration.getRootPath())));
         view.setDisableSuperComboBoxes(view.getPairs().isSelected());
+    }
+
+    private String getAbsoluteTemplatePath(String relTemplatePath, Path rootPath) {
+        return rootPath.resolve(Paths.get(relTemplatePath)).toString();
     }
 
     private void initListeners(){
