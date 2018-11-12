@@ -4,10 +4,6 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
-UPGRADING TO 4.1.M3
-
-* Per CAY-2493 'datamap' generation mode in cgen replaced with 'all' generation mode with
-      <excludeEntities>*</excludeEntities> and <excludeEmbeddables>*</excludeEmbeddables> patterns.
 
 UPGRADING TO 4.1.M2
 

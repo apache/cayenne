@@ -38,13 +38,13 @@
                 <artifactId>cayenne-maven-plugin</artifactId>
                 <configuration>
                     <map>src/test/resources/cgen/testCgen.map.xml</map>
-                    <destDir>target/resultClasses</destDir>
+                    <destDir>target/testForMode</destDir>
                     <outputPattern>*.txt</outputPattern>
-                    <makePairs>false</makePairs>
+                    <makePairs>true</makePairs>
                     <usePkgPath>true</usePkgPath>
+                    <superPkg>superPkg</superPkg>
                     <encoding>UTF-8</encoding>
-                    <excludeEntities>ObjEntity</excludeEntities>
-                    <mode>all</mode>
+                    <mode>datamap</mode>
                 </configuration>
             </plugin>
         </plugins>

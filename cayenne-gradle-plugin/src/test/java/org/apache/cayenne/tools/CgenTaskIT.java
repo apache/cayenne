@@ -146,4 +146,39 @@ public class CgenTaskIT extends BaseTaskIT {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":cgen").getOutcome());
     }
+
+    @Test
+    public void testReplaceDatamapMode() throws Exception {
+        GradleRunner runner = createRunner(
+                "cgen_replaceDatamapMode",
+                "cgen",
+                "-PdataMap=cgenMap.map.xml"
+        );
+
+        BuildResult result = runner.forwardOutput().build();
+
+        String generatedDirectoryPath = projectDir.getAbsolutePath() + "/customDirectory/";
+
+        String notIncludedEntity = generatedDirectoryPath + "ObjEntity.txt";
+        Path generatedNotIncludedEntity = Paths.get(notIncludedEntity);
+        assertFalse(Files.exists(generatedNotIncludedEntity));
+
+        String notIncludedEntity1 = generatedDirectoryPath + "ObjEntity1.txt";
+        Path generatedNotIncludedEntity1 = Paths.get(notIncludedEntity1);
+        assertFalse(Files.exists(generatedNotIncludedEntity1));
+
+        String notIncludedEmbeddable = generatedDirectoryPath + "Embeddable.txt";
+        Path generatedNotIncludedEmbeddable = Paths.get(notIncludedEmbeddable);
+        assertFalse(Files.exists(generatedNotIncludedEmbeddable));
+
+        String includedDataMap = generatedDirectoryPath + "CgenMap.txt";
+        Path generatedIncludedDataMap = Paths.get(includedDataMap);
+        assertTrue(Files.exists(generatedIncludedDataMap));
+
+        String includedSuperDataMap = generatedDirectoryPath + "auto/_CgenMap.txt";
+        Path generatedIncludedSuperDataMap = Paths.get(includedSuperDataMap);
+        assertTrue(Files.exists(generatedIncludedSuperDataMap));
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":cgen").getOutcome());
+    }
 }

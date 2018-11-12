@@ -24,6 +24,7 @@ import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenModule;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -108,17 +109,16 @@ public class CayenneGeneratorTask extends CayenneTask {
 
         loadAction.setMainDataMapFile(map);
         loadAction.setAdditionalDataMapFiles(additionalMaps);
-
-        CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
-        filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntitiesPattern, excludeEntitiesPattern));
-
-        CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
-        filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddablesPattern));
         try {
 
             DataMap dataMap = loadAction.getMainDataMap();
 
             ClassGenerationAction generatorAction = createGenerator(dataMap);
+            CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
+            filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntitiesPattern, excludeEntitiesPattern));
+
+            CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
+            filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddablesPattern));
             filterEntityAction.setClient(generatorAction.getCgenConfiguration().isClient());
             generatorAction.setLogger(logger);
             if(force) {
@@ -177,6 +177,9 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setRelPath(destDir != null ? destDir.toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
         cgenConfiguration.setMakePairs(makepairs != null ? makepairs : cgenConfiguration.isMakePairs());
+        if(mode != null && mode.equals("datamap")) {
+            replaceDatamapGenerationMode();
+        }
         cgenConfiguration.setArtifactsGenerationMode(mode != null ? mode : cgenConfiguration.getArtifactsGenerationMode());
         cgenConfiguration.setOutputPattern(outputPattern != null ? outputPattern : cgenConfiguration.getOutputPattern());
         cgenConfiguration.setOverwrite(overwrite != null ? overwrite : cgenConfiguration.isOverwrite());
@@ -203,6 +206,13 @@ public class CayenneGeneratorTask extends CayenneTask {
             }
         }
         return cgenConfiguration;
+    }
+
+    private void replaceDatamapGenerationMode() {
+        this.mode = ArtifactsGenerationMode.ALL.getLabel();
+        this.excludeEntitiesPattern = "*";
+        this.excludeEmbeddablesPattern = "*";
+        this.includeEntitiesPattern = "";
     }
 
     /**

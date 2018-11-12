@@ -108,9 +108,31 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
 
         File objEntity = new File("target/resultClasses/ObjEntity.txt");
         assertFalse(objEntity.exists());
-        File superObjEntity1 = new File("target/resultClasses/superPkg/_ObjEntity.txt");
+        File superObjEntity1 = new File("target/resultClasses/auto/_ObjEntity.txt");
         assertFalse(superObjEntity1.exists());
-        File superDataMap = new File("target/resultClasses/superPkg/_TestCgen.txt");
+        File superDataMap = new File("target/resultClasses/auto/_TestCgen.txt");
         assertFalse(superDataMap.exists());
+    }
+
+    public void testDatamapModeReplace() throws Exception {
+        File pom = getTestFile("src/test/resources/cgen/project-to-test/replaceDatamapMode-pom.xml");
+        assertNotNull(pom);
+        assertTrue(pom.exists());
+
+        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
+        assertNotNull(myMojo);
+        myMojo.execute();
+
+        File objEntity1 = new File("target/testForMode/ObjEntity1.txt");
+        assertFalse(objEntity1.exists());
+        File embeddable = new File("target/testForMode/Embeddable.txt");
+        assertFalse(embeddable.exists());
+        File objEntity = new File("target/testForMode/ObjEntity.txt");
+        assertFalse(objEntity.exists());
+        File dataMap = new File("target/testForMode/TestCgen.txt");
+        assertTrue(dataMap.exists());
+
+        File superDataMap = new File("target/testForMode/superPkg/_TestCgen.txt");
+        assertTrue(superDataMap.exists());
     }
 }
