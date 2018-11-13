@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.configuration.rop.client;
 
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
@@ -32,7 +31,7 @@ import org.apache.cayenne.rop.http.JettyHttpROPConnector;
  * This module uses {@link JettyHttpROPConnector} initialized by {@link JettyHttp2ClientConnectionProvider}
  * without ALPN by default.
  * <p>
- * In order to use it with ALPN you have to set {@link Constants#ROP_SERVICE_USE_ALPN_PROPERTY} to true
+ * In order to use it with ALPN you have to set {@link ClientConstants#ROP_SERVICE_USE_ALPN_PROPERTY} to true
  * and provide the alpn-boot-XXX.jar into the bootstrap classpath.
  */
 public class ClientJettyHttp2Module implements Module {
