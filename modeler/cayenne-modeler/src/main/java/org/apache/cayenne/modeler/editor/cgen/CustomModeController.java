@@ -103,8 +103,8 @@ public class CustomModeController extends GeneratorController {
                 cgenConfiguration.getTemplate(), cgenConfiguration.getRootPath());
         String superTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
                 cgenConfiguration.getSuperTemplate(), cgenConfiguration.getRootPath());
-        String path = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getTemplate())).toString();
-        String superPath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getSuperTemplate())).toString();
+        String path = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getTemplate())).normalize().toString();
+        String superPath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getSuperTemplate())).normalize().toString();
         if(templateName == null && superTemplateName == null) {
             view.getSubclassTemplate().setItem(null);
             view.getSuperclassTemplate().setItem(null);

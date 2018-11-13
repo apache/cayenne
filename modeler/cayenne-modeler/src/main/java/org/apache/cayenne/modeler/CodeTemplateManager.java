@@ -169,7 +169,7 @@ public class CodeTemplateManager {
 	}
 
 	public String getNameByPath(String name, Path rootPath) {
-		String fullPath = rootPath.resolve(Paths.get(name)).toString();
+		String fullPath = rootPath.resolve(Paths.get(name)).normalize().toString();
 		if(reverseCustomTemplate.containsKey(fullPath)){
 			return reverseCustomTemplate.get(fullPath);
 		} else {
