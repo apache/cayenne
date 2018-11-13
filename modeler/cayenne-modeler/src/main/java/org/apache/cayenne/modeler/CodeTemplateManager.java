@@ -25,6 +25,8 @@ import org.apache.cayenne.modeler.pref.FSPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,9 +157,10 @@ public class CodeTemplateManager {
 	// TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to
 	// correctly
 	// assign standard templates
-	public String getTemplatePath(String name) {
+	public String getTemplatePath(String name, Path rootPath) {
 		Object value = customTemplates.get(name);
 		if (value != null) {
+			value = rootPath.relativize(Paths.get((String)value));
 			return value.toString();
 		}
 
@@ -165,9 +168,10 @@ public class CodeTemplateManager {
 		return value != null ? value.toString() : null;
 	}
 
-	public String getNameByPath(String name) {
-		if(reverseCustomTemplate.containsKey(name)){
-			return reverseCustomTemplate.get(name);
+	public String getNameByPath(String name, Path rootPath) {
+		String fullPath = rootPath.resolve(Paths.get(name)).toString();
+		if(reverseCustomTemplate.containsKey(fullPath)){
+			return reverseCustomTemplate.get(fullPath);
 		} else {
 			Object value = reverseStandartTemplates.get(name);
 			return value != null ? value.toString() : null;

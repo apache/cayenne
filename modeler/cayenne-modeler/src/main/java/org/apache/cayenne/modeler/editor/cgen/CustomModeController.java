@@ -22,12 +22,12 @@ package org.apache.cayenne.modeler.editor.cgen;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.CodeTemplateManager;
+import org.apache.cayenne.modeler.dialog.cgen.TemplateDialog;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.swing.BindingBuilder;
 
-import javax.swing.*;
-import java.awt.*;
-import java.nio.file.Path;
+import javax.swing.DefaultComboBoxModel;
+import java.awt.Component;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,22 +82,44 @@ public class CustomModeController extends GeneratorController {
         return view;
     }
 
+    public void missTemplateDialog(CgenConfiguration cgenConfiguration, String template, String superTemplate) {
+        new TemplateDialog(this, cgenConfiguration, template, superTemplate).startupAction();
+        updateComboBoxes();
+    }
+
     public void popPreferencesAction() {
         new PreferenceDialog(getApplication().getFrameController()).startupAction(PreferenceDialog.TEMPLATES_KEY);
         updateTemplates();
         updateComboBoxes();
     }
 
-    private void updateComboBoxes() {
-        view.getSubclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(
-                getAbsoluteTemplatePath(cgenConfiguration.getTemplate(), cgenConfiguration.getRootPath())));
-        view.getSuperclassTemplate().setItem(getApplication().getCodeTemplateManager().getNameByPath(
-                getAbsoluteTemplatePath(cgenConfiguration.getSuperTemplate(), cgenConfiguration.getRootPath())));
-        view.setDisableSuperComboBoxes(view.getPairs().isSelected());
+    public void addTemplateAction(String template, String superTemplate) {
+        new PreferenceDialog(getApplication().getFrameController()).startupToCreateTemplate(template, superTemplate);
+        updateTemplates();
     }
 
-    private String getAbsoluteTemplatePath(String relTemplatePath, Path rootPath) {
-        return rootPath.resolve(Paths.get(relTemplatePath)).toString();
+    private void updateComboBoxes() {
+        String templateName = getApplication().getCodeTemplateManager().getNameByPath(
+                cgenConfiguration.getTemplate(), cgenConfiguration.getRootPath());
+        String superTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+                cgenConfiguration.getSuperTemplate(), cgenConfiguration.getRootPath());
+        String path = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getTemplate())).toString();
+        String superPath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getSuperTemplate())).toString();
+        if(templateName == null && superTemplateName == null) {
+            view.getSubclassTemplate().setItem(null);
+            view.getSuperclassTemplate().setItem(null);
+            missTemplateDialog(cgenConfiguration, path, superPath);
+        } else if(templateName == null) {
+            view.getSubclassTemplate().setItem(null);
+            missTemplateDialog(cgenConfiguration, path, null);
+        } else if(superTemplateName == null) {
+            view.getSuperclassTemplate().setItem(null);
+            missTemplateDialog(cgenConfiguration, null, superPath);
+        } else {
+            view.getSubclassTemplate().setItem(templateName);
+            view.getSuperclassTemplate().setItem(superTemplateName);
+        }
+        view.setDisableSuperComboBoxes(view.getPairs().isSelected());
     }
 
     private void initListeners(){

@@ -27,13 +27,10 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.ComboBoxAdapter;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
-import org.apache.cayenne.swing.control.ActionLink;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @since 4.1
@@ -49,7 +46,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
     private JCheckBox createPropertyNames;
     private JCheckBox pkProperties;
 
-    private ActionLink manageTemplatesLink;
+    private JButton manageTemplatesLink;
 
     CustomModePanel(ProjectController projectController, CodeGeneratorControllerBase codeGeneratorControllerBase) {
         super(projectController, codeGeneratorControllerBase);
@@ -58,7 +55,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 CgenConfiguration cgenConfiguration = getCgenByDataMap();
-                cgenConfiguration.setSuperTemplate(getTemplatePath(cgenConfiguration.getRootPath(), item));
+                cgenConfiguration.setSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item, cgenConfiguration.getRootPath()));
                 if(!codeGeneratorControllerBase.isInitFromModel()) {
                     projectController.setDirty(true);
                 }
@@ -70,7 +67,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 CgenConfiguration cgenConfiguration = getCgenByDataMap();
-                cgenConfiguration.setTemplate(getTemplatePath(cgenConfiguration.getRootPath(), item));
+                cgenConfiguration.setTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item, cgenConfiguration.getRootPath()));
                 if(!codeGeneratorControllerBase.isInitFromModel()) {
                     projectController.setDirty(true);
                 }
@@ -93,7 +90,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         this.createPropertyNames = new JCayenneCheckBox();
         this.pkProperties = new JCayenneCheckBox();
-        this.manageTemplatesLink = new ActionLink("Customize Templates...");
+        this.manageTemplatesLink = new JButton("Customize Templates...");
         this.manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
 
         pairs.addChangeListener(e -> {
@@ -144,15 +141,11 @@ public class CustomModePanel extends GeneratorControllerPanel {
         add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    private String getTemplatePath(Path rootPath, String templatePath) {
-        return rootPath.relativize(Paths.get(Application.getInstance().getCodeTemplateManager().getTemplatePath(String.valueOf(templatePath)))).toString();
-    }
-
     public void setDisableSuperComboBoxes(boolean val){
         superclassTemplate.getComboBox().setEnabled(val);
     }
 
-    public ActionLink getManageTemplatesLink() {
+    public JButton getManageTemplatesLink() {
         return manageTemplatesLink;
     }
 
