@@ -30,9 +30,7 @@ import org.apache.cayenne.util.XMLSerializable;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,9 +43,9 @@ import java.util.stream.Collectors;
 public class CgenConfiguration implements Serializable, XMLSerializable {
 
     private Collection<Artifact> artifacts;
-    private Collection<String> entityArtifacts;
+    private Set<String> entityArtifacts;
     private Collection<String> excludeEntityArtifacts;
-    private Collection<String> embeddableArtifacts;
+    private Set<String> embeddableArtifacts;
     private Collection<String> excludeEmbeddableArtifacts;
 
     private String superPkg;
@@ -87,9 +85,9 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         setArtifactsGenerationMode("entity");
 
         this.artifacts = new ArrayList<>();
-        this.entityArtifacts = new ArrayList<>();
+        this.entityArtifacts = new HashSet<>();
         this.excludeEntityArtifacts = new ArrayList<>();
-        this.embeddableArtifacts = new ArrayList<>();
+        this.embeddableArtifacts = new HashSet<>();
         this.excludeEmbeddableArtifacts = new ArrayList<>();
         this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
@@ -286,11 +284,11 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         return artifacts;
     }
 
-    public Collection<String> getEntities() {
+    public Set<String> getEntities() {
         return entityArtifacts;
     }
 
-    public Collection<String> getEmbeddables() {
+    public Set<String> getEmbeddables() {
         return embeddableArtifacts;
     }
 
@@ -310,8 +308,10 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 		return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : relPath;
 	}
 
-    public void loadEntity(String name) {
-        entityArtifacts.add(name);
+    public void loadEntity(ObjEntity entity) {
+        if(!entity.isGeneric()) {
+            entityArtifacts.add(entity.getName());
+        }
     }
 
     public void loadEmbeddable(String name) {
@@ -349,7 +349,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 				.stream()
 				.filter(entity -> !excludeEntityArtifacts.contains(entity.getName()))
 				.map(ObjEntity::getName)
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 
 	public void resolveExcludeEmbeddables() {
@@ -357,8 +357,16 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 				.stream()
 				.filter(embeddable -> !excludeEmbeddableArtifacts.contains(embeddable.getClassName()))
 				.map(Embeddable::getClassName)
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
+
+	public Collection<String> getExcludeEntityArtifacts() {
+        return excludeEntityArtifacts;
+    }
+
+    public Collection<String> getExcludeEmbeddableArtifacts() {
+        return excludeEmbeddableArtifacts;
+    }
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {

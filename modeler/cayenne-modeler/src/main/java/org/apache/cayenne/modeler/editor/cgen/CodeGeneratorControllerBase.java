@@ -32,20 +32,13 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
@@ -114,8 +107,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         DataMap map = projectController.getCurrentDataMap();
         CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
         if(cgenConfiguration != null){
-            addToSelectedEntities(cgenConfiguration.getDataMap(), cgenConfiguration.getEntities());
-            addToSelectedEmbeddables(cgenConfiguration.getDataMap(), cgenConfiguration.getEmbeddables());
+            addToSelectedEntities(cgenConfiguration.getEntities());
+            addToSelectedEmbeddables(cgenConfiguration.getEmbeddables());
             cgenConfiguration.setForce(true);
             return cgenConfiguration;
         }
@@ -149,11 +142,11 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
             if (preferences != null) {
                 cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
             }
-            addToSelectedEntities(map, map.getObjEntities()
+            addToSelectedEntities(map.getObjEntities()
                     .stream()
                     .map(Entity::getName)
                     .collect(Collectors.toList()));
-            addToSelectedEmbeddables(map, map.getEmbeddables()
+            addToSelectedEmbeddables(map.getEmbeddables()
                     .stream()
                     .map(Embeddable::getClassName)
                     .collect(Collectors.toList()));
@@ -247,25 +240,28 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return modified;
     }
 
-    public List<Embeddable> getSelectedEmbeddables() {
+    private List<Embeddable> getSelectedEmbeddables() {
         List<Embeddable> selected = new ArrayList<>(selectedEmbeddables.size());
         for (Object classObj : classes) {
-            if (classObj instanceof Embeddable
-                    && selectedEmbeddables.contains(((Embeddable) classObj)
-                            .getClassName())) {
-                selected.add((Embeddable) classObj);
+            if(classObj instanceof Embeddable) {
+                String name = ((Embeddable) classObj).getClassName();
+                if(selectedEmbeddables.contains(name)) {
+                    selected.add((Embeddable) classObj);
+                }
             }
         }
 
         return selected;
     }
 
-    public List<ObjEntity> getSelectedEntities() {
+    private List<ObjEntity> getSelectedEntities() {
         List<ObjEntity> selected = new ArrayList<>(selectedEntities.size());
         for (Object classObj : classes) {
-            if (classObj instanceof ObjEntity
-                    && selectedEntities.contains(((ObjEntity) classObj).getName())) {
-                selected.add(((ObjEntity) classObj));
+            if(classObj instanceof ObjEntity) {
+                String name = ((ObjEntity) classObj).getName();
+                if(selectedEntities.contains(name)) {
+                    selected.add(((ObjEntity) classObj));
+                }
             }
         }
 
@@ -392,22 +388,23 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         updateEmbeddables();
     }
 
-    public void updateEntities() {
+    CgenConfiguration getCurrentConfiguration() {
         DataMap map = getProjectController().getCurrentDataMap();
-        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+        return projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+    }
+
+    private void updateEntities() {
+        CgenConfiguration cgenConfiguration = getCurrentConfiguration();
         if(cgenConfiguration != null) {
             cgenConfiguration.getEntities().clear();
             for(ObjEntity entity: getSelectedEntities()) {
-                if(!entity.isGeneric()) {
-                    cgenConfiguration.loadEntity(entity.getName());
-                }
+                cgenConfiguration.loadEntity(entity);
             }
         }
     }
 
-    public void updateEmbeddables() {
-        DataMap map = getProjectController().getCurrentDataMap();
-        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+    private void updateEmbeddables() {
+        CgenConfiguration cgenConfiguration = getCurrentConfiguration();
         if(cgenConfiguration != null) {
             cgenConfiguration.getEmbeddables().clear();
             for(Embeddable embeddable : getSelectedEmbeddables()) {
@@ -416,16 +413,32 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         }
     }
 
-    void addToSelectedEntities(DataMap dataMap, Collection<String> entities) {
-        prepareClasses(dataMap);
+    private void addToSelectedEntities(Collection<String> entities) {
         selectedEntities.addAll(entities);
         updateEntities();
     }
 
-    void addToSelectedEmbeddables(DataMap dataMap, Collection<String> embeddables) {
+    void addEntity(DataMap dataMap, ObjEntity objEntity) {
         prepareClasses(dataMap);
+        selectedEntities.add(objEntity.getName());
+        CgenConfiguration cgenConfiguration = getCurrentConfiguration();
+        if(cgenConfiguration != null) {
+            cgenConfiguration.loadEntity(objEntity);
+        }
+    }
+
+    private void addToSelectedEmbeddables(Collection<String> embeddables) {
         selectedEmbeddables.addAll(embeddables);
         updateEmbeddables();
+    }
+
+    void addEmbeddable(DataMap dataMap, Embeddable embeddable) {
+        prepareClasses(dataMap);
+        selectedEmbeddables.add(embeddable.getClassName());
+        CgenConfiguration cgenConfiguration = getCurrentConfiguration();
+        if(cgenConfiguration != null) {
+            cgenConfiguration.loadEmbeddable(embeddable.getClassName());
+        }
     }
 
     public int getSelectedEntitiesSize() {
@@ -466,4 +479,14 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
 
 
     public abstract void enableGenerateButton(boolean enabled);
+
+    void removeFromSelectedEntities(ObjEntity objEntity) {
+        initCollectionsForSelection(objEntity.getDataMap());
+        selectedEntities.remove(objEntity.getName());
+    }
+
+    void removeFromSelectedEmbeddables(Embeddable embeddable) {
+        initCollectionsForSelection(embeddable.getDataMap());
+        selectedEmbeddables.remove(embeddable.getClassName());
+    }
 }
