@@ -37,6 +37,7 @@ import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.EventObject;
 
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration
@@ -226,16 +227,18 @@ public class CayenneTable extends JTable {
         }
     }
 
-    public void changeSelection(final int row, final int column, boolean toggle, boolean extend) {
-        super.changeSelection(row, column, toggle, extend);
-        startCellEditingOnTabPressed(row, column);
-    }
+    public boolean editCellAt(int row, int column, EventObject e) {
 
-    private void startCellEditingOnTabPressed(final int row, final int column) {
+        boolean result = false;
         if (isCellEditable(row, column)) {
-            this.editCellAt(row, column);
+            result = super.editCellAt(row, column, null);
             editorComp.requestFocus();
         }
+        return result;
+    }
+
+    public void changeSelection(final int row, final int column, boolean toggle, boolean extend) {
+        super.changeSelection(row, column, toggle, extend);
     }
 
     public void sort(int column, boolean isAscend) {
