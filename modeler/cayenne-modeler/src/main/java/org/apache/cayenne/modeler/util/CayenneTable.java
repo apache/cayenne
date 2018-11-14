@@ -26,6 +26,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
@@ -34,6 +35,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
+import java.awt.Color;
 import java.awt.Component;
 
 /**
@@ -42,6 +44,7 @@ import java.awt.Component;
  *
  */
 public class CayenneTable extends JTable {
+    private static final Color SELECTION_COLOR = UIManager.getColor("Table.selectionBackground");
 
     private SortButtonRenderer renderer = new SortButtonRenderer();
     protected TableHeaderListener tableHeaderListener;
@@ -49,6 +52,7 @@ public class CayenneTable extends JTable {
 
     public CayenneTable() {
         super();
+        this.selectionBackground = SELECTION_COLOR;
         this.setRowHeight(25);
         this.setRowMargin(3);
         JTableHeader header = getTableHeader();

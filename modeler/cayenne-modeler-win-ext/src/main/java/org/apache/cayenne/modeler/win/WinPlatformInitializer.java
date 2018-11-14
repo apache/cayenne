@@ -27,9 +27,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.BorderFactory;
-import javax.swing.border.AbstractBorder;
-import javax.swing.border.Border;
-import java.awt.*;
+import java.awt.Color;
 
 public class WinPlatformInitializer implements PlatformInitializer {
 
@@ -59,6 +57,8 @@ public class WinPlatformInitializer implements PlatformInitializer {
         UIManager.put("Tree.selectionBackground",       darkGrey);
         UIManager.put("Tree.selectionForeground",       Color.BLACK);
         UIManager.put("Tree.selectionBorderColor",      UIManager.get("Tree.selectionBackground"));
+        UIManager.put("Table.selectionForeground",      Color.BLACK);
+        UIManager.put("Table.selectionBackground",      darkGrey);
         UIManager.put("ScrollPane.border",      BorderFactory.createEmptyBorder());
         UIManager.put("Table.scrollPaneBorder", BorderFactory.createEmptyBorder());
         UIManager.put("SplitPane.border",       BorderFactory.createEmptyBorder());
