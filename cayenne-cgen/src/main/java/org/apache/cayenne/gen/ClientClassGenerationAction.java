@@ -19,29 +19,38 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
+
+import java.util.Collection;
 
 /**
  * @since 3.0
  */
 public class ClientClassGenerationAction extends ClassGenerationAction {
 
+    private static final String TEMPLATES_DIR_NAME = "templates/v4_1/";
     public static final String SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-subclass.vm";
     public static final String SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-superclass.vm";
     public static final String SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-singleclass.vm";
-    
+
     public static final String DMAP_SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-datamap-subclass.vm";
     public static final String DMAP_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-datamap-superclass.vm";
-    public static final String DMAP_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-datamap-singleclass.vm";
+    public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "client-datamap-singleclass.vm";
 
     public static final String CLIENT_SUPERCLASS_PREFIX = "_Client";
 
+    public ClientClassGenerationAction(CgenConfiguration cgenConfiguration) {
+        super(cgenConfiguration);
+        cgenConfiguration.setTemplate(SUBCLASS_TEMPLATE);
+        cgenConfiguration.setSuperTemplate(SUPERCLASS_TEMPLATE);
+        cgenConfiguration.setQueryTemplate(DMAP_SUBCLASS_TEMPLATE);
+        cgenConfiguration.setQuerySuperTemplate(DMAP_SUPERCLASS_TEMPLATE);
+    }
+
     @Override
-    protected String defaultTemplateName(TemplateType type) {
+    public String defaultTemplateName(TemplateType type) {
         switch (type) {
             case ENTITY_SUBCLASS:
                 return SUBCLASS_TEMPLATE;
@@ -51,18 +60,18 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
                 return SINGLE_CLASS_TEMPLATE;
 
             case EMBEDDABLE_SUBCLASS:
-                return EMBEDDABLE_SUBCLASS_TEMPLATE;
+                return ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
             case EMBEDDABLE_SUPERCLASS:
-                return EMBEDDABLE_SUPERCLASS_TEMPLATE;
+                return ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
             case EMBEDDABLE_SINGLE_CLASS:
-                return EMBEDDABLE_SINGLE_CLASS_TEMPLATE;
-            
+                return ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE;
+
             case DATAMAP_SUPERCLASS:
-                return ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE;
+                return DMAP_SUPERCLASS_TEMPLATE;
             case DATAMAP_SUBCLASS:
-                return ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE;
+                return DMAP_SUBCLASS_TEMPLATE;
             case DATAMAP_SINGLE_CLASS:
-                return DMAP_SINGLE_CLASS_TEMPLATE;
+                return DATAMAP_SINGLE_CLASS_TEMPLATE;
 
             default:
                 throw new IllegalArgumentException("Unsupported template type: " + type);
@@ -73,14 +82,14 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
      * @since 4.0 throws exception
      */
     @Override
-    public void addEntities(Collection<ObjEntity> entities) throws CayenneRuntimeException {
-        if (!dataMap.isClientSupported()) {
+    public void addEntities(Collection<ObjEntity> entities) {
+        if (!cgenConfiguration.getDataMap().isClientSupported()) {
             throw new CayenneRuntimeException("Can't create client classes. Check client supported option on DataMap configuration.");
         }
         if (entities != null) {
             for (ObjEntity entity : entities) {
                 if (!entity.isServerOnly()) {
-                    artifacts.add(new ClientEntityArtifact(entity));
+                    cgenConfiguration.addArtifact(new ClientEntityArtifact(entity));
                 }
             }
         }
@@ -88,10 +97,9 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
     @Override
     public void addQueries(Collection<QueryDescriptor> queries) {
-        if (artifactsGenerationMode == ArtifactsGenerationMode.DATAMAP
-                || artifactsGenerationMode == ArtifactsGenerationMode.ALL) {
+        if (cgenConfiguration.getArtifactsGenerationMode().equals(ArtifactsGenerationMode.ALL.getLabel())) {
             if (queries != null) {
-                artifacts.add(new ClientDataMapArtifact(dataMap, queries));
+                cgenConfiguration.addArtifact(new ClientDataMapArtifact(cgenConfiguration.getDataMap(), queries));
             }
         }
     }

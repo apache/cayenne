@@ -17,76 +17,81 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.codegen;
+package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.modeler.Application;
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.components.TopBorder;
 
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.Objects;
 
 /**
+ * @since 4.1
  */
-public class CodeGeneratorDialog extends JDialog {
+public class GeneratorTabPanel extends JPanel {
+
+    private JComboBox<String> generationMode;
+    private CardLayout modeLayout;
+    private JPanel modesPanel;
 
     private JButton generateButton;
-    protected JButton cancelButton;
     private JLabel classesCount;
 
-    CodeGeneratorDialog(Component generatorPanel, Component entitySelectorPanel) {
-        super(Application.getFrame());
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setFocusable(false);
-
+    public GeneratorTabPanel(String[] modeNames, Component[] modePanels) {
+        setLayout(new BorderLayout());
         this.generateButton = new JButton("Generate");
-        getRootPane().setDefaultButton(generateButton);
-
-        this.cancelButton = new JButton("Cancel");
+        generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
+        generateButton.setPreferredSize(new Dimension(180, 30));
+        generateButton.setEnabled(false);
         this.classesCount = new JLabel("No classes selected");
         classesCount.setFont(classesCount.getFont().deriveFont(10f));
-
-
-        JScrollPane scrollPane = new JScrollPane(
-                generatorPanel,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(630, 500));
-
-        splitPane.setLeftComponent(entitySelectorPanel);
-        splitPane.setRightComponent(scrollPane);
-
         JPanel messages = new JPanel(new BorderLayout());
         messages.add(classesCount, BorderLayout.WEST);
-
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.setBorder(TopBorder.create());
         buttons.add(classesCount);
         buttons.add(Box.createHorizontalStrut(50));
-        buttons.add(cancelButton);
         buttons.add(generateButton);
+        add(buttons, BorderLayout.NORTH);
 
-        Container contentPane = getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(splitPane, BorderLayout.CENTER);
-        contentPane.add(buttons, BorderLayout.SOUTH);
+        JPanel panel = new JPanel();
+        this.generationMode = new JComboBox<>(modeNames);
+        this.modeLayout = new CardLayout();
+        this.modesPanel = new JPanel(modeLayout);
 
-        setTitle("Code Generation");
+        generationMode.addItemListener(e -> modeLayout.show(modesPanel, Objects.requireNonNull(generationMode.getSelectedItem()).toString()));
+
+        // assemble
+        FormLayout layout = new FormLayout("right:77dlu, 3dlu, fill:300, fill:300dlu:grow", "");
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
+        builder.setDefaultDialogBorder();
+        builder.append("Type:", generationMode, 1);
+        builder.appendSeparator();
+
+        for (int i = 0; i < modeNames.length; i++) {
+            modesPanel.add(modePanels[i], modeNames[i]);
+        }
+
+        panel.setLayout(new BorderLayout());
+        panel.add(builder.getPanel(), BorderLayout.NORTH);
+        panel.add(modesPanel, BorderLayout.CENTER);
+
+        add(panel, BorderLayout.CENTER);
     }
 
-    public JButton getCancelButton() {
-        return cancelButton;
+    public JComboBox getGenerationMode() {
+        return generationMode;
     }
 
     public JButton getGenerateButton() {

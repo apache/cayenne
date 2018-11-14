@@ -19,19 +19,18 @@
 
 package org.apache.cayenne.modeler.dialog.pref;
 
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.pref.PreferenceEditor;
+
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.JDialog;
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
-
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.pref.PreferenceEditor;
 
 /**
  * A controller for editing Modeler preferences.
@@ -131,6 +130,11 @@ public class PreferenceDialog extends CayenneController {
         configure();
         view.getList().setSelectedValue(key == null ? GENERAL_KEY : key, true);
         view.setVisible(true);
+    }
+
+    public void startupToCreateTemplate(String template, String superTemplate) {
+        configure();
+        ((TemplatePreferences) detailControllers.get(TEMPLATES_KEY)).addTemplateAction(template, superTemplate);
     }
 
     protected void configure() {

@@ -18,16 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * DataDomain editing tabs container 
@@ -38,6 +39,8 @@ public class DataDomainTabbedView extends JTabbedPane
     ProjectController mediator;
     
     DataDomainGraphTab graphTab;
+    private JScrollPane cgenView;
+    private CgenTabController cgenTabController;
 
     /**
      * constructor
@@ -64,14 +67,20 @@ public class DataDomainTabbedView extends JTabbedPane
 
         graphTab = new DataDomainGraphTab(mediator);
         addTab("Graph", graphTab);
-        
+
         addChangeListener(this);
         mediator.addDomainDisplayListener(this);
+
+        cgenTabController = new CgenTabController(mediator);
+        cgenView = new JScrollPane(cgenTabController.getView());
+        addTab("Class Generation", cgenView);
     }
 
     public void stateChanged(ChangeEvent e) {
         if (getSelectedComponent() == graphTab) {
             graphTab.refresh();
+        } else if(getSelectedComponent() == cgenView) {
+            cgenTabController.getView().initView();
         }
     }
 
@@ -79,6 +88,12 @@ public class DataDomainTabbedView extends JTabbedPane
         if (e instanceof EntityDisplayEvent) {
             //need select an entity
             setSelectedComponent(graphTab);
+        }
+        if(getSelectedComponent() == cgenView) {
+            fireStateChanged();
+        }
+        if(e.getSource() instanceof GenerateCodeAction) {
+            setSelectedComponent(cgenView);
         }
     }
 }

@@ -48,10 +48,13 @@ public class ClassGenerationActionTest {
 	protected ClassGenerationAction action;
 	protected Collection<StringWriter> writers;
 
+	protected CgenConfiguration cgenConfiguration;
+
 	@Before
 	public void setUp() throws Exception {
 		writers = new ArrayList<>(3);
-		action = new ClassGenerationAction() {
+		cgenConfiguration = new CgenConfiguration();
+		action = new ClassGenerationAction(cgenConfiguration) {
 
 			@Override
 			protected Writer openWriter(TemplateType templateType) throws Exception {
@@ -74,8 +77,8 @@ public class ClassGenerationActionTest {
 		ObjEntity testEntity1 = new ObjEntity("TE1");
 		testEntity1.setClassName("org.example.TestClass1");
 
-		action.setMakePairs(true);
-		action.setSuperPkg("org.example.auto");
+		cgenConfiguration.setMakePairs(true);
+		cgenConfiguration.setSuperPkg("org.example.auto");
 
 		List<String> generated = execute(new EntityArtifact(testEntity1));
 		assertNotNull(generated);
@@ -116,7 +119,7 @@ public class ClassGenerationActionTest {
 		relationship.setCollectionType("java.util.Map");
 		testEntity1.addRelationship(relationship);
 
-		action.setMakePairs(true);
+		cgenConfiguration.setMakePairs(true);
 
 		List<String> generated = execute(new EntityArtifact(testEntity1));
 		assertNotNull(generated);
@@ -143,7 +146,7 @@ public class ClassGenerationActionTest {
 		testEntity1.addAttribute(attr);
 		testEntity1.addAttribute(attr1);
 
-		action.setMakePairs(true);
+		cgenConfiguration.setMakePairs(true);
 
 		List<String> generated = execute(new EntityArtifact(testEntity1));
 		assertNotNull(generated);
@@ -213,7 +216,7 @@ public class ClassGenerationActionTest {
 
 		if (isClient) {
 
-			action = new ClientClassGenerationAction() {
+			action = new ClientClassGenerationAction(cgenConfiguration) {
 				@Override
 				protected Writer openWriter(TemplateType templateType) throws Exception {
 					StringWriter writer = new StringWriter();
@@ -225,7 +228,7 @@ public class ClassGenerationActionTest {
 
 		}
 
-		action.setMakePairs(true);
+		cgenConfiguration.setMakePairs(true);
 
 		List<String> generated = execute(new EntityArtifact(testEntity1));
 		assertNotNull(generated);
@@ -261,10 +264,10 @@ public class ClassGenerationActionTest {
 		File file = mock(File.class);
 		when(file.lastModified()).thenReturn(1000L);
 
-		action.setTimestamp(0);
+		cgenConfiguration.setTimestamp(0);
 		assertTrue(action.isOld(file));
 
-		action.setTimestamp(2000L);
+		cgenConfiguration.setTimestamp(2000L);
 		assertFalse(action.isOld(file));
 	}
 
@@ -273,23 +276,23 @@ public class ClassGenerationActionTest {
 		File file = mock(File.class);
 		when(file.lastModified()).thenReturn(1000L);
 
-		action.setTimestamp(0);
-		action.setForce(false);
+		cgenConfiguration.setTimestamp(0);
+		cgenConfiguration.setForce(false);
 
 		assertFalse(action.fileNeedUpdate(file, null));
 
-		action.setTimestamp(2000L);
-		action.setForce(false);
+		cgenConfiguration.setTimestamp(2000L);
+		cgenConfiguration.setForce(false);
 
 		assertTrue(action.fileNeedUpdate(file, null));
 
-		action.setTimestamp(0);
-		action.setForce(true);
+		cgenConfiguration.setTimestamp(0);
+		cgenConfiguration.setForce(true);
 
 		assertTrue(action.fileNeedUpdate(file, null));
 
-		action.setTimestamp(2000L);
-		action.setForce(true);
+		cgenConfiguration.setTimestamp(2000L);
+		cgenConfiguration.setForce(true);
 
 		assertTrue(action.fileNeedUpdate(file, null));
 	}

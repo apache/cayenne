@@ -20,13 +20,11 @@ package org.apache.cayenne.tools;
 
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * Performs entity filtering to build a collection of entities that should be used in
@@ -39,38 +37,13 @@ class CayenneGeneratorEntityFilterAction {
     private NameFilter nameFilter;
     private boolean client;
 
-    Collection<Embeddable> getFilteredEmbeddables(DataMap mainDataMap) {
-        Collection<Embeddable> embeddables = new ArrayList<>(mainDataMap.getEmbeddables());
-
-        // filter out excluded entities...
-        Iterator<Embeddable> it = embeddables.iterator();
-
-        while (it.hasNext()) {
-            Embeddable e = it.next();
-
-            // note that unlike entity, embeddable is matched by class name as it doesn't
-            // have a symbolic name...
-            if (!nameFilter.isIncluded(e.getClassName())) {
-                it.remove();
-            }
-        }
-
-        return embeddables;
-    }
-
     Collection<ObjEntity> getFilteredEntities(DataMap mainDataMap)
             throws MalformedURLException {
 
         Collection<ObjEntity> entities = new ArrayList<>(mainDataMap.getObjEntities());
 
         // filter out excluded entities...
-        Iterator<ObjEntity> it = entities.iterator();
-        while (it.hasNext()) {
-            ObjEntity e = it.next();
-            if (e.isGeneric() || client && !e.isClientAllowed() || !nameFilter.isIncluded(e.getName())) {
-                it.remove();
-            }
-        }
+        entities.removeIf(e -> e.isGeneric() || client && !e.isClientAllowed() || !nameFilter.isIncluded(e.getName()));
 
         return entities;
     }

@@ -22,9 +22,12 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,12 +46,29 @@ public class CodeTemplateManager {
 	static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
 	static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
+	private static final String STANDART_EMBEDDABLE_SUPERCLASS = "Standart Embeddable Superclass";
+	private static final String STANDART_EMBEDDABLE_SUBCLASS = "Standart Embeddable Subclass";
+	private static final String SINGLE_EMBEDDABLE_CLASS = "Single Embeddable class";
+
+	private static final String STANDART_DATAMAP_SUPERCLASS = "Standart DataMap Superclass";
+	private static final String STANDART_DATAMAP_SUBCLASS = "Standart DataMap Subclass";
+	private static final String SINGLE_DATAMAP_CLASS = "Single DataMap class";
+
 	public static final String NODE_NAME = "codeTemplateManager";
 
-	protected List<String> standardSubclassTemplates;
-	protected List<String> standardSuperclassTemplates;
-	protected Map<String, String> customTemplates;
-	protected Map<String, String> standardTemplates;
+	private List<String> standardSubclassTemplates;
+	private List<String> standardSuperclassTemplates;
+	private Map<String, String> customTemplates;
+	private Map<String, String> reverseCustomTemplate;
+	private Map<String, String> standardTemplates;
+
+	private List<String> standartEmbeddableTemplates;
+	private List<String> standartEmbeddableSuperclassTemplates;
+
+	private List<String> standartDataMapTemplates;
+	private List<String> standartDataMapSuperclassTemplates;
+
+	private Map<String, String> reverseStandartTemplates;
 
 	private static Logger logger = LoggerFactory.getLogger(CodeTemplateManager.class);
 
@@ -67,7 +87,25 @@ public class CodeTemplateManager {
 		standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 		standardSubclassTemplates.add(SINGLE_SERVER_CLASS);
 
+		standartEmbeddableTemplates = new ArrayList<>();
+		standartEmbeddableTemplates.add(SINGLE_EMBEDDABLE_CLASS);
+		standartEmbeddableTemplates.add(STANDART_EMBEDDABLE_SUBCLASS);
+
+		standartEmbeddableSuperclassTemplates = new ArrayList<>();
+		standartEmbeddableSuperclassTemplates.add(STANDART_EMBEDDABLE_SUPERCLASS);
+
+		standartDataMapTemplates = new ArrayList<>();
+		standartDataMapTemplates.add(STANDART_DATAMAP_SUBCLASS);
+		standartDataMapTemplates.add(SINGLE_DATAMAP_CLASS);
+
+		standartDataMapSuperclassTemplates = new ArrayList<>();
+		standartDataMapSuperclassTemplates.add(STANDART_DATAMAP_SUPERCLASS);
+
 		updateCustomTemplates(getTemplatePreferences(application));
+		reverseCustomTemplate = new HashMap<>();
+		for(Map.Entry<String, String> entry : customTemplates.entrySet()){
+			reverseCustomTemplate.put(entry.getValue(), entry.getKey());
+		}
 
 		standardTemplates = new HashMap<>();
 		standardTemplates.put(STANDARD_SERVER_SUPERCLASS, ClassGenerationAction.SUPERCLASS_TEMPLATE);
@@ -75,6 +113,29 @@ public class CodeTemplateManager {
 		standardTemplates.put(STANDARD_SERVER_SUBCLASS, ClassGenerationAction.SUBCLASS_TEMPLATE);
 		standardTemplates.put(STANDARD_CLIENT_SUBCLASS, ClientClassGenerationAction.SUBCLASS_TEMPLATE);
 		standardTemplates.put(SINGLE_SERVER_CLASS, ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+
+		standardTemplates.put(STANDART_EMBEDDABLE_SUPERCLASS, ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE);
+		standardTemplates.put(STANDART_EMBEDDABLE_SUBCLASS, ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
+		standardTemplates.put(SINGLE_EMBEDDABLE_CLASS, ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
+
+		standardTemplates.put(STANDART_DATAMAP_SUBCLASS, ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+		standardTemplates.put(SINGLE_DATAMAP_CLASS, ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+		standardTemplates.put(STANDART_DATAMAP_SUPERCLASS, ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
+
+		reverseStandartTemplates = new HashMap<>();
+		reverseStandartTemplates.put(ClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_SERVER_SUBCLASS);
+		reverseStandartTemplates.put(ClientClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_CLIENT_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, SINGLE_SERVER_CLASS);
+		reverseStandartTemplates.put(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_CLIENT_SUPERCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_SERVER_SUPERCLASS);
+
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUPERCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE, SINGLE_EMBEDDABLE_CLASS);
+
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE, STANDART_DATAMAP_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE, SINGLE_DATAMAP_CLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE, STANDART_DATAMAP_SUPERCLASS);
 	}
 
 	/**
@@ -97,14 +158,28 @@ public class CodeTemplateManager {
 	// TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to
 	// correctly
 	// assign standard templates
-	public String getTemplatePath(String name) {
+	public String getTemplatePath(String name, Resource rootPath) {
 		Object value = customTemplates.get(name);
 		if (value != null) {
+			if(rootPath != null) {
+				Path path = Paths.get(rootPath.getURL().getPath()).getParent();
+				value = path.relativize(Paths.get((String) value));
+			}
 			return value.toString();
 		}
 
 		value = standardTemplates.get(name);
 		return value != null ? value.toString() : null;
+	}
+
+	public String getNameByPath(String name, Path rootPath) {
+		String fullPath = rootPath.resolve(Paths.get(name)).normalize().toString();
+		if(reverseCustomTemplate.containsKey(fullPath)){
+			return reverseCustomTemplate.get(fullPath);
+		} else {
+			Object value = reverseStandartTemplates.get(name);
+			return value != null ? value.toString() : null;
+		}
 	}
 
 	public Map<String, String> getCustomTemplates() {
@@ -118,4 +193,16 @@ public class CodeTemplateManager {
 	public List<String> getStandardSuperclassTemplates() {
 		return standardSuperclassTemplates;
 	}
+
+	public List<String> getStandartEmbeddableTemplates() {
+		return standartEmbeddableTemplates;
+	}
+
+	public List<String> getStandartEmbeddableSuperclassTemplates() {
+		return standartEmbeddableSuperclassTemplates;
+	}
+
+	public List<String> getStandartDataMapTemplates() { return standartDataMapTemplates; }
+
+	public List<String> getStandartDataMapSuperclassTemplates() { return standartDataMapSuperclassTemplates; }
 }

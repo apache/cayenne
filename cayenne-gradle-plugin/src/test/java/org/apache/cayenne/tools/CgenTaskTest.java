@@ -19,14 +19,17 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.map.DataMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -37,7 +40,9 @@ public class CgenTaskTest {
     @Rule
     public TemporaryFolder temp = new TemporaryFolder();
 
-    private CgenTask createCgenTaskMock(ClassGenerationAction action) {
+    DataMap dataMap = new DataMap();
+
+    private CgenTask createCgenTaskMock() {
         CgenTask mock = mock(CgenTask.class);
 
         doCallRealMethod().when(mock).setClient(anyBoolean());
@@ -56,17 +61,15 @@ public class CgenTaskTest {
         doCallRealMethod().when(mock).setOverwrite(anyBoolean());
         doCallRealMethod().when(mock).setUsePkgPath(anyBoolean());
         doCallRealMethod().when(mock).setTemplate(anyString());
-        when(mock.newGeneratorInstance()).thenReturn(action);
-        when(mock.createGenerator()).thenCallRealMethod();
+        when(mock.buildConfiguration(dataMap)).thenCallRealMethod();
+        when(mock.createGenerator(dataMap)).thenCallRealMethod();
 
         return mock;
     }
 
     @Test
     public void testGeneratorCreation() {
-        ClassGenerationAction action = mock(ClassGenerationAction.class);
-        CgenTask task = createCgenTaskMock(action);
-
+        CgenTask task = createCgenTaskMock();
         task.setEmbeddableSuperTemplate("superTemplate");
         task.setEmbeddableTemplate("template");
         task.setEncoding("UTF-8");
@@ -75,28 +78,29 @@ public class CgenTaskTest {
         task.setMode("entity");
         task.setOutputPattern("pattern");
         task.setSuperPkg("org.example.model.auto");
-        task.setSuperTemplate("*.java");
-        task.setTemplate("*.java");
+        task.setSuperTemplate("superTemplate");
+        task.setTemplate("template");
         task.setMakePairs(true);
         task.setCreatePropertyNames(true);
         task.setOverwrite(true);
         task.setUsePkgPath(true);
 
-        ClassGenerationAction createdAction = task.createGenerator();
-        assertSame(action, createdAction);
+        ClassGenerationAction createdAction = task.createGenerator(dataMap);
 
-        verify(action).setCreatePropertyNames(true);
-        verify(action).setMakePairs(true);
-        verify(action).setOverwrite(true);
-        verify(action).setUsePkgPath(true);
-        verify(action).setArtifactsGenerationMode("entity");
-        verify(action).setEncoding("UTF-8");
-        verify(action).setEmbeddableSuperTemplate("superTemplate");
-        verify(action).setEmbeddableTemplate("template");
-        verify(action).setOutputPattern("pattern");
-        verify(action).setSuperPkg("org.example.model.auto");
-        verify(action).setSuperTemplate("*.java");
-        verify(action).setTemplate("*.java");
+        CgenConfiguration cgenConfiguration = createdAction.getCgenConfiguration();
+        assertEquals(cgenConfiguration.getEmbeddableSuperTemplate(), "superTemplate");
+        assertEquals(cgenConfiguration.getEmbeddableTemplate(), "template");
+        assertEquals(cgenConfiguration.getEncoding(), "UTF-8");
+        assertEquals(cgenConfiguration.getArtifactsGenerationMode(), "entity");
+        assertEquals(cgenConfiguration.getOutputPattern(), "pattern");
+        assertEquals(cgenConfiguration.getSuperPkg(), "org.example.model.auto");
+        assertEquals(cgenConfiguration.getSuperTemplate(), "superTemplate");
+        assertEquals(cgenConfiguration.getTemplate(), "template");
+        assertTrue(cgenConfiguration.isMakePairs());
+        assertTrue(cgenConfiguration.isCreatePropertyNames());
+        assertTrue(cgenConfiguration.isOverwrite());
+        assertTrue(cgenConfiguration.isUsePkgPath());
+
     }
 
 }

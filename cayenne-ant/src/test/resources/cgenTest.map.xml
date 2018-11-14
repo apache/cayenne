@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+          project-version="10">
+    <embeddable className="Embeddable"/>
+    <obj-entity name="ObjEntity" className="ObjEntity"/>
+    <obj-entity name="ObjEntity1" className="ObjEntity1"/>
+    <cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+        <destDir>cgenConfigTest</destDir>
+        <excludeEntities>ObjEntity</excludeEntities>
+        <excludeEmbeddables>Embeddable</excludeEmbeddables>
+        <mode>all</mode>
+        <template>templates/v4_1/subclass.vm</template>
+        <superTemplate>templates/v4_1/superclass.vm</superTemplate>
+        <outputPattern>*.txt</outputPattern>
+        <makePairs>false</makePairs>
+        <usePkgPath>true</usePkgPath>
+        <overwrite>false</overwrite>
+        <createPropertyNames>false</createPropertyNames>
+    </cgen>
+</data-map>

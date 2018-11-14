@@ -19,36 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.List;
-import java.util.Vector;
-
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.JToolBar;
-
 import org.apache.cayenne.modeler.action.AboutAction;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
@@ -67,7 +37,6 @@ import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.FindAction;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
 import org.apache.cayenne.modeler.action.GenerateDBAction;
-import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.action.ImportDataMapAction;
 import org.apache.cayenne.modeler.action.ImportEOModelAction;
 import org.apache.cayenne.modeler.action.InferRelationshipsAction;
@@ -113,6 +82,35 @@ import org.apache.cayenne.modeler.util.RecentFileMenu;
 import org.apache.cayenne.swing.components.MainToolBar;
 import org.apache.cayenne.swing.components.TopBorder;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Main frame of CayenneModeler. Responsibilities include coordination of

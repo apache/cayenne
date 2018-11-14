@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.dialog.db.load;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
@@ -29,6 +30,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
@@ -73,6 +75,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
     public void commit() throws Exception {
         commit(config, sourceDataMap);
+        Application.getInstance().getFrameController().getProjectController().fireDataMapEvent(new DataMapEvent(this, targetMap));
     }
 
     @Override

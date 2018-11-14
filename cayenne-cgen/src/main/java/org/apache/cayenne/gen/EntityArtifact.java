@@ -94,5 +94,4 @@ public class EntityArtifact implements Artifact {
 
         context.put(ENTITY_UTILS_KEY, metadata);
     }
-
 }

@@ -18,20 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorController;
+import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 
 /**
  * Data map editing tabs container
  *
  */
-public class DataMapTabbedView extends JTabbedPane {
+public class DataMapTabbedView extends JTabbedPane{
+
     ProjectController mediator;
-    private int lastSelectionIndex;
-    private DbImportView dbImportView1;
+    private DbImportView dbImportView;
+    private JScrollPane dbImportScrollPane;
+    private CodeGeneratorController codeGeneratorController;
+    private JScrollPane cgenView;
 
     /**
      * constructor
@@ -40,7 +46,6 @@ public class DataMapTabbedView extends JTabbedPane {
      */
     public DataMapTabbedView(ProjectController mediator) {
         this.mediator = mediator;
-
         initView();
     }
 
@@ -55,22 +60,36 @@ public class DataMapTabbedView extends JTabbedPane {
         // note that those panels that have no internal scrollable tables
         // must be wrapped in a scroll pane
         JScrollPane dataMapScrollPane = new JScrollPane(new DataMapView(mediator));
-        dbImportView1 = new DbImportView(mediator);
-        JScrollPane dbImportScrollPane = new JScrollPane(dbImportView1);
+        dbImportView = new DbImportView(mediator);
+        dbImportScrollPane = new JScrollPane(dbImportView);
+        codeGeneratorController = new CodeGeneratorController(Application.getInstance().getFrameController(), mediator);
+        cgenView = new JScrollPane(codeGeneratorController.getView());
         addTab("DataMap", dataMapScrollPane);
         addTab("DB Import", dbImportScrollPane);
-        addChangeListener(e -> {
-            lastSelectionIndex = getSelectedIndex();
-            updateTabs();
+        addTab("Class Generation", cgenView);
+
+        addChangeListener(tab -> {
+            if(isCgenTabActive()) {
+                codeGeneratorController.startup(mediator.getCurrentDataMap());
+            } else if(isDbImportTabActive()) {
+                dbImportView.initFromModel();
+            }
+        });
+        mediator.addDataMapDisplayListener(e -> {
+            if(isCgenTabActive() || isDbImportTabActive()) {
+                fireStateChanged();
+            } else if(e.getSource() instanceof CgenTab){
+                setSelectedComponent(cgenView);
+            }
         });
     }
 
-    private void updateTabs() {
-        switch (lastSelectionIndex) {
-            case 1:
-                dbImportView1.initFromModel();
-            break;
-        }
+    private boolean isCgenTabActive() {
+        return getSelectedComponent() == cgenView;
+    }
+
+    private boolean isDbImportTabActive() {
+        return getSelectedComponent() == dbImportScrollPane;
     }
 }
 

@@ -17,31 +17,43 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.codegen;
+package org.apache.cayenne.modeler.editor.cgen;
+
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
+ * @since 4.1
  * A generic panel that is a superclass of generator panels, defining common fields.
- * 
  */
 public class GeneratorControllerPanel extends JPanel {
 
-    protected Collection<StandardPanelComponent> dataMapLines;
-    protected JTextField outputFolder;
+    protected TextAdapter outputFolder;
     protected JButton selectOutputFolder;
+    protected ProjectController projectController;
 
-    public GeneratorControllerPanel() {
-        this.dataMapLines = new ArrayList<>();
-        this.outputFolder = new JTextField();
+    public GeneratorControllerPanel(ProjectController projectController, CodeGeneratorControllerBase codeGeneratorControllerBase) {
+        this.projectController = projectController;
+        this.outputFolder = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+                getCgenByDataMap().setRelPath(text);
+                if(!codeGeneratorControllerBase.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
+            }
+        };
         this.selectOutputFolder = new JButton("Select");
     }
 
-    public JTextField getOutputFolder() {
+    public TextAdapter getOutputFolder() {
         return outputFolder;
     }
 
@@ -49,7 +61,8 @@ public class GeneratorControllerPanel extends JPanel {
         return selectOutputFolder;
     }
 
-    public Collection<StandardPanelComponent> getDataMapLines() {
-        return dataMapLines;
+    public CgenConfiguration getCgenByDataMap() {
+        DataMap dataMap = projectController.getCurrentDataMap();
+        return projectController.getApplication().getMetaData().get(dataMap, CgenConfiguration.class);
     }
 }

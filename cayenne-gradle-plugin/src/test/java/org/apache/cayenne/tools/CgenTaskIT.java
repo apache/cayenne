@@ -24,11 +24,14 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.Test;
 
-
 import java.io.File;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -42,7 +45,7 @@ public class CgenTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_default_config",
                 "cgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
+                "-PdataMap=test_datamap.map.xml"
         );
 
         BuildResult result = runner.forwardOutput().build();
@@ -65,7 +68,7 @@ public class CgenTaskIT extends BaseTaskIT {
         GradleRunner runner = createRunner(
                 "cgen_custom_config",
                 "cgen",
-                "-PdataMap=" + URLDecoder.decode(getClass().getResource("test_datamap.map.xml").getFile(), "UTF-8")
+                "-PdataMap=test_datamap.map.xml"
         );
         BuildResult result = runner.build();
 
@@ -88,4 +91,94 @@ public class CgenTaskIT extends BaseTaskIT {
         assertEquals(TaskOutcome.SUCCESS, result.task(":cgen").getOutcome());
     }
 
+    @Test
+    public void cgenWithConfigInDm() throws Exception {
+        GradleRunner runner = createRunner(
+                "cgen_with_config",
+                "cgen",
+                "-PdataMap=cgen_with_config.map.xml"
+        );
+
+        BuildResult result = runner.forwardOutput().build();
+
+        String generatedDirectoryPath = projectDir.getAbsolutePath() + "/customDirectory1/";
+
+        String generatedClassPath = generatedDirectoryPath + "ObjEntity1.txt";
+        String datamap = generatedDirectoryPath + "CgenMap.txt";
+        String notIncludedEntity = generatedDirectoryPath + "ObjEntity.txt";
+        String notIncludedEmbeddable = generatedDirectoryPath + "Embeddable.txt";
+
+        Path generatedClass = Paths.get(generatedClassPath);
+        Path generatedDataMap = Paths.get(datamap);
+        Path generatedNotIncludedEntity = Paths.get(notIncludedEntity);
+        Path generatedNotIncludedEmbeddable = Paths.get(notIncludedEmbeddable);
+
+        assertTrue(Files.exists(generatedClass));
+        assertFalse(Files.exists(generatedDataMap));
+        assertFalse(Files.exists(generatedNotIncludedEmbeddable));
+        assertFalse(Files.exists(generatedNotIncludedEntity));
+        assertEquals(TaskOutcome.SUCCESS, result.task(":cgen").getOutcome());
+    }
+
+    @Test
+    public void testWithConfigsInDmAndPom() throws Exception {
+        GradleRunner runner = createRunner(
+                "cgen_with_configs",
+                "cgen",
+                "-PdataMap=cgenMap.map.xml"
+        );
+
+        BuildResult result = runner.forwardOutput().build();
+
+        String generatedDirectoryPath = projectDir.getAbsolutePath() + "/customDirectory/";
+
+        String generatedClassPath = generatedDirectoryPath + "ObjEntity.groovy";
+        Path generatedClass = Paths.get(generatedClassPath);
+        assertTrue(Files.exists(generatedClass));
+
+        String notIncludedEntity = generatedDirectoryPath + "ObjEntity1.groovy";
+        Path generatedNotIncludedEntity = Paths.get(notIncludedEntity);
+        assertFalse(Files.exists(generatedNotIncludedEntity));
+
+        String includedDataMap = generatedDirectoryPath + "CgenMap.groovy";
+        Path generatedIncludedDataMap = Paths.get(includedDataMap);
+        assertTrue(Files.exists(generatedIncludedDataMap));
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":cgen").getOutcome());
+    }
+
+    @Test
+    public void testReplaceDatamapMode() throws Exception {
+        GradleRunner runner = createRunner(
+                "cgen_replaceDatamapMode",
+                "cgen",
+                "-PdataMap=cgenMap.map.xml"
+        );
+
+        BuildResult result = runner.forwardOutput().build();
+
+        String generatedDirectoryPath = projectDir.getAbsolutePath() + "/customDirectory/";
+
+        String notIncludedEntity = generatedDirectoryPath + "ObjEntity.txt";
+        Path generatedNotIncludedEntity = Paths.get(notIncludedEntity);
+        assertFalse(Files.exists(generatedNotIncludedEntity));
+
+        String notIncludedEntity1 = generatedDirectoryPath + "ObjEntity1.txt";
+        Path generatedNotIncludedEntity1 = Paths.get(notIncludedEntity1);
+        assertFalse(Files.exists(generatedNotIncludedEntity1));
+
+        String notIncludedEmbeddable = generatedDirectoryPath + "Embeddable.txt";
+        Path generatedNotIncludedEmbeddable = Paths.get(notIncludedEmbeddable);
+        assertFalse(Files.exists(generatedNotIncludedEmbeddable));
+
+        String includedDataMap = generatedDirectoryPath + "CgenMap.txt";
+        Path generatedIncludedDataMap = Paths.get(includedDataMap);
+        assertTrue(Files.exists(generatedIncludedDataMap));
+
+        String includedSuperDataMap = generatedDirectoryPath + "auto/_CgenMap.txt";
+        Path generatedIncludedSuperDataMap = Paths.get(includedSuperDataMap);
+        assertTrue(Files.exists(generatedIncludedSuperDataMap));
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":cgen").getOutcome());
+    }
 }

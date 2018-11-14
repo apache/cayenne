@@ -4,6 +4,7 @@ Apache Cayenne Upgrade Information
 IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
+
 UPGRADING TO 4.1.M2
 
 * Per CAY-2438 DataChannelFilter filter was deprecated and two new independent filters are introduced:

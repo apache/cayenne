@@ -17,26 +17,35 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.codegen;
+package org.apache.cayenne.modeler.editor.cgen;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 
-public class StandardModePanel extends GeneratorControllerPanel {
+/**
+ * @since 4.1
+ */
+public class CodeGeneratorPane extends JSplitPane {
 
-    private DefaultFormBuilder builder;
+    public CodeGeneratorPane(Component generatorPanel, Component entitySelectorPanel) {
+        super();
 
-    public StandardModePanel() {
-        FormLayout layout = new FormLayout(
-                "right:77dlu, 1dlu, fill:100:grow, 1dlu, left:80dlu, 1dlu", "");
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        JScrollPane scrollPane = new JScrollPane(
+                generatorPanel,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(800, 400));
 
-        builder = new DefaultFormBuilder(layout);
-        builder.append("Output Directory:", outputFolder, selectOutputFolder);
-        builder.nextLine();
+        // assemble
+        splitPane.setRightComponent(scrollPane);
+        splitPane.setLeftComponent(entitySelectorPanel);
 
         setLayout(new BorderLayout());
-        add(builder.getPanel(), BorderLayout.CENTER);
+        add(splitPane, BorderLayout.CENTER);
     }
 }

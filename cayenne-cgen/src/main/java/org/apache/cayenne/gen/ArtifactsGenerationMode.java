@@ -26,7 +26,7 @@ package org.apache.cayenne.gen;
 public enum ArtifactsGenerationMode {
 
     // TODO: andrus 12/9/2007 - label names are old... need to call it something else...
-    DATAMAP("datamap"), ENTITY("entity"), ALL("all");
+    ENTITY("entity"), ALL("all");
 
     private String label;
 

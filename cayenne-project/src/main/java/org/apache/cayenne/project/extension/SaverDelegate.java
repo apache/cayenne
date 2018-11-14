@@ -20,6 +20,7 @@
 package org.apache.cayenne.project.extension;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -42,4 +43,7 @@ public interface SaverDelegate extends ConfigurationNodeVisitor<Void> {
 
     SaverDelegate getParentDelegate();
 
+    Resource getBaseDirectory();
+
+    void setBaseDirectory(Resource baseDirectory);
 }

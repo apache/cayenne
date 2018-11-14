@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.project;
 
-import java.util.Collection;
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
@@ -36,7 +34,10 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.project.extension.SaverDelegate;
+import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
+
+import java.util.Collection;
 
 /**
  * @since 4.1
@@ -179,5 +180,15 @@ class CompoundSaverDelegate implements SaverDelegate {
     @Override
     public SaverDelegate getParentDelegate() {
         return null;
+    }
+
+    @Override
+    public Resource getBaseDirectory() {
+        return null;
+    }
+
+    @Override
+    public void setBaseDirectory(Resource baseDirectory) {
+        delegates.forEach(d -> d.setBaseDirectory(baseDirectory));
     }
 }
