@@ -32,7 +32,6 @@ import org.apache.cayenne.util.Util;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.util.ArrayList;
@@ -43,7 +42,7 @@ import java.util.regex.Pattern;
 
 public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor {
 
-    private static final int DB_ATTRIBUTE_PATH_COLUMN = 2;
+    private static final int DB_ATTRIBUTE_PATH_COLUMN = ObjAttributeTableModel.DB_ATTRIBUTE;
 
     private String savePath;
     private ObjAttributeTableModel model;
