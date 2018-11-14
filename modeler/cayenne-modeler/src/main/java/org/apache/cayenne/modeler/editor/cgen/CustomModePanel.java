@@ -55,7 +55,8 @@ public class CustomModePanel extends GeneratorControllerPanel {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 CgenConfiguration cgenConfiguration = getCgenByDataMap();
-                cgenConfiguration.setSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item, cgenConfiguration.getRootPath()));
+                cgenConfiguration.setSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+                        cgenConfiguration.getDataMap().getConfigurationSource()));
                 if(!codeGeneratorControllerBase.isInitFromModel()) {
                     projectController.setDirty(true);
                 }
@@ -67,7 +68,8 @@ public class CustomModePanel extends GeneratorControllerPanel {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 CgenConfiguration cgenConfiguration = getCgenByDataMap();
-                cgenConfiguration.setTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item, cgenConfiguration.getRootPath()));
+                cgenConfiguration.setTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+                        cgenConfiguration.getDataMap().getConfigurationSource()));
                 if(!codeGeneratorControllerBase.isInitFromModel()) {
                     projectController.setDirty(true);
                 }

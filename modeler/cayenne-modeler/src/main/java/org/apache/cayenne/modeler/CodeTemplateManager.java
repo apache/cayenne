@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,10 +158,13 @@ public class CodeTemplateManager {
 	// TODO: andrus, 12/5/2007 - this should also take a "pairs" parameter to
 	// correctly
 	// assign standard templates
-	public String getTemplatePath(String name, Path rootPath) {
+	public String getTemplatePath(String name, Resource rootPath) {
 		Object value = customTemplates.get(name);
 		if (value != null) {
-			value = rootPath.relativize(Paths.get((String)value));
+			if(rootPath != null) {
+				Path path = Paths.get(rootPath.getURL().getPath()).getParent();
+				value = path.relativize(Paths.get((String) value));
+			}
 			return value.toString();
 		}
 
