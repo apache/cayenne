@@ -47,7 +47,7 @@ public class WinPlatformInitializer implements PlatformInitializer {
     }
 
     private void overrideUIDefaults() {
-        Color darkGrey = new Color(225, 225, 225);
+        Color darkGrey = new Color(203, 203, 203);
 
         UIManager.put("TextFieldUI",            WinCustomTextFieldUI.class.getName());
         UIManager.put("Tree.expandedIcon",      ModelerUtil.buildIcon("icon-arrow-open.png"));
@@ -70,6 +70,6 @@ public class WinPlatformInitializer implements PlatformInitializer {
         UIManager.put("MenuItem.selectionBackground",   darkGrey);
         UIManager.put("MenuItem.selectionForeground",   Color.BLACK);
         UIManager.put("MenuItem.opaque",        Boolean.TRUE);
-        UIManager.put("Button.border", BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        UIManager.put("Button.border", BorderFactory.createEmptyBorder());
     }
 }
