@@ -38,7 +38,8 @@ import org.xml.sax.SAXException;
  */
 class ConfigHandler extends NamespaceAwareNestedTagHandler {
 
-    public static final String CONFIG_TAG = "config";
+    static final String OLD_CONFIG_TAG = "config";
+    static final String CONFIG_TAG = "dbImport";
 
     private static final String CATALOG_TAG = "catalog";
     private static final String SCHEMA_TAG = "schema";
@@ -75,6 +76,9 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         switch (localName) {
             case CONFIG_TAG:
+                createConfig();
+                return true;
+            case OLD_CONFIG_TAG:
                 createConfig();
                 return true;
         }

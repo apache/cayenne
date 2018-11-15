@@ -291,7 +291,7 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("config")
+        encoder.start("dbImport")
                 .attribute("xmlns", DbImportExtension.NAMESPACE)
                 .nested(this.getIncludeTables(), delegate)
                 .nested(this.getExcludeTables(), delegate)
