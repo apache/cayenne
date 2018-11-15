@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.gradle.api.logging.Logging;
 
 import java.io.File;
 
@@ -63,6 +64,7 @@ public class CgenTaskTest {
         doCallRealMethod().when(mock).setTemplate(anyString());
         when(mock.buildConfiguration(dataMap)).thenCallRealMethod();
         when(mock.createGenerator(dataMap)).thenCallRealMethod();
+        when(mock.getLogger()).thenReturn(Logging.getLogger(CgenTaskTest.class));
 
         return mock;
     }

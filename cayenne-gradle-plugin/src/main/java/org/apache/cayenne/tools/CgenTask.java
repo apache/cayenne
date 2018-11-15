@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Set;
-
 import groovy.lang.Reference;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -41,14 +35,12 @@ import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.Set;
 
 /**
  * @since 4.0
@@ -221,12 +213,15 @@ public class CgenTask extends BaseCayenneTask {
     CgenConfiguration buildConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration;
         if(hasConfig()) {
+            getLogger().info("Using cgen config from pom.xml");
             return cgenConfigFromPom(dataMap);
         } else if(metaData != null && metaData.get(dataMap, CgenConfiguration.class) != null) {
+            getLogger().info("Using cgen config from " + dataMap.getName());
             useConfigFromDataMap = true;
             cgenConfiguration = metaData.get(dataMap, CgenConfiguration.class);
             return cgenConfiguration;
         } else {
+            getLogger().info("Using default cgen config.");
             cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setRelPath(getDestDirFile().getPath());
             cgenConfiguration.setDataMap(dataMap);
