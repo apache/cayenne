@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -27,39 +26,25 @@ import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.editor.AdditionalTabController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.project.Project;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.swing.JOptionPane;
-import java.awt.event.ItemEvent;
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.prefs.Preferences;
 
 /**
  * @since 4.1
  */
-public class CgenTabController {
-
-    private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
-
-    private ProjectController projectController;
-    private CgenTab view;
-
-    private ConcurrentMap<DataMap, CgenPanel> generatorsPanels;
-    private Set<DataMap> selectedDataMaps;
+public class CgenTabController extends AdditionalTabController {
 
     public CgenTabController(ProjectController projectController) {
         this.projectController = projectController;
@@ -68,65 +53,10 @@ public class CgenTabController {
         this.selectedDataMaps = new HashSet<>();
     }
 
-    void createPanels() {
-        Collection<DataMap> dataMaps = getDataMaps();
-        generatorsPanels.clear();
-        for(DataMap dataMap : dataMaps) {
-            CgenPanel cgenPanel = new CgenPanel(dataMap);
-            initListenersForPanel(cgenPanel);
-            generatorsPanels.put(dataMap, cgenPanel);
-        }
-        selectedDataMaps.forEach(dataMap -> {
-            if(generatorsPanels.get(dataMap) != null) {
-                CgenPanel currPanel = generatorsPanels.get(dataMap);
-                currPanel.getCheckConfig().setSelected(true);
-            }
-        });
-    }
-
-    private void initListenersForPanel(CgenPanel cgenPanel) {
-        cgenPanel.getCheckConfig().addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED) {
-                selectedDataMaps.add(cgenPanel.getDataMap());
-            } else if(e.getStateChange() == ItemEvent.DESELECTED) {
-                selectedDataMaps.remove(cgenPanel.getDataMap());
-            }
-            setGenerateButtonDisabled();
-        });
-
-        cgenPanel.getToConfigButton().addActionListener(action -> showConfig(cgenPanel.getDataMap()));
-
-        view.getSelectAll().addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED) {
-                getGeneratorsPanels().forEach((key, value) -> value.getCheckConfig().setSelected(true));
-            } else if(e.getStateChange() == ItemEvent.DESELECTED) {
-                getGeneratorsPanels().forEach((key, value) -> value.getCheckConfig().setSelected(false));
-            }
-            setGenerateButtonDisabled();
-        });
-    }
-
-    private void setGenerateButtonDisabled() {
-        if(selectedDataMaps.size() == 0) {
-            view.getGenerateAll().setEnabled(false);
-        } else {
-            view.getGenerateAll().setEnabled(true);
-        }
-    }
-
-    private Collection<DataMap> getDataMaps() {
-        Project project = projectController.getProject();
-        return  ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
-    }
-
-    public CgenTab getView() {
-        return view;
-    }
-
-    void runGenerators(Set<DataMap> dataMaps) {
+    public void runGenerators(Set<DataMap> dataMaps) {
         DataChannelMetaData metaData = Application.getInstance().getMetaData();
         if(dataMaps.isEmpty()) {
-            view.showEmptyMessage();
+            ((CgenTab)view).showEmptyMessage();
             return;
         }
         boolean generationFail = false;
@@ -143,15 +73,15 @@ public class CgenTabController {
             } catch (Exception e) {
                 logObj.error("Error generating classes", e);
                 generationFail = true;
-                view.showErrorMessage(e.getMessage());
+                ((CgenTab)view).showErrorMessage(e.getMessage());
             }
         }
         if(!generationFail) {
-            view.showSuccessMessage();
+            ((CgenTab)view).showSuccessMessage();
         }
     }
 
-    private CgenConfiguration createConfiguration(DataMap dataMap) {
+    public CgenConfiguration createConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         Application.getInstance().getInjector().injectMembers(cgenConfiguration);
         cgenConfiguration.setDataMap(dataMap);
@@ -190,21 +120,9 @@ public class CgenTabController {
         return cgenConfiguration;
     }
 
-    private void showConfig(DataMap dataMap) {
+    public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
             projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(this.getView(), dataMap, dataMap.getDataChannelDescriptor()));
         }
-    }
-
-    public ProjectController getProjectController() {
-        return projectController;
-    }
-
-    ConcurrentMap<DataMap, CgenPanel> getGeneratorsPanels() {
-        return generatorsPanels;
-    }
-
-    public Set<DataMap> getSelectedDataMaps() {
-        return selectedDataMaps;
     }
 }
