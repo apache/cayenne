@@ -184,7 +184,7 @@ public class ASTList extends SimpleNode {
 			System.arraycopy((Object[]) value, 0, this.values, 0, size);
 		} else if (value instanceof Collection) {
 			Collection<?> c = (Collection<?>) value;
-			this.values = c.toArray(new Object[c.size()]);
+			this.values = c.toArray(new Object[0]);
 		} else if (value instanceof Iterator) {
 			List<Object> values = new ArrayList<>();
 			Iterator<?> it = (Iterator<?>) value;
@@ -201,6 +201,9 @@ public class ASTList extends SimpleNode {
 	}
 
 	private void convertValues() {
+		if(values == null) {
+			return;
+		}
 		for (int i = 0; i < values.length; i++) {
 			if (values[i] instanceof Persistent) {
 				values[i] = ((Persistent) values[i]).getObjectId();
