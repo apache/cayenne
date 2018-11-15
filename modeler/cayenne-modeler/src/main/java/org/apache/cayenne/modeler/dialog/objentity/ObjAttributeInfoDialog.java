@@ -587,7 +587,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 			OverrideEmbeddableAttributeTableModel model = (OverrideEmbeddableAttributeTableModel) table.getModel();
 
 			if (!model.isCellEditable(row, column)) {
-				setForeground(Color.GRAY);
+				setForeground(Color.DARK_GRAY);
 			} else {
 				setForeground(isSelected && !hasFocus ? table.getSelectionForeground() : table.getForeground());
 			}

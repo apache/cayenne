@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.dialog.codegen;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.util.CayenneTable;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
@@ -78,7 +79,7 @@ public class ClassesTabPanel extends JPanel {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         for(DataMap dataMap : dataMaps) {
-            JTable table = new JTable();
+            JTable table = new CayenneTable();
             table.setRowHeight(22);
             dataMapTables.put(dataMap, table);
             JPanel scrollTable = new JPanel(new BorderLayout());

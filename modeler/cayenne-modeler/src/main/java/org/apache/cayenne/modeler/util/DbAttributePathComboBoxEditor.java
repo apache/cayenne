@@ -96,7 +96,6 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         String dbAttributePath =((JTextComponent) comboBoxPathChooser.
                 getEditor().getEditorComponent()).getText();
         Object currentNode = getCurrentNode(dbAttributePath);
-        ObjAttributeTableModel currentModel = (ObjAttributeTableModel) table.getModel();
         String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
         String lastStringInPath = pathStrings[pathStrings.length - 1];
         if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
@@ -108,8 +107,8 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
                 if (dbAttributePath.equals(savePath)) {
                     return;
                 }
-                currentModel.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
-                currentModel.getAttribute(row).getValue().setDbAttributePath(dbAttributePath);
+                model.setUpdatedValueAt(dbAttributePath, row, DB_ATTRIBUTE_PATH_COLUMN);
+                model.getAttribute(row).getValue().setDbAttributePath(dbAttributePath);
             }
         }else if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
                 currentNode instanceof DbRelationship) {
