@@ -48,7 +48,6 @@ import java.util.EventObject;
  *
  */
 public class CayenneTable extends JTable {
-    private static final Color SELECTION_BACKGROUND_COLOR = UIManager.getColor("Table.selectionBackground");
 
     private SortButtonRenderer renderer = new SortButtonRenderer();
     protected TableHeaderListener tableHeaderListener;
@@ -56,7 +55,6 @@ public class CayenneTable extends JTable {
 
     public CayenneTable() {
         super();
-        this.selectionBackground = SELECTION_BACKGROUND_COLOR;
         this.setRowHeight(25);
         this.setRowMargin(3);
         JTableHeader header = getTableHeader();
@@ -268,35 +266,5 @@ public class CayenneTable extends JTable {
      */
     public void setSortable(boolean sortable) {
         renderer.setSortingEnabled(sortable);
-    }
-
-    @Override
-    public void createDefaultColumnsFromModel() {
-        TableModel m = getModel();
-        if (m != null) {
-            // Remove any current columns
-            TableColumnModel cm = getColumnModel();
-            while (cm.getColumnCount() > 0) {
-                cm.removeColumn(cm.getColumn(0));
-            }
-
-            // Create new columns from the data model info
-            for (int i = 0; i < m.getColumnCount(); i++) {
-                TableColumn newColumn = new TableColumn(i, 75, new CellRenderer(), null);
-                addColumn(newColumn);
-            }
-        }
-    }
-    // custom renderer used for inherited attributes highlighting
-    final class CellRenderer extends DefaultTableCellRenderer {
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            setBorder(BorderFactory.createEmptyBorder());
-            return this;
-        }
     }
 }
