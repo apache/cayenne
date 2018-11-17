@@ -44,6 +44,8 @@ import java.io.File;
  */
 public class CayenneGeneratorTask extends CayenneTask {
 
+    private AntLogger logger;
+
     protected String includeEntitiesPattern;
     protected String excludeEntitiesPattern;
     /**
@@ -104,7 +106,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
         injector = DIBootstrap.createInjector(new CgenModule(), new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)));
 
-        AntLogger logger = new AntLogger(this);
+        logger = new AntLogger(this);
         CayenneGeneratorMapLoaderAction loadAction = new CayenneGeneratorMapLoaderAction(injector);
 
         loadAction.setMainDataMapFile(map);
@@ -160,11 +162,14 @@ public class CayenneGeneratorTask extends CayenneTask {
     private CgenConfiguration buildConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfiguration.class);
         if(hasConfig()) {
+            logger.info("Using cgen config from pom.xml");
             return cgenConfigFromPom(dataMap);
         } else if(cgenConfiguration != null) {
+            logger.info("Using cgen config from " + cgenConfiguration.getDataMap().getName());
             useConfigFromDataMap = true;
             return cgenConfiguration;
         } else {
+            logger.info("Using default cgen config.");
             cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setDataMap(dataMap);
             return cgenConfiguration;

@@ -315,11 +315,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	private CgenConfiguration buildConfiguration(DataMap dataMap) {
 		CgenConfiguration cgenConfiguration = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfiguration.class);
 		if(hasConfig()) {
+			logger.info("Using cgen config from pom.xml");
 			return cgenConfigFromPom(dataMap);
 		} else if(cgenConfiguration != null) {
+			logger.info("Using cgen config from " + cgenConfiguration.getDataMap().getName());
 			useConfigFromDataMap = true;
 			return cgenConfiguration;
 		} else {
+			logger.info("Using default cgen config.");
 			cgenConfiguration = new CgenConfiguration();
 			cgenConfiguration.setDataMap(dataMap);
 			cgenConfiguration.setRelPath(defaultDir.getPath());
