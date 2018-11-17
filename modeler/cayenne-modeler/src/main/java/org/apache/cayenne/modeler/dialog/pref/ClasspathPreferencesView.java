@@ -29,6 +29,7 @@ import javax.swing.JTable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.CayenneTable;
 
 /**
  */
@@ -46,7 +47,7 @@ public class ClasspathPreferencesView extends JPanel {
         addDirButton = new JButton("Add Class Folder");
         removeEntryButton = new JButton("Remove");
 
-        table = new JTable();
+        table = new CayenneTable();
         table.setRowMargin(3);
         table.setRowHeight(25);
 

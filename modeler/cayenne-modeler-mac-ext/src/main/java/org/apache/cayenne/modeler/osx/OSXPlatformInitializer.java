@@ -94,6 +94,9 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         UIManager.put("Tree.selectionForeground",     Color.BLACK);
         UIManager.put("Tree.selectionBackground",     lightGrey);
         UIManager.put("Tree.selectionBorderColor",    lightGrey);
+        UIManager.put("Table.selectionForeground",    Color.BLACK);
+        UIManager.put("Table.selectionBackground",    lightGrey);
+        UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
 
         Border backgroundPainter = new AbstractBorder() {
             @Override

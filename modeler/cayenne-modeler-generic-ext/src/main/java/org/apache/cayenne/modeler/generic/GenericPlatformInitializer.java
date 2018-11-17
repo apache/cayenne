@@ -74,6 +74,9 @@ public class GenericPlatformInitializer implements PlatformInitializer {
         UIManager.put("Tree.selectionForeground",       Color.BLACK);
         UIManager.put("Tree.selectionBackground",       greyHighlight);
         UIManager.put("Tree.selectionBorderColor",      UIManager.get("Tree.selectionBackground"));
+        UIManager.put("Table.selectionForeground",      Color.BLACK);
+        UIManager.put("Table.selectionBackground",      greyHighlight);
+        UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
         UIManager.put("ScrollPane.border",              BorderFactory.createEmptyBorder());
         UIManager.put("Table.scrollPaneBorder",         BorderFactory.createEmptyBorder());
         UIManager.put("SplitPane.border",               BorderFactory.createEmptyBorder());

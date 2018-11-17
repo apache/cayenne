@@ -29,6 +29,7 @@ import javax.swing.JTable;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.util.CayenneTable;
 
 public class TemplatePreferencesView extends JPanel {
 
@@ -42,7 +43,7 @@ public class TemplatePreferencesView extends JPanel {
         addButton = new JButton("Add Template");
         removeButton = new JButton("Remove Template");
 
-        table = new JTable();
+        table = new CayenneTable();
         table.setRowMargin(3);
         table.setRowHeight(25);
 

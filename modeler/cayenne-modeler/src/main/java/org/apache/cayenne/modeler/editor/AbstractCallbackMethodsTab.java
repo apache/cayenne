@@ -403,6 +403,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
                         CallbackDescriptorTableModel.METHOD_NAME)
                         && tables[i].getEditorComponent() != null) {
                 	tables[i].changeSelection(tables[i].getRowCount() - 1, 0, false, false);
+                	tables[i].editCellAt(tables[i].getRowCount() - 1, 0);
                 	tables[i].getCellEditor().stopCellEditing();
                 	return;
                 }

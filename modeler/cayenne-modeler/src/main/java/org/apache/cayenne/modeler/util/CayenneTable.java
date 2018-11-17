@@ -22,19 +22,25 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.JTextComponent;
+import java.awt.Color;
 import java.awt.Component;
+import java.util.EventObject;
 
 /**
  * Common superclass of tables used in Cayenne. Contains some common configuration
@@ -222,16 +228,18 @@ public class CayenneTable extends JTable {
         }
     }
 
-    public void changeSelection(final int row, final int column, boolean toggle, boolean extend) {
-        super.changeSelection(row, column, toggle, extend);
-        startCellEditingOnTabPressed(row, column);
-    }
+    public boolean editCellAt(int row, int column, EventObject e) {
 
-    private void startCellEditingOnTabPressed(final int row, final int column) {
+        boolean result = false;
         if (isCellEditable(row, column)) {
-            this.editCellAt(row, column);
+            result = super.editCellAt(row, column, null);
             editorComp.requestFocus();
         }
+        return result;
+    }
+
+    public void changeSelection(final int row, final int column, boolean toggle, boolean extend) {
+        super.changeSelection(row, column, toggle, extend);
     }
 
     public void sort(int column, boolean isAscend) {

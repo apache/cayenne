@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 
 public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor {
 
-    private static final int DB_ATTRIBUTE_PATH_COLUMN = 3;
+    private static final int DB_ATTRIBUTE_PATH_COLUMN = ObjAttributeTableModel.DB_ATTRIBUTE;
 
     private String savePath;
     private ObjAttributeTableModel model;
@@ -96,7 +96,6 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         String dbAttributePath =((JTextComponent) comboBoxPathChooser.
                 getEditor().getEditorComponent()).getText();
         Object currentNode = getCurrentNode(dbAttributePath);
-
         String[] pathStrings = dbAttributePath.split(Pattern.quote("."));
         String lastStringInPath = pathStrings[pathStrings.length - 1];
         if (ModelerUtil.getObjectName(currentNode).equals(lastStringInPath) &&
