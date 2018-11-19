@@ -23,10 +23,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.configuration.event.QueryEvent;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.util.DbAdapterInfo;
 import org.apache.cayenne.modeler.util.JUndoableCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.JCayenneTextPane;
 import org.apache.cayenne.swing.components.textpane.syntax.SQLSyntaxConstants;
@@ -49,11 +49,9 @@ import javax.swing.text.Document;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * A panel for configuring SQL scripts of a SQL template.
@@ -78,6 +76,16 @@ public class SQLTemplateScriptsTab extends JPanel {
         this.mediator = mediator;
 
         initView();
+    }
+
+    private void prepareScriptAreas() {
+        for(String key : DbAdapterInfo.getStandardAdapters()) {
+            JCayenneTextPane currPane = new JUndoableCayenneTextPane(new SQLSyntaxConstants());
+            currPane.setName(key);
+            currPane.getDocument().addDocumentListener(new CustomListener(currPane.getName()));
+            builder.add(currPane.getScrollPane(), cc.xy(3, 2));
+            panes.add(currPane);
+        }
     }
 
     protected void initView() {
@@ -114,17 +122,19 @@ public class SQLTemplateScriptsTab extends JPanel {
 
         builder = new PanelBuilder(new FormLayout(
                 "fill:100dlu, 3dlu, fill:100dlu:grow",
-                "3dlu, fill:p:grow"));
+                "3dlu, fill:100dlu:grow"));
 
         // orderings table must grow as the panel is resized
         builder.add(new JScrollPane(
                 scripts,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), cc.xy(1, 2));
-        builder.add(textPane.getPane(), cc.xy(3, 2));
+        builder.add(textPane.getScrollPane(), cc.xy(3, 2));
 
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
+
+        prepareScriptAreas();
     }
 
     void initFromModel() {
@@ -182,33 +192,16 @@ public class SQLTemplateScriptsTab extends JPanel {
             return;
         }
 
-        boolean exist = false;
-        for (JCayenneTextPane textPane: panes) {
-            if (textPane.getName().equals(key)) {
-                exist = true;
-                break;
-            }
-        }
-
-        if (!exist) {
-            JCayenneTextPane textPane = new JUndoableCayenneTextPane(new SQLSyntaxConstants());
-            textPane.setName(key);
-            textPane.getDocument().addDocumentListener(new CustomListener(textPane.getName()));
-            builder.add(textPane.getPane(), cc.xy(3, 2));
-            panes.add(textPane);
-        }
-
         final String text = (key.equals(DEFAULT_LABEL)) ? query.getSql() : query
                 .getAdapterSql().get(key);
 
-        for (final JCayenneTextPane textPane: panes) {
+        for (final JCayenneTextPane textPane : panes) {
             if (key.equals(textPane.getName())) {
                 textPane.setDocumentTextDirect(text);
-                textPane.getPane().setVisible(true);
-                textPane.getPane().setEditable(true);
+                textPane.getScrollPane().setVisible(true);
+                textPane.getPane().requestFocusInWindow();
             } else {
-                textPane.getPane().setVisible(false);
-                textPane.getPane().setEditable(false);
+                textPane.getScrollPane().setVisible(false);
             }
         }
     }

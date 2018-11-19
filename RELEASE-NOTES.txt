@@ -26,6 +26,7 @@ CAY-2487 Removed usage of CayenneException.
 CAY-2489 Add validation to the case of not to PK relationships
 CAY-2491 Remaster Db Import View
 CAY-2493 Save cgen configuration with datamap XML
+CAY-2497 Modeler: SQL Scripts tab isn't scrollable
 
 Bug Fixes:
 
