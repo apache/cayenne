@@ -25,12 +25,18 @@ services:
 language: java
 
 env:
-  - DB_PROFILE=hsql
-  - DB_PROFILE=h2
-  - DB_PROFILE=derby
-  - DB_PROFILE=mysql-docker
-  - DB_PROFILE=postgres-docker
-  - DB_PROFILE=sqlserver-docker
+  matrix:
+    - DB_PROFILE=hsql
+    - DB_PROFILE=h2
+    - DB_PROFILE=derby
+    - DB_PROFILE=mysql-docker
+    - DB_PROFILE=postgres-docker
+    - DB_PROFILE=sqlserver-docker
+  global:
+    # travis encrypt -r apache/cayenne "SNAPSHOT_REPO_USERNAME='username'"
+    # travis encrypt -r apache/cayenne "SNAPSHOT_REPO_PASSWORD='password'"
+    - secure: "ssx4T8lnuLcR6bRx8BWeWRDa5IfK7RBi5CfNoFlQMoSaiiFvbW0TG+1YAqsYnvf07PfU7YJ4+6b0pG+E83Serw7TSoXehvCeCK8AzsT9/BbVpvuQVlbj/cG9rfrJcTvGyZI7p02+nVBR70XSN2qcvWQt5q2me7ZApS3unmen350="
+    - secure: "cysyR/fEtBHC26lYHGhfXYIPMaol1c1wP+r59idByE4iq71QiOffA4j1CQCAnN5Zo7QsNavz/GZoIxNif4SUcY7sW5M92a78VFVK3aYGTOBtN9jpqWDJoFc8jm5C75j3CoBe7dVFkxw3pCdMlZQ7HJj7L+GiyZ5USu6E2vD5X7A="
 
 jdk:
   - oraclejdk8
@@ -43,6 +49,13 @@ matrix:
 
 script:
   - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
+
+jobs:
+  include:
+  - stage: deploy
+    script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
+    jdk: oraclejdk8
+    if: branch = master AND repo = apache/cayenne
 
 # prevent Travis from unneeded "mvn install" run
 install: true
