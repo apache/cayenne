@@ -74,7 +74,7 @@ public class ClassesTabController extends CayenneController {
                 "parent.getItemName(#item)",
                 JLabel.class,
                 false,
-                "XXXXXXXXXXXXXX");
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         tableBuilder.addColumn(
                 "Comments, Warnings",

@@ -24,16 +24,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.components.TopBorder;
 
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -46,7 +38,6 @@ public class GeneratorTabPanel extends JPanel {
     private JPanel modesPanel;
 
     private JButton generateButton;
-    private JLabel classesCount;
 
     public GeneratorTabPanel(String[] modeNames, Component[] modePanels) {
         setLayout(new BorderLayout());
@@ -54,13 +45,8 @@ public class GeneratorTabPanel extends JPanel {
         generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
         generateButton.setPreferredSize(new Dimension(180, 30));
         generateButton.setEnabled(false);
-        this.classesCount = new JLabel("No classes selected");
-        classesCount.setFont(classesCount.getFont().deriveFont(10f));
-        JPanel messages = new JPanel(new BorderLayout());
-        messages.add(classesCount, BorderLayout.WEST);
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.setBorder(TopBorder.create());
-        buttons.add(classesCount);
         buttons.add(Box.createHorizontalStrut(50));
         buttons.add(generateButton);
         add(buttons, BorderLayout.NORTH);
@@ -96,9 +82,5 @@ public class GeneratorTabPanel extends JPanel {
 
     public JButton getGenerateButton() {
         return generateButton;
-    }
-
-    public JLabel getClassesCount() {
-        return classesCount;
     }
 }

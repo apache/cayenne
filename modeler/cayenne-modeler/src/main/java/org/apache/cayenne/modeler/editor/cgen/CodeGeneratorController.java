@@ -129,42 +129,6 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     public void classesSelectedAction() {
-        int size = getSelectedEntitiesSize();
-        String label;
-
-        if (size == 0) {
-            label = "No entities selected";
-        }
-        else if (size == 1) {
-            label = "One entity selected";
-        }
-        else {
-            label = size + " entities selected";
-        }
-
-        label = label.concat("; ");
-        
-        int sizeEmb = getSelectedEmbeddablesSize();
-
-        if (sizeEmb == 0) {
-            label = label + "No embeddables selected";
-        }
-        else if (sizeEmb == 1) {
-            label = label + "One embeddable selected";
-        }
-        else {
-            label = label + sizeEmb + " embeddables selected";
-        }
-
-        label = label.concat("; ");
-
-        if(isDataMapSelected()) {
-            label = label + "DataMap selected";
-        } else {
-            label = label + "No dataMap selected";
-        }
-
-        ((GeneratorTabPanel)generatorSelector.getView()).getClassesCount().setText(label);
         if(!isInitFromModel()) {
             getProjectController().setDirty(true);
         }

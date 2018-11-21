@@ -39,7 +39,7 @@ public class CodeGeneratorPane extends JSplitPane {
                 generatorPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setPreferredSize(new Dimension(300,400));
 
         // assemble
         splitPane.setRightComponent(scrollPane);
