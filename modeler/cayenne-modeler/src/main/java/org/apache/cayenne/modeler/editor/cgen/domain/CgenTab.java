@@ -20,17 +20,17 @@
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.editor.AdditionalTab;
-import org.apache.cayenne.modeler.editor.AdditionalTabController;
+import org.apache.cayenne.modeler.editor.GeneratorsTab;
+import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 
 import javax.swing.*;
 
 /**
  * @since 4.1
  */
-public class CgenTab extends AdditionalTab {
+public class CgenTab extends GeneratorsTab {
 
-    public CgenTab(ProjectController projectController, AdditionalTabController additionalTabController) {
+    public CgenTab(ProjectController projectController, GeneratorsTabController additionalTabController) {
         super(projectController, additionalTabController, "icon-gen_java.png");
     }
 
@@ -44,12 +44,6 @@ public class CgenTab extends AdditionalTab {
         JOptionPane.showMessageDialog(
                 this,
                 "Error generating classes - " + msg);
-    }
-
-    void showEmptyMessage() {
-        JOptionPane.showMessageDialog(
-                this,
-                "Nothing to generate - ");
     }
 
 }

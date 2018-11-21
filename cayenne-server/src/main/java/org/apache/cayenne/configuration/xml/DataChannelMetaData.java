@@ -61,4 +61,13 @@ public interface DataChannelMetaData {
      * @return value or {@code null} if no data available
      */
     <T> T get(ConfigurationNode key, Class<T> type);
+
+    /**
+     * @since 4.1
+     * @param key object for wich we want meta data
+     * @param type meta data type class
+     * @param <T> meta data type
+     * @return value or {@code null} if no can't remove
+     */
+    <T> T remove(ConfigurationNode key, Class<T> type);
 }

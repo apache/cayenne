@@ -22,23 +22,20 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
+import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoaderContext;
 import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
+import org.apache.cayenne.modeler.editor.GlobalDbImportController;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Collection;
-import javax.swing.SwingUtilities;
-import javax.swing.JOptionPane;
 
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.URL_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
 
 /**
  * Action that imports database structure into a DataMap.
@@ -63,11 +60,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
         return ACTION_NAME;
     }
 
-    /**
-     * Connects to DB and delegates processing to DbLoaderController, starting it asynchronously.
-     */
-    @Override
-    public void performAction(ActionEvent event) {
+    public void performAction() {
         final DbLoaderContext context = new DbLoaderContext(application.getMetaData());
         DBConnectionInfo connectionInfo;
         if (!datamapPreferencesExist()) {
@@ -91,6 +84,13 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        GlobalDbImportController dbImportController = Application.getInstance().getFrameController().getGlobalDbImportController();
+        DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
+        if(!dbLoadResultDialog.isVisible()) {
+            dbImportController.showDialog();
+        }
+
         if(!context.buildConfig(connectionInfo, view)) {
             try {
                 context.getConnection().close();
@@ -98,15 +98,20 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             return;
         }
 
-        runLoaderInThread(context, new Runnable() {
-            @Override
-            public void run() {
-                application.getUndoManager().discardAllEdits();
-                try {
-                    context.getConnection().close();
-                } catch (SQLException ignored) {}
-            }
+        runLoaderInThread(context, () -> {
+            application.getUndoManager().discardAllEdits();
+            try {
+                context.getConnection().close();
+            } catch (SQLException ignored) {}
         });
+    }
+
+    /**
+     * Connects to DB and delegates processing to DbLoaderController, starting it asynchronously.
+     */
+    @Override
+    public void performAction(ActionEvent event) {
+        performAction();
     }
 
     private DBConnectionInfo getConnectionInfoFromPreferences() {
@@ -138,12 +143,10 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
     }
 
     private void runLoaderInThread(final DbLoaderContext context, final Runnable callback) {
-        Thread th = new Thread(new Runnable() {
-            public void run() {
-                LoadDataMapTask task = new LoadDataMapTask(Application.getFrame(), "Reengineering DB", context);
-                task.startAndWait();
-                SwingUtilities.invokeLater(callback);
-            }
+        Thread th = new Thread(() -> {
+            LoadDataMapTask task = new LoadDataMapTask(Application.getFrame(), "Reengineering DB", context);
+            task.startAndWait();
+            SwingUtilities.invokeLater(callback);
         });
         th.start();
     }

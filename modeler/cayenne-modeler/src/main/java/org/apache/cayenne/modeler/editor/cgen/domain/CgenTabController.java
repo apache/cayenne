@@ -27,7 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
-import org.apache.cayenne.modeler.editor.AdditionalTabController;
+import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
@@ -36,27 +36,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.prefs.Preferences;
 
 /**
  * @since 4.1
  */
-public class CgenTabController extends AdditionalTabController {
+public class CgenTabController extends GeneratorsTabController {
 
     public CgenTabController(ProjectController projectController) {
+        super(CgenConfiguration.class);
         this.projectController = projectController;
         this.view = new CgenTab(projectController, this);
-        this.generatorsPanels = new ConcurrentHashMap<>();
-        this.selectedDataMaps = new HashSet<>();
     }
 
     public void runGenerators(Set<DataMap> dataMaps) {
         DataChannelMetaData metaData = Application.getInstance().getMetaData();
         if(dataMaps.isEmpty()) {
-            ((CgenTab)view).showEmptyMessage();
+            view.showEmptyMessage();
             return;
         }
         boolean generationFail = false;
@@ -124,5 +121,10 @@ public class CgenTabController extends AdditionalTabController {
         if (dataMap != null) {
             projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(this.getView(), dataMap, dataMap.getDataChannelDescriptor()));
         }
+    }
+
+    @Override
+    public void deleteConfig(DataMap dataMap) {
+        //NOOP
     }
 }

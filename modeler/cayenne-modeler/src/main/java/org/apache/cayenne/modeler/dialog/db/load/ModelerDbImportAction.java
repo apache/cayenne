@@ -28,16 +28,18 @@ import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.editor.GlobalDbImportController;
 import org.apache.cayenne.project.ProjectSaver;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
-import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.slf4j.Logger;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -55,6 +57,8 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     private DbLoadResultDialog resultDialog;
     private boolean isNothingChanged;
 
+    private GlobalDbImportController globalDbImportController;
+
     public ModelerDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
                                  @Inject DataSourceFactory dataSourceFactory,
@@ -64,6 +68,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  @Inject DataChannelMetaData metaData,
                                  @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
         super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData);
+        globalDbImportController = Application.getInstance().getFrameController().getGlobalDbImportController();
     }
 
     @Override
@@ -80,10 +85,11 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
     @Override
     protected Collection<MergerToken> log(List<MergerToken> tokens) {
-        resultDialog = new DbLoadResultDialog(DIALOG_TITLE);
+        resultDialog = globalDbImportController.createDialog();
         logger.info("");
         if (tokens.isEmpty()) {
             logger.info("Detected changes: No changes to import.");
+            resultDialog.addMsg(targetMap);
             isNothingChanged = true;
             return tokens;
         }
@@ -92,7 +98,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         for (MergerToken token : tokens) {
             String logString = String.format("    %-20s %s", token.getTokenName(), token.getTokenValue());
             logger.info(logString);
-            resultDialog.addRowToOutput(logString);
+            resultDialog.addRowToOutput(logString, targetMap);
             isNothingChanged = false;
         }
 
@@ -100,23 +106,44 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         resultDialog.getOkButton().addActionListener(e -> {
             try {
                 commit();
+                checkForUnusedImports();
             } catch (Exception ex) {
                 throw new CayenneRuntimeException("Nothing to commit.");
-            } finally {
-                resultDialog.setVisible(false);
             }
         });
 
-        resultDialog.getRevertButton().addActionListener(e -> resultDialog.setVisible(false));
-        resultDialog.setVisible(true);
+        resultDialog.getRevertButton().addActionListener(e -> {
+            resetDialog();
+        });
+
+        resultDialog.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                resetDialog();
+            }
+        });
+
         return tokens;
+    }
+
+    private void resetDialog() {
+        resultDialog.setVisible(false);
+        globalDbImportController.resetDialog();
+    }
+
+    private void checkForUnusedImports() {
+        globalDbImportController.checkImport(targetMap);
+        if(globalDbImportController.createDialog().getTableForMap().isEmpty()) {
+            resetDialog();
+            globalDbImportController.setGlobalImport(false);
+        }
     }
 
     @Override
     protected void addMessageToLogs(String message, List<String> messages) {
         String formattedMessage = String.format("    %-20s", message);
         messages.add(formattedMessage);
-        resultDialog.addRowToOutput(formattedMessage);
+        resultDialog.addRowToOutput(formattedMessage, targetMap);
         isNothingChanged = false;
     }
 

@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
+import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTabController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
@@ -41,6 +42,8 @@ public class DataDomainTabbedView extends JTabbedPane
     DataDomainGraphTab graphTab;
     private JScrollPane cgenView;
     private CgenTabController cgenTabController;
+    private JScrollPane dbImportView;
+    private DbImportTabController dbImportTabController;
 
     /**
      * constructor
@@ -65,15 +68,19 @@ public class DataDomainTabbedView extends JTabbedPane
         JScrollPane domainView = new JScrollPane(new DataDomainView(mediator));
         addTab("Main", domainView);
 
-        graphTab = new DataDomainGraphTab(mediator);
-        addTab("Graph", graphTab);
-
         addChangeListener(this);
         mediator.addDomainDisplayListener(this);
+
+        dbImportTabController = new DbImportTabController(mediator);
+        dbImportView = new JScrollPane(dbImportTabController.getView());
+        addTab("Db Import", dbImportView);
 
         cgenTabController = new CgenTabController(mediator);
         cgenView = new JScrollPane(cgenTabController.getView());
         addTab("Class Generation", cgenView);
+
+        graphTab = new DataDomainGraphTab(mediator);
+        addTab("Graph", graphTab);
     }
 
     public void stateChanged(ChangeEvent e) {
@@ -81,6 +88,8 @@ public class DataDomainTabbedView extends JTabbedPane
             graphTab.refresh();
         } else if(getSelectedComponent() == cgenView) {
             cgenTabController.getView().initView();
+        } else if(getSelectedComponent() == dbImportView) {
+            dbImportTabController.getView().initView();
         }
     }
 
@@ -94,6 +103,9 @@ public class DataDomainTabbedView extends JTabbedPane
         }
         if(e.getSource() instanceof GenerateCodeAction) {
             setSelectedComponent(cgenView);
+        }
+        if(getSelectedComponent() == dbImportView) {
+            fireStateChanged();
         }
     }
 }

@@ -29,6 +29,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.GetDbConnectionAction;
 import org.apache.cayenne.modeler.action.dbimport.AddCatalogAction;
 import org.apache.cayenne.modeler.action.dbimport.AddExcludeColumnAction;
 import org.apache.cayenne.modeler.action.dbimport.AddExcludeProcedureAction;
@@ -40,14 +41,12 @@ import org.apache.cayenne.modeler.action.dbimport.AddPatternParamAction;
 import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
 import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
-import org.apache.cayenne.modeler.action.GetDbConnectionAction;
 import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
-import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
-import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
 
 import javax.swing.JButton;
 import javax.swing.JToolBar;
+import javax.swing.border.EmptyBorder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +79,7 @@ class TreeToolbarPanel extends JToolBar {
         createButtons(treePanel);
         initLevels();
         addButtons();
+        this.setBorder(new EmptyBorder(0,0,0,0));
     }
 
     void unlockButtons() {

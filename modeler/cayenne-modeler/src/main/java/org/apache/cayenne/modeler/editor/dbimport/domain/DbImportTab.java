@@ -16,32 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.xml;
+package org.apache.cayenne.modeler.editor.dbimport.domain;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.editor.GeneratorsTab;
+import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 
 /**
- * Noop implementation of {@link DataChannelMetaData}.
- * Used by Cayenne runtime by default as it doesn't need this information.
- *
- * @see DefaultDataChannelMetaData
  * @since 4.1
  */
-public class NoopDataChannelMetaData implements DataChannelMetaData {
+public class DbImportTab extends GeneratorsTab {
 
-    @Override
-    public void add(ConfigurationNode key, Object value) {
-        // noop
-    }
-
-    @Override
-    public <T> T get(ConfigurationNode key, Class<T> type) {
-        return null;
-    }
-
-    @Override
-    public <T> T remove(ConfigurationNode key, Class<T> type) {
-        return null;
+    public DbImportTab(ProjectController projectController, GeneratorsTabController additionalTabController) {
+        super(projectController, additionalTabController, "icon-dbi-runImport.png");
     }
 
 }

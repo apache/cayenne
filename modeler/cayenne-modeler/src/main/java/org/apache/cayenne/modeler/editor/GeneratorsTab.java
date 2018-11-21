@@ -1,3 +1,21 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
@@ -12,15 +30,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
 
-public class AdditionalTab extends JPanel {
+/**
+ * @since 4.1
+ */
+public class GeneratorsTab extends JPanel {
 
     protected ProjectController projectController;
-    private AdditionalTabController additionalTabController;
+    private GeneratorsTabController additionalTabController;
 
     private JCheckBox selectAll;
     private JButton generateAll;
 
-    public AdditionalTab(ProjectController projectController, AdditionalTabController additionalTabController, String icon) {
+    public GeneratorsTab(ProjectController projectController, GeneratorsTabController additionalTabController, String icon) {
         this.projectController = projectController;
         this.additionalTabController = additionalTabController;
         this.selectAll = new JCheckBox();
@@ -39,7 +60,7 @@ public class AdditionalTab extends JPanel {
                 "left:pref, 4dlu, 50dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        ConcurrentMap<DataMap, TabPanel> panels = additionalTabController.getGeneratorsPanels();
+        ConcurrentMap<DataMap, GeneratorsPanel> panels = additionalTabController.getGeneratorsPanels();
 
         if(panels.isEmpty()) {
             this.add(new JLabel("There are no configs."), BorderLayout.NORTH);
@@ -59,6 +80,12 @@ public class AdditionalTab extends JPanel {
         }
         builder.append(generateAll);
         this.add(builder.getPanel(), BorderLayout.CENTER);
+    }
+
+    public void showEmptyMessage() {
+        JOptionPane.showMessageDialog(
+                this,
+                "Nothing to generate");
     }
 
     public JCheckBox getSelectAll() {
