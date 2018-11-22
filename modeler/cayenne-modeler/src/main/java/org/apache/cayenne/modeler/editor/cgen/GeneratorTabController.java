@@ -60,7 +60,7 @@ public class GeneratorTabController extends CayenneController {
         }
         this.view = new GeneratorTabPanel(GENERATION_MODES, modePanels);
         initBindings();
-        view.setPreferredSize(new Dimension(600, 480));
+        view.setPreferredSize(new Dimension(550, 480));
     }
 
     public Component getView() {

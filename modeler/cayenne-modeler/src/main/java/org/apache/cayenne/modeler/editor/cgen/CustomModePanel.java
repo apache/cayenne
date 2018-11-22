@@ -102,7 +102,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         // assemble
         FormLayout layout = new FormLayout(
-                "right:79dlu, 1dlu, fill:300:grow, 1dlu, left:100dlu, 100dlu", "");
+                "right:74dlu, 1dlu, fill:240:grow, 1dlu, left:100dlu, 100dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
@@ -139,8 +139,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         JPanel links = new JPanel(new FlowLayout(FlowLayout.TRAILING));
         links.add(manageTemplatesLink);
         add(links, BorderLayout.SOUTH);
-
-        add(builder.getPanel(), BorderLayout.CENTER);
     }
 
     public void setDisableSuperComboBoxes(boolean val){

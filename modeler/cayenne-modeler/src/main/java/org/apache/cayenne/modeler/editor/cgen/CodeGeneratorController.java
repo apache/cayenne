@@ -38,8 +38,8 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
@@ -81,6 +81,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         generatorSelector.setSelectedController(modeController);
         classesSelector.startup();
         initFromModel = false;
+        validate(modeController);
     }
 
     private boolean isDefaultConfig(CgenConfiguration cgenConfiguration) {
@@ -108,7 +109,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
                 getApplication().getBindingFactory(),
                 this);
 
-        builder.bindToAction(((GeneratorTabPanel)generatorSelector.getView()).getGenerateButton(), "generateAction()");
+        builder.bindToAction(view.getGenerateButton(), "generateAction()");
         builder.bindToAction(this, "classesSelectedAction()", SELECTED_PROPERTY);
         builder.bindToAction(generatorSelector, "generatorSelectedAction()",
                 GeneratorTabController.GENERATOR_PROPERTY);
@@ -159,7 +160,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     public void enableGenerateButton(boolean enable) {
-        ((GeneratorTabPanel)generatorSelector.getView()).getGenerateButton().setEnabled(enable);
+        view.getGenerateButton().setEnabled(enable);
     }
 
     @Override

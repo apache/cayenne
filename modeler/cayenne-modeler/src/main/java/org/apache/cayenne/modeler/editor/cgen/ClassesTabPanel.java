@@ -19,16 +19,12 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 /**
  * @since 4.1
@@ -36,30 +32,10 @@ import java.awt.FlowLayout;
 public class ClassesTabPanel extends JPanel {
 
     protected JTable table;
-    private JCheckBox checkAll;
-    private JLabel checkAllLabel;
-
     ClassesTabPanel() {
 
         this.table = new JTable();
         this.table.setRowHeight(22);
-        this.checkAll = new JCheckBox();
-        this.checkAllLabel = new JLabel("Check All Classes");
-
-        checkAll.addItemListener(event -> {
-            if (checkAll.isSelected()) {
-                checkAllLabel.setText("Uncheck All Classess");
-            }
-            else {
-                checkAllLabel.setText("Check All Classes");
-            }
-        });
-
-        // assemble
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        topPanel.setBorder(UIManager.getBorder("ToolBar.border"));
-        topPanel.add(checkAll);
-        topPanel.add(checkAllLabel);
 
         JScrollPane tablePanel = new JScrollPane(
                 table,
@@ -68,18 +44,13 @@ public class ClassesTabPanel extends JPanel {
 
         // set some minimal preferred size, so that it is smaller than other forms used in
         // the dialog... this way we get the right automated overall size
-        tablePanel.setPreferredSize(new Dimension(450, 200));
+        tablePanel.setPreferredSize(new Dimension(530, 200));
 
         setLayout(new BorderLayout());
-        add(topPanel, BorderLayout.NORTH);
         add(tablePanel, BorderLayout.CENTER);
     }
 
     public JTable getTable() {
         return table;
-    }
-
-    public JCheckBox getCheckAll() {
-        return checkAll;
     }
 }

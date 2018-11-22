@@ -33,7 +33,7 @@ public class StandardModePanel extends GeneratorControllerPanel {
     public StandardModePanel(CodeGeneratorControllerBase codeGeneratorControllerBase) {
         super(Application.getInstance().getFrameController().getProjectController(), codeGeneratorControllerBase);
         FormLayout layout = new FormLayout(
-                "right:88dlu, 1dlu, fill:300:grow, 1dlu, left:100dlu, 100dlu", "");
+                "right:83dlu, 1dlu, fill:240:grow, 1dlu, left:100dlu, 100dlu", "");
 
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.append("Output Directory:", outputFolder.getComponent(), selectOutputFolder);

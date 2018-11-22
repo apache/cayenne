@@ -32,14 +32,21 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -275,7 +282,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public String getProblem(Object obj) {
 
         String name = null;
-        
+
         if (obj instanceof ObjEntity) {
             name = ((ObjEntity) obj).getName();
         }
