@@ -19,33 +19,80 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.modeler.util.ModelerUtil;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 /**
  * @since 4.1
  */
-public class CodeGeneratorPane extends JSplitPane {
+public class CodeGeneratorPane extends JPanel {
+
+    private JPanel toolBarPanel;
+    private JButton generateButton;
+    private JCheckBox checkAll;
+    private JLabel checkAllLabel;
 
     public CodeGeneratorPane(Component generatorPanel, Component entitySelectorPanel) {
         super();
+        this.setLayout(new BorderLayout());
+
+        this.toolBarPanel = new JPanel();
+        toolBarPanel.setLayout(new BorderLayout());
+
+        this.generateButton = new JButton("Generate");
+        generateButton.setIcon(ModelerUtil.buildIcon("icon-dbi-runImport.png"));
+        generateButton.setEnabled(false);
+        generateButton.setPreferredSize(new Dimension(115, 25));
+
+        toolBarPanel.add(generateButton, BorderLayout.EAST);
+
+        this.checkAll = new JCheckBox();
+        this.checkAllLabel = new JLabel("Check All Classes");
+        checkAll.addItemListener(event -> {
+            if (checkAll.isSelected()) {
+                checkAllLabel.setText("Uncheck All Classess");
+            }
+            else {
+                checkAllLabel.setText("Check All Classes");
+            }
+        });
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        topPanel.add(checkAll);
+        topPanel.add(checkAllLabel);
+        toolBarPanel.add(topPanel, BorderLayout.WEST);
+
+        add(toolBarPanel, BorderLayout.NORTH);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         JScrollPane scrollPane = new JScrollPane(
                 generatorPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(800, 400));
+        scrollPane.setPreferredSize(new Dimension(150,400));
 
         // assemble
         splitPane.setRightComponent(scrollPane);
         splitPane.setLeftComponent(entitySelectorPanel);
 
-        setLayout(new BorderLayout());
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    public JButton getGenerateButton() {
+        return generateButton;
+    }
+
+    public JCheckBox getCheckAll() {
+        return checkAll;
     }
 }

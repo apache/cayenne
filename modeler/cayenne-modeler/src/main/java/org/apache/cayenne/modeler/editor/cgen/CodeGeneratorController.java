@@ -38,8 +38,8 @@ import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
@@ -81,6 +81,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         generatorSelector.setSelectedController(modeController);
         classesSelector.startup();
         initFromModel = false;
+        validate(modeController);
     }
 
     private boolean isDefaultConfig(CgenConfiguration cgenConfiguration) {
@@ -108,7 +109,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
                 getApplication().getBindingFactory(),
                 this);
 
-        builder.bindToAction(((GeneratorTabPanel)generatorSelector.getView()).getGenerateButton(), "generateAction()");
+        builder.bindToAction(view.getGenerateButton(), "generateAction()");
         builder.bindToAction(this, "classesSelectedAction()", SELECTED_PROPERTY);
         builder.bindToAction(generatorSelector, "generatorSelectedAction()",
                 GeneratorTabController.GENERATOR_PROPERTY);
@@ -129,42 +130,6 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     public void classesSelectedAction() {
-        int size = getSelectedEntitiesSize();
-        String label;
-
-        if (size == 0) {
-            label = "No entities selected";
-        }
-        else if (size == 1) {
-            label = "One entity selected";
-        }
-        else {
-            label = size + " entities selected";
-        }
-
-        label = label.concat("; ");
-        
-        int sizeEmb = getSelectedEmbeddablesSize();
-
-        if (sizeEmb == 0) {
-            label = label + "No embeddables selected";
-        }
-        else if (sizeEmb == 1) {
-            label = label + "One embeddable selected";
-        }
-        else {
-            label = label + sizeEmb + " embeddables selected";
-        }
-
-        label = label.concat("; ");
-
-        if(isDataMapSelected()) {
-            label = label + "DataMap selected";
-        } else {
-            label = label + "No dataMap selected";
-        }
-
-        ((GeneratorTabPanel)generatorSelector.getView()).getClassesCount().setText(label);
         if(!isInitFromModel()) {
             getProjectController().setDirty(true);
         }
@@ -195,7 +160,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     public void enableGenerateButton(boolean enable) {
-        ((GeneratorTabPanel)generatorSelector.getView()).getGenerateButton().setEnabled(enable);
+        view.getGenerateButton().setEnabled(enable);
     }
 
     @Override

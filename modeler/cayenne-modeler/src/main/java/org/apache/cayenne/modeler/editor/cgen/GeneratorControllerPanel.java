@@ -50,7 +50,7 @@ public class GeneratorControllerPanel extends JPanel {
                 }
             }
         };
-        this.selectOutputFolder = new JButton("Select");
+        this.selectOutputFolder = new JButton("..");
     }
 
     public TextAdapter getOutputFolder() {
