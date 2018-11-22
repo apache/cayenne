@@ -49,6 +49,7 @@ CAY-2480 cayenne:cdbgen and cayenne:cgen have identical text in cayenne-maven-pl
 CAY-2484 maven plugins missing in 4.1.M2 release
 CAY-2490 Added dbEntities from other datamaps in dbRelationship dialog.
 CAY-2496 Fixed wrong table behavior: focus color, cleanup DBAttribute Path cell on select.
+CAY-2497 Modeler: SQL Scripts tab isn't scrollable
 
 ----------------------------------
 Release: 4.1.M2
