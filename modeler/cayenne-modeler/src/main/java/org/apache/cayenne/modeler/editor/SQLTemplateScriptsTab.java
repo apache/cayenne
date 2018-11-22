@@ -49,9 +49,11 @@ import javax.swing.text.Document;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
+import java.util.Map;
 
 /**
  * A panel for configuring SQL scripts of a SQL template.
