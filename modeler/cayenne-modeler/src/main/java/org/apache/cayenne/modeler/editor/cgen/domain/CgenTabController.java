@@ -31,7 +31,7 @@ import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

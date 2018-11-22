@@ -39,7 +39,7 @@ public class GlobalDbImportController {
         this.dbLoadResultDialog = new DbLoadResultDialog(DIALOG_TITLE);
     }
 
-    public synchronized DbLoadResultDialog createDialog() {
+    public DbLoadResultDialog createDialog() {
         return dbLoadResultDialog;
     }
 
@@ -56,7 +56,7 @@ public class GlobalDbImportController {
         return globalImport;
     }
 
-    public synchronized void checkImport(DataMap dataMap) {
+    public void checkImport(DataMap dataMap) {
         dbLoadResultDialog.getTableForMap().remove(dataMap);
     }
 

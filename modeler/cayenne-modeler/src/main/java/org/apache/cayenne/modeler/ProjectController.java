@@ -116,9 +116,17 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.IDUtil;
 
 import javax.swing.event.EventListenerList;
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 /**

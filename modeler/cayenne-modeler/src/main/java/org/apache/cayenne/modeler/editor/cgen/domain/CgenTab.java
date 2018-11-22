@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.GeneratorsTab;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 /**
  * @since 4.1

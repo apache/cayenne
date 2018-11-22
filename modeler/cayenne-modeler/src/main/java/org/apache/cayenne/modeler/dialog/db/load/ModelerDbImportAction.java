@@ -37,7 +37,8 @@ import org.apache.cayenne.modeler.editor.GlobalDbImportController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.slf4j.Logger;
 
-import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
