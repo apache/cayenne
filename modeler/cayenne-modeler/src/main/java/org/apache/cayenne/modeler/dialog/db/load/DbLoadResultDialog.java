@@ -21,15 +21,23 @@ package org.apache.cayenne.modeler.dialog.db.load;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.map.DataMap;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * @since 4.1
@@ -39,15 +47,26 @@ public class DbLoadResultDialog extends JDialog {
     private static final int TABLE_ROW_HIGH = 24;
     private static final int TABLE_ROW_MARGIN = 3;
 
-    private DefaultTableModel tableModel;
-    private JTable table;
     private JButton okButton;
     private JButton revertButton;
     private String title;
 
-    DbLoadResultDialog(String title) {
+    private DefaultFormBuilder builder;
+
+    private ConcurrentMap<DataMap, JTable> tableForMap;
+    private JPanel tablePanel;
+    private JPanel buttonPanel;
+    private JScrollPane scrollPane;
+
+    public DbLoadResultDialog(String title) {
         super();
         this.title = title;
+        this.tableForMap = new ConcurrentHashMap<>();
+        this.tablePanel = new JPanel();
+        this.tablePanel.setLayout(new BoxLayout(this.tablePanel, BoxLayout.Y_AXIS));
+        this.scrollPane = new JScrollPane(tablePanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        this.buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         initElements();
         buildElements();
         configureDialog();
@@ -56,48 +75,61 @@ public class DbLoadResultDialog extends JDialog {
     private void configureDialog() {
         this.setResizable(false);
         this.setTitle(title);
-        this.pack();
         this.setLocationRelativeTo(null);
         this.setModal(false);
         this.setAlwaysOnTop(true);
+        this.setPreferredSize(new Dimension(400, 400));
+        this.scrollPane.setPreferredSize(new Dimension(400, 330));
+        this.pack();
     }
 
     private void initElements() {
-        tableModel = new DefaultTableModel() {
+        revertButton = new JButton("Revert");
+        okButton = new JButton("OK");
+    }
+
+    public void buildElements() {
+        getRootPane().setDefaultButton(okButton);
+        FormLayout layout = new FormLayout("fill:200dlu");
+        builder = new DefaultFormBuilder(layout);
+        builder.append(scrollPane);
+        buttonPanel.add(revertButton);
+        buttonPanel.add(okButton);
+        builder.append(buttonPanel);
+        this.add(builder.getPanel());
+    }
+
+    private DefaultTableModel prepareTable(DataMap dataMap) {
+        if(tableForMap.containsKey(dataMap)) {
+            return (DefaultTableModel)tableForMap.get(dataMap).getModel();
+        }
+        DefaultTableModel tokensTableModel = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int col) {
                 return false;
             }
         };
-        table = new JTable(tableModel);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setRowHeight(TABLE_ROW_HIGH);
-        table.setRowMargin(TABLE_ROW_MARGIN);
-        tableModel.addColumn("");
-        revertButton = new JButton("Revert");
-        okButton = new JButton("OK");
+        JPanel tablePane = new JPanel(new BorderLayout());
+        JLabel dataMapLabel = new JLabel(String.format("    %-20s", dataMap.getName()));
+        dataMapLabel.setBorder(new EmptyBorder(5,0,5,0));
+        tablePane.add(dataMapLabel, BorderLayout.NORTH);
+        JTable tokensTable = new JTable(tokensTableModel);
+        tokensTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tokensTable.setRowHeight(TABLE_ROW_HIGH);
+        tokensTable.setRowMargin(TABLE_ROW_MARGIN);
+        tokensTableModel.addColumn("");
+        tablePane.add(tokensTable, BorderLayout.CENTER);
+        tableForMap.put(dataMap, tokensTable);
+        tablePanel.add(tablePane);
+        return tokensTableModel;
     }
 
-    private void buildElements() {
-        getRootPane().setDefaultButton(okButton);
-
-        FormLayout layout = new FormLayout("fill:200dlu");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.append(new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panel.add(revertButton);
-        panel.add(okButton);
-        builder.append(panel);
-        this.add(builder.getPanel());
+    public synchronized void addRowToOutput(String output, DataMap dataMap) {
+        prepareTable(dataMap).addRow(new Object[]{output});
     }
 
-    public void addRowToOutput(String output) {
-        tableModel.addRow(new Object[]{output});
-    }
-
-    public int getTableRowCount() {
-        return tableModel.getRowCount();
+    public synchronized void addMsg(DataMap dataMap) {
+        prepareTable(dataMap).addRow(new Object[]{String.format("    %-20s", "No changes to import")});
     }
 
     public JButton getOkButton() {
@@ -106,5 +138,13 @@ public class DbLoadResultDialog extends JDialog {
 
     public JButton getRevertButton() {
         return revertButton;
+    }
+
+    public ConcurrentMap<DataMap, JTable> getTableForMap() {
+        return tableForMap;
+    }
+
+    public JPanel getTablePanel() {
+        return tablePanel;
     }
 }

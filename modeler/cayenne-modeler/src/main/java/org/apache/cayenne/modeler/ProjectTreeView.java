@@ -642,7 +642,9 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
 
         positionNode(domainNode, newMapNode, Comparators
                 .getDataDomainChildrenComparator());
-        showNode(newMapNode);
+        if(!Application.getInstance().getFrameController().getGlobalDbImportController().isGlobalImport()) {
+            showNode(newMapNode);
+        }
     }
 
     public void dataMapRemoved(DataMapEvent e) {

@@ -23,6 +23,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorController;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
+import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTab;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -76,10 +77,12 @@ public class DataMapTabbedView extends JTabbedPane{
             }
         });
         mediator.addDataMapDisplayListener(e -> {
-            if(isCgenTabActive() || isDbImportTabActive()) {
-                fireStateChanged();
-            } else if(e.getSource() instanceof CgenTab){
+            if(e.getSource() instanceof CgenTab) {
                 setSelectedComponent(cgenView);
+            } else if(e.getSource() instanceof DbImportTab) {
+                setSelectedComponent(dbImportScrollPane);
+            } else if(isCgenTabActive() || isDbImportTabActive()) {
+                fireStateChanged();
             }
         });
     }

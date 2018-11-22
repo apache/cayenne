@@ -47,6 +47,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.map.event.DbEntityListener;
@@ -112,7 +113,6 @@ import org.apache.cayenne.modeler.util.CircularArray;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.IDUtil;
 
 import javax.swing.event.EventListenerList;
@@ -262,6 +262,10 @@ public class ProjectController extends CayenneController {
     @Override
     public Component getView() {
         return parent.getView();
+    }
+
+    public void setCurrentDataMap(DataMap dataMap) {
+        currentState.map = dataMap;
     }
 
     public Project getProject() {

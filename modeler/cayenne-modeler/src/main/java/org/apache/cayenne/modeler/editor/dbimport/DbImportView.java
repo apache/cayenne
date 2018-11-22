@@ -33,8 +33,10 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -77,18 +79,19 @@ public class DbImportView extends JPanel {
 
         FormLayout layout = new FormLayout(MAIN_LAYOUT);
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-        builder.appendSeparator("Database Import Configuration");
         builder.append(treeToolbar, ALL_LINE_SPAN);
-
         FormLayout headerLayout = new FormLayout(HEADER_LAYOUT);
 
         DefaultFormBuilder reverseEngineeringHeaderBuilder = new DefaultFormBuilder(headerLayout);
-        reverseEngineeringHeaderBuilder.append("Import Configuration");
+        JLabel importLabel = new JLabel("Database Import Configuration");
+        importLabel.setBorder(new EmptyBorder(0, 5, 0,0));
+        reverseEngineeringHeaderBuilder.append(importLabel);
         builder.append(reverseEngineeringHeaderBuilder.getPanel());
 
         DefaultFormBuilder databaseHeaderBuilder = new DefaultFormBuilder(headerLayout);
-        databaseHeaderBuilder.append("Database Schema");
+        JLabel schemaLabel = new JLabel("Database Schema");
+        schemaLabel.setBorder(new EmptyBorder(0, 5, 0,0));
+        databaseHeaderBuilder.append(schemaLabel);
         LoadDbSchemaAction loadDbSchemaAction = projectController.getApplication().getActionManager().
                 getAction(LoadDbSchemaAction.class);
         loadDbSchemaAction.setDraggableTreePanel(draggableTreePanel);
@@ -190,8 +193,8 @@ public class DbImportView extends JPanel {
         treePanel.getReverseEngineeringTree().stopEditing();
         if (map != null) {
             treeToolbar.unlockButtons();
-            ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication().
-                    getMetaData().get(map, ReverseEngineering.class);
+            ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication()
+                    .getMetaData().get(map, ReverseEngineering.class);
             if (reverseEngineering == null) {
                 reverseEngineering = new ReverseEngineering();
                 DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);

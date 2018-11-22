@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.configuration.xml;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.cayenne.configuration.ConfigurationNode;
 
 /**
  * <p>
@@ -87,5 +87,26 @@ public class DefaultDataChannelMetaData implements DataChannelMetaData {
         }
 
         return type.cast(data.get(type));
+    }
+
+    /**
+     *
+     * @param key object for wich we want meta data
+     * @param type meta data type class
+     * @param <T> data type
+     * @return removed value or {@code null}
+     */
+    @Override
+    public <T> T remove(ConfigurationNode key, Class<T> type) {
+        if(key == null || type == null) {
+            return null;
+        }
+
+        Map<Class<?>, Object> data = map.get(key);
+        if(data == null) {
+            return null;
+        }
+
+        return type.cast(data.remove(type));
     }
 }
