@@ -36,12 +36,7 @@ env:
 jdk:
   - oraclejdk7
   - oraclejdk8
-  - oraclejdk10
   - oraclejdk11
-
-matrix:
-  allow_failures:
-    - jdk: oraclejdk11
 
 script:
   - travis_wait 30 mvn verify -q -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
