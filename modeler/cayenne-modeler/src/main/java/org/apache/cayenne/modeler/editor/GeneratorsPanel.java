@@ -40,7 +40,6 @@ public class GeneratorsPanel extends JPanel {
     private JCheckBox checkConfig;
     private JLabel dataMapLabel;
     private JButton toConfigButton;
-    private JButton deleteButton;
     private DataMap dataMap;
     private Class type;
     private String icon;
@@ -55,28 +54,20 @@ public class GeneratorsPanel extends JPanel {
     public void initView(){
         setLayout(new BorderLayout());
         FormLayout layout = new FormLayout(
-                "left:pref, 4dlu, fill:50dlu, 3dlu, fill:120, 3dlu, fill:120", "");
+                "left:pref, 4dlu, fill:70dlu, 3dlu, fill:120, 3dlu, fill:120", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        builder.setDefaultDialogBorder();
-
         this.checkConfig = new JCheckBox();
         this.dataMapLabel = new JLabel(dataMap.getName());
+        this.dataMapLabel.setToolTipText(dataMap.getName());
         DataChannelMetaData metaData = Application.getInstance().getMetaData();
-        this.toConfigButton = new JButton();
-        this.deleteButton = new JButton("Delete config");
-        if(metaData.get(dataMap, type) != null) {
-            this.toConfigButton.setText("Edit Config");
-        } else {
-            this.toConfigButton.setText("Create Config");
+        this.toConfigButton = new JButton("Edit Config");
+        if(metaData.get(dataMap, type) == null) {
             if(type == ReverseEngineering.class) {
                 checkConfig.setEnabled(false);
             }
         }
         this.toConfigButton.setIcon(ModelerUtil.buildIcon(icon));
         builder.append(checkConfig, dataMapLabel, toConfigButton);
-        if(type == ReverseEngineering.class) {
-            builder.append(deleteButton);
-        }
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
@@ -86,14 +77,6 @@ public class GeneratorsPanel extends JPanel {
 
     public JButton getToConfigButton() {
         return toConfigButton;
-    }
-
-    public JButton getDeleteButton() {
-        return deleteButton;
-    }
-
-    public JLabel getDataMapLabel() {
-        return dataMapLabel;
     }
 
     public DataMap getDataMap() {

@@ -31,7 +31,7 @@ import javax.swing.JOptionPane;
 public class CgenTab extends GeneratorsTab {
 
     public CgenTab(ProjectController projectController, GeneratorsTabController additionalTabController) {
-        super(projectController, additionalTabController, "icon-gen_java.png");
+        super(projectController, additionalTabController, "icon-gen_java.png", "Run class generation on selected datamaps.");
     }
 
     void showSuccessMessage() {

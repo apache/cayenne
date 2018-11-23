@@ -28,7 +28,7 @@ import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 public class DbImportTab extends GeneratorsTab {
 
     public DbImportTab(ProjectController projectController, GeneratorsTabController additionalTabController) {
-        super(projectController, additionalTabController, "icon-dbi-runImport.png");
+        super(projectController, additionalTabController, "icon-dbi-runImport.png", "Run reverse engineering on selected datamaps.");
     }
 
 }

@@ -30,8 +30,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentMap;
@@ -44,18 +42,14 @@ public class GeneratorsTab extends JPanel {
     protected ProjectController projectController;
     private GeneratorsTabController additionalTabController;
 
-    private JCheckBox selectAll;
-    private JButton generateAll;
+    private TopGeneratorPanel generationPanel;
 
-    public GeneratorsTab(ProjectController projectController, GeneratorsTabController additionalTabController, String icon) {
+    public GeneratorsTab(ProjectController projectController, GeneratorsTabController additionalTabController, String icon, String text) {
         this.projectController = projectController;
         this.additionalTabController = additionalTabController;
-        this.selectAll = new JCheckBox();
-        generateAll = new JButton("Run");
-        generateAll.setEnabled(false);
-        generateAll.setIcon(ModelerUtil.buildIcon(icon));
-        generateAll.setPreferredSize(new Dimension(120, 30));
-        generateAll.addActionListener(action -> additionalTabController.runGenerators(additionalTabController.getSelectedDataMaps()));
+        this.generationPanel = new TopGeneratorPanel(icon);
+        this.generationPanel.generateAll.addActionListener(action -> additionalTabController.runGenerators(additionalTabController.getSelectedDataMaps()));
+        this.generationPanel.generateAll.setToolTipText(text);
         setLayout(new BorderLayout());
     }
 
@@ -63,28 +57,23 @@ public class GeneratorsTab extends JPanel {
         removeAll();
         additionalTabController.createPanels();
         FormLayout layout = new FormLayout(
-                "left:pref, 4dlu, 50dlu", "");
+                "left:pref, 4dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
         ConcurrentMap<DataMap, GeneratorsPanel> panels = additionalTabController.getGeneratorsPanels();
 
         if(panels.isEmpty()) {
-            this.add(new JLabel("There are no configs."), BorderLayout.NORTH);
+            this.add(new JLabel("There are no datamaps."), BorderLayout.NORTH);
             return;
         }
 
-        JPanel selectAllPanel = new JPanel(new FlowLayout());
-        selectAllPanel.add(new JLabel("Select All"), FlowLayout.LEFT);
-        selectAllPanel.add(selectAll, FlowLayout.CENTER);
-        builder.append(selectAllPanel);
+        builder.append(generationPanel);
         builder.nextLine();
-
         SortedSet<DataMap> keys = new TreeSet<>(panels.keySet());
         for(DataMap dataMap : keys) {
             builder.append(panels.get(dataMap));
             builder.nextLine();
         }
-        builder.append(generateAll);
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
@@ -94,11 +83,34 @@ public class GeneratorsTab extends JPanel {
                 "Nothing to generate");
     }
 
-    public JCheckBox getSelectAll() {
-        return selectAll;
+    TopGeneratorPanel getGenerationPanel() {
+        return generationPanel;
     }
 
-    public JButton getGenerateAll() {
-        return generateAll;
+    class TopGeneratorPanel extends JPanel {
+
+        private JCheckBox selectAll;
+        JButton generateAll;
+
+        TopGeneratorPanel(String icon) {
+            setLayout(new BorderLayout());
+            FormLayout layout = new FormLayout(
+                    "left:pref, 4dlu, fill:70dlu, 3dlu, fill:120, 3dlu, fill:120", "");
+            DefaultFormBuilder builder = new DefaultFormBuilder(layout);
+            this.selectAll = new JCheckBox();
+            generateAll = new JButton("Run");
+            generateAll.setEnabled(false);
+            generateAll.setIcon(ModelerUtil.buildIcon(icon));
+            builder.append(selectAll, new JLabel("Select All"), generateAll);
+            this.add(builder.getPanel(), BorderLayout.CENTER);
+        }
+
+        JCheckBox getSelectAll() {
+            return selectAll;
+        }
+
+        JButton getGenerateAll() {
+            return generateAll;
+        }
     }
 }
