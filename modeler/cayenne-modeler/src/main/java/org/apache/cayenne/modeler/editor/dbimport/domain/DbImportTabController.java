@@ -18,14 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.dbimport.domain;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
-import org.apache.cayenne.modeler.editor.GeneratorsPanel;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 
 import java.util.Set;
@@ -59,20 +57,6 @@ public class DbImportTabController extends GeneratorsTabController {
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
             projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(this.getView(), dataMap, dataMap.getDataChannelDescriptor()));
-        }
-    }
-
-    @Override
-    public void deleteConfig(DataMap dataMap) {
-        DataChannelMetaData metaData = Application.getInstance().getMetaData();
-        if(metaData != null) {
-            ReverseEngineering reverseEngineering = metaData.remove(dataMap, ReverseEngineering.class);
-            if(reverseEngineering != null) {
-                GeneratorsPanel tabPanel = generatorsPanels.get(dataMap);
-                tabPanel.getToConfigButton().setText("Create Config");
-                tabPanel.getCheckConfig().setEnabled(false);
-                tabPanel.getCheckConfig().setSelected(false);
-            }
         }
     }
 }

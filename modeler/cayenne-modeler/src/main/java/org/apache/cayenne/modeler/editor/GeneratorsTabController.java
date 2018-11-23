@@ -83,9 +83,8 @@ public abstract class GeneratorsTabController {
         });
 
         panel.getToConfigButton().addActionListener(action -> showConfig(panel.getDataMap()));
-        panel.getDeleteButton().addActionListener(action -> deleteConfig(panel.getDataMap()));
 
-        view.getSelectAll().addItemListener(e -> {
+        view.getGenerationPanel().getSelectAll().addItemListener(e -> {
             if(e.getStateChange() == ItemEvent.SELECTED) {
                 getGeneratorsPanels().forEach((key, value) -> {
                     if (value.getCheckConfig().isEnabled()) {
@@ -105,13 +104,11 @@ public abstract class GeneratorsTabController {
 
     public abstract void showConfig(DataMap dataMap);
 
-    public abstract void deleteConfig(DataMap dataMap);
-
     private void setGenerateButtonDisabled() {
         if(selectedDataMaps.size() == 0) {
-            view.getGenerateAll().setEnabled(false);
+            view.getGenerationPanel().getGenerateAll().setEnabled(false);
         } else {
-            view.getGenerateAll().setEnabled(true);
+            view.getGenerationPanel().getGenerateAll().setEnabled(true);
         }
     }
 

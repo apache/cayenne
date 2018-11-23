@@ -122,9 +122,4 @@ public class CgenTabController extends GeneratorsTabController {
             projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(this.getView(), dataMap, dataMap.getDataChannelDescriptor()));
         }
     }
-
-    @Override
-    public void deleteConfig(DataMap dataMap) {
-        //NOOP
-    }
 }
