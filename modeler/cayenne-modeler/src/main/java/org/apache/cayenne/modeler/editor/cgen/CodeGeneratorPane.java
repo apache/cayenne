@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.JButton;
@@ -50,12 +52,14 @@ public class CodeGeneratorPane extends JPanel {
         this.toolBarPanel = new JPanel();
         toolBarPanel.setLayout(new BorderLayout());
 
+        FormLayout layout = new FormLayout(
+                "fill:110", "");
+        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         this.generateButton = new JButton("Generate");
-        generateButton.setIcon(ModelerUtil.buildIcon("icon-dbi-runImport.png"));
+        generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
         generateButton.setEnabled(false);
-        generateButton.setPreferredSize(new Dimension(115, 25));
-
-        toolBarPanel.add(generateButton, BorderLayout.EAST);
+        builder.append(generateButton);
+        toolBarPanel.add(builder.getPanel(), BorderLayout.EAST);
 
         this.checkAll = new JCheckBox();
         this.checkAllLabel = new JLabel("Check All Classes");

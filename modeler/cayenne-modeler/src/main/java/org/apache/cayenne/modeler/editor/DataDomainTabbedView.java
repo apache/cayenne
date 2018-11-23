@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.GenerateCodeAction;
+import org.apache.cayenne.modeler.action.dbimport.ReverseEngineeringToolMenuAction;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTabController;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTabController;
 import org.apache.cayenne.modeler.event.DomainDisplayEvent;
@@ -27,7 +28,8 @@ import org.apache.cayenne.modeler.event.DomainDisplayListener;
 import org.apache.cayenne.modeler.event.EntityDisplayEvent;
 import org.apache.cayenne.modeler.graph.DataDomainGraphTab;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -106,6 +108,9 @@ public class DataDomainTabbedView extends JTabbedPane
         }
         if(getSelectedComponent() == dbImportView) {
             fireStateChanged();
+        }
+        if(e.getSource() instanceof ReverseEngineeringToolMenuAction) {
+            setSelectedComponent(dbImportView);
         }
     }
 }

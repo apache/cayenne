@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.modeler.action.dbimport;
 
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.DomainDisplayEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 
 /**
@@ -39,8 +40,6 @@ public class ReverseEngineeringToolMenuAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        JOptionPane.showMessageDialog(null, "Reverse Engineering was moved to DataMap tabs.\n" +
-                "You will find new Reverse Engineering in DataMap \u2192 DbImport tab.", DIALOG_TITLE,
-                JOptionPane.INFORMATION_MESSAGE);
+        getProjectController().fireDomainDisplayEvent(new DomainDisplayEvent(this, (DataChannelDescriptor) getProjectController().getProject().getRootNode()));
     }
 }
