@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
 
 import javax.swing.JTable;
@@ -28,14 +30,14 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @since 4.1
  */
-public class GlobalDbImportController {
+public class DbImportController {
 
     private static final String DIALOG_TITLE = "Reverse Engineering Result";
 
     private DbLoadResultDialog dbLoadResultDialog;
     private boolean globalImport;
 
-    public GlobalDbImportController() {
+    public DbImportController() {
         this.dbLoadResultDialog = new DbLoadResultDialog(DIALOG_TITLE);
     }
 
@@ -73,5 +75,9 @@ public class GlobalDbImportController {
 
         dbLoadResultDialog.getTableForMap().clear();
         dbLoadResultDialog.getTablePanel().removeAll();
+    }
+
+    public void fireDataMapChangeEvent(DataMap dataMap) {
+        Application.getInstance().getFrameController().getProjectController().fireDataMapEvent(new DataMapEvent(this, dataMap));
     }
 }

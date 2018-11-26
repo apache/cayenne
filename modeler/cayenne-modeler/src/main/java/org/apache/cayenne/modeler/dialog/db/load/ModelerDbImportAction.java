@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.dialog.db.load;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
@@ -33,7 +32,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.editor.GlobalDbImportController;
+import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.slf4j.Logger;
 
@@ -58,7 +57,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     private DbLoadResultDialog resultDialog;
     private boolean isNothingChanged;
 
-    private GlobalDbImportController globalDbImportController;
+    private DbImportController dbImportController;
 
     public ModelerDbImportAction(@Inject Logger logger,
                                  @Inject ProjectSaver projectSaver,
@@ -69,7 +68,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                                  @Inject DataChannelMetaData metaData,
                                  @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
         super(logger, projectSaver, dataSourceFactory, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData);
-        globalDbImportController = Application.getInstance().getFrameController().getGlobalDbImportController();
+        dbImportController = Application.getInstance().getFrameController().getDbImportController();
     }
 
     @Override
@@ -81,12 +80,11 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
     public void commit() throws Exception {
         commit(config, sourceDataMap);
-        Application.getInstance().getFrameController().getProjectController().fireDataMapEvent(new DataMapEvent(this, targetMap));
     }
 
     @Override
     protected Collection<MergerToken> log(List<MergerToken> tokens) {
-        resultDialog = globalDbImportController.createDialog();
+        resultDialog = dbImportController.createDialog();
         logger.info("");
         if (tokens.isEmpty()) {
             logger.info("Detected changes: No changes to import.");
@@ -129,14 +127,15 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
     private void resetDialog() {
         resultDialog.setVisible(false);
-        globalDbImportController.resetDialog();
+        dbImportController.resetDialog();
     }
 
     private void checkForUnusedImports() {
-        globalDbImportController.checkImport(targetMap);
-        if(globalDbImportController.createDialog().getTableForMap().isEmpty()) {
+        dbImportController.checkImport(targetMap);
+        if(dbImportController.createDialog().getTableForMap().isEmpty()) {
             resetDialog();
-            globalDbImportController.setGlobalImport(false);
+            dbImportController.setGlobalImport(false);
+            dbImportController.fireDataMapChangeEvent(targetMap);
         }
     }
 

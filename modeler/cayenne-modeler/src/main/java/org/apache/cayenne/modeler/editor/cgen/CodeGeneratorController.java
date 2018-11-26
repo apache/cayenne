@@ -32,7 +32,7 @@ import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
-import org.apache.cayenne.modeler.dialog.db.load.ModelerDbImportAction;
+import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
@@ -200,10 +200,10 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
 
     @Override
     public void dataMapChanged(DataMapEvent e) {
-        if(e.getSource() instanceof ModelerDbImportAction) {
+        if(e.getSource() instanceof DbImportController) {
             CgenConfiguration cgenConfiguration = getCurrentConfiguration();
             if(cgenConfiguration != null) {
-                for(ObjEntity objEntity : dataMap.getObjEntities()) {
+                for(ObjEntity objEntity : e.getDataMap().getObjEntities()) {
                     if(!cgenConfiguration.getExcludeEntityArtifacts().contains(objEntity.getName())) {
                         addEntity(cgenConfiguration.getDataMap(), objEntity);
                     }

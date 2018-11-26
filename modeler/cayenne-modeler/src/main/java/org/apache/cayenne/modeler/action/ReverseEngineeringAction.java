@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoaderContext;
 import org.apache.cayenne.modeler.dialog.db.load.LoadDataMapTask;
-import org.apache.cayenne.modeler.editor.GlobalDbImportController;
+import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -86,7 +86,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             return;
         }
 
-        GlobalDbImportController dbImportController = Application.getInstance().getFrameController().getGlobalDbImportController();
+        DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
         DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
         if(!dbLoadResultDialog.isVisible()) {
             dbImportController.showDialog();
