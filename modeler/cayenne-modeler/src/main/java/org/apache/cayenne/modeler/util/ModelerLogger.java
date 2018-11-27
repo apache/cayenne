@@ -42,7 +42,7 @@ public class ModelerLogger implements Logger {
     private static final byte LOG_LEVEL_WARNING = 3;
     private static final byte LOG_LEVEL_ERROR = 4;
 
-    private static final String INFO_LOG_NAME = "INFO";
+    static final String INFO_LOG_NAME = "INFO";
     private static final String DEBUG_LOG_NAME = "DEBUG";
     private static final String TRACE_LOG_NAME = "TRACE";
     private static final String WARNING_LOG_NAME = "WARNING";
@@ -498,12 +498,12 @@ public class ModelerLogger implements Logger {
      * Prints common message to the modeler console
      */
 
-    private void log(String level, String message, Throwable throwable, AttributeSet style, Object... parameters) {
+    void log(String level, String message, Throwable throwable, AttributeSet style, Object... parameters) {
         FormattingTuple tuple = MessageFormatter.arrayFormat(message, parameters);
         getLogConsole().appendMessage(level, tuple.getMessage(), throwable, style);
     }
 
-    private void log(String level, Object message, Throwable throwable, AttributeSet style) {
+    void log(String level, Object message, Throwable throwable, AttributeSet style) {
         getLogConsole().appendMessage(level, String.valueOf(message), throwable, style);
     }
 

@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.editor.EditorView;
-import org.apache.cayenne.modeler.editor.GlobalDbImportController;
+import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.pref.ComponentGeometry;
 import org.apache.cayenne.modeler.pref.FSPath;
@@ -65,7 +65,7 @@ public class CayenneModelerController extends CayenneController {
     protected CayenneModelerFrame frame;
 	private EditorView editorView;
 
-	private GlobalDbImportController globalDbImportController;
+	private DbImportController dbImportController;
 
     public CayenneModelerController(){}
 
@@ -75,7 +75,7 @@ public class CayenneModelerController extends CayenneController {
         this.frame = new CayenneModelerFrame(application.getActionManager());
         application.getInjector().getInstance(PlatformInitializer.class).setupMenus(frame);
         this.projectController = new ProjectController(this);
-        this.globalDbImportController = new GlobalDbImportController();
+        this.dbImportController = new DbImportController();
     }
 
     @Override
@@ -301,8 +301,8 @@ public class CayenneModelerController extends CayenneController {
         }
     }
 
-    public GlobalDbImportController getGlobalDbImportController() {
-        return globalDbImportController;
+    public DbImportController getDbImportController() {
+        return dbImportController;
     }
 
     class ExpireThread extends Thread {

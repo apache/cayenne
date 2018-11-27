@@ -18,38 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.util;
 
-import org.slf4j.ILoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
+import javax.swing.text.AttributeSet;
 
 /**
- * Factory for creating ModelerLogger instances.
+ * @since 4.1
  */
-public class ModelerLogFactory implements ILoggerFactory {
+class NoopModelerLogger extends ModelerLogger {
 
-	/**
-	 * Local cache of modeler loggers
-	 */
-	protected Map<String, ModelerLogger> localCache;
+    NoopModelerLogger(String name) {
+        super(name);
+    }
 
-	private static final String ignoreVelocoty = "org.apache.velocity";
+    void log(String level, String message, Throwable throwable, AttributeSet style, Object... parameters) {
+        if(level.equals(INFO_LOG_NAME)) {
+            super.log(level, message, throwable, style, parameters);
+        }
+    }
 
-	public ModelerLogFactory() {
-		localCache = new HashMap<>();
-	}
-
-	public ModelerLogger getLogger(String name) {
-		ModelerLogger local = localCache.get(name);
-		if (local == null) {
-			if(name.contains(ignoreVelocoty)) {
-				local = new NoopModelerLogger(name);
-			} else {
-				local = new ModelerLogger(name);
-			}
-			localCache.put(name, local);
-		}
-		return local;
-	}
-
+    void log(String level, Object message, Throwable throwable, AttributeSet style) {
+        if(level.equals(INFO_LOG_NAME)) {
+            super.log(level, message, throwable, style);
+        }
+    }
 }
