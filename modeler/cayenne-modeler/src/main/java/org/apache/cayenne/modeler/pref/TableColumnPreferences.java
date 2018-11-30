@@ -60,7 +60,7 @@ public class TableColumnPreferences extends CayennePreference {
         }
 
         public void columnMoved(TableColumnModelEvent e) {
-            TableColumn column = null;
+            TableColumn column;
             for (int i = 0; i < columnCount; i++) {
                 column = table.getColumnModel().getColumn(i);
                 setOrderIndex(column.getModelIndex(), i);
@@ -90,13 +90,6 @@ public class TableColumnPreferences extends CayennePreference {
      * Binds this preference object to synchronize its state with a given table component,
      * allowing to specify an initial offset compared to the stored position. Allow to specify
      * initial sorting.
-     * 
-     * @param table
-     * @param minSizes
-     * @param maxSizes
-     * @param defaultSizes
-     * @param defaultSortColumn
-     * @param defaultSortOrder
      */
     public void bind(
             final JTable table,
@@ -114,12 +107,7 @@ public class TableColumnPreferences extends CayennePreference {
 
     /**
      * Binds this preference object to synchronize its state with a given table component,
-     * allowing to specify an initial offset compared to the stored position. 
-     * 
-     * @param table
-     * @param minSizes
-     * @param maxSizes
-     * @param defaultSizes
+     * allowing to specify an initial offset compared to the stored position.
      */
     public void bind(
             final JTable table,
@@ -147,7 +135,7 @@ public class TableColumnPreferences extends CayennePreference {
     private void updateWidths(
             Map<Integer, Integer> minSizes,
             Map<Integer, Integer> maxSizes, Map<Integer, Integer> defaultSizes) {
-        TableColumn column = null;
+        TableColumn column;
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnCount; i++) {
             column = columnModel.getColumn(i);
@@ -180,7 +168,7 @@ public class TableColumnPreferences extends CayennePreference {
         TableColumn column;
         TableColumnModel columnModel = table.getColumnModel();
         TableModel model = table.getModel();
-        String columnName = "";
+        String columnName;
         for (int i = 0; i < columnCount; i++) {
             columnName = model.getColumnName(i);
             column = table.getColumn(columnName);
@@ -194,37 +182,33 @@ public class TableColumnPreferences extends CayennePreference {
 
     private void updateSort(int defaultSortColumn, boolean defaultSortOrder) {
         ((CayenneTable) table).sort(
-                getSortColumn(SORT_COLUMN_KEY, defaultSortColumn),
-                getSortOrder(SORT_ORDER_KEY, defaultSortOrder));
+                getSortColumn(defaultSortColumn),
+                getSortOrder(defaultSortOrder));
     }
 
     private int getWidth(int index, int defaultWidth) {
         if(currentWidth[index] == 0) {
-            currentWidth[index] = getPreference().getInt(WIDTH_KEY + Integer.toString(index), defaultWidth);
+            currentWidth[index] = getPreference().getInt(WIDTH_KEY + index, defaultWidth);
         }
         return currentWidth[index];
     }
 
     private void setWidth(int index, int width) {
         if(currentWidth[index] != width) {
-            getPreference().putInt(WIDTH_KEY + Integer.toString(index), width);
+            getPreference().putInt(WIDTH_KEY + index, width);
             currentWidth[index] = width;
         }
     }
 
     private int getOrderIndex(int columnIndex, int defaultOrderIndex) {
-        return getPreference().getInt(
-                ORDER_KEY + Integer.toString(columnIndex),
-                defaultOrderIndex);
+        return getPreference().getInt(ORDER_KEY + columnIndex, defaultOrderIndex);
     }
 
     private void setOrderIndex(int columnIndex, int defaultOrderIndex) {
-        getPreference().putInt(
-                ORDER_KEY + Integer.toString(columnIndex),
-                defaultOrderIndex);
+        getPreference().putInt(ORDER_KEY + columnIndex, defaultOrderIndex);
     }
 
-    private boolean getSortOrder(String sortOrderKey, boolean defaultSortOrder) {
+    private boolean getSortOrder(boolean defaultSortOrder) {
         return getPreference().getBoolean(SORT_ORDER_KEY, defaultSortOrder);
     }
 
@@ -232,7 +216,7 @@ public class TableColumnPreferences extends CayennePreference {
         getPreference().putBoolean(SORT_ORDER_KEY, isAscent);
     }
 
-    private int getSortColumn(String sortColumnKey, int defaultSortColumn) {
+    private int getSortColumn(int defaultSortColumn) {
         return getPreference().getInt(SORT_COLUMN_KEY, defaultSortColumn);
     }
 

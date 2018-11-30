@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ModelerConstants;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.ActionManager;
 import org.apache.cayenne.modeler.action.MultipleObjectsAction;
 import org.apache.cayenne.modeler.pref.FSPath;
@@ -97,9 +96,7 @@ public final class ModelerUtil {
     /**
      * Returns array of db attribute names for DbEntity mapped to current ObjEntity.
      */
-    public static Collection<String> getDbAttributeNames(
-            ProjectController mediator,
-            DbEntity entity) {
+    public static Collection<String> getDbAttributeNames(DbEntity entity) {
 
         Set<String> keys = entity.getAttributeMap().keySet();
         List<String> list = new ArrayList<>(keys.size() + 1);

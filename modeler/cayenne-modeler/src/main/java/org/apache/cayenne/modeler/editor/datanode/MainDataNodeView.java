@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.editor.datanode;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.JTextFieldUndoable;
 
 import javax.swing.JButton;
@@ -46,14 +45,14 @@ import static org.apache.cayenne.modeler.editor.datanode.MainDataNodeEditor.DBCP
 public class MainDataNodeView extends JPanel {
 
     protected JTextField dataNodeName;
-    protected JComboBox factories;
+    protected JComboBox<String> factories;
     protected JPanel dataSourceDetail;
     protected CardLayout dataSourceDetailLayout;
-    protected JComboBox localDataSources;
+    protected JComboBox<String> localDataSources;
     protected JButton configLocalDataSources;
-    protected JComboBox schemaUpdateStrategy;
+    protected JComboBox<String> schemaUpdateStrategy;
 
-    public MainDataNodeView(final ProjectController projectController) {
+    public MainDataNodeView() {
 
         // create widgets
         this.dataNodeName = new JTextFieldUndoable();
@@ -102,7 +101,7 @@ public class MainDataNodeView extends JPanel {
         add(dataSourceDetail, BorderLayout.CENTER);
     }
 
-    public JComboBox getSchemaUpdateStrategy() {
+    public JComboBox<String> getSchemaUpdateStrategy() {
         return schemaUpdateStrategy;
     }
 
@@ -114,7 +113,7 @@ public class MainDataNodeView extends JPanel {
         return dataSourceDetail;
     }
 
-    public JComboBox getLocalDataSources() {
+    public JComboBox<String> getLocalDataSources() {
         return localDataSources;
     }
 
@@ -122,7 +121,7 @@ public class MainDataNodeView extends JPanel {
         return dataSourceDetailLayout;
     }
 
-    public JComboBox getFactories() {
+    public JComboBox<String> getFactories() {
         return factories;
     }
 

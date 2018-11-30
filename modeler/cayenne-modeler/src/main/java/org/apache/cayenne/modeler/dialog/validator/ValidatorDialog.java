@@ -78,7 +78,7 @@ public class ValidatorDialog extends CayenneDialog {
             instance = null;
         }
 
-        JOptionPane.showMessageDialog(Application.getFrame(), "Cayenne project is valid.");
+        JOptionPane.showMessageDialog(editor, "Cayenne project is valid.");
     }
 
     protected ValidatorDialog(CayenneModelerFrame editor) {

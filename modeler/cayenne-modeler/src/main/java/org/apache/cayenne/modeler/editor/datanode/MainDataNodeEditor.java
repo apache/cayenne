@@ -22,11 +22,8 @@ package org.apache.cayenne.modeler.editor.datanode;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
@@ -42,8 +39,6 @@ import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
-import org.apache.cayenne.modeler.event.DataNodeDisplayEvent;
-import org.apache.cayenne.modeler.event.DataNodeDisplayListener;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataNodeDefaults;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -62,18 +57,23 @@ public class MainDataNodeEditor extends CayenneController {
 	protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
 	public static final String DBCP_DATA_SOURCE_FACTORY = "org.apache.cayenne.configuration.server.DBCPDataSourceFactory";
 
-	final static String[] standardDataSourceFactories = new String[] { XMLPoolingDataSourceFactory.class.getName(),
-			JNDIDataSourceFactory.class.getName(), DBCP_DATA_SOURCE_FACTORY };
+	private final static String[] STANDARD_DATA_SOURCE_FACTORIES = new String[] {
+	        XMLPoolingDataSourceFactory.class.getName(),
+			JNDIDataSourceFactory.class.getName(),
+            DBCP_DATA_SOURCE_FACTORY
+	};
 
-	final static String[] standardSchemaUpdateStrategy = new String[] { SkipSchemaUpdateStrategy.class.getName(),
-			CreateIfNoSchemaStrategy.class.getName(), ThrowOnPartialSchemaStrategy.class.getName(),
-			ThrowOnPartialOrCreateSchemaStrategy.class.getName() };
+	private final static String[] STANDARD_SCHEMA_UPDATE_STRATEGY = new String[] {
+	        SkipSchemaUpdateStrategy.class.getName(),
+			CreateIfNoSchemaStrategy.class.getName(),
+            ThrowOnPartialSchemaStrategy.class.getName(),
+			ThrowOnPartialOrCreateSchemaStrategy.class.getName()
+	};
 
 	protected MainDataNodeView view;
 	protected DataNodeEditor tabbedPaneController;
 	protected DataNodeDescriptor node;
-	protected Map datasourceEditors;
-	protected List localDataSources;
+	protected Map<String, DataSourceEditor> datasourceEditors;
 
 	protected DataSourceEditor defaultSubeditor;
 	protected BindingDelegate nodeChangeProcessor;
@@ -85,22 +85,18 @@ public class MainDataNodeEditor extends CayenneController {
 		super(parent);
 
 		this.tabbedPaneController = tabController;
-		this.view = new MainDataNodeView((ProjectController) getParent());
-		this.datasourceEditors = new HashMap();
-		this.localDataSources = new ArrayList<String>();
+		this.view = new MainDataNodeView();
+		this.datasourceEditors = new HashMap<>();
 
-		this.nodeChangeProcessor = new BindingDelegate() {
+		this.nodeChangeProcessor = (binding, oldValue, newValue) -> {
 
-			public void modelUpdated(ObjectBinding binding, Object oldValue, Object newValue) {
+            DataNodeEvent e = new DataNodeEvent(MainDataNodeEditor.this, node);
+            if (binding != null && binding.getView() == view.getDataNodeName()) {
+                e.setOldName(oldValue != null ? oldValue.toString() : null);
+            }
 
-				DataNodeEvent e = new DataNodeEvent(MainDataNodeEditor.this, node);
-				if (binding != null && binding.getView() == view.getDataNodeName()) {
-					e.setOldName(oldValue != null ? oldValue.toString() : null);
-				}
-
-				((ProjectController) getParent()).fireDataNodeEvent(e);
-			}
-		};
+            ((ProjectController) getParent()).fireDataNodeEvent(e);
+        };
 
 		this.defaultSubeditor = new CustomDataSourceEditor(parent, nodeChangeProcessor);
 
@@ -154,23 +150,16 @@ public class MainDataNodeEditor extends CayenneController {
 				.getRootNode();
 
 		Collection<DataNodeDescriptor> matchingNode = dataChannelDescriptor.getNodeDescriptors();
-
-		Iterator<DataNodeDescriptor> it = matchingNode.iterator();
-		while (it.hasNext()) {
-			DataNodeDescriptor node = it.next();
-			if (node.getName().equals(newName)) {
-				// there is an entity with the same name
-				throw new ValidationException("There is another DataNode named '" + newName
-						+ "'. Use a different name.");
-			}
-		}
+        for (DataNodeDescriptor node : matchingNode) {
+            if (node.getName().equals(newName)) {
+                // there is an entity with the same name
+                throw new ValidationException("There is another DataNode named '" + newName
+                        + "'. Use a different name.");
+            }
+        }
 
 		// passed validation, set value...
-
-		// TODO: fixme....there is a slight chance that domain is different than
-		// the one
-		// cached node belongs to
-		ProjectUtil.setDataNodeName((DataChannelDescriptor) parent.getProject().getRootNode(), node, newName);
+		ProjectUtil.setDataNodeName(node, newName);
 
 		oldPref.copyPreferences(newName);
 	}
@@ -179,18 +168,13 @@ public class MainDataNodeEditor extends CayenneController {
 		view.getDataSourceDetail().add(defaultSubeditor.getView(), "default");
 		view.getFactories().setEditable(true);
 		// init combo box choices
-		view.getFactories().setModel(new DefaultComboBoxModel(standardDataSourceFactories));
+		view.getFactories().setModel(new DefaultComboBoxModel<>(STANDARD_DATA_SOURCE_FACTORIES));
 
 		view.getSchemaUpdateStrategy().setEditable(true);
-		view.getSchemaUpdateStrategy().setModel(new DefaultComboBoxModel(standardSchemaUpdateStrategy));
+		view.getSchemaUpdateStrategy().setModel(new DefaultComboBoxModel<>(STANDARD_SCHEMA_UPDATE_STRATEGY));
 
 		// init listeners
-		((ProjectController) getParent()).addDataNodeDisplayListener(new DataNodeDisplayListener() {
-
-			public void currentDataNodeChanged(DataNodeDisplayEvent e) {
-				refreshView(e.getDataNode());
-			}
-		});
+		((ProjectController) getParent()).addDataNodeDisplayListener(e -> refreshView(e.getDataNode()));
 
 		getView().addComponentListener(new ComponentAdapter() {
 
@@ -224,25 +208,21 @@ public class MainDataNodeEditor extends CayenneController {
 	}
 
 	protected void refreshLocalDataSources() {
-		localDataSources.clear();
-
-		Map sources = getApplication().getCayenneProjectPreferences().getDetailObject(DBConnectionInfo.class)
-				.getChildrenPreferences();
+		@SuppressWarnings("unchecked")
+        Map<String, Object> sources = (Map<String, Object>)getApplication().getCayenneProjectPreferences()
+                .getDetailObject(DBConnectionInfo.class).getChildrenPreferences();
 
 		int len = sources.size();
-		Object[] keys = new Object[len + 1];
+        String[] keys = new String[len + 1];
 
 		// a slight chance that a real datasource is called
 		// NO_LOCAL_DATA_SOURCE...
 		keys[0] = NO_LOCAL_DATA_SOURCE;
 
-		Object[] dataSources = sources.keySet().toArray();
-		localDataSources.add(dataSources);
-		for (int i = 0; i < dataSources.length; i++) {
-			keys[i + 1] = dataSources[i];
-		}
+		String[] dataSources = sources.keySet().toArray(new String[0]);
+        System.arraycopy(dataSources, 0, keys, 1, dataSources.length);
 
-		view.getLocalDataSources().setModel(new DefaultComboBoxModel(keys));
+		view.getLocalDataSources().setModel(new DefaultComboBoxModel<>(keys));
 		localDataSourceBinding.updateView();
 	}
 
@@ -271,7 +251,7 @@ public class MainDataNodeEditor extends CayenneController {
 	 */
 	protected void showDataSourceSubview(String factoryName) {
 
-		DataSourceEditor c = (DataSourceEditor) datasourceEditors.get(factoryName);
+		DataSourceEditor c = datasourceEditors.get(factoryName);
 
 		// create subview dynamically...
 		if (c == null) {
@@ -307,7 +287,7 @@ public class MainDataNodeEditor extends CayenneController {
 
 	protected void disabledTab(String name) {
 
-		if (name.equals(standardDataSourceFactories[0])) {
+		if (name.equals(STANDARD_DATA_SOURCE_FACTORIES[0])) {
 			tabbedPaneController.getTabComponent().setEnabledAt(2, true);
 		} else {
 			tabbedPaneController.getTabComponent().setEnabledAt(2, false);

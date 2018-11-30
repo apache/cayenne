@@ -51,7 +51,6 @@ public class RemoveCallbackMethodAction extends RemoveAction {
     /**
      * Constructor.
      *
-     * @param actionName unique action name
      * @param application Application instance
      */
     public RemoveCallbackMethodAction(Application application) {
@@ -77,15 +76,14 @@ public class RemoveCallbackMethodAction extends RemoveAction {
 
         if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0].getName()))
         		|| (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
-        	removeCallbackMethods(e);
+        	removeCallbackMethods();
         }
     }
 
     /**
      * base logic for callback method removing
-     * @param actionEvent event
      */
-    private void removeCallbackMethods(ActionEvent actionEvent) {
+    private void removeCallbackMethods() {
         ProjectController mediator = getProjectController();
         CallbackType callbackType = mediator.getCurrentCallbackType();
 

@@ -287,10 +287,10 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	private void initComboBoxes() {
 		Collection<String> nameAttr = null;
 		if (attributeSaved != null) {
-			DbEntity currentEnt = ((ObjEntity) attributeSaved.getEntity()).getDbEntity();
+			DbEntity currentEnt = attributeSaved.getEntity().getDbEntity();
 
 			if (currentEnt != null) {
-				nameAttr = ModelerUtil.getDbAttributeNames(mediator, currentEnt);
+				nameAttr = ModelerUtil.getDbAttributeNames(currentEnt);
 				embeddableModel.setCellEditor(nameAttr, view.getOverrideAttributeTable());
 				embeddableModel.setComboBoxes(
 						nameAttr,

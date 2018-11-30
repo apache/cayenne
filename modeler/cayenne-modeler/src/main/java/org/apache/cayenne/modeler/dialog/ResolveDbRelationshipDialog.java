@@ -215,14 +215,14 @@ public class ResolveDbRelationshipDialog extends CayenneDialog {
         table.setModel(new DbJoinTableModel(relationship, getMediator(), this, true));
         TableColumn sourceColumn = table.getColumnModel().getColumn(DbJoinTableModel.SOURCE);
         JComboBox comboBox = Application.getWidgetFactory().createComboBox(
-                ModelerUtil.getDbAttributeNames(getMediator(), relationship.getSourceEntity()), true);
+                ModelerUtil.getDbAttributeNames(relationship.getSourceEntity()), true);
 
         AutoCompletion.enable(comboBox);
         sourceColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));
 
         TableColumn targetColumn = table.getColumnModel().getColumn(DbJoinTableModel.TARGET);
         comboBox = Application.getWidgetFactory().createComboBox(
-                ModelerUtil.getDbAttributeNames(getMediator(), relationship.getTargetEntity()), true);
+                ModelerUtil.getDbAttributeNames(relationship.getTargetEntity()), true);
         AutoCompletion.enable(comboBox);
 
         targetColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));

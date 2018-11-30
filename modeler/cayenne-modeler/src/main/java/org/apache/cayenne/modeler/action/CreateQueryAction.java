@@ -59,7 +59,7 @@ public class CreateQueryAction extends CayenneAction {
     }
 
     protected void createQuery() {
-        new QueryType(getProjectController(),getProjectController().getCurrentDataMap()).startupAction();
+        new QueryType(getProjectController()).startupAction();
     }
     
     public void createQuery(DataChannelDescriptor domain, DataMap dataMap, QueryDescriptor query) {

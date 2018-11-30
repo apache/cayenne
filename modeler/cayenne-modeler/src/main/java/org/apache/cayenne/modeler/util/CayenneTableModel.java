@@ -144,10 +144,6 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
         }
 
         int neighborIndex = ind - 1;
-        if (neighborIndex < 0) {
-            neighborIndex = len - 1;
-        }
-
         swapRows(ind, neighborIndex);
         return neighborIndex;
     }

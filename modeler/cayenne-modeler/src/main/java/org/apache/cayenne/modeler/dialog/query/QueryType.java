@@ -42,7 +42,7 @@ public class QueryType extends CayenneController{
     protected QueryTypeView view;
     protected String type;
     
-    public QueryType(ProjectController mediator, DataMap root) {
+    public QueryType(ProjectController mediator) {
         super(mediator);
 
         view = new QueryTypeView();
