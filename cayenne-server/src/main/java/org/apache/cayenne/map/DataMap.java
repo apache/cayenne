@@ -870,7 +870,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 			for (ObjEntity ent : getObjEntities()) {
 				// take a copy since we're going to modify the entity
 				for (Relationship relationship : new ArrayList<>(ent.getRelationships())) {
-					if (objEntityName.equals(relationship.getTargetEntityName())
+					if (objEntityName.equals(relationship.getSourceEntity().getName())
 							|| objEntityName.equals(relationship.getTargetEntityName())) {
 						ent.removeRelationship(relationship.getName());
 					}

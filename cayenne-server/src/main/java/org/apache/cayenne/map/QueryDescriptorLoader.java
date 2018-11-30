@@ -235,7 +235,7 @@ public class QueryDescriptorLoader {
     }
 
     public void addPrefetch(String path, int semantics) {
-        if (path == null || (path != null && isBlank(path))) {
+        if (path == null || isBlank(path)) {
             // throw??
             return;
         }

@@ -55,7 +55,7 @@ public class ClientModule implements Module {
     public void configure(Binder binder) {
 
         // Contribute always to create binding
-        MapBuilder<String> propertiesBuilder = ServerModule.contributeProperties(binder);
+        ServerModule.contributeProperties(binder);
 
         binder.bind(ObjectContextFactory.class).to(CayenneContextFactory.class);
         binder.bind(ROPSerializationService.class).toProvider(ClientHessianSerializationServiceProvider.class);

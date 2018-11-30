@@ -121,9 +121,7 @@ public class DriverDataSource implements DataSource {
 
 	private void logConnect(String url, String userName, String password) {
 		if (LOGGER.isInfoEnabled()) {
-			StringBuilder buf = new StringBuilder("Connecting to '").append(url).append("' as '").append(userName)
-					.append("'");
-			LOGGER.info(buf.toString());
+			LOGGER.info("Connecting to '" + url + "' as '" + userName + "'");
 		}
 	}
 

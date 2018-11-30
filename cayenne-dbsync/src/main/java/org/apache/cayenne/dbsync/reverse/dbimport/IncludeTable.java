@@ -125,7 +125,7 @@ public class IncludeTable extends PatternParam implements XMLSerializable {
             }
         }
 
-        if(excludeRelationship != null && !excludeColumns.isEmpty()) {
+        if(excludeRelationship != null && !excludeRelationship.isEmpty()) {
             for(ExcludeRelationship excludeRelationship : excludeRelationship) {
                 excludeRelationship.toString(res, prefix);
             }

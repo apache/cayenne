@@ -112,7 +112,9 @@ class ObjectDiff extends NodeDiff {
                     boolean isUsedForLocking = entity.getRelationship(property.getName()).isUsedForLocking();
                     
                     // eagerly resolve optimistically locked relationships
-                    Object target = isUsedForLocking ? property.readProperty(object) : property.readPropertyDirectly(object);
+                    Object target = (lock && isUsedForLocking)
+                            ? property.readProperty(object)
+                            : property.readPropertyDirectly(object);
 
                     if (target instanceof Persistent) {
                         target = ((Persistent) target).getObjectId();
@@ -159,7 +161,7 @@ class ObjectDiff extends NodeDiff {
     }
 
     boolean containsArcSnapshot(String propertyName) {
-        return arcSnapshot != null ? arcSnapshot.containsKey(propertyName) : false;
+        return arcSnapshot != null && arcSnapshot.containsKey(propertyName);
     }
 
     /**
@@ -263,8 +265,7 @@ class ObjectDiff extends NodeDiff {
         String arcId = arcDiff.getArcId().toString();
 
         DbEntity dbEntity = classDescriptor.getEntity().getDbEntity();
-        DbRelationship dbRelationship = (DbRelationship) dbEntity.getRelationship(arcId.substring(ASTDbPath.DB_PREFIX
-                .length()));
+        DbRelationship dbRelationship = dbEntity.getRelationship(arcId.substring(ASTDbPath.DB_PREFIX.length()));
 
         if (dbRelationship.isToMany()) {
             return;

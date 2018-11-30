@@ -149,7 +149,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
 
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", new Integer(3000));
+        q.addParameter("paintingPrice", 3000);
         List<?> artists = runProcedureSelect(q);
 
         // check the results
@@ -175,7 +175,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
 
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", new Integer(3000));
+        q.addParameter("paintingPrice", 3000);
 
         List<?> artists = runProcedureSelect(q);
 

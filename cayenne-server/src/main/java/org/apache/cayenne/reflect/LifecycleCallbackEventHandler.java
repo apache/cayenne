@@ -37,7 +37,7 @@ class LifecycleCallbackEventHandler {
     private Map<String, Collection<AbstractCallback>> listeners;
     private Collection<AbstractCallback> defaultListeners;
 
-    LifecycleCallbackEventHandler(EntityResolver resolver) {
+    LifecycleCallbackEventHandler() {
         this.listeners = new HashMap<>();
         this.defaultListeners = new ArrayList<>();
     }

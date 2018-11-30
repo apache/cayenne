@@ -279,7 +279,7 @@ public class RemoteIncrementalFaultList implements List {
             throw new IndexOutOfBoundsException("Index: " + elementIndex);
         }
 
-        if (pageSize <= 0 || elementIndex < 0) {
+        if (pageSize <= 0) {
             return -1;
         }
 

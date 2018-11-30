@@ -199,8 +199,6 @@ public class RowDescriptorBuilder {
     }
 
     private void performTransformAndTypeOverride(ColumnDescriptor[] columnArray) {
-        int len = columnArray.length;
-
         if (caseTransformer != null) {
             for (ColumnDescriptor aColumnArray : columnArray) {
                 aColumnArray.setDataRowKey(caseTransformer.apply(aColumnArray.getDataRowKey()));

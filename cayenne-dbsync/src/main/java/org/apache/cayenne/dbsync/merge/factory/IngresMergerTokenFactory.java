@@ -120,11 +120,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                     // also make sure we delete dependent FKs
                     buf.append(" ON DELETE CASCADE");
 
-                    String fksql = buf.toString();
-
-                    if (fksql != null) {
-                        return Collections.singletonList(fksql);
-                    }
+                    return Collections.singletonList(buf.toString());
                 }
 
                 return Collections.emptyList();

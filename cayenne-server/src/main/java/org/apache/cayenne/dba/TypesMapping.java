@@ -258,7 +258,6 @@ public class TypesMapping {
 		JAVA_SQL_ENUM.put(JAVA_SHORT, SMALLINT);
 		JAVA_SQL_ENUM.put(JAVA_BYTE, SMALLINT);
 		JAVA_SQL_ENUM.put(JAVA_TIME, TIME);
-		JAVA_SQL_ENUM.put(JAVA_TIMESTAMP, TIMESTAMP);
 
 		// add primitives
 		JAVA_SQL_ENUM.put("byte", TINYINT);

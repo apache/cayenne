@@ -426,7 +426,7 @@ public class ServerModule implements Module {
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
         // configure explicit configurations
-        ListBuilder<String> locationsListBuilder = contributeProjectLocations(binder);
+        contributeProjectLocations(binder);
 
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
