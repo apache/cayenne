@@ -643,6 +643,13 @@ public class Property<E> {
     public Property<Long> count() {
         return create(FunctionExpressionFactory.countExp(getExpression()), Long.class);
     }
+    
+    /**
+     * @see FunctionExpressionFactory#countDistinctExp(Expression)
+     */
+    public Property<Long> countDistinct() {
+        return create(FunctionExpressionFactory.countDistinctExp(getExpression()), Long.class);
+    }
 
     /**
      * @see FunctionExpressionFactory#maxExp(Expression)

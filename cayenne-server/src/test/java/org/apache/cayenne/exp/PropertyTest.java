@@ -30,6 +30,7 @@ import org.apache.cayenne.exp.parser.ASTAbs;
 import org.apache.cayenne.exp.parser.ASTAvg;
 import org.apache.cayenne.exp.parser.ASTConcat;
 import org.apache.cayenne.exp.parser.ASTCount;
+import org.apache.cayenne.exp.parser.ASTDistinct;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
@@ -346,6 +347,15 @@ public class PropertyTest {
         Property<Long> newProp = p.count();
         assertTrue(newProp.getExpression() instanceof ASTCount);
         assertEquals(p.getExpression(), newProp.getExpression().getOperand(0));
+    }
+    
+    @Test
+    public void testCountDistinct() {
+        Property<String> p = Property.create("test", String.class);
+        Property<Long> newProp = p.countDistinct();
+        assertTrue(newProp.getExpression() instanceof ASTCount);
+        assertTrue(newProp.getExpression().getOperand(0) instanceof ASTDistinct);
+        assertEquals(p.getExpression(), ((ASTDistinct)newProp.getExpression().getOperand(0)).getOperand(0));
     }
 
     @Test

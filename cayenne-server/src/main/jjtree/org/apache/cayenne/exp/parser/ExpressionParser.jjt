@@ -419,6 +419,11 @@ void dateTimeExtractingFunction() #Extract(1) : {
     "(" pathExpression() ")"
 }
 
+void distinct() #Distinct : { }
+{
+	<DISTINCT> "(" ( pathExpression() ) ")"
+}
+
 TOKEN_MGR_DECLS:
 {
       /** Holds the last value computed by a constant token. */
@@ -515,6 +520,7 @@ TOKEN : /* aggregates */
 	|	<MAX: "max" >
 	|	<SUM: "sum" >
 	|	<COUNT: "count" >
+	|	<DISTINCT: "distinct" >
 }
 
 TOKEN : /* functions returning strings */

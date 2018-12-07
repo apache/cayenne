@@ -101,6 +101,22 @@ public class ObjectSelect_AggregateIT extends ServerCase {
                 .selectOne(context);
         assertEquals(20L, count);
     }
+    
+    @Test
+    public void testCountDistinct() throws Exception {
+    	List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
+    	for (Artist artist : artists) {
+			artist.setArtistName("Duplicate");
+		}
+    	context.commitChanges();
+    	
+        Property<Long> countDistinctProp = Artist.ARTIST_NAME.countDistinct();
+
+        long count = ObjectSelect.query(Artist.class)
+                .column(countDistinctProp)
+                .selectOne(context);
+        assertEquals(1L, count);
+    }
 
     @Test
     @Ignore("Not all databases support AVG(DATE) aggregation")

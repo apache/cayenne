@@ -26,6 +26,7 @@ import org.apache.cayenne.exp.parser.ASTCount;
 import org.apache.cayenne.exp.parser.ASTCurrentDate;
 import org.apache.cayenne.exp.parser.ASTCurrentTime;
 import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
+import org.apache.cayenne.exp.parser.ASTDistinct;
 import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
@@ -321,6 +322,13 @@ public class FunctionExpressionFactory {
      */
     public static Expression countExp(Expression exp) {
         return new ASTCount(exp);
+    }
+    
+    /**
+     * @return Expression COUNT(DISTINCT(exp))
+     */
+    public static Expression countDistinctExp(Expression exp) {
+        return new ASTCount(new ASTDistinct(exp));
     }
 
     /**
