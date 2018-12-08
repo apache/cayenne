@@ -81,7 +81,7 @@ Here is example of Cayenne Maven plugin setup that will do it:
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.5</version>
+            <version>8.0.13</version>
         </dependency>
     </dependencies>
 
