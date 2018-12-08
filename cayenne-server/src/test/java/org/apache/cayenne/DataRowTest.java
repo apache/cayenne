@@ -22,6 +22,8 @@ package org.apache.cayenne;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class DataRowTest {
 
@@ -35,4 +37,54 @@ public class DataRowTest {
         assertFalse(s3.getVersion() == s1.getVersion());
     }
 
+    @Test
+    public void testEquals(){
+        DataRow d1 = new DataRow(1);
+        d1.put("FIELD", "test".getBytes());
+
+        assertTrue(d1.equals(d1));
+
+        DataRow d2 = new DataRow(1);
+        d2.put("FIELD", "test".getBytes());
+
+        assertTrue(d1.equals(d2));
+        assertTrue(d2.equals(d1));
+
+        DataRow d3 = new DataRow(1);
+        d3.put("FIELD", "test".getBytes());
+
+        assertTrue(d2.equals(d3));
+        assertTrue(d1.equals(d3));
+
+        assertFalse(d1.equals(null));
+
+        DataRow d4 = new DataRow(1);
+        d4.put("FIELD1", "test".getBytes());
+
+        for(int i = 0; i < 5; i++) {
+            assertFalse(d3.equals(d4));
+        }
+
+        DataRow d5 = new DataRow(1);
+        d5.put("FIELD", "test1".getBytes());
+
+        DataRow d6 = new DataRow(1);
+        d6.put("FIELD", "test".getBytes());
+
+        assertFalse(d5.equals(d6));
+    }
+
+    @Test
+    public void testHashCode(){
+        DataRow d1 = new DataRow(1);
+        d1.put("FIELD", "test".getBytes());
+
+        assertEquals(d1.hashCode(), d1.hashCode());
+
+        DataRow d2 = new DataRow(1);
+        d2.put("FIELD", "test".getBytes());
+
+        assertTrue(d1.equals(d2));
+        assertEquals(d1.hashCode(), d2.hashCode());
+    }
 }

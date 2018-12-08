@@ -21,6 +21,16 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="ID_CLOB" type="INTEGER" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="DIST_ENTITY">
+		<db-attribute name="FIELD" type="LONGVARBINARY"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="200"/>
+	</db-entity>
+	<db-entity name="DIST_ENTITY_REL">
+		<db-attribute name="DIST_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NUM" type="INTEGER"/>
+	</db-entity>
 	<db-entity name="NCLOB_TEST">
 		<db-attribute name="NCLOB_COL" type="NCLOB"/>
 		<db-attribute name="NCLOB_TEST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -39,6 +49,13 @@
 		<obj-attribute name="id" type="java.lang.Integer" db-attribute-path="ID"/>
 		<obj-attribute name="value" type="java.lang.Integer" db-attribute-path="CVALUE"/>
 	</obj-entity>
+	<obj-entity name="DistEntity" className="org.apache.cayenne.testdo.lob.DistEntity" clientClassName="test.client.DistEntity" dbEntityName="DIST_ENTITY" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="field" type="byte[]" db-attribute-path="FIELD"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="DistEntityRel" className="org.apache.cayenne.testdo.lob.DistEntityRel" clientClassName="test.client.DistEntityRel" dbEntityName="DIST_ENTITY_REL" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="num" type="int" db-attribute-path="NUM"/>
+	</obj-entity>
 	<obj-entity name="NClobTestEntity" className="org.apache.cayenne.testdo.lob.NClobTestEntity" dbEntityName="NCLOB_TEST">
 		<obj-attribute name="nclobCol" type="java.lang.String" db-attribute-path="NCLOB_COL"/>
 	</obj-entity>
@@ -48,6 +65,14 @@
 	<db-relationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST">
 		<db-attribute-pair source="ID_CLOB" target="CLOB_TEST_ID"/>
 	</db-relationship>
+	<db-relationship name="distRel" source="DIST_ENTITY" target="DIST_ENTITY_REL" toMany="true">
+		<db-attribute-pair source="ID" target="DIST_ID"/>
+	</db-relationship>
+	<db-relationship name="dist" source="DIST_ENTITY_REL" target="DIST_ENTITY">
+		<db-attribute-pair source="DIST_ID" target="ID"/>
+	</db-relationship>
 	<obj-relationship name="clobValue" source="ClobTestEntity" target="ClobTestRelation" db-relationship-path="clob"/>
 	<obj-relationship name="clobId" source="ClobTestRelation" target="ClobTestEntity" db-relationship-path="CLOB_REL"/>
+	<obj-relationship name="distRel" source="DistEntity" target="DistEntityRel" deleteRule="Deny" db-relationship-path="distRel"/>
+	<obj-relationship name="dist" source="DistEntityRel" target="DistEntity" deleteRule="Nullify" db-relationship-path="dist"/>
 </data-map>

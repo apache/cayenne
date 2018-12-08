@@ -19,14 +19,23 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
+import org.apache.cayenne.testdo.lob.DistEntity;
+import org.apache.cayenne.testdo.lob.DistEntityRel;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -43,6 +52,12 @@ public class SelectActionIT extends ServerCase {
 
     @Inject
     private DataContext context;
+
+    @Inject
+    private ServerRuntime serverRuntime;
+
+    @Inject
+    private DBHelper dbHelper;
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
@@ -77,6 +92,67 @@ public class SelectActionIT extends ServerCase {
             // this should be 80, but we got only single values and we forcing distinct on them
             // so here will be only 21 elements that are unique
             assertEquals(21, result.size());
+        }
+    }
+
+    @Test
+    public void  testAddingDistinctToQuery() throws Exception{
+        if (accessStackAdapter.supportsLobs()){
+
+            TableHelper tDistEntity = new TableHelper(dbHelper, "DIST_ENTITY");
+            tDistEntity.setColumns("ID", "NAME", "FIELD");
+
+            for (int i = 1; i <= 3; i++) {
+                tDistEntity.insert(i, "dist_entity" + i, ("dist_entity" + i).getBytes());
+            }
+
+            TableHelper tDistEntityRel = new TableHelper(dbHelper, "DIST_ENTITY_REL");
+            tDistEntityRel.setColumns("ID", "DIST_ID", "NUM");
+
+            for (int i = 1; i <= 10; i++) {
+                if(i < 5) {
+                    tDistEntityRel.insert(i, 1, i);
+                }
+                else{
+                    tDistEntityRel.insert(i, 3, i);
+                }
+            }
+
+            ObjectContext objectContext = serverRuntime.newContext();
+
+            SQLTemplate select = new SQLTemplate(DistEntity.class, "SELECT t0.FIELD, t0.NAME, t0.ID FROM DIST_ENTITY t0 JOIN DIST_ENTITY_REL t1 ON (t0.ID = t1.DIST_ID) WHERE (t1.NUM > 0) AND (t0.NAME LIKE 'dist_entity1')");
+            select.setColumnNamesCapitalization(CapsStrategy.UPPER);
+            List<DistEntity> list1 = objectContext.performQuery(select);
+
+            assertEquals(4, list1.size());
+
+            List<DistEntity> list2 = ObjectSelect.query(DistEntity.class)
+                    .where(DistEntity.DIST_REL.dot(DistEntityRel.NUM).gt(0))
+                    .and(DistEntity.NAME.like("dist_entity1"))
+                    .select(objectContext);
+
+            assertEquals(1,list2.size());
+
+            EJBQLQuery query1 = new EJBQLQuery("select d FROM DistEntity d JOIN d.distRel r where d.name='dist_entity1' and r.num>0");
+            List<DistEntity> list3 = context.performQuery(query1);
+
+            assertEquals(4,list3.size());
+
+            List<String> list4 = ObjectSelect
+                    .columnQuery(DistEntity.class, DistEntity.NAME)
+                    .where(DistEntity.DIST_REL.dot(DistEntityRel.NUM).gt(0))
+                    .and(DistEntity.NAME.eq("dist_entity1"))
+                    .select(context);
+
+            assertEquals(1,list4.size());
+
+            List<Object[]> list5 = ObjectSelect
+                    .columnQuery(DistEntity.class, DistEntity.NAME, DistEntity.FIELD)
+                    .where(DistEntity.DIST_REL.dot(DistEntityRel.NUM).gt(0))
+                    .and(DistEntity.NAME.eq("dist_entity1"))
+                    .select(context);
+
+            assertEquals(1,list5.size());
         }
     }
 
