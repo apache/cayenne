@@ -20,10 +20,10 @@
 
 package org.apache.cayenne.util;
 
+import org.apache.cayenne.exp.ExpressionException;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import org.apache.cayenne.exp.ExpressionException;
 
 /**
  * A collection of static conversion utility methods.
@@ -139,9 +139,7 @@ public final class ConversionUtil {
     public static String toString(Object object) {
         if (object == null) {
             return null;
-        } else if (object instanceof String) {
-            return (String) object;
-        } else if (object instanceof StringBuffer) {
+        } else if (object instanceof CharSequence) {
             return object.toString();
         } else if (object instanceof char[]) {
             return new String((char[]) object);
@@ -155,7 +153,7 @@ public final class ConversionUtil {
      * Attempts to convert an object to an uppercase string.
      */
     public static Object toUpperCase(Object object) {
-        if ((object instanceof String) || (object instanceof StringBuffer)) {
+        if (object instanceof CharSequence) {
             return object.toString().toUpperCase();
         } else if (object instanceof char[]) {
             return new String((char[]) object).toUpperCase();
