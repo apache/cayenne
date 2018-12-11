@@ -267,6 +267,15 @@
 				<role>Committer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>abulatski</id>
+			<name>Arseni Bulatski</name>
+			<email>abulatski@apache.org</email>
+			<organization>ObjectStyle</organization>
+			<roles>
+				<role>Committer</role>
+			</roles>
+		</developer>
 	</developers>
 	<licenses>
 		<license>
