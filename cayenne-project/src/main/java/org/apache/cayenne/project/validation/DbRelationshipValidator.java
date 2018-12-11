@@ -73,11 +73,11 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
 
         if(!relationship.isToPK()) {
             DbRelationship reverseRelationship = relationship.getReverseRelationship();
-            if(reverseRelationship == null || !reverseRelationship.isToPK()) {
+            if(reverseRelationship != null && !reverseRelationship.isToPK()) {
                 addFailure(
                         validationResult,
                         relationship,
-                        "DbRelationship '%s' has join not to PK. Cayenne doesn't allow this type of relashionships",
+                        "DbRelationship '%s' has join not to PK. Cayenne doesn't allow this type of relationship",
                         toString(relationship));
             }
         }
