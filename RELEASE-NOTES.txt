@@ -50,6 +50,7 @@ CAY-2484 maven plugins missing in 4.1.M2 release
 CAY-2490 Added dbEntities from other datamaps in dbRelationship dialog.
 CAY-2496 Fixed wrong table behavior: focus color, cleanup DBAttribute Path cell on select.
 CAY-2497 Modeler: SQL Scripts tab isn't scrollable
+CAY-2501 Modeler: DbImport ui not loading columns for MySQL connector v8.0
 
 ----------------------------------
 Release: 4.1.M2

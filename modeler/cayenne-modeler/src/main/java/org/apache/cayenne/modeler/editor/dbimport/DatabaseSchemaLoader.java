@@ -84,7 +84,7 @@ public class DatabaseSchemaLoader {
         String tableName = path.getPathComponent(2).toString();
 
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
-            try (ResultSet rs = connection.getMetaData().getColumns(catalogName, schemaName, tableName, "")) {
+            try (ResultSet rs = connection.getMetaData().getColumns(catalogName, schemaName, tableName, null)) {
                 while (rs.next()) {
                     String column = rs.getString(4);
                     packTable(tableName, catalogName, schemaName, column);
