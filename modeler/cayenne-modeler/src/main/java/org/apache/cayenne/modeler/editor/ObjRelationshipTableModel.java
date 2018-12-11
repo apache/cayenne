@@ -54,7 +54,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
         this.entity = entity;
 
         // order using local comparator
-        Collections.sort(objectList, new RelationshipComparator());
+        objectList.sort(new RelationshipComparator());
     }
 
     public ObjEntity getEntity() {
@@ -200,6 +200,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
             case REL_TARGET_PATH:
                 relationship.setDbRelationshipPath((String) value);
                 fireTableCellUpdated(row, column);
+                break;
             case REL_COMMENT:
                 setComment((String)value, relationship);
                 fireTableRowsUpdated(row, row);
@@ -224,7 +225,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
 
     private boolean isInherited(int row) {
         ObjRelationship relationship = getRelationship(row);
-        return (relationship != null) ? relationship.getSourceEntity() != entity : false;
+        return (relationship != null) && relationship.getSourceEntity() != entity;
     }
 
     @Override
@@ -263,7 +264,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
             case REL_SEMANTICS:
             case REL_DELETE_RULE:
             case REL_TARGET_PATH:
-                Collections.sort(objectList, new ObjRelationshipTableComparator(sortCol));
+                objectList.sort(new ObjRelationshipTableComparator(sortCol));
                 if (!isAscent) {
                     Collections.reverse(objectList);
                 }
@@ -282,7 +283,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
         }
 
         public int compare(ObjRelationship o1, ObjRelationship o2) {
-            if ((o1 == null && o2 == null) || o1 == o2) {
+            if (o1 == o2) {
                 return 0;
             } else if (o1 == null) {
                 return -1;
