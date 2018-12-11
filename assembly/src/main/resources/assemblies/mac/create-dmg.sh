@@ -65,6 +65,8 @@ echo '
            set arrangement of viewOptions to not arranged
            set icon size of viewOptions to 98
            set background picture of viewOptions to file ".background:background.tiff"
+           set position of item ".background" of container window to {900, 100}
+           set position of item ".fseventsd" of container window to {900, 300}
            set position of item "cayenne-'${VERSION}'" of container window to {353, 437}
            set position of item "CayenneModeler.app" of container window to {197, 191}
            set position of item "Applications" of container window to {519, 190}
