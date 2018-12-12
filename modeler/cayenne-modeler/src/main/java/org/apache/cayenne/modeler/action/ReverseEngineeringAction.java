@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
 
@@ -52,7 +53,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
     private static final String DIALOG_TITLE = "Reengineer DB Schema: Connect to Database";
 
     private DbImportView view;
-    private int dataMapCount = 0;
+    private AtomicInteger dataMapCount;
     protected Set<DataMap> dataMaps;
 
     public String getIconName() {
@@ -70,6 +71,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
     public void performAction(Set<DataMap> dataMapSet) {
         resetParams();
         dataMaps.addAll(dataMapSet);
+        dataMapCount.set(dataMaps.size());
         ProjectController projectController = Application.getInstance().getFrameController().getProjectController();
         for(DataMap dataMap : dataMapSet) {
             projectController.setCurrentDataMap(dataMap);
@@ -113,8 +115,8 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             application.getUndoManager().discardAllEdits();
             try {
                 context.getConnection().close();
-                dataMapCount++;
-                if(dataMapCount == dataMaps.size() && !context.isInterrupted()) {
+                dataMapCount.getAndDecrement();
+                if(dataMapCount.get() <= 0 && !context.isInterrupted()) {
                     DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
                     DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
                     if (!dbLoadResultDialog.isVisible()) {
@@ -132,11 +134,12 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
     public void performAction(ActionEvent event) {
         resetParams();
         dataMaps.add(Application.getInstance().getFrameController().getProjectController().getCurrentDataMap());
+        dataMapCount.set(dataMaps.size());
         startImport();
     }
 
     private void resetParams() {
-        dataMapCount = 0;
+        dataMapCount = new AtomicInteger();
         this.dataMaps = new HashSet<>();
     }
 

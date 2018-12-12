@@ -53,7 +53,7 @@ public class DbLoaderContext {
     private DataMap dataMap;
     private boolean stopping;
     private String loadStatusNote;
-    private boolean isInterrupted;
+    private volatile boolean isInterrupted;
 
     private DataChannelMetaData metaData;
 
