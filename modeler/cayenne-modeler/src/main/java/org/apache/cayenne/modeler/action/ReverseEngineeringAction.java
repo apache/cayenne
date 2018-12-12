@@ -115,8 +115,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             application.getUndoManager().discardAllEdits();
             try {
                 context.getConnection().close();
-                dataMapCount.getAndDecrement();
-                if(dataMapCount.get() <= 0 && !context.isInterrupted()) {
+                if(dataMapCount.decrementAndGet() <= 0 && !context.isInterrupted()) {
                     DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
                     DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
                     if (!dbLoadResultDialog.isVisible()) {
