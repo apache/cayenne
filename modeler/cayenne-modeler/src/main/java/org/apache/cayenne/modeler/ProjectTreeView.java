@@ -628,11 +628,11 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     }
 
     public void dataMapAdded(DataMapEvent e) {
+        DataChannelDescriptor dataChannelDescriptor = e.getDomain() != null ? e.getDomain() :
+                (DataChannelDescriptor) mediator.getProject().getRootNode();
         DefaultMutableTreeNode domainNode = getProjectModel().getNodeForObjectPath(
                 new Object[] {
-                    e.getDomain() != null
-                            ? e.getDomain()
-                            : (DataChannelDescriptor) mediator.getProject().getRootNode()
+                   dataChannelDescriptor
                 });
 
         DefaultMutableTreeNode newMapNode = ProjectTreeFactory.wrapProjectNode(e
@@ -646,6 +646,14 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
             showNode(newMapNode);
         } else {
             setSelected(newMapNode);
+        }
+
+        for (DataNodeDescriptor dataNode : new ArrayList<>(dataChannelDescriptor.getNodeDescriptors())) {
+            for(String dataMapName : dataNode.getDataMapNames()) {
+                if(e.getDataMap().getName().equals(dataMapName)) {
+                    mediator.fireDataNodeEvent(new DataNodeEvent(this, dataNode));
+                }
+            }
         }
     }
 

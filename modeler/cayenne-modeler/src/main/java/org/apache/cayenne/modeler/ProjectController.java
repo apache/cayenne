@@ -851,6 +851,7 @@ public class ProjectController extends CayenneController {
         if (!changed) {
             changed = currentState.dbEntity != null || currentState.objEntity != null || currentState.procedure != null
                     || currentState.query != null || currentState.embeddable != null;
+            currentState.node = e.getDataNode();
         }
 
         if (!e.isRefired()) {
@@ -859,7 +860,7 @@ public class ProjectController extends CayenneController {
             if (changed) {
                 clearState();
                 currentState.domain = e.getDomain();
-                currentState.node = e.getDataNode();
+                currentState.node  = e.getDataNode();
                 currentState.map = e.getDataMap();
             }
         }
