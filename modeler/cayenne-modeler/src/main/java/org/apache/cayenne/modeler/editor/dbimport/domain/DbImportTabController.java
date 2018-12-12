@@ -47,10 +47,7 @@ public class DbImportTabController extends GeneratorsTabController {
         }
         Application.getInstance().getFrameController().getDbImportController().setGlobalImport(true);
         ReverseEngineeringAction reverseEngineeringAction = Application.getInstance().getActionManager().getAction(ReverseEngineeringAction.class);
-        for(DataMap dataMap : dataMaps) {
-            projectController.setCurrentDataMap(dataMap);
-            reverseEngineeringAction.performAction();
-        }
+        reverseEngineeringAction.performAction(dataMaps);
     }
 
     @Override

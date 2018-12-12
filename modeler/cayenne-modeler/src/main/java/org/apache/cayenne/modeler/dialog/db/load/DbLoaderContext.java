@@ -19,11 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import java.io.File;
-import java.sql.Connection;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -40,6 +35,10 @@ import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+import java.io.File;
+import java.sql.Connection;
+
 /**
  * @since 4.0
  */
@@ -54,6 +53,7 @@ public class DbLoaderContext {
     private DataMap dataMap;
     private boolean stopping;
     private String loadStatusNote;
+    private boolean isInterrupted;
 
     private DataChannelMetaData metaData;
 
@@ -192,7 +192,12 @@ public class DbLoaderContext {
 
     public void processException(final Throwable th, final String message) {
         LOGGER.info("Exception on reverse engineering", Util.unwindException(th));
+        isInterrupted = true;
         SwingUtilities.invokeLater(() -> JOptionPane
                 .showMessageDialog(Application.getFrame(), th.getMessage(), message, JOptionPane.ERROR_MESSAGE));
+    }
+
+    public boolean isInterrupted() {
+        return isInterrupted;
     }
 }

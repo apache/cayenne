@@ -104,8 +104,10 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         logger.info("");
         resultDialog.getOkButton().addActionListener(e -> {
             try {
-                commit();
-                checkForUnusedImports();
+                if(resultDialog.getTableForMap().containsKey(targetMap)) {
+                    commit();
+                    checkForUnusedImports();
+                }
             } catch (Exception ex) {
                 throw new CayenneRuntimeException("Nothing to commit.");
             }

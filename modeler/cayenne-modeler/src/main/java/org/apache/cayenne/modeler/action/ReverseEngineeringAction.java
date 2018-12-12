@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.modeler.action;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
@@ -35,6 +37,8 @@ import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
 
@@ -48,6 +52,8 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
     private static final String DIALOG_TITLE = "Reengineer DB Schema: Connect to Database";
 
     private DbImportView view;
+    private int dataMapCount = 0;
+    protected Set<DataMap> dataMaps;
 
     public String getIconName() {
         return ICON_NAME;
@@ -61,7 +67,17 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
         return ACTION_NAME;
     }
 
-    public void performAction() {
+    public void performAction(Set<DataMap> dataMapSet) {
+        resetParams();
+        dataMaps.addAll(dataMapSet);
+        ProjectController projectController = Application.getInstance().getFrameController().getProjectController();
+        for(DataMap dataMap : dataMapSet) {
+            projectController.setCurrentDataMap(dataMap);
+            startImport();
+        }
+    }
+
+    private void startImport(){
         final DbLoaderContext context = new DbLoaderContext(application.getMetaData());
         DBConnectionInfo connectionInfo;
         if (!datamapPreferencesExist()) {
@@ -86,12 +102,6 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             return;
         }
 
-        DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
-        DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
-        if(!dbLoadResultDialog.isVisible()) {
-            dbImportController.showDialog();
-        }
-
         if(!context.buildConfig(connectionInfo, view)) {
             try {
                 context.getConnection().close();
@@ -103,6 +113,14 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             application.getUndoManager().discardAllEdits();
             try {
                 context.getConnection().close();
+                dataMapCount++;
+                if(dataMapCount == dataMaps.size() && !context.isInterrupted()) {
+                    DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
+                    DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
+                    if (!dbLoadResultDialog.isVisible()) {
+                        dbImportController.showDialog();
+                    }
+                }
             } catch (SQLException ignored) {}
         });
     }
@@ -112,7 +130,14 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
      */
     @Override
     public void performAction(ActionEvent event) {
-        performAction();
+        resetParams();
+        dataMaps.add(Application.getInstance().getFrameController().getProjectController().getCurrentDataMap());
+        startImport();
+    }
+
+    private void resetParams() {
+        dataMapCount = 0;
+        this.dataMaps = new HashSet<>();
     }
 
     private DBConnectionInfo getConnectionInfoFromPreferences() {
