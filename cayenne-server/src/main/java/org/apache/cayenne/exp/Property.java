@@ -646,6 +646,7 @@ public class Property<E> {
     
     /**
      * @see FunctionExpressionFactory#countDistinctExp(Expression)
+     * @since 4.1
      */
     public Property<Long> countDistinct() {
         return create(FunctionExpressionFactory.countDistinctExp(getExpression()), Long.class);

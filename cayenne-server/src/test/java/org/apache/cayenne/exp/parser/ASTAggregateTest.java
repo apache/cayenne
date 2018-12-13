@@ -84,6 +84,20 @@ public class ASTAggregateTest {
     }
 
     @Test
+    public void testCountDistinctParse() throws Exception {
+        String expressionString = "count(distinct(artistName))";
+        Expression exp = ExpressionFactory.exp(expressionString);
+        assertTrue(exp instanceof ASTCount);
+        assertEquals(1, exp.getOperandCount());
+        assertTrue(exp.getOperand(0) instanceof ASTDistinct);
+
+        ASTDistinct distinct = (ASTDistinct)exp.getOperand(0);
+        assertTrue(distinct.getOperand(0) instanceof ASTObjPath);
+
+        assertEquals(expressionString, exp.toString());
+    }
+
+    @Test
     public void testMinConstruct() throws Exception {
         ASTMin min = new ASTMin(null);
         assertEquals("MIN", min.getFunctionName());

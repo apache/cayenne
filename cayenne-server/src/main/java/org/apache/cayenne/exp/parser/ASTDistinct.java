@@ -22,7 +22,7 @@ package org.apache.cayenne.exp.parser;
 import org.apache.cayenne.exp.Expression;
 
 /**
- * @since 4.0
+ * @since 4.1
  */
 public class ASTDistinct extends ASTAggregateFunctionCall {
 

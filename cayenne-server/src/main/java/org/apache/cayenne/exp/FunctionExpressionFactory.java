@@ -326,6 +326,7 @@ public class FunctionExpressionFactory {
     
     /**
      * @return Expression COUNT(DISTINCT(exp))
+     * @since 4.1
      */
     public static Expression countDistinctExp(Expression exp) {
         return new ASTCount(new ASTDistinct(exp));

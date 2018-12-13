@@ -354,7 +354,7 @@ void asterisk() #Asterisk : {}
 
 void count() #Count : { }
 {
-	<COUNT> "(" ( asterisk() | pathExpression() ) ")"
+	<COUNT> "(" ( asterisk() | pathExpression() | distinct() ) ")"
 }
 
 void avg() #Avg : { }
