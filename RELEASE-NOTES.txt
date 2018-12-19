@@ -36,6 +36,7 @@ CAY-2470 Can't bind SQLExec parameters in a loop
 CAY-2472 Clear cached replacement query on mutation in all indirect queries
 CAY-2480 cayenne:cdbgen and cayenne:cgen have identical text in cayenne-maven-plugin
 CAY-2497 Modeler: SQL Scripts tab isn't scrollable
+CAY-2504 Broken detection logic of NoopEventBridge in DataRowStoreFactory
 
 ----------------------------------
 Release: 4.0
