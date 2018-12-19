@@ -53,6 +53,7 @@ CAY-2496 Fixed wrong table behavior: focus color, cleanup DBAttribute Path cell 
 CAY-2497 Modeler: SQL Scripts tab isn't scrollable
 CAY-2501 Modeler: DbImport ui not loading columns for MySQL connector v8.0
 CAY-2502 DataMap in DataNode tree view disappears after dbImport
+CAY-2504 Broken detection logic of NoopEventBridge in DataRowStoreFactory
 
 ----------------------------------
 Release: 4.1.M2
