@@ -39,7 +39,7 @@
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
         <jacoco.version>0.7.9</jacoco.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<ant.version>1.9.9</ant.version>
+		<ant.version>1.10.5</ant.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -337,17 +337,12 @@
 			<dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
-                <version>2.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>2.4.2</version>
+                <version>2.2.0</version>
             </dependency>
             <dependency>
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
-                <version>4.0.38</version>
+                <version>4.0.51</version>
                 <scope>provided</scope>
             </dependency>
 			<dependency>
@@ -434,7 +429,7 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>2.23.0</version>
+				<version>2.23.4</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -446,7 +441,7 @@
 			<dependency>
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
-				<version>2.3.5</version>
+				<version>2.3.6</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -721,15 +716,15 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.5</version>
+                    <version>3.6.0</version>
                 </plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.6.2</version>
+					<version>3.8.0</version>
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
@@ -840,7 +835,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.21.0</version>
+                    <version>2.22.1</version>
                     <executions>
                         <execution>
                             <id>integration-test</id>
@@ -853,12 +848,12 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.23.0</version>
+                    <version>0.28.0</version>
                 </plugin>
             </plugins>
 		</pluginManagement>
@@ -1518,7 +1513,7 @@
 				<dependency>
 					<groupId>com.microsoft.sqlserver</groupId>
 					<artifactId>mssql-jdbc</artifactId>
-					<version>6.1.0.jre7</version>
+					<version>7.0.0.jre8</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1535,7 +1530,7 @@
 				<dependency>
 					<groupId>com.microsoft.sqlserver</groupId>
 					<artifactId>mssql-jdbc</artifactId>
-					<version>6.1.0.jre7</version>
+					<version>7.0.0.jre8</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1632,7 +1627,7 @@
 				<dependency>
 					<groupId>org.xerial</groupId>
 					<artifactId>sqlite-jdbc</artifactId>
-					<version>3.18.0</version>
+					<version>3.25.2</version>
 				</dependency>
 			</dependencies>
 		</profile>
