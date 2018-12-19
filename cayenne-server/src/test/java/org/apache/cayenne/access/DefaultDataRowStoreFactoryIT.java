@@ -45,12 +45,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class DefaultDataRowStoreFactoryIT extends ServerCase {
 
     @Test
-    public void testGetDataRowStore() throws Exception {
+    public void testGetDataRowStore() {
         ServerRuntime runtime = getUnitTestInjector().getInstance(ServerRuntime.class);
         DataRowStore dataStore = runtime.getInjector().getInstance(DataRowStoreFactory.class)
                 .createDataRowStore("test");
@@ -82,6 +83,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
 
         assertNotNull(dataStore);
         assertEquals(dataStore.maximumSize(), CACHE_SIZE);
+        assertNull(dataStore.getEventBridge());
     }
 
     @Test

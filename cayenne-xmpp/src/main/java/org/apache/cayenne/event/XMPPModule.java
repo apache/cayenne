@@ -66,6 +66,6 @@ public class XMPPModule implements Module {
         // init properties' defaults
         contributeChatService(binder, XMPPBridge.DEFAULT_CHAT_SERVICE);
 
-        binder.bind(EventBridge.class).toProvider(XMPPBridgeProvider.class);
+        binder.bind(EventBridge.class).toProvider(XMPPBridgeProvider.class).withoutScope();
     }
 }

@@ -58,6 +58,6 @@ public class JGroupsModule implements Module {
         contributeMulticastAddress(binder, JavaGroupsBridge.MCAST_ADDRESS_DEFAULT);
         contributeMulticastPort(binder, JavaGroupsBridge.MCAST_PORT_DEFAULT_INT);
 
-        binder.bind(EventBridge.class).toProvider(JavaGroupsBridgeProvider.class);
+        binder.bind(EventBridge.class).toProvider(JavaGroupsBridgeProvider.class).withoutScope();
     }
 }
