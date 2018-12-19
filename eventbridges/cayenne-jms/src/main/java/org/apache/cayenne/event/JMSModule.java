@@ -49,6 +49,6 @@ public class JMSModule implements Module {
         // init properties' defaults
         contributeTopicConnectionFactory(binder, JMSBridge.TOPIC_CONNECTION_FACTORY_DEFAULT);
 
-        binder.bind(EventBridge.class).toProvider(JMSBridgeProvider.class);
+        binder.bind(EventBridge.class).toProvider(JMSBridgeProvider.class).withoutScope();
     }
 }

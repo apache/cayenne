@@ -28,6 +28,7 @@ import org.apache.cayenne.di.Module;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -45,9 +46,13 @@ public class JGroupsModuleIT {
         };
 
         Injector injector = DIBootstrap.createInjector(new ServerModule(), new JGroupsModule(), configModule);
-        EventBridge bridge = injector.getInstance(EventBridge.class);
 
+        EventBridge bridge = injector.getInstance(EventBridge.class);
         assertThat(bridge, instanceOf(JavaGroupsBridge.class));
+
+        EventBridge bridge2 = injector.getInstance(EventBridge.class);
+        assertThat(bridge2, instanceOf(JavaGroupsBridge.class));
+        assertNotSame(bridge, bridge2);
     }
 
 }

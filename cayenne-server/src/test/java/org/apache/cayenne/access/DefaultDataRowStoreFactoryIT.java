@@ -29,10 +29,10 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
-import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventBridge;
 import org.apache.cayenne.event.MockEventBridgeProvider;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
@@ -46,12 +46,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class DefaultDataRowStoreFactoryIT extends ServerCase {
 
     @Test
-    public void testGetDataRowStore() throws Exception {
+    public void testGetDataRowStore() {
         ServerRuntime runtime = getUnitTestInjector().getInstance(ServerRuntime.class);
         DataRowStore dataStore = runtime.getInjector().getInstance(DataRowStoreFactory.class)
                 .createDataRowStore("test");
@@ -85,6 +86,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
 
         assertNotNull(dataStore);
         assertEquals(dataStore.maximumSize(), CACHE_SIZE);
+        assertNull(dataStore.getEventBridge());
     }
 
     @Test
