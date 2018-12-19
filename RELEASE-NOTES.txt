@@ -37,6 +37,7 @@ CAY-2472 Clear cached replacement query on mutation in all indirect queries
 CAY-2480 cayenne:cdbgen and cayenne:cgen have identical text in cayenne-maven-plugin
 CAY-2497 Modeler: SQL Scripts tab isn't scrollable
 CAY-2504 Broken detection logic of NoopEventBridge in DataRowStoreFactory
+CAY-2505 EventBridge providers should be bound without scope
 
 ----------------------------------
 Release: 4.0
