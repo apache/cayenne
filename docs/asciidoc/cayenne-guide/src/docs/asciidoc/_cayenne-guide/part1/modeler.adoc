@@ -14,8 +14,6 @@
 
 === CayenneModeler Application
 
-==== Working with Mapping Projects
-
 ==== Reverse Engineering Database
 
 See chapter <<Reverse Engineering in Cayenne Modeler>>
@@ -25,8 +23,6 @@ See chapter <<Reverse Engineering in Cayenne Modeler>>
 With Cayenne Modeler you can create simple database schemas without any additional database tools. This is a good option for initial database setup if you completely created you model with the Modeler. You can start SQL schema generation by selecting menu *Tools > Generate Database Schema*
 
 You can select what database parts should be generated and what tables you want
-
-==== Migrations
 
 ==== Generating Java Classes
 
@@ -42,11 +38,11 @@ Default type of generation suitable for almost all cases. Use this type unless y
 
 - *Client Persistent Objects*
 
+This type is for generating code for client part of a ROP setup.
+
 - *Advanced*
 
 In advanced mode you can control almost all aspects of code generation including custom templates for java code. See default Cayenne templates on GitHub as an example.
-
-==== Modeling Inheritance
 
 ==== Modeling Generic Persistent Classes
 
@@ -56,6 +52,18 @@ If you don't enter anything for Java Class of an ObjEntity, Cayenne assumes gene
 
 Class generation procedures (either done in the Modeler or with Ant or Maven) would skip entities that are mapped to CayenneDataObject explicitly or have no class mapping.
 
-==== Mapping ObjAttributes to Custom Classes
-
 ==== Modeling Primary Key Generation Strategy
+
+Cayenne supports three PK generation strategies:
+
+1. *Cayenne Generated*.
+This is default strategy. Cayenne will use special table `AUTO_PK_SUPPORT` for managing primary keys.
+
+1. *Database Generated*.
+Cayenne will delegate PK generation to database (e.g. auto increment fields on MySQL or `serial` type on PostgreSQL)
+
+1. *Custom Sequence*. In this case Cayenne will use provided sequence to generate primary keys.
+
+Strategy should be set per each `DbEntity` independently.
+
+image::../images/db-entity-pk.png[align="center"]
