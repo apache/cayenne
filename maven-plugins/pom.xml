@@ -23,7 +23,6 @@
 
 	<modules>
 		<module>cayenne-maven-plugin</module>
-		<module>maven-cayenne-plugin</module>
 		<module>cayenne-modeler-maven-plugin</module>
 		<module>cayenne-tools-itest</module>
 	</modules>
