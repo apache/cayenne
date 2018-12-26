@@ -5,6 +5,12 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 4.2.M1
+
+* Per CAY-2467 Property class is replaced with a type-aware Property API, it's mostly backwards compatible.
+    To take advantage of this new API you should regenerate code via Modeler ("Tools" -> "Generate Classes") or cgen tools.
+
+
 UPGRADING TO 4.1.M2
 
 * Per CAY-2438 DataChannelFilter filter was deprecated and two new independent filters are introduced:
