@@ -41,14 +41,14 @@ public class ASTNotLikeIgnoreCase extends IgnoreCaseNode {
 	public ASTNotLikeIgnoreCase(SimpleNode path, Object value) {
 		super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true);
 		jjtAddChild(path, 0);
-		jjtAddChild(new ASTScalar(value), 1);
+		jjtAddChild(wrap(value), 1);
 		connectChildren();
 	}
 
 	public ASTNotLikeIgnoreCase(SimpleNode path, Object value, char escapeChar) {
 		super(ExpressionParserTreeConstants.JJTNOTLIKEIGNORECASE, true, escapeChar);
 		jjtAddChild(path, 0);
-		jjtAddChild(new ASTScalar(value), 1);
+		jjtAddChild(wrap(value), 1);
 		connectChildren();
 	}
 

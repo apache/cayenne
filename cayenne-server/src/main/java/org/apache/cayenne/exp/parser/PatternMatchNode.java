@@ -50,6 +50,13 @@ public abstract class PatternMatchNode extends ConditionNode {
         setEscapeChar(escapeChar);
     }
 
+    SimpleNode wrap(Object pattern) {
+        if(pattern instanceof SimpleNode) {
+            return (SimpleNode)pattern;
+        }
+        return new ASTScalar(pattern);
+    }
+
     /**
      * <p>This method will return an escape character for the like
      * clause.  The escape character will eventually end up in the
@@ -79,15 +86,13 @@ public abstract class PatternMatchNode extends ConditionNode {
     }
 
     protected boolean matchPattern(String string) {
-        return (string != null) ? getPattern().matcher(string).find() : false;
+        return (string != null) && getPattern().matcher(string).find();
     }
 
     protected Pattern getPattern() {
         // compile pattern on demand
         if (!patternCompiled) {
-
             synchronized (this) {
-
                 if (!patternCompiled) {
                     pattern = null;
 
@@ -97,20 +102,23 @@ public abstract class PatternMatchNode extends ConditionNode {
                     }
 
                     // precompile pattern
-                    ASTScalar patternNode = (ASTScalar) jjtGetChild(1);
-                    if (patternNode == null) {
-                        patternCompiled = true;
-                        return null;
-                    }
+                    Node node = jjtGetChild(1);
+                    if(node instanceof ASTScalar) {
+                        ASTScalar patternNode = (ASTScalar) node;
+                        if (patternNode == null) {
+                            patternCompiled = true;
+                            return null;
+                        }
 
-                    String srcPattern = (String) patternNode.getValue();
-                    if (srcPattern == null) {
-                        patternCompiled = true;
-                        return null;
-                    }
+                        String srcPattern = (String) patternNode.getValue();
+                        if (srcPattern == null) {
+                            patternCompiled = true;
+                            return null;
+                        }
 
-                    pattern = Util.sqlPatternToPattern(srcPattern, ignoringCase);
-                    patternCompiled = true;
+                        pattern = Util.sqlPatternToPattern(srcPattern, ignoringCase);
+                        patternCompiled = true;
+                    }
                 }
             }
         }

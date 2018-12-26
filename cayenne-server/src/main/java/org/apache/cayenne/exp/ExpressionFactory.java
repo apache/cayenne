@@ -384,7 +384,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#matchExp(String, Object)
 	 */
-	static Expression matchExp(Expression exp, Object value) {
+	public static Expression matchExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -402,7 +402,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#noMatchExp(String, Object)
 	 */
-	static Expression noMatchExp(Expression exp, Object value) {
+	public static Expression noMatchExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -420,7 +420,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#lessExp(String, Object)
 	 */
-	static Expression lessExp(Expression exp, Object value) {
+	public static Expression lessExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -448,7 +448,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#lessOrEqualExp(String, Object)
 	 */
-	static Expression lessOrEqualExp(Expression exp, Object value) {
+	public static Expression lessOrEqualExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -476,7 +476,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#greaterExp(String, Object)
 	 */
-	static Expression greaterExp(Expression exp, Object value) {
+	public static Expression greaterExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -504,7 +504,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#greaterOrEqualExp(String, Object)
 	 */
-	static Expression greaterOrEqualExp(Expression exp, Object value) {
+	public static Expression greaterOrEqualExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -533,7 +533,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#inExp(String, Object[])
 	 */
-	static Expression inExp(Expression exp, Object... values) {
+	public static Expression inExp(Expression exp, Object... values) {
 		if (values.length == 0) {
 			return new ASTFalse();
 		}
@@ -566,7 +566,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#inExp(String, Collection)
 	 */
-	static Expression inExp(Expression exp, Collection<?> values) {
+	public static Expression inExp(Expression exp, Collection<?> values) {
 		if (values.isEmpty()) {
 			return new ASTFalse();
 		}
@@ -599,7 +599,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#notInExp(String, Collection)
 	 */
-	static Expression notInExp(Expression exp, Collection<?> values) {
+	public static Expression notInExp(Expression exp, Collection<?> values) {
 		if (values.isEmpty()) {
 			return new ASTTrue();
 		}
@@ -636,7 +636,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#notInExp(String, Object[])
 	 */
-	static Expression notInExp(Expression exp, Object... values) {
+	public static Expression notInExp(Expression exp, Object... values) {
 		if (values.length == 0) {
 			return new ASTTrue();
 		}
@@ -670,7 +670,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#betweenExp(String, Object, Object)
 	 */
-	static Expression betweenExp(Expression exp, Object value1, Object value2) {
+	public static Expression betweenExp(Expression exp, Object value1, Object value2) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -697,7 +697,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#notBetweenExp(String, Object, Object)
 	 */
-	static Expression notBetweenExp(Expression exp, Object value1, Object value2) {
+	public static Expression notBetweenExp(Expression exp, Object value1, Object value2) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -724,7 +724,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#likeExp(String, Object)
 	 */
-	static Expression likeExp(Expression exp, Object value) {
+	public static Expression likeExp(Expression exp, Object value) {
 		return likeExpInternal(exp, value, (char) 0);
 	}
 
@@ -748,7 +748,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#likeExp(String, Object)
 	 */
-	static Expression likeExp(Expression exp, Object value, char escapeChar) {
+	public static Expression likeExp(Expression exp, Object value, char escapeChar) {
 		return likeExpInternal(exp, value, escapeChar);
 	}
 
@@ -799,7 +799,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#notLikeExp(String, Object)
 	 */
-	static Expression notLikeExp(Expression exp, Object value) {
+	public static Expression notLikeExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -826,7 +826,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#notLikeExp(String, Object)
 	 */
-	static Expression notLikeExp(Expression exp, Object value, char escapeChar) {
+	public static Expression notLikeExp(Expression exp, Object value, char escapeChar) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -869,7 +869,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#likeIgnoreCaseExp(String, Object)
 	 */
-	static Expression likeIgnoreCaseExp(Expression exp, Object value) {
+	public static Expression likeIgnoreCaseExp(Expression exp, Object value) {
 		return likeIgnoreCaseExp(exp, value, (char) 0);
 	}
 
@@ -936,7 +936,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#notLikeIgnoreCaseExp(String, Object)
 	 */
-	static Expression notLikeIgnoreCaseExp(Expression exp, Object value) {
+	public static Expression notLikeIgnoreCaseExp(Expression exp, Object value) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -963,7 +963,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#notLikeIgnoreCaseExp(String, Object, char)
 	 */
-	static Expression notLikeIgnoreCaseExp(Expression exp, Object value, char escapeChar) {
+	public static Expression notLikeIgnoreCaseExp(Expression exp, Object value, char escapeChar) {
 		if(!(exp instanceof SimpleNode)) {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
@@ -1010,7 +1010,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#containsExp(String, String)
 	 */
-	static Expression containsExp(Expression exp, String value) {
+	public static Expression containsExp(Expression exp, String value) {
 		ASTLike like = likeExpInternal(exp, value, (char) 0);
 		LikeExpressionHelper.toContains(like);
 		return like;
@@ -1031,7 +1031,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#startsWithExp(String, String)
 	 */
-	static Expression startsWithExp(Expression exp, String value) {
+	public static Expression startsWithExp(Expression exp, String value) {
 		ASTLike like = likeExpInternal(exp, value, (char) 0);
 		LikeExpressionHelper.toStartsWith(like);
 		return like;
@@ -1052,7 +1052,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#endsWithExp(String, String)
 	 */
-	static Expression endsWithExp(Expression exp, String value) {
+	public static Expression endsWithExp(Expression exp, String value) {
 		ASTLike like = likeExpInternal(exp, value, (char) 0);
 		LikeExpressionHelper.toEndsWith(like);
 		return like;
@@ -1074,7 +1074,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#containsIgnoreCaseExp(String, String)
 	 */
-	static Expression containsIgnoreCaseExp(Expression exp, String value) {
+	public static Expression containsIgnoreCaseExp(Expression exp, String value) {
 		ASTLikeIgnoreCase like = likeIgnoreCaseExp(exp, value, (char) 0);
 		LikeExpressionHelper.toContains(like);
 		return like;
@@ -1096,7 +1096,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#startsWithIgnoreCaseExp(String, String)
 	 */
-	static Expression startsWithIgnoreCaseExp(Expression exp, String value) {
+	public static Expression startsWithIgnoreCaseExp(Expression exp, String value) {
 		ASTLikeIgnoreCase like = likeIgnoreCaseExp(exp, value, (char) 0);
 		LikeExpressionHelper.toStartsWith(like);
 		return like;
@@ -1118,7 +1118,7 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 * @see ExpressionFactory#endsWithIgnoreCaseExp(String, String)
 	 */
-	static Expression endsWithIgnoreCaseExp(Expression exp, String value) {
+	public static Expression endsWithIgnoreCaseExp(Expression exp, String value) {
 		ASTLikeIgnoreCase like = likeIgnoreCaseExp(exp, value, (char) 0);
 		LikeExpressionHelper.toEndsWith(like);
 		return like;
@@ -1310,7 +1310,7 @@ public class ExpressionFactory {
 	 * Wrap value into ASTScalar
 	 * @since 4.0
 	 */
-	static Expression wrapScalarValue(Object value) {
+	public static Expression wrapScalarValue(Object value) {
 		return new ASTScalar(value);
 	}
 

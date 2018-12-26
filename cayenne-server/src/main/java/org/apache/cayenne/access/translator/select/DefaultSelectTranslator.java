@@ -25,9 +25,9 @@ import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.exp.TraversalHelper;
 import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
 import org.apache.cayenne.exp.parser.ASTDbPath;
@@ -435,7 +435,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		joinListener = () -> joinTableAliasForProperty[0] = getCurrentAlias();
 		setAddBindingListener(bindingListener);
 
-		for(Property<?> property : query.getColumns()) {
+		for(BaseProperty<?> property : query.getColumns()) {
 			joinTableAliasForProperty[0] = null;
 			int expressionType = property.getExpression().getType();
 
@@ -508,7 +508,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		return columns;
 	}
 
-	private int getJdbcTypeForProperty(Property<?> property) {
+	private int getJdbcTypeForProperty(BaseProperty<?> property) {
 		int expressionType = property.getExpression().getType();
 		if(expressionType == Expression.OBJ_PATH) {
 			// Scan obj path, stop as soon as DbAttribute found
@@ -542,7 +542,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		return TypesMapping.getSqlTypeByJava(property.getType());
 	}
 
-	private boolean isAggregate(Property<?> property) {
+	private boolean isAggregate(BaseProperty<?> property) {
 		final boolean[] isAggregate = new boolean[1];
 		Expression exp = property.getExpression();
 		exp.traverse(new TraversalHelper() {
@@ -894,11 +894,11 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 	@Override
 	public String getAliasForExpression(Expression exp) {
-		Collection<Property<?>> columns = getSelectQuery().getColumns();
+		Collection<BaseProperty<?>> columns = getSelectQuery().getColumns();
 		if(columns == null) {
 			return null;
 		}
-		for(Property<?> property : columns) {
+		for(BaseProperty<?> property : columns) {
 			if(property.getExpression().equals(exp)) {
 				return property.getAlias();
 			}

@@ -31,9 +31,9 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
@@ -108,7 +108,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 
 		if(query.getColumns() != null && !query.getColumns().isEmpty()) {
 			traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
-			for(Property<?> property : query.getColumns()) {
+			for(BaseProperty<?> property : query.getColumns()) {
 				key.append("/c:");
 				property.getExpression().traverse(traversalHandler);
 			}
@@ -220,7 +220,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		}
 		
 		SQLResult result = new SQLResult();
-		for(Property<?> column : query.getColumns()) {
+		for(BaseProperty<?> column : query.getColumns()) {
 			Expression exp = column.getExpression();
 			String name = column.getName() == null ? exp.expName() : column.getName();
 			boolean fullObject = false;
@@ -260,7 +260,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	 * @param resolver entity resolver
 	 * @return Entity result
 	 */
-	private EntityResult buildEntityIdResultForColumn(Property<?> column, EntityResolver resolver) {
+	private EntityResult buildEntityIdResultForColumn(BaseProperty<?> column, EntityResolver resolver) {
 		EntityResult result = new EntityResult(column.getType());
 		DbEntity entity = resolver.getObjEntity(column.getType()).getDbEntity();
 		for(DbAttribute attribute : entity.getPrimaryKeys()) {
@@ -293,7 +293,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	 * @param resolver entity resolver to get ObjEntity and ClassDescriptor
 	 * @return Entity result
 	 */
-	private EntityResult buildEntityResultForColumn(SelectQuery<?> query, Property<?> column, EntityResolver resolver) {
+	private EntityResult buildEntityResultForColumn(SelectQuery<?> query, BaseProperty<?> column, EntityResolver resolver) {
 		final EntityResult result = new EntityResult(column.getType());
 
 		// Collecting visitor for ObjAttributes and toOne relationships

@@ -18,19 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.parser.ASTPath;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.Orderings;
-import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.ComparableProperty;
+import org.apache.cayenne.exp.property.RelationshipProperty;
 
 /**
  * <p>
@@ -52,9 +47,14 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * @see Property#create(Expression, Class)
  * @see Property#create(String, Expression, Class)
  *
+ * @see org.apache.cayenne.exp.property.PropertyFactory
+ *
  * @since 4.0
+ * @deprecated since 4.2 in favour of type-specific set of properties, see {@link org.apache.cayenne.exp.property.PropertyFactory}
+ * and {@link org.apache.cayenne.exp.property} package.
  */
-public class Property<E> {
+@Deprecated
+public class Property<E> extends BaseProperty<E> implements ComparableProperty<E>, RelationshipProperty<E> {
 
     /**
      * <p>Property that can be used in COUNT(*) queries</p>
@@ -66,23 +66,10 @@ public class Property<E> {
      *         .select(context);
      * }</pre>
      * </p>
+     * @deprecated since 4.2 use {@link org.apache.cayenne.exp.property.PropertyFactory#COUNT}
      */
+    @Deprecated
     public static final Property<Long> COUNT = Property.create(FunctionExpressionFactory.countExp(), Long.class);
-
-    /**
-     * Name of the property in the object
-     */
-    private final String name;
-
-    /**
-     * Expression provider for the property
-     */
-    private final ExpressionProvider expressionProvider;
-
-    /**
-     * Explicit type of the property
-     */
-    private final Class<? super E> type;
 
     /**
      * Constructs a new property with the given name and type.
@@ -92,15 +79,8 @@ public class Property<E> {
      *
      * @see Property#create(String, Class)
      */
-    protected Property(final String name, final Class<? super E> type) {
-        this.name = name;
-        expressionProvider = new ExpressionProvider() {
-            @Override
-            public Expression get() {
-                return ExpressionFactory.pathExp(name);
-            }
-        };
-        this.type = type;
+    protected Property(final String name, final Class<E> type) {
+        super(name, null, type);
     }
 
     /**
@@ -112,177 +92,8 @@ public class Property<E> {
      *
      * @see Property#create(String, Expression, Class)
      */
-    protected Property(final String name, final Expression expression, final Class<? super E> type) {
-        this.name = name;
-        expressionProvider = new ExpressionProvider() {
-            @Override
-            public Expression get() {
-                return expression.deepCopy();
-            }
-        };
-        this.type = type;
-    }
-
-    /**
-     * @return Name of the property in the object.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @return alias for this property
-     */
-    public String getAlias() {
-        if(getName() == null) {
-            return null;
-        }
-
-        // check if default name for Path expression is overridden
-        Expression exp = getExpression();
-        if(exp instanceof ASTPath) {
-            if(((ASTPath) exp).getPath().equals(getName())) {
-                return null;
-            }
-        }
-
-        return getName();
-    }
-
-    /**
-     * This method returns fresh copy of the expression for each call.
-     * @return expression that represents this Property
-     */
-    public Expression getExpression() {
-        return expressionProvider.get();
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : expressionProvider.get().hashCode();
-        if(type != null) {
-            result = 31 * result + type.hashCode();
-        }
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Property<?> property = (Property<?>) o;
-        if (name != null ? !name.equals(property.name) : property.name != null) {
-            return false;
-        }
-        if (name == null && !expressionProvider.get().equals(property.expressionProvider.get())) {
-            return false;
-        }
-        return (type == null ? property.type == null : type.equals(property.type));
-    }
-
-    /**
-     * Constructs a property path by appending the argument to the existing property separated by a dot.
-     *
-     * @return a newly created Property object.
-     */
-    public Property<Object> dot(String property) {
-        return create(getName() + "." + property, null);
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @return a newly created Property object.
-     */
-    public <T> Property<T> dot(Property<T> property) {
-        return create(getName() + "." + property.getName(), property.getType());
-    }
-
-    /**
-     * Returns a version of this property that represents an OUTER join. It is
-     * up to caller to ensure that the property corresponds to a relationship,
-     * as "outer" attributes make no sense.
-     */
-    public Property<E> outer() {
-        return isOuter() ? this : create(name + "+", type);
-    }
-
-    private boolean isOuter() {
-        return name.endsWith("+");
-    }
-
-    /**
-     * Converts this property to a path expression.
-     * This method is equivalent of getExpression() which is preferred as more generic.
-     *
-     * @return a newly created expression.
-     * @see Property#getExpression()
-     */
-    public Expression path() {
-        return getExpression();
-    }
-
-    /**
-     * @return An expression representing null.
-     */
-    public Expression isNull() {
-        return ExpressionFactory.matchExp(getExpression(), null);
-    }
-
-    /**
-     * @return An expression representing a non-null value.
-     */
-    public Expression isNotNull() {
-        return ExpressionFactory.matchExp(getExpression(), null).notExp();
-    }
-
-    /**
-     * @return An expression representing equality to TRUE.
-     */
-    public Expression isTrue() {
-        return ExpressionFactory.matchExp(getExpression(), Boolean.TRUE);
-    }
-
-    /**
-     * @return An expression representing equality to FALSE.
-     */
-    public Expression isFalse() {
-        return ExpressionFactory.matchExp(getExpression(), Boolean.FALSE);
-    }
-
-    /**
-     * @return An expression representing equality to a value.
-     */
-    public Expression eq(E value) {
-        return ExpressionFactory.matchExp(getExpression(), value);
-    }
-
-    /**
-     * @return An expression representing equality between two attributes
-     * (columns).
-     */
-    public Expression eq(Property<?> value) {
-        return ExpressionFactory.matchExp(getExpression(), value.getExpression());
-    }
-
-    /**
-     * @return An expression representing inequality to a value.
-     */
-    public Expression ne(E value) {
-        return ExpressionFactory.noMatchExp(getExpression(), value);
-    }
-
-    /**
-     * @return An expression representing inequality between two attributes
-     * (columns).
-     */
-    public Expression ne(Property<?> value) {
-        return ExpressionFactory.noMatchExp(getExpression(), value.getExpression());
+    protected Property(final String name, final Expression expression, final Class<E> type) {
+        super(name, expression, type);
     }
 
     /**
@@ -294,7 +105,7 @@ public class Property<E> {
      * @return An expression for a Database "LIKE" query.
      */
     public Expression like(String pattern) {
-        return ExpressionFactory.likeExp(getExpression(), pattern);
+        return ExpressionFactory.likeExp(path(), pattern);
     }
 
     /**
@@ -305,28 +116,28 @@ public class Property<E> {
      * @return An expression for a Database "LIKE" query.
      */
     public Expression like(String pattern, char escapeChar) {
-        return ExpressionFactory.likeExp(getExpression(), pattern, escapeChar);
+        return ExpressionFactory.likeExp(path(), pattern, escapeChar);
     }
 
     /**
      * @return An expression for a case insensitive "LIKE" query.
      */
     public Expression likeIgnoreCase(String pattern) {
-        return ExpressionFactory.likeIgnoreCaseExp(getExpression(), pattern);
+        return ExpressionFactory.likeIgnoreCaseExp(path(), pattern);
     }
 
     /**
      * @return An expression for a Database "NOT LIKE" query.
      */
     public Expression nlike(String value) {
-        return ExpressionFactory.notLikeExp(getExpression(), value);
+        return ExpressionFactory.notLikeExp(path(), value);
     }
 
     /**
      * @return An expression for a case insensitive "NOT LIKE" query.
      */
     public Expression nlikeIgnoreCase(String value) {
-        return ExpressionFactory.notLikeIgnoreCaseExp(getExpression(), value);
+        return ExpressionFactory.notLikeIgnoreCaseExp(path(), value);
     }
 
     /**
@@ -339,7 +150,7 @@ public class Property<E> {
      * @return a newly created expression.
      */
     public Expression contains(String substring) {
-        return ExpressionFactory.containsExp(getExpression(), substring);
+        return ExpressionFactory.containsExp(path(), substring);
     }
 
     /**
@@ -352,7 +163,7 @@ public class Property<E> {
      * @return a newly created expression.
      */
     public Expression startsWith(String value) {
-        return ExpressionFactory.startsWithExp(getExpression(), value);
+        return ExpressionFactory.startsWithExp(path(), value);
     }
 
     /**
@@ -365,7 +176,7 @@ public class Property<E> {
      * @return a newly created expression.
      */
     public Expression endsWith(String value) {
-        return ExpressionFactory.endsWithExp(getExpression(), value);
+        return ExpressionFactory.endsWithExp(path(), value);
     }
 
     /**
@@ -373,7 +184,7 @@ public class Property<E> {
      * comparison.
      */
     public Expression containsIgnoreCase(String value) {
-        return ExpressionFactory.containsIgnoreCaseExp(getExpression(), value);
+        return ExpressionFactory.containsIgnoreCaseExp(path(), value);
     }
 
     /**
@@ -381,7 +192,7 @@ public class Property<E> {
      * comparison.
      */
     public Expression startsWithIgnoreCase(String value) {
-        return ExpressionFactory.startsWithIgnoreCaseExp(getExpression(), value);
+        return ExpressionFactory.startsWithIgnoreCaseExp(path(), value);
     }
 
     /**
@@ -389,358 +200,49 @@ public class Property<E> {
      * comparison.
      */
     public Expression endsWithIgnoreCase(String value) {
-        return ExpressionFactory.endsWithIgnoreCaseExp(getExpression(), value);
-    }
-
-    /**
-     * @param lower The lower bound.
-     * @param upper The upper bound.
-     * @return An expression checking for objects between a lower and upper
-     * bound inclusive
-     */
-    public Expression between(E lower, E upper) {
-        return ExpressionFactory.betweenExp(getExpression(), lower, upper);
-    }
-
-    /**
-     * @return An expression for finding objects with values in the given set.
-     */
-    public Expression in(E firstValue, E... moreValues) {
-
-        int moreValuesLength = moreValues != null ? moreValues.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstValue;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.inExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with values not in the given
-     * set.
-     */
-    public Expression nin(E firstValue, E... moreValues) {
-
-        int moreValuesLength = moreValues != null ? moreValues.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstValue;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.notInExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with values in the given set.
-     */
-    public Expression in(Collection<E> values) {
-        return ExpressionFactory.inExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with values not in the given
-     * set.
-     */
-    public Expression nin(Collection<E> values) {
-        return ExpressionFactory.notInExp(getExpression(), values);
-    }
-
-    /**
-     * @return A greater than Expression.
-     */
-    public Expression gt(E value) {
-        return ExpressionFactory.greaterExp(getExpression(), value);
-    }
-
-    /**
-     * @return Represents a greater than relationship between two attributes
-     * (columns).
-     */
-    public Expression gt(Property<?> value) {
-        return ExpressionFactory.greaterExp(getExpression(), value.getExpression());
-    }
-
-    /**
-     * @return A greater than or equal to Expression.
-     */
-    public Expression gte(E value) {
-        return ExpressionFactory.greaterOrEqualExp(getExpression(), value);
-    }
-
-    /**
-     * @return Represents a greater than or equal relationship between two
-     * attributes (columns).
-     */
-    public Expression gte(Property<?> value) {
-        return ExpressionFactory.greaterOrEqualExp(getExpression(), value.getExpression());
-    }
-
-    /**
-     * @return A less than Expression.
-     */
-    public Expression lt(E value) {
-        return ExpressionFactory.lessExp(getExpression(), value);
-    }
-
-    /**
-     * @return Represents a less than relationship between two attributes
-     * (columns).
-     */
-    public Expression lt(Property<?> value) {
-        return ExpressionFactory.lessExp(getExpression(), value.getExpression());
-    }
-
-    /**
-     * @return A less than or equal to Expression.
-     */
-    public Expression lte(E value) {
-        return ExpressionFactory.lessOrEqualExp(getExpression(), value);
-    }
-
-    /**
-     * @return Represents a less than or equal relationship between two
-     * attributes (columns).
-     */
-    public Expression lte(Property<?> value) {
-        return ExpressionFactory.lessOrEqualExp(getExpression(), value.getExpression());
-    }
-
-    /**
-     * @return Ascending sort orderings on this property.
-     */
-    public Ordering asc() {
-        return new Ordering(getExpression(), SortOrder.ASCENDING);
-    }
-
-    /**
-     * @return Ascending sort orderings on this property.
-     */
-	public Orderings ascs() {
-		return new Orderings(asc());
-	}
-
-    /**
-     * @return Ascending case insensitive sort orderings on this property.
-     */
-    public Ordering ascInsensitive() {
-        return new Ordering(getExpression(), SortOrder.ASCENDING_INSENSITIVE);
-    }
-
-    /**
-     * @return Ascending case insensitive sort orderings on this property.
-     */
-	public Orderings ascInsensitives() {
-		return new Orderings(ascInsensitive());
-	}
-
-    /**
-     * @return Descending sort orderings on this property.
-     */
-    public Ordering desc() {
-        return new Ordering(getExpression(), SortOrder.DESCENDING);
-    }
-
-    /**
-     * @return Descending sort orderings on this property.
-     */
-    public Orderings descs() {
-        return new Orderings(desc());
-    }
-
-    /**
-     * @return Descending case insensitive sort orderings on this property.
-     */
-    public Ordering descInsensitive() {
-        return new Ordering(getExpression(), SortOrder.DESCENDING_INSENSITIVE);
-    }
-
-    /**
-     * @return Descending case insensitive sort orderings on this property.
-     */
-    public Orderings descInsensitives() {
-        return new Orderings(descInsensitive());
-    }
-
-    /**
-     * Returns a prefetch tree that follows this property path, potentially
-     * spanning a number of phantom nodes, and having a single leaf with "joint"
-     * prefetch semantics.
-     */
-    public PrefetchTreeNode joint() {
-        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-    }
-
-    /**
-     * Returns a prefetch tree that follows this property path, potentially
-     * spanning a number of phantom nodes, and having a single leaf with
-     * "disjoint" prefetch semantics.
-     */
-    public PrefetchTreeNode disjoint() {
-        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-    }
-
-    /**
-     * Returns a prefetch tree that follows this property path, potentially
-     * spanning a number of phantom nodes, and having a single leaf with
-     * "disjoint by id" prefetch semantics.
-     */
-    public PrefetchTreeNode disjointById() {
-        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
-    }
-
-    /**
-     * Extracts property value from an object using JavaBean-compatible
-     * introspection with one addition - a property can be a dot-separated
-     * property name path.
-     */
-    @SuppressWarnings("unchecked")
-    public E getFrom(Object bean) {
-        return (E) PropertyUtils.getProperty(bean, getName());
-    }
-
-    /**
-     * Extracts property value from a collection of objects using
-     * JavaBean-compatible introspection with one addition - a property can be a
-     * dot-separated property name path.
-     */
-    public List<E> getFromAll(Collection<?> beans) {
-        List<E> result = new ArrayList<>(beans.size());
-        for (Object bean : beans) {
-            result.add(getFrom(bean));
-        }
-        return result;
-    }
-
-    /**
-     * Sets a property value in 'obj' using JavaBean-compatible introspection
-     * with one addition - a property can be a dot-separated property name path.
-     */
-    public void setIn(Object bean, E value) {
-        PropertyUtils.setProperty(bean, getName(), value);
-    }
-
-    /**
-     * Sets a property value in a collection of objects using
-     * JavaBean-compatible introspection with one addition - a property can be a
-     * dot-separated property name path.
-     */
-    public void setInAll(Collection<?> beans, E value) {
-        for (Object bean : beans) {
-            setIn(bean, value);
-        }
-    }
-
-    /**
-     * @see FunctionExpressionFactory#countExp(Expression)
-     */
-    public Property<Long> count() {
-        return create(FunctionExpressionFactory.countExp(getExpression()), Long.class);
-    }
-    
-    /**
-     * @see FunctionExpressionFactory#countDistinctExp(Expression)
-     * @since 4.1
-     */
-    public Property<Long> countDistinct() {
-        return create(FunctionExpressionFactory.countDistinctExp(getExpression()), Long.class);
-    }
-
-    /**
-     * @see FunctionExpressionFactory#maxExp(Expression)
-     */
-    public Property<E> max() {
-        return create(FunctionExpressionFactory.maxExp(getExpression()), getType());
-    }
-
-    /**
-     * @see FunctionExpressionFactory#minExp(Expression)
-     */
-    public Property<E> min() {
-        return create(FunctionExpressionFactory.minExp(getExpression()), getType());
-    }
-
-    /**
-     * @see FunctionExpressionFactory#avgExp(Expression)
-     */
-    public Property<E> avg() {
-        return create(FunctionExpressionFactory.avgExp(getExpression()), getType());
-    }
-
-    /**
-     * @see FunctionExpressionFactory#sumExp(Expression)
-     */
-    public Property<E> sum() {
-        return create(FunctionExpressionFactory.sumExp(getExpression()), getType());
-    }
-
-    /**
-     * @see FunctionExpressionFactory#modExp(Expression, Number)
-     */
-    public Property<E> mod(Number number) {
-        return create(FunctionExpressionFactory.modExp(getExpression(), number), getType());
-    }
-
-    /**
-     * @see FunctionExpressionFactory#absExp(Expression)
-     */
-    public Property<E> abs() {
-        return create(FunctionExpressionFactory.absExp(getExpression()), getType());
-    }
-
-    /**
-     * @see FunctionExpressionFactory#sqrtExp(Expression)
-     */
-    public Property<E> sqrt() {
-        return create(FunctionExpressionFactory.sqrtExp(getExpression()), getType());
+        return ExpressionFactory.endsWithIgnoreCaseExp(path(), value);
     }
 
     /**
      * @see FunctionExpressionFactory#lengthExp(Expression)
      */
     public Property<Integer> length() {
-        return create(FunctionExpressionFactory.lengthExp(getExpression()), Integer.class);
+        return create(FunctionExpressionFactory.lengthExp(path()), Integer.class);
     }
 
     /**
      * @see FunctionExpressionFactory#locateExp(String, Expression)
      */
     public Property<Integer> locate(String string) {
-        return create(FunctionExpressionFactory.locateExp(ExpressionFactory.wrapScalarValue(string), getExpression()), Integer.class);
+        return create(FunctionExpressionFactory.locateExp(ExpressionFactory.wrapScalarValue(string), path()), Integer.class);
     }
 
     /**
      * @see FunctionExpressionFactory#locateExp(Expression, Expression)
      */
     public Property<Integer> locate(Property<? extends String> property) {
-        return create(FunctionExpressionFactory.locateExp(property.getExpression(), getExpression()), Integer.class);
+        return create(FunctionExpressionFactory.locateExp(property.path(), path()), Integer.class);
     }
 
     /**
      * @see FunctionExpressionFactory#trimExp(Expression)
      */
     public Property<String> trim() {
-        return create(FunctionExpressionFactory.trimExp(getExpression()), String.class);
+        return create(FunctionExpressionFactory.trimExp(path()), String.class);
     }
 
     /**
      * @see FunctionExpressionFactory#upperExp(Expression)
      */
     public Property<String> upper() {
-        return create(FunctionExpressionFactory.upperExp(getExpression()), String.class);
+        return create(FunctionExpressionFactory.upperExp(path()), String.class);
     }
 
     /**
      * @see FunctionExpressionFactory#lowerExp(Expression)
      */
     public Property<String> lower() {
-        return create(FunctionExpressionFactory.lowerExp(getExpression()), String.class);
+        return create(FunctionExpressionFactory.lowerExp(path()), String.class);
     }
 
     /**
@@ -762,10 +264,10 @@ public class Property<E> {
     public Property<String> concat(Object... args) {
         Expression[] exp = new Expression[args.length + 1];
         int i = 0;
-        exp[i++] = getExpression();
+        exp[i++] = path();
         for(Object arg : args) {
-            if(arg instanceof Property) {
-                exp[i++] = ((Property) arg).getExpression();
+            if(arg instanceof BaseProperty) {
+                exp[i++] = ((BaseProperty) arg).getExpression();
             } else if(arg instanceof Expression) {
                 exp[i++] = (Expression) arg;
             } else if(arg != null) {
@@ -779,15 +281,49 @@ public class Property<E> {
      * @see FunctionExpressionFactory#substringExp(Expression, int, int)
      */
     public Property<String> substring(int offset, int length) {
-        return create(FunctionExpressionFactory.substringExp(getExpression(), offset, length), String.class);
+        return create(FunctionExpressionFactory.substringExp(path(), offset, length), String.class);
+    }
+
+    // TODO: end of StringProperty related methods
+
+    // TODO: start of NumericProperty related methods
+
+    /**
+     * @see FunctionExpressionFactory#avgExp(Expression)
+     */
+    public Property<E> avg() {
+        return create(FunctionExpressionFactory.avgExp(path()), getType());
     }
 
     /**
-     * Creates alias with different name for this property
+     * @see FunctionExpressionFactory#sumExp(Expression)
      */
-    public Property<E> alias(String alias) {
-        return new Property<>(alias, this.getExpression(), this.getType());
+    public Property<E> sum() {
+        return create(FunctionExpressionFactory.sumExp(path()), getType());
     }
+
+    /**
+     * @see FunctionExpressionFactory#modExp(Expression, Number)
+     */
+    public Property<E> mod(Number number) {
+        return create(FunctionExpressionFactory.modExp(path(), number), getType());
+    }
+
+    /**
+     * @see FunctionExpressionFactory#absExp(Expression)
+     */
+    public Property<E> abs() {
+        return create(FunctionExpressionFactory.absExp(path()), getType());
+    }
+
+    /**
+     * @see FunctionExpressionFactory#sqrtExp(Expression)
+     */
+    public Property<E> sqrt() {
+        return create(FunctionExpressionFactory.sqrtExp(path()), getType());
+    }
+
+    // TODO: end of NumericProperty related methods
 
     /**
      * <p>Create new "flat" property for toMany relationship.</p>
@@ -800,15 +336,65 @@ public class Property<E> {
      *     }</pre>
      * </p>
      */
-    public <T extends Persistent> Property<T> flat(Class<? super T> tClass) {
+    public <T extends Persistent> Property<T> flat(Class<T> tClass) {
         if(!Collection.class.isAssignableFrom(type) && !Map.class.isAssignableFrom(type)) {
             throw new CayenneRuntimeException("Can use flat() function only on Property mapped on toMany relationship.");
         }
-        return create(ExpressionFactory.fullObjectExp(getExpression()), tClass);
+        return create(ExpressionFactory.fullObjectExp(path()), tClass);
     }
 
-    public Class<? super E> getType() {
-        return type;
+    /**
+     * Creates alias with different name for this property
+     */
+    @Override
+    public Property<E> alias(String alias) {
+        return new Property<>(alias, this.getExpression(), this.getType());
+    }
+
+    @Override
+    public Property<E> outer() {
+        return getName().endsWith("+")
+                ? this
+                : Property.create(getName() + "+", getType());
+    }
+
+    public <T> Property<T> dot(Property<T> property) {
+        return Property.create(getName() + "." + property.getName(), property.getType());
+    }
+
+    /**
+     * Constructs a property path by appending the argument to the existing property separated by a dot.
+     *
+     * @return a newly created Property object.
+     */
+    @Override
+    public Property<Object> dot(String property) {
+        return Property.create(getName() + "." + property, null);
+    }
+
+    // TODO: this method has incompatible return type in BaseProperty
+//    /**
+//     * @see FunctionExpressionFactory#countExp(Expression)
+//     */
+//    @Override
+//    public NumericProperty<Long> count() {
+//        return Property.create(FunctionExpressionFactory.countExp(getExpression()), Long.class);
+//    }
+
+    /**
+     * @see FunctionExpressionFactory#maxExp(Expression)
+     */
+    @Override
+    public Property<E> max() {
+        return Property.create(FunctionExpressionFactory.maxExp(path()), getType());
+    }
+
+    /**
+     * @see FunctionExpressionFactory#minExp(Expression)
+     */
+    @Override
+    public Property<E> min() {
+        return Property.create(FunctionExpressionFactory.minExp(path()), getType());
     }
 
     /**
@@ -816,8 +402,9 @@ public class Property<E> {
      * @see Property#create(Expression, Class)
      * @see Property#create(String, Expression, Class)
      */
+    @SuppressWarnings("unchecked")
     public static <T> Property<T> create(String name, Class<? super T> type) {
-        return new Property<>(name, type);
+        return (Property<T>)new Property<>(name, type);
     }
 
     /**
@@ -825,8 +412,9 @@ public class Property<E> {
      * @see Property#create(String, Class)
      * @see Property#create(String, Expression, Class)
      */
+    @SuppressWarnings("unchecked")
     public static <T> Property<T> create(Expression expression, Class<? super T> type) {
-        return new Property<>(null, expression, type);
+        return (Property<T>)new Property<>(null, expression, type);
     }
 
     /**
@@ -834,8 +422,9 @@ public class Property<E> {
      * @see Property#create(String, Class)
      * @see Property#create(Expression, Class)
      */
+    @SuppressWarnings("unchecked")
     public static <T> Property<T> create(String name, Expression expression, Class<? super T> type) {
-        return new Property<>(name, expression, type);
+        return (Property<T>)new Property<>(name, expression, type);
     }
 
     /**
@@ -855,17 +444,9 @@ public class Property<E> {
      *     </pre>
      * </p>
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Persistent> Property<T> createSelf(Class<? super T> type) {
-        return new Property<>(null, ExpressionFactory.fullObjectExp(), type);
+        return (Property<T>)new Property<>(null, ExpressionFactory.fullObjectExp(), type);
     }
 
-    /**
-     * Since Expression is mutable we need to provide clean Expression for every getter call.
-     * So to keep Property itself immutable we use ExpressionProvider.
-     * @see Property#Property(String, Class)
-     * @see Property#Property(String, Expression, Class)
-     */
-    private interface ExpressionProvider {
-        Expression get();
-    }
 }

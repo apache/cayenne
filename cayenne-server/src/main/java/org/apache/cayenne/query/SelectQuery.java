@@ -24,17 +24,12 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +58,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * @since 4.0
 	 */
-	protected Collection<Property<?>> columns;
+	protected Collection<BaseProperty<?>> columns;
 
 	/**
 	 * @since 4.0
@@ -760,14 +755,14 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @since 4.0
 	 * @see SelectQuery#setCanReturnScalarValue(boolean)
 	 */
-	public void setColumns(Collection<Property<?>> columns) {
+	public void setColumns(Collection<BaseProperty<?>> columns) {
 		this.columns = columns;
 	}
 
 	/**
 	 * @since 4.0
 	 */
-	public void setColumns(Property<?>... columns) {
+	public void setColumns(BaseProperty<?>... columns) {
 		if(columns == null || columns.length == 0) {
 			return;
 		}
@@ -797,7 +792,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * @since 4.0
 	 */
-	public Collection<Property<?>> getColumns() {
+	public Collection<BaseProperty<?>> getColumns() {
 		return columns;
 	}
 

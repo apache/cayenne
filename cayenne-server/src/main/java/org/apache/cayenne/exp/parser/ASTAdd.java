@@ -41,7 +41,7 @@ public class ASTAdd extends EvaluatedMathNode {
 		super(ExpressionParserTreeConstants.JJTADD);
 	}
 
-	public ASTAdd(Object[] nodes) {
+	public ASTAdd(Object... nodes) {
 		this(Arrays.asList(nodes));
 	}
 

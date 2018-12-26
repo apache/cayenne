@@ -41,7 +41,7 @@ public class ASTSubtract extends EvaluatedMathNode {
         super(ExpressionParserTreeConstants.JJTSUBTRACT);
     }
 
-    public ASTSubtract(Object[] nodes) {
+    public ASTSubtract(Object... nodes) {
         this(Arrays.asList(nodes));
     }
 

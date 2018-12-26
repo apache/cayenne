@@ -43,7 +43,7 @@ public class ASTDivide extends EvaluatedMathNode {
 		super(ExpressionParserTreeConstants.JJTDIVIDE);
 	}
 
-	public ASTDivide(Object[] nodes) {
+	public ASTDivide(Object... nodes) {
 		this(Arrays.asList(nodes));
 	}
 

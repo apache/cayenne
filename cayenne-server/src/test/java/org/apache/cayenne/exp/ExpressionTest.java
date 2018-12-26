@@ -144,7 +144,7 @@ public class ExpressionTest {
 	public void testIsNotNullEx() {
 		Expression e = Artist.ARTIST_NAME.isNotNull();
 		String ejbql = e.toEJBQL("x");
-		assertEquals("not (x.artistName is null)", ejbql);
+		assertEquals("x.artistName is not null", ejbql);
 	}
 
 	@Test

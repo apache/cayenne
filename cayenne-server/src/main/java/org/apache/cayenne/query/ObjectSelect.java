@@ -20,9 +20,13 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ComparableProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -131,7 +135,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * @param entityType base persistent class that will be used as a root for this query
      * @param column single column to select
      */
-    public static <E> ColumnSelect<E> columnQuery(Class<?> entityType, Property<E> column) {
+    public static <E> ColumnSelect<E> columnQuery(Class<?> entityType, BaseProperty<E> column) {
         return new ColumnSelect<>().entityType(entityType).column(column);
     }
 
@@ -142,7 +146,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * @param firstColumn column to select
      * @param otherColumns columns to select
      */
-    public static ColumnSelect<Object[]> columnQuery(Class<?> entityType, Property<?> firstColumn, Property<?>... otherColumns) {
+    public static ColumnSelect<Object[]> columnQuery(Class<?> entityType, BaseProperty<?> firstColumn, BaseProperty<?>... otherColumns) {
         return new ColumnSelect<Object[]>().entityType(entityType).columns(firstColumn, otherColumns);
     }
 
@@ -560,9 +564,9 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * </pre>
      *
      * @param properties array of properties to select
-     * @see ObjectSelect#column(Property)
+     * @see ObjectSelect#column(BaseProperty)
      */
-    public ColumnSelect<Object[]> columns(Property<?> firstProperty, Property<?>... properties) {
+    public ColumnSelect<Object[]> columns(BaseProperty<?> firstProperty, BaseProperty<?>... properties) {
         return new ColumnSelect<>(this).columns(firstProperty, properties);
     }
 
@@ -570,7 +574,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * <p>Select one specific property.</p>
      * <p>Can be any property that can be resolved against root entity type
      * (root entity's property, function call expression, property of relationships, etc)</p>
-     * <p>If you need several columns use {@link ObjectSelect#columns(Property, Property[])} method.</p>
+     * <p>If you need several columns use {@link ObjectSelect#columns(BaseProperty, BaseProperty[])} method.</p>
      * <p>
      * <pre>
      * {@code
@@ -581,59 +585,95 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * </pre>
      * </p>
      * @param property single property to select
-     * @see ObjectSelect#columns(Property, Property[])
+     * @see ObjectSelect#columns(BaseProperty, BaseProperty[])
      */
-    public <E> ColumnSelect<E> column(Property<E> property) {
+    public <E> ColumnSelect<E> column(BaseProperty<E> property) {
         return new ColumnSelect<>(this).column(property);
     }
 
     /**
      * Select COUNT(*)
-     * @see ObjectSelect#column(Property)
+     * @see ObjectSelect#column(BaseProperty)
      */
     public ColumnSelect<Long> count() {
-        return column(Property.COUNT);
+        return column(PropertyFactory.COUNT);
     }
 
     /**
      * <p>Select COUNT(property)</p>
      * <p>Can return different result than COUNT(*) as it will count only non null values</p>
      * @see ObjectSelect#count()
-     * @see ObjectSelect#column(Property)
+     * @see ObjectSelect#column(BaseProperty)
      */
-    public ColumnSelect<Long> count(Property<?> property) {
+    public ColumnSelect<Long> count(BaseProperty<?> property) {
         return column(property.count());
     }
 
     /**
      * <p>Select minimum value of property</p>
-     * @see ObjectSelect#column(Property)
+     * @see ObjectSelect#column(BaseProperty)
      */
-    public <E> ColumnSelect<E> min(Property<E> property) {
+    public <E> ColumnSelect<E> min(ComparableProperty<E> property) {
+        return column(property.min());
+    }
+
+    /**
+     * <p>Select minimum value of property</p>
+     * @see ObjectSelect#column(BaseProperty)
+     */
+    public <E extends Number> ColumnSelect<E> min(NumericProperty<E> property) {
         return column(property.min());
     }
 
     /**
      * <p>Select maximum value of property</p>
-     * @see ObjectSelect#column(Property)
+     * @see ObjectSelect#column(BaseProperty)
      */
-    public <E> ColumnSelect<E> max(Property<E> property) {
+    public <E> ColumnSelect<E> max(ComparableProperty<E> property) {
+        return column(property.max());
+    }
+
+    /**
+     * <p>Select maximum value of property</p>
+     * @see ObjectSelect#column(BaseProperty)
+     */
+    public <E extends Number> ColumnSelect<E> max(NumericProperty<E> property) {
         return column(property.max());
     }
 
     /**
      * <p>Select average value of property</p>
-     * @see ObjectSelect#column(Property)
+     * @see ObjectSelect#column(BaseProperty)
+     * @deprecated since 4.2 use {@link #avg(NumericProperty)}
      */
+    @Deprecated
     public <E> ColumnSelect<E> avg(Property<E> property) {
         return column(property.avg());
     }
 
     /**
-     * <p>Select sum of values</p>
-     * @see ObjectSelect#column(Property)
+     * <p>Select average value of property</p>
+     * @see ObjectSelect#column(BaseProperty)
      */
+    public <E extends Number> ColumnSelect<E> avg(NumericProperty<E> property) {
+        return column(property.avg());
+    }
+
+    /**
+     * <p>Select sum of values</p>
+     * @see ObjectSelect#column(BaseProperty)
+     * @deprecated since 4.2 use {@link #sum(NumericProperty)}
+     */
+    @Deprecated
     public <E extends Number> ColumnSelect<E> sum(Property<E> property) {
+        return column(property.sum());
+    }
+
+    /**
+     * <p>Select sum of values</p>
+     * @see ObjectSelect#column(BaseProperty)
+     */
+    public <E extends Number> ColumnSelect<E> sum(NumericProperty<E> property) {
         return column(property.sum());
     }
 

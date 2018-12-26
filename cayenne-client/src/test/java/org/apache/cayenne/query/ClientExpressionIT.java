@@ -80,7 +80,7 @@ public class ClientExpressionIT extends ClientCase {
         
         context.commitChanges();
         
-        Expression scalar = ExpressionFactory.matchExp(null, t1);
+        Expression scalar = ExpressionFactory.matchExp((String)null, t1);
         Expression list = ExpressionFactory.matchAllExp("|", Arrays.asList(t1, t2));
         
         assertEquals(t1.getObjectId(), scalar.getOperand(1));

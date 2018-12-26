@@ -44,7 +44,7 @@ public class ASTMultiply extends EvaluatedMathNode {
 		super(ExpressionParserTreeConstants.JJTMULTIPLY);
 	}
 
-	public ASTMultiply(Object[] nodes) {
+	public ASTMultiply(Object... nodes) {
 		this(Arrays.asList(nodes));
 	}
 

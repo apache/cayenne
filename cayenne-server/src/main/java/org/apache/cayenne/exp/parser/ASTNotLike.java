@@ -40,14 +40,14 @@ public class ASTNotLike extends PatternMatchNode {
     public ASTNotLike(SimpleNode path, Object value) {
         super(ExpressionParserTreeConstants.JJTNOTLIKE, false);
         jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value), 1);
+        jjtAddChild(wrap(value), 1);
         connectChildren();
     }
 
     public ASTNotLike(SimpleNode path, Object value, char escapeChar) {
         super(ExpressionParserTreeConstants.JJTNOTLIKE, false, escapeChar);
         jjtAddChild(path, 0);
-        jjtAddChild(new ASTScalar(value), 1);
+        jjtAddChild(wrap(value), 1);
         connectChildren();
     }
 
