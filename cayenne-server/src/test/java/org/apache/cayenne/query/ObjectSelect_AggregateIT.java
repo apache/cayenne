@@ -28,7 +28,9 @@ import java.util.Locale;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -93,11 +95,9 @@ public class ObjectSelect_AggregateIT extends ServerCase {
     }
 
     @Test
-    public void testCount() throws Exception {
-        Property<Long> countProp = Property.create(countExp(), Long.class);
-
+    public void testCount() {
         long count = ObjectSelect.query(Artist.class)
-                .column(countProp)
+                .column(PropertyFactory.COUNT)
                 .selectOne(context);
         assertEquals(20L, count);
     }
@@ -110,7 +110,7 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 		}
     	context.commitChanges();
     	
-        Property<Long> countDistinctProp = Artist.ARTIST_NAME.countDistinct();
+        NumericProperty<Long> countDistinctProp = Artist.ARTIST_NAME.countDistinct();
 
         long count = ObjectSelect.query(Artist.class)
                 .column(countDistinctProp)
@@ -121,7 +121,7 @@ public class ObjectSelect_AggregateIT extends ServerCase {
     @Test
     @Ignore("Not all databases support AVG(DATE) aggregation")
     public void testAvg() throws Exception {
-        Property<Date> avgProp = Property.create(avgExp(Artist.DATE_OF_BIRTH.path()), Date.class);
+        BaseProperty<Date> avgProp = PropertyFactory.createBase(avgExp(Artist.DATE_OF_BIRTH.getExpression()), Date.class);
 
         Date avg = ObjectSelect.query(Artist.class)
                 .column(avgProp)
@@ -132,10 +132,8 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 
     @Test
     public void testMin() throws Exception {
-        Property<Date> minProp = Property.create(minExp(Artist.DATE_OF_BIRTH.path()), Date.class);
-
         Date avg = ObjectSelect.query(Artist.class)
-                .column(minProp)
+                .column(Artist.DATE_OF_BIRTH.min())
                 .selectOne(context);
         Date date = dateFormat.parse("1/1/17");
         assertEquals(date, avg);
@@ -143,10 +141,8 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 
     @Test
     public void testMax() throws Exception {
-        Property<Date> maxProp = Property.create(maxExp(Artist.DATE_OF_BIRTH.path()), Date.class);
-
         Date avg = ObjectSelect.query(Artist.class)
-                .column(maxProp)
+                .column(Artist.DATE_OF_BIRTH.max())
                 .selectOne(context);
         Date date = dateFormat.parse("1/5/17");
         assertEquals(date, avg);
@@ -154,10 +150,8 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 
     @Test
     public void testCountGroupBy() throws Exception {
-        Property<Long> countProp = Property.create(countExp(Artist.ARTIST_NAME.path()), Long.class);
-
         List<Object[]> count = ObjectSelect.query(Artist.class)
-                .columns(countProp, Artist.DATE_OF_BIRTH)
+                .columns(Artist.ARTIST_NAME.count(), Artist.DATE_OF_BIRTH)
                 .orderBy(Artist.DATE_OF_BIRTH.asc())
                 .select(context);
         Date date = dateFormat.parse("1/2/17");
@@ -168,10 +162,8 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 
     @Test
     public void testSelectRelationshipCount() throws Exception {
-        Property<Long> paintingCount = Property.create(countExp(Artist.PAINTING_ARRAY.path()), Long.class);
-
         long count = ObjectSelect.query(Artist.class)
-                .column(paintingCount)
+                .column(Artist.PAINTING_ARRAY.count())
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .selectOne(context);
         assertEquals(4L, count);
@@ -179,10 +171,8 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 
     @Test
     public void testSelectRelationshipCountWithAnotherField() throws Exception {
-        Property<Long> paintingCount = Property.create(countExp(Artist.PAINTING_ARRAY.path()), Long.class);
-
         Object[] result = ObjectSelect.query(Artist.class)
-                .columns(Artist.ARTIST_NAME, paintingCount)
+                .columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .selectOne(context);
         assertEquals("artist1", result[0]);

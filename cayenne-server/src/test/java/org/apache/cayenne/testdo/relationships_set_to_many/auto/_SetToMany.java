@@ -6,7 +6,8 @@ import java.io.ObjectOutputStream;
 import java.util.Set;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SetProperty;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
 
 /**
@@ -21,7 +22,7 @@ public abstract class _SetToMany extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Set<SetToManyTarget>> TARGETS = Property.create("targets", Set.class);
+    public static final SetProperty<SetToManyTarget> TARGETS = PropertyFactory.createSet("targets", SetToManyTarget.class);
 
 
     protected Object targets;

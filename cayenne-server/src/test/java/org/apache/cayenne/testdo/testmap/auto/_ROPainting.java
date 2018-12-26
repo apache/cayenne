@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Artist;
 
 /**
@@ -19,11 +23,12 @@ public abstract class _ROPainting extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PAINTING_ID"), Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
-    public static final Property<BigDecimal> ESTIMATED_PRICE = Property.create("estimatedPrice", BigDecimal.class);
-    public static final Property<String> PAINTING_TITLE = Property.create("paintingTitle", String.class);
-    public static final Property<Artist> TO_ARTIST = Property.create("toArtist", Artist.class);
+    public static final NumericProperty<BigDecimal> ESTIMATED_PRICE = PropertyFactory.createNumeric("estimatedPrice", BigDecimal.class);
+    public static final StringProperty<String> PAINTING_TITLE = PropertyFactory.createString("paintingTitle", String.class);
+    public static final EntityProperty<Artist> TO_ARTIST = PropertyFactory.createEntity("toArtist", Artist.class);
 
     protected BigDecimal estimatedPrice;
     protected String paintingTitle;

@@ -7,7 +7,12 @@ import java.sql.Date;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Painting;
 
 /**
@@ -20,11 +25,12 @@ public abstract class _ROArtist extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ARTIST_ID"), Long.class);
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 
-    public static final Property<String> ARTIST_NAME = Property.create("artistName", String.class);
-    public static final Property<Date> DATE_OF_BIRTH = Property.create("dateOfBirth", Date.class);
-    public static final Property<List<Painting>> PAINTING_ARRAY = Property.create("paintingArray", List.class);
+    public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);
+    public static final DateProperty<Date> DATE_OF_BIRTH = PropertyFactory.createDate("dateOfBirth", Date.class);
+    public static final ListProperty<Painting> PAINTING_ARRAY = PropertyFactory.createList("paintingArray", Painting.class);
 
     protected String artistName;
     protected Date dateOfBirth;

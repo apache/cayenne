@@ -184,6 +184,13 @@ public class ImportUtils {
 	}
 
 	/**
+	 * @since 4.2
+	 */
+	public boolean isNumericPrimitive(String type) {
+		return isNonBooleanPrimitive(type) && !"char".equals(type);
+	}
+
+	/**
 	 * @since 3.0
 	 */
 	public boolean isBoolean(String type) {

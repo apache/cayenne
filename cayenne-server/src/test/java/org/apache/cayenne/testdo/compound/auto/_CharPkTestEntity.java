@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.compound.CharFkTestEntity;
 
 /**
@@ -21,9 +23,9 @@ public abstract class _CharPkTestEntity extends BaseDataObject {
 
     public static final String PK_COL_PK_COLUMN = "PK_COL";
 
-    public static final Property<String> OTHER_COL = Property.create("otherCol", String.class);
-    public static final Property<String> PK_COL = Property.create("pkCol", String.class);
-    public static final Property<List<CharFkTestEntity>> CHAR_FKS = Property.create("charFKs", List.class);
+    public static final StringProperty<String> OTHER_COL = PropertyFactory.createString("otherCol", String.class);
+    public static final StringProperty<String> PK_COL = PropertyFactory.createString("pkCol", String.class);
+    public static final ListProperty<CharFkTestEntity> CHAR_FKS = PropertyFactory.createList("charFKs", CharFkTestEntity.class);
 
     protected String otherCol;
     protected String pkCol;

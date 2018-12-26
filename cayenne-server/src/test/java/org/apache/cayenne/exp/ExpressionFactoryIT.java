@@ -156,16 +156,15 @@ public class ExpressionFactoryIT extends ServerCase {
 
 		// Second version via FunctionExpressionFactory API
 		Expression exp2 = greaterExp(
-				lengthExp(substringExp(Artist.ARTIST_NAME.path(), 1, 3)),
-				lengthExp(trimExp(Artist.ARTIST_NAME.path()))
+				lengthExp(substringExp(Artist.ARTIST_NAME.getExpression(), 1, 3)),
+				lengthExp(trimExp(Artist.ARTIST_NAME.getExpression()))
 		);
 		res = ObjectSelect.query(Artist.class, exp2).select(context);
 		assertEquals(0, res.size());
 
 		// Third version via Property API
-		Property<Integer> lengthSub = Property.create(lengthExp(substringExp(Artist.ARTIST_NAME.path(), 1, 3)), Integer.class);
-		Property<Integer> length = Property.create(lengthExp(trimExp(Artist.ARTIST_NAME.path())), Integer.class);
-		Expression exp3 = lengthSub.gt(length);
+		Expression exp3 = Artist.ARTIST_NAME.substring(1, 3).length()
+				.gt(Artist.ARTIST_NAME.trim().length());
 		res = ObjectSelect.query(Artist.class, exp3).select(context);
 		assertEquals(0, res.size());
 

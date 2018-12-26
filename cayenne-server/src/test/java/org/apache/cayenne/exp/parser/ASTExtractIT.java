@@ -27,8 +27,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.FunctionExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
@@ -40,6 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 4.0
@@ -147,12 +146,12 @@ public class ASTExtractIT extends ServerCase {
 
     @Test
     public void testDayOfYearSelect() {
-        Property<Integer> dayOfYear = Property.create(
-                FunctionExpressionFactory.yearExp(DateTestEntity.DATE_COLUMN.path()), Integer.class);
-
         try {
-            List<Integer> res = ObjectSelect.query(DateTestEntity.class).column(dayOfYear).select(context);
+            List<Integer> res = ObjectSelect.query(DateTestEntity.class)
+                    .column(DateTestEntity.DATE_COLUMN.dayOfYear()).select(context);
             assertEquals(2, res.size());
+            assertTrue(res.contains(59));
+            assertTrue(res.contains(89));
         } catch (CayenneRuntimeException e) {
             if(unitDbAdapter.supportsExtractPart(ASTExtract.DateTimePart.DAY_OF_YEAR)) {
                 throw e;

@@ -24,9 +24,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
@@ -39,7 +40,7 @@ import static org.junit.Assert.*;
 public class ColumnSelectTest {
 
     @Test
-    public void query() throws Exception {
+    public void query() {
         ColumnSelect<Artist> q = new ColumnSelect<>();
         assertNull(q.getColumns());
         assertNull(q.getHaving());
@@ -47,7 +48,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void queryWithOneColumn() throws Exception {
+    public void queryWithOneColumn() {
         ColumnSelect<String> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
         assertTrue(q.singleColumn);
@@ -56,7 +57,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void queryWithOneColumn2() throws Exception {
+    public void queryWithOneColumn2() {
         ColumnSelect<String> q = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
         assertTrue(q.singleColumn);
@@ -65,7 +66,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void queryWithOneColumn3() throws Exception {
+    public void queryWithOneColumn3() {
         ColumnSelect<Object[]> q = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
         assertFalse(q.singleColumn);
@@ -74,7 +75,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void queryWithMultipleColumns() throws Exception {
+    public void queryWithMultipleColumns() {
         ColumnSelect<Object[]> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.getColumns());
         assertFalse(q.singleColumn);
@@ -83,15 +84,15 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void queryCount() throws Exception {
+    public void queryCount() {
         ColumnSelect<Long> q = ObjectSelect.query(Artist.class).count();
-        assertEquals(Collections.singletonList(Property.COUNT), q.getColumns());
+        assertEquals(Collections.singletonList(PropertyFactory.COUNT), q.getColumns());
         assertNull(q.getHaving());
         assertNull(q.getWhere());
     }
 
     @Test
-    public void queryCountWithProperty() throws Exception {
+    public void queryCountWithProperty() {
         ColumnSelect<Long> q = ObjectSelect.query(Artist.class).count(Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME.count()), q.getColumns());
         assertNull(q.getHaving());
@@ -99,7 +100,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void queryMinWithProperty() throws Exception {
+    public void queryMinWithProperty() {
         ColumnSelect<BigDecimal> q = ObjectSelect.query(Artist.class).min(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE));
         assertEquals(Collections.singletonList(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).min()), q.getColumns());
         assertNull(q.getHaving());
@@ -108,7 +109,7 @@ public class ColumnSelectTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void columns() throws Exception {
+    public void columns() {
         ColumnSelect q = new ColumnSelect();
         assertNull(q.getColumns());
         q.columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY);
@@ -122,7 +123,7 @@ public class ColumnSelectTest {
 
 
     @Test
-    public void havingExpression() throws Exception {
+    public void havingExpression() {
         ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -139,7 +140,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void havingString() throws Exception {
+    public void havingString() {
         ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -156,7 +157,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void and() throws Exception {
+    public void and() {
         ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -175,7 +176,7 @@ public class ColumnSelectTest {
     }
 
     @Test
-    public void or() throws Exception {
+    public void or() {
         ColumnSelect q = new ColumnSelect();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -198,13 +199,13 @@ public class ColumnSelectTest {
     public void testColumnsAddByOne() {
         ColumnSelect<Artist> q = new ColumnSelect<>();
 
-        assertEquals(null, q.getColumns());
+        assertNull(q.getColumns());
 
         q.columns(Artist.ARTIST_NAME);
         q.columns(Artist.DATE_OF_BIRTH);
         q.columns(Artist.PAINTING_ARRAY);
 
-        Collection<Property<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
+        Collection<BaseProperty<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
         assertEquals(properties, q.getColumns());
     }
 
@@ -212,12 +213,12 @@ public class ColumnSelectTest {
     public void testColumnsAddAll() {
         ColumnSelect<Artist> q = new ColumnSelect<>();
 
-        assertEquals(null, q.getColumns());
+        assertNull(q.getColumns());
 
         q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
         q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
 
-        Collection<Property<?>> properties = Arrays.asList(
+        Collection<BaseProperty<?>> properties = Arrays.asList(
                 Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY,
                 Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY); // should it be Set instead of List?
         assertEquals(properties, q.getColumns());
@@ -227,13 +228,13 @@ public class ColumnSelectTest {
     public void testColumnAddByOne() {
         ColumnSelect<Artist> q = new ColumnSelect<>();
 
-        assertEquals(null, q.getColumns());
+        assertNull(q.getColumns());
 
         q.column(Artist.ARTIST_NAME);
         q.column(Artist.DATE_OF_BIRTH);
         q.column(Artist.PAINTING_ARRAY);
 
-        Collection<Property<?>> properties = Collections.<Property<?>>singletonList(Artist.PAINTING_ARRAY);
+        Collection<BaseProperty<?>> properties = Collections.singletonList(Artist.PAINTING_ARRAY);
         assertEquals(properties, q.getColumns());
     }
 

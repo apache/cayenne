@@ -24,7 +24,9 @@ import java.util.List;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
@@ -35,10 +37,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.apache.cayenne.exp.FunctionExpressionFactory.avgExp;
-import static org.apache.cayenne.exp.FunctionExpressionFactory.sumExp;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @since 4.0
@@ -66,7 +67,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     }
 
     @Test
-    public void test_SelectIntegerColumn() throws Exception {
+    public void test_SelectIntegerColumn() {
         int intColumn2 = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.INT_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -75,7 +76,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     }
 
     @Test
-    public void test_SelectIntegerList() throws Exception {
+    public void test_SelectIntegerList() {
         List<Integer> intColumns = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.INT_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -85,8 +86,8 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     }
 
     @Test
-    public void test_SelectIntegerExpColumn() throws Exception {
-        Property<Integer> property = Property.create("intColumn",
+    public void test_SelectIntegerExpColumn() {
+        NumericProperty<Integer> property = PropertyFactory.createNumeric("intColumn",
                 ExpressionFactory.exp("(obj:intColumn + obj:intColumn)"), Integer.class);
 
         int intColumn2 = ObjectSelect.query(PrimitivesTestEntity.class)
@@ -97,42 +98,42 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     }
 
     @Test
-    public void test_SelectBooleanColumn() throws Exception {
+    public void test_SelectBooleanColumn() {
         boolean boolColumn = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.BOOLEAN_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
                 .selectFirst(context);
-        assertEquals(false, boolColumn);
+        assertFalse(boolColumn);
     }
 
     @Test
-    public void test_SelectBooleanList() throws Exception {
+    public void test_SelectBooleanList() {
         List<Boolean> intColumns = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(PrimitivesTestEntity.BOOLEAN_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
                 .select(context);
         assertEquals(20, intColumns.size());
-        assertEquals(false, intColumns.get(0));
+        assertFalse(intColumns.get(0));
     }
 
     @Test
-    public void test_SelectBooleanExpColumn() throws Exception {
+    public void test_SelectBooleanExpColumn() {
         if(!unitDbAdapter.supportsSelectBooleanExpression()) {
             return;
         }
 
-        Property<Boolean> property = Property.create("boolColumn",
+        BaseProperty<Boolean> property = PropertyFactory.createBase("boolColumn",
                 ExpressionFactory.exp("(obj:intColumn < 10)"), Boolean.class);
 
         boolean boolColumn = ObjectSelect.query(PrimitivesTestEntity.class)
                 .column(property)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
                 .selectFirst(context);
-        assertEquals(false, boolColumn);
+        assertFalse(boolColumn);
     }
 
     @Test
-    public void test_SelectColumnsList() throws Exception {
+    public void test_SelectColumnsList() {
         List<Object[]> columns = ObjectSelect.query(PrimitivesTestEntity.class)
                 .columns(PrimitivesTestEntity.INT_COLUMN, PrimitivesTestEntity.BOOLEAN_COLUMN)
                 .orderBy(PrimitivesTestEntity.INT_COLUMN.asc())
@@ -144,15 +145,15 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     }
 
     @Test
-    public void test_SelectColumnsExpList() throws Exception {
+    public void test_SelectColumnsExpList() {
         if(!unitDbAdapter.supportsSelectBooleanExpression()) {
             return;
         }
 
-        Property<Integer> intProperty = Property.create("intColumn",
+        NumericProperty<Integer> intProperty = PropertyFactory.createNumeric("intColumn",
                 ExpressionFactory.exp("(obj:intColumn + 1)"), Integer.class);
 
-        Property<Boolean> boolProperty = Property.create("boolColumn",
+        BaseProperty<Boolean> boolProperty = PropertyFactory.createBase("boolColumn",
                 ExpressionFactory.exp("(obj:intColumn = 10)"), Boolean.class);
 
         List<Object[]> columns = ObjectSelect.query(PrimitivesTestEntity.class)
@@ -166,7 +167,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     }
 
     @Test
-    public void testSum() throws Exception {
+    public void testSum() {
         int sum = ObjectSelect.query(PrimitivesTestEntity.class)
                 .sum(PrimitivesTestEntity.INT_COLUMN)
                 .selectOne(context);
@@ -174,7 +175,7 @@ public class ObjectSelect_PrimitiveColumnsIT extends ServerCase {
     }
 
     @Test
-    public void testAvg() throws Exception {
+    public void testAvg() {
         int avg = ObjectSelect.query(PrimitivesTestEntity.class)
                 .avg(PrimitivesTestEntity.INT_COLUMN)
                 .selectOne(context);

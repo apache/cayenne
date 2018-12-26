@@ -40,19 +40,13 @@ ${importUtils.addType("java.io.IOException")}##
 ${importUtils.addType("java.io.ObjectInputStream")}##
 ${importUtils.addType("java.io.ObjectOutputStream")}##
 #if( $createPKProperties )
-${importUtils.addType("org.apache.cayenne.exp.ExpressionFactory")}##
-#end
-#if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) || (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}))
-${importUtils.addType('org.apache.cayenne.exp.Property')}##
+$propertyUtils.addImportForPK($object.DbEntity)##
 #end
 #foreach( $attr in ${object.DeclaredAttributes} )
-$importUtils.addType(${attr.Type})##
+$propertyUtils.addImport($attr)##
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
-$importUtils.addType(${rel.TargetEntity.ClassName})##
-#if(${rel.CollectionType})
-$importUtils.addType(${rel.CollectionType})##
-#end
+$propertyUtils.addImport($rel)##
 #end
 ${importUtils.generate()}
 
@@ -79,7 +73,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
     #foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
         #if( $createPKProperties && !${entityUtils.declaresDbAttribute($idAttr)})
             #set ( $type = "$importUtils.dbAttributeToJavaType($idAttr)")
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = Property.create(ExpressionFactory.dbPathExp("${idAttr.Name}"), ${type}.class});
+    $propertyUtils.propertyDefinition($idAttr)
         #else
     public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";
         #end
@@ -90,22 +84,10 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ## Create Properties ##
 #######################
 #foreach( $attr in ${object.DeclaredAttributes} )
-#set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)")
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($attr.Name)} = Property.create("${attr.Name}", ${stringUtils.stripGeneric($type)}.class);
+    $propertyUtils.propertyDefinition($attr)
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
-#if( $rel.ToMany )
-#if ( ${rel.CollectionType} == "java.util.Map")
-#set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
-#else
-#set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
-#end
-#else
-    #set( $type = "$importUtils.formatJavaType(${rel.TargetEntity.ClassName})" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
-#end
+    $propertyUtils.propertyDefinition($rel)
 #end
 
 ###################

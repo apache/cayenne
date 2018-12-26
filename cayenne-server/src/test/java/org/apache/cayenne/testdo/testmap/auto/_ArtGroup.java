@@ -6,7 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 
@@ -20,12 +25,13 @@ public abstract class _ArtGroup extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> GROUP_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("GROUP_ID"), Integer.class);
     public static final String GROUP_ID_PK_COLUMN = "GROUP_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<Artist>> ARTIST_ARRAY = Property.create("artistArray", List.class);
-    public static final Property<List<ArtGroup>> CHILD_GROUPS_ARRAY = Property.create("childGroupsArray", List.class);
-    public static final Property<ArtGroup> TO_PARENT_GROUP = Property.create("toParentGroup", ArtGroup.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<Artist> ARTIST_ARRAY = PropertyFactory.createList("artistArray", Artist.class);
+    public static final ListProperty<ArtGroup> CHILD_GROUPS_ARRAY = PropertyFactory.createList("childGroupsArray", ArtGroup.class);
+    public static final EntityProperty<ArtGroup> TO_PARENT_GROUP = PropertyFactory.createEntity("toParentGroup", ArtGroup.class);
 
     protected String name;
 

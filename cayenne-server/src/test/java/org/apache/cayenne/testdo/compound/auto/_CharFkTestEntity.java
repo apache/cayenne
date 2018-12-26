@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 
 /**
@@ -20,8 +22,8 @@ public abstract class _CharFkTestEntity extends BaseDataObject {
 
     public static final String PK_PK_COLUMN = "PK";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<CharPkTestEntity> TO_CHAR_PK = Property.create("toCharPK", CharPkTestEntity.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<CharPkTestEntity> TO_CHAR_PK = PropertyFactory.createEntity("toCharPK", CharPkTestEntity.class);
 
     protected String name;
 

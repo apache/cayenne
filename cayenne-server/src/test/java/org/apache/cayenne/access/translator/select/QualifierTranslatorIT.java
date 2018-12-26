@@ -29,8 +29,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.FunctionExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -54,7 +52,7 @@ public class QualifierTranslatorIT extends ServerCase {
 
 	// TODO: not an integration test; extract into *Test
 	@Test
-	public void testNonQualifiedQuery() throws Exception {
+	public void testNonQualifiedQuery() {
 		TstQueryAssembler qa = new TstQueryAssembler(new MockQuery(), node.getAdapter(), node.getEntityResolver());
 
 		try {
@@ -67,8 +65,8 @@ public class QualifierTranslatorIT extends ServerCase {
 
 	// TODO: not an integration test; extract into *Test
 	@Test
-	public void testNullQualifier() throws Exception {
-		TstQueryAssembler qa = new TstQueryAssembler(new SelectQuery<Object>(), node.getAdapter(),
+	public void testNullQualifier() {
+		TstQueryAssembler qa = new TstQueryAssembler(new SelectQuery<>(), node.getAdapter(),
 				node.getEntityResolver());
 
 		StringBuilder out = new StringBuilder();
@@ -77,51 +75,51 @@ public class QualifierTranslatorIT extends ServerCase {
 	}
 
 	@Test
-	public void testBinary_In1() throws Exception {
+	public void testBinary_In1() {
 		doExpressionTest(Exhibit.class, "toGallery.galleryName in ('g1', 'g2', 'g3')", "ta.GALLERY_NAME IN (?, ?, ?)");
 	}
 
 	@Test
-	public void testBinary_In2() throws Exception {
+	public void testBinary_In2() {
 		Expression exp = ExpressionFactory.inExp("toGallery.galleryName",
-				Arrays.asList(new Object[] { "g1", "g2", "g3" }));
+				Arrays.asList("g1", "g2", "g3"));
 		doExpressionTest(Exhibit.class, exp, "ta.GALLERY_NAME IN (?, ?, ?)");
 	}
 
 	@Test
-	public void testBinary_In3() throws Exception {
-		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", new Object[] { "g1", "g2", "g3" });
+	public void testBinary_In3() {
+		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", "g1", "g2", "g3");
 		doExpressionTest(Exhibit.class, exp, "ta.GALLERY_NAME IN (?, ?, ?)");
 	}
 
 	@Test
-	public void testBinary_Like() throws Exception {
+	public void testBinary_Like() {
 		doExpressionTest(Exhibit.class, "toGallery.galleryName like 'a%'", "ta.GALLERY_NAME LIKE ?");
 	}
 
 	@Test
-	public void testBinary_LikeIgnoreCase() throws Exception {
+	public void testBinary_LikeIgnoreCase() {
 		doExpressionTest(Exhibit.class, "toGallery.galleryName likeIgnoreCase 'a%'",
 				"UPPER(ta.GALLERY_NAME) LIKE UPPER(?)");
 	}
 
 	@Test
-	public void testBinary_IsNull() throws Exception {
+	public void testBinary_IsNull() {
 		doExpressionTest(Exhibit.class, "toGallery.galleryName = null", "ta.GALLERY_NAME IS NULL");
 	}
 
 	@Test
-	public void testBinary_IsNotNull() throws Exception {
+	public void testBinary_IsNotNull() {
 		doExpressionTest(Exhibit.class, "toGallery.galleryName != null", "ta.GALLERY_NAME IS NOT NULL");
 	}
 
 	@Test
-	public void testTernary_Between() throws Exception {
+	public void testTernary_Between() {
 		doExpressionTest(Painting.class, "estimatedPrice between 3000 and 15000", "ta.ESTIMATED_PRICE BETWEEN ? AND ?");
 	}
 
 	@Test
-	public void testExtras() throws Exception {
+	public void testExtras() {
 		ObjectId oid1 = new ObjectId("Gallery", "GALLERY_ID", 1);
 		ObjectId oid2 = new ObjectId("Gallery", "GALLERY_ID", 2);
 		Gallery g1 = new Gallery();
@@ -136,27 +134,22 @@ public class QualifierTranslatorIT extends ServerCase {
 	}
 
 	@Test
-	public void testTrim() throws Exception {
-		Expression exp = FunctionExpressionFactory.trimExp(Artist.ARTIST_NAME.path());
-		Property<String> property = Property.create("trimmedName", exp, String.class);
-
-		doExpressionTest(Artist.class, property.like("P%"), "TRIM(ta.ARTIST_NAME) LIKE ?");
+	public void testTrim() {
+		doExpressionTest(Artist.class, Artist.ARTIST_NAME.trim().like("P%"),
+				"TRIM(ta.ARTIST_NAME) LIKE ?");
 	}
 
 	@Test
-	public void testConcat() throws Exception {
-		Expression exp = FunctionExpressionFactory.concatExp("artistName", "dateOfBirth");
-
-		Property<String> property = Property.create("concatNameAndDate", exp, String.class);
-
-		doExpressionTest(Artist.class, property.like("P%"), "CONCAT(ta.ARTIST_NAME, ta.DATE_OF_BIRTH) LIKE ?");
+	public void testConcat() {
+		doExpressionTest(Artist.class, Artist.ARTIST_NAME.concat(Artist.DATE_OF_BIRTH).like("P%"),
+				"CONCAT(ta.ARTIST_NAME, ta.DATE_OF_BIRTH) LIKE ?");
 	}
 
-	private void doExpressionTest(Class<?> queryType, String qualifier, String expectedSQL) throws Exception {
+	private void doExpressionTest(Class<?> queryType, String qualifier, String expectedSQL) {
 		doExpressionTest(queryType, ExpressionFactory.exp(qualifier), expectedSQL);
 	}
 
-	private void doExpressionTest(Class<?> queryType, Expression qualifier, String expectedSQL) throws Exception {
+	private void doExpressionTest(Class<?> queryType, Expression qualifier, String expectedSQL) {
 
 		SelectQuery<?> q = new SelectQuery<>(queryType);
 		q.setQualifier(qualifier);

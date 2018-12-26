@@ -5,7 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 
 /**
@@ -20,7 +21,7 @@ public abstract class _IdMapToManyTarget extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<IdMapToMany> MAP_TO_MANY = Property.create("mapToMany", IdMapToMany.class);
+    public static final EntityProperty<IdMapToMany> MAP_TO_MANY = PropertyFactory.createEntity("mapToMany", IdMapToMany.class);
 
 
     protected Object mapToMany;

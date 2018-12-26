@@ -43,6 +43,7 @@ public interface Artifact {
     String BASE_PACKAGE_KEY = "basePackageName";
     String CREATE_PROPERTY_NAMES = "createPropertyNames";
     String CREATE_PK_PROPERTIES = "createPKProperties";
+    String PROPERTY_UTILS_KEY = "propertyUtils";
 
     TemplateType[] getTemplateTypes(ArtifactGenerationMode mode);
 

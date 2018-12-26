@@ -169,7 +169,9 @@ public class ClassGenerationAction {
 	 * template type combination.
 	 */
 	void resetContextForArtifactTemplate(Artifact artifact, TemplateType templateType) {
-		context.put(Artifact.IMPORT_UTILS_KEY, new ImportUtils());
+        ImportUtils importUtils = new ImportUtils();
+        context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
+		context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
 		artifact.postInitContext(context);
 	}
 

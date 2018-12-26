@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
@@ -101,7 +101,7 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testCompoundPKForObject() throws Exception {
 		createOneCompoundPK();
 
-		List<?> objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+		List<?> objects = context.performQuery(new SelectQuery<>(CompoundPkTestEntity.class));
 		assertEquals(1, objects.size());
 		DataObject object = (DataObject) objects.get(0);
 
@@ -116,7 +116,7 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testIntPKForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
-		List<?> objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+		List<?> objects = context.performQuery(new SelectQuery<>(CompoundPkTestEntity.class));
 		assertEquals(1, objects.size());
 		DataObject object = (DataObject) objects.get(0);
 
@@ -132,7 +132,7 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testIntPKForObjectFailureForNonNumeric() throws Exception {
 		createOneCharPK();
 
-		List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
+		List<?> objects = context.performQuery(new SelectQuery<>(CharPkTestEntity.class));
 		assertEquals(1, objects.size());
 		DataObject object = (DataObject) objects.get(0);
 
@@ -148,7 +148,7 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testPKForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
-		List<?> objects = context.performQuery(new SelectQuery(CompoundPkTestEntity.class));
+		List<?> objects = context.performQuery(new SelectQuery<>(CompoundPkTestEntity.class));
 		assertEquals(1, objects.size());
 		DataObject object = (DataObject) objects.get(0);
 
@@ -164,7 +164,7 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testIntPKForObjectNonNumeric() throws Exception {
 		createOneCharPK();
 
-		List<?> objects = context.performQuery(new SelectQuery(CharPkTestEntity.class));
+		List<?> objects = context.performQuery(new SelectQuery<>(CharPkTestEntity.class));
 		assertEquals(1, objects.size());
 		DataObject object = (DataObject) objects.get(0);
 
@@ -177,7 +177,7 @@ public class CayenneCompoundIT extends ServerCase {
 		createCompoundPKs(20);
 
 		List<Object[]> result = ObjectSelect.query(CompoundPkTestEntity.class)
-				.columns(CompoundPkTestEntity.NAME, Property.createSelf(CompoundPkTestEntity.class))
+				.columns(CompoundPkTestEntity.NAME, PropertyFactory.createSelf(CompoundPkTestEntity.class))
 				.pageSize(7)
 				.select(context);
 		assertEquals(20, result.size());

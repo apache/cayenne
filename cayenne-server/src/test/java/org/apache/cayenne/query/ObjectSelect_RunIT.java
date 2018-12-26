@@ -26,9 +26,6 @@ import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.FunctionExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -101,17 +98,17 @@ public class ObjectSelect_RunIT extends ServerCase {
 		try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
 			int count = 0;
 
-			for (Artist a : it) {
+			while(it.hasNextRow()) {
+				it.nextRow();
 				count++;
 			}
-
 			assertEquals(20, count);
 		}
 	}
 
 	@Test
 	public void test_BatchIterator() {
-		try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5);) {
+		try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5)) {
 			int count = 0;
 
 			for (List<Artist> artistList : it) {
@@ -176,27 +173,25 @@ public class ObjectSelect_RunIT extends ServerCase {
 	@Test
 	public void test_SelectFirst_MoreThanOneMatch() {
 		Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("artist%"))
-				.orderBy("db:ARTIST_ID").selectFirst(context);
+				.orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc()).selectFirst(context);
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
 	}
 
 	@Test
 	public void test_SelectFirst_TrimInWhere() {
-		Expression exp = FunctionExpressionFactory.trimExp(Artist.ARTIST_NAME.path());
-		Property<String> trimmedName = Property.create("trimmed", exp, String.class);
-		Artist a = ObjectSelect.query(Artist.class).where(trimmedName.likeIgnoreCase("artist%"))
-				.orderBy("db:ARTIST_ID").selectFirst(context);
+		Artist a = ObjectSelect.query(Artist.class)
+				.where(Artist.ARTIST_NAME.trim().likeIgnoreCase("artist%"))
+				.orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc()).selectFirst(context);
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
 	}
 
 	@Test
 	public void test_SelectFirst_SubstringInWhere() {
-		Expression exp = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.path(), 2, 3);
-		Property<String> substrName = Property.create("substr", exp, String.class);
-		Artist a = ObjectSelect.query(Artist.class).where(substrName.eq("rti"))
-				.orderBy("db:ARTIST_ID").selectFirst(context);
+		Artist a = ObjectSelect.query(Artist.class)
+				.where(Artist.ARTIST_NAME.substring(2, 3).eq("rti"))
+				.orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc()).selectFirst(context);
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
 	}

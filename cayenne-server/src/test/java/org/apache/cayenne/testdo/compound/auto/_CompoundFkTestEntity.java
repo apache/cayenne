@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 
 /**
@@ -20,8 +22,8 @@ public abstract class _CompoundFkTestEntity extends BaseDataObject {
 
     public static final String PKEY_PK_COLUMN = "PKEY";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<CompoundPkTestEntity> TO_COMPOUND_PK = Property.create("toCompoundPk", CompoundPkTestEntity.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<CompoundPkTestEntity> TO_COMPOUND_PK = PropertyFactory.createEntity("toCompoundPk", CompoundPkTestEntity.class);
 
     protected String name;
 

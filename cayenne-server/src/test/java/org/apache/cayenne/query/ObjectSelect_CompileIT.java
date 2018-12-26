@@ -25,7 +25,7 @@ import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -181,7 +181,7 @@ public class ObjectSelect_CompileIT extends ServerCase {
 		SelectQuery selectQuery2 = (SelectQuery) newQ.createReplacementQuery(resolver);
 		assertNotNull(selectQuery2.getColumns());
 
-		Collection<Property<?>> properties = Arrays.<Property<?>>asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+		Collection<BaseProperty<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
 		assertEquals(properties, selectQuery2.getColumns());
 	}
 

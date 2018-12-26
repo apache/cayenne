@@ -34,32 +34,32 @@ public class ExpressionEvaluateInMemoryTest {
 
 	@Test
 	public void testEvaluateADD() {
-		Expression add = new ASTAdd(new Object[] { new Integer(1), new Double(5.5) });
+		Expression add = new ASTAdd(1, 5.5);
 		assertEquals(6.5, ((Number) add.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
 	public void testEvaluateSubtract() {
-		Expression subtract = new ASTSubtract(new Object[] { new Integer(1), new Double(0.1), new Double(0.2) });
+		Expression subtract = new ASTSubtract(1, 0.1, 0.2);
 		assertEquals(0.7, ((Number) subtract.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
 	public void testEvaluateMultiply() {
-		Expression multiply = new ASTMultiply(new Object[] { new Integer(2), new Double(3.5) });
+		Expression multiply = new ASTMultiply(2, 3.5);
 		assertEquals(7, ((Number) multiply.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
 	public void testEvaluateDivide() {
-		Expression divide = new ASTDivide(new Object[] { new BigDecimal("7.0"), new BigDecimal("2.0") });
+		Expression divide = new ASTDivide(new BigDecimal("7.0"), new BigDecimal("2.0"));
 		assertEquals(3.5, ((Number) divide.evaluate(null)).doubleValue(), 0.0001);
 	}
 
 	@Test
 	public void testEvaluateNegate() {
-		assertEquals(-3, ((Number) new ASTNegate(new Integer(3)).evaluate(null)).intValue());
-		assertEquals(5, ((Number) new ASTNegate(new Integer(-5)).evaluate(null)).intValue());
+		assertEquals(-3, ((Number) new ASTNegate(Integer.valueOf(3)).evaluate(null)).intValue());
+		assertEquals(5, ((Number) new ASTNegate(Integer.valueOf(-5)).evaluate(null)).intValue());
 	}
 
 	@Test

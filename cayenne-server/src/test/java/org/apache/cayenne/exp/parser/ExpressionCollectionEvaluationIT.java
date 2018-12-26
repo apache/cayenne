@@ -27,7 +27,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -107,12 +107,19 @@ public class ExpressionCollectionEvaluationIT extends ServerCase {
         testExpression("paintingArray.estimatedPrice + 2", BigDecimal.class);
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Comparable<T>> void testExpression(String expStr, Class<T> tClass) {
         Expression exp = ExpressionFactory.exp(expStr);
-        Object res = exp.evaluate(ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).selectOne(context));
-        List<T> sqlResult = ObjectSelect.query(Artist.class).column(Property.create(exp, tClass)).orderBy("db:paintingArray.PAINTING_ID").select(context);
+        Object res = exp.evaluate(ObjectSelect
+                .query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .selectOne(context));
+        List<T> sqlResult = ObjectSelect.query(Artist.class)
+                .column(PropertyFactory.createBase(exp, tClass))
+                .orderBy("db:paintingArray.PAINTING_ID")
+                .select(context);
 
-        Collections.sort((List)res);
+        Collections.sort((List<T>)res);
         Collections.sort(sqlResult);
 
         assertEquals(3, sqlResult.size());

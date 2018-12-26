@@ -137,11 +137,8 @@ public class DataContextOrderingIT extends ServerCase {
 
         context.commitChanges();
 
-        Expression exp = FunctionExpressionFactory.substringExp(Artist.ARTIST_NAME.path(), 2, 1);
-        Property<String> nameSubstr = Property.create("name", exp, String.class);
-
         SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-        query.addOrdering(nameSubstr.desc());
+        query.addOrdering(Artist.ARTIST_NAME.substring(2, 1).desc());
 
         List<Artist> list = query.select(context);
         assertEquals(3, list.size());

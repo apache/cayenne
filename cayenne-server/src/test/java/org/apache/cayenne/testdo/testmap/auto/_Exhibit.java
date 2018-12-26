@@ -7,7 +7,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 
@@ -21,12 +26,13 @@ public abstract class _Exhibit extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> EXHIBIT_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("EXHIBIT_ID"), Integer.class);
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
-    public static final Property<Date> CLOSING_DATE = Property.create("closingDate", Date.class);
-    public static final Property<Date> OPENING_DATE = Property.create("openingDate", Date.class);
-    public static final Property<List<ArtistExhibit>> ARTIST_EXHIBIT_ARRAY = Property.create("artistExhibitArray", List.class);
-    public static final Property<Gallery> TO_GALLERY = Property.create("toGallery", Gallery.class);
+    public static final DateProperty<Date> CLOSING_DATE = PropertyFactory.createDate("closingDate", Date.class);
+    public static final DateProperty<Date> OPENING_DATE = PropertyFactory.createDate("openingDate", Date.class);
+    public static final ListProperty<ArtistExhibit> ARTIST_EXHIBIT_ARRAY = PropertyFactory.createList("artistExhibitArray", ArtistExhibit.class);
+    public static final EntityProperty<Gallery> TO_GALLERY = PropertyFactory.createEntity("toGallery", Gallery.class);
 
     protected Date closingDate;
     protected Date openingDate;

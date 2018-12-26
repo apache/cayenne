@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
 
@@ -20,11 +24,12 @@ public abstract class _Gallery extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> GALLERY_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("GALLERY_ID"), Integer.class);
     public static final String GALLERY_ID_PK_COLUMN = "GALLERY_ID";
 
-    public static final Property<String> GALLERY_NAME = Property.create("galleryName", String.class);
-    public static final Property<List<Exhibit>> EXHIBIT_ARRAY = Property.create("exhibitArray", List.class);
-    public static final Property<List<Painting>> PAINTING_ARRAY = Property.create("paintingArray", List.class);
+    public static final StringProperty<String> GALLERY_NAME = PropertyFactory.createString("galleryName", String.class);
+    public static final ListProperty<Exhibit> EXHIBIT_ARRAY = PropertyFactory.createList("exhibitArray", Exhibit.class);
+    public static final ListProperty<Painting> PAINTING_ARRAY = PropertyFactory.createList("paintingArray", Painting.class);
 
     protected String galleryName;
 

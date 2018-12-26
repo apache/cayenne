@@ -22,7 +22,7 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -113,7 +113,7 @@ public class UUIDIT extends ServerCase {
         assertEquals(id, readValue);
 
         UUID readValue2 = ObjectSelect.query(UuidTestEntity.class)
-                .column(Property.create(ExpressionFactory.dbPathExp("UUID"), UUID.class)).selectOne(context);
+                .column(PropertyFactory.createBase(ExpressionFactory.dbPathExp("UUID"), UUID.class)).selectOne(context);
 
         assertEquals(id, readValue2);
     }

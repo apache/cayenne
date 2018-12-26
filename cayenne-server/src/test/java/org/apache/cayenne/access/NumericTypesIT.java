@@ -24,7 +24,8 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -320,8 +321,8 @@ public class NumericTypesIT extends ServerCase {
 
         assertEquals(i, readValue);
 
-        Property<BigInteger> calculated =
-                Property.create(ExpressionFactory.exp("bigIntegerField + 1"), BigInteger.class);
+        NumericProperty<BigInteger> calculated =
+                PropertyFactory.createNumeric(ExpressionFactory.exp("bigIntegerField + 1"), BigInteger.class);
 
         BigInteger readValue2 = ObjectSelect.query(BigIntegerEntity.class)
                 .column(calculated).selectOne(context);

@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 
 /**
@@ -22,10 +24,10 @@ public abstract class _CompoundPkTestEntity extends BaseDataObject {
     public static final String KEY1_PK_COLUMN = "KEY1";
     public static final String KEY2_PK_COLUMN = "KEY2";
 
-    public static final Property<String> KEY1 = Property.create("key1", String.class);
-    public static final Property<String> KEY2 = Property.create("key2", String.class);
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<CompoundFkTestEntity>> COMPOUND_FK_ARRAY = Property.create("compoundFkArray", List.class);
+    public static final StringProperty<String> KEY1 = PropertyFactory.createString("key1", String.class);
+    public static final StringProperty<String> KEY2 = PropertyFactory.createString("key2", String.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<CompoundFkTestEntity> COMPOUND_FK_ARRAY = PropertyFactory.createList("compoundFkArray", CompoundFkTestEntity.class);
 
     protected String key1;
     protected String key2;

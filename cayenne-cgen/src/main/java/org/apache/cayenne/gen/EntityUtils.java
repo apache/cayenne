@@ -232,30 +232,28 @@ public class EntityUtils {
      * @return The type of the attribute keyed on.
      */
     public String getMapKeyType(final ObjRelationship relationship) {
+        return getMapKeyTypeInternal(relationship);
+    }
 
-        ObjEntity targetEntity = (ObjEntity) relationship.getTargetEntity();
+    static String getMapKeyTypeInternal(final ObjRelationship relationship) {
 
-        // If the map key is null, then we're doing look-ups by actual object
-        // key.
+        ObjEntity targetEntity = relationship.getTargetEntity();
+
+        // If the map key is null, then we're doing look-ups by actual object key.
         if (relationship.getMapKey() == null) {
 
-            // If it's a multi-column key, then the return type is always
-            // ObjectId.
+            // If it's a multi-column key, then the return type is always ObjectId.
             DbEntity dbEntity = targetEntity.getDbEntity();
             if ((dbEntity != null) && (dbEntity.getPrimaryKeys().size() > 1)) {
                 return ObjectId.class.getName();
             }
 
-            // If it's a single column key or no key exists at all, then we
-            // really don't
-            // know what the key type is,
+            // If it's a single column key or no key exists at all, then we really don't know what the key type is,
             // so default to Object.
             return Object.class.getName();
         }
 
-        // If the map key is a non-default attribute, then fetch the attribute
-        // and return
-        // its type.
+        // If the map key is a non-default attribute, then fetch the attribute and return its type.
         ObjAttribute attribute = targetEntity.getAttribute(relationship.getMapKey());
         if (attribute == null) {
             throw new CayenneRuntimeException("Invalid map key '%s', no matching attribute found", relationship.getMapKey());

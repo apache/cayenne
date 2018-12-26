@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -55,10 +54,8 @@ public class ASTFunctionCallMathIT extends ServerCase {
     public void testASTAbs() throws Exception {
         TablePrimitives p1 = createPrimitives(-10);
 
-        ASTAbs exp = new ASTAbs(TablePrimitives.INT_COLUMN.path());
-        Property<Integer> intColumn = Property.create("intColumn", exp, Integer.class);
-
-        TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class).where(intColumn.eq(10)).selectOne(context);
+        TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class)
+                .where(TablePrimitives.INT_COLUMN.abs().eq(10)).selectOne(context);
         assertEquals(p1, p2);
     }
 
@@ -66,10 +63,8 @@ public class ASTFunctionCallMathIT extends ServerCase {
     public void testASTSqrt() throws Exception {
         TablePrimitives p1 = createPrimitives(9);
 
-        ASTSqrt exp = new ASTSqrt(TablePrimitives.INT_COLUMN.path());
-        Property<Integer> intColumn = Property.create("intColumn", exp, Integer.class);
-
-        TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class).where(intColumn.eq(3)).selectOne(context);
+        TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class)
+                .where(TablePrimitives.INT_COLUMN.sqrt().eq(3)).selectOne(context);
         assertEquals(p1, p2);
     }
 
@@ -77,10 +72,8 @@ public class ASTFunctionCallMathIT extends ServerCase {
     public void testASTMod() throws Exception {
         TablePrimitives p1 = createPrimitives(10);
 
-        ASTMod exp = new ASTMod(TablePrimitives.INT_COLUMN.path(), new ASTScalar((Integer)3));
-        Property<Integer> intColumn = Property.create("intColumn", exp, Integer.class);
-
-        TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class).where(intColumn.eq(1)).selectOne(context);
+        TablePrimitives p2 = ObjectSelect.query(TablePrimitives.class)
+                .where(TablePrimitives.INT_COLUMN.mod(3).eq(1)).selectOne(context);
         assertEquals(p1, p2);
     }
 
