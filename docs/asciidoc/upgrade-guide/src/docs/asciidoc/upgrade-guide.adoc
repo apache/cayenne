@@ -11,7 +11,7 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-= Guide to 4.1 Features
+= Guide to {project-major-version} Features
 :revnumber: {project-major-version} ({project-version})
 // enable section numbering, limiting depth to 2
 :sectnums:
@@ -36,7 +36,7 @@ is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND
 See the License for the specific language governing permissions and limitations under the License._#
 
 
-This guide highlights the new features and changes introduced in Apache Cayenne 4.1. For a full list of changes consult
+This guide highlights the new features and changes introduced in Apache Cayenne 4.2. For a full list of changes consult
 RELEASE-NOTES.txt included in Cayenne download. For release-specific upgrade instructions check UPGRADE.txt.
 
 include::_upgrade-guide/new-features.adoc[]

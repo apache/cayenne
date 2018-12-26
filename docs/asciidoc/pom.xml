@@ -47,7 +47,7 @@
         <asciidoctorj.pdf.version>1.5.0-alpha.16</asciidoctorj.pdf.version>
         <jruby.version>9.2.0.0</jruby.version>
         <cayenne.version>${project.version}</cayenne.version>
-        <cayenne.major.version>4.1</cayenne.major.version>
+        <cayenne.major.version>4.2</cayenne.major.version>
     </properties>
 
     <dependencies>

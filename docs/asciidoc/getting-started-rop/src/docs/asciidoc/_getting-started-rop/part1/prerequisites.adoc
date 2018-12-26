@@ -22,4 +22,4 @@ This tutorial starts where "Getting Started with Cayenne" left off. If you have 
 * Step 4 - Create Java Classes
 * Step 5 - Convert the project to webapp.
 
-Note that at "Step 5" you can skip the JSP creation part. Just setup web.xml and maven-jetty-plugin in the POM.
+Note that at "Step 5" you can skip the JSP creation part. Just setup `web.xml` and `maven-jetty-plugin` in the POM.

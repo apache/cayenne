@@ -26,6 +26,10 @@ include::../var.adoc[]
 |===
 |Cayenne Version |Java Version |Status
 
+|4.2
+|Java 1.8 or newer
+|Development
+
 |4.1
 |Java 1.8 or newer
 |Beta
@@ -34,12 +38,8 @@ include::../var.adoc[]
 |Java 1.7 or newer
 |Stable
 
-|3.1
-|Java 1.5 or newer
-|Stable
-
-|3.0
-|Java 1.5
+|3.0 / 3.1
+|Java 1.5 -- Java 1.8
 |Aging
 
 |1.2 / 2.0
