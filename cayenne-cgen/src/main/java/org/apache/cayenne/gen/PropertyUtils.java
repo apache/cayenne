@@ -256,7 +256,7 @@ public class PropertyUtils {
                 return MapProperty.class.getName();
             }
 
-            if (java.util.List.class.getName().equals(collectionType)) {
+            if (java.util.List.class.getName().equals(collectionType) || java.util.Collection.class.getName().equals(collectionType)) {
                 return ListProperty.class.getName();
             }
 
