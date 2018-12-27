@@ -7,7 +7,12 @@ import java.sql.Date;
 import java.util.Map;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.MapProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 
 /**
@@ -20,11 +25,12 @@ public abstract class _Activity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final StringProperty<String> ACTIVITY_ID_PK_PROPERTY = PropertyFactory.createString(ExpressionFactory.dbPathExp("ACTIVITY_ID"), String.class);
     public static final String ACTIVITY_ID_PK_COLUMN = "ACTIVITY_ID";
 
-    public static final Property<Date> APPOINTMENT_DATE = Property.create("appointmentDate", Date.class);
-    public static final Property<Integer> APPOINTMENT_NO = Property.create("appointmentNo", Integer.class);
-    public static final Property<Map<String, ActivityResult>> RESULTS = Property.create("results", Map.class);
+    public static final DateProperty<Date> APPOINTMENT_DATE = PropertyFactory.createDate("appointmentDate", Date.class);
+    public static final NumericProperty<Integer> APPOINTMENT_NO = PropertyFactory.createNumeric("appointmentNo", Integer.class);
+    public static final MapProperty<String, ActivityResult> RESULTS = PropertyFactory.createMap("results", String.class, ActivityResult.class);
 
     protected Date appointmentDate;
     protected int appointmentNo;
@@ -93,7 +99,7 @@ public abstract class _Activity extends BaseDataObject {
                 this.appointmentDate = (Date)val;
                 break;
             case "appointmentNo":
-                this.appointmentNo = val == null ? 0 : (Integer)val;
+                this.appointmentNo = val == null ? 0 : (int)val;
                 break;
             case "results":
                 this.results = val;

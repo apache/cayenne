@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.weighted_sort.SortRoot;
 
 /**
@@ -18,9 +21,10 @@ public abstract class _SortDep extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Long.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<SortRoot> ROOT = Property.create("root", SortRoot.class);
+    public static final EntityProperty<SortRoot> ROOT = PropertyFactory.createEntity("root", SortRoot.class);
 
 
     protected Object root;

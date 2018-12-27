@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_clob.ClobDetail;
 
 /**
@@ -19,11 +23,12 @@ public abstract class _ClobMaster extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> CLOB_MASTER_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("CLOB_MASTER_ID"), Integer.class);
     public static final String CLOB_MASTER_ID_PK_COLUMN = "CLOB_MASTER_ID";
 
-    public static final Property<String> CLOB_COLUMN = Property.create("clobColumn", String.class);
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<ClobDetail>> DETAILS = Property.create("details", List.class);
+    public static final StringProperty<String> CLOB_COLUMN = PropertyFactory.createString("clobColumn", String.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<ClobDetail> DETAILS = PropertyFactory.createList("details", ClobDetail.class);
 
     protected String clobColumn;
     protected String name;

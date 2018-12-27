@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.things.Box;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _BoxInfo extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Long.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> COLOR = Property.create("color", String.class);
-    public static final Property<Box> BOX = Property.create("box", Box.class);
+    public static final StringProperty<String> COLOR = PropertyFactory.createString("color", String.class);
+    public static final EntityProperty<Box> BOX = PropertyFactory.createEntity("box", Box.class);
 
     protected String color;
 

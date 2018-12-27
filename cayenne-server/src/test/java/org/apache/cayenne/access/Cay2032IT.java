@@ -87,7 +87,7 @@ public class Cay2032IT extends ServerCase {
     public void testPrefetchDisjoint() throws Exception {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjoint())
-                .orderBy("db:team_id", SortOrder.ASCENDING)
+                .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
                 .select(context);
 
         checkResult(result);
@@ -97,7 +97,7 @@ public class Cay2032IT extends ServerCase {
     public void testPrefetchDisjointById() throws Exception {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.disjointById())
-                .orderBy("db:team_id", SortOrder.ASCENDING)
+                .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
                 .select(context);
 
         checkResult(result);
@@ -107,7 +107,7 @@ public class Cay2032IT extends ServerCase {
     public void testPrefetchJoint() throws Exception {
         List<Team> result = ObjectSelect.query(Team.class)
                 .prefetch(Team.TEAM_USERS.joint())
-                .orderBy("db:team_id", SortOrder.ASCENDING)
+                .orderBy(Team.TEAM_ID_PK_PROPERTY.asc())
                 .select(context);
 
         checkResult(result);

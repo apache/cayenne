@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 
 /**
@@ -18,9 +21,10 @@ public abstract class _EnumEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Enum1> ENUM_ATTRIBUTE = Property.create("enumAttribute", Enum1.class);
+    public static final BaseProperty<Enum1> ENUM_ATTRIBUTE = PropertyFactory.createBase("enumAttribute", Enum1.class);
 
     protected Enum1 enumAttribute;
 

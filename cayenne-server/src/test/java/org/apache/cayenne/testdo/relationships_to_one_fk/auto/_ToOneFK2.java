@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 
 /**
@@ -18,9 +21,10 @@ public abstract class _ToOneFK2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> TO_ONE_FK2_PK_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("TO_ONE_FK2_PK"), Integer.class);
     public static final String TO_ONE_FK2_PK_PK_COLUMN = "TO_ONE_FK2_PK";
 
-    public static final Property<ToOneFK1> TO_ONE_TO_FK = Property.create("toOneToFK", ToOneFK1.class);
+    public static final EntityProperty<ToOneFK1> TO_ONE_TO_FK = PropertyFactory.createEntity("toOneToFK", ToOneFK1.class);
 
 
     protected Object toOneToFK;

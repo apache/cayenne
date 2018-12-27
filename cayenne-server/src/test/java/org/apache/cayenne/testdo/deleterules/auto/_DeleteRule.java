@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.deleterules.DeleteCascade;
 import org.apache.cayenne.testdo.deleterules.DeleteDeny;
 import org.apache.cayenne.testdo.deleterules.DeleteNullify;
@@ -21,12 +25,13 @@ public abstract class _DeleteRule extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> DELETE_RULE_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("DELETE_RULE_ID"), Integer.class);
     public static final String DELETE_RULE_ID_PK_COLUMN = "DELETE_RULE_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<DeleteCascade>> FROM_CASCADE = Property.create("fromCascade", List.class);
-    public static final Property<List<DeleteDeny>> FROM_DENY = Property.create("fromDeny", List.class);
-    public static final Property<List<DeleteNullify>> FROM_NULLIFY = Property.create("fromNullify", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<DeleteCascade> FROM_CASCADE = PropertyFactory.createList("fromCascade", DeleteCascade.class);
+    public static final ListProperty<DeleteDeny> FROM_DENY = PropertyFactory.createList("fromDeny", DeleteDeny.class);
+    public static final ListProperty<DeleteNullify> FROM_NULLIFY = PropertyFactory.createList("fromNullify", DeleteNullify.class);
 
     protected String name;
 

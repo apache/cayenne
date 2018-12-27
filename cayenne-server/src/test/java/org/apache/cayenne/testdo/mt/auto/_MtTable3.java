@@ -6,7 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.mt.MtTable2;
 
 /**
@@ -19,12 +24,13 @@ public abstract class _MtTable3 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> TABLE3_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("TABLE3_ID"), Integer.class);
     public static final String TABLE3_ID_PK_COLUMN = "TABLE3_ID";
 
-    public static final Property<byte[]> BINARY_COLUMN = Property.create("binaryColumn", byte[].class);
-    public static final Property<String> CHAR_COLUMN = Property.create("charColumn", String.class);
-    public static final Property<Integer> INT_COLUMN = Property.create("intColumn", Integer.class);
-    public static final Property<List<MtTable2>> TABLE2ARRAY = Property.create("table2Array", List.class);
+    public static final BaseProperty<byte[]> BINARY_COLUMN = PropertyFactory.createBase("binaryColumn", byte[].class);
+    public static final StringProperty<String> CHAR_COLUMN = PropertyFactory.createString("charColumn", String.class);
+    public static final NumericProperty<Integer> INT_COLUMN = PropertyFactory.createNumeric("intColumn", Integer.class);
+    public static final ListProperty<MtTable2> TABLE2ARRAY = PropertyFactory.createList("table2Array", MtTable2.class);
 
     protected byte[] binaryColumn;
     protected String charColumn;

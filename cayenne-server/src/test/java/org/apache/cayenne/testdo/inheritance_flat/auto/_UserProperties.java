@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 
 /**
@@ -20,9 +24,9 @@ public abstract class _UserProperties extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<Long> ID = Property.create("id", Long.class);
-    public static final Property<String> NICKNAME = Property.create("nickname", String.class);
-    public static final Property<User> USER = Property.create("user", User.class);
+    public static final NumericProperty<Long> ID = PropertyFactory.createNumeric("id", Long.class);
+    public static final StringProperty<String> NICKNAME = PropertyFactory.createString("nickname", String.class);
+    public static final EntityProperty<User> USER = PropertyFactory.createEntity("user", User.class);
 
     protected Long id;
     protected String nickname;

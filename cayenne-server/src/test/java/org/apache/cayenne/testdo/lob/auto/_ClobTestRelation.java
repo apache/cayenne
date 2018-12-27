@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 
 /**
@@ -20,9 +23,9 @@ public abstract class _ClobTestRelation extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> ID = Property.create("id", Integer.class);
-    public static final Property<Integer> VALUE = Property.create("value", Integer.class);
-    public static final Property<ClobTestEntity> CLOB_ID = Property.create("clobId", ClobTestEntity.class);
+    public static final NumericProperty<Integer> ID = PropertyFactory.createNumeric("id", Integer.class);
+    public static final NumericProperty<Integer> VALUE = PropertyFactory.createNumeric("value", Integer.class);
+    public static final EntityProperty<ClobTestEntity> CLOB_ID = PropertyFactory.createEntity("clobId", ClobTestEntity.class);
 
     protected Integer id;
     protected Integer value;

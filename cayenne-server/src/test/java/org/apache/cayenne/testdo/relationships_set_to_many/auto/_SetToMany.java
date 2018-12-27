@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.util.Set;
 
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SetProperty;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
@@ -20,6 +22,7 @@ public abstract class _SetToMany extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final SetProperty<SetToManyTarget> TARGETS = PropertyFactory.createSet("targets", SetToManyTarget.class);

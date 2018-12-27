@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
 
 /**
@@ -18,9 +21,10 @@ public abstract class _DeleteRuleTest1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> DEL_RULE_TEST1_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("DEL_RULE_TEST1_ID"), Integer.class);
     public static final String DEL_RULE_TEST1_ID_PK_COLUMN = "DEL_RULE_TEST1_ID";
 
-    public static final Property<DeleteRuleTest2> TEST2 = Property.create("test2", DeleteRuleTest2.class);
+    public static final EntityProperty<DeleteRuleTest2> TEST2 = PropertyFactory.createEntity("test2", DeleteRuleTest2.class);
 
 
     protected Object test2;

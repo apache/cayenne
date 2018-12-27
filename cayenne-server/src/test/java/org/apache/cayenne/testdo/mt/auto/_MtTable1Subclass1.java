@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.mt.MtTable1;
 
 /**
@@ -17,9 +20,10 @@ public abstract class _MtTable1Subclass1 extends MtTable1 {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> TABLE1_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("TABLE1_ID"), Integer.class);
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";
 
-    public static final Property<String> SUBCLASS1ATTRIBUTE1 = Property.create("subclass1Attribute1", String.class);
+    public static final StringProperty<String> SUBCLASS1ATTRIBUTE1 = PropertyFactory.createString("subclass1Attribute1", String.class);
 
     protected String subclass1Attribute1;
 

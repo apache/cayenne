@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.toone.TooneMaster;
 
 /**
@@ -18,9 +21,10 @@ public abstract class _TooneDep extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<TooneMaster> TO_MASTER = Property.create("toMaster", TooneMaster.class);
+    public static final EntityProperty<TooneMaster> TO_MASTER = PropertyFactory.createEntity("toMaster", TooneMaster.class);
 
 
     protected Object toMaster;

@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_with_enum.Dependent;
 
 /**
@@ -19,11 +23,12 @@ public abstract class _Root extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("id"), Integer.class);
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<Short> TYPE = Property.create("type", Short.class);
-    public static final Property<List<Dependent>> DEPENDENTS = Property.create("dependents", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final NumericProperty<Short> TYPE = PropertyFactory.createNumeric("type", Short.class);
+    public static final ListProperty<Dependent> DEPENDENTS = PropertyFactory.createList("dependents", Dependent.class);
 
     protected String name;
     protected short type;

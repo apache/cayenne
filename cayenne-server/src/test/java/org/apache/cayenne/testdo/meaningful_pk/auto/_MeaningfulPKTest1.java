@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 
 /**
@@ -21,11 +25,11 @@ public abstract class _MeaningfulPKTest1 extends BaseDataObject {
 
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 
-    public static final Property<String> DESCR = Property.create("descr", String.class);
-    public static final Property<Integer> INT_ATTRIBUTE = Property.create("intAttribute", Integer.class);
-    public static final Property<Integer> INT_NULLABLE_ATTRIBUTE = Property.create("intNullableAttribute", Integer.class);
-    public static final Property<Integer> PK_ATTRIBUTE = Property.create("pkAttribute", Integer.class);
-    public static final Property<List<MeaningfulPKDep>> MEANINGFUL_PKDEP_ARRAY = Property.create("meaningfulPKDepArray", List.class);
+    public static final StringProperty<String> DESCR = PropertyFactory.createString("descr", String.class);
+    public static final NumericProperty<Integer> INT_ATTRIBUTE = PropertyFactory.createNumeric("intAttribute", Integer.class);
+    public static final NumericProperty<Integer> INT_NULLABLE_ATTRIBUTE = PropertyFactory.createNumeric("intNullableAttribute", Integer.class);
+    public static final NumericProperty<Integer> PK_ATTRIBUTE = PropertyFactory.createNumeric("pkAttribute", Integer.class);
+    public static final ListProperty<MeaningfulPKDep> MEANINGFUL_PKDEP_ARRAY = PropertyFactory.createList("meaningfulPKDepArray", MeaningfulPKDep.class);
 
     protected String descr;
     protected int intAttribute;

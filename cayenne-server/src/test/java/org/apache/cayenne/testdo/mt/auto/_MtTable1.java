@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.mt.MtTable2;
 
 /**
@@ -19,11 +23,12 @@ public abstract class _MtTable1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> TABLE1_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("TABLE1_ID"), Integer.class);
     public static final String TABLE1_ID_PK_COLUMN = "TABLE1_ID";
 
-    public static final Property<String> GLOBAL_ATTRIBUTE1 = Property.create("globalAttribute1", String.class);
-    public static final Property<String> SERVER_ATTRIBUTE1 = Property.create("serverAttribute1", String.class);
-    public static final Property<List<MtTable2>> TABLE2ARRAY = Property.create("table2Array", List.class);
+    public static final StringProperty<String> GLOBAL_ATTRIBUTE1 = PropertyFactory.createString("globalAttribute1", String.class);
+    public static final StringProperty<String> SERVER_ATTRIBUTE1 = PropertyFactory.createString("serverAttribute1", String.class);
+    public static final ListProperty<MtTable2> TABLE2ARRAY = PropertyFactory.createList("table2Array", MtTable2.class);
 
     protected String globalAttribute1;
     protected String serverAttribute1;

@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance.DirectToSubEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 
@@ -19,11 +23,12 @@ public abstract class _BaseEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> BASE_ENTITY_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("BASE_ENTITY_ID"), Integer.class);
     public static final String BASE_ENTITY_ID_PK_COLUMN = "BASE_ENTITY_ID";
 
-    public static final Property<String> ENTITY_TYPE = Property.create("entityType", String.class);
-    public static final Property<DirectToSubEntity> TO_DIRECT_TO_SUB_ENTITY = Property.create("toDirectToSubEntity", DirectToSubEntity.class);
-    public static final Property<RelatedEntity> TO_RELATED_ENTITY = Property.create("toRelatedEntity", RelatedEntity.class);
+    public static final StringProperty<String> ENTITY_TYPE = PropertyFactory.createString("entityType", String.class);
+    public static final EntityProperty<DirectToSubEntity> TO_DIRECT_TO_SUB_ENTITY = PropertyFactory.createEntity("toDirectToSubEntity", DirectToSubEntity.class);
+    public static final EntityProperty<RelatedEntity> TO_RELATED_ENTITY = PropertyFactory.createEntity("toRelatedEntity", RelatedEntity.class);
 
     protected String entityType;
 

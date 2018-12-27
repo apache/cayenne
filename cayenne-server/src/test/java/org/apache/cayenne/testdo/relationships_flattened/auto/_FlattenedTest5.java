@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _FlattenedTest5 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> FT5_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("FT5_ID"), Integer.class);
     public static final String FT5_ID_PK_COLUMN = "FT5_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<FlattenedTest1> TO_FT1 = Property.create("toFT1", FlattenedTest1.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<FlattenedTest1> TO_FT1 = PropertyFactory.createEntity("toFT1", FlattenedTest1.class);
 
     protected String name;
 

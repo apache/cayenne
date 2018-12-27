@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.generated.GeneratedColumnDep;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _GeneratedColumnTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> GENERATED_COLUMN_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("GENERATED_COLUMN"), Integer.class);
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<GeneratedColumnDep> TO_DEP = Property.create("toDep", GeneratedColumnDep.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<GeneratedColumnDep> TO_DEP = PropertyFactory.createEntity("toDep", GeneratedColumnDep.class);
 
     protected String name;
 

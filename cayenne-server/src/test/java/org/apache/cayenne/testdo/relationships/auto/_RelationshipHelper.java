@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
@@ -21,12 +25,13 @@ public abstract class _RelationshipHelper extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> RELATIONSHIP_HELPER_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("RELATIONSHIP_HELPER_ID"), Integer.class);
     public static final String RELATIONSHIP_HELPER_ID_PK_COLUMN = "RELATIONSHIP_HELPER_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<FkOfDifferentType>> FKS_OF_DIFFERENT_TYPE = Property.create("fksOfDifferentType", List.class);
-    public static final Property<List<MeaningfulFK>> MEANIGFUL_FKS = Property.create("meanigfulFKs", List.class);
-    public static final Property<List<ReflexiveAndToOne>> REFLEXIVE_AND_TO_ONE_ARRAY = Property.create("reflexiveAndToOneArray", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<FkOfDifferentType> FKS_OF_DIFFERENT_TYPE = PropertyFactory.createList("fksOfDifferentType", FkOfDifferentType.class);
+    public static final ListProperty<MeaningfulFK> MEANIGFUL_FKS = PropertyFactory.createList("meanigfulFKs", MeaningfulFK.class);
+    public static final ListProperty<ReflexiveAndToOne> REFLEXIVE_AND_TO_ONE_ARRAY = PropertyFactory.createList("reflexiveAndToOneArray", ReflexiveAndToOne.class);
 
     protected String name;
 

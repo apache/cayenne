@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
@@ -20,6 +22,7 @@ public abstract class _CharFkTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> PK_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PK"), Integer.class);
     public static final String PK_PK_COLUMN = "PK";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

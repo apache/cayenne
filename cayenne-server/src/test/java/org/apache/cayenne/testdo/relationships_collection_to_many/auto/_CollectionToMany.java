@@ -6,7 +6,8 @@ import java.io.ObjectOutputStream;
 import java.util.Collection;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToManyTarget;
 
 /**
@@ -21,7 +22,7 @@ public abstract class _CollectionToMany extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Collection<CollectionToManyTarget>> TARGETS = Property.create("targets", Collection.class);
+    public static final ListProperty<CollectionToManyTarget> TARGETS = PropertyFactory.createList("targets", CollectionToManyTarget.class);
 
 
     protected Object targets;

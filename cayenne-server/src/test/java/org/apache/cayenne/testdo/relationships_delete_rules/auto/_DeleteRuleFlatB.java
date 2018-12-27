@@ -6,7 +6,10 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatA;
 
 /**
@@ -19,9 +22,10 @@ public abstract class _DeleteRuleFlatB extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> FLATB_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("FLATB_ID"), Integer.class);
     public static final String FLATB_ID_PK_COLUMN = "FLATB_ID";
 
-    public static final Property<List<DeleteRuleFlatA>> UNTITLED_REL = Property.create("untitledRel", List.class);
+    public static final ListProperty<DeleteRuleFlatA> UNTITLED_REL = PropertyFactory.createList("untitledRel", DeleteRuleFlatA.class);
 
 
     protected Object untitledRel;

@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
 
@@ -20,12 +24,13 @@ public abstract class _Thing extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Long.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> VOLUME = Property.create("volume", Integer.class);
-    public static final Property<Integer> WEIGHT = Property.create("weight", Integer.class);
-    public static final Property<Ball> BALL = Property.create("ball", Ball.class);
-    public static final Property<List<Box>> BOX = Property.create("box", List.class);
+    public static final NumericProperty<Integer> VOLUME = PropertyFactory.createNumeric("volume", Integer.class);
+    public static final NumericProperty<Integer> WEIGHT = PropertyFactory.createNumeric("weight", Integer.class);
+    public static final EntityProperty<Ball> BALL = PropertyFactory.createEntity("ball", Ball.class);
+    public static final ListProperty<Box> BOX = PropertyFactory.createList("box", Box.class);
 
     protected Integer volume;
     protected Integer weight;

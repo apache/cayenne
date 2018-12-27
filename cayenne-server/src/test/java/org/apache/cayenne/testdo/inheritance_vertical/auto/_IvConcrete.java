@@ -5,7 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvAbstract;
 import org.apache.cayenne.testdo.inheritance_vertical.IvConcrete;
 
@@ -19,11 +24,12 @@ public abstract class _IvConcrete extends IvAbstract {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<IvConcrete>> CHILDREN = Property.create("children", List.class);
-    public static final Property<IvConcrete> PARENT = Property.create("parent", IvConcrete.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<IvConcrete> CHILDREN = PropertyFactory.createList("children", IvConcrete.class);
+    public static final EntityProperty<IvConcrete> PARENT = PropertyFactory.createEntity("parent", IvConcrete.class);
 
     protected String name;
 

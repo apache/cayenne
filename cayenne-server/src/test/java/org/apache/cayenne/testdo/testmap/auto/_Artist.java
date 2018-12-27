@@ -27,8 +27,8 @@ public abstract class _Artist extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ARTIST_ID"), Long.class);
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
-    public static final NumericProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp(ARTIST_ID_PK_COLUMN), Long.class);
 
     public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);
     public static final DateProperty<Date> DATE_OF_BIRTH = PropertyFactory.createDate("dateOfBirth", Date.class);

@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable3;
 
@@ -19,11 +23,12 @@ public abstract class _MtTable2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> TABLE2_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("TABLE2_ID"), Integer.class);
     public static final String TABLE2_ID_PK_COLUMN = "TABLE2_ID";
 
-    public static final Property<String> GLOBAL_ATTRIBUTE = Property.create("globalAttribute", String.class);
-    public static final Property<MtTable1> TABLE1 = Property.create("table1", MtTable1.class);
-    public static final Property<MtTable3> TABLE3 = Property.create("table3", MtTable3.class);
+    public static final StringProperty<String> GLOBAL_ATTRIBUTE = PropertyFactory.createString("globalAttribute", String.class);
+    public static final EntityProperty<MtTable1> TABLE1 = PropertyFactory.createEntity("table1", MtTable1.class);
+    public static final EntityProperty<MtTable3> TABLE3 = PropertyFactory.createEntity("table3", MtTable3.class);
 
     protected String globalAttribute;
 

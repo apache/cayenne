@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 
 /**
@@ -19,10 +23,11 @@ public abstract class _BinaryPKTest1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final BaseProperty<byte[]> BIN_ID_PK_PROPERTY = PropertyFactory.createBase(ExpressionFactory.dbPathExp("BIN_ID"), byte[].class);
     public static final String BIN_ID_PK_COLUMN = "BIN_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<BinaryPKTest2>> BINARY_PKDETAILS = Property.create("binaryPKDetails", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<BinaryPKTest2> BINARY_PKDETAILS = PropertyFactory.createList("binaryPKDetails", BinaryPKTest2.class);
 
     protected String name;
 

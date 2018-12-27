@@ -6,7 +6,10 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.mt.MtTable4;
 
 /**
@@ -19,9 +22,10 @@ public abstract class _MtTable5 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<MtTable4>> TABLE4S = Property.create("table4s", List.class);
+    public static final ListProperty<MtTable4> TABLE4S = PropertyFactory.createList("table4s", MtTable4.class);
 
 
     protected Object table4s;

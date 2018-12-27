@@ -6,7 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 
@@ -20,11 +25,12 @@ public abstract class _Department extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> DEPARTMENT_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("DEPARTMENT_ID"), Integer.class);
     public static final String DEPARTMENT_ID_PK_COLUMN = "DEPARTMENT_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<Employee>> EMPLOYEES = Property.create("employees", List.class);
-    public static final Property<Manager> TO_MANAGER = Property.create("toManager", Manager.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<Employee> EMPLOYEES = PropertyFactory.createList("employees", Employee.class);
+    public static final EntityProperty<Manager> TO_MANAGER = PropertyFactory.createEntity("toManager", Manager.class);
 
     protected String name;
 

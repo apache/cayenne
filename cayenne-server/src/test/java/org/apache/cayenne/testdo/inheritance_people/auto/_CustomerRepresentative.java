@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.ClientCompany;
 
@@ -18,10 +22,11 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> PERSON_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PERSON_ID"), Integer.class);
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<String> CLIENT_CONTACT_TYPE = Property.create("clientContactType", String.class);
-    public static final Property<ClientCompany> TO_CLIENT_COMPANY = Property.create("toClientCompany", ClientCompany.class);
+    public static final StringProperty<String> CLIENT_CONTACT_TYPE = PropertyFactory.createString("clientContactType", String.class);
+    public static final EntityProperty<ClientCompany> TO_CLIENT_COMPANY = PropertyFactory.createEntity("toClientCompany", ClientCompany.class);
 
     protected String clientContactType;
 

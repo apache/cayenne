@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 
@@ -19,9 +22,10 @@ public abstract class _Manager extends Employee {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> PERSON_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PERSON_ID"), Integer.class);
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<List<Department>> MANAGED_DEPARTMENTS = Property.create("managedDepartments", List.class);
+    public static final ListProperty<Department> MANAGED_DEPARTMENTS = PropertyFactory.createList("managedDepartments", Department.class);
 
 
     protected Object managedDepartments;

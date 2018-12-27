@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance_flat.GroupProperties;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
@@ -22,8 +26,8 @@ public abstract class _Group extends User {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<List<Role>> GROUP_MEMBERS = Property.create("groupMembers", List.class);
-    public static final Property<GroupProperties> GROUP_PROPERTIES = Property.create("groupProperties", GroupProperties.class);
+    public static final ListProperty<Role> GROUP_MEMBERS = PropertyFactory.createList("groupMembers", Role.class);
+    public static final EntityProperty<GroupProperties> GROUP_PROPERTIES = PropertyFactory.createEntity("groupProperties", GroupProperties.class);
 
 
     protected Object groupMembers;

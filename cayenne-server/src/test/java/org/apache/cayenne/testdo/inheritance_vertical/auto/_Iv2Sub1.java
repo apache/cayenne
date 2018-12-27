@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Root;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
 
@@ -18,9 +21,10 @@ public abstract class _Iv2Sub1 extends Iv2Root {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Iv2X> X = Property.create("x", Iv2X.class);
+    public static final EntityProperty<Iv2X> X = PropertyFactory.createEntity("x", Iv2X.class);
 
 
     protected Object x;

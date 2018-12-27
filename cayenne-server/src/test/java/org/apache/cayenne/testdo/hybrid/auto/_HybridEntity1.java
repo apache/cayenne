@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.HybridDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.hybrid.HybridEntity2;
 
 /**
@@ -19,11 +23,12 @@ public abstract class _HybridEntity1 extends HybridDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> INT_FIELD = Property.create("intField", Integer.class);
-    public static final Property<String> STR_FIELD = Property.create("strField", String.class);
-    public static final Property<List<HybridEntity2>> HYBRID_ENTITIES2 = Property.create("hybridEntities2", List.class);
+    public static final NumericProperty<Integer> INT_FIELD = PropertyFactory.createNumeric("intField", Integer.class);
+    public static final StringProperty<String> STR_FIELD = PropertyFactory.createString("strField", String.class);
+    public static final ListProperty<HybridEntity2> HYBRID_ENTITIES2 = PropertyFactory.createList("hybridEntities2", HybridEntity2.class);
 
     protected int intField;
     protected String strField;
@@ -89,7 +94,7 @@ public abstract class _HybridEntity1 extends HybridDataObject {
 
         switch (propName) {
             case "intField":
-                this.intField = val == null ? 0 : (Integer)val;
+                this.intField = val == null ? 0 : (int)val;
                 break;
             case "strField":
                 this.strField = (String)val;

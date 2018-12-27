@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
 
@@ -22,9 +24,9 @@ public abstract class _CrossdbM1E1 extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<CrossdbM2E1>> FLATTENED = Property.create("flattened", List.class);
-    public static final Property<List<CrossdbM2E2>> LIST_OF_M2E2 = Property.create("listOfM2E2", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<CrossdbM2E1> FLATTENED = PropertyFactory.createList("flattened", CrossdbM2E1.class);
+    public static final ListProperty<CrossdbM2E2> LIST_OF_M2E2 = PropertyFactory.createList("listOfM2E2", CrossdbM2E2.class);
 
     protected String name;
 

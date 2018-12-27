@@ -6,7 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.locking.LockingHelper;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 
@@ -20,11 +25,12 @@ public abstract class _RelLockingTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> REL_LOCKING_TEST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("REL_LOCKING_TEST_ID"), Integer.class);
     public static final String REL_LOCKING_TEST_ID_PK_COLUMN = "REL_LOCKING_TEST_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<LockingHelper>> LOCKING_HELPERS = Property.create("lockingHelpers", List.class);
-    public static final Property<SimpleLockingTestEntity> TO_SIMPLE_LOCKING_TEST = Property.create("toSimpleLockingTest", SimpleLockingTestEntity.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<LockingHelper> LOCKING_HELPERS = PropertyFactory.createList("lockingHelpers", LockingHelper.class);
+    public static final EntityProperty<SimpleLockingTestEntity> TO_SIMPLE_LOCKING_TEST = PropertyFactory.createEntity("toSimpleLockingTest", SimpleLockingTestEntity.class);
 
     protected String name;
 

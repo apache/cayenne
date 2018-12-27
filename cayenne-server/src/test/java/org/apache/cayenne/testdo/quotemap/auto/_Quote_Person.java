@@ -6,7 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 
 /**
@@ -19,14 +24,15 @@ public abstract class _Quote_Person extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("id"), Integer.class);
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<Date> D_ATE = Property.create("dAte", Date.class);
-    public static final Property<String> F_ULL_NAME = Property.create("fULL_name", String.class);
-    public static final Property<String> GROUP = Property.create("group", String.class);
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<Integer> SALARY = Property.create("salary", Integer.class);
-    public static final Property<QuoteAdress> ADDRESS_REL = Property.create("address_Rel", QuoteAdress.class);
+    public static final DateProperty<Date> D_ATE = PropertyFactory.createDate("dAte", Date.class);
+    public static final StringProperty<String> F_ULL_NAME = PropertyFactory.createString("fULL_name", String.class);
+    public static final StringProperty<String> GROUP = PropertyFactory.createString("group", String.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final NumericProperty<Integer> SALARY = PropertyFactory.createNumeric("salary", Integer.class);
+    public static final EntityProperty<QuoteAdress> ADDRESS_REL = PropertyFactory.createEntity("address_Rel", QuoteAdress.class);
 
     protected Date dAte;
     protected String fULL_name;

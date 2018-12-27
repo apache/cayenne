@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _PersonNotes extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NOTES = Property.create("notes", String.class);
-    public static final Property<AbstractPerson> PERSON = Property.create("person", AbstractPerson.class);
+    public static final StringProperty<String> NOTES = PropertyFactory.createString("notes", String.class);
+    public static final EntityProperty<AbstractPerson> PERSON = PropertyFactory.createEntity("person", AbstractPerson.class);
 
     protected String notes;
 

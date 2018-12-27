@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 
 /**
@@ -18,10 +21,11 @@ public abstract class _MeaningfulFK extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> MEANIGNFUL_FK_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("MEANIGNFUL_FK_ID"), Integer.class);
     public static final String MEANIGNFUL_FK_ID_PK_COLUMN = "MEANIGNFUL_FK_ID";
 
-    public static final Property<Integer> RELATIONSHIP_HELPER_ID = Property.create("relationshipHelperID", Integer.class);
-    public static final Property<RelationshipHelper> TO_RELATIONSHIP_HELPER = Property.create("toRelationshipHelper", RelationshipHelper.class);
+    public static final NumericProperty<Integer> RELATIONSHIP_HELPER_ID = PropertyFactory.createNumeric("relationshipHelperID", Integer.class);
+    public static final EntityProperty<RelationshipHelper> TO_RELATIONSHIP_HELPER = PropertyFactory.createEntity("toRelationshipHelper", RelationshipHelper.class);
 
     protected Integer relationshipHelperID;
 

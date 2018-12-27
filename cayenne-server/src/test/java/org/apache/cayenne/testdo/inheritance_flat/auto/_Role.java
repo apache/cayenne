@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 
 /**
@@ -21,10 +25,10 @@ public abstract class _Role extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<Long> ID = Property.create("id", Long.class);
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<Integer> TYPE = Property.create("type", Integer.class);
-    public static final Property<List<Group>> ROLE_GROUPS = Property.create("roleGroups", List.class);
+    public static final NumericProperty<Long> ID = PropertyFactory.createNumeric("id", Long.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final NumericProperty<Integer> TYPE = PropertyFactory.createNumeric("type", Integer.class);
+    public static final ListProperty<Group> ROLE_GROUPS = PropertyFactory.createList("roleGroups", Group.class);
 
     protected long id;
     protected String name;
@@ -107,13 +111,13 @@ public abstract class _Role extends BaseDataObject {
 
         switch (propName) {
             case "id":
-                this.id = val == null ? 0 : (Long)val;
+                this.id = val == null ? 0 : (long)val;
                 break;
             case "name":
                 this.name = (String)val;
                 break;
             case "type":
-                this.type = val == null ? 0 : (Integer)val;
+                this.type = val == null ? 0 : (int)val;
                 break;
             case "roleGroups":
                 this.roleGroups = val;

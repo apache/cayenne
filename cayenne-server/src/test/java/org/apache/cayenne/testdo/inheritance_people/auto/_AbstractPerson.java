@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 
 /**
@@ -19,11 +23,12 @@ public abstract class _AbstractPerson extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> PERSON_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PERSON_ID"), Integer.class);
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<String> PERSON_TYPE = Property.create("personType", String.class);
-    public static final Property<List<PersonNotes>> NOTES = Property.create("notes", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final StringProperty<String> PERSON_TYPE = PropertyFactory.createString("personType", String.class);
+    public static final ListProperty<PersonNotes> NOTES = PropertyFactory.createList("notes", PersonNotes.class);
 
     protected String name;
     protected String personType;

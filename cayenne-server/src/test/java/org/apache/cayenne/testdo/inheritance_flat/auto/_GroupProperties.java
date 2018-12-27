@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 
 /**
@@ -20,9 +24,9 @@ public abstract class _GroupProperties extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<String> DESCRIPTION = Property.create("description", String.class);
-    public static final Property<Long> ID = Property.create("id", Long.class);
-    public static final Property<Group> GROUP = Property.create("group", Group.class);
+    public static final StringProperty<String> DESCRIPTION = PropertyFactory.createString("description", String.class);
+    public static final NumericProperty<Long> ID = PropertyFactory.createNumeric("id", Long.class);
+    public static final EntityProperty<Group> GROUP = PropertyFactory.createEntity("group", Group.class);
 
     protected String description;
     protected Long id;

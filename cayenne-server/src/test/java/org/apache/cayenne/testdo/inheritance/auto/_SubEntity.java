@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance.BaseEntity;
 
 /**
@@ -16,6 +19,7 @@ public abstract class _SubEntity extends BaseEntity {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> BASE_ENTITY_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("BASE_ENTITY_ID"), Integer.class);
     public static final String BASE_ENTITY_ID_PK_COLUMN = "BASE_ENTITY_ID";
 
 

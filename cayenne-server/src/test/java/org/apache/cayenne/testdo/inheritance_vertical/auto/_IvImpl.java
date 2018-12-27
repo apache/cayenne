@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
 
@@ -18,12 +22,13 @@ public abstract class _IvImpl extends IvBase {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> ATTR1 = Property.create("attr1", String.class);
-    public static final Property<String> ATTR2 = Property.create("attr2", String.class);
-    public static final Property<IvOther> OTHER1 = Property.create("other1", IvOther.class);
-    public static final Property<IvOther> OTHER2 = Property.create("other2", IvOther.class);
+    public static final StringProperty<String> ATTR1 = PropertyFactory.createString("attr1", String.class);
+    public static final StringProperty<String> ATTR2 = PropertyFactory.createString("attr2", String.class);
+    public static final EntityProperty<IvOther> OTHER1 = PropertyFactory.createEntity("other1", IvOther.class);
+    public static final EntityProperty<IvOther> OTHER2 = PropertyFactory.createEntity("other2", IvOther.class);
 
     protected String attr1;
     protected String attr2;

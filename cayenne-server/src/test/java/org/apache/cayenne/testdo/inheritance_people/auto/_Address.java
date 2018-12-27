@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _Address extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ADDRESS_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ADDRESS_ID"), Integer.class);
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS_ID";
 
-    public static final Property<String> CITY = Property.create("city", String.class);
-    public static final Property<Employee> TO_EMPLOYEE = Property.create("toEmployee", Employee.class);
+    public static final StringProperty<String> CITY = PropertyFactory.createString("city", String.class);
+    public static final EntityProperty<Employee> TO_EMPLOYEE = PropertyFactory.createEntity("toEmployee", Employee.class);
 
     protected String city;
 

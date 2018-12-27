@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.Address;
 import org.apache.cayenne.testdo.inheritance_people.Department;
@@ -20,11 +24,12 @@ public abstract class _Employee extends AbstractPerson {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> PERSON_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PERSON_ID"), Integer.class);
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
-    public static final Property<Float> SALARY = Property.create("salary", Float.class);
-    public static final Property<List<Address>> ADDRESSES = Property.create("addresses", List.class);
-    public static final Property<Department> TO_DEPARTMENT = Property.create("toDepartment", Department.class);
+    public static final NumericProperty<Float> SALARY = PropertyFactory.createNumeric("salary", Float.class);
+    public static final ListProperty<Address> ADDRESSES = PropertyFactory.createList("addresses", Address.class);
+    public static final EntityProperty<Department> TO_DEPARTMENT = PropertyFactory.createEntity("toDepartment", Department.class);
 
     protected Float salary;
 

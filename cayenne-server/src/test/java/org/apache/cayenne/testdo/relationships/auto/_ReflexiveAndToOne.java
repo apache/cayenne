@@ -6,7 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 
@@ -20,12 +25,13 @@ public abstract class _ReflexiveAndToOne extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> REFLEXIVE_AND_TO_ONE_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("REFLEXIVE_AND_TO_ONE_ID"), Integer.class);
     public static final String REFLEXIVE_AND_TO_ONE_ID_PK_COLUMN = "REFLEXIVE_AND_TO_ONE_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<ReflexiveAndToOne>> CHILDREN = Property.create("children", List.class);
-    public static final Property<RelationshipHelper> TO_HELPER = Property.create("toHelper", RelationshipHelper.class);
-    public static final Property<ReflexiveAndToOne> TO_PARENT = Property.create("toParent", ReflexiveAndToOne.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<ReflexiveAndToOne> CHILDREN = PropertyFactory.createList("children", ReflexiveAndToOne.class);
+    public static final EntityProperty<RelationshipHelper> TO_HELPER = PropertyFactory.createEntity("toHelper", RelationshipHelper.class);
+    public static final EntityProperty<ReflexiveAndToOne> TO_PARENT = PropertyFactory.createEntity("toParent", ReflexiveAndToOne.class);
 
     protected String name;
 

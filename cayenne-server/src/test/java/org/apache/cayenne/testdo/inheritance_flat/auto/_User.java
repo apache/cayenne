@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 
@@ -20,7 +23,7 @@ public abstract class _User extends Role {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<UserProperties> USER_PROPERTIES = Property.create("userProperties", UserProperties.class);
+    public static final EntityProperty<UserProperties> USER_PROPERTIES = PropertyFactory.createEntity("userProperties", UserProperties.class);
 
 
     protected Object userProperties;

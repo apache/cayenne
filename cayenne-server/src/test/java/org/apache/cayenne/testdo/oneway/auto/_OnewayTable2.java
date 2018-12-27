@@ -5,7 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.oneway.OnewayTable1;
 
 /**
@@ -20,8 +23,8 @@ public abstract class _OnewayTable2 extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<Integer> ID = Property.create("id", Integer.class);
-    public static final Property<OnewayTable1> TO_ONE_ONE_WAY_DB = Property.create("toOneOneWayDb", OnewayTable1.class);
+    public static final NumericProperty<Integer> ID = PropertyFactory.createNumeric("id", Integer.class);
+    public static final EntityProperty<OnewayTable1> TO_ONE_ONE_WAY_DB = PropertyFactory.createEntity("toOneOneWayDb", OnewayTable1.class);
 
     protected Integer id;
 

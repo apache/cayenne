@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 
@@ -21,9 +23,9 @@ public abstract class _CrossdbM2E2 extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<CrossdbM1E1> TO_M1E1 = Property.create("toM1E1", CrossdbM1E1.class);
-    public static final Property<CrossdbM2E1> TO_M2E1 = Property.create("toM2E1", CrossdbM2E1.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<CrossdbM1E1> TO_M1E1 = PropertyFactory.createEntity("toM1E1", CrossdbM1E1.class);
+    public static final EntityProperty<CrossdbM2E1> TO_M2E1 = PropertyFactory.createEntity("toM2E1", CrossdbM2E1.class);
 
     protected String name;
 

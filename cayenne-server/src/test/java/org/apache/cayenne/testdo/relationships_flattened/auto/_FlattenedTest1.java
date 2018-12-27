@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4;
@@ -22,14 +26,15 @@ public abstract class _FlattenedTest1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> FT1_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("FT1_ID"), Integer.class);
     public static final String FT1_ID_PK_COLUMN = "FT1_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<List<FlattenedTest2>> FT2ARRAY = Property.create("ft2Array", List.class);
-    public static final Property<List<FlattenedTest3>> FT3ARRAY = Property.create("ft3Array", List.class);
-    public static final Property<List<FlattenedTest3>> FT3OVER_COMPLEX = Property.create("ft3OverComplex", List.class);
-    public static final Property<List<FlattenedTest4>> FT4ARRAY_FOR1 = Property.create("ft4ArrayFor1", List.class);
-    public static final Property<List<FlattenedTest5>> FT5ARRAY = Property.create("ft5Array", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<FlattenedTest2> FT2ARRAY = PropertyFactory.createList("ft2Array", FlattenedTest2.class);
+    public static final ListProperty<FlattenedTest3> FT3ARRAY = PropertyFactory.createList("ft3Array", FlattenedTest3.class);
+    public static final ListProperty<FlattenedTest3> FT3OVER_COMPLEX = PropertyFactory.createList("ft3OverComplex", FlattenedTest3.class);
+    public static final ListProperty<FlattenedTest4> FT4ARRAY_FOR1 = PropertyFactory.createList("ft4ArrayFor1", FlattenedTest4.class);
+    public static final ListProperty<FlattenedTest5> FT5ARRAY = PropertyFactory.createList("ft5Array", FlattenedTest5.class);
 
     protected String name;
 

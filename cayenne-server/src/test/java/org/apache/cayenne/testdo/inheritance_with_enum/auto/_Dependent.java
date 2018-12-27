@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_with_enum.Root;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _Dependent extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("id"), Integer.class);
     public static final String ID_PK_COLUMN = "id";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<Root> ROOT = Property.create("root", Root.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<Root> ROOT = PropertyFactory.createEntity("root", Root.class);
 
     protected String name;
 

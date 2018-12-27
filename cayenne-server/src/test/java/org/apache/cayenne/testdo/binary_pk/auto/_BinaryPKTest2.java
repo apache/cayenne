@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _BinaryPKTest2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> DETAIL_NAME = Property.create("detailName", String.class);
-    public static final Property<BinaryPKTest1> TO_BINARY_PKMASTER = Property.create("toBinaryPKMaster", BinaryPKTest1.class);
+    public static final StringProperty<String> DETAIL_NAME = PropertyFactory.createString("detailName", String.class);
+    public static final EntityProperty<BinaryPKTest1> TO_BINARY_PKMASTER = PropertyFactory.createEntity("toBinaryPKMaster", BinaryPKTest1.class);
 
     protected String detailName;
 

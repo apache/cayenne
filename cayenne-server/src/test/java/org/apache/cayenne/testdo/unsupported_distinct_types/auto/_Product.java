@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Customer;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
 
@@ -20,12 +24,13 @@ public abstract class _Product extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> LONGVARCHAR_COL = Property.create("longvarcharCol", String.class);
-    public static final Property<List<Product>> BASE = Property.create("base", List.class);
-    public static final Property<List<Product>> CONTAINED = Property.create("contained", List.class);
-    public static final Property<List<Customer>> ORDER_BY = Property.create("orderBy", List.class);
+    public static final StringProperty<String> LONGVARCHAR_COL = PropertyFactory.createString("longvarcharCol", String.class);
+    public static final ListProperty<Product> BASE = PropertyFactory.createList("base", Product.class);
+    public static final ListProperty<Product> CONTAINED = PropertyFactory.createList("contained", Product.class);
+    public static final ListProperty<Customer> ORDER_BY = PropertyFactory.createList("orderBy", Customer.class);
 
     protected String longvarcharCol;
 

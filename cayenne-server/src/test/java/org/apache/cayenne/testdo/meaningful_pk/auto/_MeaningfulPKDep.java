@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> PK_ATTRIBUTE_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PK_ATTRIBUTE"), Integer.class);
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 
-    public static final Property<String> DESCR = Property.create("descr", String.class);
-    public static final Property<MeaningfulPKTest1> TO_MEANINGFUL_PK = Property.create("toMeaningfulPK", MeaningfulPKTest1.class);
+    public static final StringProperty<String> DESCR = PropertyFactory.createString("descr", String.class);
+    public static final EntityProperty<MeaningfulPKTest1> TO_MEANINGFUL_PK = PropertyFactory.createEntity("toMeaningfulPK", MeaningfulPKTest1.class);
 
     protected String descr;
 

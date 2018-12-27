@@ -6,7 +6,10 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
 
@@ -20,10 +23,11 @@ public abstract class _DeleteRuleTest2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> DEL_RULE_TEST2_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("DEL_RULE_TEST2_ID"), Integer.class);
     public static final String DEL_RULE_TEST2_ID_PK_COLUMN = "DEL_RULE_TEST2_ID";
 
-    public static final Property<List<DeleteRuleTest3>> DELETE_RULE_TEST3ARRAY = Property.create("deleteRuleTest3Array", List.class);
-    public static final Property<List<DeleteRuleTest1>> TEST1ARRAY = Property.create("test1Array", List.class);
+    public static final ListProperty<DeleteRuleTest3> DELETE_RULE_TEST3ARRAY = PropertyFactory.createList("deleteRuleTest3Array", DeleteRuleTest3.class);
+    public static final ListProperty<DeleteRuleTest1> TEST1ARRAY = PropertyFactory.createList("test1Array", DeleteRuleTest1.class);
 
 
     protected Object deleteRuleTest3Array;

@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 
 /**
@@ -19,6 +21,7 @@ public abstract class _DateTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> DATE_TEST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("DATE_TEST_ID"), Integer.class);
     public static final String DATE_TEST_ID_PK_COLUMN = "DATE_TEST_ID";
 
     public static final DateProperty<Date> DATE_COLUMN = PropertyFactory.createDate("dateColumn", Date.class);

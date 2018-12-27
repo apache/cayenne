@@ -6,7 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.things.Bag;
 import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.BoxInfo;
@@ -22,13 +27,14 @@ public abstract class _Box extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Long.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<Bag> BAG = Property.create("bag", Bag.class);
-    public static final Property<List<Ball>> BALLS = Property.create("balls", List.class);
-    public static final Property<BoxInfo> BOX_INFO = Property.create("boxInfo", BoxInfo.class);
-    public static final Property<List<Thing>> THINGS = Property.create("things", List.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<Bag> BAG = PropertyFactory.createEntity("bag", Bag.class);
+    public static final ListProperty<Ball> BALLS = PropertyFactory.createList("balls", Ball.class);
+    public static final EntityProperty<BoxInfo> BOX_INFO = PropertyFactory.createEntity("boxInfo", BoxInfo.class);
+    public static final ListProperty<Thing> THINGS = PropertyFactory.createList("things", Thing.class);
 
     protected String name;
 

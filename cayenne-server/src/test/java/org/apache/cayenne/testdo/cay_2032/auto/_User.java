@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.cay_2032.Team;
 
 /**
@@ -19,10 +23,11 @@ public abstract class _User extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> USER_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("user_id"), Integer.class);
     public static final String USER_ID_PK_COLUMN = "user_id";
 
-    public static final Property<byte[]> NAME = Property.create("name", byte[].class);
-    public static final Property<List<Team>> USER_TEAMS = Property.create("userTeams", List.class);
+    public static final BaseProperty<byte[]> NAME = PropertyFactory.createBase("name", byte[].class);
+    public static final ListProperty<Team> USER_TEAMS = PropertyFactory.createList("userTeams", Team.class);
 
     protected byte[] name;
 

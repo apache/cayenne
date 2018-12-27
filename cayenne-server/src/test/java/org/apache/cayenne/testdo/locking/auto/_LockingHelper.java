@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 
 /**
@@ -18,10 +22,11 @@ public abstract class _LockingHelper extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> LOCKING_HELPER_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("LOCKING_HELPER_ID"), Integer.class);
     public static final String LOCKING_HELPER_ID_PK_COLUMN = "LOCKING_HELPER_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<RelLockingTestEntity> TO_REL_LOCKING_TEST = Property.create("toRelLockingTest", RelLockingTestEntity.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<RelLockingTestEntity> TO_REL_LOCKING_TEST = PropertyFactory.createEntity("toRelLockingTest", RelLockingTestEntity.class);
 
     protected String name;
 

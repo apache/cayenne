@@ -5,7 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
 
 /**
@@ -18,11 +22,12 @@ public abstract class _QuoteAdress extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> ADDRESS_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ADDRESS ID"), Integer.class);
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS ID";
 
-    public static final Property<String> CITY = Property.create("city", String.class);
-    public static final Property<String> GROUP = Property.create("group", String.class);
-    public static final Property<Quote_Person> PERSON_REL = Property.create("person_Rel", Quote_Person.class);
+    public static final StringProperty<String> CITY = PropertyFactory.createString("city", String.class);
+    public static final StringProperty<String> GROUP = PropertyFactory.createString("group", String.class);
+    public static final EntityProperty<Quote_Person> PERSON_REL = PropertyFactory.createEntity("person_Rel", Quote_Person.class);
 
     protected String city;
     protected String group;

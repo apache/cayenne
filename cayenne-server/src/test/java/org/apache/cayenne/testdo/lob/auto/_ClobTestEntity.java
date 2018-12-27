@@ -6,7 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 
 /**
@@ -19,10 +23,11 @@ public abstract class _ClobTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
+    public static final NumericProperty<Integer> CLOB_TEST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("CLOB_TEST_ID"), Integer.class);
     public static final String CLOB_TEST_ID_PK_COLUMN = "CLOB_TEST_ID";
 
-    public static final Property<String> CLOB_COL = Property.create("clobCol", String.class);
-    public static final Property<List<ClobTestRelation>> CLOB_VALUE = Property.create("clobValue", List.class);
+    public static final StringProperty<String> CLOB_COL = PropertyFactory.createString("clobCol", String.class);
+    public static final ListProperty<ClobTestRelation> CLOB_VALUE = PropertyFactory.createList("clobValue", ClobTestRelation.class);
 
     protected String clobCol;
 
