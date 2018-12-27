@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
@@ -74,12 +75,21 @@ public class PropertyUtils {
         this.importUtils = importUtils;
     }
 
-    public void addImportForPK(DbEntity entity) throws ClassNotFoundException {
-        importUtils.addType(PropertyFactory.class.getName());
-        importUtils.addType(ExpressionFactory.class.getName());
+    public void addImportForPK(EntityUtils entityUtils) throws ClassNotFoundException {
+        DbEntity entity = entityUtils.objEntity.getDbEntity();
+        boolean needToCreatePK = false;
+
         for(DbAttribute attribute : entity.getPrimaryKeys()) {
-            importUtils.addType(TypesMapping.getJavaBySqlType(attribute.getType()));
-            importUtils.addType(getPropertyTypeForAttribute(attribute));
+            if(!entityUtils.declaresDbAttribute(attribute)) {
+                importUtils.addType(TypesMapping.getJavaBySqlType(attribute.getType()));
+                importUtils.addType(getPropertyTypeForAttribute(attribute));
+                needToCreatePK = true;
+            }
+        }
+
+        if(needToCreatePK) {
+            importUtils.addType(PropertyFactory.class.getName());
+            importUtils.addType(ExpressionFactory.class.getName());
         }
     }
 
@@ -91,8 +101,10 @@ public class PropertyUtils {
 
     public void addImport(ObjRelationship relationship) {
         importUtils.addType(PropertyFactory.class.getName());
-        if (relationship.getTargetEntityName() != null) {
+        if (relationship.getTargetEntityName() != null && relationship.getTargetEntity() != null) {
             importUtils.addType(relationship.getTargetEntity().getClassName());
+        } else {
+            importUtils.addType(Persistent.class.getName());
         }
         importUtils.addType(getPropertyTypeForJavaClass(relationship));
         if (relationship.isToMany()) {
@@ -120,6 +132,10 @@ public class PropertyUtils {
 
     private String getPropertyTypeForAttribute(DbAttribute attribute) throws ClassNotFoundException {
         String attributeType = TypesMapping.getJavaBySqlType(attribute.getType());
+        if(TypesMapping.JAVA_BYTES.equals(attributeType)) {
+            return BaseProperty.class.getName();
+        }
+
         Class<?> javaClass = Class.forName(attributeType);
         if (Number.class.isAssignableFrom(javaClass)) {
             return NumericProperty.class.getName();
@@ -175,7 +191,9 @@ public class PropertyUtils {
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
         String mapKeyType = EntityUtils.getMapKeyTypeInternal(relationship);
-        String attributeType = relationship.getTargetEntity().getClassName();
+        String attributeType = relationship.getTargetEntity() == null
+                ? Persistent.class.getSimpleName()
+                : relationship.getTargetEntity().getClassName();
 
         return String.format("public static final %s<%s, %s> %s = PropertyFactory.%s(\"%s\", %s.class, %s.class);",
                 importUtils.formatJavaType(propertyType),
@@ -194,7 +212,9 @@ public class PropertyUtils {
 
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
-        String entityType = importUtils.formatJavaType(relationship.getTargetEntity().getClassName());
+        String entityType = importUtils.formatJavaType(relationship.getTargetEntity() == null
+                ? Persistent.class.getSimpleName()
+                : relationship.getTargetEntity().getClassName());
 
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),
@@ -211,8 +231,8 @@ public class PropertyUtils {
 
         String propertyType = EntityProperty.class.getName();
         String propertyFactoryMethod = "createEntity";
-        String attributeType = relationship.getTargetEntityName() == null
-                ? "Object"
+        String attributeType = (relationship.getTargetEntityName() == null || relationship.getTargetEntity() == null)
+                ? Persistent.class.getSimpleName()
                 : importUtils.formatJavaType(relationship.getTargetEntity().getClassName());
 
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",

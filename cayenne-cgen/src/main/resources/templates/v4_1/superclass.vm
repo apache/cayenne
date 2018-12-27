@@ -42,7 +42,7 @@ ${importUtils.addType("java.io.IOException")}##
 ${importUtils.addType("java.io.ObjectInputStream")}##
 ${importUtils.addType("java.io.ObjectOutputStream")}##
 #if( $createPKProperties )
-$propertyUtils.addImportForPK($object.DbEntity)##
+$propertyUtils.addImportForPK($entityUtils)##
 #end
 #foreach( $attr in ${object.DeclaredAttributes} )
 $propertyUtils.addImport($attr)##
