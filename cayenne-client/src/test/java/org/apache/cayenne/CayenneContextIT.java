@@ -296,7 +296,7 @@ public class CayenneContextIT extends ClientCase {
 		context.graphManager.registerNode(hollow.getObjectId(), hollow);
 
 		// testing this...
-		context.prepareForAccess(hollow, ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, false);
+		context.prepareForAccess(hollow, ClientMtTable1.GLOBAL_ATTRIBUTE1.getName(), false);
 		assertTrue(selectExecuted[0]);
 		assertSame(hollow, context.getGraphManager().getNode(gid));
 		assertEquals(inflated.getGlobalAttribute1Direct(), hollow.getGlobalAttribute1Direct());

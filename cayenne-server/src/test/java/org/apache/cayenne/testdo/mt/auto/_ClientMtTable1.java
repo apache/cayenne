@@ -3,7 +3,11 @@ package org.apache.cayenne.testdo.mt.auto;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.util.PersistentObjectList;
 
 /**
  * A generated persistent class mapped as "MtTable1" Cayenne entity. It is a good idea to
@@ -12,9 +16,9 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
  */
 public abstract class _ClientMtTable1 extends PersistentObject {
 
-    public static final String GLOBAL_ATTRIBUTE1_PROPERTY = "globalAttribute1";
-    public static final String SERVER_ATTRIBUTE1_PROPERTY = "serverAttribute1";
-    public static final String TABLE2ARRAY_PROPERTY = "table2Array";
+    public static final StringProperty<String> GLOBAL_ATTRIBUTE1 = PropertyFactory.createString("globalAttribute1", String.class);
+    public static final StringProperty<String> SERVER_ATTRIBUTE1 = PropertyFactory.createString("serverAttribute1", String.class);
+    public static final ListProperty<ClientMtTable2> TABLE2ARRAY = PropertyFactory.createList("table2Array", ClientMtTable2.class);
 
     protected String globalAttribute1;
     protected String serverAttribute1;
@@ -27,18 +31,14 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return globalAttribute1;
     }
+
     public void setGlobalAttribute1(String globalAttribute1) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "globalAttribute1", false);
+            objectContext.propertyChanged(this, "globalAttribute1", this.globalAttribute1, globalAttribute1);
         }
 
-        Object oldValue = this.globalAttribute1;
         this.globalAttribute1 = globalAttribute1;
-
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "globalAttribute1", oldValue, globalAttribute1);
-        }
     }
 
     public String getServerAttribute1() {
@@ -48,38 +48,42 @@ public abstract class _ClientMtTable1 extends PersistentObject {
 
         return serverAttribute1;
     }
+
     public void setServerAttribute1(String serverAttribute1) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "serverAttribute1", false);
+            objectContext.propertyChanged(this, "serverAttribute1", this.serverAttribute1, serverAttribute1);
         }
 
-        Object oldValue = this.serverAttribute1;
         this.serverAttribute1 = serverAttribute1;
-
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "serverAttribute1", oldValue, serverAttribute1);
-        }
     }
 
     public List<ClientMtTable2> getTable2Array() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
-        }
+        } else if (this.table2Array == null) {
+        	this.table2Array = new PersistentObjectList<>(this, "table2Array");
+		}
 
         return table2Array;
     }
+
     public void addToTable2Array(ClientMtTable2 object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
-        }
+        } else if (this.table2Array == null) {
+        	this.table2Array = new PersistentObjectList<>(this, "table2Array");
+		}
 
         this.table2Array.add(object);
     }
+
     public void removeFromTable2Array(ClientMtTable2 object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "table2Array", true);
-        }
+        } else if (this.table2Array == null) {
+        	this.table2Array = new PersistentObjectList<>(this, "table2Array");
+		}
 
         this.table2Array.remove(object);
     }

@@ -1,6 +1,7 @@
 package org.apache.cayenne.testdo.mt.auto;
 
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 
 /**
@@ -10,10 +11,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
  */
 public abstract class _ClientMtTable1Subclass1 extends ClientMtTable1 {
 
-    @Deprecated
-    public static final String SUBCLASS1ATTRIBUTE1_PROPERTY = "subclass1Attribute1";
-
-    public static final Property<String> SUBCLASS1ATTRIBUTE1 = Property.create("subclass1Attribute1", String.class);
+    public static final StringProperty<String> SUBCLASS1ATTRIBUTE1 = PropertyFactory.createString("subclass1Attribute1", String.class);
 
     protected String subclass1Attribute1;
 
@@ -24,17 +22,13 @@ public abstract class _ClientMtTable1Subclass1 extends ClientMtTable1 {
 
         return subclass1Attribute1;
     }
+
     public void setSubclass1Attribute1(String subclass1Attribute1) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "subclass1Attribute1", false);
+            objectContext.propertyChanged(this, "subclass1Attribute1", this.subclass1Attribute1, subclass1Attribute1);
         }
 
-        Object oldValue = this.subclass1Attribute1;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "subclass1Attribute1", oldValue, subclass1Attribute1);
-        }
-        
         this.subclass1Attribute1 = subclass1Attribute1;
     }
 

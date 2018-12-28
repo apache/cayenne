@@ -23,6 +23,9 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -102,6 +105,20 @@ public class EmbeddingIT extends ServerCase {
         assertEquals("ex2", e21.getEmbedded20());
         assertEquals("ex3", e22.getEmbedded10());
         assertEquals("ex4", e22.getEmbedded20());
+    }
+
+    @Test
+    public void testEmbeddableInWhere() throws Exception {
+        createSelectDataSet();
+
+        Embeddable1 embeddable1 = new Embeddable1();
+        embeddable1.setEmbedded10("e1");
+        embeddable1.setEmbedded20("e2");
+
+        Expression exp = ExpressionFactory.matchDbExp(Embeddable1.EMBEDDED10.getName().toUpperCase(), "e1");
+
+
+        ObjectSelect.query(EmbedEntity1.class).where(exp).select(context);
     }
 
     @Test

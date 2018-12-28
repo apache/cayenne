@@ -38,20 +38,25 @@ public class ClientSuperClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
 
         String res = renderTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, context);
-        assertFalse(res.contains("org.apache.cayenne.exp.Property"));
+        assertFalse(res.contains("org.apache.cayenne.exp.property."));
     }
 
     @Test
     public void testContainsPropertyImportForAttributes() throws Exception {
         ObjEntity objEntity = new ObjEntity("TEST1");
         ObjAttribute attr = new ObjAttribute("attr");
+        attr.setType("int");
         objEntity.addAttribute(attr);
 
         VelocityContext context = new VelocityContext();
+        ImportUtils importUtils = new ImportUtils();
         context.put(Artifact.OBJECT_KEY, objEntity);
+        context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
+        context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
+        context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
 
         String res = renderTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, context);
-        assertTrue(res.contains("org.apache.cayenne.exp.Property"));
+        assertTrue(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
     }
 
     @Test
@@ -61,26 +66,36 @@ public class ClientSuperClassGenerationTest extends ClassGenerationCase {
         objEntity.addRelationship(rel);
 
         VelocityContext context = new VelocityContext();
+        ImportUtils importUtils = new ImportUtils();
         context.put(Artifact.OBJECT_KEY, objEntity);
+        context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
+        context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
+        context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
 
         String res = renderTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, context);
-        assertTrue(res.contains("org.apache.cayenne.exp.Property"));
+        assertTrue(res.contains("org.apache.cayenne.exp.property.EntityProperty"));
     }
 
     @Test
     public void testContainsPropertyImport() throws Exception {
         ObjEntity objEntity = new ObjEntity("TEST1");
         ObjAttribute attr = new ObjAttribute("attr");
+        attr.setType("int");
         ObjRelationship rel = new ObjRelationship("rel");
 
         objEntity.addAttribute(attr);
         objEntity.addRelationship(rel);
 
         VelocityContext context = new VelocityContext();
+        ImportUtils importUtils = new ImportUtils();
         context.put(Artifact.OBJECT_KEY, objEntity);
+        context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
+        context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
+        context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
 
         String res = renderTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, context);
-        assertTrue(res.contains("org.apache.cayenne.exp.Property"));
+        assertTrue(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
+        assertTrue(res.contains("org.apache.cayenne.exp.property.EntityProperty"));
     }
 
 }

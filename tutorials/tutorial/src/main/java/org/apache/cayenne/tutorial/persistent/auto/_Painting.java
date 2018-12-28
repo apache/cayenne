@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.tutorial.persistent.Artist;
 import org.apache.cayenne.tutorial.persistent.Gallery;
 
@@ -21,9 +23,9 @@ public abstract class _Painting extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<Artist> ARTIST = Property.create("artist", Artist.class);
-    public static final Property<Gallery> GALLERY = Property.create("gallery", Gallery.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<org.apache.cayenne.tutorial.persistent.Artist> ARTIST = PropertyFactory.createEntity("artist", org.apache.cayenne.tutorial.persistent.Artist.class);
+    public static final EntityProperty<org.apache.cayenne.tutorial.persistent.Gallery> GALLERY = PropertyFactory.createEntity("gallery", org.apache.cayenne.tutorial.persistent.Gallery.class);
 
     protected String name;
 

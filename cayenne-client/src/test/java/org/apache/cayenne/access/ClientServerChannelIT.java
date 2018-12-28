@@ -43,7 +43,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.QueryMessage;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -53,7 +52,6 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTable3;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -98,7 +96,7 @@ public class ClientServerChannelIT extends ClientCase {
 		tMtTable3.setColumns("TABLE3_ID", "BINARY_COLUMN", "CHAR_COLUMN", "INT_COLUMN");
 	}
 
-	protected void createTwoMtTable1sAnd2sDataSet() throws Exception {
+	private void createTwoMtTable1sAnd2sDataSet() throws Exception {
 
 		tMtTable1.insert(1, "g1", "s1");
 		tMtTable1.insert(2, "g2", "s2");
@@ -108,7 +106,7 @@ public class ClientServerChannelIT extends ClientCase {
 	}
 
 	@Test
-	public void testGetEntityResolver() throws Exception {
+	public void testGetEntityResolver() {
 		EntityResolver resolver = clientServerChannel.getEntityResolver();
 		assertNotNull(resolver);
 		assertNull(resolver.getObjEntity(ClientMtTable1.class));
@@ -116,9 +114,9 @@ public class ClientServerChannelIT extends ClientCase {
 	}
 
 	@Test
-	public void testSynchronizeCommit() throws Exception {
+	public void testSynchronizeCommit() {
 
-		SelectQuery query = new SelectQuery(MtTable1.class);
+		SelectQuery<MtTable1> query = new SelectQuery<>(MtTable1.class);
 
 		// no changes...
 		clientServerChannel.onSync(serverContext, mock(GraphDiff.class), DataChannel.FLUSH_CASCADE_SYNC);
@@ -126,8 +124,9 @@ public class ClientServerChannelIT extends ClientCase {
 		assertEquals(0, serverContext.performQuery(query).size());
 
 		// introduce changes
-		clientServerChannel.onSync(serverContext, new NodeCreateOperation(new ObjectId("MtTable1")),
-				DataChannel.FLUSH_CASCADE_SYNC);
+		clientServerChannel.onSync(serverContext
+				, new NodeCreateOperation(new ObjectId("MtTable1"))
+				, DataChannel.FLUSH_CASCADE_SYNC);
 
 		assertEquals(1, serverContext.performQuery(query).size());
 	}
@@ -185,7 +184,7 @@ public class ClientServerChannelIT extends ClientCase {
 
 		tMtTable1.insert(65, "sub1", "xyz");
 
-		SelectQuery query = new SelectQuery(ClientMtTable1.class);
+		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
 		QueryResponse response = clientServerChannel.onQuery(null, query);
 
 		assertNotNull(response);
@@ -225,24 +224,21 @@ public class ClientServerChannelIT extends ClientCase {
 	public void testOnQueryPrefetchingToMany() throws Exception {
 		createTwoMtTable1sAnd2sDataSet();
 
-		SelectQuery query = new SelectQuery(ClientMtTable1.class);
-		query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
-		query.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
+		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
+		query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
+		query.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
 		final List<?> results = clientServerChannel.onQuery(null, query).firstList();
 
-		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+		queryInterceptor.runWithQueriesBlocked(() -> {
+			ClientMtTable1 o1 = (ClientMtTable1) results.get(0);
+			assertNull(o1.getObjectContext());
 
-			public void execute() {
-				ClientMtTable1 o1 = (ClientMtTable1) results.get(0);
-				assertNull(o1.getObjectContext());
+			List<ClientMtTable2> children1 = o1.getTable2Array();
 
-				List<ClientMtTable2> children1 = o1.getTable2Array();
-
-				assertEquals(2, children1.size());
-				for (ClientMtTable2 o : children1) {
-					assertNull(o.getObjectContext());
-				}
+			assertEquals(2, children1.size());
+			for (ClientMtTable2 o : children1) {
+				assertNull(o.getObjectContext());
 			}
 		});
 	}
@@ -251,24 +247,20 @@ public class ClientServerChannelIT extends ClientCase {
 	public void testOnQueryPrefetchingToManyEmpty() throws Exception {
 		createTwoMtTable1sAnd2sDataSet();
 
-		SelectQuery q = new SelectQuery(ClientMtTable1.class);
-		q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
-		q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
+		SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class);
+		q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
+		q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
 		final List<?> results = clientServerChannel.onQuery(null, q).firstList();
 
-		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+		queryInterceptor.runWithQueriesBlocked(() -> {
+			ClientMtTable1 o2 = (ClientMtTable1) results.get(1);
+			assertNull(o2.getObjectContext());
 
-			public void execute() {
-
-				ClientMtTable1 o2 = (ClientMtTable1) results.get(1);
-				assertNull(o2.getObjectContext());
-
-				List<?> children2 = o2.getTable2Array();
-				assertNotNull(children2);
-				assertFalse(((ValueHolder) children2).isFault());
-				assertEquals(0, children2.size());
-			}
+			List<?> children2 = o2.getTable2Array();
+			assertNotNull(children2);
+			assertFalse(((ValueHolder) children2).isFault());
+			assertEquals(0, children2.size());
 		});
 	}
 }

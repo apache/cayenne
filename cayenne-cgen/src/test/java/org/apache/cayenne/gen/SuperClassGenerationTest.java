@@ -37,7 +37,6 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         ObjEntity objEntity = new ObjEntity("TEST1");
 
         VelocityContext context = new VelocityContext();
-        context.put(Artifact.OBJECT_KEY, objEntity);
         ImportUtils importUtils = new ImportUtils();
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
@@ -57,7 +56,6 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         objEntity.addAttribute(attr);
 
         VelocityContext context = new VelocityContext();
-        context.put(Artifact.OBJECT_KEY, objEntity);
         ImportUtils importUtils = new ImportUtils();
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
@@ -76,7 +74,6 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         objEntity.addRelationship(rel);
 
         VelocityContext context = new VelocityContext();
-        context.put(Artifact.OBJECT_KEY, objEntity);
         ImportUtils importUtils = new ImportUtils();
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);

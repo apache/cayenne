@@ -88,8 +88,8 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testPaginatedQueryServerCacheOverflow() throws Exception {
         createSevenMtTable1sDataSet();
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
+        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
         query.setPageSize(3);
 
         List<?> results = context.performQuery(query);
@@ -135,7 +135,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQueryClientClassRoot() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class);
+        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class);
         List<?> results = context.performQuery(q);
 
         assertEquals(2, results.size());
@@ -146,7 +146,8 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQuerySimpleQualifier() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class, ExpressionFactory.exp("globalAttribute1 = 'g1'"));
+        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class
+                , ExpressionFactory.exp("globalAttribute1 = 'g1'"));
         List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
@@ -158,7 +159,8 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQueryToManyRelationshipQualifier() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class, ExpressionFactory.exp("table2Array.globalAttribute = 'g1'"));
+        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class
+                , ExpressionFactory.exp("table2Array.globalAttribute = 'g1'"));
         List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
@@ -170,7 +172,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
         createTwoMtTable1sAnd2sDataSet();
 
         SelectQuery q = new SelectQuery("MtTable1");
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
         List<?> results = context.performQuery(q);
 
         assertEquals(2, results.size());
@@ -183,7 +185,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
         // result wasn't coincidental.
 
         q.clearOrderings();
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.DESCENDING);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.desc());
         List<?> results1 = context.performQuery(q);
 
         assertEquals(2, results1.size());
@@ -197,8 +199,9 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQueryPrefetchToOne() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable2.class, ExpressionFactory.exp("globalAttribute = 'g1'"));
-        q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
+        SelectQuery<ClientMtTable2> q = new SelectQuery<>(ClientMtTable2.class
+                , ExpressionFactory.exp("globalAttribute = 'g1'"));
+        q.addPrefetch(ClientMtTable2.TABLE1.disjoint());
         List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());
@@ -219,8 +222,9 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testSelectQueryPrefetchToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class, ExpressionFactory.exp("globalAttribute1 = 'g1'"));
-        q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
+        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class
+                , ExpressionFactory.exp("globalAttribute1 = 'g1'"));
+        q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
         List<?> results = context.performQuery(q);
 
         assertEquals(1, results.size());

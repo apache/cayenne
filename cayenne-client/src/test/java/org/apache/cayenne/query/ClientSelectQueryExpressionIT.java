@@ -21,7 +21,6 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -52,7 +51,7 @@ public class ClientSelectQueryExpressionIT extends ClientCase {
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
-    protected void createMtTable1DataSet() throws Exception {
+    private void createMtTable1DataSet() throws Exception {
         for (int i = 1; i <= 20; i++) {
             tMtTable1.insert(i, "globalAttr" + i, "serverAttr" + i);
         }
@@ -64,7 +63,7 @@ public class ClientSelectQueryExpressionIT extends ClientCase {
 
         List<ClientMtTable1> mtTable1List = context.select(SelectQuery.query(ClientMtTable1.class));
 
-        Expression exp = ExpressionFactory.likeExp(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "globalAttr1%");
+        Expression exp = ClientMtTable1.GLOBAL_ATTRIBUTE1.like("globalAttr1%");
         exp.filterObjects(mtTable1List);
 
         List<ClientMtTable1> matchingMtTableList = context.select(SelectQuery.query(ClientMtTable1.class, exp));

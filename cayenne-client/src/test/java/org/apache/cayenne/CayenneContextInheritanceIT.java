@@ -84,8 +84,8 @@ public class CayenneContextInheritanceIT extends ClientCase {
         tMtTable1.insert(2, "sub1", "zzz", "sa1");
         tMtTable1.insert(3, "1111", "aaa", null);
 
-        SelectQuery query = new SelectQuery(ClientMtTable1Subclass1.class);
-        List<ClientMtTable1Subclass1> objects = context.performQuery(query);
+        SelectQuery<ClientMtTable1Subclass1> query = new SelectQuery<>(ClientMtTable1Subclass1.class);
+        List<ClientMtTable1Subclass1> objects = query.select(context);
 
         assertEquals(1, objects.size());
         assertEquals("sa1", objects.get(0).getSubclass1Attribute1());
@@ -98,22 +98,19 @@ public class CayenneContextInheritanceIT extends ClientCase {
         tMtTable1.insert(2, "sub1", "zzz", "sa1");
         tMtTable1.insert(3, "z", "aaa", null);
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        List<ClientMtTable1> objects = context.performQuery(query);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
+        List<ClientMtTable1> objects = query.select(context);
 
         assertEquals(3, objects.size());
 
         int checkedFields = 0;
-        for (int i = 0; i < objects.size(); i++) {
-            Integer id = (Integer) objects.get(i).getObjectId().getIdSnapshot().get(
-                    "TABLE1_ID");
+        for (ClientMtTable1 object : objects) {
+            Integer id = (Integer) object.getObjectId().getIdSnapshot().get("TABLE1_ID");
             if (id == 1) {
-                assertEquals("a", objects.get(i).getGlobalAttribute1());
+                assertEquals("a", object.getGlobalAttribute1());
                 checkedFields++;
-            }
-            else if (id == 2) {
-                assertEquals("sa1", ((ClientMtTable1Subclass1) objects.get(i))
-                        .getSubclass1Attribute1());
+            } else if (id == 2) {
+                assertEquals("sa1", ((ClientMtTable1Subclass1) object).getSubclass1Attribute1());
                 checkedFields++;
             }
 
@@ -128,25 +125,20 @@ public class CayenneContextInheritanceIT extends ClientCase {
         tMtTable1.insert(2, "sub1", "XXA", "sa1");
         tMtTable1.insert(3, "z", "MM", null);
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        query.andQualifier(ExpressionFactory.likeExp(
-                ClientMtTable1.SERVER_ATTRIBUTE1_PROPERTY,
-                "X%"));
-        List<ClientMtTable1> objects = context.performQuery(query);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
+        query.andQualifier(ClientMtTable1.SERVER_ATTRIBUTE1.like("X%"));
+        List<ClientMtTable1> objects = query.select(context);
 
         assertEquals(2, objects.size());
 
         int checkedFields = 0;
-        for (int i = 0; i < objects.size(); i++) {
-            Integer id = (Integer) objects.get(i).getObjectId().getIdSnapshot().get(
-                    "TABLE1_ID");
+        for (ClientMtTable1 object : objects) {
+            Integer id = (Integer) object.getObjectId().getIdSnapshot().get("TABLE1_ID");
             if (id == 1) {
-                assertEquals("a", objects.get(i).getGlobalAttribute1());
+                assertEquals("a", object.getGlobalAttribute1());
                 checkedFields++;
-            }
-            else if (id == 2) {
-                assertEquals("sa1", ((ClientMtTable1Subclass1) objects.get(i))
-                        .getSubclass1Attribute1());
+            } else if (id == 2) {
+                assertEquals("sa1", ((ClientMtTable1Subclass1) object).getSubclass1Attribute1());
                 checkedFields++;
             }
 

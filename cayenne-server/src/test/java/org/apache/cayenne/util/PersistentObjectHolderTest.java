@@ -41,7 +41,7 @@ public class PersistentObjectHolderTest {
         ClientMtTable2 o = new ClientMtTable2();
         o.setPersistenceState(PersistenceState.COMMITTED);
         o.setObjectContext(context);
-        PersistentObjectHolder holder = new PersistentObjectHolder(o, ClientMtTable2.TABLE1_PROPERTY);
+        PersistentObjectHolder holder = new PersistentObjectHolder(o, ClientMtTable2.TABLE1.getName());
 
         assertTrue(holder.isFault());
         ClientMtTable1 o1 = new ClientMtTable1();
@@ -59,7 +59,7 @@ public class PersistentObjectHolderTest {
         ClientMtTable2 o = new ClientMtTable2();
         o.setPersistenceState(PersistenceState.COMMITTED);
         o.setObjectContext(context);
-        PersistentObjectHolder holder = new PersistentObjectHolder(o, ClientMtTable2.TABLE1_PROPERTY);
+        PersistentObjectHolder holder = new PersistentObjectHolder(o, ClientMtTable2.TABLE1.getName());
 
         assertTrue(holder.isFault());
         ClientMtTable1 o1 = new ClientMtTable1();

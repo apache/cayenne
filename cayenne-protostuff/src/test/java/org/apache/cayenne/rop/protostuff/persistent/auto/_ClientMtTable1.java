@@ -7,7 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.PersistentObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable2;
 import org.apache.cayenne.util.PersistentObjectList;
 
@@ -18,13 +21,13 @@ import org.apache.cayenne.util.PersistentObjectList;
  */
 public abstract class _ClientMtTable1 extends PersistentObject {
 
-    public static final Property<LocalDate> DATE_ATTRIBUTE = Property.create("dateAttribute", LocalDate.class);
-    public static final Property<String> GLOBAL_ATTRIBUTE = Property.create("globalAttribute", String.class);
-    public static final Property<Date> OLD_DATE_ATTRIBUTE = Property.create("oldDateAttribute", Date.class);
-    public static final Property<String> SERVER_ATTRIBUTE = Property.create("serverAttribute", String.class);
-    public static final Property<LocalTime> TIME_ATTRIBUTE = Property.create("timeAttribute", LocalTime.class);
-    public static final Property<LocalDateTime> TIMESTAMP_ATTRIBUTE = Property.create("timestampAttribute", LocalDateTime.class);
-    public static final Property<List<ClientMtTable2>> TABLE2ARRAY = Property.create("table2Array", List.class);
+    public static final DateProperty<LocalDate> DATE_ATTRIBUTE = PropertyFactory.createDate("dateAttribute", LocalDate.class);
+    public static final StringProperty<String> GLOBAL_ATTRIBUTE = PropertyFactory.createString("globalAttribute", String.class);
+    public static final DateProperty<Date> OLD_DATE_ATTRIBUTE = PropertyFactory.createDate("oldDateAttribute", Date.class);
+    public static final StringProperty<String> SERVER_ATTRIBUTE = PropertyFactory.createString("serverAttribute", String.class);
+    public static final DateProperty<LocalTime> TIME_ATTRIBUTE = PropertyFactory.createDate("timeAttribute", LocalTime.class);
+    public static final DateProperty<LocalDateTime> TIMESTAMP_ATTRIBUTE = PropertyFactory.createDate("timestampAttribute", LocalDateTime.class);
+    public static final ListProperty<ClientMtTable2> TABLE2ARRAY = PropertyFactory.createList("table2Array", ClientMtTable2.class);
 
     protected LocalDate dateAttribute;
     protected String globalAttribute;

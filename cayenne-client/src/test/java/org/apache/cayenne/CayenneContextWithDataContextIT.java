@@ -26,7 +26,6 @@ import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.RemoteIncrementalFaultList;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -36,7 +35,6 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -44,7 +42,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -97,13 +94,9 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testLocalCacheStaysLocal() {
-
-        DataContext serverContext = (DataContext) clientServerChannel.getParentChannel();
-
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         List<?> results = clientContext.performQuery(query);
@@ -114,7 +107,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     }
 
     @Test
-    public void testAddToList() throws Exception {
+    public void testAddToList() {
 
         ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable2 t2 = clientContext.newObject(ClientMtTable2.class);
@@ -133,7 +126,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     }
 
     @Test
-    public void testSetValueHolder() throws Exception {
+    public void testSetValueHolder() {
 
         ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable2 t2 = clientContext.newObject(ClientMtTable2.class);
@@ -144,7 +137,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     }
 
     @Test
-    public void testPostAddCallback() throws Exception {
+    public void testPostAddCallback() {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
@@ -213,11 +206,9 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         new ParallelTestContainer() {
 
             @Override
-            protected void assertResult() throws Exception {
+            protected void assertResult() {
             	// find peer
-            	MtTable1 peer = (MtTable1) serverContext.getGraphManager().getNode(
-                    clientObject.getObjectId());
-
+            	MtTable1 peer = (MtTable1) serverContext.getGraphManager().getNode(clientObject.getObjectId());
             	assertNotNull(peer);
             	assertTrue(peer.isPrePersisted());
             }
@@ -231,7 +222,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     }
 
     @Test
-    public void testPreRemoveCallback() throws Exception {
+    public void testPreRemoveCallback() {
 
         // an exception was triggered within POST_LOAD callback
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -285,7 +276,7 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     }
 
     @Test
-    public void testRollbackChanges() throws Exception {
+    public void testRollbackChanges() {
 
         ClientMtTable1 o = clientContext.newObject(ClientMtTable1.class);
         o.setGlobalAttribute1("1");
@@ -352,27 +343,24 @@ public class CayenneContextWithDataContextIT extends ClientCase {
                 MtTable1.TABLE1_ID_PK_COLUMN,
                 1);
 
-        SelectQuery q = new SelectQuery(ClientMtTable2.class);
-        q.addOrdering(ClientMtTable2.GLOBAL_ATTRIBUTE_PROPERTY, SortOrder.ASCENDING);
-        q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
+        SelectQuery<ClientMtTable2> q = new SelectQuery<>(ClientMtTable2.class);
+        q.addOrdering(ClientMtTable2.GLOBAL_ATTRIBUTE.asc());
+        q.addPrefetch(ClientMtTable2.TABLE1.disjoint());
 
-        final List<ClientMtTable2> results = clientContext.performQuery(q);
+        final List<ClientMtTable2> results = q.select(clientContext);
 
-        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        clientServerInterceptor.runWithQueriesBlocked(() -> {
+            assertEquals(2, results.size());
 
-            public void execute() {
-                assertEquals(2, results.size());
+            for (ClientMtTable2 o : results) {
+                assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
+                assertSame(clientContext, o.getObjectContext());
 
-                for (ClientMtTable2 o : results) {
-                    assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
-                    assertSame(clientContext, o.getObjectContext());
-
-                    ClientMtTable1 o1 = o.getTable1();
-                    assertNotNull(o1);
-                    assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-                    assertSame(clientContext, o1.getObjectContext());
-                    assertEquals(prefetchedId, o1.getObjectId());
-                }
+                ClientMtTable1 o1 = o.getTable1();
+                assertNotNull(o1);
+                assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
+                assertSame(clientContext, o1.getObjectContext());
+                assertEquals(prefetchedId, o1.getObjectId());
             }
         });
     }
@@ -381,23 +369,19 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     public void testPrefetchingToOneNull() throws Exception {
         tMtTable2.insert(15, null, "g3");
 
-        SelectQuery q = new SelectQuery(ClientMtTable2.class);
-        q.addPrefetch(ClientMtTable2.TABLE1_PROPERTY);
+        SelectQuery<ClientMtTable2> q = new SelectQuery<>(ClientMtTable2.class);
+        q.addPrefetch(ClientMtTable2.TABLE1.disjoint());
 
-        final List<ClientMtTable2> results = clientContext.performQuery(q);
+        final List<ClientMtTable2> results = q.select(clientContext);
 
-        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        clientServerInterceptor.runWithQueriesBlocked(() -> {
+            assertEquals(1, results.size());
 
-            public void execute() {
+            ClientMtTable2 o = results.get(0);
+            assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
+            assertSame(clientContext, o.getObjectContext());
 
-                assertEquals(1, results.size());
-
-                ClientMtTable2 o = results.get(0);
-                assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
-                assertSame(clientContext, o.getObjectContext());
-
-                assertNull(o.getTable1());
-            }
+            assertNull(o.getTable1());
         });
     }
 
@@ -405,33 +389,28 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     public void testPrefetchingToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
-        q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
+        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
+        q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
-        final List<ClientMtTable1> results = clientContext.performQuery(q);
+        final List<ClientMtTable1> results = q.select(clientContext);
 
-        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        clientServerInterceptor.runWithQueriesBlocked(() -> {
 
-            public void execute() {
+            ClientMtTable1 o1 = results.get(0);
+            assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
+            assertSame(clientContext, o1.getObjectContext());
 
-                ClientMtTable1 o1 = results.get(0);
-                assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
-                assertSame(clientContext, o1.getObjectContext());
+            List<ClientMtTable2> children1 = o1.getTable2Array();
 
-                List<?> children1 = o1.getTable2Array();
+            assertEquals(2, children1.size());
+            for (ClientMtTable2 o : children1) {
+                assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
+                assertSame(clientContext, o.getObjectContext());
 
-                assertEquals(2, children1.size());
-                Iterator<?> it = children1.iterator();
-                while (it.hasNext()) {
-                    ClientMtTable2 o = (ClientMtTable2) it.next();
-                    assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
-                    assertSame(clientContext, o.getObjectContext());
-
-                    // TODO: fixme... reverse relationship is not connected and will
-                    // cause a fetch
-                    // assertEquals(o1, o.getTable1());
-                }
+                // TODO: fixme... reverse relationship is not connected and will
+                // cause a fetch
+                // assertEquals(o1, o.getTable1());
             }
         });
     }
@@ -440,9 +419,9 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     public void testPerformPaginatedQuery() throws Exception {
         createEightMtTable1s();
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
         query.setPageSize(5);
-        List<ClientMtTable1> objects = clientContext.performQuery(query);
+        List<ClientMtTable1> objects = query.select(clientContext);
         assertNotNull(objects);
         assertTrue(objects instanceof RemoteIncrementalFaultList);
     }
@@ -451,62 +430,47 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     public void testPrefetchingToManyEmpty() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery q = new SelectQuery(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
-        q.addPrefetch(ClientMtTable1.TABLE2ARRAY_PROPERTY);
+        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class);
+        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
+        q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
-        final List<ClientMtTable1> results = clientContext.performQuery(q);
+        final List<ClientMtTable1> results = q.select(clientContext);
 
-        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        clientServerInterceptor.runWithQueriesBlocked(() -> {
+            ClientMtTable1 o2 = results.get(1);
+            assertEquals(PersistenceState.COMMITTED, o2.getPersistenceState());
+            assertSame(clientContext, o2.getObjectContext());
 
-            public void execute() {
-                ClientMtTable1 o2 = results.get(1);
-                assertEquals(PersistenceState.COMMITTED, o2.getPersistenceState());
-                assertSame(clientContext, o2.getObjectContext());
-
-                List<ClientMtTable2> children2 = o2.getTable2Array();
-                assertFalse(((ValueHolder) children2).isFault());
-                assertEquals(0, children2.size());
-            }
+            List<ClientMtTable2> children2 = o2.getTable2Array();
+            assertFalse(((ValueHolder) children2).isFault());
+            assertEquals(0, children2.size());
         });
     }
 
     @Test
-    public void testOIDQueryInterception() throws Exception {
+    public void testOIDQueryInterception() {
 
         final ClientMtTable1 o = clientContext.newObject(ClientMtTable1.class);
         o.setGlobalAttribute1("aaa");
 
         // fetch new
-        final ObjectIdQuery q1 = new ObjectIdQuery(
-                o.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE);
+        final ObjectIdQuery q1 = new ObjectIdQuery(o.getObjectId(), false, ObjectIdQuery.CACHE);
 
-        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                List<?> objects = clientContext.performQuery(q1);
-                assertEquals(1, objects.size());
-                assertSame(o, objects.get(0));
-            }
+        clientServerInterceptor.runWithQueriesBlocked(() -> {
+            List<?> objects = clientContext.performQuery(q1);
+            assertEquals(1, objects.size());
+            assertSame(o, objects.get(0));
         });
 
         clientContext.commitChanges();
 
         // fetch committed
-        final ObjectIdQuery q2 = new ObjectIdQuery(
-                o.getObjectId(),
-                false,
-                ObjectIdQuery.CACHE);
+        final ObjectIdQuery q2 = new ObjectIdQuery(o.getObjectId(), false, ObjectIdQuery.CACHE);
 
-        clientServerInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                List<?> objects = clientContext.performQuery(q2);
-                assertEquals(1, objects.size());
-                assertSame(o, objects.get(0));
-            }
+        clientServerInterceptor.runWithQueriesBlocked(() -> {
+            List<?> objects = clientContext.performQuery(q2);
+            assertEquals(1, objects.size());
+            assertSame(o, objects.get(0));
         });
     }
 }

@@ -52,7 +52,7 @@ public class CayenneContextPaginatedListCachingIT extends ClientCase {
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
-    protected void createSevenMtTable1sDataSet() throws Exception {
+    private void createSevenMtTable1sDataSet() throws Exception {
         for (int i = 1; i <= 7; i++) {
             tMtTable1.insert(i, "g" + i, "s" + i);
         }
@@ -62,12 +62,12 @@ public class CayenneContextPaginatedListCachingIT extends ClientCase {
     public void testLocalCache() throws Exception {
         createSevenMtTable1sDataSet();
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
-        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
+        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
         query.setPageSize(3);
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        List<ClientMtTable1> result1 = context.performQuery(query);
+        List<ClientMtTable1> result1 = query.select(context);
         assertEquals(7, result1.size());
 
         // ensure we can resolve all objects without a failure...

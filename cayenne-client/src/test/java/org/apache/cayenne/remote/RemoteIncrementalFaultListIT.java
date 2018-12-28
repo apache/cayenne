@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -68,7 +67,7 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 				"SERVER_ATTRIBUTE1");
 	}
 
-	protected void createObjectsDataSet() throws Exception {
+	private void createObjectsDataSet() throws Exception {
 		tMTTable.insert(1, "g1", "s1");
 		tMTTable.insert(2, "g2", "s2");
 		tMTTable.insert(3, "g3", "s3");
@@ -100,14 +99,12 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 
 		createObjectsDataSet();
 
-		SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(
-				ClientMtTable1.class);
+		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
 
 		// make sure total number of objects is not divisable
 		// by the page size, to test the last smaller page
 		query.setPageSize(pageSize);
-		query.addOrdering("db:" + MtTable1.TABLE1_ID_PK_COLUMN,
-				SortOrder.ASCENDING);
+		query.addOrdering("db:" + MtTable1.TABLE1_ID_PK_COLUMN, SortOrder.ASCENDING);
 
 		list = new RemoteIncrementalFaultList(clientContext, query);
 	}
@@ -161,14 +158,12 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 			assertTrue(obj instanceof Persistent);
 
 			// iterator must be resolved page by page
-			int expectedResolved = list.pageIndex(counter) * list.getPageSize()
-					+ list.getPageSize();
+			int expectedResolved = list.pageIndex(counter) * list.getPageSize() + list.getPageSize();
 			if (expectedResolved > list.size()) {
 				expectedResolved = list.size();
 			}
 
-			assertEquals(list.size() - expectedResolved,
-					list.getUnfetchedObjects());
+			assertEquals(list.size() - expectedResolved, list.getUnfetchedObjects());
 
 			counter++;
 		}
@@ -229,35 +224,29 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 	public void testIndexOf() throws Exception {
 		prepareList(6);
 
-		Expression qual = ExpressionFactory.matchExp(
-				ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "g20");
-		SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(
-				ClientMtTable1.class, qual);
+		Expression qual = ClientMtTable1.GLOBAL_ATTRIBUTE1.eq("g20");
+		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class, qual);
 		List<?> artists = list.context.performQuery(query);
 
 		assertEquals(1, artists.size());
 
 		ClientMtTable1 row = (ClientMtTable1) artists.get(0);
 		assertEquals(19, list.indexOf(row));
-		assertEquals(-1,
-				list.indexOf(list.context.newObject(ClientMtTable1.class)));
+		assertEquals(-1, list.indexOf(list.context.newObject(ClientMtTable1.class)));
 	}
 
 	@Test
 	public void testLastIndexOf() throws Exception {
 		prepareList(6);
-		Expression qual = ExpressionFactory.matchExp(
-				ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "g20");
-		SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(
-				ClientMtTable1.class, qual);
+		Expression qual = ClientMtTable1.GLOBAL_ATTRIBUTE1.eq("g20");
+		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class, qual);
 		List<?> objects = list.context.performQuery(query);
 
 		assertEquals(1, objects.size());
 
 		ClientMtTable1 row = (ClientMtTable1) objects.get(0);
 		assertEquals(19, list.lastIndexOf(row));
-		assertEquals(-1,
-				list.lastIndexOf(list.context.newObject(ClientMtTable1.class)));
+		assertEquals(-1, list.lastIndexOf(list.context.newObject(ClientMtTable1.class)));
 	}
 
 	private void doTestIterator(int size) throws Exception {

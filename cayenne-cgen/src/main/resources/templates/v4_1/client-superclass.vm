@@ -36,17 +36,11 @@
 ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${$superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
-#if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) || (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}))
-${importUtils.addType('org.apache.cayenne.exp.Property')}##
-#end
 #foreach( $attr in ${object.DeclaredAttributes} )
-$importUtils.addType(${attr.Type})##
+$propertyUtils.addImport($attr)##
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
-$importUtils.addType(${rel.TargetEntity.ClientClassName})##
-#if(${rel.CollectionType}) 
-$importUtils.addType(${rel.CollectionType})##
-#end
+$propertyUtils.addImport($rel, true)##
 #end
 #if( ${entityUtils.hasToOneDeclaredRelationships()} )
 ${importUtils.addType('org.apache.cayenne.ValueHolder')}##
@@ -76,22 +70,10 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
 ## Create Properties
 #foreach( $attr in ${object.DeclaredAttributes} )
-    #set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($attr.Name)} = Property.create("${attr.Name}", ${stringUtils.stripGeneric($type)}.class);
+    $propertyUtils.propertyDefinition($attr, true)
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
-#if( $rel.ToMany )
-#if ( ${rel.CollectionType} == "java.util.Map")
-    #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($entityUtils.getMapKeyType($rel)), $importUtils.formatJavaType($rel.TargetEntity.ClientClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
-#else
-    #set( $type = "$importUtils.formatJavaType($rel.CollectionType)<$importUtils.formatJavaType($rel.TargetEntity.ClientClassName)>" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
-#end
-#else
-    #set( $type = "$importUtils.formatJavaType(${rel.TargetEntity.ClientClassName})" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($rel.Name)} = Property.create("${rel.Name}", ${stringUtils.stripGeneric($type)}.class);
-#end
+    $propertyUtils.propertyDefinition($rel, true)
 #end
 
 ## Create ivars
@@ -228,7 +210,6 @@ public abstract class ${superClassName} extends ${baseClassName} {
     public void set${stringUtils.capitalized($rel.Name)}(${importUtils.formatJavaType($rel.TargetEntity.ClientClassName)} $relName) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "$rel.Name", true);
-            objectContext.propertyChanged(this, "$rel.Name", this.${relName}.getValueDirectly(), $relName);
         } else if (this.$relName == null) {
         	this.$relName = new PersistentObjectHolder<>(this, "$rel.Name");
 		}

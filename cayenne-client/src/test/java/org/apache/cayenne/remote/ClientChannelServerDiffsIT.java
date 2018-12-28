@@ -103,7 +103,7 @@ public class ClientChannelServerDiffsIT extends ClientCase {
     @Test
     public void testReturnDiffInPrePersist() {
 
-        final List<GenericDiff> diffs = new ArrayList<GenericDiff>();
+        final List<GenericDiff> diffs = new ArrayList<>();
         final NoopGraphChangeHandler diffReader = new NoopGraphChangeHandler() {
 
             @Override
@@ -168,7 +168,7 @@ public class ClientChannelServerDiffsIT extends ClientCase {
             assertEquals(2, diffReader.size);
             assertEquals(1, diffs.size());
             assertEquals(tempId, diffs.get(0).sourceId);
-            assertEquals(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, diffs.get(0).property);
+            assertEquals(ClientMtTable1.GLOBAL_ATTRIBUTE1.getName(), diffs.get(0).property);
             assertNull(diffs.get(0).oldValue);
             assertEquals("XXX", diffs.get(0).newValue);
         }

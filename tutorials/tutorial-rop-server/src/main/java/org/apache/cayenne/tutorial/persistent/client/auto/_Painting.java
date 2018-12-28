@@ -2,7 +2,9 @@ package org.apache.cayenne.tutorial.persistent.client.auto;
 
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.tutorial.persistent.client.Artist;
 import org.apache.cayenne.tutorial.persistent.client.Gallery;
 import org.apache.cayenne.util.PersistentObjectHolder;
@@ -14,13 +16,13 @@ import org.apache.cayenne.util.PersistentObjectHolder;
  */
 public abstract class _Painting extends PersistentObject {
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<org.apache.cayenne.tutorial.persistent.Artist> ARTIST = Property.create("artist", org.apache.cayenne.tutorial.persistent.Artist.class);
-    public static final Property<org.apache.cayenne.tutorial.persistent.Gallery> GALLERY = Property.create("gallery", org.apache.cayenne.tutorial.persistent.Gallery.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<Artist> ARTIST = PropertyFactory.createEntity("artist", Artist.class);
+    public static final EntityProperty<Gallery> GALLERY = PropertyFactory.createEntity("gallery", Gallery.class);
 
     protected String name;
-    protected ValueHolder artist;
-    protected ValueHolder gallery;
+    protected ValueHolder<Artist> artist;
+    protected ValueHolder<Gallery> gallery;
 
     public String getName() {
         if(objectContext != null) {
@@ -29,17 +31,13 @@ public abstract class _Painting extends PersistentObject {
 
         return name;
     }
+
     public void setName(String name) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "name", false);
+            objectContext.propertyChanged(this, "name", this.name, name);
         }
 
-        Object oldValue = this.name;
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "name", oldValue, name);
-        }
-        
         this.name = name;
     }
 
@@ -47,25 +45,19 @@ public abstract class _Painting extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "artist", true);
         } else if (this.artist == null) {
-        	this.artist = new PersistentObjectHolder(this, "artist");
+        	this.artist = new PersistentObjectHolder<>(this, "artist");
 		}
 
-        return (Artist) artist.getValue();
+        return artist.getValue();
     }
+
     public void setArtist(Artist artist) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "artist", true);
         } else if (this.artist == null) {
-        	this.artist = new PersistentObjectHolder(this, "artist");
+        	this.artist = new PersistentObjectHolder<>(this, "artist");
 		}
 
-        // note how we notify ObjectContext of change BEFORE the object is actually
-        // changed... this is needed to take a valid current snapshot
-        Object oldValue = this.artist.getValueDirectly();
-        if (objectContext != null) {
-        	objectContext.propertyChanged(this, "artist", oldValue, artist);
-        }
-        
         this.artist.setValue(artist);
     }
 
@@ -73,25 +65,19 @@ public abstract class _Painting extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "gallery", true);
         } else if (this.gallery == null) {
-        	this.gallery = new PersistentObjectHolder(this, "gallery");
+        	this.gallery = new PersistentObjectHolder<>(this, "gallery");
 		}
 
-        return (Gallery) gallery.getValue();
+        return gallery.getValue();
     }
+
     public void setGallery(Gallery gallery) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "gallery", true);
         } else if (this.gallery == null) {
-        	this.gallery = new PersistentObjectHolder(this, "gallery");
+        	this.gallery = new PersistentObjectHolder<>(this, "gallery");
 		}
 
-        // note how we notify ObjectContext of change BEFORE the object is actually
-        // changed... this is needed to take a valid current snapshot
-        Object oldValue = this.gallery.getValueDirectly();
-        if (objectContext != null) {
-        	objectContext.propertyChanged(this, "gallery", oldValue, gallery);
-        }
-        
         this.gallery.setValue(gallery);
     }
 

@@ -100,9 +100,16 @@ public class PropertyUtils {
     }
 
     public void addImport(ObjRelationship relationship) {
+        addImport(relationship, false);
+    }
+
+    public void addImport(ObjRelationship relationship, boolean client) {
         importUtils.addType(PropertyFactory.class.getName());
-        if (relationship.getTargetEntityName() != null && relationship.getTargetEntity() != null) {
-            importUtils.addType(relationship.getTargetEntity().getClassName());
+        if (relationship.getTargetEntity() != null) {
+            importUtils.addType(client
+                    ? relationship.getTargetEntity().getClientClassName()
+                    : relationship.getTargetEntity().getClassName())
+            ;
         } else {
             importUtils.addType(Persistent.class.getName());
         }
@@ -152,7 +159,7 @@ public class PropertyUtils {
         return BaseProperty.class.getName();
     }
 
-    public String propertyDefinition(ObjAttribute attribute) {
+    public String propertyDefinition(ObjAttribute attribute, boolean client) {
         StringUtils utils = StringUtils.getInstance();
 
         String propertyType = getPropertyTypeForAttribute(attribute);
@@ -169,52 +176,56 @@ public class PropertyUtils {
         );
     }
 
-    public String propertyDefinition(ObjRelationship relationship) {
+    public String propertyDefinition(ObjAttribute attribute) {
+        return propertyDefinition(attribute, false);
+    }
+
+    public String propertyDefinition(ObjRelationship relationship, boolean client) {
         if (relationship.isToMany()) {
-            return toManyRelationshipDefinition(relationship);
+            return toManyRelationshipDefinition(relationship, client);
         } else {
-            return toOneRelationshipDefinition(relationship);
+            return toOneRelationshipDefinition(relationship, client);
         }
     }
 
-    private String toManyRelationshipDefinition(ObjRelationship relationship) {
+    public String propertyDefinition(ObjRelationship relationship) {
+        return propertyDefinition(relationship, false);
+    }
+
+    private String toManyRelationshipDefinition(ObjRelationship relationship, boolean client) {
         if (Map.class.getName().equals(relationship.getCollectionType())) {
-            return mapRelationshipDefinition(relationship);
+            return mapRelationshipDefinition(relationship, client);
         } else {
-            return collectionRelationshipDefinition(relationship);
+            return collectionRelationshipDefinition(relationship, client);
         }
     }
 
-    private String mapRelationshipDefinition(ObjRelationship relationship) {
+    private String mapRelationshipDefinition(ObjRelationship relationship, boolean client) {
         StringUtils utils = StringUtils.getInstance();
 
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
-        String mapKeyType = EntityUtils.getMapKeyTypeInternal(relationship);
-        String attributeType = relationship.getTargetEntity() == null
-                ? Persistent.class.getSimpleName()
-                : relationship.getTargetEntity().getClassName();
+        String mapKeyType = importUtils.formatJavaType(EntityUtils.getMapKeyTypeInternal(relationship));
+        String attributeType = getRelatedTypeName(relationship, client);
 
         return String.format("public static final %s<%s, %s> %s = PropertyFactory.%s(\"%s\", %s.class, %s.class);",
                 importUtils.formatJavaType(propertyType),
-                importUtils.formatJavaType(mapKeyType),
-                importUtils.formatJavaType(attributeType),
+                mapKeyType,
+                attributeType,
                 utils.capitalizedAsConstant(relationship.getName()),
                 propertyFactoryMethod,
                 relationship.getName(),
-                importUtils.formatJavaType(mapKeyType),
-                importUtils.formatJavaType(attributeType)
+                mapKeyType,
+                attributeType
         );
     }
 
-    private String collectionRelationshipDefinition(ObjRelationship relationship) {
+    private String collectionRelationshipDefinition(ObjRelationship relationship, boolean client) {
         StringUtils utils = StringUtils.getInstance();
 
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
-        String entityType = importUtils.formatJavaType(relationship.getTargetEntity() == null
-                ? Persistent.class.getSimpleName()
-                : relationship.getTargetEntity().getClassName());
+        String entityType = getRelatedTypeName(relationship, client);
 
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),
@@ -226,14 +237,22 @@ public class PropertyUtils {
         );
     }
 
-    private String toOneRelationshipDefinition(ObjRelationship relationship) {
+    private String getRelatedTypeName(ObjRelationship relationship, boolean client) {
+        if(relationship.getTargetEntity() == null) {
+            return Persistent.class.getSimpleName();
+        }
+
+        return importUtils.formatJavaType(client
+                ? relationship.getTargetEntity().getClientClassName()
+                : relationship.getTargetEntity().getClassName());
+    }
+
+    private String toOneRelationshipDefinition(ObjRelationship relationship, boolean client) {
         StringUtils utils = StringUtils.getInstance();
 
         String propertyType = EntityProperty.class.getName();
         String propertyFactoryMethod = "createEntity";
-        String attributeType = (relationship.getTargetEntityName() == null || relationship.getTargetEntity() == null)
-                ? Persistent.class.getSimpleName()
-                : importUtils.formatJavaType(relationship.getTargetEntity().getClassName());
+        String attributeType = getRelatedTypeName(relationship, client);
 
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),

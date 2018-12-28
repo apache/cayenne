@@ -79,19 +79,19 @@ public class CayenneContextMergeHandlerIT extends ClientCase {
 
         assertNull(o1.getGlobalAttribute1Direct());
 
-        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, null, "abc");
+        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1.getName(), null, "abc");
         assertEquals("abc", o1.getGlobalAttribute1Direct());
 
-        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "abc", "xyz");
+        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1.getName(), "abc", "xyz");
 
         assertEquals("xyz", o1.getGlobalAttribute1Direct());
 
         // block if old value is different
-        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "123", "mnk");
+        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1.getName(), "123", "mnk");
 
         assertEquals("xyz", o1.getGlobalAttribute1Direct());
 
-        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, "xyz", null);
+        handler.nodePropertyChanged(o1.getObjectId(), ClientMtTable1.GLOBAL_ATTRIBUTE1.getName(), "xyz", null);
 
         assertNull(o1.getGlobalAttribute1Direct());
     }
