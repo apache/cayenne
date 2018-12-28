@@ -1,7 +1,12 @@
 package org.apache.cayenne.joda.db.auto;
 
-import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.exp.Property;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.joda.time.LocalTime;
 
 /**
@@ -10,19 +15,74 @@ import org.joda.time.LocalTime;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _LocalTimeTestEntity extends CayenneDataObject {
+public abstract class _LocalTimeTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<LocalTime> TIME = Property.create("time", LocalTime.class);
+    public static final BaseProperty<LocalTime> TIME = PropertyFactory.createBase("time", LocalTime.class);
+
+    protected LocalTime time;
+
 
     public void setTime(LocalTime time) {
-        writeProperty("time", time);
+        beforePropertyWrite("time", this.time, time);
+        this.time = time;
     }
+
     public LocalTime getTime() {
-        return (LocalTime)readProperty("time");
+        beforePropertyRead("time");
+        return this.time;
+    }
+
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "time":
+                return this.time;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "time":
+                this.time = (LocalTime)val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.time);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.time = (LocalTime)in.readObject();
     }
 
 }

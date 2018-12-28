@@ -1,7 +1,13 @@
 package org.apache.cayenne.rop.protostuff.persistent.auto;
 
-import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.exp.Property;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.rop.protostuff.persistent.MtTable1;
 
 /**
@@ -10,20 +16,27 @@ import org.apache.cayenne.rop.protostuff.persistent.MtTable1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MtTable2 extends CayenneDataObject {
+public abstract class _MtTable2 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
     public static final String TABLE2_ID_PK_COLUMN = "TABLE2_ID";
 
-    public static final Property<String> GLOBAL_ATTRIBUTE = Property.create("globalAttribute", String.class);
-    public static final Property<MtTable1> TABLE1 = Property.create("table1", MtTable1.class);
+    public static final StringProperty<String> GLOBAL_ATTRIBUTE = PropertyFactory.createString("globalAttribute", String.class);
+    public static final EntityProperty<MtTable1> TABLE1 = PropertyFactory.createEntity("table1", MtTable1.class);
+
+    protected String globalAttribute;
+
+    protected Object table1;
 
     public void setGlobalAttribute(String globalAttribute) {
-        writeProperty("globalAttribute", globalAttribute);
+        beforePropertyWrite("globalAttribute", this.globalAttribute, globalAttribute);
+        this.globalAttribute = globalAttribute;
     }
+
     public String getGlobalAttribute() {
-        return (String)readProperty("globalAttribute");
+        beforePropertyRead("globalAttribute");
+        return this.globalAttribute;
     }
 
     public void setTable1(MtTable1 table1) {
@@ -34,5 +47,60 @@ public abstract class _MtTable2 extends CayenneDataObject {
         return (MtTable1)readProperty("table1");
     }
 
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+            case "globalAttribute":
+                return this.globalAttribute;
+            case "table1":
+                return this.table1;
+            default:
+                return super.readPropertyDirectly(propName);
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+            case "globalAttribute":
+                this.globalAttribute = (String)val;
+                break;
+            case "table1":
+                this.table1 = val;
+                break;
+            default:
+                super.writePropertyDirectly(propName, val);
+        }
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        writeSerialized(out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        readSerialized(in);
+    }
+
+    @Override
+    protected void writeState(ObjectOutputStream out) throws IOException {
+        super.writeState(out);
+        out.writeObject(this.globalAttribute);
+        out.writeObject(this.table1);
+    }
+
+    @Override
+    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        super.readState(in);
+        this.globalAttribute = (String)in.readObject();
+        this.table1 = in.readObject();
+    }
 
 }
