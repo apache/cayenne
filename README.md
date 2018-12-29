@@ -119,7 +119,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.1.M2'
-        classpath 'mysql:mysql-connector-java:6.0.5'
+        classpath 'mysql:mysql-connector-java:8.0.13'
     }
 }
 
