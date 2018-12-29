@@ -17,6 +17,7 @@ CAY-2467 New type-aware Property API
 
 Bug Fixes:
 
+CAY-2332 Property API: unable to use eq() and in() methods for toMany relationships
 
 ----------------------------------
 Release: 4.1.M3
