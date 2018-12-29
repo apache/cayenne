@@ -56,7 +56,7 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void testImportAttribute() {
+    public void testImportAttribute() throws Exception {
         ObjAttribute attribute = new ObjAttribute();
         attribute.setName("test");
         attribute.setType(java.util.Date.class.getName());
@@ -99,7 +99,7 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void simpleNumericDefinition() {
+    public void simpleNumericDefinition() throws Exception {
         importUtils.addType(NumericProperty.class.getName());
 
         ObjAttribute attribute = new ObjAttribute();
@@ -112,7 +112,7 @@ public class PropertyUtilsTest {
     }
 
     @Test
-    public void simpleStringDefinition() {
+    public void simpleStringDefinition() throws Exception {
         importUtils.addType(StringProperty.class.getName());
 
         ObjAttribute attribute = new ObjAttribute();

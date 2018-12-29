@@ -127,7 +127,7 @@ public class CayenneGeneratorIntegrationTest {
         assertContents("org/apache/cayenne/testdo/embeddable/Embeddable1.java", "Embeddable1",
                 "org.apache.cayenne.testdo.embeddable", "_Embeddable1");
         assertContents("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java", "_Embeddable1",
-                "org.apache.cayenne.testdo.embeddable.auto", "Object");
+                "org.apache.cayenne.testdo.embeddable.auto", null);
     }
 
     private String convertPath(String unixPath) {
@@ -175,8 +175,10 @@ public class CayenneGeneratorIntegrationTest {
         while ((s = in.readLine()) != null) {
             if (classPattern.matcher(s).find()) {
                 assertTrue(s.indexOf(className) > 0);
-                assertTrue(s.indexOf(extendsName) > 0);
-                assertTrue(s.indexOf(className) < s.indexOf(extendsName));
+                if(extendsName != null) {
+                    assertTrue(s.indexOf(extendsName) > 0);
+                    assertTrue(s.indexOf(className) < s.indexOf(extendsName));
+                }
                 return;
             }
         }

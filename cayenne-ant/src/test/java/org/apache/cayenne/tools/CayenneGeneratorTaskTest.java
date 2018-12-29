@@ -270,7 +270,7 @@ public class CayenneGeneratorTaskTest {
 
 		File _e = new File(mapDir, convertPath("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java"));
 		assertTrue(_e.exists());
-		assertContents(_e, "_Embeddable1", "org.apache.cayenne.testdo.embeddable.auto", "Object");
+		assertContents(_e, "_Embeddable1", "org.apache.cayenne.testdo.embeddable.auto", null);
 	}
 
 	private String convertPath(String unixPath) {
@@ -306,8 +306,10 @@ public class CayenneGeneratorTaskTest {
 		while ((s = in.readLine()) != null) {
 			if (classPattern.matcher(s).find()) {
 				assertTrue(s.indexOf(className) > 0);
-				assertTrue(s.indexOf(extendsName) > 0);
-				assertTrue(s.indexOf(className) < s.indexOf(extendsName));
+				if(extendsName != null) {
+					assertTrue(s.indexOf(extendsName) > 0);
+					assertTrue(s.indexOf(className) < s.indexOf(extendsName));
+				}
 				return;
 			}
 		}
