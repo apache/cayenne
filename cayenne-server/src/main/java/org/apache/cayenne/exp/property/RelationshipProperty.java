@@ -38,7 +38,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default BaseProperty<Object> dot(String property) {
-        return PropertyFactory.createBase(getName() + "." + property, null);
+        String path = getName() + "." + property;
+        return PropertyFactory.createBase(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                null);
     }
 
     /**
@@ -48,7 +51,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T> BaseProperty<T> dot(BaseProperty<T> property) {
-        return PropertyFactory.createBase(getName() + "." + property.getName(), property.getType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createBase(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getType());
     }
 
     /**
@@ -58,7 +64,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T extends Number> NumericProperty<T> dot(NumericProperty<T> property) {
-        return PropertyFactory.createNumeric(getName() + "." + property.getName(), property.getType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createNumeric(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getType());
     }
 
     /**
@@ -68,7 +77,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T extends CharSequence> StringProperty<T> dot(StringProperty<T> property) {
-        return PropertyFactory.createString(getName() + "." + property.getName(), property.getType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createString(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getType());
     }
 
     /**
@@ -78,7 +90,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T> DateProperty<T> dot(DateProperty<T> property) {
-        return PropertyFactory.createDate(getName() + "." + property.getName(), property.getType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createDate(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getType());
     }
 
     /**
@@ -88,7 +103,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T extends Persistent> EntityProperty<T> dot(EntityProperty<T> property) {
-        return PropertyFactory.createEntity(getName() + "." + property.getName(), property.getType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createEntity(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getType());
     }
 
     /**
@@ -98,7 +116,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T extends Persistent> ListProperty<T> dot(ListProperty<T> property) {
-        return PropertyFactory.createList(getName() + "." + property.getName(), property.getEntityType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createList(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getEntityType());
     }
 
     /**
@@ -108,7 +129,10 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T extends Persistent> SetProperty<T> dot(SetProperty<T> property) {
-        return PropertyFactory.createSet(getName() + "." + property.getName(), property.getEntityType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createSet(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getEntityType());
     }
 
     /**
@@ -118,7 +142,11 @@ public interface RelationshipProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <K, V extends Persistent> MapProperty<K, V> dot(MapProperty<K, V> property) {
-        return PropertyFactory.createMap(getName() + "." + property.getName(), property.getKeyType(), property.getEntityType());
+        String path = getName() + "." + property.getName();
+        return PropertyFactory.createMap(path,
+                PropertyUtils.createExpressionWithCopiedAliases(path, getExpression()),
+                property.getKeyType(),
+                property.getEntityType());
     }
 
     /**
@@ -134,6 +162,7 @@ public interface RelationshipProperty<E> extends Property<E> {
      * prefetch semantics.
      */
     default PrefetchTreeNode joint() {
+        PropertyUtils.checkAliases(getExpression());
         return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 
@@ -143,6 +172,7 @@ public interface RelationshipProperty<E> extends Property<E> {
      * "disjoint" prefetch semantics.
      */
     default PrefetchTreeNode disjoint() {
+        PropertyUtils.checkAliases(getExpression());
         return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
     }
 
@@ -152,6 +182,7 @@ public interface RelationshipProperty<E> extends Property<E> {
      * "disjoint by id" prefetch semantics.
      */
     default PrefetchTreeNode disjointById() {
+        PropertyUtils.checkAliases(getExpression());
         return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
     }
 

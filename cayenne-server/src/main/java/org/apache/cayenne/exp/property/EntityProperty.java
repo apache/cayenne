@@ -56,7 +56,11 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
      */
     @Override
     public EntityProperty<E> alias(String alias) {
-        return PropertyFactory.createEntity(alias, getExpression(), getType());
+        String substrPath = PropertyUtils.substringPath(this.getName());
+        String aliasedPath = substrPath + alias;
+        return PropertyFactory.createEntity(aliasedPath,
+                PropertyUtils.createPathExp(aliasedPath, this.getName().substring(substrPath.length()), alias, getExpression().getPathAliases()),
+                this.getType());
     }
 
     /**

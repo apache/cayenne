@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -38,6 +32,12 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.util.CayenneMapEntry;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Path expression traversing DB relationships and attributes.
@@ -166,6 +166,7 @@ public class ASTDbPath extends ASTPath {
 	public Expression shallowCopy() {
 		ASTDbPath copy = new ASTDbPath(id);
 		copy.path = path;
+		copy.setPathAliases(pathAliases);
 		return copy;
 	}
 

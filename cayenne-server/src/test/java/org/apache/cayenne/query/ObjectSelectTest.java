@@ -18,22 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.Test;
 
 public class ObjectSelectTest {
 

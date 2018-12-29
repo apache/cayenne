@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.exp.property;
 
-import java.time.LocalDateTime;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
+
+import java.time.LocalDateTime;
 
 /**
  *
