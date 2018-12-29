@@ -6,8 +6,6 @@ import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.BaseProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
@@ -22,11 +20,12 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final BaseProperty<Embeddable1> EMBEDDED1 = PropertyFactory.createBase("embedded1", Embeddable1.class);
-    public static final BaseProperty<Embeddable1> EMBEDDED2 = PropertyFactory.createBase("embedded2", Embeddable1.class);
+    public static final StringProperty<String> EMBEDDED1_EMBEDDED20 = PropertyFactory.createString(ExpressionFactory.dbPathExp("EMBEDDED20"), String.class);
+    public static final StringProperty<String> EMBEDDED1_EMBEDDED10 = PropertyFactory.createString(ExpressionFactory.dbPathExp("EMBEDDED10"), String.class);
+    public static final StringProperty<String> EMBEDDED2_EMBEDDED20 = PropertyFactory.createString(ExpressionFactory.dbPathExp("EMBEDDED40"), String.class);
+    public static final StringProperty<String> EMBEDDED2_EMBEDDED10 = PropertyFactory.createString(ExpressionFactory.dbPathExp("EMBEDDED30"), String.class);
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
 
     protected Embeddable1 embedded1;

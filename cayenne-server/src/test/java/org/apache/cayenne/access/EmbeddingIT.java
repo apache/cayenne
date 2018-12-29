@@ -108,17 +108,15 @@ public class EmbeddingIT extends ServerCase {
     }
 
     @Test
-    public void testEmbeddableInWhere() throws Exception {
+    public void testEmbeddablePropertiesInWhere() throws Exception {
         createSelectDataSet();
 
-        Embeddable1 embeddable1 = new Embeddable1();
-        embeddable1.setEmbedded10("e1");
-        embeddable1.setEmbedded20("e2");
-
-        Expression exp = ExpressionFactory.matchDbExp(Embeddable1.EMBEDDED10.getName().toUpperCase(), "e1");
-
-
-        ObjectSelect.query(EmbedEntity1.class).where(exp).select(context);
+        List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class)
+                .where(EmbedEntity1.EMBEDDED1_EMBEDDED10.eq("e1"))
+                .orderBy(EmbedEntity1.EMBEDDED2_EMBEDDED10.asc())
+                .select(context);
+        assertEquals(1, result.size());
+        assertEquals("e1", result.get(0).getEmbedded1().getEmbedded10());
     }
 
     @Test

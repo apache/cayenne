@@ -38,9 +38,6 @@ ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
-#if(${object.Attributes} && !${object.Attributes.isEmpty()})
-${importUtils.addType('org.apache.cayenne.exp.Property')}##
-#end
 #foreach( $attr in ${object.Attributes} )
 $importUtils.addType(${attr.Type})##
 #end
@@ -52,7 +49,8 @@ ${importUtils.generate()}
  * since it may be overwritten next time code is regenerated. 
  * If you need to make any customizations, please use subclass. 
  */
-public abstract class ${superClassName} extends ${baseClassName} {
+## extends ${baseClassName} - always Object, so skip it
+public abstract class ${superClassName} {
 
 ## Create property names
 #if( $createPropertyNames )
@@ -61,12 +59,6 @@ public abstract class ${superClassName} extends ${baseClassName} {
 #end
 
 #end
-## Create Properties
-#foreach( $attr in ${object.Attributes} )
-    #set ( $type = "$importUtils.formatJavaType(${attr.Type}, false)" )
-    public static final Property<$type> ${stringUtils.capitalizedAsConstant($attr.Name)} = Property.create("${attr.Name}", ${stringUtils.stripGeneric($type)}.class);
-#end
-
     // special properties injected by Cayenne
     private Persistent owner;
     private String embeddedProperty;
