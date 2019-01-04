@@ -31,8 +31,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.parser.ASTLike;
 import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTTrim;
 import org.junit.Before;
 import org.junit.Test;
@@ -511,6 +513,26 @@ public class ExpressionFactoryTest {
 	public void testFuncExp() {
 		Expression e = ExpressionFactory.exp("trim(abc.xyz)");
 		assertEquals(ASTTrim.class, e.getClass());
+	}
+
+	@Test
+	public void testExpWithAlias() {
+		Expression expression = ExpressionFactory.exp("paintings#p1.galleries#p2.name = 'Test'");
+		assertEquals("p1.p2.name", expression.getOperand(0).toString());
+		assertEquals("paintings", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
+		assertEquals("galleries", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p2"));
+	}
+
+	@Test
+	public void testExpWithAliasAndOuterJoin() {
+		Expression expression = ExpressionFactory.exp("paintings#p1+.name = 'Test'");
+		assertEquals("p1.name", expression.getOperand(0).toString());
+		assertEquals("paintings+", ((ASTObjPath)expression.getOperand(0)).getPathAliases().get("p1"));
+	}
+
+	@Test(expected = CayenneRuntimeException.class)
+	public void testExpWithTheSameAliasToDiffSegments() {
+		ExpressionFactory.exp("paintings#p1.gallery#p1.name = 'Test'");
 	}
 
     // CAY-2081

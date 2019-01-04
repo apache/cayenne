@@ -37,6 +37,7 @@ package org.apache.cayenne.exp.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ExpressionUtils;
 
 /**
   * Parser of Cayenne Expressions. 
@@ -579,11 +580,11 @@ void pathExpression() : {
 }
 {
    (
-             t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #ObjPath(0)
+             t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #ObjPath(0)
    |
-     "obj:"  t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #ObjPath(0)
+     "obj:"  t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #ObjPath(0)
    |
-     "db:"   t = <PROPERTY_PATH> { jjtThis.setPath(t.image); } #DbPath(0)
+     "db:"   t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #DbPath(0)
    |
      "enum:" t = <PROPERTY_PATH> { jjtThis.setEnumValue(t.image); } #Enum(0)
    )
@@ -599,7 +600,7 @@ TOKEN : {
 
 TOKEN :
 {
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* (["+"])? >
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* (["#"]<LETTER> (<LETTER>|<DIGIT>)*)? (["+"])? >
 |
   < #LETTER: ["_","a"-"z","A"-"Z"] >
 |
