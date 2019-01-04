@@ -131,7 +131,8 @@ public class PathAliasesIT extends ServerCase {
         query.setQualifier(expression);
         List<Painting> paintings = query.select(context);
         assertEquals(2, paintings.size());
-        assertEquals("painting5", paintings.get(0).getPaintingTitle());
+        assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
+        assertEquals("artist1", paintings.get(1).getToArtist().getArtistName());
     }
 
     @Test
@@ -173,11 +174,11 @@ public class PathAliasesIT extends ServerCase {
     @Test
     public void testOrderWithAlias() {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .orderBy(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.ESTIMATED_PRICE).asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .orderBy(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME).asc());
         List<Artist> artists = query.select(context);
-        assertEquals(5, artists.size());
-        assertEquals(2, artists.get(0).getPaintingArray().size());
+        assertEquals(6, artists.size());
+        assertEquals("tate modern", artists.get(0).getPaintingArray().get(0).getToGallery().getGalleryName());
+        assertEquals("test gallery", artists.get(artists.size() - 1).getPaintingArray().get(0).getToGallery().getGalleryName());
     }
 
     @Test(expected = CayenneRuntimeException.class)
@@ -280,13 +281,13 @@ public class PathAliasesIT extends ServerCase {
 
     @Test
     public void testOrderWithAliasForExp() {
-        Expression e1 = ExpressionFactory.exp("paintingArray#p1.estimatedPrice");
+        Expression e1 = ExpressionFactory.exp("paintingArray#p1.toGallery#p2.galleryName");
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .orderBy(PropertyFactory.createBase(e1, Number.class).asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .orderBy(PropertyFactory.createBase(e1, String.class).asc());
         List<Artist> artists = query.select(context);
-        assertEquals(5, artists.size());
-        assertEquals(2, artists.get(0).getPaintingArray().size());
+        assertEquals(6, artists.size());
+        assertEquals("tate modern", artists.get(0).getPaintingArray().get(0).getToGallery().getGalleryName());
+        assertEquals("test gallery", artists.get(artists.size() - 1).getPaintingArray().get(0).getToGallery().getGalleryName());
     }
 
     @Test
