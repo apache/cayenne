@@ -19,9 +19,15 @@
 
 package org.apache.cayenne.query;
 
+import java.sql.Types;
+import java.text.DateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -36,13 +42,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.text.DateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
+import static org.apache.cayenne.exp.FunctionExpressionFactory.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -101,7 +101,7 @@ public class ObjectSelect_AggregateIT extends ServerCase {
                 .selectOne(context);
         assertEquals(20L, count);
     }
-    
+
     @Test
     public void testCountDistinct() throws Exception {
     	List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
@@ -121,7 +121,7 @@ public class ObjectSelect_AggregateIT extends ServerCase {
     @Test
     @Ignore("Not all databases support AVG(DATE) aggregation")
     public void testAvg() throws Exception {
-        BaseProperty<Date> avgProp = PropertyFactory.createBase(FunctionExpressionFactory.avgExp(Artist.DATE_OF_BIRTH.getExpression()), Date.class);
+        BaseProperty<Date> avgProp = PropertyFactory.createBase(avgExp(Artist.DATE_OF_BIRTH.getExpression()), Date.class);
 
         Date avg = ObjectSelect.query(Artist.class)
                 .column(avgProp)

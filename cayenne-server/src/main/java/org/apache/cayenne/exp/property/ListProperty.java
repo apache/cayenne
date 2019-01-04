@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.List;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
-
-import java.util.List;
+import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
  * Property that represents to-many relationship mapped on {@link List}.
@@ -52,11 +53,8 @@ public class ListProperty<V extends Persistent> extends CollectionProperty<V, Li
      */
     @Override
     public ListProperty<V> alias(String alias) {
-        String substrPath = PropertyUtils.substringPath(this.getName());
-        String aliasedPath = substrPath + alias;
-        return PropertyFactory.createList(aliasedPath,
-                PropertyUtils.createPathExp(aliasedPath, this.getName().substring(substrPath.length()), alias, getExpression().getPathAliases()),
-                this.getEntityType());
+        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        return PropertyFactory.createList(exp.getPath(), exp, this.getEntityType());
     }
 
     /**

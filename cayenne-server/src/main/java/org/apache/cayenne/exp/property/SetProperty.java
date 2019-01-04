@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.Set;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
-
-import java.util.Set;
+import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
  * Property that represents to-many relationship mapped on {@link Set}.
@@ -48,11 +49,8 @@ public class SetProperty<V extends Persistent> extends CollectionProperty<V, Set
      */
     @Override
     public SetProperty<V> alias(String alias) {
-        String substrPath = PropertyUtils.substringPath(this.getName());
-        String aliasedPath = substrPath + alias;
-        return PropertyFactory.createSet(aliasedPath,
-                PropertyUtils.createPathExp(aliasedPath, this.getName().substring(substrPath.length()), alias, getExpression().getPathAliases()),
-                this.getEntityType());
+        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        return PropertyFactory.createSet(exp.getPath(), exp, this.getEntityType());
     }
 
     /**

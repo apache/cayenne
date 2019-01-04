@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
@@ -41,9 +44,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -52,7 +52,7 @@ import static org.junit.Assert.assertNotNull;
  * @since 4.2
  */
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PropertyAliasesIT extends ServerCase {
+public class PathAliasesIT extends ServerCase {
 
     @Inject
     private DataContext context;
@@ -184,6 +184,14 @@ public class PropertyAliasesIT extends ServerCase {
     public void testPrefetchWithAliases() {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
         query.prefetch(Artist.PAINTING_ARRAY.alias("p1").disjoint());
+        query.select(context);
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void testTheSameAliasesToDifferentProperties() {
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
+        query.where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("p1"));
+        query.and(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).alias("p1").dot(Gallery.GALLERY_NAME).eq("g1"));
         query.select(context);
     }
 }

@@ -19,52 +19,30 @@
 
 package org.apache.cayenne.exp.property;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTPath;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
  * @since 4.2
  */
 class PropertyUtils {
 
-    static ASTPath createPathExp(String aliasedPath, String segment, String alias, Map<String, String> aliasMap) {
-        ASTPath pathExp = new ASTObjPath(aliasedPath);
-        Map<String, String> aliases = new HashMap<>(aliasMap);
-        aliases.put(alias, segment);
-        pathExp.setPathAliases(aliases);
+    static ASTPath createPathExp(String path, String alias, Map<String, String> aliasMap) {
+        int index = path.lastIndexOf(".");
+        String aliasedPath = index != -1 ? path.substring(0, index + 1) + alias : alias;
+        String segmentPath = path.substring(index != -1 ? index + 1 : 0);
 
+        Map<String, String> pathAliases = new HashMap<>(aliasMap);
+        pathAliases.put(alias, segmentPath);
+        return buildExp(aliasedPath, pathAliases);
+    }
+
+    static ASTPath buildExp(String path, Map<String, String> pathAliases) {
+        ASTPath pathExp = new ASTObjPath(path);
+        pathExp.setPathAliases(pathAliases);
         return pathExp;
     }
-
-    static ASTPath createExpressionWithCopiedAliases(String name, Expression expression) {
-        if(expression instanceof ASTPath) {
-            ASTPath pathExp = new ASTObjPath(name);
-            pathExp.setPathAliases(expression.getPathAliases());
-            return pathExp;
-        }
-
-        throw new CayenneRuntimeException("Dot is used only with path expressions.");
-    }
-
-    static String substringPath(String propertyName){
-        for(int i = propertyName.length() - 1; i >= 0; i--) {
-            if(propertyName.charAt(i) == '.') {
-                return propertyName.substring(0, i + 1);
-            }
-        }
-
-        return "";
-    }
-
-    static void checkAliases(Expression expression) {
-        if(!expression.getPathAliases().isEmpty()) {
-            throw new CayenneRuntimeException("Can't use aliases with prefetch");
-        }
-    }
-
 }

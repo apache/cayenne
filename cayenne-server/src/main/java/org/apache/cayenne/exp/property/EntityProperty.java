@@ -21,6 +21,7 @@ package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
  * Property that represents to-one relationships.
@@ -56,11 +57,8 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
      */
     @Override
     public EntityProperty<E> alias(String alias) {
-        String substrPath = PropertyUtils.substringPath(this.getName());
-        String aliasedPath = substrPath + alias;
-        return PropertyFactory.createEntity(aliasedPath,
-                PropertyUtils.createPathExp(aliasedPath, this.getName().substring(substrPath.length()), alias, getExpression().getPathAliases()),
-                this.getType());
+        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        return PropertyFactory.createEntity(exp.getPath(), exp, this.getType());
     }
 
     /**

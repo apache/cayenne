@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.CayenneMapEntry;
-
 import java.util.Iterator;
 import java.util.Map;
+
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Generic path expression.

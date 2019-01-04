@@ -19,12 +19,13 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-
-import java.util.Collection;
-import java.util.Map;
+import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
  * Property that represents to-many relationship mapped on {@link Map}.
@@ -204,12 +205,8 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      */
     @Override
     public MapProperty<K, V> alias(String alias) {
-        String substrPath = PropertyUtils.substringPath(this.getName());
-        String aliasedPath = substrPath + alias;
-        return PropertyFactory.createMap(aliasedPath,
-                PropertyUtils.createPathExp(aliasedPath, this.getName().substring(substrPath.length()), alias, getExpression().getPathAliases()),
-                this.getKeyType(),
-                this.getEntityType());
+        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        return PropertyFactory.createMap(exp.getPath(), exp, this.getKeyType(), this.getEntityType());
     }
 
     /**

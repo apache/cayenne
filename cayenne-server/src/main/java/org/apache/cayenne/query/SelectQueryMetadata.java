@@ -18,6 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -47,15 +56,6 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @since 3.0
@@ -206,14 +206,16 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 			if (pathSplitAliases == null) {
 				pathSplitAliases = new HashMap<>();
 			}
-			for(String key : aliases.keySet()) {
-				if(pathSplitAliases.containsKey(key)) {
-					if(!pathSplitAliases.get(key).equals(aliases.get(key))) {
+
+			for(Map.Entry<String, String> entry : aliases.entrySet()) {
+				pathSplitAliases.compute(entry.getKey(), (key, value) -> {
+					if(value != null && !value.equals(entry.getValue())){
 						throw new CayenneRuntimeException("Can't add the same alias to different path segments.");
+					} else {
+						return entry.getValue();
 					}
-				}
+				});
 			}
-			pathSplitAliases.putAll(aliases);
 		}
 
 		int len = expression.getOperandCount();

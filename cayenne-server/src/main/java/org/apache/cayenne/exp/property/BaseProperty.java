@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Supplier;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
@@ -27,11 +32,6 @@ import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Orderings;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.reflect.PropertyUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Property that represents generic attribute.
