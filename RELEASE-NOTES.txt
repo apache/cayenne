@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-2467 New type-aware Property API
+CAY-2507 Property API to use path aliases
 
 Bug Fixes:
 

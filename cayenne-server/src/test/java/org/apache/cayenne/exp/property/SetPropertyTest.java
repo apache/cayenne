@@ -33,21 +33,26 @@ import static org.junit.Assert.*;
 public class SetPropertyTest {
 
     private SetProperty<Artist> property;
+    private SetProperty<Artist> property1;
 
     @Before
     public void createProperty() {
         property = new SetProperty<>("path", null, Artist.class);
+        property1 = new SetProperty<>("path.artist", null, Artist.class);
     }
 
     @Test
     public void alias() {
         assertEquals("path", property.getName());
-        assertNull(property.getAlias());
-
         property = property.alias("alias");
-
         assertEquals("alias", property.getName());
-        assertEquals("alias", property.getAlias());
+        assertEquals(1, property.getExpression().getPathAliases().size());
+
+        assertEquals("path.artist", property1.getName());
+        property1 = property1.alias("a");
+        assertEquals("path.a", property1.getName());
+        assertEquals(1, property1.getExpression().getPathAliases().size());
+        assertEquals("artist", property1.getExpression().getPathAliases().get("a"));
     }
 
     @Test

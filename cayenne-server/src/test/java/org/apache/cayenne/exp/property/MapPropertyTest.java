@@ -27,7 +27,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @since 4.2
@@ -35,10 +35,12 @@ import static org.junit.Assert.*;
 public class MapPropertyTest {
 
     private MapProperty<Integer, Artist> property;
+    private MapProperty<Integer, Artist> property1;
 
     @Before
     public void createProperty() {
         property = new MapProperty<>("path", null, Integer.class, Artist.class);
+        property1 = new MapProperty<>("path.artist", null, Integer.class, Artist.class);
     }
 
     @Test
@@ -132,12 +134,15 @@ public class MapPropertyTest {
     @Test
     public void alias() {
         assertEquals("path", property.getName());
-        assertNull(property.getAlias());
-
         property = property.alias("alias");
-
         assertEquals("alias", property.getName());
-        assertEquals("alias", property.getAlias());
+        assertEquals(1, property.getExpression().getPathAliases().size());
+
+        assertEquals("path.artist", property1.getName());
+        property1 = property1.alias("a");
+        assertEquals("path.a", property1.getName());
+        assertEquals(1, property1.getExpression().getPathAliases().size());
+        assertEquals("artist", property1.getExpression().getPathAliases().get("a"));
     }
 
     @Test

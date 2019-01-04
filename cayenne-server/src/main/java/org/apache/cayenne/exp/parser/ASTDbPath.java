@@ -166,6 +166,7 @@ public class ASTDbPath extends ASTPath {
 	public Expression shallowCopy() {
 		ASTDbPath copy = new ASTDbPath(id);
 		copy.path = path;
+		copy.setPathAliases(pathAliases);
 		return copy;
 	}
 

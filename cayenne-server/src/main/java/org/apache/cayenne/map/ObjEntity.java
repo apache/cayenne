@@ -1003,15 +1003,14 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
         DBPathConverter transformer = new DBPathConverter();
 
-        String dbPath = transformer.toDbPath(createPathIterator(relationshipPath));
+        String dbPath = transformer.toDbPath(createPathIterator(relationshipPath, expression.getPathAliases()));
         Expression dbClone = expression.transform(transformer);
 
         return getDbEntity().translateToRelatedEntity(dbClone, dbPath);
     }
 
-    private PathComponentIterator createPathIterator(String path) {
-        return new PathComponentIterator(ObjEntity.this, path, Collections.emptyMap());
-        // TODO: do we need aliases here?
+    private PathComponentIterator createPathIterator(String path, Map<String, String> aliasMap) {
+        return new PathComponentIterator(ObjEntity.this, path, aliasMap);
     }
 
     /**
@@ -1037,31 +1036,41 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                 PathComponent<Attribute, Relationship> component = objectPathComponents.next();
 
                 Iterator<?> dbSubpath;
-
-                if (component.getAttribute() != null) {
+                if(component.getAttribute() != null) {
                     dbSubpath = ((ObjAttribute) component.getAttribute()).getDbPathIterator();
-                } else if (component.getRelationship() != null) {
+                    buildPath(dbSubpath, component, buf);
+                } else if(component.getRelationship() != null) {
                     dbSubpath = ((ObjRelationship) component.getRelationship()).getDbRelationships().iterator();
+                    buildPath(dbSubpath, component, buf);
+                } else if(component.getAliasedPath() != null) {
+                    for(PathComponent<Attribute, Relationship> pathComponent : component.getAliasedPath()) {
+                       if(pathComponent.getRelationship() != null) {
+                           dbSubpath = ((ObjRelationship) pathComponent.getRelationship()).getDbRelationships().iterator();
+                           buildPath(dbSubpath, pathComponent, buf);
+                       }
+                    }
                 } else {
                     throw new CayenneRuntimeException("Unknown path component: %s", component);
-                }
-
-                while (dbSubpath.hasNext()) {
-                    CayenneMapEntry subComponent = (CayenneMapEntry) dbSubpath.next();
-                    if (buf.length() > 0) {
-                        buf.append(Entity.PATH_SEPARATOR);
-                    }
-
-                    buf.append(subComponent.getName());
-                    
-                    // use OUTER join for all components of the path is Obj path is OUTER
-                    if (component.getJoinType() == JoinType.LEFT_OUTER) {
-                        buf.append(OUTER_JOIN_INDICATOR);
-                    }
                 }
             }
 
             return buf.toString();
+        }
+
+        private void buildPath(Iterator<?> dbSubpath, PathComponent<Attribute, Relationship> component, StringBuilder buf) {
+            while (dbSubpath.hasNext()) {
+                CayenneMapEntry subComponent = (CayenneMapEntry) dbSubpath.next();
+                if (buf.length() > 0) {
+                    buf.append(Entity.PATH_SEPARATOR);
+                }
+
+                buf.append(subComponent.getName());
+
+                // use OUTER join for all components of the path is Obj path is OUTER
+                if (component.getJoinType() == JoinType.LEFT_OUTER) {
+                    buf.append(OUTER_JOIN_INDICATOR);
+                }
+            }
         }
 
         public Object apply(Object input) {
@@ -1077,7 +1086,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
             }
 
             // convert obj_path to db_path
-            String converted = toDbPath(createPathIterator((String) expression.getOperand(0)));
+            String converted = toDbPath(createPathIterator((String) expression.getOperand(0), expression.getPathAliases()));
             return ExpressionFactory.dbPathExp(converted);
         }
     }

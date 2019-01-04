@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;

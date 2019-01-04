@@ -101,7 +101,7 @@ public class ObjectSelect_AggregateIT extends ServerCase {
                 .selectOne(context);
         assertEquals(20L, count);
     }
-    
+
     @Test
     public void testCountDistinct() throws Exception {
     	List<Artist> artists = ObjectSelect.query(Artist.class).select(context);

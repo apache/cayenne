@@ -195,5 +195,4 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
 	}
-
 }

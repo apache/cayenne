@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,13 +32,13 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTScalar;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -63,9 +64,9 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 
 	private static final long serialVersionUID = 7465922769303943945L;
 	
-	Map<String, String> pathSplitAliases;
-	boolean isSingleResultSetMapping;
-	boolean suppressingDistinct;
+	private Map<String, String> pathSplitAliases;
+	private boolean isSingleResultSetMapping;
+	private boolean suppressingDistinct;
 
 	@Override
 	void copyFromInfo(QueryMetadata info) {
@@ -154,13 +155,50 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	}
 
 	private void resolveAutoAliases(SelectQuery<?> query) {
+		resolveQualifierAliases(query);
+		resolveColumnsAliases(query);
+        resolveOrderingAliases(query);
+		resolveHavingQualifierAliases(query);
+		// TODO: include aliases in prefetches? flattened attributes?
+	}
+
+	private void resolveQualifierAliases(SelectQuery<?> query) {
 		Expression qualifier = query.getQualifier();
 		if (qualifier != null) {
 			resolveAutoAliases(qualifier);
 		}
-
-		// TODO: include aliases in prefetches? flattened attributes?
 	}
+
+	private void resolveColumnsAliases(SelectQuery<?> query) {
+        Collection<BaseProperty<?>> columns = query.getColumns();
+        if(columns != null) {
+            for(BaseProperty<?> property : columns) {
+                Expression propertyExpression = property.getExpression();
+                if(propertyExpression != null) {
+                    resolveAutoAliases(propertyExpression);
+                }
+            }
+        }
+    }
+
+    private void resolveOrderingAliases(SelectQuery<?> query) {
+        List<Ordering> orderings = query.getOrderings();
+        if(orderings != null) {
+            for(Ordering ordering : orderings) {
+                Expression sortSpec = ordering.getSortSpec();
+                if(sortSpec != null) {
+                    resolveAutoAliases(sortSpec);
+                }
+            }
+        }
+    }
+
+    private void resolveHavingQualifierAliases(SelectQuery<?> query) {
+        Expression havingQualifier = query.getHavingQualifier();
+        if(havingQualifier != null) {
+            resolveAutoAliases(havingQualifier);
+        }
+    }
 
 	private void resolveAutoAliases(Expression expression) {
 		Map<String, String> aliases = expression.getPathAliases();
@@ -169,7 +207,15 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 				pathSplitAliases = new HashMap<>();
 			}
 
-			pathSplitAliases.putAll(aliases);
+			for(Map.Entry<String, String> entry : aliases.entrySet()) {
+				pathSplitAliases.compute(entry.getKey(), (key, value) -> {
+					if(value != null && !value.equals(entry.getValue())){
+						throw new CayenneRuntimeException("Can't add the same alias to different path segments.");
+					} else {
+						return entry.getValue();
+					}
+				});
+			}
 		}
 
 		int len = expression.getOperandCount();

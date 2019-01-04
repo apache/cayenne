@@ -329,7 +329,7 @@ public class ExpressionFactory {
 
 			int splitEnd = path.indexOf(Entity.PATH_SEPARATOR, split + 1);
 
-			String beforeSplit = split > 0 ? path.substring(0, split) + "." : "";
+			String beforeSplit = split > 0 ? path.substring(0, split) : "";
 			String afterSplit = splitEnd > 0 ? "." + path.substring(splitEnd + 1) : "";
 			String aliasBase = "split" + autoAliasId++ + "_";
 			String splitChunk = splitEnd > 0 ? path.substring(split + 1, splitEnd) : path.substring(split + 1);

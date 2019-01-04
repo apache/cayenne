@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
  * Property that represents to-many relationship mapped on {@link Map}.
@@ -204,7 +205,8 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      */
     @Override
     public MapProperty<K, V> alias(String alias) {
-        return PropertyFactory.createMap(alias, this.getExpression(), getKeyType(), getEntityType());
+        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        return PropertyFactory.createMap(exp.getPath(), exp, this.getKeyType(), this.getEntityType());
     }
 
     /**

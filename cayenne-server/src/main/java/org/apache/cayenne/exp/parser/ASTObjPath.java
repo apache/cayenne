@@ -68,6 +68,7 @@ public class ASTObjPath extends ASTPath {
 	public Expression shallowCopy() {
 		ASTObjPath copy = new ASTObjPath(id);
 		copy.path = path;
+		copy.setPathAliases(pathAliases);
 		return copy;
 	}
 
