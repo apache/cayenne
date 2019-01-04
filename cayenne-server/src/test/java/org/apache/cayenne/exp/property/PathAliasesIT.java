@@ -131,7 +131,8 @@ public class PathAliasesIT extends ServerCase {
         query.setQualifier(expression);
         List<Painting> paintings = query.select(context);
         assertEquals(2, paintings.size());
-        assertEquals("painting5", paintings.get(0).getPaintingTitle());
+        assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
+        assertEquals("artist1", paintings.get(1).getToArtist().getArtistName());
     }
 
     @Test
@@ -172,12 +173,13 @@ public class PathAliasesIT extends ServerCase {
 
     @Test
     public void testOrderWithAlias() {
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .orderBy(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.ESTIMATED_PRICE).asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
-        List<Artist> artists = query.select(context);
-        assertEquals(5, artists.size());
-        assertEquals(2, artists.get(0).getPaintingArray().size());
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+                .orderBy(Painting.TO_ARTIST.alias("p1").dot(Artist.ARTIST_NAME).asc())
+                .prefetch(Painting.TO_ARTIST.disjoint());
+
+        List<Painting> paintings = query.select(context);
+        assertEquals(20, paintings.size());
+        assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
     }
 
     @Test(expected = CayenneRuntimeException.class)
@@ -280,13 +282,14 @@ public class PathAliasesIT extends ServerCase {
 
     @Test
     public void testOrderWithAliasForExp() {
-        Expression e1 = ExpressionFactory.exp("paintingArray#p1.estimatedPrice");
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .orderBy(PropertyFactory.createBase(e1, Number.class).asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
-        List<Artist> artists = query.select(context);
-        assertEquals(5, artists.size());
-        assertEquals(2, artists.get(0).getPaintingArray().size());
+        Expression e1 = ExpressionFactory.exp("toArtist#p1.artistName");
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+                .orderBy(PropertyFactory.createBase(e1, String.class).asc())
+                .prefetch(Painting.TO_ARTIST.disjoint());
+
+        List<Painting> paintings = query.select(context);
+        assertEquals(20, paintings.size());
+        assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
     }
 
     @Test
