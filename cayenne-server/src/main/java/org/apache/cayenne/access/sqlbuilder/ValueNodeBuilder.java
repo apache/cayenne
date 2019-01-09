@@ -32,6 +32,8 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
     private DbAttribute attribute;
 
+    private boolean isArray;
+
     ValueNodeBuilder(Object value) {
         this.value = value;
     }
@@ -41,8 +43,13 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
         return this;
     }
 
+    public ValueNodeBuilder array(boolean isArray) {
+        this.isArray = isArray;
+        return this;
+    }
+
     @Override
     public Node build() {
-        return new ValueNode(value, attribute);
+        return new ValueNode(value, isArray, attribute);
     }
 }

@@ -232,7 +232,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	 */
 	@Override
 	public Map<String, String> getPathSplitAliases() {
-		return pathSplitAliases != null ? pathSplitAliases : Collections.<String, String> emptyMap();
+		return pathSplitAliases != null ? pathSplitAliases : Collections.emptyMap();
 	}
 
 	/**
@@ -328,18 +328,17 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	 * (possibly including joint prefetch).
 	 * This information will be used to correctly create Persistent object back from raw result.
 	 *
-	 * This method is actually repeating logic of
-	 * {@link org.apache.cayenne.access.translator.select.DefaultSelectTranslator#appendQueryColumns}.
-	 * Here we don't care about intermediate joins and few other things so it's shorter.
-	 * Logic of these methods should be unified and simplified, possibly to a single source of metadata,
-	 * generated only once and used everywhere.
-	 *
 	 * @param query original query
 	 * @param column full object column
 	 * @param resolver entity resolver to get ObjEntity and ClassDescriptor
 	 * @return Entity result
 	 */
 	private EntityResult buildEntityResultForColumn(SelectQuery<?> query, BaseProperty<?> column, EntityResolver resolver) {
+		// This method is actually repeating logic of DescriptorColumnExtractor.
+		// Here we don't care about intermediate joins and few other things so it's shorter.
+	 	// Logic of these methods should be unified and simplified, possibly to a single source of metadata,
+	 	// generated only once and used everywhere.
+
 		final EntityResult result = new EntityResult(column.getType());
 
 		// Collecting visitor for ObjAttributes and toOne relationships

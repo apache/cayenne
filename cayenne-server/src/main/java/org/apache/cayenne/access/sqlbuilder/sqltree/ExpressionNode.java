@@ -41,14 +41,14 @@ public class ExpressionNode extends Node {
 
     @Override
     public void appendChildrenStart(QuotingAppendable buffer) {
-        if(parent.type != NodeType.WHERE && parent.type != NodeType.JOIN) {
+        if(parent != null && parent.type != NodeType.WHERE && parent.type != NodeType.JOIN) {
             buffer.append(" (");
         }
     }
 
     @Override
     public void appendChildrenEnd(QuotingAppendable buffer) {
-        if(parent.type != NodeType.WHERE && parent.type != NodeType.JOIN) {
+        if(parent != null && parent.type != NodeType.WHERE && parent.type != NodeType.JOIN) {
             buffer.append(" )");
         }
     }

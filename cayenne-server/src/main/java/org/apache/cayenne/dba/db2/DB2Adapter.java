@@ -22,14 +22,14 @@ package org.apache.cayenne.dba.db2;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
@@ -145,13 +145,11 @@ public class DB2Adapter extends JdbcAdapter {
     }
 
     /**
-     * Returns a trimming translator.
+     * @since 4.2
      */
     @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        QualifierTranslator translator = new DB2QualifierTranslator(queryAssembler, TRIM_FUNCTION);
-        translator.setCaseInsensitive(caseInsensitiveCollations);
-        return translator;
+    public Function<Node, Node> getSqlTreeProcessor() {
+        return new DB2SQLTreeProcessor();
     }
 
     /**

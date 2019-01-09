@@ -21,12 +21,10 @@ package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -43,10 +41,8 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.PreparedStatement;
@@ -59,6 +55,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>.
@@ -109,16 +106,12 @@ public class MySQLAdapter extends JdbcAdapter {
 		return new DefaultQuotingStrategy("`", "`");
 	}
 
+    /**
+     * @since 4.2
+     */
 	@Override
-	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
-		return new MySQLSelectTranslator(query, this, entityResolver);
-	}
-
-	@Override
-	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-		QualifierTranslator translator = new MySQLQualifierTranslator(queryAssembler);
-		translator.setCaseInsensitive(caseInsensitiveCollations);
-		return translator;
+	public Function<Node, Node> getSqlTreeProcessor() {
+		return MySQLTreeProcessor.getInstance();
 	}
 
 	/**

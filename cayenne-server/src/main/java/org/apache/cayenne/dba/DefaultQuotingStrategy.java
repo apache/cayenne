@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
+import java.io.IOException;
+
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -29,8 +32,8 @@ import org.apache.cayenne.map.Entity;
  */
 public class DefaultQuotingStrategy implements QuotingStrategy {
 
-    private String endQuote;
-    private String startQuote;
+    private final String endQuote;
+    private final String startQuote;
 
     public DefaultQuotingStrategy(String startQuote, String endQuote) {
         this.startQuote = startQuote;
@@ -59,37 +62,44 @@ public class DefaultQuotingStrategy implements QuotingStrategy {
         return quotedIdentifier(dataMap, join.getTargetName());
     }
 
+    /**
+     * @since 4.2
+     */
     @Override
-    public String quotedIdentifier(Entity entity, String... identifierParts) {
-        return quotedIdentifier(entity.getDataMap(), identifierParts);
+    public void quotedIdentifier(DataMap dataMap, CharSequence identifier, Appendable appender) {
+        if (identifier == null) {
+            return;
+        }
+
+        boolean quoting = dataMap != null && dataMap.isQuotingSQLIdentifiers();
+        try {
+            if (quoting) {
+                appender.append(startQuote).append(identifier).append(endQuote);
+            } else {
+                appender.append(identifier);
+            }
+        } catch (IOException ex) {
+            throw new CayenneRuntimeException("Failed to append quoted identifier", ex);
+        }
     }
 
     @Override
     public String quotedIdentifier(DataMap dataMap, String... identifierParts) {
-
-        String startQuote, endQuote;
-
-        if (dataMap != null && dataMap.isQuotingSQLIdentifiers()) {
-            startQuote = this.startQuote;
-            endQuote = this.endQuote;
-        } else {
-            startQuote = "";
-            endQuote = "";
-        }
-
+        boolean quoting = dataMap != null && dataMap.isQuotingSQLIdentifiers();
         StringBuilder buffer = new StringBuilder();
 
         for (String part : identifierParts) {
-
             if (part == null) {
                 continue;
             }
-
             if (buffer.length() > 0) {
                 buffer.append('.');
             }
-
-            buffer.append(startQuote).append(part).append(endQuote);
+            if(quoting) {
+                buffer.append(startQuote).append(part).append(endQuote);
+            } else {
+                buffer.append(part);
+            }
         }
 
         return buffer.toString();

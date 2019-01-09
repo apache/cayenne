@@ -56,6 +56,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 /**
@@ -492,6 +493,7 @@ public class ColumnSelectIT extends ServerCase {
                 PropertyFactory.createSelf(Artist.class)
         ).select(context);
         assertEquals(21, result.size());
+
         for(Object[] next : result) {
             long count = (Long)next[0];
             Artist artist = (Artist)next[1];
@@ -502,12 +504,12 @@ public class ColumnSelectIT extends ServerCase {
             Artist artist3 = (Artist)next[6];
 
             assertTrue(paintingTitle.startsWith("painting"));
-            assertTrue(count == 4L || count == 5L);
             assertEquals("tate modern", galleryName);
             assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, artist2.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, artist3.getPersistenceState());
             assertEquals(artistName, artist.getArtistName());
+            assertTrue(count == 4L || count == 5L);
         }
     }
 
@@ -607,7 +609,7 @@ public class ColumnSelectIT extends ServerCase {
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
-        assertEquals(5, a.size());
+        assertEquals(20, a.size());
         int idx = 0;
         for(Object[] next : a) {
             assertNotNull(next);
@@ -655,7 +657,7 @@ public class ColumnSelectIT extends ServerCase {
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
-        assertEquals(5, a.size());
+        assertEquals(20, a.size());
         int idx = 0;
         for(Object[] next : a) {
             assertNotNull(next);
@@ -673,14 +675,17 @@ public class ColumnSelectIT extends ServerCase {
                 .columns(Artist.ARTIST_NAME, artistFull, Artist.PAINTING_ARRAY.flat())
                 .pageSize(10)
                 .select(context);
+
         assertNotNull(a);
-        assertEquals(21, a.size());
+        assertEquals(36, a.size());
         int idx = 0;
         for(Object[] next : a) {
             assertNotNull(next);
             assertEquals("" + idx, String.class, next[0].getClass());
             assertEquals("" + idx, Artist.class, next[1].getClass());
-            assertEquals("" + idx, Painting.class, next[2].getClass());
+            if(next[2] != null) {
+                assertEquals("" + idx, Painting.class, next[2].getClass());
+            }
             idx++;
         }
     }
@@ -728,9 +733,9 @@ public class ColumnSelectIT extends ServerCase {
     private void checkPrefetchResults(List<Object[]> result) {
         assertEquals(21, result.size());
         for(Object[] next : result) {
-            assertTrue(next[0] instanceof Artist);
-            assertTrue(next[1] instanceof java.util.Date);
-            assertTrue(next[2] instanceof String);
+            assertThat(next[0], instanceOf(Artist.class));
+            assertThat(next[1], instanceOf(java.util.Date.class));
+            assertThat(next[2], instanceOf(String.class));
             Artist artist = (Artist)next[0];
             assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
@@ -777,7 +782,7 @@ public class ColumnSelectIT extends ServerCase {
     }
 
     private void checkAggregatePrefetchResults(List<Object[]> result) {
-        assertEquals(5, result.size());
+        assertEquals(20, result.size());
         for(Object[] next : result) {
             assertTrue(next[0] instanceof Artist);
             assertTrue(next[1] instanceof Long);
@@ -847,7 +852,7 @@ public class ColumnSelectIT extends ServerCase {
         List<Object[]> result = ObjectSelect.query(Artist.class)
                 .columns(artistProperty, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .select(context);
-        assertEquals(5, result.size());
+        assertEquals(20, result.size());
 
         for(Object[] next : result) {
             assertTrue(next[0] instanceof Artist);
@@ -898,15 +903,19 @@ public class ColumnSelectIT extends ServerCase {
         List<Object[]> result = ObjectSelect.query(Artist.class)
                 .columns(artistProperty, Artist.PAINTING_ARRAY.flat(), Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
                 .select(context);
-        assertEquals(21, result.size());
+        assertEquals(36, result.size());
 
         for(Object[] next : result) {
             assertTrue(next[0] instanceof Artist);
-            assertTrue(next[1] instanceof Painting);
-            assertTrue(next[2] instanceof Gallery);
             assertEquals(PersistenceState.COMMITTED, ((Artist)next[0]).getPersistenceState());
-            assertEquals(PersistenceState.COMMITTED, ((Painting)(next[1])).getPersistenceState());
-            assertEquals(PersistenceState.COMMITTED, ((Gallery)(next[2])).getPersistenceState());
+            if(next[1] != null) {
+                assertTrue(next[1] instanceof Painting);
+                assertEquals(PersistenceState.COMMITTED, ((Painting)(next[1])).getPersistenceState());
+            }
+            if(next[2] != null) {
+                assertTrue(next[2] instanceof Gallery);
+                assertEquals(PersistenceState.COMMITTED, ((Gallery) (next[2])).getPersistenceState());
+            }
         }
     }
 
@@ -918,24 +927,29 @@ public class ColumnSelectIT extends ServerCase {
         assertEquals(21, result.size());
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void testSelfPropertyInOrderBy() {
         EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
-        ObjectSelect.query(Artist.class)
+        List<Artist> artists = ObjectSelect.query(Artist.class)
                 .column(artistProperty)
                 .orderBy(artistProperty.desc())
                 .select(context);
+        assertEquals(20, artists.size());
+        assertEquals("artist20", artists.get(0).getArtistName());
+        assertEquals("artist1", artists.get(19).getArtistName());
     }
 
-    @Test(expected = CayenneRuntimeException.class)
+    @Test
     public void testSelfPropertyInWhere() {
         Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
         EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
-        List<Artist> result = ObjectSelect.query(Artist.class)
+        Artist selectedArtist = ObjectSelect.query(Artist.class)
                 .column(artistProperty)
                 .where(artistProperty.eq(artist))
-                .select(context);
-        assertNotNull(result);
+                .orderBy(artistProperty.asc())
+                .selectOne(context);
+        assertNotNull(selectedArtist);
+        assertEquals(artist.getArtistName(), selectedArtist.getArtistName());
     }
 
     @Test

@@ -41,4 +41,8 @@ public class TextNode extends Node {
     public Node copy() {
         return new TextNode(text);
     }
+
+    public CharSequence getText() {
+        return text;
+    }
 }

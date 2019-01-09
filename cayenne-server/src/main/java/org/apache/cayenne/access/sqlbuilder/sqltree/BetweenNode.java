@@ -49,4 +49,8 @@ public class BetweenNode extends ExpressionNode {
     public Node copy() {
         return new BetweenNode(not);
     }
+
+    public boolean isNot() {
+        return not;
+    }
 }

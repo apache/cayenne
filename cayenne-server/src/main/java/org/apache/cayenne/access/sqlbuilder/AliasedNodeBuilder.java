@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.AliasedNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
 
 /**
  * @since 4.2
@@ -38,9 +37,8 @@ class AliasedNodeBuilder implements NodeBuilder {
 
     @Override
     public Node build() {
-        Node root = new EmptyNode();
+        Node root = new AliasedNode(alias);
         root.addChild(nodeBuilder.build());
-        root.addChild(new TextNode(" " + alias));
         return root;
     }
 }

@@ -19,10 +19,9 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -36,6 +35,7 @@ import org.apache.cayenne.query.SelectQuery;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * A Cayenne extension point that abstracts the differences between specifics of
@@ -60,7 +60,11 @@ public interface DbAdapter {
 	 */
 	SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
 
-	QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler);
+	/**
+	 * @since 4.2
+	 * @return {@link Function} that can adjust SQL tree to specific database flavour
+	 */
+	Function<Node, Node> getSqlTreeProcessor();
 
 	/**
 	 * Returns an instance of SQLAction that should handle the query.

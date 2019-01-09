@@ -29,8 +29,8 @@ public class ColumnNode extends Node {
 
     protected final String table;
     protected final String column;
-    protected final String alias;
     protected final DbAttribute attribute;
+    protected String alias;
 
     public ColumnNode(String table, String column, String alias, DbAttribute attribute) {
         super(NodeType.COLUMN);
@@ -63,6 +63,10 @@ public class ColumnNode extends Node {
 
     public String getAlias() {
         return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public DbAttribute getAttribute() {

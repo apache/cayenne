@@ -21,14 +21,13 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -52,12 +51,12 @@ import org.apache.cayenne.util.Util;
 
 import java.net.URL;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * A generic DbAdapter implementation. Can be used as a default adapter or as a
@@ -516,16 +515,6 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     /**
-     * Creates and returns a default implementation of a qualifier translator.
-     */
-    @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        QualifierTranslator translator = new QualifierTranslator(queryAssembler);
-        translator.setCaseInsensitive(caseInsensitiveCollations);
-        return translator;
-    }
-
-    /**
      * Uses JdbcActionBuilder to create the right action.
      *
      * @since 1.2
@@ -541,9 +530,13 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
+    public Function<Node, Node> getSqlTreeProcessor() {
+        return Function.identity();
+    }
+
     @SuppressWarnings("unchecked")
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding)
-            throws SQLException, Exception {
+    @Override
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 
         if (binding.getValue() == null) {
             statement.setNull(binding.getStatementPosition(), binding.getJdbcType());

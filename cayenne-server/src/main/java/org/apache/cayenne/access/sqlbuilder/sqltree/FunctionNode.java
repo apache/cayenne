@@ -28,8 +28,8 @@ import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 public class FunctionNode extends Node {
 
     private final String functionName;
-    private final String alias;
     private final boolean needParentheses;
+    private String alias;
 
     public FunctionNode(String functionName, String alias) {
         this(functionName, alias, true);
@@ -101,6 +101,10 @@ public class FunctionNode extends Node {
 
     public String getAlias() {
         return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     @Override

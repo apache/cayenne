@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
+import org.apache.cayenne.access.sqlbuilder.sqltree.AliasedNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
@@ -87,6 +88,17 @@ public final class SQLBuilder {
         if(suppressAlias(node)) {
             return node(node);
         }
+
+        if(node instanceof FunctionNode) {
+            ((FunctionNode) node).setAlias(alias);
+            return node(node);
+        }
+
+        if(node instanceof ColumnNode) {
+            ((ColumnNode) node).setAlias(alias);
+            return node(node);
+        }
+
         return new AliasedNodeBuilder(node(node), alias);
     }
 
@@ -152,6 +164,9 @@ public final class SQLBuilder {
                 suppressAlias = true;
                 return false;
             } else if(node.getType() == NodeType.FUNCTION && ((FunctionNode) node).getAlias() != null) {
+                suppressAlias = true;
+                return false;
+            } else if(node instanceof AliasedNode) {
                 suppressAlias = true;
                 return false;
             }

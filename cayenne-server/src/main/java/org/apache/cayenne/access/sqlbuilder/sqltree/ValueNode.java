@@ -34,12 +34,14 @@ import org.apache.cayenne.map.DbAttribute;
 public class ValueNode extends Node {
 
     private final Object value;
+    private final boolean isArray;
     // Used as hint for type of this value
     private final DbAttribute attribute;
 
-    public ValueNode(Object value, DbAttribute attribute) {
+    public ValueNode(Object value, boolean isArray, DbAttribute attribute) {
         super(NodeType.VALUE);
         this.value = value;
+        this.isArray = isArray;
         this.attribute = attribute;
     }
 
@@ -49,6 +51,10 @@ public class ValueNode extends Node {
 
     public DbAttribute getAttribute() {
         return attribute;
+    }
+
+    public boolean isArray() {
+        return isArray;
     }
 
     @Override
@@ -62,8 +68,7 @@ public class ValueNode extends Node {
             return;
         }
 
-        boolean isArray = val.getClass().isArray();
-        if(isArray) {
+        if(isArray && val.getClass().isArray()) {
             if(val instanceof short[]) {
                 appendValue((short[])val, buffer);
             } else if(val instanceof char[]) {
@@ -82,7 +87,7 @@ public class ValueNode extends Node {
                 appendValue((Object[]) val, buffer);
             } else if(val instanceof byte[]) {
                 // append byte[] array as single object
-                appendObjectValue(buffer, val);
+                appendValue((byte[])val, buffer);
             } else {
                 throw new CayenneRuntimeException("Unsupported array type %s", val.getClass().getName());
             }
@@ -227,6 +232,18 @@ public class ValueNode extends Node {
         }
     }
 
+    private void appendValue(byte[] val, QuotingAppendable buffer) {
+        boolean first = true;
+        for(byte i : val) {
+            if(first) {
+                first = false;
+            } else {
+                buffer.append(',');
+            }
+            appendValue(i, buffer);
+        }
+    }
+
     private void appendValue(Object[] val, QuotingAppendable buffer) {
         boolean first = true;
         for(Object i : val) {
@@ -241,6 +258,6 @@ public class ValueNode extends Node {
 
     @Override
     public Node copy() {
-        return new ValueNode(value, attribute);
+        return new ValueNode(value, isArray, attribute);
     }
 }

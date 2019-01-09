@@ -21,11 +21,8 @@ package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
-import org.apache.cayenne.access.translator.select.TrimmingQualifierTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -37,16 +34,15 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * DbAdapter implementation for <a
@@ -75,17 +71,12 @@ public class IngresAdapter extends JdbcAdapter {
 		setSupportsGeneratedKeys(true);
 	}
 
-	/**
-	 * @since 4.0
-	 */
+    /**
+     * @since 4.2
+     */
 	@Override
-	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
-		return new IngresSelectTranslator(query, this, entityResolver);
-	}
-
-	@Override
-	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-		return new IngresQualifierTranslator(queryAssembler);
+	public Function<Node, Node> getSqlTreeProcessor() {
+		return new IngressSQLTreeProcessor();
 	}
 
 	@Override

@@ -19,8 +19,7 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -36,11 +35,11 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * A SQLite database adapter that works with Zentus JDBC driver. See
@@ -87,11 +86,11 @@ public class SQLiteAdapter extends JdbcAdapter {
     }
 
     /**
-     * @since 4.0
+     * @since 4.2
      */
     @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new SQLiteQualifierTranslator(queryAssembler);
+    public Function<Node, Node> getSqlTreeProcessor() {
+        return new SQLiteTreeProcessor();
     }
 
     @Override
@@ -110,18 +109,6 @@ public class SQLiteAdapter extends JdbcAdapter {
     @Override
     public SQLAction getAction(Query query, DataNode node) {
         return query.createSQLAction(new SQLiteActionBuilder(node));
-    }
-
-    private int mapNTypes(int sqlType) {
-        switch (sqlType) {
-            case Types.NCHAR : return Types.CHAR;
-            case Types.NCLOB : return Types.CLOB;
-            case Types.NVARCHAR : return Types.VARCHAR;
-            case Types.LONGNVARCHAR : return Types.LONGVARCHAR;
-
-            default:
-                return sqlType;
-        }
     }
 
     /**

@@ -74,13 +74,10 @@ public class ColumnNodeBuilder implements ExpressionTrait {
 
     @Override
     public Node build() {
-        ColumnNode columnNode;
         if(unescaped) {
-            columnNode = new UnescapedColumnNode(table, column, alias, attribute);
-        } else {
-            columnNode = new ColumnNode(table, column, alias, attribute);
+            return new UnescapedColumnNode(table, column, alias, attribute);
         }
-        return columnNode;
+        return new ColumnNode(table, column, alias, attribute);
     }
 
 }

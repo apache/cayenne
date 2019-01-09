@@ -23,12 +23,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
+import java.util.function.Function;
 
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -43,15 +42,13 @@ import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.dba.sqlserver.SQLServerTreeProcessor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.sybase.com">Sybase
- * RDBMS</a>.
+ * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
  */
 public class SybaseAdapter extends JdbcAdapter {
 
@@ -79,20 +76,12 @@ public class SybaseAdapter extends JdbcAdapter {
         return new SybaseEJBQLTranslatorFactory();
     }
 
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
-		return new SybaseSelectTranslator(query, this, entityResolver);
-	}
-
     /**
-     * @since 4.0
+     * @since 4.2
      */
     @Override
-    public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-        return new SybaseQualifierTranslator(queryAssembler);
+    public Function<Node, Node> getSqlTreeProcessor() {
+        return new SQLServerTreeProcessor();
     }
 
     /**

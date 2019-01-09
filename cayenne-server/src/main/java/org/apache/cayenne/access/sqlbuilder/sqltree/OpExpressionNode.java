@@ -41,4 +41,8 @@ public class OpExpressionNode extends ExpressionNode {
     public Node copy() {
         return new OpExpressionNode(op);
     }
+
+    public String getOp() {
+        return op;
+    }
 }

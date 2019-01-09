@@ -686,6 +686,13 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         return having;
     }
 
+    /**
+     * @since 4.2
+     */
+    public boolean isDistinct() {
+        return distinct;
+    }
+
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));

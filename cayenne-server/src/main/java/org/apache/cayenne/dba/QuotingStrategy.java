@@ -31,7 +31,7 @@ public interface QuotingStrategy {
 
     /**
      * Builds a fully qualified name from catalog, schema, name parts of
-     * DbEntity, inclosing them in quotations according to this strategy
+     * DbEntity, enclosing them in quotations according to this strategy
      * algorithm. Analog of "quotedIdentifier(entity.getCatalog(),
      * entity.getSchema(), entity.getName())".
      * 
@@ -58,10 +58,26 @@ public interface QuotingStrategy {
     /**
      * @since 4.0
      */
-    String quotedIdentifier(Entity entity, String... identifierParts);
+    default String quotedIdentifier(Entity entity, String... identifierParts) {
+        return quotedIdentifier(entity.getDataMap(), identifierParts);
+    }
     
     /**
      * @since 4.0
      */
     String quotedIdentifier(DataMap dataMap, String... identifierParts);
+
+    /**
+     * Append quoted identifier to provided appender
+     * @since 4.2
+     */
+    default void quotedIdentifier(Entity entity, CharSequence identifier, Appendable appender) {
+        quotedIdentifier(entity.getDataMap(), identifier, appender);
+    }
+
+    /**
+     * Append quoted identifier to provided appender
+     * @since 4.2
+     */
+    void quotedIdentifier(DataMap dataMap, CharSequence identifier, Appendable appender);
 }

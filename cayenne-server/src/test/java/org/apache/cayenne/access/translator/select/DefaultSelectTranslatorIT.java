@@ -42,6 +42,9 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -71,10 +74,10 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString1() throws Exception {
 		// query with qualifier and ordering
-		SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, ExpressionFactory.likeExp("artistName", "a%"));
+		SelectQuery<Artist> q = new SelectQuery<>(Artist.class, ExpressionFactory.likeExp("artistName", "a%"));
 		q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
 
-		DefaultSelectTranslator defaultSelectTranslator = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
+		SelectTranslator defaultSelectTranslator = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 		String generatedSql = defaultSelectTranslator.getSql();
 
 		// do some simple assertions to make sure all parts are in
@@ -96,7 +99,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		DefaultSelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
@@ -111,11 +114,11 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 			assertTrue(generatedSql.startsWith("SELECT "));
 			assertTrue(generatedSql.indexOf(" FROM ") > 0);
 			if (generatedSql.contains("RTRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("RTRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
 			} else if (generatedSql.contains("TRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("TRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
 			} else {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
+				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
 			}
 		} finally {
 			entity.setQualifier(null);
@@ -132,7 +135,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		DefaultSelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
@@ -147,11 +150,11 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 			assertTrue(generatedSql.startsWith("SELECT "));
 			assertTrue(generatedSql.indexOf(" FROM ") > 0);
 			if (generatedSql.contains("RTRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("RTRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
 			} else if (generatedSql.contains("TRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("TRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
 			} else {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
+				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
 			}
 
 		} finally {
@@ -169,7 +172,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		DefaultSelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
@@ -184,11 +187,11 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 			assertTrue(generatedSql.startsWith("SELECT "));
 			assertTrue(generatedSql.indexOf(" FROM ") > 0);
 			if (generatedSql.contains("RTRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("RTRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
 			} else if (generatedSql.contains("TRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("TRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
 			} else {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
+				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
 			}
 
 		} finally {
@@ -200,13 +203,13 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testDbEntityQualifier_RelatedMatch() throws Exception {
 
-		SelectQuery<Artist> q = new SelectQuery(Painting.class,
+		SelectQuery<Painting> q = new SelectQuery<>(Painting.class,
 				ExpressionFactory.matchExp("toArtist.artistName", "foo"));
 
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		DefaultSelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
@@ -221,11 +224,11 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 			assertTrue(generatedSql.startsWith("SELECT "));
 			assertTrue(generatedSql.indexOf(" FROM ") > 0);
 			if (generatedSql.contains("RTRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("RTRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("RTRIM("));
 			} else if (generatedSql.contains("TRIM")) {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME) = ") > generatedSql.indexOf("TRIM("));
+				assertTrue(generatedSql.indexOf("ARTIST_NAME) =") > generatedSql.indexOf("TRIM("));
 			} else {
-				assertTrue(generatedSql.indexOf("ARTIST_NAME = ") > 0);
+				assertTrue(generatedSql.indexOf("ARTIST_NAME =") > 0);
 			}
 		} finally {
 			entity.setQualifier(null);
@@ -239,7 +242,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString2() throws Exception {
 		// query with "distinct" set
-		SelectQuery q = new SelectQuery(Artist.class);
+		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
 		q.setDistinct(true);
 
 		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver())
@@ -258,7 +261,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString5() throws Exception {
 		// query with qualifier and ordering
-		SelectQuery q = new SelectQuery(ArtistExhibit.class);
+		SelectQuery<ArtistExhibit> q = new SelectQuery<>(ArtistExhibit.class);
 		q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
 		q.andQualifier(ExpressionFactory.likeExp("toExhibit.toGallery.paintingArray.toArtist.artistName", "a%"));
 
@@ -290,7 +293,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString6() throws Exception {
 		// query with qualifier and ordering
-		SelectQuery q = new SelectQuery(ArtistExhibit.class);
+		SelectQuery<ArtistExhibit> q = new SelectQuery<>(ArtistExhibit.class);
 		q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
 		q.andQualifier(ExpressionFactory.likeExp("toArtist.paintingArray.paintingTitle", "p%"));
 
@@ -318,7 +321,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testCreateSqlString7() throws Exception {
-		SelectQuery q = new SelectQuery(Artist.class);
+		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
 		q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
 		q.andQualifier(ExpressionFactory.lessExp("dateOfBirth", new Date()));
 
@@ -351,7 +354,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testCreateSqlString8() throws Exception {
-		SelectQuery q = new SelectQuery();
+		SelectQuery<?> q = new SelectQuery<>();
 		q.setRoot(Painting.class);
 		q.setQualifier(ExpressionFactory.greaterExp("toArtist.dateOfBirth", new Date()));
 		q.andQualifier(ExpressionFactory.lessExp("toArtist.dateOfBirth", new Date()));
@@ -379,7 +382,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString9() throws Exception {
 		// query for a compound ObjEntity with qualifier
-		SelectQuery q = new SelectQuery(CompoundPainting.class, ExpressionFactory.likeExp("artistName", "a%"));
+		SelectQuery<CompoundPainting> q = new SelectQuery<>(CompoundPainting.class, ExpressionFactory.likeExp("artistName", "a%"));
 
 		String sql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 
@@ -431,10 +434,10 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString10() throws Exception {
 		// query with to-many joint prefetches
-		SelectQuery q = new SelectQuery(Artist.class);
+		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
 		q.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
-		DefaultSelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
 		String sql = transl.getSql();
 		assertNotNull(sql);
@@ -449,32 +452,31 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		assertTrue(sql, sql.indexOf("PAINTING_ID") > 0);
 
 		// assert we have one join
-		assertEquals(1, transl.joinStack.size());
+		assertTrue(transl.hasJoins());
 	}
 
 	@Test
 	public void testCreateSqlString11() throws Exception {
 		// query with joint prefetches and other joins
-		SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.exp("paintingArray.paintingTitle = 'a'"));
+		SelectQuery<Artist> q = new SelectQuery<>(Artist.class, ExpressionFactory.exp("paintingArray.paintingTitle = 'a'"));
 		q.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
-		DefaultSelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
 
 		transl.getSql();
 
 		// assert we only have one join
-		assertEquals(2, transl.joinStack.size());
 		assertTrue(transl.hasJoins());
 	}
 
 	@Test
 	public void testCreateSqlString12() throws Exception {
 		// query with to-one joint prefetches
-		SelectQuery q = new SelectQuery(Painting.class);
+		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
 		q.addPrefetch(Painting.TO_ARTIST.joint());
 
-		DefaultSelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
 
 		String sql = transl.getSql();
@@ -490,14 +492,13 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		assertTrue(sql, sql.indexOf("PAINTING_ID") > 0);
 
 		// assert we have one join
-		assertEquals(1, transl.joinStack.size());
 		assertTrue(transl.hasJoins());
 	}
 
 	@Test
 	public void testCreateSqlString13() throws Exception {
 		// query with invalid joint prefetches
-		SelectQuery q = new SelectQuery(Painting.class);
+		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
 		q.addPrefetch("invalid.invalid").setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
 		try {
@@ -512,7 +513,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	public void testCreateSqlStringWithQuoteSqlIdentifiers() throws Exception {
 
 		try {
-			SelectQuery q = new SelectQuery(Artist.class);
+			SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
 			DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 			q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
@@ -549,7 +550,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	public void testCreateSqlStringWithQuoteSqlIdentifiers2() throws Exception {
 
 		try {
-			SelectQuery q = new SelectQuery(Artist.class);
+			SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
 			DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
 			q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
@@ -574,14 +575,12 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 			int iWhere = s.indexOf(" WHERE ");
 			assertTrue(iWhere > iArtist);
 
-			int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd
-					+ " > ?");
+			int dateOfBirth2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd + " > ?");
 			assertTrue(dateOfBirth2 > iWhere);
 
 			int iAnd = s.indexOf(" AND ");
 			assertTrue(iAnd > iWhere);
-			int dateOfBirth3 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd
-					+ " < ?");
+			int dateOfBirth3 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd + " < ?");
 			assertTrue(dateOfBirth3 > iAnd);
 
 		} finally {
@@ -596,7 +595,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		// query with joint prefetches and other joins
 		// and with QuoteSqlIdentifiers = true
 		try {
-			SelectQuery q = new SelectQuery(Artist.class, ExpressionFactory.exp("paintingArray.paintingTitle = 'a'"));
+			SelectQuery<Artist> q = new SelectQuery<>(Artist.class, ExpressionFactory.exp("paintingArray.paintingTitle = 'a'"));
 			q.addPrefetch(Artist.PAINTING_ARRAY.joint());
 
 			DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
@@ -607,61 +606,60 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 
 			String s = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 
-			assertTrue(s.startsWith("SELECT DISTINCT "));
+			assertTrue(s, s.startsWith("SELECT DISTINCT "));
 			int iFrom = s.indexOf(" FROM ");
-			assertTrue(iFrom > 0);
+			assertTrue(s, iFrom > 0);
 			int artistName = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
-			assertTrue(artistName > 0 && artistName < iFrom);
+			assertTrue(s, artistName > 0 && artistName < iFrom);
 			int artistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
-			assertTrue(artistId > 0 && artistId < iFrom);
+			assertTrue(s, artistId > 0 && artistId < iFrom);
 			int dateOfBirth = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
-			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+			assertTrue(s, dateOfBirth > 0 && dateOfBirth < iFrom);
 			int estimatedPrice = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
-			assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom);
+			assertTrue(s, estimatedPrice > 0 && estimatedPrice < iFrom);
 			int paintingDescription = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
 					+ charEnd);
-			assertTrue(paintingDescription > 0 && paintingDescription < iFrom);
+			assertTrue(s, paintingDescription > 0 && paintingDescription < iFrom);
 			int paintingTitle = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
-			assertTrue(paintingTitle > 0 && paintingTitle < iFrom);
+			assertTrue(s, paintingTitle > 0 && paintingTitle < iFrom);
 			int artistIdT1 = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
-			assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom);
+			assertTrue(s, artistIdT1 > 0 && artistIdT1 < iFrom);
 			int galleryId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
-			assertTrue(galleryId > 0 && galleryId < iFrom);
+			assertTrue(s, galleryId > 0 && galleryId < iFrom);
 			int paintingId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
-			assertTrue(paintingId > 0 && paintingId < iFrom);
+			assertTrue(s, paintingId > 0 && paintingId < iFrom);
 			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t0" + charEnd);
-			assertTrue(iArtist > iFrom);
+			assertTrue(s, iArtist > iFrom);
 			int iLeftJoin = s.indexOf("LEFT JOIN");
-			assertTrue(iLeftJoin > iFrom);
+			assertTrue(s, iLeftJoin > iFrom);
 			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t1" + charEnd);
-			assertTrue(iPainting > iLeftJoin);
+			assertTrue(s, iPainting > iLeftJoin);
 			int iOn = s.indexOf(" ON ");
-			assertTrue(iOn > iLeftJoin);
+			assertTrue(s, iOn > iLeftJoin);
 			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
-			assertTrue(iArtistId > iOn);
+			assertTrue(s, iArtistId > iOn);
 			int iArtistIdT1 = s
 					.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
-			assertTrue(iArtistIdT1 > iOn);
+			assertTrue(s, iArtistIdT1 > iOn);
 			int i = s.indexOf("=", iLeftJoin);
-			assertTrue(iArtistIdT1 > i || iArtistId > i);
+			assertTrue(s, iArtistIdT1 > i || iArtistId > i);
 			int iJoin = s.indexOf("JOIN");
-			assertTrue(iJoin > iLeftJoin);
+			assertTrue(s, iJoin > iLeftJoin);
 			int iPainting2 = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t2" + charEnd);
-			assertTrue(iPainting2 > iJoin);
+			assertTrue(s, iPainting2 > iJoin);
 			int iOn2 = s.indexOf(" ON ");
-			assertTrue(iOn2 > iJoin);
+			assertTrue(s, iOn2 > iJoin);
 			int iArtistId2 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
-			assertTrue(iArtistId2 > iOn2);
+			assertTrue(s, iArtistId2 > iOn2);
 			int iArtistId2T2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iJoin);
-			assertTrue(iArtistId2T2 > iOn2);
+			assertTrue(s, iArtistId2T2 > iOn2);
 			int i2 = s.indexOf("=", iJoin);
-			assertTrue(iArtistId2T2 > i2 || iArtistId2 > i2);
+			assertTrue(s, iArtistId2T2 > i2 || iArtistId2 > i2);
 			int iWhere = s.indexOf(" WHERE ");
-			assertTrue(iWhere > iJoin);
+			assertTrue(s, iWhere > iJoin);
 
-			int paintingTitle2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd
-					+ " = ?");
-			assertTrue(paintingTitle2 > iWhere);
+			int paintingTitle2 = s.indexOf(charStart + "t2" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd + " = ?");
+			assertTrue(s, paintingTitle2 > iWhere);
 
 		} finally {
 			DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
@@ -675,7 +673,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		// query with to-one joint prefetches
 		// and with QuoteSqlIdentifiers = true
 		try {
-			SelectQuery q = new SelectQuery(Painting.class);
+			SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
 			q.addPrefetch(Painting.TO_ARTIST.joint());
 
 			DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
@@ -686,45 +684,45 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 
 			String s = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 
-			assertTrue(s.startsWith("SELECT "));
+			assertTrue(s, s.startsWith("SELECT "));
 			int iFrom = s.indexOf(" FROM ");
-			assertTrue(iFrom > 0);
+			assertTrue(s, iFrom > 0);
 
 			int paintingDescription = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_DESCRIPTION"
 					+ charEnd);
-			assertTrue(paintingDescription > 0 && paintingDescription < iFrom);
+			assertTrue(s, paintingDescription > 0 && paintingDescription < iFrom);
 			int paintingTitle = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_TITLE" + charEnd);
-			assertTrue(paintingTitle > 0 && paintingTitle < iFrom);
+			assertTrue(s, paintingTitle > 0 && paintingTitle < iFrom);
 			int artistIdT1 = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
-			assertTrue(artistIdT1 > 0 && artistIdT1 < iFrom);
+			assertTrue(s, artistIdT1 > 0 && artistIdT1 < iFrom);
 			int estimatedPrice = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ESTIMATED_PRICE" + charEnd);
-			assertTrue(estimatedPrice > 0 && estimatedPrice < iFrom);
+			assertTrue(s, estimatedPrice > 0 && estimatedPrice < iFrom);
 			int galleryId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "GALLERY_ID" + charEnd);
-			assertTrue(galleryId > 0 && galleryId < iFrom);
+			assertTrue(s, galleryId > 0 && galleryId < iFrom);
 			int paintingId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "PAINTING_ID" + charEnd);
-			assertTrue(paintingId > 0 && paintingId < iFrom);
+			assertTrue(s, paintingId > 0 && paintingId < iFrom);
 			int artistName = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_NAME" + charEnd);
-			assertTrue(artistName > 0 && artistName < iFrom);
+			assertTrue(s, artistName > 0 && artistName < iFrom);
 			int artistId = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd);
-			assertTrue(artistId > 0 && artistId < iFrom);
+			assertTrue(s, artistId > 0 && artistId < iFrom);
 			int dateOfBirth = s.indexOf(charStart + "t1" + charEnd + "." + charStart + "DATE_OF_BIRTH" + charEnd);
-			assertTrue(dateOfBirth > 0 && dateOfBirth < iFrom);
+			assertTrue(s, dateOfBirth > 0 && dateOfBirth < iFrom);
 			int iPainting = s.indexOf(charStart + "PAINTING" + charEnd + " " + charStart + "t0" + charEnd);
-			assertTrue(iPainting > iFrom);
+			assertTrue(s, iPainting > iFrom);
 
 			int iLeftJoin = s.indexOf("LEFT JOIN");
-			assertTrue(iLeftJoin > iFrom);
+			assertTrue(s, iLeftJoin > iFrom);
 			int iArtist = s.indexOf(charStart + "ARTIST" + charEnd + " " + charStart + "t1" + charEnd);
-			assertTrue(iArtist > iLeftJoin);
+			assertTrue(s, iArtist > iLeftJoin);
 			int iOn = s.indexOf(" ON ");
-			assertTrue(iOn > iLeftJoin);
+			assertTrue(s, iOn > iLeftJoin);
 			int iArtistId = s.indexOf(charStart + "t0" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
-			assertTrue(iArtistId > iOn);
+			assertTrue(s, iArtistId > iOn);
 			int iArtistIdT1 = s
 					.indexOf(charStart + "t1" + charEnd + "." + charStart + "ARTIST_ID" + charEnd, iLeftJoin);
-			assertTrue(iArtistIdT1 > iOn);
+			assertTrue(s, iArtistIdT1 > iOn);
 			int i = s.indexOf("=", iLeftJoin);
-			assertTrue(iArtistIdT1 > i || iArtistId > i);
+			assertTrue(s, iArtistIdT1 > i || iArtistId > i);
 
 		} finally {
 			DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
@@ -737,16 +735,28 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testBuildResultColumns1() throws Exception {
-		SelectQuery q = new SelectQuery(Painting.class);
-		DefaultSelectTranslator tr = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
+		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
+		SelectTranslator tr = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		List<?> columns = tr.buildResultColumns();
+		tr.getSql();
+
+		List<ColumnDescriptor> columns = Arrays.asList(tr.getResultColumns());
+		columns.sort(Comparator.comparing(ColumnDescriptor::getName));
+
+		DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
+		List<DbAttribute> attributes = new ArrayList<>(entity.getAttributes());
+		attributes.sort(Comparator.comparing(DbAttribute::getName));
 
 		// all DbAttributes must be included
-		DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
-		for (final DbAttribute a : entity.getAttributes()) {
-			ColumnDescriptor c = new ColumnDescriptor(a, "t0");
-			assertTrue("No descriptor for " + a + ", columns: " + columns, columns.contains(c));
+		assertEquals(attributes.size(), columns.size());
+
+		for(int i=0; i<attributes.size(); i++) {
+			DbAttribute attribute = attributes.get(i);
+			ColumnDescriptor descriptor = columns.get(i);
+			assertEquals(attribute, descriptor.getAttribute());
+			assertEquals(attribute.getName(), descriptor.getName());
+			assertEquals(attribute.getName(), descriptor.getDataRowKey());
+			assertEquals(attribute.getType(), descriptor.getJdbcType());
 		}
 	}
 
@@ -755,31 +765,32 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testBuildResultColumns2() throws Exception {
-		SelectQuery q = new SelectQuery(Painting.class);
+		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
 		q.addPrefetch(Painting.TO_ARTIST.joint());
-		DefaultSelectTranslator tr = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
+		SelectTranslator tr = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		List<?> columns = tr.buildResultColumns();
+		tr.getSql();
 
-		// assert root entity columns
-		DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
-		for (final DbAttribute a : entity.getAttributes()) {
-			ColumnDescriptor c = new ColumnDescriptor(a, "t0");
-			assertTrue("No descriptor for " + a + ", columns: " + columns, columns.contains(c));
-		}
+		List<ColumnDescriptor> columns = Arrays.asList(tr.getResultColumns());
+		columns.sort(Comparator.comparing(ColumnDescriptor::getName));
 
-		// assert joined columns
-		DbEntity joined = context.getEntityResolver().getDbEntity("ARTIST");
-		for (final DbAttribute a : joined.getAttributes()) {
+		DbEntity rootEntity = context.getEntityResolver().getDbEntity("PAINTING");
+		List<DbAttribute> attributes = new ArrayList<>(rootEntity.getAttributes());
+		DbEntity joinedEntity = context.getEntityResolver().getDbEntity("ARTIST");
+		attributes.addAll(joinedEntity.getAttributes());
+		attributes.sort(Comparator.comparing(DbAttribute::getName));
 
-			// skip ARTIST PK, it is joined from painting
-			if (Artist.ARTIST_ID_PK_COLUMN.equals(a.getName())) {
-				continue;
+		for(int i=0; i<attributes.size(); i++) {
+			DbAttribute attribute = attributes.get(i);
+			ColumnDescriptor descriptor = columns.get(i);
+			assertEquals(attribute, descriptor.getAttribute());
+			assertEquals(attribute.getName(), descriptor.getName());
+			if("ARTIST".equals(attribute.getEntity().getName())) {
+				assertEquals("toArtist." + attribute.getName(), descriptor.getDataRowKey());
+			} else {
+				assertEquals(attribute.getName(), descriptor.getDataRowKey());
 			}
-
-			ColumnDescriptor c = new ColumnDescriptor(a, "t1");
-			c.setDataRowKey("toArtist." + a.getName());
-			assertTrue("No descriptor for " + a + ", columns: " + columns, columns.contains(c));
+			assertEquals(attribute.getType(), descriptor.getJdbcType());
 		}
 	}
 

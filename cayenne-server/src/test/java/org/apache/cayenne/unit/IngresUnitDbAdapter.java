@@ -21,6 +21,9 @@ package org.apache.cayenne.unit;
 
 import org.apache.cayenne.dba.DbAdapter;
 
+/**
+ * Ingress doesn't support sorting by an aggregate expression (ORDER BY COUNT(some_field))
+ */
 public class IngresUnitDbAdapter extends UnitDbAdapter {
 
     public IngresUnitDbAdapter(DbAdapter adapter) {
@@ -50,5 +53,10 @@ public class IngresUnitDbAdapter extends UnitDbAdapter {
     @Override
     public boolean supportsSelectBooleanExpression() {
         return false;
+    }
+
+    @Override
+    public boolean isLowerCaseNames() {
+        return true;
     }
 }

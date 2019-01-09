@@ -161,6 +161,13 @@ public class ColumnDescriptor {
     }
 
     /**
+     * @since 4.2
+     */
+    public void setAttribute(DbAttribute attribute) {
+        this.attribute = attribute;
+    }
+
+    /**
      * Returns true if another object is a ColumnDescriptor with the same name,
      * name prefix, table and procedure names. Other fields are ignored in the
      * equality test.

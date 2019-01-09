@@ -21,10 +21,9 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.di.Provider;
@@ -40,6 +39,7 @@ import org.apache.cayenne.query.SelectQuery;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * A DbAdapter that automatically detects the kind of database it is running on
@@ -111,8 +111,8 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	@Override
-	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-		return getAdapter().getQualifierTranslator(queryAssembler);
+	public Function<Node, Node> getSqlTreeProcessor() {
+		return getAdapter().getSqlTreeProcessor();
 	}
 
 	@Override

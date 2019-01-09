@@ -20,19 +20,14 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.lang.reflect.Method;
@@ -84,14 +79,6 @@ public class Oracle8Adapter extends OracleAdapter {
 	}
 
 	/**
-	 * @since 4.0
-	 */
-	@Override
-	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
-		return new Oracle8SelectTranslator(query, this, entityResolver);
-	}
-
-	/**
 	 * Uses OracleActionBuilder to create the right action.
 	 */
 	@Override
@@ -109,10 +96,4 @@ public class Oracle8Adapter extends OracleAdapter {
 		return super.findResource(name);
 	}
 
-	@Override
-	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-		QualifierTranslator translator = new Oracle8QualifierTranslator(queryAssembler);
-		translator.setCaseInsensitive(caseInsensitiveCollations);
-		return translator;
-	}
 }

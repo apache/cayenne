@@ -21,12 +21,9 @@ package org.apache.cayenne.dba.hsqldb;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -40,18 +37,15 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/">
@@ -91,22 +85,11 @@ public class HSQLDBAdapter extends JdbcAdapter {
 	}
 
 	/**
-	 * @since 4.0
+	 * @since 4.2
 	 */
 	@Override
-	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
-		return new HSQLSelectTranslator(query, this, entityResolver);
-	}
-
-	/**
-	 * Returns a trimming translator.
-	 * @since 4.0
-	 */
-	@Override
-	public QualifierTranslator getQualifierTranslator(QueryAssembler queryAssembler) {
-		QualifierTranslator translator = new HSQLQualifierTranslator(queryAssembler);
-		translator.setCaseInsensitive(caseInsensitiveCollations);
-		return translator;
+	public Function<Node, Node> getSqlTreeProcessor() {
+		return new HSQLTreeProcessor();
 	}
 
 	/**
