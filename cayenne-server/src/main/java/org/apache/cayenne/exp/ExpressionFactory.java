@@ -31,7 +31,9 @@ import org.apache.cayenne.exp.parser.ASTBitwiseRightShift;
 import org.apache.cayenne.exp.parser.ASTBitwiseXor;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTDivide;
+import org.apache.cayenne.exp.parser.ASTEnclosingObject;
 import org.apache.cayenne.exp.parser.ASTEqual;
+import org.apache.cayenne.exp.parser.ASTExists;
 import org.apache.cayenne.exp.parser.ASTFalse;
 import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTGreater;
@@ -54,6 +56,7 @@ import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTOr;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
+import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.ASTSubtract;
 import org.apache.cayenne.exp.parser.ASTTrue;
 import org.apache.cayenne.exp.parser.ExpressionParser;
@@ -61,6 +64,9 @@ import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
 import org.apache.cayenne.exp.parser.JavaCharStream;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.query.ColumnSelect;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectQuery;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -1257,6 +1263,13 @@ public class ExpressionFactory {
 	}
 
 	/**
+	 * @since 4.2
+	 */
+	public static Expression enclosingObjectExp(Expression exp) {
+		return new ASTEnclosingObject(exp);
+	}
+
+	/**
 	 * @since 4.0
 	 */
 	public static Expression and(Collection<Expression> expressions) {
@@ -1342,5 +1355,46 @@ public class ExpressionFactory {
 			String message = th.getMessage();
 			throw new ExpressionException("%s", th, message != null ? message : "");
 		}
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public static Expression exists(SelectQuery<?> subQuery) {
+		return new ASTExists(new ASTSubquery(subQuery));
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public static Expression exists(ObjectSelect<?> subQuery) {
+		return new ASTExists(new ASTSubquery(subQuery));
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public static Expression exists(ColumnSelect<?> subQuery) {
+		return new ASTExists(new ASTSubquery(subQuery));
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public static Expression inExp(Expression exp, ColumnSelect<?> subQuery) {
+		if(!(exp instanceof SimpleNode)) {
+			throw new IllegalArgumentException("exp should be instance of SimpleNode");
+		}
+		return new ASTIn((SimpleNode)exp, new ASTSubquery(subQuery));
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public static Expression notInExp(Expression exp, ColumnSelect<?> subQuery) {
+		if(!(exp instanceof SimpleNode)) {
+			throw new IllegalArgumentException("exp should be instance of SimpleNode");
+		}
+		return new ASTNotIn((SimpleNode)exp, new ASTSubquery(subQuery));
 	}
 }

@@ -19,53 +19,44 @@
 
 package org.apache.cayenne.exp.parser;
 
-import java.io.IOException;
-
 import org.apache.cayenne.exp.Expression;
 
 /**
- * @since 4.0
+ * @since 4.2
  */
-public class ASTFullObject extends SimpleNode {
+public class ASTExists extends ConditionNode {
 
-    public ASTFullObject(Expression expression) {
-        this();
-        Node node = wrapChild(expression);
-        jjtAddChild(node, 0);
-        node.jjtSetParent(this);
+    public ASTExists(ASTSubquery subquery) {
+        super(0);
+        jjtAddChild(subquery, 0);
     }
 
-    public ASTFullObject() {
-        this(0);
+    ASTExists(int id) {
+        super(id);
     }
 
-    protected ASTFullObject(int i) {
-        super(i);
+    @Override
+    protected int getRequiredChildrenCount() {
+        return 1;
+    }
+
+    @Override
+    protected Boolean evaluateSubNode(Object o, Object[] evaluatedChildren) throws Exception {
+        return null;
     }
 
     @Override
     protected String getExpressionOperator(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected Object evaluateNode(Object o) throws Exception {
-        return o;
-    }
-
-    @Override
-    public void appendAsString(Appendable out) throws IOException {
-        out.append(":FULL_OBJECT:");
-        super.appendAsString(out);
+        return null;
     }
 
     @Override
     public Expression shallowCopy() {
-        return new ASTFullObject(id);
+        return new ASTExists(id);
     }
 
     @Override
     public int getType() {
-        return Expression.FULL_OBJECT;
+        return Expression.EXISTS;
     }
 }

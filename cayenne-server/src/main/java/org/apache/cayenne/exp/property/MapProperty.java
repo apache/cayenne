@@ -232,4 +232,11 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
     protected Class<V> getEntityType() {
         return entityType;
     }
+
+    /**
+     * @return property that will be translated relative to parent query
+     */
+    public MapProperty<K, V> enclosing() {
+        return PropertyFactory.createMap(null, ExpressionFactory.enclosingObjectExp(getExpression()),  getKeyType(), getEntityType());
+    }
 }

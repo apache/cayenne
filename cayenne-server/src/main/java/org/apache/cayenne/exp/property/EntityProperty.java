@@ -21,6 +21,7 @@ package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
@@ -70,4 +71,12 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
                 ? this
                 : PropertyFactory.createEntity(getName() + "+", getType());
     }
+
+    /**
+     * @return property that will be translated relative to parent query
+     */
+    public EntityProperty<E> enclosing() {
+        return PropertyFactory.createEntity(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
+    }
+
 }

@@ -24,22 +24,22 @@ import java.io.IOException;
 import org.apache.cayenne.exp.Expression;
 
 /**
- * @since 4.0
+ * @since 4.2
  */
-public class ASTFullObject extends SimpleNode {
+public class ASTEnclosingObject extends SimpleNode {
 
-    public ASTFullObject(Expression expression) {
+    public ASTEnclosingObject(Expression expression) {
         this();
         Node node = wrapChild(expression);
         jjtAddChild(node, 0);
         node.jjtSetParent(this);
     }
 
-    public ASTFullObject() {
+    public ASTEnclosingObject() {
         this(0);
     }
 
-    protected ASTFullObject(int i) {
+    protected ASTEnclosingObject(int i) {
         super(i);
     }
 
@@ -55,17 +55,17 @@ public class ASTFullObject extends SimpleNode {
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append(":FULL_OBJECT:");
+        out.append("SUPER:");
         super.appendAsString(out);
     }
 
     @Override
     public Expression shallowCopy() {
-        return new ASTFullObject(id);
+        return new ASTEnclosingObject(id);
     }
 
     @Override
     public int getType() {
-        return Expression.FULL_OBJECT;
+        return Expression.ENCLOSING_OBJECT;
     }
 }

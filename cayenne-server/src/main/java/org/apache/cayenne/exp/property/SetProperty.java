@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
@@ -61,5 +62,12 @@ public class SetProperty<V extends Persistent> extends CollectionProperty<V, Set
         return getName().endsWith("+")
                 ? this
                 : PropertyFactory.createSet(getName() + "+", getEntityType());
+    }
+
+    /**
+     * @return property that will be translated relative to parent query
+     */
+    public SetProperty<V> enclosing() {
+        return PropertyFactory.createSet(null, ExpressionFactory.enclosingObjectExp(getExpression()), getEntityType());
     }
 }

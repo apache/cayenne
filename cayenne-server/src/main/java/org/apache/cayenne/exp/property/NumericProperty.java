@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTAdd;
 import org.apache.cayenne.exp.parser.ASTDivide;
@@ -181,6 +182,13 @@ public class NumericProperty<E extends Number> extends BaseProperty<E> implement
     @Override
     public NumericProperty<E> alias(String alias) {
         return PropertyFactory.createNumeric(alias, this.getExpression(), this.getType());
+    }
+
+    /**
+     * @return property that will be translated relative to parent query
+     */
+    public NumericProperty<E> enclosing() {
+        return PropertyFactory.createNumeric(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
     }
 
 }

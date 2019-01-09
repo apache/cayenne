@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
 
 /**
@@ -136,5 +137,12 @@ public class DateProperty<E> extends BaseProperty<E> implements ComparableProper
      */
     public DateProperty<E> min() {
         return PropertyFactory.createDate(FunctionExpressionFactory.minExp(getExpression()), getType());
+    }
+
+    /**
+     * @return property that will be translated relative to parent query
+     */
+    public DateProperty<E> enclosing() {
+        return PropertyFactory.createDate(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
     }
 }

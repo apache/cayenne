@@ -37,10 +37,10 @@ public class ASTNotIn extends ConditionNode {
         super(ExpressionParserTreeConstants.JJTNOTIN);
     }
 
-    public ASTNotIn(SimpleNode path, ASTList list) {
+    public ASTNotIn(SimpleNode path, SimpleNode node) {
         super(ExpressionParserTreeConstants.JJTNOTIN);
         jjtAddChild(path, 0);
-        jjtAddChild(list, 1);
+        jjtAddChild(node, 1);
         connectChildren();
     }
 

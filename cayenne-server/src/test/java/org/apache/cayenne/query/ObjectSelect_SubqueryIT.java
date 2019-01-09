@@ -1,0 +1,167 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.query;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
+/**
+ * @since 4.2
+ */
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+public class ObjectSelect_SubqueryIT extends ServerCase {
+
+    @Inject
+    DataContext context;
+
+    @Inject
+    private DBHelper dbHelper;
+
+    @Before
+    public void createArtistsDataSet() throws Exception {
+        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+        tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+
+        long dateBase = System.currentTimeMillis() - 2 * 24 * 3600 * 1000;
+        for (int i = 1; i <= 20; i++) {
+            tArtist.insert(i, "artist" + i, new java.sql.Date(dateBase + 24 * 3600 * 1000 * i));
+        }
+
+        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+        tGallery.insert(1, "tate modern");
+
+        TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
+        tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
+        for (int i = 1; i <= 20; i++) {
+            tPaintings.insert(i, "painting" + i, i % 5 + 1, 1);
+        }
+    }
+
+    @Test
+    public void selectQuery_simpleExists() {
+        long count = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exists(SelectQuery.query(Painting.class, Painting.PAINTING_TITLE.like("painting%"))))
+                .selectCount(context);
+        assertEquals(20L, count);
+    }
+
+    @Test
+    public void selectQuery_existsWithExpressionFromParentQuery() {
+        Expression exp = Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing())
+                .andExp(Painting.PAINTING_TITLE.like("painting%"))
+                .andExp(Artist.ARTIST_NAME.enclosing().like("art%"));
+
+        SelectQuery<Painting> subQuery = SelectQuery.query(Painting.class, exp);
+        subQuery.setColumns(Painting.PAINTING_TITLE);
+
+        long count = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exists(subQuery))
+                .selectCount(context);
+        assertEquals(5L, count);
+    }
+
+    @Test
+    public void selectQuery_twoLevelExists() {
+        Expression exp = Painting.PAINTING_TITLE.like("painting%")
+                .andExp(ExpressionFactory.exists(SelectQuery.query(Gallery.class)));
+        long count = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exists(SelectQuery.query(Painting.class, exp)))
+                .selectCount(context);
+        assertEquals(20L, count);
+    }
+
+    @Test
+    public void selectQuery_twoLevelExistsWithExpressionFromParentQuery() {
+        Expression deepNestedExp = Artist.ARTIST_NAME.enclosing().enclosing().like("art%")
+                .andExp(Painting.TO_GALLERY.enclosing().eq(PropertyFactory.createSelf(Gallery.class)));
+
+        Expression exp = Painting.PAINTING_TITLE.like("painting%")
+                .andExp(ExpressionFactory.exists(SelectQuery.query(Gallery.class, deepNestedExp)))
+                .andExp(Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing()));
+
+        long count = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exists(SelectQuery.query(Painting.class, exp)))
+                .selectCount(context);
+        assertEquals(5L, count);
+    }
+
+    @Test
+    public void objectSelect_twoLevelExistsWithExpressionFromParentQuery() {
+        ObjectSelect<Gallery> deepSubquery = ObjectSelect.query(Gallery.class)
+                .where(Artist.ARTIST_NAME.enclosing().enclosing().like("art%"))
+                .and(Painting.TO_GALLERY.enclosing().eq(PropertyFactory.createSelf(Gallery.class)));
+
+        ObjectSelect<Painting> subquery = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.like("painting%"))
+                .and(Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing()))
+                .and(ExpressionFactory.exists(deepSubquery));
+
+        long count = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exists(subquery))
+                .selectCount(context);
+
+        assertEquals(5L, count);
+    }
+
+    @Test
+    public void columnSelect_simpleInSubquery() {
+
+        ColumnSelect<String> subquery = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+                .where(Artist.DATE_OF_BIRTH.lt(new Date()));
+
+        long count = ObjectSelect.query(Painting.class)
+                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(subquery))
+                .selectCount(context);
+
+        assertEquals(4L, count);
+    }
+
+    @Test
+    public void columnSelect_simpleNotInSubquery() {
+
+        ColumnSelect<String> subquery = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+                .where(Artist.DATE_OF_BIRTH.lt(new Date()));
+
+        long count = ObjectSelect.query(Painting.class)
+                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).nin(subquery))
+                .selectCount(context);
+
+        assertEquals(16L, count);
+    }
+}

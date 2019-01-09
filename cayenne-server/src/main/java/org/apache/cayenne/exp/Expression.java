@@ -19,10 +19,7 @@
 
 package org.apache.cayenne.exp;
 
-import static org.apache.cayenne.exp.ExpressionFactory.exp;
-
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -166,6 +163,21 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 * @since 4.0
 	 */
 	public static final int FULL_OBJECT = 47;
+
+	/**
+	 * @since 4.2
+	 */
+	public static final int ENCLOSING_OBJECT = 48;
+
+	/**
+	 * @since 4.2
+	 */
+	public static final int EXISTS = 49;
+
+	/**
+	 * @since 4.2
+	 */
+	public static final int SUBQUERY = 50;
 
 	protected int type;
 

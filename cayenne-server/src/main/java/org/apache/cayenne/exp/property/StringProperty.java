@@ -301,4 +301,12 @@ public class StringProperty<E extends CharSequence> extends BaseProperty<E> {
     public StringProperty<E> alias(String alias) {
         return PropertyFactory.createString(alias, this.getExpression(), this.getType());
     }
+
+    /**
+     * @return property that will be translated relative to parent query
+     */
+    public StringProperty<E> enclosing() {
+        return PropertyFactory.createString(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
+    }
+
 }

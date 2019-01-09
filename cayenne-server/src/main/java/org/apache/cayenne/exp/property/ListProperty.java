@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
 
 /**
@@ -65,5 +66,12 @@ public class ListProperty<V extends Persistent> extends CollectionProperty<V, Li
         return getName().endsWith("+")
                 ? this
                 : PropertyFactory.createList(getName() + "+", getEntityType());
+    }
+
+    /**
+     * @return property that will be translated relative to parent query
+     */
+    public ListProperty<V> enclosing() {
+        return PropertyFactory.createList(null, ExpressionFactory.enclosingObjectExp(getExpression()), getEntityType());
     }
 }
