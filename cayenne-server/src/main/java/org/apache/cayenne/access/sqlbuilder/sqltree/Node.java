@@ -19,13 +19,9 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.cayenne.access.sqlbuilder.NodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
-
 
 /**
  * @since 4.2
@@ -34,7 +30,9 @@ public abstract class Node {
 
     protected Node parent;
 
-    protected List<Node> children;
+    protected Node[] children;
+
+    protected int childrenCount;
 
     protected final NodeType type;
 
@@ -47,33 +45,46 @@ public abstract class Node {
     }
 
     public Node addChild(int index, Node node) {
-        children.add(index, node);
+        if(children.length <= childrenCount) {
+            // expand + copy with empty slot at index
+            Node[] newChildren = new Node[children.length + 4];
+            System.arraycopy(children, 0, newChildren, 0, index);
+            System.arraycopy(children, index, newChildren, index + 1, (childrenCount - index));
+            children = newChildren;
+        } else {
+            // move tail after index on one position
+            System.arraycopy(children, index, children, index + 1, (childrenCount - index));
+        }
+        children[index] = node;
+        childrenCount++;
         node.setParent(this);
         return this;
     }
 
     public Node addChild(Node node) {
         if(children == null) {
-            children = new ArrayList<>(4);
+            children = new Node[4];
+        } else if(children.length <= childrenCount) {
+            Node[] newChildren = new Node[children.length + 4];
+            System.arraycopy(children, 0, newChildren, 0, children.length);
+            children = newChildren;
         }
-        children.add(node);
+        children[childrenCount++] = node;
         node.setParent(this);
         return this;
     }
 
     public Node getChild(int idx) {
-        return children.get(idx);
+        return children[idx];
     }
 
     public int getChildrenCount() {
-        if(children == null) {
-            return 0;
-        }
-        return children.size();
+        return childrenCount;
     }
 
     public void replaceChild(int idx, Node node) {
-        children.set(idx, node).setParent(null);
+        children[idx].setParent(null);
+        children[idx] = node;
         node.setParent(this);
     }
 
@@ -89,13 +100,14 @@ public abstract class Node {
         if(!visitor.onNodeStart(this)) {
             return;
         }
-        int count = getChildrenCount();
-        for(int i=0; i<count; i++) {
-            if(!visitor.onChildNodeStart(this, getChild(i), i, i < (count - 1))) {
+
+        for(int i=0; i<childrenCount; i++) {
+            boolean hasMore = i < (childrenCount - 1);
+            if(!visitor.onChildNodeStart(this, children[i], i, hasMore)) {
                 return;
             }
-            getChild(i).visit(visitor);
-            visitor.onChildNodeEnd(this, getChild(i), i, i < (count - 1));
+            children[i].visit(visitor);
+            visitor.onChildNodeEnd(this, children[i], i, hasMore);
         }
         visitor.onNodeEnd(this);
     }
@@ -107,9 +119,10 @@ public abstract class Node {
     public <T extends Node> T deepCopy() {
         Node node = this.copy();
         if(children != null) {
-            node.children = new ArrayList<>(children.size());
-            for(Node child : children) {
-                node.children.add(child.deepCopy());
+            node.children = new Node[childrenCount];
+            node.childrenCount = childrenCount;
+            for(int i=0; i<childrenCount; i++) {
+                node.children[i] = children[i].deepCopy();
             }
         }
         return (T)node;
