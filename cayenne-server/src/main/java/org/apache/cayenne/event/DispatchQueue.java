@@ -43,11 +43,10 @@ class DispatchQueue {
     private final Map<Object, ConcurrentMap<Invocation, Object>> invocationsBySender;
 
     DispatchQueue() {
-        subjectInvocations = new ConcurrentHashMap<Invocation, Object>();
+        subjectInvocations = new ConcurrentHashMap<>();
 
-        // TODO: need something like com.google.common.collect.MapMaker to avoid
-        // synchronization on invocationsBySender
-        invocationsBySender = new WeakHashMap<Object, ConcurrentMap<Invocation, Object>>();
+        // TODO: need something like com.google.common.collect.MapMaker to avoid synchronization on invocationsBySender
+        invocationsBySender = new WeakHashMap<>();
     }
 
     /**
@@ -71,8 +70,7 @@ class DispatchQueue {
 
         if (sender == null) {
             invocations = subjectInvocations;
-        }
-        else {
+        } else {
             invocations = invocationsForSender(sender, true);
         }
 
@@ -80,14 +78,7 @@ class DispatchQueue {
         // result in a memory leak per CAY-770. This seemed to happen when lots of
         // invocations got registered, but no events were dispatched (hence the stale
         // invocation removal during dispatch did not happen)
-        Iterator<Invocation> it = invocations.keySet().iterator();
-        while (it.hasNext()) {
-            Invocation i = it.next();
-            if (i.getTarget() == null) {
-                it.remove();
-            }
-        }
-
+        invocations.keySet().removeIf(i -> i.getTarget() == null);
         invocations.putIfAbsent(invocation, Boolean.TRUE);
     }
 
@@ -102,8 +93,7 @@ class DispatchQueue {
         boolean didRemove = removeInvocations(subjectInvocations, listener);
 
         synchronized (invocationsBySender) {
-            for (ConcurrentMap<Invocation, Object> senderInvocations : invocationsBySender
-                    .values()) {
+            for (ConcurrentMap<Invocation, Object> senderInvocations : invocationsBySender.values()) {
                 didRemove = removeInvocations(senderInvocations, listener) || didRemove;
             }
         }
@@ -111,16 +101,12 @@ class DispatchQueue {
         return didRemove;
     }
 
-    private ConcurrentMap<Invocation, Object> invocationsForSender(
-            Object sender,
-            boolean create) {
+    private ConcurrentMap<Invocation, Object> invocationsForSender(Object sender, boolean create) {
 
         synchronized (invocationsBySender) {
-
-            ConcurrentMap<Invocation, Object> senderInvocations = invocationsBySender
-                    .get(sender);
+            ConcurrentMap<Invocation, Object> senderInvocations = invocationsBySender.get(sender);
             if (create && senderInvocations == null) {
-                senderInvocations = new ConcurrentHashMap<Invocation, Object>();
+                senderInvocations = new ConcurrentHashMap<>();
                 invocationsBySender.put(sender, senderInvocations);
             }
 
@@ -152,16 +138,7 @@ class DispatchQueue {
 
     // dispatches event to a list of listeners
     private void dispatchEvent(Collection<Invocation> invocations, Dispatch dispatch) {
-
-        Iterator<Invocation> it = invocations.iterator();
-        while (it.hasNext()) {
-
-            // fire invocation, clean up GC'd invocations...
-
-            Invocation invocation = it.next();
-            if (!dispatch.fire(invocation)) {
-                it.remove();
-            }
-        }
+        // fire invocation, clean up GC'd invocations...
+        invocations.removeIf(invocation -> !dispatch.fire(invocation));
     }
 }

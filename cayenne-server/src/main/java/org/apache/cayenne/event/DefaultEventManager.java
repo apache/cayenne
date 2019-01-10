@@ -37,14 +37,15 @@ import java.util.WeakHashMap;
  */
 public class DefaultEventManager implements EventManager {
 
-    static final int DEFAULT_DISPATCH_THREAD_COUNT = 5;
+    private static final int DEFAULT_DISPATCH_THREAD_COUNT = 5;
 
     // keeps weak references to subjects
-    protected Map<EventSubject, DispatchQueue> subjects;
-    protected List<Dispatch> eventQueue;
-    protected boolean singleThread;
+    protected final Map<EventSubject, DispatchQueue> subjects;
+    protected final List<Dispatch> eventQueue;
+    protected final boolean singleThread;
+    protected final List<DispatchThread> dispatchThreads;
+
     protected volatile boolean stopped;
-    List<DispatchThread> dispatchThreads;
 
     /**
      * Creates a multithreaded EventManager using default thread count.
@@ -59,9 +60,8 @@ public class DefaultEventManager implements EventManager {
      * less.
      */
     public DefaultEventManager(int dispatchThreadCount) {
-        this.subjects = Collections
-                .synchronizedMap(new WeakHashMap<EventSubject, DispatchQueue>());
-        this.eventQueue = Collections.synchronizedList(new LinkedList<Dispatch>());
+        this.subjects = Collections.synchronizedMap(new WeakHashMap<>());
+        this.eventQueue = Collections.synchronizedList(new LinkedList<>());
         this.singleThread = dispatchThreadCount <= 0;
 
         if (!singleThread) {
@@ -75,8 +75,7 @@ public class DefaultEventManager implements EventManager {
                 dispatchThreads.add(thread);
                 thread.start();
             }
-        }
-        else {
+        } else {
             dispatchThreads = Collections.emptyList();
         }
     }
@@ -143,8 +142,7 @@ public class DefaultEventManager implements EventManager {
             EventSubject subject) {
 
         if (singleThread) {
-            throw new IllegalStateException(
-                    "DefaultEventManager is configured to be single-threaded.");
+            throw new IllegalStateException("DefaultEventManager is configured to be single-threaded.");
         }
 
         this.addListener(listener, methodName, eventParameterClass, subject, null, false);
@@ -179,8 +177,7 @@ public class DefaultEventManager implements EventManager {
             Object sender) {
 
         if (singleThread) {
-            throw new IllegalStateException(
-                    "DefaultEventManager is configured to be single-threaded.");
+            throw new IllegalStateException("DefaultEventManager is configured to be single-threaded.");
         }
 
         addListener(listener, methodName, eventParameterClass, subject, sender, false);
@@ -207,18 +204,12 @@ public class DefaultEventManager implements EventManager {
         }
 
         try {
-            Invocation invocation = (blocking) ? new Invocation(
-                    listener,
-                    methodName,
-                    eventParameterClass) : new NonBlockingInvocation(
-                    listener,
-                    methodName,
-                    eventParameterClass);
+            Invocation invocation = blocking
+                    ? new Invocation(listener, methodName, eventParameterClass)
+                    : new NonBlockingInvocation(listener, methodName, eventParameterClass);
             dispatchQueueForSubject(subject, true).addInvocation(invocation, sender);
-        }
-        catch (NoSuchMethodException nsm) {
-            throw new CayenneRuntimeException("Error adding listener, method name: "
-                    + methodName, nsm);
+        } catch (NoSuchMethodException nsm) {
+            throw new CayenneRuntimeException("Error adding listener, method name: %s", nsm, methodName);
         }
     }
 
@@ -322,8 +313,7 @@ public class DefaultEventManager implements EventManager {
      */
     public void postNonBlockingEvent(EventObject event, EventSubject subject) {
         if (singleThread) {
-            throw new IllegalStateException(
-                    "EventManager is configured to be single-threaded.");
+            throw new IllegalStateException("EventManager is configured to be single-threaded.");
         }
 
         // add dispatch to the queue and return
@@ -359,9 +349,7 @@ public class DefaultEventManager implements EventManager {
         EventSubject subject;
 
         Dispatch(EventObject event, EventSubject subject) {
-            this(new EventObject[] {
-                event
-            }, subject);
+            this(new EventObject[] {event}, subject);
         }
 
         Dispatch(EventObject[] eventArgument, EventSubject subject) {
@@ -387,16 +375,12 @@ public class DefaultEventManager implements EventManager {
 
                 // inject single invocation dispatch into the queue
                 synchronized (eventQueue) {
-                    eventQueue.add(new InvocationDispatch(
-                            eventArgument,
-                            subject,
-                            invocation));
+                    eventQueue.add(new InvocationDispatch(eventArgument, subject, invocation));
                     eventQueue.notifyAll();
                 }
 
                 return true;
-            }
-            else {
+            } else {
                 return invocation.fire(eventArgument);
             }
         }
@@ -407,8 +391,7 @@ public class DefaultEventManager implements EventManager {
 
         Invocation target;
 
-        InvocationDispatch(EventObject[] eventArgument, EventSubject subject,
-                Invocation target) {
+        InvocationDispatch(EventObject[] eventArgument, EventSubject subject, Invocation target) {
             super(eventArgument, subject);
             this.target = target;
         }
@@ -424,9 +407,7 @@ public class DefaultEventManager implements EventManager {
     // subclass exists only to tag invocations that should be
     // dispatched in a separate thread
     final class NonBlockingInvocation extends Invocation {
-
-        public NonBlockingInvocation(Object target, String methodName,
-                Class<?> parameterType) throws NoSuchMethodException {
+        NonBlockingInvocation(Object target, String methodName, Class<?> parameterType) throws NoSuchMethodException {
             super(target, methodName, parameterType);
         }
     }
@@ -442,20 +423,17 @@ public class DefaultEventManager implements EventManager {
         public void run() {
             while (!stopped) {
 
-                // get event from the queue, if the queue
-                // is empty, just wait
+                // get event from the queue, if the queue is empty, just wait
                 Dispatch dispatch = null;
 
                 synchronized (DefaultEventManager.this.eventQueue) {
                     if (DefaultEventManager.this.eventQueue.size() > 0) {
                         dispatch = DefaultEventManager.this.eventQueue.remove(0);
-                    }
-                    else {
+                    } else {
                         try {
                             // wake up occasionally to check whether EM has been stopped
                             DefaultEventManager.this.eventQueue.wait(3 * 60 * 1000);
-                        }
-                        catch (InterruptedException e) {
+                        } catch (InterruptedException e) {
                             // ignore interrupts...
                         }
                     }
@@ -467,8 +445,7 @@ public class DefaultEventManager implements EventManager {
                     // from dying on dispatch errors
                     try {
                         dispatch.fire();
-                    }
-                    catch (Throwable th) {
+                    } catch (Throwable th) {
                         // ignoring exception
                     }
                 }
