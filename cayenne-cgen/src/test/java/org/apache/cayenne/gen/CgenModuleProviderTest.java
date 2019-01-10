@@ -16,20 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.project.ProjectModule;
+import org.apache.cayenne.tools.CayenneToolsModuleProvider;
+import org.apache.cayenne.unit.util.ModuleProviderChecker;
+import org.junit.Test;
 
 /**
- * @since 4.1
+ * @since 4.2
  */
-public class CgenModule implements Module{
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ClassGenerationActionFactory.class).to(DefaultClassGenerationActionFactory.class);
-        ProjectModule.contributeExtensions(binder).add(CgenExtension.class);
+public class CgenModuleProviderTest {
+    @Test
+    public void testProviderPresent() {
+        ModuleProviderChecker.testProviderPresent(CgenToolsModuleProvider.class, CayenneToolsModuleProvider.class);
     }
 }

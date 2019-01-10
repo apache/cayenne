@@ -18,24 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import java.io.File;
+
 import foundrylogic.vpp.VPPConfig;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
-import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.gen.CgenModule;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 /**
  * An Ant task to perform class generation based on CayenneDataMap.
@@ -104,7 +103,9 @@ public class CayenneGeneratorTask extends CayenneTask {
     public void execute() throws BuildException {
         validateAttributes();
 
-        injector = DIBootstrap.createInjector(new CgenModule(), new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)));
+        injector = new ToolsInjectorBuilder()
+                .addModule(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)))
+                .create();
 
         logger = new AntLogger(this);
         CayenneGeneratorMapLoaderAction loadAction = new CayenneGeneratorMapLoaderAction(injector);
@@ -144,11 +145,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     private ClassGenerationAction createGenerator(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction(cgenConfiguration) :
-                new ClassGenerationAction(cgenConfiguration);
-        injector.injectMembers(classGenerationAction);
-
-        return classGenerationAction;
+        return injector.getInstance(ClassGenerationActionFactory.class).createAction(cgenConfiguration);
     }
 
     private boolean hasConfig() {
