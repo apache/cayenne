@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collection;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-
-import java.util.Collection;
 
 /**
  * @since 3.0
@@ -41,12 +41,8 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
     public static final String CLIENT_SUPERCLASS_PREFIX = "_Client";
 
-    public ClientClassGenerationAction(CgenConfiguration cgenConfiguration) {
-        super(cgenConfiguration);
-        cgenConfiguration.setTemplate(SUBCLASS_TEMPLATE);
-        cgenConfiguration.setSuperTemplate(SUPERCLASS_TEMPLATE);
-        cgenConfiguration.setQueryTemplate(DMAP_SUBCLASS_TEMPLATE);
-        cgenConfiguration.setQuerySuperTemplate(DMAP_SUPERCLASS_TEMPLATE);
+    public ClientClassGenerationAction() {
+        super();
     }
 
     @Override
@@ -102,5 +98,13 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
                 cgenConfiguration.addArtifact(new ClientDataMapArtifact(cgenConfiguration.getDataMap(), queries));
             }
         }
+    }
+
+    public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
+        super.setCgenConfiguration(cgenConfiguration);
+        cgenConfiguration.setTemplate(SUBCLASS_TEMPLATE);
+        cgenConfiguration.setSuperTemplate(SUPERCLASS_TEMPLATE);
+        cgenConfiguration.setQueryTemplate(DMAP_SUBCLASS_TEMPLATE);
+        cgenConfiguration.setQuerySuperTemplate(DMAP_SUPERCLASS_TEMPLATE);
     }
 }

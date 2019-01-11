@@ -18,18 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.project.ProjectModule;
-
 /**
- * @since 4.1
+ * @since 4.2
  */
-public class CgenModule implements Module{
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ClassGenerationActionFactory.class).to(DefaultClassGenerationActionFactory.class);
-        ProjectModule.contributeExtensions(binder).add(CgenExtension.class);
-    }
+public interface ClassGenerationActionFactory {
+
+    ClassGenerationAction createAction(CgenConfiguration cgenConfiguration);
 }

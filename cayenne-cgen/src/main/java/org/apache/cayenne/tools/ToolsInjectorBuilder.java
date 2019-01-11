@@ -16,20 +16,44 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.gen;
+package org.apache.cayenne.tools;
 
-import org.apache.cayenne.di.Binder;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.gen.xml.CgenExtension;
-import org.apache.cayenne.project.ProjectModule;
+import org.apache.cayenne.di.spi.ModuleLoader;
 
 /**
- * @since 4.1
+ * @since 4.2
  */
-public class CgenModule implements Module{
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ClassGenerationActionFactory.class).to(DefaultClassGenerationActionFactory.class);
-        ProjectModule.contributeExtensions(binder).add(CgenExtension.class);
+public class ToolsInjectorBuilder {
+
+    private Collection<Module> modules;
+
+    public ToolsInjectorBuilder() {
+        this.modules = new ArrayList<>();
+    }
+
+    public ToolsInjectorBuilder addModule(Module module) {
+        modules.add(module);
+        return this;
+    }
+
+    public ToolsInjectorBuilder addModules(Collection<Module> modules) {
+        this.modules.addAll(modules);
+        return this;
+    }
+
+    private Collection<? extends Module> autoLoadedModules() {
+        return new ModuleLoader().load(CayenneToolsModuleProvider.class);
+    }
+
+    public Injector create() {
+        Collection<Module> allModules = new ArrayList<>(autoLoadedModules());
+        allModules.addAll(modules);
+        return DIBootstrap.createInjector(allModules);
     }
 }

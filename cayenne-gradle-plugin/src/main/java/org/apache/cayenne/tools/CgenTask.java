@@ -23,12 +23,11 @@ import groovy.lang.Reference;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
-import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.gen.CgenModule;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.gradle.api.Action;
@@ -36,7 +35,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.*;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -150,11 +148,16 @@ public class CgenTask extends BaseCayenneTask {
 
     private boolean useConfigFromDataMap;
 
+    private transient Injector injector;
+
     @TaskAction
     public void generate() {
         File dataMapFile = getDataMapFile();
 
-        final Injector injector = DIBootstrap.createInjector(new CgenModule(), new ToolsModule(LoggerFactory.getLogger(CgenTask.class)));
+        injector = new ToolsInjectorBuilder()
+                .addModule(new ToolsModule(LoggerFactory.getLogger(CgenTask.class)))
+                .create();
+
         metaData = injector.getInstance(DataChannelMetaData.class);
 
         CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
@@ -206,8 +209,7 @@ public class CgenTask extends BaseCayenneTask {
 
     ClassGenerationAction createGenerator(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
-        return cgenConfiguration.isClient() ? new ClientClassGenerationAction(cgenConfiguration) :
-                new ClassGenerationAction(cgenConfiguration);
+        return injector.getInstance(ClassGenerationActionFactory.class).createAction(cgenConfiguration);
     }
 
     CgenConfiguration buildConfiguration(DataMap dataMap) {

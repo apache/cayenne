@@ -19,11 +19,17 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
+
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EmbeddableEvent;
@@ -35,14 +41,9 @@ import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.JOptionPane;
-import java.awt.Component;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Predicate;
 
 /**
  * @since 4.1
@@ -137,9 +138,10 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
 
     public void generateAction() {
         CgenConfiguration cgenConfiguration = createConfiguration();
-        ClassGenerationAction generator = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction(cgenConfiguration) :
-                new ClassGenerationAction(cgenConfiguration);
+        ClassGenerationAction generator = new ToolsInjectorBuilder()
+                .create()
+                .getInstance(ClassGenerationActionFactory.class)
+                .createAction(cgenConfiguration);
 
         try {
             generator.prepareArtifacts();

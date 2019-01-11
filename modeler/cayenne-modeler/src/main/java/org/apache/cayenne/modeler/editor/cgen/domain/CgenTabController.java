@@ -19,10 +19,18 @@
 
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
+import javax.swing.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
+import java.util.prefs.Preferences;
+
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -30,14 +38,7 @@ import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-
-import javax.swing.JOptionPane;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Set;
-import java.util.prefs.Preferences;
+import org.apache.cayenne.tools.ToolsInjectorBuilder;
 
 /**
  * @since 4.1
@@ -63,8 +64,10 @@ public class CgenTabController extends GeneratorsTabController {
                 if(cgenConfiguration == null) {
                     cgenConfiguration = createConfiguration(dataMap);
                 }
-                ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction(cgenConfiguration) :
-                        new ClassGenerationAction(cgenConfiguration);
+                ClassGenerationAction classGenerationAction = new ToolsInjectorBuilder()
+                        .create()
+                        .getInstance(ClassGenerationActionFactory.class)
+                        .createAction(cgenConfiguration);
                 classGenerationAction.prepareArtifacts();
                 classGenerationAction.execute();
             } catch (Exception e) {
