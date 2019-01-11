@@ -167,7 +167,7 @@ public class PathAliasesIT extends ServerCase {
         List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .having(Artist.PAINTING_ARRAY.alias("p1").count().lt(5L))
                 .select(context);
-        assertEquals(19, artistAndPaintingCount.size());
+        assertEquals(4, artistAndPaintingCount.size());
         assertTrue((Long)artistAndPaintingCount.get(0)[1] < 5);
     }
 
@@ -298,7 +298,7 @@ public class PathAliasesIT extends ServerCase {
         List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .having(PropertyFactory.createBase(e1, Number.class).count().lt(5L))
                 .select(context);
-        assertEquals(19, artistAndPaintingCount.size());
+        assertEquals(4, artistAndPaintingCount.size());
         assertTrue((Long)artistAndPaintingCount.get(0)[1] < 5);
     }
 

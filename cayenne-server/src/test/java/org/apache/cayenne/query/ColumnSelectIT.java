@@ -609,7 +609,7 @@ public class ColumnSelectIT extends ServerCase {
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
-        assertEquals(20, a.size());
+        assertEquals(5, a.size());
         int idx = 0;
         for(Object[] next : a) {
             assertNotNull(next);
@@ -657,7 +657,7 @@ public class ColumnSelectIT extends ServerCase {
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
-        assertEquals(20, a.size());
+        assertEquals(5, a.size());
         int idx = 0;
         for(Object[] next : a) {
             assertNotNull(next);
@@ -677,7 +677,7 @@ public class ColumnSelectIT extends ServerCase {
                 .select(context);
 
         assertNotNull(a);
-        assertEquals(36, a.size());
+        assertEquals(21, a.size());
         int idx = 0;
         for(Object[] next : a) {
             assertNotNull(next);
@@ -782,7 +782,7 @@ public class ColumnSelectIT extends ServerCase {
     }
 
     private void checkAggregatePrefetchResults(List<Object[]> result) {
-        assertEquals(20, result.size());
+        assertEquals(5, result.size());
         for(Object[] next : result) {
             assertTrue(next[0] instanceof Artist);
             assertTrue(next[1] instanceof Long);
@@ -852,7 +852,7 @@ public class ColumnSelectIT extends ServerCase {
         List<Object[]> result = ObjectSelect.query(Artist.class)
                 .columns(artistProperty, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .select(context);
-        assertEquals(20, result.size());
+        assertEquals(5, result.size());
 
         for(Object[] next : result) {
             assertTrue(next[0] instanceof Artist);
@@ -903,7 +903,7 @@ public class ColumnSelectIT extends ServerCase {
         List<Object[]> result = ObjectSelect.query(Artist.class)
                 .columns(artistProperty, Artist.PAINTING_ARRAY.flat(), Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
                 .select(context);
-        assertEquals(36, result.size());
+        assertEquals(21, result.size());
 
         for(Object[] next : result) {
             assertTrue(next[0] instanceof Artist);

@@ -30,11 +30,19 @@ import org.apache.cayenne.map.JoinType;
  */
 class DbPathProcessor extends PathProcessor<DbEntity> {
 
-    DbPathProcessor(TranslatorContext context, DbEntity entity, String parentPath) {
+    private boolean flattenedPath;
+
+    DbPathProcessor(TranslatorContext context, DbEntity entity, String parentPath, boolean flattenedPath) {
         super(context, entity);
+        this.flattenedPath = flattenedPath;
         if(parentPath != null) {
             currentDbPath.append(parentPath);
         }
+    }
+
+    @Override
+    public boolean isOuterJoin() {
+        return super.isOuterJoin() || flattenedPath;
     }
 
     @Override
@@ -76,7 +84,8 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
             processRelTermination(relationship);
         } else {
             appendCurrentPath(relationship.getName());
-            context.getTableTree().addJoinTable(currentDbPath.toString(), relationship, JoinType.LEFT_OUTER);
+            context.getTableTree().addJoinTable(currentDbPath.toString(), relationship, isOuterJoin()
+                    ? JoinType.LEFT_OUTER : JoinType.INNER);
             if(!relationship.isToMany()) {
                 String path = currentDbPath.toString();
                 for (DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
@@ -86,20 +95,21 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
         }
     }
 
-    protected void processRelTermination(DbRelationship rel) {
-        this.relationship = rel;
+    protected void processRelTermination(DbRelationship relationship) {
+        this.relationship = relationship;
         String path = currentDbPath.toString();
-        appendCurrentPath(rel.getName());
+        appendCurrentPath(relationship.getName());
 
-        if (rel.isToMany() || !rel.isToPK()) {
+        if (relationship.isToMany() || !relationship.isToPK()) {
             // match on target PK
-            context.getTableTree().addJoinTable(currentDbPath.toString(), rel, JoinType.LEFT_OUTER);
+            context.getTableTree().addJoinTable(currentDbPath.toString(), relationship, isOuterJoin()
+                    ? JoinType.LEFT_OUTER : JoinType.INNER);
             path = currentDbPath.toString();
-            for(DbAttribute attribute : rel.getTargetEntity().getPrimaryKeys()) {
+            for(DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
                 addAttribute(path, attribute);
             }
         } else {
-            for(DbJoin join : rel.getJoins()) {
+            for(DbJoin join : relationship.getJoins()) {
                 addAttribute(path, join.getSource());
             }
         }

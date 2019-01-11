@@ -89,8 +89,10 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
             return;
         }
 
-        PathTranslationResult result = context.getPathTranslator()
-                .translatePath(entity.getDbEntity(), attribute.getDbAttributePath(), currentDbPath.toString());
+        PathTranslationResult result = context.getPathTranslator().translatePath(entity.getDbEntity()
+                , attribute.getDbAttributePath()
+                , currentDbPath.toString()
+                , attribute.isFlattened());
         attributes.addAll(result.getDbAttributes());
         attributePaths.addAll(result.getAttributePaths());
         relationship = result.getDbRelationship().orElse(relationship);
@@ -109,22 +111,23 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
             for (int i=0; i<count; i++) {
                 DbRelationship dbRel = relationship.getDbRelationships().get(i);
                 appendCurrentPath(dbRel.getName());
+                boolean leftJoin = isOuterJoin() || count > 1;
                 context.getTableTree().addJoinTable(currentDbPath.toString(), dbRel,
-                        isOuterJoin ? JoinType.LEFT_OUTER : JoinType.INNER);
+                        leftJoin ? JoinType.LEFT_OUTER : JoinType.INNER);
             }
         }
     }
 
-    protected void processRelTermination(ObjRelationship rel) {
-        String path = currentAlias != null ? currentAlias : rel.getDbRelationshipPath();
-        if(isOuterJoin) {
+    protected void processRelTermination(ObjRelationship relationship) {
+        String path = currentAlias != null ? currentAlias : relationship.getDbRelationshipPath();
+        if(isOuterJoin()) {
             path += OUTER_JOIN_INDICATOR;
         }
         PathTranslationResult result = context.getPathTranslator()
-                .translatePath(entity.getDbEntity(), path, currentDbPath.toString());
+                .translatePath(entity.getDbEntity(), path, currentDbPath.toString(), relationship.isFlattened());
         attributes.addAll(result.getDbAttributes());
         attributePaths.addAll(result.getAttributePaths());
-        relationship = result.getDbRelationship().orElse(relationship);
+        this.relationship = result.getDbRelationship().orElse(this.relationship);
         currentDbPath.delete(0, currentDbPath.length());
         currentDbPath.append(result.getFinalPath());
     }

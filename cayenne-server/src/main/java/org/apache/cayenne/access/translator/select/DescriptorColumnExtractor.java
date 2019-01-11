@@ -99,7 +99,8 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
     @Override
     public boolean visitToOne(ToOneProperty property) {
         ObjRelationship rel = property.getRelationship();
-        PathTranslationResult result = pathTranslator.translatePath(rel.getSourceEntity(), property.getName(), prefix);
+        // outer join should be used for to-one relationships
+        PathTranslationResult result = pathTranslator.translatePath(rel.getSourceEntity(), property.getName() + '+', prefix);
 
         int count = result.getDbAttributes().size();
         for(int i=0; i<count; i++) {

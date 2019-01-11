@@ -48,9 +48,13 @@ class PathTranslator {
         return translatePath(entity, path, null);
     }
 
-    PathTranslationResult translatePath(DbEntity entity, String path, String parentPath) {
+    PathTranslationResult translatePath(DbEntity entity, String path, String parentPath, boolean flattenedPath) {
         return dbResultCache.computeIfAbsent(parentPath + '.' + entity.getName() + '.' + path,
-                (k) -> new DbPathProcessor(context, entity, parentPath).process(path));
+                (k) -> new DbPathProcessor(context, entity, parentPath, flattenedPath).process(path));
+    }
+
+    PathTranslationResult translatePath(DbEntity entity, String path, String parentPath) {
+        return translatePath(entity, path, parentPath, false);
     }
 
     PathTranslationResult translatePath(DbEntity entity, String path) {

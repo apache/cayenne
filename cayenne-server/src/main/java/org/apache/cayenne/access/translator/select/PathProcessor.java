@@ -44,7 +44,7 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     protected final StringBuilder currentDbPath;
 
     protected boolean lastComponent;
-    protected boolean isOuterJoin;
+    private boolean isOuterJoin;
     protected T entity;
     protected DbRelationship relationship;
     protected String currentAlias;
@@ -125,5 +125,9 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
         if(isOuterJoin) {
             currentDbPath.append(OUTER_JOIN_INDICATOR);
         }
+    }
+
+    public boolean isOuterJoin() {
+        return isOuterJoin;
     }
 }
