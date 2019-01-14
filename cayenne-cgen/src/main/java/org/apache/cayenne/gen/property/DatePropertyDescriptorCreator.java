@@ -16,27 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.gen.property;
 
-package org.apache.cayenne.gen;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.gen.PropertyDescriptor;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public class DatePropertyDescriptorCreator implements PropertyDescriptorCreator {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
+    private static final List<Class<?>> JAVA_DATE_TYPES = Arrays.asList(
+            java.util.Date.class,
+            java.time.LocalDate.class,
+            java.time.LocalTime.class,
+            java.time.LocalDateTime.class,
+            java.sql.Date.class,
+            java.sql.Time.class,
+            java.sql.Timestamp.class
+    );
+
+    private static final String FACTORY_METHOD = "PropertyFactory.createDate";
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    public Optional<PropertyDescriptor> apply(Class<?> aClass) {
+        if (JAVA_DATE_TYPES.contains(aClass)) {
+            return Optional.of(new PropertyDescriptor(DateProperty.class.getName(), FACTORY_METHOD));
+        }
+        return Optional.empty();
     }
-
 }

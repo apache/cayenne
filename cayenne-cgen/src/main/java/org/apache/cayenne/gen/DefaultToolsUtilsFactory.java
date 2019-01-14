@@ -16,27 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.gen;
 
+import java.util.List;
+
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
+import org.apache.cayenne.tools.ToolsConstants;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public class DefaultToolsUtilsFactory implements ToolsUtilsFactory {
 
     @Inject
-    private ToolsUtilsFactory utilsFactory;
+    private AdhocObjectFactory objectFactory;
+
+    @Inject(ToolsConstants.CUSTOM_PROPERTIES)
+    List<PropertyDescriptorCreator> propertyList;
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    public ImportUtils createImportUtils() {
+        return new ImportUtils();
     }
 
+    @Override
+    public PropertyUtils createPropertyUtils(ImportUtils importUtils) {
+        return new PropertyUtils(importUtils, objectFactory, propertyList);
+    }
 }

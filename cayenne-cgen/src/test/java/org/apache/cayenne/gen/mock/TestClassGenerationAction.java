@@ -16,27 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.gen.mock;
 
-package org.apache.cayenne.gen;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Collection;
 
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.TemplateType;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public class TestClassGenerationAction extends ClassGenerationAction {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
+    private Collection<StringWriter> writers;
 
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    public TestClassGenerationAction(ClassGenerationAction classGenerationAction, Collection<StringWriter> writers){
+        super();
+        setCgenConfiguration(classGenerationAction.getCgenConfiguration());
+        setUtilsFactory(classGenerationAction.getUtilsFactory());
+        this.writers = writers;
     }
 
+    @Override
+    protected Writer openWriter(TemplateType templateType) throws Exception {
+        StringWriter writer = new StringWriter();
+        writers.add(writer);
+        return writer;
+    }
 }

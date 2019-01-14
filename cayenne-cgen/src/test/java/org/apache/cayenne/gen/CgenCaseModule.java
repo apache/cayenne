@@ -19,24 +19,30 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.gen.mock.CustomPropertyDescriptor;
+import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
+import org.apache.cayenne.unit.di.server.ServerCaseLifecycleManager;
+import org.apache.cayenne.unit.di.server.ServerCaseProperties;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public class CgenCaseModule implements Module {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
+    protected DefaultScope testScope;
 
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    public CgenCaseModule(DefaultScope testScope) {
+        this.testScope = testScope;
     }
+    @Override
+    public void configure(Binder binder) {
+        binder.bind(UnitTestLifecycleManager.class).toInstance(new ServerCaseLifecycleManager(testScope));
+        binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
 
+        CgenModule.contributeUserProperties(binder)
+                .add(CustomPropertyDescriptor.class);
+    }
 }

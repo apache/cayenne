@@ -16,27 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.gen.mock;
 
-package org.apache.cayenne.gen;
-
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.property.BaseProperty;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public class CustomProperty extends BaseProperty<TimestampType> {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
-
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    public CustomProperty(String name, Class<? super TimestampType> type) {
+        super(name, null, type);
     }
 
+    public CustomProperty(String name, Expression expression, Class<? super TimestampType> type) {
+        super(name, expression, type);
+    }
 }

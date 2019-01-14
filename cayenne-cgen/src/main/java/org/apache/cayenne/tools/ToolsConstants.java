@@ -16,27 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.gen;
-
-import org.apache.cayenne.di.Inject;
+package org.apache.cayenne.tools;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public interface ToolsConstants {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
-
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
-    }
+    String CUSTOM_PROPERTIES = "cayenne.cgen.properties";
 
 }

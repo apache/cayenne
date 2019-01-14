@@ -21,11 +21,11 @@ package org.apache.cayenne.gen;
 
 import java.io.File;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.cayenne.gen.mock.TestClassGenerationAction;
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ClassGenerationActionTest {
+public class ClassGenerationActionTest extends CgenCase {
 
 	protected ClassGenerationAction action;
 	protected Collection<StringWriter> writers;
@@ -54,16 +54,8 @@ public class ClassGenerationActionTest {
 	public void setUp() throws Exception {
 		writers = new ArrayList<>(3);
 		cgenConfiguration = new CgenConfiguration();
-		action = new ClassGenerationAction() {
-
-			@Override
-			protected Writer openWriter(TemplateType templateType) throws Exception {
-				StringWriter writer = new StringWriter();
-				writers.add(writer);
-				return writer;
-			}
-		};
-		action.setCgenConfiguration(cgenConfiguration);
+		action = new TestClassGenerationAction(getUnitTestInjector().getInstance(ClassGenerationActionFactory.class)
+				.createAction(cgenConfiguration), writers);
 	}
 
 	@After
@@ -217,16 +209,9 @@ public class ClassGenerationActionTest {
 
 		if (isClient) {
 
-			action = new ClientClassGenerationAction() {
-				@Override
-				protected Writer openWriter(TemplateType templateType) throws Exception {
-					StringWriter writer = new StringWriter();
-					writers.add(writer);
-					return writer;
-				}
-
-			};
-			action.setCgenConfiguration(cgenConfiguration);
+			cgenConfiguration.setClient(true);
+			action = new TestClassGenerationAction(getUnitTestInjector().getInstance(ClassGenerationActionFactory.class)
+					.createAction(cgenConfiguration), writers);
 		}
 
 		cgenConfiguration.setMakePairs(true);
