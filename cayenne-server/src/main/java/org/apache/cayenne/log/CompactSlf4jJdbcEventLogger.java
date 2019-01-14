@@ -37,10 +37,10 @@ import java.util.stream.Collectors;
  */
 public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
 
-    private static final String UNION = "UNION";
+    private static final String UNION  = "UNION";
     private static final String SELECT = "SELECT";
-    private static final String FROM = "FROM";
-    private static final String SPACE = " ";
+    private static final String FROM   = "FROM";
+    private static final char   SPACE  = ' ';
 
     public CompactSlf4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
         super(runtimeProperties);
@@ -63,21 +63,12 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     }
 
     protected String processUnionSql(String sql) {
-
-        String modified = Pattern.compile(UNION.toLowerCase(), Pattern.CASE_INSENSITIVE).matcher(sql).replaceAll(UNION);
+        String modified = Pattern.compile(UNION.toLowerCase(), Pattern.CASE_INSENSITIVE)
+                .matcher(sql).replaceAll(UNION);
         String[] queries = modified.split(UNION);
-        List<String> formattedQueries = Arrays.stream(queries).map(this::trimSqlSelectColumns).collect(Collectors.toList());
-        StringBuilder buffer = new StringBuilder();
-        boolean used =  false;
-        for (String q: formattedQueries) {
-            if(!used){
-                used = true;
-            } else {
-                buffer.append(SPACE).append(UNION);
-            }
-            buffer.append(q);
-        }
-        return buffer.toString();
+        return Arrays.stream(queries)
+                .map(this::trimSqlSelectColumns)
+                .collect(Collectors.joining(SPACE + UNION));
     }
 
     protected String trimSqlSelectColumns(String sql) {
