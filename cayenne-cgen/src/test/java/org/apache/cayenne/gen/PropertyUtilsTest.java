@@ -22,6 +22,10 @@ package org.apache.cayenne.gen;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
@@ -30,13 +34,18 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SetProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.gen.mock.CustomProperty;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.EmbeddableAttribute;
+import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,7 +61,14 @@ public class PropertyUtilsTest {
     @Before
     public void setup() {
         importUtils = new ImportUtils();
-        propertyUtils = new PropertyUtils(importUtils);
+
+        DefaultScope testScope = new DefaultScope();
+        propertyUtils = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule(),
+                binder ->
+                        ServerModule.contributeUserTypes(binder)
+                                .add(new TimestampType()))
+                .getInstance(ToolsUtilsFactory.class)
+                .createPropertyUtils(importUtils);
     }
 
     @Test
@@ -121,6 +137,111 @@ public class PropertyUtilsTest {
 
         String definition = propertyUtils.propertyDefinition(attribute);
         assertEquals("public static final StringProperty<String> TEST = PropertyFactory.createString(\"test\", String.class);",
+                definition);
+    }
+
+    @Test
+    public void customPropertyDefinition() throws ClassNotFoundException {
+        importUtils.addType(CustomProperty.class.getName());
+        importUtils.addType(TimestampType.class.getName());
+
+        ObjAttribute attribute = new ObjAttribute();
+        attribute.setName("test");
+        attribute.setType("org.apache.cayenne.access.types.TimestampType");
+
+        String definition = propertyUtils.propertyDefinition(attribute);
+        assertEquals("public static final CustomProperty<TimestampType> TEST = new CustomProperty(\"test\", TimestampType.class);",
+                definition);
+    }
+
+    @Test
+    public void simpleStringPropertyEmbDefinition() throws ClassNotFoundException {
+        importUtils.addType(StringProperty.class.getName());
+
+        DataMap dataMap = new DataMap();
+
+        ObjEntity entity = new ObjEntity();
+        entity.setDataMap(dataMap);
+
+        EmbeddedAttribute embeddedAttribute = new EmbeddedAttribute();
+        embeddedAttribute.setName("a");
+        embeddedAttribute.setType("test");
+        embeddedAttribute.addAttributeOverride("testEmbAttr", "testPath");
+        embeddedAttribute.setEntity(entity);
+
+        EmbeddableAttribute attribute = new EmbeddableAttribute();
+        attribute.setName("testEmbAttr");
+        attribute.setType("java.lang.String");
+
+        Embeddable embeddable = new Embeddable();
+        embeddable.setClassName("test");
+        embeddable.addAttribute(attribute);
+
+        dataMap.addEmbeddable(embeddable);
+
+        String definition = propertyUtils.propertyDefinition(embeddedAttribute);
+        assertEquals("public static final StringProperty<String> A_TEST_EMB_ATTR = PropertyFactory.createString(ExpressionFactory.dbPathExp(\"testPath\"), String.class);",
+                definition);
+    }
+
+    @Test
+    public void simpleNumericPropertyEmbDefinition() throws ClassNotFoundException {
+        importUtils.addType(NumericProperty.class.getName());
+
+        DataMap dataMap = new DataMap();
+
+        ObjEntity entity = new ObjEntity();
+        entity.setDataMap(dataMap);
+
+        EmbeddedAttribute embeddedAttribute = new EmbeddedAttribute();
+        embeddedAttribute.setName("a");
+        embeddedAttribute.setType("test");
+        embeddedAttribute.addAttributeOverride("testEmbAttr", "testPath");
+        embeddedAttribute.setEntity(entity);
+
+        EmbeddableAttribute attribute = new EmbeddableAttribute();
+        attribute.setName("testEmbAttr");
+        attribute.setType("int");
+
+        Embeddable embeddable = new Embeddable();
+        embeddable.setClassName("test");
+        embeddable.addAttribute(attribute);
+
+        dataMap.addEmbeddable(embeddable);
+
+        String definition = propertyUtils.propertyDefinition(embeddedAttribute);
+        assertEquals("public static final NumericProperty<Integer> A_TEST_EMB_ATTR = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp(\"testPath\"), Integer.class);",
+                definition);
+    }
+
+    @Test
+    public void customPropertyEmbDefinition() throws ClassNotFoundException {
+        importUtils.addType(CustomProperty.class.getName());
+        importUtils.addType(TimestampType.class.getName());
+
+        DataMap dataMap = new DataMap();
+
+        ObjEntity entity = new ObjEntity();
+        entity.setDataMap(dataMap);
+
+        EmbeddedAttribute embeddedAttribute = new EmbeddedAttribute();
+        embeddedAttribute.setName("a");
+        embeddedAttribute.setType("test");
+        embeddedAttribute.addAttributeOverride("testEmbAttr", "testPath");
+        embeddedAttribute.setEntity(entity);
+
+        EmbeddableAttribute attribute = new EmbeddableAttribute();
+        attribute.setName("testEmbAttr");
+        attribute.setType("org.apache.cayenne.access.types.TimestampType");
+
+        Embeddable embeddable = new Embeddable();
+        embeddable.setClassName("test");
+        embeddable.addAttribute(attribute);
+
+        dataMap.addEmbeddable(embeddable);
+
+        String definition = propertyUtils.propertyDefinition(embeddedAttribute);
+        assertEquals("public static final CustomProperty<TimestampType> A_TEST_EMB_ATTR = new CustomProperty(ExpressionFactory.dbPathExp(\"testPath\"), TimestampType.class);",
                 definition);
     }
 

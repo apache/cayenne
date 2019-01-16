@@ -17,6 +17,7 @@ CAY-2467 New type-aware Property API
 CAY-2507 Property API to use path aliases
 CAY-2508 Create api to add aliases in expressions
 CAY-2510 Create builder to load custom modules into plugins and modeler
+CAY-2511 Contribute custom properties for attributes
 
 Bug Fixes:
 

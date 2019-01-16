@@ -19,24 +19,25 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.unit.di.DICase;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public class CgenCase extends DICase {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
+    private static final Injector injector;
 
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    static {
+        DefaultScope testScope = new DefaultScope();
+        injector = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule());
     }
 
+    @Override
+    protected Injector getUnitTestInjector() {
+        return injector;
+    }
 }

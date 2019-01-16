@@ -16,27 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.gen.property;
 
-package org.apache.cayenne.gen;
+import java.util.Optional;
+import java.util.function.Function;
 
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.gen.PropertyDescriptor;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
-
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
-
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
-    }
-
+public interface PropertyDescriptorCreator extends Function<Class<?>, Optional<PropertyDescriptor>> {
 }

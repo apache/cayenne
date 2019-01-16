@@ -19,18 +19,27 @@
 
 package org.apache.cayenne.gen;
 
+import java.io.StringWriter;
+import java.util.Properties;
+
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.velocity.Template;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.junit.Before;
-
-import java.io.StringWriter;
-import java.util.Properties;
 
 public class ClassGenerationCase {
 
     private VelocityEngine velocityEngine;
+
+    private static final Injector injector;
+
+    static {
+        DefaultScope testScope = new DefaultScope();
+        injector = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -53,4 +62,7 @@ public class ClassGenerationCase {
         return writer.toString();
     }
 
+    public Injector getInjector() {
+        return injector;
+    }
 }

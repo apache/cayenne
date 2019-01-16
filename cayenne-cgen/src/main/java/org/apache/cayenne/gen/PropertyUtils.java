@@ -19,14 +19,18 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.DateProperty;
@@ -37,6 +41,7 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SetProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
@@ -75,8 +80,18 @@ public class PropertyUtils {
 
     private final ImportUtils importUtils;
 
+    private List<PropertyDescriptorCreator> propertyList;
+    private AdhocObjectFactory adhocObjectFactory;
+
     public PropertyUtils(ImportUtils importUtils) {
         this.importUtils = importUtils;
+        this.propertyList = new ArrayList<>();
+    }
+
+    public PropertyUtils(ImportUtils importUtils, AdhocObjectFactory adhocObjectFactory, List<PropertyDescriptorCreator> propertyList) {
+        this.importUtils = importUtils;
+        this.adhocObjectFactory = adhocObjectFactory;
+        this.propertyList = propertyList;
     }
 
     public void addImportForPK(EntityUtils entityUtils) throws ClassNotFoundException {
@@ -105,7 +120,7 @@ public class PropertyUtils {
         }
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
-        importUtils.addType(getPropertyTypeForAttribute(attribute));
+        importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
     }
 
     public void addImport(EmbeddedAttribute attribute) throws ClassNotFoundException {
@@ -113,7 +128,7 @@ public class PropertyUtils {
         importUtils.addType(embeddable.getClassName());
         for(EmbeddableAttribute embeddableAttribute : embeddable.getAttributes()) {
             importUtils.addType(embeddableAttribute.getType());
-            importUtils.addType(getPropertyTypeForType(embeddableAttribute.getType()));
+            importUtils.addType(getPropertyDescriptor(embeddableAttribute.getType()).getPropertyType());
             importUtils.addType(ExpressionFactory.class.getName());
         }
     }
@@ -162,16 +177,13 @@ public class PropertyUtils {
         }
 
         StringUtils utils = StringUtils.getInstance();
-
-        String propertyType = getPropertyTypeForAttribute(attribute);
-        String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
-
-        return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
-                importUtils.formatJavaType(propertyType),
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
+        return String.format("public static final %s<%s> %s = %s(\"%s\", %s.class);",
+                importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
                 attributeType,
                 utils.capitalizedAsConstant(attribute.getName()),
-                propertyFactoryMethod,
+                propertyDescriptor.getPropertyFactoryMethod(),
                 attribute.getName(),
                 attributeType
         );
@@ -190,19 +202,18 @@ public class PropertyUtils {
         String[] attributesDefinitions = new String[attributes.size()];
         int i = 0;
         for(EmbeddableAttribute embeddableAttribute : attributes) {
-            String propertyType = getPropertyTypeForType(embeddableAttribute.getType());
-            String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
+            PropertyDescriptor propertyDescriptor = getPropertyDescriptor(embeddableAttribute.getType());
             String attributeType = utils.stripGeneric(importUtils.formatJavaType(embeddableAttribute.getType(), false));
             String path = attribute.getAttributeOverrides()
                     .getOrDefault(embeddableAttribute.getName(), embeddableAttribute.getDbAttributeName());
 
             String propertyName = utils.capitalizedAsConstant(attribute.getName()) + "_" + utils.capitalizedAsConstant(embeddableAttribute.getName());
             attributesDefinitions[i++] =  String.format("public static final %s<%s> %s " +
-                            "= PropertyFactory.%s(ExpressionFactory.dbPathExp(\"%s\"), %s.class);",
-                    importUtils.formatJavaType(propertyType),
+                            "= %s(ExpressionFactory.dbPathExp(\"%s\"), %s.class);",
+                    importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
                     attributeType,
                     propertyName,
-                    propertyFactoryMethod,
+                    propertyDescriptor.getPropertyFactoryMethod(),
                     path,
                     attributeType
             );
@@ -337,32 +348,18 @@ public class PropertyUtils {
         return EntityProperty.class.getName();
     }
 
-    private String getPropertyTypeForAttribute(ObjAttribute attribute) {
-        String attributeType = attribute.getType();
-
-        if (importUtils.isNumericPrimitive(attributeType)) {
-            return NumericProperty.class.getName();
+    private PropertyDescriptor getPropertyDescriptor(String attrType) {
+        try {
+            Class<?> type = adhocObjectFactory.getJavaClass(attrType);
+            for(PropertyDescriptorCreator creator : propertyList) {
+                Optional<PropertyDescriptor> optionalPropertyDescriptor = creator.apply(type);
+                if(optionalPropertyDescriptor.isPresent()) {
+                    return optionalPropertyDescriptor.get();
+                }
+            }
+        } catch (DIRuntimeException ex) {
+            return PropertyDescriptor.defaultDescriptor();
         }
-
-        Class<?> javaClass;
-        if (importUtils.isPrimitive(attributeType) || attributeType.startsWith("java.")) {
-            javaClass = attribute.getJavaClass();
-        } else {
-            return BaseProperty.class.getName();
-        }
-
-        if (Number.class.isAssignableFrom(javaClass)) {
-            return NumericProperty.class.getName();
-        }
-
-        if (CharSequence.class.isAssignableFrom(javaClass)) {
-            return StringProperty.class.getName();
-        }
-
-        if (JAVA_DATE_TYPES.contains(javaClass)) {
-            return DateProperty.class.getName();
-        }
-
-        return BaseProperty.class.getName();
+        return PropertyDescriptor.defaultDescriptor();
     }
 }

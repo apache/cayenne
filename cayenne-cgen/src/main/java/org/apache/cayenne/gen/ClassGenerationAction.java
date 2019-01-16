@@ -71,6 +71,8 @@ public class ClassGenerationAction {
     protected VelocityContext context;
     protected Map<String, Template> templateCache;
 
+    private ToolsUtilsFactory utilsFactory;
+
 	public ClassGenerationAction() {
 		this.context = new VelocityContext();
 		this.templateCache = new HashMap<>(5);
@@ -168,9 +170,9 @@ public class ClassGenerationAction {
 	 * template type combination.
 	 */
 	void resetContextForArtifactTemplate(Artifact artifact, TemplateType templateType) {
-        ImportUtils importUtils = new ImportUtils();
+        ImportUtils importUtils = utilsFactory.createImportUtils();
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
-		context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
+		context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory.createPropertyUtils(importUtils));
 		artifact.postInitContext(context);
 	}
 
@@ -476,4 +478,11 @@ public class ClassGenerationAction {
 		this.cgenConfiguration = cgenConfiguration;
 	}
 
+	public ToolsUtilsFactory getUtilsFactory() {
+		return utilsFactory;
+	}
+
+	public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
+		this.utilsFactory = utilsFactory;
+	}
 }

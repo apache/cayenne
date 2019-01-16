@@ -16,27 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.gen.mock;
 
-package org.apache.cayenne.gen;
+import java.util.Optional;
 
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.gen.PropertyDescriptor;
+import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
-
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
+public class CustomPropertyDescriptor implements PropertyDescriptorCreator {
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    public Optional<PropertyDescriptor> apply(Class<?> aClass) {
+        if(TimestampType.class.isAssignableFrom(aClass)) {
+            return Optional.of(new PropertyDescriptor(CustomProperty.class.getName(), "new CustomProperty"));
+        }
+        return Optional.empty();
     }
-
 }

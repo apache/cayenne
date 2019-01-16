@@ -41,7 +41,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertFalse(res.contains(NumericProperty.class.getName()));
@@ -60,7 +60,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertTrue(res.contains(NumericProperty.class.getName()));
@@ -78,7 +78,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertFalse(res.contains(NumericProperty.class.getName()));
@@ -102,7 +102,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, new PropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertTrue(res.contains(NumericProperty.class.getName()));

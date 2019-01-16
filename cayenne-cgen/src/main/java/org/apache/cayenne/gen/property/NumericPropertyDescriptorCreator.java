@@ -16,27 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.gen.property;
 
-package org.apache.cayenne.gen;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.gen.PropertyDescriptor;
 
 /**
  * @since 4.2
  */
-public class DefaultClassGenerationActionFactory implements ClassGenerationActionFactory {
+public class NumericPropertyDescriptorCreator implements PropertyDescriptorCreator {
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
+    private static final List<Class<?>> PRIMITIVE_NUM_TYPES = Arrays.asList(
+            int.class,
+            short.class,
+            long.class,
+            float.class,
+            double.class,
+            byte.class
+    );
+
+    private static final String FACTORY_METHOD = "PropertyFactory.createNumeric";
 
     @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
-        classGenerationAction.setUtilsFactory(utilsFactory);
-        return classGenerationAction;
+    public Optional<PropertyDescriptor> apply(Class<?> aClass) {
+        if(PRIMITIVE_NUM_TYPES.contains(aClass) || Number.class.isAssignableFrom(aClass)) {
+            return Optional.of(new PropertyDescriptor(NumericProperty.class.getName(), FACTORY_METHOD));
+        }
+        return Optional.empty();
     }
-
 }
