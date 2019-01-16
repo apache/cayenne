@@ -195,4 +195,13 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
 	}
+
+	@Test
+	public void test_Select_CustomFunction() {
+		Artist a = ObjectSelect.query(Artist.class)
+				.where(Artist.ARTIST_NAME.function("UPPER", String.class).eq("ARTIST1"))
+				.selectOne(context);
+		assertNotNull(a);
+		assertEquals("artist1", a.getArtistName());
+	}
 }

@@ -226,7 +226,7 @@ public class ExpressionEvaluationIT extends ServerCase {
     @Test
     public void testInEmpty() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
-                .in(Collections.<BigDecimal>emptyList());
+                .in(Collections.emptyList());
 
         compareSqlAndEval(exp, 0);
     }
@@ -242,7 +242,7 @@ public class ExpressionEvaluationIT extends ServerCase {
     @Test
     public void testNotInEmpty() {
         Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
-                .nin(Collections.<BigDecimal>emptyList());
+                .nin(Collections.emptyList());
 
         compareSqlAndEval(exp, 6);
     }

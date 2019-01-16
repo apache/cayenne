@@ -408,4 +408,28 @@ public class BaseProperty<E> implements Property<E> {
     public BaseProperty<E> enclosing() {
         return PropertyFactory.createBase(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
     }
+
+    /**
+     * @return An expression for calling functionName with first argument equals to <b>this</b> property
+     *      and provided additional arguments
+     */
+    public <T> BaseProperty<T> function(String functionName, Class<T> returnType, BaseProperty<?>... arguments) {
+        Object[] expressions = new Expression[arguments.length + 1];
+        expressions[0] = getExpression();
+        for(int i=1; i<=arguments.length; i++) {
+            expressions[i] = arguments[i].getExpression();
+        }
+        return PropertyFactory.createBase(FunctionExpressionFactory.functionCall(functionName, expressions), returnType);
+    }
+
+    /**
+     * @return An expression for calling functionName with first argument equals to <b>this</b> property
+     *      and provided additional arguments
+     */
+    public <T> BaseProperty<T> function(String functionName, Class<T> returnType, Object... arguments) {
+        Object[] expressions = new Object[arguments.length + 1];
+        expressions[0] = getExpression();
+        System.arraycopy(arguments, 0, expressions, 1, arguments.length);
+        return PropertyFactory.createBase(FunctionExpressionFactory.functionCall(functionName, expressions), returnType);
+    }
 }

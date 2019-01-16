@@ -26,8 +26,10 @@ import org.apache.cayenne.exp.parser.ASTCount;
 import org.apache.cayenne.exp.parser.ASTCurrentDate;
 import org.apache.cayenne.exp.parser.ASTCurrentTime;
 import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
+import org.apache.cayenne.exp.parser.ASTCustomFunction;
 import org.apache.cayenne.exp.parser.ASTDistinct;
 import org.apache.cayenne.exp.parser.ASTExtract;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
@@ -523,6 +525,17 @@ public class FunctionExpressionFactory {
      */
     public static Expression secondExp(String path) {
         return extractExp(path, ASTExtract.DateTimePart.SECOND);
+    }
+
+    /**
+     * @param function name to call
+     * @param args function arguments
+     * @return expression to call "function" with provided arguments
+     *
+     * @since 4.2
+     */
+    public static Expression functionCall(String function, Object... args) {
+        return new ASTCustomFunction(function, args);
     }
 
     static Expression extractExp(String path, ASTExtract.DateTimePart part) {
