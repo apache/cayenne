@@ -29,16 +29,16 @@ import org.apache.cayenne.exp.Expression;
  */
 public abstract class ASTFunctionCall extends EvaluatedNode {
 
-    private String functionName;
+    protected String functionName;
 
     ASTFunctionCall(int id, String functionName) {
         super(id);
-        this.functionName = functionName;
+        setFunctionName(functionName);
     }
 
     public ASTFunctionCall(int id, String functionName, Object... nodes) {
         this(id, functionName);
-        this.functionName = functionName;
+        setFunctionName(functionName);
         int len = nodes.length;
         for (int i = 0; i < len; i++) {
             jjtAddChild(wrapChild(nodes[i]), i);
@@ -58,6 +58,10 @@ public abstract class ASTFunctionCall extends EvaluatedNode {
 
     public String getFunctionName() {
         return functionName;
+    }
+
+    protected void setFunctionName(String functionName) {
+        this.functionName = functionName;
     }
 
     @Override

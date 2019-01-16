@@ -154,11 +154,16 @@ void stringParameter() : {}
         stringExpression()
 }
 
-void stringExpression() : {}
+void stringLiteral() :  {}
 {
     <SINGLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
     |
     <DOUBLE_QUOTED_STRING> { jjtThis.setValue(token_source.literalValue); } #Scalar(0)
+}
+
+void stringExpression() : {}
+{
+    stringLiteral()
     |
     functionsReturningStrings()
 }
@@ -281,11 +286,18 @@ void numericPrimary() : {}
         functionsReturningNumerics()
 	|
         pathExpression()
+    |
+        customFunction()
 }
 
 void functionsReturningStrings() : { }
 {
 	concat() | substring() | trim() | lower() | upper()
+}
+
+void customFunction() #CustomFunction : { }
+{
+    <FUNCTION> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
 }
 
 void concat() #Concat : { }
@@ -512,6 +524,7 @@ TOKEN : {
 	<NULL: "null" | "NULL" >
     |   <TRUE: "true" | "TRUE" >
     |   <FALSE: "false" | "FALSE" >
+    |   <FUNCTION: "function" >
 }
 
 TOKEN : /* aggregates */

@@ -36,31 +36,32 @@ public interface ExpressionParserTreeConstants
   public int JJTDIVIDE = 30;
   public int JJTBITWISENOT = 31;
   public int JJTNEGATE = 32;
-  public int JJTCONCAT = 33;
-  public int JJTSUBSTRING = 34;
-  public int JJTTRIM = 35;
-  public int JJTLOWER = 36;
-  public int JJTUPPER = 37;
-  public int JJTLENGTH = 38;
-  public int JJTLOCATE = 39;
-  public int JJTABS = 40;
-  public int JJTSQRT = 41;
-  public int JJTMOD = 42;
-  public int JJTASTERISK = 43;
-  public int JJTCOUNT = 44;
-  public int JJTAVG = 45;
-  public int JJTMAX = 46;
-  public int JJTMIN = 47;
-  public int JJTSUM = 48;
-  public int JJTCURRENTDATE = 49;
-  public int JJTCURRENTTIME = 50;
-  public int JJTCURRENTTIMESTAMP = 51;
-  public int JJTEXTRACT = 52;
-  public int JJTDISTINCT = 53;
-  public int JJTNAMEDPARAMETER = 54;
-  public int JJTOBJPATH = 55;
-  public int JJTDBPATH = 56;
-  public int JJTENUM = 57;
+  public int JJTCUSTOMFUNCTION = 33;
+  public int JJTCONCAT = 34;
+  public int JJTSUBSTRING = 35;
+  public int JJTTRIM = 36;
+  public int JJTLOWER = 37;
+  public int JJTUPPER = 38;
+  public int JJTLENGTH = 39;
+  public int JJTLOCATE = 40;
+  public int JJTABS = 41;
+  public int JJTSQRT = 42;
+  public int JJTMOD = 43;
+  public int JJTASTERISK = 44;
+  public int JJTCOUNT = 45;
+  public int JJTAVG = 46;
+  public int JJTMAX = 47;
+  public int JJTMIN = 48;
+  public int JJTSUM = 49;
+  public int JJTCURRENTDATE = 50;
+  public int JJTCURRENTTIME = 51;
+  public int JJTCURRENTTIMESTAMP = 52;
+  public int JJTEXTRACT = 53;
+  public int JJTDISTINCT = 54;
+  public int JJTNAMEDPARAMETER = 55;
+  public int JJTOBJPATH = 56;
+  public int JJTDBPATH = 57;
+  public int JJTENUM = 58;
 
 
   public String[] jjtNodeName = {
@@ -97,6 +98,7 @@ public interface ExpressionParserTreeConstants
     "Divide",
     "BitwiseNot",
     "Negate",
+    "CustomFunction",
     "Concat",
     "Substring",
     "Trim",
@@ -124,4 +126,4 @@ public interface ExpressionParserTreeConstants
     "Enum",
   };
 }
-/* JavaCC - OriginalChecksum=887631d60a8b59c21effca16e8257a84 (do not edit this line) */
+/* JavaCC - OriginalChecksum=a6d7ef3729cf32ee51d4115c98944e5e (do not edit this line) */

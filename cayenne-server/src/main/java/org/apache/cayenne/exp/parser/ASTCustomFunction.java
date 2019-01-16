@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.io.IOException;
+
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -26,8 +28,14 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTCustomFunction extends ASTFunctionCall {
 
+    private boolean nameSet;
+
+    ASTCustomFunction(int id) {
+        super(id, "");
+    }
+
     public ASTCustomFunction(String name, Object... arguments) {
-        super(0, name, arguments);
+        super(ExpressionParserTreeConstants.JJTCUSTOMFUNCTION, name, arguments);
     }
 
     @Override
@@ -43,5 +51,42 @@ public class ASTCustomFunction extends ASTFunctionCall {
     @Override
     public Expression shallowCopy() {
         return new ASTCustomFunction(getFunctionName());
+    }
+
+    @Override
+    protected void setFunctionName(String functionName) {
+        super.setFunctionName(functionName);
+        if(!functionName.isEmpty()) {
+            nameSet = true;
+        }
+    }
+
+    @Override
+    public void jjtAddChild(Node n, int i) {
+        // First argument should be used as a function name when created by parser
+        if(!nameSet && i == 0) {
+            if(!(n instanceof ASTScalar)) {
+                throw new IllegalArgumentException("ASTScalar expected, got " + n);
+            }
+            this.functionName = ((ASTScalar) n).getValue().toString();
+            return;
+        }
+        super.jjtAddChild(n, nameSet ? i : --i);
+    }
+
+    @Override
+    public void appendAsString(Appendable out) throws IOException {
+        out.append("function").append('(').append('"').append(functionName).append('"');
+        if (children != null) {
+            for (Node child : children) {
+                out.append(", ");
+                if (child == null) {
+                    out.append("null");
+                } else {
+                    ((SimpleNode) child).appendAsString(out);
+                }
+            }
+        }
+        out.append(')');
     }
 }
