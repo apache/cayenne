@@ -37,19 +37,19 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int FALSE = 35;
   /** RegularExpression Id. */
-  int FUNCTION = 36;
+  int AVG = 36;
   /** RegularExpression Id. */
-  int AVG = 37;
+  int MIN = 37;
   /** RegularExpression Id. */
-  int MIN = 38;
+  int MAX = 38;
   /** RegularExpression Id. */
-  int MAX = 39;
+  int SUM = 39;
   /** RegularExpression Id. */
-  int SUM = 40;
+  int COUNT = 40;
   /** RegularExpression Id. */
-  int COUNT = 41;
+  int DISTINCT = 41;
   /** RegularExpression Id. */
-  int DISTINCT = 42;
+  int FUNCTION = 42;
   /** RegularExpression Id. */
   int CONCAT = 43;
   /** RegularExpression Id. */
@@ -172,13 +172,13 @@ public interface ExpressionParserConstants {
     "<NULL>",
     "<TRUE>",
     "<FALSE>",
-    "\"function\"",
     "\"avg\"",
     "\"min\"",
     "\"max\"",
     "\"sum\"",
     "\"count\"",
     "\"distinct\"",
+    "\"fn\"",
     "\"concat\"",
     "\"substring\"",
     "\"trim\"",

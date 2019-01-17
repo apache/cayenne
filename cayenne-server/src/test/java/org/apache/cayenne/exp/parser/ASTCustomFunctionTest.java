@@ -33,10 +33,10 @@ public class ASTCustomFunctionTest {
 
     @Test
     public void testParse() {
-        Expression exp = ExpressionFactory.exp("function('MY_FUNCTION', 1, 'abc')");
+        Expression exp = ExpressionFactory.exp("fn('MY_FUNCTION', 1, 'abc')");
         assertTrue(exp instanceof ASTCustomFunction);
 
-        assertEquals("function(\"MY_FUNCTION\", 1, \"abc\")", exp.toString());
+        assertEquals("fn(\"MY_FUNCTION\", 1, \"abc\")", exp.toString());
     }
 
     @Test(expected = ExpressionException.class)

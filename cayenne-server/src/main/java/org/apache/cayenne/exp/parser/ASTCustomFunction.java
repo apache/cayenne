@@ -76,7 +76,7 @@ public class ASTCustomFunction extends ASTFunctionCall {
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append("function").append('(').append('"').append(functionName).append('"');
+        out.append("fn").append('(').append('"').append(functionName).append('"');
         if (children != null) {
             for (Node child : children) {
                 out.append(", ");

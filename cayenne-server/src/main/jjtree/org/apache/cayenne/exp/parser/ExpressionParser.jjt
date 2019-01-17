@@ -37,7 +37,6 @@ package org.apache.cayenne.exp.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ExpressionUtils;
 
 /**
   * Parser of Cayenne Expressions. 
@@ -524,7 +523,6 @@ TOKEN : {
 	<NULL: "null" | "NULL" >
     |   <TRUE: "true" | "TRUE" >
     |   <FALSE: "false" | "FALSE" >
-    |   <FUNCTION: "function" >
 }
 
 TOKEN : /* aggregates */
@@ -534,7 +532,8 @@ TOKEN : /* aggregates */
 	|	<MAX: "max" >
 	|	<SUM: "sum" >
 	|	<COUNT: "count" >
-	|	<DISTINCT: "distinct" >
+	|	<DISTINCT: "distinct">
+	|   <FUNCTION: "fn" >
 }
 
 TOKEN : /* functions returning strings */
@@ -580,8 +579,7 @@ TOKEN :
     | <SECOND: "second">
 }
 
-void namedParameter() :
-{
+void namedParameter() :{
 	Token t;
 }
 {
