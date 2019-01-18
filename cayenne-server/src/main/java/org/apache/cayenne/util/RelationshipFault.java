@@ -88,6 +88,10 @@ public abstract class RelationshipFault<E> {
             return new ArrayList<>();
         }
 
+        /**
+         * Doing that to refresh query (see CAY-2509) while resolving RelationshipFault.
+         * Refreshing query is used only for parent contexts.
+         */
         boolean refresh = relationshipOwner.getObjectContext().getChannel() instanceof DataDomain;
         List<E> resolved = relationshipOwner.getObjectContext().performQuery(
                 new RelationshipQuery(relationshipOwner.getObjectId(), relationshipName, refresh));
