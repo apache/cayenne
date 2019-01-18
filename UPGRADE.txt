@@ -10,6 +10,9 @@ UPGRADING TO 4.2.M1
 * Per CAY-2467 Property class is replaced with a type-aware Property API, it's mostly backwards compatible.
     To take advantage of this new API you should regenerate code via Modeler ("Tools" -> "Generate Classes") or cgen tools.
 
+UPGRADING TO 4.1.M3
+
+* Per CAY-2514 SERVER_CONTEXTS_SYNC_PROPERTY default value was set to false.
 
 UPGRADING TO 4.1.M2
 
