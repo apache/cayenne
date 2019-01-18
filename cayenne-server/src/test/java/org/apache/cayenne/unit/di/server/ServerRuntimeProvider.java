@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
@@ -30,9 +34,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
-
-import java.util.Collection;
-import java.util.Collections;
 
 public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
@@ -53,7 +54,6 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
         this.unitDbAdapter = unitDbAdapter;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public ServerRuntime get() throws ConfigurationException {
 
@@ -63,7 +63,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
                     + "annotate your test case with @UseServerRuntime");
         }
 
-        Collection modules = getExtraModules();
+        Collection<Module> modules = new ArrayList<>(getExtraModules());
 
         return ServerRuntime.builder()
                         .addConfig(configurationLocation)

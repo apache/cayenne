@@ -18,43 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
-import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.DataChannel;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.rop.client.ClientRuntime;
-import org.apache.cayenne.configuration.rop.client.LocalConnectionProvider;
 import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.remote.ClientConnection;
+import org.apache.cayenne.di.Module;
 
 /**
  * @since 4.1
  */
-public class ClientRuntimeProviderContextsSync implements Provider<ClientRuntime> {
+public class ClientRuntimeProviderContextsSync extends ClientRuntimeProvider {
 
-    // injecting provider to make this provider independent from scoping of ServerRuntime
-    @Inject
-    protected Provider<ServerRuntime> serverRuntimeProvider;
-
-    @Inject
-    protected ClientCaseProperties clientCaseProperties;
-
-    public ClientRuntime get() throws ConfigurationException {
-        return ClientRuntime.builder()
-                .properties(clientCaseProperties.getRuntimeProperties())
-                .addModule(binder -> {
-                    // add an interceptor between client and server parts to capture and inspect the traffic
-                    binder.bind(Key.get(DataChannel.class, ClientRuntime.CLIENT_SERVER_CHANNEL_KEY))
-                            .toProviderInstance(new InterceptingClientServerChannelProvider(serverRuntimeProvider.get().getInjector()));
-                    // create local connection
-                    binder.bind(ClientConnection.class).toProviderInstance(new LocalConnectionProvider());
-                    ServerModule.contributeProperties(binder)
-                            .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(true));
-                })
-                .build();
+    @Override
+    protected Collection<? extends Module> getModules() {
+        Collection<Module> modules = new ArrayList<>(super.getModules());
+        modules.add(binder ->
+                ServerModule.contributeProperties(binder)
+                        .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(true)));
+        return modules;
     }
 
 }

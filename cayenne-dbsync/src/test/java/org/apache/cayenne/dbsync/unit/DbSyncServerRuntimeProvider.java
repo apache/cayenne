@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.unit;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.Inject;
@@ -27,9 +30,6 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.ServerCaseProperties;
 import org.apache.cayenne.unit.di.server.ServerRuntimeProvider;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class DbSyncServerRuntimeProvider extends ServerRuntimeProvider {
 
@@ -42,8 +42,7 @@ public class DbSyncServerRuntimeProvider extends ServerRuntimeProvider {
 
     @Override
     protected Collection<? extends Module> getExtraModules() {
-        Collection<Module> modules = new ArrayList<>();
-        modules.addAll(super.getExtraModules());
+        Collection<Module> modules = new ArrayList<>(super.getExtraModules());
         modules.add(new DbSyncModule());
         return modules;
     }
