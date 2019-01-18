@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc;
 
+import java.util.List;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -29,17 +31,15 @@ import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseServerRuntime(CayenneProjects.LOB_PROJECT)
-public class SelectActionIT extends ServerCase {
+public class SelectActionIT extends ServerCaseContextsSync {
 
     @Inject
     private DataContext context;

@@ -29,7 +29,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTable4;
 import org.apache.cayenne.testdo.mt.ClientMtTable5;
-import org.apache.cayenne.unit.di.client.ClientCase;
+import org.apache.cayenne.unit.di.client.ClientCaseContextsSync;
 import org.apache.cayenne.unit.di.client.ClientRuntimeProperty;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 @ClientRuntimeProperty({
         ClientConstants.ROP_CHANNEL_EVENTS_PROPERTY, "true"
 })
-public class CayenneContextClientChannelEventsIT extends ClientCase {
+public class CayenneContextClientChannelEventsIT extends ClientCaseContextsSync {
 
     @Inject
     private DBHelper dbHelper;

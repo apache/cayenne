@@ -18,8 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -28,9 +33,6 @@ import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.MockClientConnection;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -75,6 +77,8 @@ public class ClientModuleTest {
 
                 // use a noop connection to prevent startup errors...
                 binder.bind(ClientConnection.class).to(MockClientConnection.class);
+                ServerModule.contributeProperties(binder)
+                        .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(true));
             }
         };
 
