@@ -40,7 +40,7 @@ public class DefaultObjectStoreFactory implements ObjectStoreFactory {
     protected ObjectMapRetainStrategy retainStrategy;
     
     public ObjectStore createObjectStore(DataRowStore dataRowCache) {
-        boolean sync = runtimeProperties.getBoolean(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, true);
+        boolean sync = runtimeProperties.getBoolean(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, false);
         
         return sync ? new ObjectStore(dataRowCache, retainStrategy.createObjectMap()) 
                 : new NoSyncObjectStore(dataRowCache, retainStrategy.createObjectMap());

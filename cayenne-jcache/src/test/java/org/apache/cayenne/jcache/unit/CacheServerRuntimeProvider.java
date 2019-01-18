@@ -43,8 +43,7 @@ public class CacheServerRuntimeProvider extends ServerRuntimeProvider {
 
     @Override
     protected Collection<? extends Module> getExtraModules() {
-        Collection<Module> modules = new ArrayList<>();
-        modules.addAll(super.getExtraModules());
+        Collection<Module> modules = new ArrayList<>(super.getExtraModules());
         modules.add(new JCacheModule());
         return modules;
     }

@@ -18,9 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -29,9 +34,6 @@ import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.MockClientConnection;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -98,6 +100,8 @@ public class ClientRuntimeTest {
 		Map<String, String> properties = new HashMap<>();
 		ClientRuntime runtime = ClientRuntime.builder()
 								.properties(properties)
+								.addModule(binder -> ServerModule.contributeProperties(binder)
+										.put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(true)))
 								.build();
 
 		// make sure objects to be shut down are resolved

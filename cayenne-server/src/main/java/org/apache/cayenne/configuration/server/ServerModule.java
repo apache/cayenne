@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelQueryFilter;
@@ -132,9 +135,9 @@ import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.EventManagerProvider;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
@@ -150,9 +153,6 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.cayenne.tx.TransactionManager;
 import org.xml.sax.XMLReader;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
@@ -342,6 +342,8 @@ public class ServerModule implements Module {
         // configure global stack properties
         contributeProperties(binder)
                 .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
+        contributeProperties(binder)
+                .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(false));
 
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
@@ -430,7 +432,7 @@ public class ServerModule implements Module {
 
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
-        binder.bind(EventManager.class).to(DefaultEventManager.class);
+        binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
 
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
 

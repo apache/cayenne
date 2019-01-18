@@ -16,34 +16,36 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.unit;
+package org.apache.cayenne.unit.di.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.ServerCaseProperties;
-import org.apache.cayenne.unit.di.server.ServerRuntimeProvider;
 
-public class DbSyncServerRuntimeProvider extends ServerRuntimeProvider {
+/**
+ * @since 4.1
+ */
+public class ServerRuntimeProviderContextsSync extends ServerRuntimeProvider {
 
-    public DbSyncServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
-                                       @Inject ServerCaseProperties properties,
-                                       @Inject Provider<DbAdapter> dbAdapterProvider,
-                                       @Inject UnitDbAdapter unitDbAdapter) {
+    public ServerRuntimeProviderContextsSync(@Inject ServerCaseDataSourceFactory dataSourceFactory,
+                                             @Inject ServerCaseProperties properties,
+                                             @Inject Provider<DbAdapter> dbAdapterProvider,
+                                             @Inject UnitDbAdapter unitDbAdapter) {
         super(dataSourceFactory, properties, dbAdapterProvider, unitDbAdapter);
     }
 
     @Override
     protected Collection<? extends Module> getExtraModules() {
         Collection<Module> modules = new ArrayList<>(super.getExtraModules());
-        modules.add(new DbSyncModule());
+        modules.add(binder -> ServerModule.contributeProperties(binder)
+                .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(true)));
         return modules;
     }
 }

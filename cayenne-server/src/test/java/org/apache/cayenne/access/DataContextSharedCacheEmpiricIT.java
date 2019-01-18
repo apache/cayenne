@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
@@ -31,21 +34,18 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextSharedCacheEmpiricIT extends ServerCase {
+public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
 
     private static final String NEW_NAME = "versionX";
 
