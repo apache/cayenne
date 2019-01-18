@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
-import java.util.Map;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
@@ -28,13 +26,14 @@ import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.EventManagerProvider;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.RemoteService;
-import org.apache.cayenne.rop.*;
+import org.apache.cayenne.rop.HttpClientConnectionProvider;
+import org.apache.cayenne.rop.ProxyRemoteService;
+import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.http.ClientHessianSerializationServiceProvider;
 
 /**
@@ -61,7 +60,7 @@ public class ClientModule implements Module {
         binder.bind(ROPSerializationService.class).toProvider(ClientHessianSerializationServiceProvider.class);
         binder.bind(RemoteService.class).to(ProxyRemoteService.class);
         binder.bind(ClientConnection.class).toProvider(HttpClientConnectionProvider.class);
-        binder.bind(EventManager.class).to(DefaultEventManager.class);
+        binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(DataChannel.class).toProvider(ClientChannelProvider.class);
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
