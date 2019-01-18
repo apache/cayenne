@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -87,8 +88,13 @@ public abstract class RelationshipFault<E> {
             return new ArrayList<>();
         }
 
+        /**
+         * Doing that to refresh query (see CAY-2509) while resolving RelationshipFault.
+         * Refreshing query is used only for parent contexts.
+         */
+        boolean refresh = relationshipOwner.getObjectContext().getChannel() instanceof DataDomain;
         List<E> resolved = relationshipOwner.getObjectContext().performQuery(
-                new RelationshipQuery(relationshipOwner.getObjectId(), relationshipName, false));
+                new RelationshipQuery(relationshipOwner.getObjectId(), relationshipName, refresh));
 
         /*
          * Duplicating the list (see CAY-1194). Doing that only for
