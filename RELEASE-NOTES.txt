@@ -29,6 +29,7 @@ CAY-2493 Save cgen configuration with datamap XML
 CAY-2494 Rename dbImport tag from 'config' to 'dbImport'
 CAY-2499 Support for COUNT(DISTINCT(column)) function aggregate
 CAY-2514 Set SERVER_CONTEXTS_SYNC_PROPERTY default value to false
+CAY-2517 EventManager: optimization of adding listeners
 
 Bug Fixes:
 

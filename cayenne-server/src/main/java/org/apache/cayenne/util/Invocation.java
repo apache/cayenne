@@ -37,6 +37,7 @@ public class Invocation {
     private WeakReference _target;
     private Method _method;
     private Class[] _parameterTypes;
+    private int _hashCode;
 
     /**
      * Prevent use of empty default constructor
@@ -119,6 +120,11 @@ public class Invocation {
             _method.setAccessible(true);
         }
 
+        /**
+         * IMPORTANT: include Invocation target object(not a WeakReference) into
+         * algorithm is used to compute hashCode.
+         */
+        _hashCode = 31 * target.hashCode() + _method.hashCode();
         _parameterTypes = parameterTypes;
         _target = new WeakReference(target);
     }
@@ -258,15 +264,7 @@ public class Invocation {
      */
     @Override
     public int hashCode() {
-        // IMPORTANT: DO NOT include Invocation target into whatever
-        // algorithm is used to compute hashCode, since it is using a
-        // WeakReference and can be released at a later time, altering
-        // hashCode, and breaking collections using Invocation as a key
-        // (e.g. event DispatchQueue)
-
-        // TODO: use Jakarta commons HashBuilder
-        int hash = 42, hashMultiplier = 59;
-        return hash * hashMultiplier + _method.hashCode();
+        return _hashCode;
     }
 
     /**
