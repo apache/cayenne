@@ -37,6 +37,7 @@ public class Invocation {
     private WeakReference<?> target;
     private Method method;
     private Class<?>[] parameterTypes;
+    private int hashCode;
 
     /**
      * Prevent use of empty default constructor
@@ -92,7 +93,6 @@ public class Invocation {
 
         // allow access to public methods of inaccessible classes, if such methods were
         // declared in a public interface
-
         method = lookupMethodInHierarchy(target.getClass(), methodName, parameterTypes);
         if (method == null) {
             throw new NoSuchMethodException("No such method: " + target.getClass().getName() + "." + methodName);
@@ -101,6 +101,11 @@ public class Invocation {
             method.setAccessible(true);
         }
 
+        /**
+         * IMPORTANT: include Invocation target object(not a WeakReference) into
+         * algorithm is used to compute hashCode.
+         */
+        this.hashCode = 31 * target.hashCode() + method.hashCode();
         this.parameterTypes = parameterTypes;
         this.target = new WeakReference<>(target);
     }
@@ -226,13 +231,7 @@ public class Invocation {
      */
     @Override
     public int hashCode() {
-        // IMPORTANT: DO NOT include Invocation target into whatever
-        // algorithm is used to compute hashCode, since it is using a
-        // WeakReference and can be released at a later time, altering
-        // hashCode, and breaking collections using Invocation as a key
-        // (e.g. event DispatchQueue)
-
-        return method.hashCode();
+        return hashCode;
     }
 
     /**
