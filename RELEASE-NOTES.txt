@@ -20,6 +20,7 @@ CAY-2474 Modeler: swap buttons in dialog toolbar
 CAY-2475 Modeler: move inheritance icon to name column in objAttr table and objRel table
 CAY-2476 Modeler: Fixed wrong behaviour of code generation dialog
 CAY-2479 Modeler: update cgen dialog
+CAY-2517 EventManager: optimization of adding listeners
 
 Bug Fixes:
 
