@@ -120,10 +120,8 @@ public class Invocation {
             _method.setAccessible(true);
         }
 
-        /**
-         * IMPORTANT: include Invocation target object(not a WeakReference) into
-         * algorithm is used to compute hashCode.
-         */
+        // IMPORTANT: include Invocation target object(not a WeakReference) into
+        // algorithm is used to compute hashCode.
         _hashCode = 31 * target.hashCode() + _method.hashCode();
         _parameterTypes = parameterTypes;
         _target = new WeakReference(target);
