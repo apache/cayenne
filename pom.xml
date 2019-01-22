@@ -793,6 +793,7 @@
 					<configuration>
 						<!-- Java 8 is too strict about Javadoc omissions --> 
 						<doclint>${javadoc.doclint}</doclint>
+						<source>1.7</source>
 					</configuration>
 				</plugin>
 				<plugin>
