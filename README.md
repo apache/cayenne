@@ -180,7 +180,7 @@ ServerRuntime cayenneRuntime = ServerRuntime.builder()
     .addConfig("cayenne-demo.xml")
     .dataSource(DataSourceBuilder
              .url("jdbc:mysql://localhost:3306/cayenne_demo")
-             .driver("com.mysql.jdbc.Driver")
+             .driver("com.mysql.cj.jdbc.Driver")
              .userName("username")
              .password("password")
              .build())
