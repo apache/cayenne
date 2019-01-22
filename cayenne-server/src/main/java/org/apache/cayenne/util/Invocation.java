@@ -101,10 +101,8 @@ public class Invocation {
             method.setAccessible(true);
         }
 
-        /**
-         * IMPORTANT: include Invocation target object(not a WeakReference) into
-         * algorithm is used to compute hashCode.
-         */
+        // IMPORTANT: include Invocation target object(not a WeakReference) into
+        // algorithm is used to compute hashCode.
         this.hashCode = 31 * target.hashCode() + method.hashCode();
         this.parameterTypes = parameterTypes;
         this.target = new WeakReference<>(target);
