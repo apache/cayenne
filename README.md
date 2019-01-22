@@ -90,7 +90,7 @@ Here is example of Cayenne Maven plugin setup that will do it:
         <cayenneProject>${project.basedir}/src/main/resources/cayenne-demo.xml</cayenneProject>
         <dataSource>
             <url>jdbc:mysql://localhost:3306/cayenne_demo</url>
-            <driver>com.mysql.jdbc.Driver</driver>
+            <driver>com.mysql.cj.jdbc.Driver</driver>
             <username>user</username>
             <password>password</password>
         </dataSource>
