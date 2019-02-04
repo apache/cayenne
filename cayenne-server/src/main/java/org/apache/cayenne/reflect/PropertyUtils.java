@@ -20,6 +20,7 @@
 package org.apache.cayenne.reflect;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -38,6 +39,11 @@ public class PropertyUtils {
 
 	private static final ConcurrentMap<String, Accessor> PATH_ACCESSORS = new ConcurrentHashMap<>();
 	private static final ConcurrentMap<Class<?>, ConcurrentMap<String, Accessor>> SEGMENT_ACCESSORS = new ConcurrentHashMap<>();
+
+    /**
+     * Factory for accessor, can be customized by {@link #installAccessorFactory(AccessorFactory)}
+     */
+	private static AccessorFactory accessorFactory = BeanAccessor::new;
 
 	/**
 	 * Compiles an accessor that can be used for fast access for the nested
@@ -112,7 +118,7 @@ public class PropertyUtils {
 		if (Map.class.isAssignableFrom(objectClass)) {
 			return new MapAccessor(propertyName);
 		} else {
-			return new BeanAccessor(objectClass, propertyName, null);
+			return accessorFactory.createAccessor(objectClass, propertyName, null);
 		}
 	}
 
@@ -196,6 +202,18 @@ public class PropertyUtils {
 
 		return null;
 	}
+
+    /**
+     * This method installs custom accessor factory to be used by property utils.
+     * <p>
+     * A factory that produces {@link BeanAccessor} is used by default.
+     *
+     * @param accessorFactory new factory to use
+     * @since 4.1
+     */
+	public static void installAccessorFactory(AccessorFactory accessorFactory) {
+	    PropertyUtils.accessorFactory = Objects.requireNonNull(accessorFactory);
+    }
 
 	private PropertyUtils() {
 		super();
