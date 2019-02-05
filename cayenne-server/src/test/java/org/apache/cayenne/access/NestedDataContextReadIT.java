@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -284,10 +283,10 @@ public class NestedDataContextReadIT extends ServerCase {
 
         final ObjectContext child = runtime.newContext(context);
 
-        final ObjectId prefetchedId = new ObjectId(
+        final ObjectId prefetchedId = ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
-                new Integer(33001));
+                33001);
 
         SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
         q.addOrdering(Painting.PAINTING_TITLE.asc());

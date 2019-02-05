@@ -36,7 +36,7 @@ public class ASTListTest {
 
     @Test
 	public void testConstructorWithCollection() {
-		ObjectId objectId = new ObjectId("Artist", "ARTIST_ID", 1);
+		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
 		Persistent artist = mock(Persistent.class);
 		when(artist.getObjectId()).thenReturn(objectId);
 
@@ -51,7 +51,7 @@ public class ASTListTest {
 
 	@Test
 	public void testEquals() throws Exception {
-		ObjectId objectId = new ObjectId("Artist", "ARTIST_ID", 1);
+		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
 		Persistent artist = mock(Persistent.class);
 		when(artist.getObjectId()).thenReturn(objectId);
 
@@ -68,7 +68,7 @@ public class ASTListTest {
 
 	@Test
 	public void testHashCode() throws Exception {
-		ObjectId objectId = new ObjectId("Artist", "ARTIST_ID", 1);
+		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
 		Persistent artist = mock(Persistent.class);
 		when(artist.getObjectId()).thenReturn(objectId);
 

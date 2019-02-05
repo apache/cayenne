@@ -19,6 +19,7 @@ CAY-2508 Create api to add aliases in expressions
 CAY-2510 Create builder to load custom modules into plugins and modeler
 CAY-2511 Contribute custom properties for attributes
 CAY-2517 EventManager: optimization of adding listeners
+CAY-2520 Split ObjectId into several specialized variants
 
 Bug Fixes:
 

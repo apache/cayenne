@@ -211,14 +211,14 @@ public class EvaluatorTest {
     @Test
     public void testEvaluator_Persistent() {
 
-        ObjectId lhsId = new ObjectId("X", "k", 3);
+        ObjectId lhsId = ObjectId.of("X", "k", 3);
         Persistent lhs = mock(Persistent.class);
         when(lhs.getObjectId()).thenReturn(lhsId);
 
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
 
-        ObjectId rhsId1 = new ObjectId("X", "k", 3);
+        ObjectId rhsId1 = ObjectId.of("X", "k", 3);
         Persistent rhs1 = mock(Persistent.class);
         when(rhs1.getObjectId()).thenReturn(rhsId1);
 
@@ -226,7 +226,7 @@ public class EvaluatorTest {
         assertTrue(e.eq(lhs, rhsId1));
         assertTrue(e.eq(lhs, 3));
 
-        ObjectId rhsId2 = new ObjectId("X", "k", 4);
+        ObjectId rhsId2 = ObjectId.of("X", "k", 4);
         Persistent rhs2 = mock(Persistent.class);
         when(rhs2.getObjectId()).thenReturn(rhsId2);
 
@@ -238,14 +238,14 @@ public class EvaluatorTest {
     @Test
     public void testEvaluator_Persistent_StringId() {
 
-        ObjectId lhsId = new ObjectId("X", "k", "A");
+        ObjectId lhsId = ObjectId.of("X", "k", "A");
         Persistent lhs = mock(Persistent.class);
         when(lhs.getObjectId()).thenReturn(lhsId);
 
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
 
-        ObjectId rhsId1 = new ObjectId("X", "k", "A");
+        ObjectId rhsId1 = ObjectId.of("X", "k", "A");
         Persistent rhs1 = mock(Persistent.class);
         when(rhs1.getObjectId()).thenReturn(rhsId1);
 
@@ -253,7 +253,7 @@ public class EvaluatorTest {
         assertTrue(e.eq(lhs, rhsId1));
         assertTrue(e.eq(lhs, "A"));
 
-        ObjectId rhsId2 = new ObjectId("X", "k", "B");
+        ObjectId rhsId2 = ObjectId.of("X", "k", "B");
         Persistent rhs2 = mock(Persistent.class);
         when(rhs2.getObjectId()).thenReturn(rhsId2);
 
@@ -268,7 +268,7 @@ public class EvaluatorTest {
         Map<String, Object> lhsIdMap = new HashMap<>();
         lhsIdMap.put("a", 1);
         lhsIdMap.put("b", "B");
-        ObjectId lhsId = new ObjectId("X", lhsIdMap);
+        ObjectId lhsId = ObjectId.of("X", lhsIdMap);
         Persistent lhs = mock(Persistent.class);
         when(lhs.getObjectId()).thenReturn(lhsId);
 
@@ -278,7 +278,7 @@ public class EvaluatorTest {
         Map<String, Object> rhsId1Map = new HashMap<>();
         rhsId1Map.put("a", 1);
         rhsId1Map.put("b", "B");
-        ObjectId rhsId1 = new ObjectId("X", rhsId1Map);
+        ObjectId rhsId1 = ObjectId.of("X", rhsId1Map);
         Persistent rhs1 = mock(Persistent.class);
         when(rhs1.getObjectId()).thenReturn(rhsId1);
 
@@ -289,7 +289,7 @@ public class EvaluatorTest {
         Map<String, Object> rhsId2Map = new HashMap<>();
         rhsId2Map.put("a", 1);
         rhsId2Map.put("b", "BX");
-        ObjectId rhsId2 = new ObjectId("X", rhsId2Map);
+        ObjectId rhsId2 = ObjectId.of("X", rhsId2Map);
         Persistent rhs2 = mock(Persistent.class);
         when(rhs2.getObjectId()).thenReturn(rhsId2);
 

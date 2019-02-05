@@ -118,7 +118,7 @@ public class CayenneContextIT extends ClientCase {
 
 		// test that a command is being sent via connector on commit...
 
-		context.internalGraphManager().nodePropertyChanged(new ObjectId("MtTable1"), "x", "y", "z");
+		context.internalGraphManager().nodePropertyChanged(ObjectId.of("MtTable1"), "x", "y", "z");
 
 		context.commitChanges();
 		assertEquals(1, channel.getRequestObjects().size());
@@ -131,7 +131,7 @@ public class CayenneContextIT extends ClientCase {
 	@Test
 	public void testCommitChangesNew() {
 		final CompoundDiff diff = new CompoundDiff();
-		final Object newObjectId = new ObjectId("test", "key", "generated");
+		final Object newObjectId = ObjectId.of("test", "key", "generated");
 		eventManager = new DefaultEventManager(0);
 
 		// test that ids that are passed back are actually propagated to the
@@ -229,7 +229,7 @@ public class CayenneContextIT extends ClientCase {
 		// COMMITTED
 		Persistent committed = new MockPersistentObject();
 		committed.setPersistenceState(PersistenceState.COMMITTED);
-		committed.setObjectId(new ObjectId("test_entity", "key", "value1"));
+		committed.setObjectId(ObjectId.of("test_entity", "key", "value1"));
 		committed.setObjectContext(context);
 		context.deleteObjects(committed);
 		assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
@@ -237,7 +237,7 @@ public class CayenneContextIT extends ClientCase {
 		// MODIFIED
 		Persistent modified = new MockPersistentObject();
 		modified.setPersistenceState(PersistenceState.MODIFIED);
-		modified.setObjectId(new ObjectId("test_entity", "key", "value2"));
+		modified.setObjectId(ObjectId.of("test_entity", "key", "value2"));
 		modified.setObjectContext(context);
 		context.deleteObjects(modified);
 		assertEquals(PersistenceState.DELETED, modified.getPersistenceState());
@@ -245,7 +245,7 @@ public class CayenneContextIT extends ClientCase {
 		// DELETED
 		Persistent deleted = new MockPersistentObject();
 		deleted.setPersistenceState(PersistenceState.DELETED);
-		deleted.setObjectId(new ObjectId("test_entity", "key", "value3"));
+		deleted.setObjectId(ObjectId.of("test_entity", "key", "value3"));
 		deleted.setObjectContext(context);
 		context.deleteObjects(deleted);
 		assertEquals(PersistenceState.DELETED, committed.getPersistenceState());
@@ -254,7 +254,7 @@ public class CayenneContextIT extends ClientCase {
 	@Test
 	public void testBeforePropertyReadShouldInflateHollow() {
 
-		ObjectId gid = new ObjectId("MtTable1", "a", "b");
+        ObjectId gid = ObjectId.of("MtTable1", "a", "b");
 		final ClientMtTable1 inflated = new ClientMtTable1();
 		inflated.setPersistenceState(PersistenceState.COMMITTED);
 		inflated.setObjectId(gid);
@@ -306,7 +306,7 @@ public class CayenneContextIT extends ClientCase {
 	@Test
 	public void testBeforeHollowDeleteShouldChangeStateToCommited() {
 
-		ObjectId gid = new ObjectId("MtTable1", "a", "b");
+        ObjectId gid = ObjectId.of("MtTable1", "a", "b");
 		final ClientMtTable1 inflated = new ClientMtTable1();
 		inflated.setPersistenceState(PersistenceState.COMMITTED);
 		inflated.setObjectId(gid);

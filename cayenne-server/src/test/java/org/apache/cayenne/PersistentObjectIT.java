@@ -52,7 +52,7 @@ public class PersistentObjectIT extends ServerCase {
 
     @Test
     public void testObjectID() {
-        ObjectId id = new ObjectId("test");
+        ObjectId id = ObjectId.of("test");
 
         PersistentObject object = new MockPersistentObject();
 

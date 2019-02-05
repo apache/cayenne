@@ -114,7 +114,7 @@ public class ExpressionTest {
 	public void testAppendAsEJBQL_PersistentParamater() throws IOException {
 
 		Artist a = new Artist();
-		ObjectId aId = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
+        ObjectId aId = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
 		a.setObjectId(aId);
 
 		Expression e = ExpressionFactory.matchExp("artist", a);

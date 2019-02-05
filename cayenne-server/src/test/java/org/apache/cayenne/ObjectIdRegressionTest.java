@@ -34,13 +34,13 @@ public class ObjectIdRegressionTest {
 
         int size = 100000;
 
-        new ObjectId("Artist");
+        ObjectId.of("Artist");
         ObjectId[] pool = new ObjectId[size];
 
         long t0 = System.currentTimeMillis();
         // fill in
         for (int i = 0; i < size; i++) {
-            pool[i] = new ObjectId("Artist");
+            pool[i] = ObjectId.of("Artist");
         }
 
         long t1 = System.currentTimeMillis();

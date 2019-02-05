@@ -374,7 +374,7 @@ public class JointPrefetchIT extends ServerCase {
 
         // sanity check...
         DataObject g1 = (DataObject) context.getGraphManager().getNode(
-                new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
+                ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
         assertNull(g1);
 
         final List<Artist> objects = q.select(context);
@@ -393,11 +393,11 @@ public class JointPrefetchIT extends ServerCase {
 
             // however both galleries must be in memory...
             DataObject g11 = (DataObject) context.getGraphManager().getNode(
-                    new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
+                    ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
             assertNotNull(g11);
             assertEquals(PersistenceState.COMMITTED, g11.getPersistenceState());
             DataObject g2 = (DataObject) context.getGraphManager().getNode(
-                    new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33002));
+                    ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33002));
             assertNotNull(g2);
             assertEquals(PersistenceState.COMMITTED, g2.getPersistenceState());
         });
@@ -443,7 +443,7 @@ public class JointPrefetchIT extends ServerCase {
                 .select(context);
         queryInterceptor.runWithQueriesBlocked(() -> {
             DataObject g1 = (DataObject) context.getGraphManager().getNode(
-                    new ObjectId("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001)
+                    ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001)
             );
             assertNotNull(g1);
             assertEquals("G1", g1.readProperty("galleryName"));

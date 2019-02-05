@@ -156,7 +156,7 @@ public class CayenneSQLTemplateProcessorTest {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($helper.cayenneExp($a, 'db:ID_COLUMN'))";
 
         DataObject dataObject = new CayenneDataObject();
-        dataObject.setObjectId(new ObjectId("T", "ID_COLUMN", 5));
+        dataObject.setObjectId(ObjectId.of("T", "ID_COLUMN", 5));
 
         Map<String, Object> map = Collections.singletonMap("a", dataObject);
 
@@ -176,7 +176,7 @@ public class CayenneSQLTemplateProcessorTest {
         Map<String, Object> idMap = new HashMap<>();
         idMap.put("ID_COLUMN1", 3);
         idMap.put("ID_COLUMN2", "aaa");
-        ObjectId id = new ObjectId("T", idMap);
+        ObjectId id = ObjectId.of("T", idMap);
         DataObject dataObject = new CayenneDataObject();
         dataObject.setObjectId(id);
 

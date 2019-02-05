@@ -354,7 +354,7 @@ public class Cayenne {
      */
     @SuppressWarnings("unchecked")
 	public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, int pk) {
-        return (T) objectForPK(context, buildId(context, dataObjectClass, Integer.valueOf(pk)));
+        return (T) objectForPK(context, buildId(context, dataObjectClass, pk));
     }
 
     /**
@@ -392,7 +392,7 @@ public class Cayenne {
             throw new CayenneRuntimeException("Non-existent ObjEntity for class: %s", dataObjectClass);
         }
 
-        return (T) objectForPK(context, new ObjectId(entity.getName(), pk));
+        return (T) objectForPK(context, ObjectId.of(entity.getName(), pk));
     }
 
     /**
@@ -441,7 +441,7 @@ public class Cayenne {
             throw new IllegalArgumentException("Null ObjEntity name.");
         }
 
-        return objectForPK(context, new ObjectId(objEntityName, pk));
+        return objectForPK(context, ObjectId.of(objEntityName, pk));
     }
 
     /**
@@ -495,7 +495,7 @@ public class Cayenne {
         }
 
         String attr = pkAttributes.iterator().next();
-        return new ObjectId(objEntityName, attr, pk);
+        return ObjectId.of(objEntityName, attr, pk);
     }
 
     static ObjectId buildId(ObjectContext context, Class<?> dataObjectClass, Object pk) {
@@ -518,7 +518,7 @@ public class Cayenne {
         }
 
         String attr = pkAttributes.iterator().next();
-        return new ObjectId(entity.getName(), attr, pk);
+        return ObjectId.of(entity.getName(), attr, pk);
     }
 
     protected Cayenne() {

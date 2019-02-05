@@ -27,24 +27,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ObjectIdTest {
 
     @Test
     public void testConstructor() {
-        ObjectId temp1 = new ObjectId("e");
+        ObjectId temp1 = ObjectId.of("e");
         assertEquals("e", temp1.getEntityName());
         assertTrue(temp1.isTemporary());
         assertNotNull(temp1.getKey());
 
         byte[] key = new byte[] { 1, 2, 3 };
-        ObjectId temp2 = new ObjectId("e1", key);
+        ObjectId temp2 = ObjectId.of("e1", key);
         assertEquals("e1", temp2.getEntityName());
         assertTrue(temp2.isTemporary());
         assertSame(key, temp2.getKey());
@@ -52,7 +47,7 @@ public class ObjectIdTest {
 
     @Test
     public void testSerializabilityTemp() throws Exception {
-        ObjectId temp1 = new ObjectId("e");
+        ObjectId temp1 = ObjectId.of("e");
         ObjectId temp2 = Util.cloneViaSerialization(temp1);
 
         assertTrue(temp1.isTemporary());
@@ -62,17 +57,16 @@ public class ObjectIdTest {
 
     @Test
     public void testSerializabilityPerm() throws Exception {
-        ObjectId perm1 = new ObjectId("e", "a", "b");
+        ObjectId perm1 = ObjectId.of("e", "a", "b");
 
         // make sure hashcode is resolved
         int h = perm1.hashCode();
-        assertEquals(h, perm1.hashCode);
-        assertTrue(perm1.hashCode != 0);
+        assertEquals(h, perm1.hashCode());
+        assertTrue(perm1.hashCode() != 0);
 
         ObjectId perm2 = Util.cloneViaSerialization(perm1);
 
-        // make sure hashCode is reset to 0
-        assertTrue(perm2.hashCode == 0);
+        assertEquals(h, perm1.hashCode());
 
         assertFalse(perm2.isTemporary());
         assertNotSame(perm1, perm2);
@@ -80,31 +74,55 @@ public class ObjectIdTest {
     }
 
     @Test
-    public void testEquals0() {
-        ObjectId oid1 = new ObjectId("TE");
+    public void testEqualsTmoKey() {
+        ObjectId oid1 = ObjectId.of("TE");
         assertEquals(oid1, oid1);
         assertEquals(oid1.hashCode(), oid1.hashCode());
     }
 
     @Test
-    public void testEquals1() {
-        ObjectId oid1 = new ObjectId("T", "a", "b");
-        ObjectId oid2 = new ObjectId("T", "a", "b");
+    public void testEqualsSingleValueKeyStr() {
+        ObjectId oid1 = ObjectId.of("T", "a", "b");
+        ObjectId oid2 = ObjectId.of("T", "a", "b");
         assertEquals(oid1, oid2);
         assertEquals(oid1.hashCode(), oid2.hashCode());
     }
 
     @Test
-    public void testEquals2() {
+    public void testNotEqualsSingleValueKeyStr() {
+        ObjectId oid1 = ObjectId.of("T", "a", "a");
+        ObjectId oid2 = ObjectId.of("T", "a", "b");
+        assertNotEquals(oid1, oid2);
+        assertNotEquals(oid1.hashCode(), oid2.hashCode());
+    }
+
+    @Test
+    public void testEqualsSingleValueKeyNumeric() {
+        ObjectId oid1 = ObjectId.of("T", "a", 42);
+        ObjectId oid2 = ObjectId.of("T", "a", BigDecimal.valueOf(42));
+        assertEquals(oid1, oid2);
+        assertEquals(oid1.hashCode(), oid2.hashCode());
+    }
+
+    @Test
+    public void testNotEqualsSingleValueKeyNumeric() {
+        ObjectId oid1 = ObjectId.of("T", "a", 41);
+        ObjectId oid2 = ObjectId.of("T", "a", BigDecimal.valueOf(42));
+        assertNotEquals(oid1, oid2);
+        assertNotEquals(oid1.hashCode(), oid2.hashCode());
+    }
+
+    @Test
+    public void testEqualsCompoundKeyNoValues() {
         Map<String, Object> hm = new HashMap<>();
-        ObjectId oid1 = new ObjectId("T", hm);
-        ObjectId oid2 = new ObjectId("T", hm);
+        ObjectId oid1 = ObjectId.of("T", hm);
+        ObjectId oid2 = ObjectId.of("T", hm);
         assertEquals(oid1, oid2);
         assertEquals(oid1.hashCode(), oid2.hashCode());
     }
 
     @Test
-    public void testEquals3() {
+    public void testEqualsSingleKeyFromMap() {
         String pknm = "xyzabc";
 
         Map<String, Object> hm1 = new HashMap<>();
@@ -113,8 +131,8 @@ public class ObjectIdTest {
         Map<String, Object> hm2 = new HashMap<>();
         hm2.put(pknm, "123");
 
-        ObjectId oid1 = new ObjectId("T", hm1);
-        ObjectId oid2 = new ObjectId("T", hm2);
+        ObjectId oid1 = ObjectId.of("T", hm1);
+        ObjectId oid2 = ObjectId.of("T", hm2);
         assertEquals(oid1, oid2);
         assertEquals(oid1.hashCode(), oid2.hashCode());
     }
@@ -123,7 +141,7 @@ public class ObjectIdTest {
      * This is a test case reproducing conditions for the bug "8458963".
      */
     @Test
-    public void testEquals5() {
+    public void testNotEqualsCompoundKey() {
 
         Map<String, Object> hm1 = new HashMap<>();
         hm1.put("key1", 1);
@@ -133,16 +151,16 @@ public class ObjectIdTest {
         hm2.put("key1", 11);
         hm2.put("key2", 1);
 
-        ObjectId ref = new ObjectId("T", hm1);
-        ObjectId oid = new ObjectId("T", hm2);
-        assertFalse(ref.equals(oid));
+        ObjectId ref = ObjectId.of("T", hm1);
+        ObjectId oid = ObjectId.of("T", hm2);
+        assertNotEquals(ref, oid);
     }
 
     /**
      * Multiple key objectId
      */
     @Test
-    public void testEquals6() {
+    public void testEqualsCompoundKey1() {
 
         Map<String, Object> hm1 = new HashMap<>();
         hm1.put("key1", 1);
@@ -152,9 +170,9 @@ public class ObjectIdTest {
         hm2.put("key1", 1);
         hm2.put("key2", 2);
 
-        ObjectId ref = new ObjectId("T", hm1);
-        ObjectId oid = new ObjectId("T", hm2);
-        assertTrue(ref.equals(oid));
+        ObjectId ref = ObjectId.of("T", hm1);
+        ObjectId oid = ObjectId.of("T", hm2);
+        assertEquals(ref, oid);
         assertEquals(ref.hashCode(), oid.hashCode());
     }
 
@@ -163,24 +181,43 @@ public class ObjectIdTest {
      * different order...
      */
     @Test
-    public void testEquals7() {
+    public void testEqualsCompoundKey2() {
 
         // create maps with guaranteed iteration order
-
-        @SuppressWarnings("unchecked")
         Map<String, Object> hm1 = new LinkedHashMap<>();
         hm1.put("KEY1", 1);
         hm1.put("KEY2", 2);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> hm2 = new LinkedHashMap();
+        Map<String, Object> hm2 = new LinkedHashMap<>();
         // put same keys but in different order
         hm2.put("KEY2", 2);
         hm2.put("KEY1", 1);
 
-        ObjectId ref = new ObjectId("T", hm1);
-        ObjectId oid = new ObjectId("T", hm2);
-        assertTrue(ref.equals(oid));
+        ObjectId ref = ObjectId.of("T", hm1);
+        ObjectId oid = ObjectId.of("T", hm2);
+        assertEquals(ref, oid);
+        assertEquals(ref.hashCode(), oid.hashCode());
+    }
+
+    /**
+     * Test different numeric types.
+     */
+    @Test
+    public void testEqualsCompoundKey3() {
+
+        // create maps with guaranteed iteration order
+        Map<String, Object> hm1 = new LinkedHashMap<>();
+        hm1.put("KEY1", 1);
+        hm1.put("KEY2", 2);
+
+        Map<String, Object> hm2 = new LinkedHashMap<>();
+        // put same keys but in different order
+        hm2.put("KEY2", new BigDecimal(2.00));
+        hm2.put("KEY1", 1L);
+
+        ObjectId ref = ObjectId.of("T", hm1);
+        ObjectId oid = ObjectId.of("T", hm2);
+        assertEquals(ref, oid);
         assertEquals(ref.hashCode(), oid.hashCode());
     }
 
@@ -193,16 +230,16 @@ public class ObjectIdTest {
         Map<String, Object> hm2 = new HashMap<>();
         hm2.put("key1", new byte[] { 3, 4, 10, -1 });
 
-        ObjectId ref = new ObjectId("T", hm1);
-        ObjectId oid = new ObjectId("T", hm2);
+        ObjectId ref = ObjectId.of("T", hm1);
+        ObjectId oid = ObjectId.of("T", hm2);
         assertEquals(ref.hashCode(), oid.hashCode());
-        assertTrue(ref.equals(oid));
+        assertEquals(ref, oid);
     }
 
     @Test
     public void testEqualsNull() {
-        ObjectId o = new ObjectId("T", "ARTIST_ID", new Integer(42));
-        assertFalse(o.equals(null));
+        ObjectId o = ObjectId.of("T", "ARTIST_ID", 42);
+        assertNotNull(o);
     }
 
     @Test
@@ -218,33 +255,33 @@ public class ObjectIdTest {
         Map<String, Object> hm2 = new HashMap<>();
         hm2.put(pknm, "123");
 
-        ObjectId oid1 = new ObjectId("T", hm1);
-        ObjectId oid2 = new ObjectId("T", hm2);
+        ObjectId oid1 = ObjectId.of("T", hm1);
+        ObjectId oid2 = ObjectId.of("T", hm2);
 
         map.put(oid1, o1);
         assertSame(o1, map.get(oid2));
     }
 
     @Test
-    public void testNotEqual1() {
+    public void testNotEqualTmpKey() {
 
-        ObjectId oid1 = new ObjectId("T1");
-        ObjectId oid2 = new ObjectId("T2");
-        assertFalse(oid1.equals(oid2));
+        ObjectId oid1 = ObjectId.of("T1");
+        ObjectId oid2 = ObjectId.of("T2");
+        assertNotEquals(oid1, oid2);
     }
 
     @Test
-    public void testNotEqual2() {
+    public void testNotEqualSingleValueKey() {
 
         Map<String, Object> hm1 = new HashMap<>();
         hm1.put("pk1", "123");
 
         Map<String, Object> hm2 = new HashMap<>();
-        hm2.put("pk2", "123");
+        hm2.put("pk1", "124");
 
-        ObjectId oid1 = new ObjectId("T", hm1);
-        ObjectId oid2 = new ObjectId("T", hm2);
-        assertFalse(oid1.equals(oid2));
+        ObjectId oid1 = ObjectId.of("T", hm1);
+        ObjectId oid2 = ObjectId.of("T", hm2);
+        assertNotEquals(oid1, oid2);
     }
 
     /**
@@ -255,20 +292,18 @@ public class ObjectIdTest {
 
         // create maps with guaranteed iteration order
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> hm1 = new LinkedHashMap();
+        Map<String, Object> hm1 = new LinkedHashMap<>();
         hm1.put("KEY1", 1);
         hm1.put("KEY2", 2);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> hm2 = new LinkedHashMap();
+        Map<String, Object> hm2 = new LinkedHashMap<>();
         // put same keys but in different order
         hm2.put("KEY2", new BigDecimal(2.00));
         hm2.put("KEY1", 1L);
 
-        ObjectId ref = new ObjectId("T", hm1);
-        ObjectId oid = new ObjectId("T", hm2);
-        assertTrue(ref.equals(oid));
+        ObjectId ref = ObjectId.of("T", hm1);
+        ObjectId oid = ObjectId.of("T", hm2);
+        assertEquals(ref, oid);
         assertEquals(ref.hashCode(), oid.hashCode());
     }
 
@@ -277,13 +312,13 @@ public class ObjectIdTest {
         Map<String, Object> m1 = new HashMap<>();
         m1.put("a", "1");
         m1.put("b", "2");
-        ObjectId i1 = new ObjectId("e1", m1);
+        ObjectId i1 = ObjectId.of("e1", m1);
 
         Map<String, Object> m2 = new HashMap<>();
         m2.put("b", "2");
         m2.put("a", "1");
 
-        ObjectId i2 = new ObjectId("e1", m2);
+        ObjectId i2 = ObjectId.of("e1", m2);
 
         assertEquals(i1, i2);
         assertEquals(i1.toString(), i2.toString());

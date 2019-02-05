@@ -121,7 +121,7 @@ public class DataContextExtrasIT extends ServerCase {
         assertEquals(PersistenceState.NEW, object.getPersistenceState());
 
         // do a manual ID substitution
-        ObjectId manualId = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 77777);
+        ObjectId manualId = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 77777);
         object.setObjectId(manualId);
 
         context.commitChanges();
@@ -159,7 +159,7 @@ public class DataContextExtrasIT extends ServerCase {
     @Test
     public void testResolveFaultFailure() {
 
-        Persistent o1 = context.findOrCreateObject(new ObjectId(
+        Persistent o1 = context.findOrCreateObject(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 234));

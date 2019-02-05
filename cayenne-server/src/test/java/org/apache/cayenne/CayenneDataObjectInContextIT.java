@@ -299,10 +299,10 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         assertEquals(PersistenceState.NEW, object.getPersistenceState());
 
         // do a manual id substitution
-        object.setObjectId(new ObjectId(
+        object.setObjectId(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
-                new Integer(3)));
+                3));
 
         context.commitChanges();
         assertEquals(PersistenceState.COMMITTED, object.getPersistenceState());

@@ -53,19 +53,19 @@ public class ObjectStoreIT extends ServerCase {
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
 
         DataObject o1 = new MockDataObject();
-        o1.setObjectId(new ObjectId("T", "key1", "v1"));
+        o1.setObjectId(ObjectId.of("T", "key1", "v1"));
         context.getObjectStore().registerNode(o1.getObjectId(), o1);
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // test object with same id
         DataObject o2 = new MockDataObject();
-        o2.setObjectId(new ObjectId("T", "key1", "v1"));
+        o2.setObjectId(ObjectId.of("T", "key1", "v1"));
         context.getObjectStore().registerNode(o2.getObjectId(), o2);
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // test new object
         DataObject o3 = new MockDataObject();
-        o3.setObjectId(new ObjectId("T", "key3", "v3"));
+        o3.setObjectId(ObjectId.of("T", "key3", "v3"));
         context.getObjectStore().registerNode(o3.getObjectId(), o3);
         assertEquals(2, context.getObjectStore().registeredObjectsCount());
     }

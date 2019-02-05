@@ -32,7 +32,7 @@ public class RelationshipQueryTest {
     @Test
     public void testConstructorObjectId() {
 
-        ObjectId oid = new ObjectId("MockDataObject", "a", "b");
+        ObjectId oid = ObjectId.of("MockDataObject", "a", "b");
         RelationshipQuery query = new RelationshipQuery(oid, "relX");
         assertSame(oid, query.getObjectId());
         assertSame("relX", query.getRelationshipName());
@@ -40,7 +40,7 @@ public class RelationshipQueryTest {
 
     @Test
     public void testSerializability() throws Exception {
-        ObjectId oid = new ObjectId("test", "a", "b");
+        ObjectId oid = ObjectId.of("test", "a", "b");
         RelationshipQuery query = new RelationshipQuery(oid, "relX");
 
         RelationshipQuery q1 = (RelationshipQuery) Util.cloneViaSerialization(query);

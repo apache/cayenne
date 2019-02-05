@@ -219,7 +219,7 @@ public class DataContextIT extends ServerCase {
 		// the
 		// CAY-96 bug report)
 
-		ObjectId eId = new ObjectId("Exhibit", Exhibit.EXHIBIT_ID_PK_COLUMN, 2);
+        ObjectId eId = ObjectId.of("Exhibit", Exhibit.EXHIBIT_ID_PK_COLUMN, 2);
 		Exhibit e = (Exhibit) context.performQuery(new ObjectIdQuery(eId)).get(0);
 
 		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
@@ -690,7 +690,7 @@ public class DataContextIT extends ServerCase {
 
 		// testing this...
 		context.deleteObjects(hollow);
-		assertSame(hollow, context.getGraphManager().getNode(new ObjectId("Artist", "ARTIST_ID", 33001)));
+		assertSame(hollow, context.getGraphManager().getNode(ObjectId.of("Artist", "ARTIST_ID", 33001)));
 		assertEquals("artist1", hollow.getArtistName());
 
 		assertEquals(PersistenceState.DELETED, hollow.getPersistenceState());

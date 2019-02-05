@@ -153,12 +153,12 @@ public class QuotedIdentifiersIT extends ServerCase {
         List<QuoteAdress> objects7 = quoteAdress1.select(context);
         assertEquals(1, objects7.size());
 
-        ObjectIdQuery queryObjectId = new ObjectIdQuery(new ObjectId("QuoteAdress", QuoteAdress.GROUP.getName(), "324"));
+        ObjectIdQuery queryObjectId = new ObjectIdQuery(ObjectId.of("QuoteAdress", QuoteAdress.GROUP.getName(), "324"));
 
         List objects8 = context.performQuery(queryObjectId);
         assertEquals(1, objects8.size());
 
-        ObjectIdQuery queryObjectId2 = new ObjectIdQuery(new ObjectId("Quote_Person", "GROUP", "1111"));
+        ObjectIdQuery queryObjectId2 = new ObjectIdQuery(ObjectId.of("Quote_Person", "GROUP", "1111"));
         List objects9 = context.performQuery(queryObjectId2);
         assertEquals(1, objects9.size());
 

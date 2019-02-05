@@ -125,12 +125,12 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         Map<String, Object> id1 = new HashMap<>();
         id1.put("ARTIST_ID", 11);
         id1.put("EXHIBIT_ID", 2);
-        ObjectId oid1 = new ObjectId("ArtistExhibit", id1);
+        ObjectId oid1 = ObjectId.of("ArtistExhibit", id1);
 
         Map<String, Object> id2 = new HashMap<>();
         id2.put("ARTIST_ID", 101);
         id2.put("EXHIBIT_ID", 2);
-        ObjectId oid2 = new ObjectId("ArtistExhibit", id2);
+        ObjectId oid2 = ObjectId.of("ArtistExhibit", id2);
 
         assertNull(context.getGraphManager().getNode(oid1));
         assertNull(context.getGraphManager().getNode(oid2));

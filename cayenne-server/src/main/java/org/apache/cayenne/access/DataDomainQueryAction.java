@@ -189,22 +189,22 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
 		EntityInheritanceTree inheritanceTree = domain.getEntityResolver().getInheritanceTree(superOid.getEntityName());
 		if (!inheritanceTree.getChildren().isEmpty()) {
-			row = polymorphicRowFromCache(inheritanceTree, superOid.getIdSnapshot());
+			row = polymorphicRowFromCache(inheritanceTree, superOid);
 		}
 
 		return row;
 	}
     
-	private DataRow polymorphicRowFromCache(EntityInheritanceTree superNode, Map<String, ?> idSnapshot) {
+	private DataRow polymorphicRowFromCache(EntityInheritanceTree superNode, ObjectId superOid) {
 
 		for (EntityInheritanceTree child : superNode.getChildren()) {
-			ObjectId id = new ObjectId(child.getEntity().getName(), idSnapshot);
+			ObjectId id = ObjectId.of(child.getEntity().getName(), superOid);
 			DataRow row = cache.getCachedSnapshot(id);
 			if (row != null) {
 				return row;
 			}
 			
-			row = polymorphicRowFromCache(child, idSnapshot);
+			row = polymorphicRowFromCache(child, superOid);
 			if (row != null) {
 				return row;
 			}

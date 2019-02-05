@@ -126,7 +126,7 @@ public class DataRow extends HashMap<String, Object> {
         }
 
         Map<String, Object> target = relationship.targetPkSnapshotWithSrcSnapshot(this);
-        return (target != null) ? new ObjectId(entityName, target) : null;
+        return (target != null) ? ObjectId.of(entityName, target) : null;
     }
 
     @Override

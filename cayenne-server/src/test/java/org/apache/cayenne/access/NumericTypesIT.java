@@ -285,7 +285,7 @@ public class NumericTypesIT extends ServerCase {
         object.setDecimalPK(new BigDecimal("1.25"));
         context.commitChanges();
 
-        ObjectId syntheticId = new ObjectId(
+        ObjectId syntheticId = ObjectId.of(
                 "DecimalPKTestEntity",
                 "DECIMAL_PK",
                 new BigDecimal("1.25"));
@@ -305,7 +305,7 @@ public class NumericTypesIT extends ServerCase {
         object.setDecimalPK(1.25);
         context.commitChanges();
 
-        ObjectId syntheticId = new ObjectId("DecimalPKTest1", "DECIMAL_PK", 1.25);
+        ObjectId syntheticId = ObjectId.of("DecimalPKTest1", "DECIMAL_PK", 1.25);
         assertSame(object, context.getGraphManager().getNode(syntheticId));
     }
 

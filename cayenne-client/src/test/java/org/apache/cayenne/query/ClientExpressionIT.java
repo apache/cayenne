@@ -106,8 +106,8 @@ public class ClientExpressionIT extends ClientCase {
         assertEquals(t1.getObjectId(), values[0]);
         assertEquals(t2.getObjectId(), values[1]);
         
-        ObjectId t1Id = new ObjectId("MtTable1", "TABLE1_ID", 1);
-        ObjectId t2Id = new ObjectId("MtTable1", "TABLE1_ID", 2);
+        ObjectId t1Id = ObjectId.of("MtTable1", "TABLE1_ID", 1);
+        ObjectId t2Id = ObjectId.of("MtTable1", "TABLE1_ID", 2);
         t1.setObjectId(t1Id);
         t2.setObjectId(t2Id);
 
@@ -138,8 +138,8 @@ public class ClientExpressionIT extends ClientCase {
         assertEquals(t1.getObjectId(), values[0]);
         assertEquals(t2.getObjectId(), values[1]);
         
-        ObjectId t1Id = new ObjectId("MtTable1", "TABLE1_ID", 1);
-        ObjectId t2Id = new ObjectId("MtTable1", "TABLE1_ID", 2);
+        ObjectId t1Id = ObjectId.of("MtTable1", "TABLE1_ID", 1);
+        ObjectId t2Id = ObjectId.of("MtTable1", "TABLE1_ID", 2);
         t1.setObjectId(t1Id);
         t2.setObjectId(t2Id);
         

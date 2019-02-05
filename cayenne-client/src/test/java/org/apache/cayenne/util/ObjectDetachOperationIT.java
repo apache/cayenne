@@ -64,7 +64,7 @@ public class ObjectDetachOperationIT extends ClientCase {
         EntityResolver clientResolver = serverResover.getClientEntityResolver();
         ObjectDetachOperation op = new ObjectDetachOperation(clientResolver);
 
-        ObjectId oid = new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 456);
+        ObjectId oid = ObjectId.of("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 456);
         MtTable1 so = new MtTable1();
         so.setObjectId(oid);
         so.setGlobalAttribute1("gx");
@@ -96,7 +96,7 @@ public class ObjectDetachOperationIT extends ClientCase {
         EntityResolver clientResolver = serverResover.getClientEntityResolver();
         ObjectDetachOperation op = new ObjectDetachOperation(clientResolver);
 
-        ObjectId oid = new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 4);
+        ObjectId oid = ObjectId.of("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 4);
         MtTable1 so = new MtTable1();
         so.setObjectId(oid);
         so.setPersistenceState(PersistenceState.HOLLOW);

@@ -244,7 +244,7 @@ class ObjectResolver {
 			}
 
 			// PUT without a prefix
-			return new ObjectId(name, attribute.getName(), val);
+			return ObjectId.of(name, attribute.getName(), val);
 		}
 
 		// ... handle generic case - PK.size > 1
@@ -268,7 +268,7 @@ class ObjectResolver {
 			idMap.put(attribute.getName(), val);
 		}
 
-		return new ObjectId(name, idMap);
+		return ObjectId.of(name, idMap);
 	}
 
 	interface DescriptorResolutionStrategy {

@@ -145,7 +145,7 @@ public class EntityIdCoder {
 
         if (stringId.startsWith(TEMP_ID_PREFIX)) {
             String idValues = stringId.substring(entityName.length() + 1 + TEMP_PREFIX_LENGTH);
-            return new ObjectId(entityName, decodeTemp(idValues));
+            return ObjectId.of(entityName, decodeTemp(idValues));
         }
 
         String idValues = stringId.substring(entityName.length() + 1);
@@ -160,7 +160,7 @@ public class EntityIdCoder {
                 // unexpected
                 throw new CayenneRuntimeException("Unsupported encoding", e);
             }
-            return new ObjectId(entityName, entry.getKey(), entry.getValue().fromStringId(decoded));
+            return ObjectId.of(entityName, entry.getKey(), entry.getValue().fromStringId(decoded));
         }
 
         Map<String, Object> idMap = new HashMap<>(idSize);
@@ -185,7 +185,7 @@ public class EntityIdCoder {
             idMap.put(entry.getKey(), entry.getValue().fromStringId(decoded));
         }
 
-        return new ObjectId(entityName, idMap);
+        return ObjectId.of(entityName, idMap);
     }
 
     private byte[] decodeTemp(String byteString) {

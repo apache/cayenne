@@ -42,8 +42,8 @@ public class FlattenedArcKeyIT extends ServerCase {
 
     @Test
     public void testAttributes() {
-        ObjectId src = new ObjectId("X");
-        ObjectId target = new ObjectId("Y");
+        ObjectId src = ObjectId.of("X");
+        ObjectId target = ObjectId.of("Y");
         ObjRelationship r1 = entityResolver.getObjEntity(FlattenedTest3.class).getRelationship(
                 FlattenedTest3.TO_FT1.getName());
 
@@ -56,8 +56,8 @@ public class FlattenedArcKeyIT extends ServerCase {
 
     @Test
     public void testHashCode() {
-        ObjectId src = new ObjectId("X");
-        ObjectId target = new ObjectId("Y");
+        ObjectId src = ObjectId.of("X");
+        ObjectId target = ObjectId.of("Y");
         ObjRelationship r1 = entityResolver.getObjEntity(FlattenedTest3.class).getRelationship(
                 FlattenedTest3.TO_FT1.getName());
 
@@ -79,8 +79,8 @@ public class FlattenedArcKeyIT extends ServerCase {
 
     @Test
     public void testEquals() {
-        ObjectId src = new ObjectId("X");
-        ObjectId target = new ObjectId("Y");
+        ObjectId src = ObjectId.of("X");
+        ObjectId target = ObjectId.of("Y");
         ObjRelationship r1 = entityResolver.getObjEntity(FlattenedTest3.class).getRelationship(
                 FlattenedTest3.TO_FT1.getName());
 

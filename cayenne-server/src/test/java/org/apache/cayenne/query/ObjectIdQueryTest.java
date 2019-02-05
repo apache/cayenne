@@ -23,18 +23,14 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ObjectIdQueryTest {
 
     @Test
     public void testConstructorObjectId() {
 
-        ObjectId oid = new ObjectId("MockDataObject", "a", "b");
+        ObjectId oid = ObjectId.of("MockDataObject", "a", "b");
         ObjectIdQuery query = new ObjectIdQuery(oid);
 
         assertSame(oid, query.getObjectId());
@@ -42,7 +38,7 @@ public class ObjectIdQueryTest {
 
     @Test
     public void testSerializability() throws Exception {
-        ObjectId oid = new ObjectId("test", "a", "b");
+        ObjectId oid = ObjectId.of("test", "a", "b");
         ObjectIdQuery query = new ObjectIdQuery(oid);
 
         Object o = Util.cloneViaSerialization(query);
@@ -57,10 +53,10 @@ public class ObjectIdQueryTest {
      */
     @Test
     public void testEquals() throws Exception {
-        ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("abc", "a", 1));
-        ObjectIdQuery q2 = new ObjectIdQuery(new ObjectId("abc", "a", 1));
-        ObjectIdQuery q3 = new ObjectIdQuery(new ObjectId("abc", "a", 3));
-        ObjectIdQuery q4 = new ObjectIdQuery(new ObjectId("123", "a", 1));
+        ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("abc", "a", 1));
+        ObjectIdQuery q2 = new ObjectIdQuery(ObjectId.of("abc", "a", 1));
+        ObjectIdQuery q3 = new ObjectIdQuery(ObjectId.of("abc", "a", 3));
+        ObjectIdQuery q4 = new ObjectIdQuery(ObjectId.of("123", "a", 1));
 
         assertTrue(q1.equals(q2));
         assertEquals(q1.hashCode(), q2.hashCode());
@@ -74,7 +70,7 @@ public class ObjectIdQueryTest {
 
     @Test
     public void testMetadata() {
-        ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("abc", "a", 1), true, ObjectIdQuery.CACHE_REFRESH);
+        ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("abc", "a", 1), true, ObjectIdQuery.CACHE_REFRESH);
 
         assertTrue(q1.isFetchAllowed());
         assertTrue(q1.isFetchMandatory());
@@ -82,7 +78,7 @@ public class ObjectIdQueryTest {
         QueryMetadata md1 = q1.getMetaData(null);
         assertTrue(md1.isFetchingDataRows());
 
-        ObjectIdQuery q2 = new ObjectIdQuery(new ObjectId("abc", "a", 1), false, ObjectIdQuery.CACHE);
+        ObjectIdQuery q2 = new ObjectIdQuery(ObjectId.of("abc", "a", 1), false, ObjectIdQuery.CACHE);
 
         assertTrue(q2.isFetchAllowed());
         assertFalse(q2.isFetchMandatory());
@@ -90,7 +86,7 @@ public class ObjectIdQueryTest {
         QueryMetadata md2 = q2.getMetaData(null);
         assertFalse(md2.isFetchingDataRows());
 
-        ObjectIdQuery q3 = new ObjectIdQuery(new ObjectId("abc", "a", 1), false, ObjectIdQuery.CACHE_NOREFRESH);
+        ObjectIdQuery q3 = new ObjectIdQuery(ObjectId.of("abc", "a", 1), false, ObjectIdQuery.CACHE_NOREFRESH);
 
         assertFalse(q3.isFetchAllowed());
         assertFalse(q3.isFetchMandatory());

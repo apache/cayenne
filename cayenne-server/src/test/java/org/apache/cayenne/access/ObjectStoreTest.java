@@ -48,7 +48,7 @@ public class ObjectStoreTest {
     @Test
     public void testRegisterNode() {
 
-        ObjectId id = new ObjectId("E1", "ID", 500);
+        ObjectId id = ObjectId.of("E1", "ID", 500);
         Persistent object = mock(Persistent.class);
 
         objectStore.registerNode(id, object);
@@ -58,7 +58,7 @@ public class ObjectStoreTest {
     @Test
     public void testUnregisterNode() {
 
-        ObjectId id = new ObjectId("E1", "ID", 500);
+        ObjectId id = ObjectId.of("E1", "ID", 500);
         Persistent object = mock(Persistent.class);
 
         objectStore.registerNode(id, object);

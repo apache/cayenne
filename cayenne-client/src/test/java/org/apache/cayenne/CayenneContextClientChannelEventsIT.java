@@ -168,11 +168,11 @@ public class CayenneContextClientChannelEventsIT extends ClientCaseContextsSync 
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
-                new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable1", "TABLE1_ID", 1)));
 
         ClientMtTable1 o2 = (ClientMtTable1) Cayenne.objectForQuery(
                 c2,
-                new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable1", "TABLE1_ID", 1)));
 
         assertEquals("g1", o1.getGlobalAttribute1());
         assertEquals("g1", o2.getGlobalAttribute1());
@@ -200,18 +200,18 @@ public class CayenneContextClientChannelEventsIT extends ClientCaseContextsSync 
 
         ClientMtTable2 o1 = (ClientMtTable2) Cayenne.objectForQuery(
                 c1,
-                new ObjectIdQuery(new ObjectId("MtTable2", "TABLE2_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable2", "TABLE2_ID", 1)));
 
         ClientMtTable2 o2 = (ClientMtTable2) Cayenne.objectForQuery(
                 c2,
-                new ObjectIdQuery(new ObjectId("MtTable2", "TABLE2_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable2", "TABLE2_ID", 1)));
 
         assertEquals("g1", o1.getTable1().getGlobalAttribute1());
         assertEquals("g1", o2.getTable1().getGlobalAttribute1());
 
         ClientMtTable1 o1r = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
-                new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 2)));
+                new ObjectIdQuery(ObjectId.of("MtTable1", "TABLE1_ID", 2)));
         o1.setTable1(o1r);
         c1.commitChanges();
         
@@ -234,11 +234,11 @@ public class CayenneContextClientChannelEventsIT extends ClientCaseContextsSync 
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
-                new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable1", "TABLE1_ID", 1)));
 
         ClientMtTable1 o2 = (ClientMtTable1) Cayenne.objectForQuery(
                 c2,
-                new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable1", "TABLE1_ID", 1)));
 
         assertEquals(1, o1.getTable2Array().size());
         assertEquals(1, o2.getTable2Array().size());
@@ -268,7 +268,7 @@ public class CayenneContextClientChannelEventsIT extends ClientCaseContextsSync 
 
         ClientMtTable1 o1 = (ClientMtTable1) Cayenne.objectForQuery(
                 c1,
-                new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable1", "TABLE1_ID", 1)));
 
         // do not resolve objects in question in the second context and see if the merge
         // causes any issues...
@@ -288,7 +288,7 @@ public class CayenneContextClientChannelEventsIT extends ClientCaseContextsSync 
 
         ClientMtTable1 o2 = (ClientMtTable1) Cayenne.objectForQuery(
                 c2,
-                new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable1", "TABLE1_ID", 1)));
         assertEquals(2, o2.getTable2Array().size());
     }
 
@@ -305,18 +305,18 @@ public class CayenneContextClientChannelEventsIT extends ClientCaseContextsSync 
 
         ClientMtTable4 o1 = (ClientMtTable4) Cayenne.objectForQuery(
                 c1,
-                new ObjectIdQuery(new ObjectId("MtTable4", "ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable4", "ID", 1)));
 
         ClientMtTable4 o2 = (ClientMtTable4) Cayenne.objectForQuery(
                 c2,
-                new ObjectIdQuery(new ObjectId("MtTable4", "ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable4", "ID", 1)));
 
         assertEquals(2, o1.getTable5s().size());
         assertEquals(2, o2.getTable5s().size());
 
         ClientMtTable5 o1r = (ClientMtTable5) Cayenne.objectForQuery(
                 c1,
-                new ObjectIdQuery(new ObjectId("MtTable5", "ID", 1)));
+                new ObjectIdQuery(ObjectId.of("MtTable5", "ID", 1)));
         o1.removeFromTable5s(o1r);
 
         c1.commitChanges();

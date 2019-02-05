@@ -218,22 +218,22 @@ public abstract class ObjectContextQueryAction {
 
 		EntityInheritanceTree inheritanceTree = actingContext.getEntityResolver().getInheritanceTree(superOid.getEntityName());
 		if (!inheritanceTree.getChildren().isEmpty()) {
-			object = polymorphicObjectFromCache(inheritanceTree, superOid.getIdSnapshot());
+			object = polymorphicObjectFromCache(inheritanceTree, superOid);
 		}
 
 		return object;
 	}
     
-	private Object polymorphicObjectFromCache(EntityInheritanceTree superNode, Map<String, ?> idSnapshot) {
+	private Object polymorphicObjectFromCache(EntityInheritanceTree superNode, ObjectId superOid) {
 
 		for (EntityInheritanceTree child : superNode.getChildren()) {
-			ObjectId id = new ObjectId(child.getEntity().getName(), idSnapshot);
+			ObjectId id = ObjectId.of(child.getEntity().getName(), superOid);
 			Object object = actingContext.getGraphManager().getNode(id);
 			if (object != null) {
 				return object;
 			}
 			
-			object = polymorphicObjectFromCache(child, idSnapshot);
+			object = polymorphicObjectFromCache(child, superOid);
 			if (object != null) {
 				return object;
 			}

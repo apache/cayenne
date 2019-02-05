@@ -34,17 +34,17 @@ public class ObjectIdTest {
 
     @Test
     public void testHessianSerializabilityTemp() throws Exception {
-        ObjectId temp1 = new ObjectId("e");
+        ObjectId temp1 = ObjectId.of("e");
 
         // make sure hashcode is resolved
         int h = temp1.hashCode();
-        assertEquals(h, temp1.hashCode);
-        assertTrue(temp1.hashCode != 0);
+        assertEquals(h, temp1.hashCode());
+        assertTrue(temp1.hashCode() != 0);
 
         ObjectId temp2 = (ObjectId) HessianUtil.cloneViaClientServerSerialization(temp1, new EntityResolver());
 
         // make sure hashCode is reset to 0
-        assertTrue(temp2.hashCode == 0);
+        assertEquals(h, temp2.hashCode());
 
         assertTrue(temp1.isTemporary());
         assertNotSame(temp1, temp2);
@@ -53,17 +53,16 @@ public class ObjectIdTest {
 
     @Test
     public void testHessianSerializabilityPerm() throws Exception {
-        ObjectId perm1 = new ObjectId("e", "a", "b");
+        ObjectId perm1 = ObjectId.of("e", "a", "b");
 
         // make sure hashcode is resolved
         int h = perm1.hashCode();
-        assertEquals(h, perm1.hashCode);
-        assertTrue(perm1.hashCode != 0);
+        assertEquals(h, perm1.hashCode());
+        assertTrue(perm1.hashCode() != 0);
 
         ObjectId perm2 = (ObjectId) HessianUtil.cloneViaClientServerSerialization(perm1, new EntityResolver());
 
-        // make sure hashCode is reset to 0
-        assertTrue(perm2.hashCode == 0);
+        assertEquals(h, perm2.hashCode());
 
         assertFalse(perm2.isTemporary());
         assertNotSame(perm1, perm2);
@@ -74,8 +73,8 @@ public class ObjectIdTest {
     public void testHessianSerializabilityPerm1() throws Exception {
         // test serializing an id created with unmodifiable map
 
-        Map id = Collections.unmodifiableMap(Collections.singletonMap("a", "b"));
-        ObjectId perm1 = new ObjectId("e", id);
+        Map<String, Object> id = Collections.unmodifiableMap(Collections.singletonMap("a", "b"));
+        ObjectId perm1 = ObjectId.of("e", id);
         ObjectId perm2 = (ObjectId) HessianUtil.cloneViaClientServerSerialization(perm1, new EntityResolver());
 
         assertFalse(perm2.isTemporary());

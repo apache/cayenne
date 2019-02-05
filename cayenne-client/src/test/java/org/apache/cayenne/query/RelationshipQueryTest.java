@@ -30,7 +30,7 @@ public class RelationshipQueryTest {
 
     @Test
     public void testSerializabilityWithHessian() throws Exception {
-        ObjectId oid = new ObjectId("test", "a", "b");
+        ObjectId oid = ObjectId.of("test", "a", "b");
         RelationshipQuery query = new RelationshipQuery(oid, "relX");
 
         RelationshipQuery q1 = (RelationshipQuery) HessianUtil.cloneViaClientServerSerialization(query,

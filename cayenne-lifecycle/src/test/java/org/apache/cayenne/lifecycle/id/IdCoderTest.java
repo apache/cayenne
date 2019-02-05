@@ -46,14 +46,14 @@ public class IdCoderTest {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         E1 e1 = new E1();
-        e1.setObjectId(new ObjectId("E1", "ID", 5));
+        e1.setObjectId(ObjectId.of("E1", "ID", 5));
         assertEquals("E1:5", handler.getStringId(e1));
     }
 
     @Test
     public void testGetStringId_ObjectId() {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
-        assertEquals("E1:5", handler.getStringId(new ObjectId("E1", "ID", 5)));
+        assertEquals("E1:5", handler.getStringId(ObjectId.of("E1", "ID", 5)));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class IdCoderTest {
         byte[] key = new byte[] { 1, 2, 10, 100 };
 
         E1 e1 = new E1();
-        e1.setObjectId(new ObjectId("E1", key));
+        e1.setObjectId(ObjectId.of("E1", key));
 
         assertEquals(".E1:01020A64", handler.getStringId(e1));
     }
@@ -75,7 +75,7 @@ public class IdCoderTest {
         byte[] key = new byte[] { 1, (byte) 0xD7, 10, 100 };
 
         ObjectId decoded = handler.getObjectId(".E1:01D70A64");
-        assertEquals(new ObjectId("E1", key), decoded);
+        assertEquals(ObjectId.of("E1", key), decoded);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class IdCoderTest {
         IdCoder handler = new IdCoder(runtime.getChannel().getEntityResolver());
 
         byte[] key = new byte[] { 5, 2, 11, 99 };
-        ObjectId id = new ObjectId("E1", key);
+        ObjectId id = ObjectId.of("E1", key);
         id.getReplacementIdMap().put("ID", 6);
 
         E1 e1 = new E1();

@@ -108,13 +108,13 @@ public class ShallowMergeOperationIT extends ServerCase {
         int modifiedId = 33003;
         final Artist modified = (Artist) Cayenne.objectForQuery(
                 context,
-                new ObjectIdQuery(new ObjectId(
+                new ObjectIdQuery(ObjectId.of(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));
         final Artist peerModified = (Artist) Cayenne.objectForQuery(
                 childContext,
-                new ObjectIdQuery(new ObjectId(
+                new ObjectIdQuery(ObjectId.of(
                         "Artist",
                         Artist.ARTIST_ID_PK_COLUMN,
                         modifiedId)));

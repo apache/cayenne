@@ -56,7 +56,7 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         obj.setPkAttribute(1000);
         obj.setDescr("aaa-aaa");
         context.commitChanges();
-        ObjectId objId = new ObjectId("MeaningfulPKTest1", MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN, 1000);
+        ObjectId objId = ObjectId.of("MeaningfulPKTest1", MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN, 1000);
         ObjectIdQuery q = new ObjectIdQuery(objId, true, ObjectIdQuery.CACHE_REFRESH);
         @SuppressWarnings("unchecked")
         List<DataRow> result = (List<DataRow>)context.performQuery(q);

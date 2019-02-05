@@ -63,7 +63,7 @@ public class StatementFetchSizeIT extends ServerCase {
                 .getStatementFetchSize());
         context.performQuery(ejbql);
 
-        ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
+        ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         RelationshipQuery relationshipQuery = new RelationshipQuery(
                 id,
                 Artist.PAINTING_ARRAY.getName(),

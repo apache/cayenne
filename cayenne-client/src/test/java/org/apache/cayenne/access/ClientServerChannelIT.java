@@ -125,7 +125,7 @@ public class ClientServerChannelIT extends ClientCase {
 
 		// introduce changes
 		clientServerChannel.onSync(serverContext
-				, new NodeCreateOperation(new ObjectId("MtTable1"))
+				, new NodeCreateOperation(ObjectId.of("MtTable1"))
 				, DataChannel.FLUSH_CASCADE_SYNC);
 
 		assertEquals(1, serverContext.performQuery(query).size());
@@ -150,7 +150,7 @@ public class ClientServerChannelIT extends ClientCase {
 		ClientMtTable1 clientObject = (ClientMtTable1) result;
 		assertNotNull(clientObject.getObjectId());
 
-		assertEquals(new ObjectId("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 55), clientObject.getObjectId());
+		assertEquals(ObjectId.of("MtTable1", MtTable1.TABLE1_ID_PK_COLUMN, 55), clientObject.getObjectId());
 	}
 
 	@Test

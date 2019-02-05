@@ -75,10 +75,10 @@ public class PersistentObjectInContextIT extends ClientCase {
     public void testResolveToManyReverseResolved() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        ObjectId gid = new ObjectId(
+        ObjectId gid = ObjectId.of(
                 "MtTable1",
                 MtTable1.TABLE1_ID_PK_COLUMN,
-                new Integer(1));
+                1);
         ClientMtTable1 t1 = (ClientMtTable1) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(gid));
@@ -100,10 +100,10 @@ public class PersistentObjectInContextIT extends ClientCase {
     public void testToOneRelationship() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        ObjectId gid = new ObjectId(
+        ObjectId gid = ObjectId.of(
                 "MtTable2",
                 MtTable2.TABLE2_ID_PK_COLUMN,
-                new Integer(1));
+                1);
         ClientMtTable2 mtTable21 = (ClientMtTable2) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(gid));
@@ -119,10 +119,10 @@ public class PersistentObjectInContextIT extends ClientCase {
     public void testResolveToOneReverseResolved() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        ObjectId gid = new ObjectId(
+        ObjectId gid = ObjectId.of(
                 "MtTable2",
                 MtTable2.TABLE2_ID_PK_COLUMN,
-                new Integer(1));
+                1);
         ClientMtTable2 mtTable21 = (ClientMtTable2) Cayenne.objectForQuery(
                 context,
                 new ObjectIdQuery(gid));

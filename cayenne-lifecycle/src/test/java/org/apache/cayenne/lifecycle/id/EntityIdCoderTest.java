@@ -64,7 +64,7 @@ public class EntityIdCoderTest {
         EntityIdCoder coder = new EntityIdCoder(e1);
 
         byte[] key = new byte[] { 2, 2, 10, 100 };
-        ObjectId encoded = new ObjectId("E1", key);
+        ObjectId encoded = ObjectId.of("E1", key);
 
         String string = coder.toStringId(encoded);
         assertEquals(".E1:02020A64", string);
@@ -87,7 +87,7 @@ public class EntityIdCoderTest {
         when(entity.getDbEntityName()).thenReturn(dbEntity.getName());
         when(entity.getDbEntity()).thenReturn(dbEntity);
 
-        ObjectId id = new ObjectId("x", "ID", 3);
+        ObjectId id = ObjectId.of("x", "ID", 3);
 
         EntityIdCoder coder = new EntityIdCoder(entity);
         assertEquals("x:3", coder.toStringId(id));
@@ -109,7 +109,7 @@ public class EntityIdCoderTest {
         when(entity.getDbEntityName()).thenReturn(dbEntity.getName());
         when(entity.getDbEntity()).thenReturn(dbEntity);
 
-        ObjectId id = new ObjectId("x", "ID", 3L);
+        ObjectId id = ObjectId.of("x", "ID", 3L);
 
         EntityIdCoder coder = new EntityIdCoder(entity);
         assertEquals("x:3", coder.toStringId(id));
@@ -133,7 +133,7 @@ public class EntityIdCoderTest {
 
         EntityIdCoder coder = new EntityIdCoder(entity);
 
-        ObjectId id = new ObjectId("x", "ID", "AbC");
+        ObjectId id = ObjectId.of("x", "ID", "AbC");
         assertEquals("x:AbC", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:AbC");
@@ -155,7 +155,7 @@ public class EntityIdCoderTest {
 
         EntityIdCoder coder = new EntityIdCoder(entity);
 
-        ObjectId id = new ObjectId("x", "ID", "Ab:C");
+        ObjectId id = ObjectId.of("x", "ID", "Ab:C");
         assertEquals("x:Ab%3AC", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:Ab%3AC");
@@ -191,7 +191,7 @@ public class EntityIdCoderTest {
         idMap.put("ID", "X;Y");
         idMap.put("ABC", 6783463L);
         idMap.put("ZZZ", "'_'");
-        ObjectId id = new ObjectId("x", idMap);
+        ObjectId id = ObjectId.of("x", idMap);
         assertEquals("x:6783463:X%3BY:%27_%27", coder.toStringId(id));
 
         ObjectId parsedId = coder.toObjectId("x:6783463:X%3BY:%27_%27");

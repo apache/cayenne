@@ -56,7 +56,7 @@ public class DataContextObjectIdQueryIT extends ServerCase {
                 "UPDATE ARTIST SET DATE_OF_BIRTH = NULL"));
 
         long id = Cayenne.longPKForObject(a);
-        ObjectIdQuery query = new ObjectIdQuery(new ObjectId(
+        ObjectIdQuery query = new ObjectIdQuery(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 id), false, ObjectIdQuery.CACHE_REFRESH);
@@ -79,7 +79,7 @@ public class DataContextObjectIdQueryIT extends ServerCase {
                 "UPDATE ARTIST SET ARTIST_NAME = 'Y'"));
 
         long id = Cayenne.longPKForObject(a);
-        ObjectIdQuery query = new ObjectIdQuery(new ObjectId(
+        ObjectIdQuery query = new ObjectIdQuery(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 id), false, ObjectIdQuery.CACHE);
@@ -106,7 +106,7 @@ public class DataContextObjectIdQueryIT extends ServerCase {
                 Artist.class,
                 "UPDATE ARTIST SET DATE_OF_BIRTH = NULL"));
 
-        ObjectIdQuery query = new ObjectIdQuery(new ObjectId(
+        ObjectIdQuery query = new ObjectIdQuery(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 44l), false, ObjectIdQuery.CACHE_REFRESH);

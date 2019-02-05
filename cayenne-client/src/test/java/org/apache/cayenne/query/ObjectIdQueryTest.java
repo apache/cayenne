@@ -31,7 +31,7 @@ public class ObjectIdQueryTest {
 
     @Test
     public void testSerializabilityWithHessian() throws Exception {
-        ObjectId oid = new ObjectId("test", "a", "b");
+        ObjectId oid = ObjectId.of("test", "a", "b");
         ObjectIdQuery query = new ObjectIdQuery(oid);
 
         Object o = HessianUtil.cloneViaClientServerSerialization(query, new EntityResolver());

@@ -325,8 +325,7 @@ public class CayenneContext extends BaseContext {
          */
         ObjectId id = object.getObjectId();
         if (id == null) {
-            id = new ObjectId(entityName);
-            object.setObjectId(id);
+            object.setObjectId(ObjectId.of(entityName));
         }
 
         injectInitialValue(object);

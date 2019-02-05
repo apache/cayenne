@@ -74,7 +74,7 @@ public class ClientChannelTest {
     public void testOnQuerySelect() {
 
         final MockPersistentObject o1 = new MockPersistentObject();
-        ObjectId oid1 = new ObjectId("test_entity");
+        ObjectId oid1 = ObjectId.of("test_entity");
         o1.setObjectId(oid1);
 
         ClientConnection connection = mock(ClientConnection.class);
@@ -135,7 +135,7 @@ public class ClientChannelTest {
         CayenneContext context = new CayenneContext();
         context.setEntityResolver(resolver);
 
-        ObjectId oid = new ObjectId("test_entity", "x", "y");
+        ObjectId oid = ObjectId.of("test_entity", "x", "y");
 
         MockPersistentObject o1 = new MockPersistentObject(oid);
         context.getGraphManager().registerNode(oid, o1);
@@ -176,7 +176,7 @@ public class ClientChannelTest {
         CayenneContext context = new CayenneContext();
         context.setEntityResolver(resolver);
 
-        ObjectId oid = new ObjectId("test_entity", "x", "y");
+        ObjectId oid = ObjectId.of("test_entity", "x", "y");
 
         MockPersistentObject o1 = new MockPersistentObject(oid);
         o1.setPersistenceState(PersistenceState.MODIFIED);

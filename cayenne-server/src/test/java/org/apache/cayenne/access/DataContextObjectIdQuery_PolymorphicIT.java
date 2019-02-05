@@ -62,7 +62,7 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
 		tPerson.insert(1, "P1", "EM");
 
-		final ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("AbstractPerson", "PERSON_ID", 1), false,
+		final ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("AbstractPerson", "PERSON_ID", 1), false,
 				ObjectIdQuery.CACHE);
 
 		AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context1, q1);
@@ -93,7 +93,7 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
 
 		final ObjectIdQuery q1 = new ObjectIdQuery(
-				new ObjectId("AbstractPerson", "PERSON_ID", Cayenne.intPKForObject(e)),
+				ObjectId.of("AbstractPerson", "PERSON_ID", Cayenne.intPKForObject(e)),
 				false,
 				ObjectIdQuery.CACHE);
 
@@ -114,7 +114,7 @@ public class DataContextObjectIdQuery_PolymorphicIT extends PeopleProjectCase {
 
 		tPerson.insert(1, "P1", "EM");
 
-		final ObjectIdQuery q1 = new ObjectIdQuery(new ObjectId("AbstractPerson", "PERSON_ID", 1), false,
+		final ObjectIdQuery q1 = new ObjectIdQuery(ObjectId.of("AbstractPerson", "PERSON_ID", 1), false,
 				ObjectIdQuery.CACHE);
 
 		AbstractPerson ap1 = (AbstractPerson) Cayenne.objectForQuery(context1, q1);

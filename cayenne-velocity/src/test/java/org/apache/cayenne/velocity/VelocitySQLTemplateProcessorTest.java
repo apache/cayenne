@@ -154,7 +154,7 @@ public class VelocitySQLTemplateProcessorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($helper.cayenneExp($a, 'db:ID_COLUMN'))";
 
 		DataObject dataObject = new CayenneDataObject();
-		dataObject.setObjectId(new ObjectId("T", "ID_COLUMN", 5));
+		dataObject.setObjectId(ObjectId.of("T", "ID_COLUMN", 5));
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", dataObject);
 
@@ -172,9 +172,9 @@ public class VelocitySQLTemplateProcessorTest {
 				+ "AND COLUMN2 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN2'))";
 
 		Map<String, Object> idMap = new HashMap<>();
-		idMap.put("ID_COLUMN1", new Integer(3));
+		idMap.put("ID_COLUMN1", 3);
 		idMap.put("ID_COLUMN2", "aaa");
-		ObjectId id = new ObjectId("T", idMap);
+        ObjectId id = ObjectId.of("T", idMap);
 		DataObject dataObject = new CayenneDataObject();
 		dataObject.setObjectId(id);
 

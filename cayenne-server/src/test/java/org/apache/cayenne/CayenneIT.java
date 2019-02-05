@@ -152,8 +152,7 @@ public class CayenneIT extends ServerCase {
     public void testObjectForQuery() throws Exception {
         createOneArtist();
 
-        ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, new Integer(
-                33002));
+        ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 33002);
 
         assertNull(context.getGraphManager().getNode(id));
 
@@ -180,8 +179,7 @@ public class CayenneIT extends ServerCase {
     @Test
     public void testObjectForQueryNoObject() throws Exception {
 
-        ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, new Integer(
-                44001));
+        ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 44001);
 
         Object object = Cayenne.objectForQuery(context, new ObjectIdQuery(id));
         assertNull(object);
@@ -204,16 +202,14 @@ public class CayenneIT extends ServerCase {
         assertSame(o1, Cayenne.objectForPK(context, o1.getObjectId()));
         assertSame(o2, Cayenne.objectForPK(context, o2.getObjectId()));
 
-        assertNull(Cayenne.objectForPK(context, new ObjectId("Artist", new byte[] {
-                1, 2, 3
-        })));
+        assertNull(Cayenne.objectForPK(context, ObjectId.of("Artist", new byte[] {1, 2, 3})));
     }
 
     @Test
     public void testObjectForPKObjectId() throws Exception {
         createOneArtist();
 
-        Object object = Cayenne.objectForPK(context, new ObjectId(
+        Object object = Cayenne.objectForPK(context, ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33002));
