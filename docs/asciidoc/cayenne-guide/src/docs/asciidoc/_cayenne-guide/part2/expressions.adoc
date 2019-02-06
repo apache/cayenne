@@ -215,7 +215,7 @@ Checking whether an object satisfies an expression:
 
 [source, java]
 ----
-Expression e = Artist.NAME.in("John", "Bob");
+Expression e = ExpressionFactory.inExp("artistName", "John", "Bob");
 Artist artist = ...
 if(e.match(artist)) {
    ...
@@ -235,7 +235,7 @@ Filtering a list of objects:
 
 [source, java]
 ----
-Expression e = Artist.NAME.in("John", "Bob");
+Expression e = ExpressionFactory.inExp("artistName", "John", "Bob");
 List<Artist> unfiltered = ...
 List<Artist> filtered = e.filterObjects(unfiltered);
 ----
