@@ -204,4 +204,23 @@ public class ObjectSelect_RunIT extends ServerCase {
 		assertNotNull(a);
 		assertEquals("artist1", a.getArtistName());
 	}
+
+	@Test
+	public void test_Select_Having() {
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.having(Artist.PAINTING_ARRAY.count().gt(3L))
+				.select(context);
+
+		assertEquals(5, artists.size());
+	}
+
+	@Test
+	public void test_Select_Where_Having() {
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.where(Artist.ARTIST_NAME.eq("artist1"))
+				.having(Artist.PAINTING_ARRAY.count().gt(3L))
+				.select(context);
+
+		assertEquals(1, artists.size());
+	}
 }

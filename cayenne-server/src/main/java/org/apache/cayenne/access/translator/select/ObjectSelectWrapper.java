@@ -74,7 +74,7 @@ public class ObjectSelectWrapper implements TranslatableQueryWrapper {
 
     @Override
     public Expression getHavingQualifier() {
-        return null;
+        return selectQuery.getHaving();
     }
 
     @Override

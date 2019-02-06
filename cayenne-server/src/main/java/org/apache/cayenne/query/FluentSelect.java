@@ -43,6 +43,7 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
     protected String entityName;
     protected String dbEntityName;
     protected Expression where;
+    protected Expression having;
     protected Collection<Ordering> orderings;
     protected PrefetchTreeNode prefetches;
     protected int limit;
@@ -51,6 +52,8 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
     protected int statementFetchSize;
     protected QueryCacheStrategy cacheStrategy;
     protected String cacheGroup;
+
+    boolean havingExpressionIsActive = false;
 
     protected FluentSelect() {
     }
@@ -88,6 +91,7 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
         }
 
         replacement.setQualifier(where);
+        replacement.setHavingQualifier(having);
         replacement.addOrderings(orderings);
         replacement.setPrefetchTree(prefetches);
         replacement.setCacheStrategy(cacheStrategy);
@@ -143,12 +147,36 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
         return where;
     }
 
+    /**
+     * Returns a HAVING clause Expression of this query.
+     */
+    public Expression getHaving() {
+        return having;
+    }
+
     public Collection<Ordering> getOrderings() {
         return orderings;
     }
 
     public PrefetchTreeNode getPrefetches() {
         return prefetches;
+    }
+
+    void setActiveExpression(Expression exp) {
+        if(havingExpressionIsActive) {
+            having = exp;
+        } else {
+            where = exp;
+        }
+        replacementQuery = null;
+    }
+
+    Expression getActiveExpression() {
+        if(havingExpressionIsActive) {
+            return having;
+        } else {
+            return where;
+        }
     }
 
     @Override
