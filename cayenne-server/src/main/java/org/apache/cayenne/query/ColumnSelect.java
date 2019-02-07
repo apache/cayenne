@@ -67,10 +67,8 @@ import org.apache.cayenne.map.ObjEntity;
 public class ColumnSelect<T> extends FluentSelect<T> {
 
     private Collection<BaseProperty<?>> columns;
-    private boolean havingExpressionIsActive = false;
     // package private for tests
     boolean singleColumn = true;
-    private Expression having;
     boolean distinct;
     boolean suppressDistinct;
 
@@ -88,6 +86,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         this.entityName = select.entityName;
         this.dbEntityName = select.dbEntityName;
         this.where = select.where;
+        this.having = select.having;
         this.orderings = select.orderings;
         this.prefetches = select.prefetches;
         this.limit = select.limit;
@@ -102,7 +101,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     protected Query createReplacementQuery(EntityResolver resolver) {
         SelectQuery<?> replacement = (SelectQuery)super.createReplacementQuery(resolver);
         replacement.setColumns(columns);
-        replacement.setHavingQualifier(having);
         replacement.setCanReturnScalarValue(singleColumn);
         replacement.setDistinct(distinct);
         replacement.setSuppressDistinct(suppressDistinct);
@@ -658,32 +656,8 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         return this;
     }
 
-    private void setActiveExpression(Expression exp) {
-        if(havingExpressionIsActive) {
-            having = exp;
-        } else {
-            where = exp;
-        }
-        replacementQuery = null;
-    }
-
-    private Expression getActiveExpression() {
-        if(havingExpressionIsActive) {
-            return having;
-        } else {
-            return where;
-        }
-    }
-
     public Collection<BaseProperty<?>> getColumns() {
         return columns;
-    }
-
-    /**
-     * Returns a HAVING clause Expression of this query.
-     */
-    public Expression getHaving() {
-        return having;
     }
 
     /**
