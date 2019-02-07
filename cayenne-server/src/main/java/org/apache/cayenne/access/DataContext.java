@@ -44,6 +44,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.event.NoopEventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -53,7 +54,12 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.MappedExec;
+import org.apache.cayenne.query.MappedSelect;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -140,7 +146,7 @@ public class DataContext extends BaseContext {
 
         EventManager eventManager = channel.getEventManager();
 
-        if (eventManager != null) {
+        if (eventManager != null && !(eventManager instanceof NoopEventManager)) {
             mergeHandler = new DataContextMergeHandler(this);
 
             // listen to our channel events...

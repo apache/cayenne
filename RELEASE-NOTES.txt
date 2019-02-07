@@ -8,6 +8,17 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.0.2
+Date:
+----------------------------------
+
+=======
+Changes/New Features:
+
+CAY-2517 EventManager: optimization of adding listeners
+CAY-2519 Use NoopEventManager if SERVER_CONTEXTS_SYNC_PROPERTY is false
+
+----------------------------------
 Release: 4.0.1
 Date: December 20, 2018
 ----------------------------------
@@ -20,7 +31,6 @@ CAY-2474 Modeler: swap buttons in dialog toolbar
 CAY-2475 Modeler: move inheritance icon to name column in objAttr table and objRel table
 CAY-2476 Modeler: Fixed wrong behaviour of code generation dialog
 CAY-2479 Modeler: update cgen dialog
-CAY-2517 EventManager: optimization of adding listeners
 
 Bug Fixes:
 
