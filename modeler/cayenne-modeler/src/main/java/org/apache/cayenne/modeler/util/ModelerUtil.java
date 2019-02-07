@@ -19,18 +19,6 @@
 
 package org.apache.cayenne.modeler.util;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ModelerConstants;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.ActionManager;
-import org.apache.cayenne.modeler.action.MultipleObjectsAction;
-import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.cayenne.util.CayenneMapEntry;
-
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import java.awt.Dimension;
@@ -48,11 +36,22 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.UUID;
+
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ModelerConstants;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.ActionManager;
+import org.apache.cayenne.modeler.action.MultipleObjectsAction;
+import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Various unorganized utility methods used by CayenneModeler.
@@ -124,7 +123,6 @@ public final class ModelerUtil {
                 Short.class.getName(),
                 Time.class.getName(),
                 Timestamp.class.getName(),
-                Date.class.getName(),
                 GregorianCalendar.class.getName(),
                 Calendar.class.getName(),
                 UUID.class.getName(),
