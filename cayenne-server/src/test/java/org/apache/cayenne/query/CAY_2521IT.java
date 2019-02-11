@@ -67,15 +67,21 @@ public class CAY_2521IT extends ServerCase {
 
     @After
     public void after() throws SQLException {
+        this.tLocation.update().set("team_id", null, Types.INTEGER).execute();
+        this.tTeam.update().set("home_location_id", null, Types.INTEGER).execute();
+
         this.tIssue.deleteAll();
-        this.tTeam.deleteAll();
         this.tLocation.deleteAll();
+        this.tTeam.deleteAll();
     }
 
     private void createDataSet() throws SQLException {
         tLocation.insert(71, "Test", null);
-        tTeam.insert(71, 8);
+        tTeam.insert(null, 8);
         tIssue.insert(8, 100, 71);
+
+        tLocation.update().set("team_id", 8).execute();
+        tTeam.update().set("home_location_id", 71).execute();
     }
 
     @Test

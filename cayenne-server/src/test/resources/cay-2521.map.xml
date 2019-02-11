@@ -6,11 +6,11 @@
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2521"/>
 	<db-entity name="ISSUE">
 		<db-attribute name="home_team_id" type="INTEGER" length="10"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
 		<db-attribute name="location_id" type="INTEGER" length="10"/>
 	</db-entity>
 	<db-entity name="LOCATION">
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="10"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
 		<db-attribute name="name" type="VARCHAR" length="45"/>
 		<db-attribute name="team_id" type="INTEGER" length="10"/>
 	</db-entity>
