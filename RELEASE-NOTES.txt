@@ -29,6 +29,7 @@ Bug Fixes:
 
 CAY-2332 Property API: unable to use eq() and in() methods for toMany relationships
 CAY-2509 Result of resolving lazily faulted relationships can be out-of-date
+CAY-2530 DB Import and Class Generation from Project is performed for removed datamaps
 CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
 

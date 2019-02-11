@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.dbimport.domain;
 
+import java.util.Set;
+
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
@@ -26,16 +28,13 @@ import org.apache.cayenne.modeler.action.ReverseEngineeringAction;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 
-import java.util.Set;
-
 /**
  * @since 4.1
  */
 public class DbImportTabController extends GeneratorsTabController {
 
     public DbImportTabController(ProjectController projectController) {
-        super(ReverseEngineering.class);
-        this.projectController = projectController;
+        super(ReverseEngineering.class, projectController);
         this.view = new DbImportTab(projectController, this);
     }
 

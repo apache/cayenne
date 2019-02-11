@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,8 +46,7 @@ import org.apache.cayenne.tools.ToolsInjectorBuilder;
 public class CgenTabController extends GeneratorsTabController {
 
     public CgenTabController(ProjectController projectController) {
-        super(CgenConfiguration.class);
-        this.projectController = projectController;
+        super(CgenConfiguration.class, projectController);
         this.view = new CgenTab(projectController, this);
     }
 
