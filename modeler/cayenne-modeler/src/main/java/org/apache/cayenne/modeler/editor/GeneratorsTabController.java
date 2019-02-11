@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import java.awt.event.ItemEvent;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
@@ -25,13 +32,6 @@ import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.awt.event.ItemEvent;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @since 4.1
@@ -46,10 +46,11 @@ public abstract class GeneratorsTabController {
     public ConcurrentMap<DataMap, GeneratorsPanel> generatorsPanels;
     public Set<DataMap> selectedDataMaps;
 
-    public GeneratorsTabController(Class type) {
+    public GeneratorsTabController(Class type, ProjectController projectController) {
         this.type = type;
         this.generatorsPanels = new ConcurrentHashMap<>();
         this.selectedDataMaps = new HashSet<>();
+        this.projectController = projectController;
     }
 
     public String icon;
@@ -58,6 +59,7 @@ public abstract class GeneratorsTabController {
 
     public void createPanels(){
         Collection<DataMap> dataMaps = getDataMaps();
+        refreshSelectedMaps(dataMaps);
         generatorsPanels.clear();
         for(DataMap dataMap : dataMaps) {
             GeneratorsPanel generatorPanel = new GeneratorsPanel(dataMap, "icon-datamap.png", type);
@@ -131,5 +133,9 @@ public abstract class GeneratorsTabController {
 
     Set<DataMap> getSelectedDataMaps() {
         return selectedDataMaps;
+    }
+
+    private void refreshSelectedMaps(Collection<DataMap> dataMaps) {
+        selectedDataMaps.removeIf(dataMap -> !dataMaps.contains(dataMap));
     }
 }

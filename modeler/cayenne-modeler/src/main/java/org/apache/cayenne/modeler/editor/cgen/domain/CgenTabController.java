@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
+import javax.swing.JOptionPane;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
+import java.util.prefs.Preferences;
+
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -31,22 +39,13 @@ import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
-import javax.swing.JOptionPane;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Set;
-import java.util.prefs.Preferences;
-
 /**
  * @since 4.1
  */
 public class CgenTabController extends GeneratorsTabController {
 
     public CgenTabController(ProjectController projectController) {
-        super(CgenConfiguration.class);
-        this.projectController = projectController;
+        super(CgenConfiguration.class, projectController);
         this.view = new CgenTab(projectController, this);
     }
 
