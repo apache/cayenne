@@ -126,13 +126,13 @@ class ObjRelationshipValidator extends ConfigurationNodeValidator {
             }
         }
 
-        if(!relationship.isToPK()) {
+        if(!relationship.getDbRelationships().isEmpty() && !relationship.isToPK()) {
             ObjRelationship reverseRelationship = relationship.getReverseRelationship();
-            if(reverseRelationship != null && !reverseRelationship.isToPK()) {
+            if(reverseRelationship != null && !relationship.getDbRelationships().isEmpty() && !reverseRelationship.isToPK()) {
                 addFailure(
                         validationResult,
                         relationship,
-                        "ObjRelationship '%s' has join not to PK. Cayenne doesn't allow this type of relationship",
+                        "ObjRelationship '%s' has join not to PK. This is not fully supported by Cayenne.",
                         toString(relationship));
             }
         }
