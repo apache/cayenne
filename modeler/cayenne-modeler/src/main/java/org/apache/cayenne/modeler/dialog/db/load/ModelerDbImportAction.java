@@ -37,8 +37,10 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.project.ProjectSaver;
@@ -55,7 +57,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     DbImportConfiguration config;
 
     private DbLoadResultDialog resultDialog;
-    private boolean isNothingChanged;
+    private boolean hasTokenToMerge;
 
     private DbImportController dbImportController;
 
@@ -108,10 +110,10 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         });
 
         logger.info("");
+
         if (tokens.isEmpty()) {
             logger.info("Detected changes: No changes to import.");
-            resultDialog.addMsg(targetMap);
-            isNothingChanged = true;
+            hasTokenToMerge = false;
             return tokens;
         }
 
@@ -120,7 +122,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             String logString = String.format("    %-20s %s", token.getTokenName(), token.getTokenValue());
             logger.info(logString);
             resultDialog.addRowToOutput(logString, targetMap);
-            isNothingChanged = false;
+            hasTokenToMerge = true;
         }
 
         logger.info("");
@@ -147,13 +149,13 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         String formattedMessage = String.format("    %-20s", message);
         messages.add(formattedMessage);
         resultDialog.addRowToOutput(formattedMessage, targetMap);
-        isNothingChanged = false;
+        hasTokenToMerge = true;
     }
 
     @Override
     protected void logMessages(List<String> messages) {
         super.logMessages(messages);
-        if (isNothingChanged) {
+        if (!hasTokenToMerge) {
             JOptionPane optionPane = new JOptionPane("Detected changes: No changes to import.", JOptionPane.PLAIN_MESSAGE);
             JDialog dialog = optionPane.createDialog(DIALOG_TITLE);
             dialog.setModal(false);
@@ -167,5 +169,31 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Override
     protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
         return targetMap;
+    }
+
+    @Override
+    protected boolean checkIncludedProcedures(DataMap loadedDataMap, FiltersConfig filters) {
+        Collection<Procedure> procedures = loadedDataMap.getProcedures();
+        boolean hasProceduresToMerge = false;
+        for (Procedure procedure : procedures) {
+            if(!hasChangesForProcedure(procedure)) {
+               continue;
+            }
+            hasProceduresToMerge = true;
+            Procedure oldProcedure = targetMap.getProcedure(procedure.getName());
+
+            String msg = "";
+            if (oldProcedure != null) {
+                msg = "Replace procedure " + procedure.getName();
+            } else {
+                msg = "Create procedure " + procedure.getName();
+            }
+            String formattedMessage = String.format("    %-20s", msg);
+            resultDialog.addRowToOutput(formattedMessage, targetMap);
+        }
+        if(!hasTokenToMerge && !hasProceduresToMerge) {
+            resultDialog.addMsg(targetMap);
+        }
+        return hasProceduresToMerge;
     }
 }

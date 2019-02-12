@@ -65,17 +65,24 @@ public class DbImportController {
     public void resetDialog() {
         ConcurrentMap<DataMap, JTable> tableMap = dbLoadResultDialog.getTableForMap();
         for(DataMap dataMap : tableMap.keySet()) {
-            JTable table = tableMap.get(dataMap);
-            DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
-            int rowCount = tableModel.getRowCount();
-            for (int i = rowCount - 1; i >= 0; i--) {
-                tableModel.removeRow(i);
-            }
+            clearTable(dataMap);
         }
 
         dbLoadResultDialog.getTableForMap().clear();
         dbLoadResultDialog.removeListenersFromButtons();
         dbLoadResultDialog.getTablePanel().removeAll();
+    }
+
+    public void clearTable(DataMap dataMap) {
+        JTable table = dbLoadResultDialog.getTableForMap().get(dataMap);
+        if(table == null) {
+            return;
+        }
+        DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+        int rowCount = tableModel.getRowCount();
+        for (int i = rowCount - 1; i >= 0; i--) {
+            tableModel.removeRow(i);
+        }
     }
 
     public void fireDataMapChangeEvent(DataMap dataMap) {

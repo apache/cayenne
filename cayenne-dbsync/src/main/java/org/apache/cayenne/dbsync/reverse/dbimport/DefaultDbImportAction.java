@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -30,17 +40,17 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
-import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
-import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.model.AbstractToModelToken;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
+import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
@@ -59,16 +69,6 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.apache.cayenne.util.Util.isBlank;
 
@@ -272,19 +272,19 @@ public class DefaultDbImportAction implements DbImportAction {
             return false;
         }
 
-        if(!defaultPackage.equals(targetDataMap.getDefaultPackage())) {
-            return false;
-        }
-
-        return true;
+        return defaultPackage.equals(targetDataMap.getDefaultPackage());
     }
 
-    private boolean checkIncludedProcedures(DataMap loadedDataMap, FiltersConfig filters) {
+    protected boolean hasChangesForProcedure(Procedure procedure) {
+        PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
+        return proceduresFilter != null && proceduresFilter.isIncluded(procedure.getName());
+    }
+
+    protected boolean checkIncludedProcedures(DataMap loadedDataMap, FiltersConfig filters) {
         Collection<Procedure> procedures = loadedDataMap.getProcedures();
         boolean hasChanges = false;
         for (Procedure procedure : procedures) {
-            PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
-            if (proceduresFilter == null || !proceduresFilter.isIncluded(procedure.getName())) {
+            if(!hasChangesForProcedure(procedure)) {
                 continue;
             }
             hasChanges = true;
