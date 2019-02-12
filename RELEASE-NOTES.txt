@@ -32,6 +32,7 @@ CAY-2509 Result of resolving lazily faulted relationships can be out-of-date
 CAY-2530 DB Import and Class Generation from Project is performed for removed datamaps
 CAY-2531 Importing same schema after Import Revert clears all entities in datamap
 CAY-2533 Modeler: Exception on validating ObjRelationship without db path
+CAY-2535 Imposible to import stored proceedure apart from db tables
 CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
 
