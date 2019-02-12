@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
@@ -35,14 +43,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.project.ProjectSaver;
 import org.slf4j.Logger;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
 
 public class ModelerDbImportAction extends DefaultDbImportAction {
 
@@ -85,23 +85,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Override
     protected Collection<MergerToken> log(List<MergerToken> tokens) {
         resultDialog = dbImportController.createDialog();
-        logger.info("");
-        if (tokens.isEmpty()) {
-            logger.info("Detected changes: No changes to import.");
-            resultDialog.addMsg(targetMap);
-            isNothingChanged = true;
-            return tokens;
-        }
-
-        logger.info("Detected changes: ");
-        for (MergerToken token : tokens) {
-            String logString = String.format("    %-20s %s", token.getTokenName(), token.getTokenValue());
-            logger.info(logString);
-            resultDialog.addRowToOutput(logString, targetMap);
-            isNothingChanged = false;
-        }
-
-        logger.info("");
         resultDialog.getOkButton().addActionListener(e -> {
             try {
                 if(resultDialog.getTableForMap().containsKey(targetMap)) {
@@ -123,6 +106,24 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                 resetDialog();
             }
         });
+
+        logger.info("");
+        if (tokens.isEmpty()) {
+            logger.info("Detected changes: No changes to import.");
+            resultDialog.addMsg(targetMap);
+            isNothingChanged = true;
+            return tokens;
+        }
+
+        logger.info("Detected changes: ");
+        for (MergerToken token : tokens) {
+            String logString = String.format("    %-20s %s", token.getTokenName(), token.getTokenValue());
+            logger.info(logString);
+            resultDialog.addRowToOutput(logString, targetMap);
+            isNothingChanged = false;
+        }
+
+        logger.info("");
 
         return tokens;
     }
