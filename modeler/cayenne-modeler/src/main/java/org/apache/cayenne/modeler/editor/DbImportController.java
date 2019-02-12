@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import java.util.concurrent.ConcurrentMap;
+
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
-
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @since 4.1
@@ -74,6 +74,7 @@ public class DbImportController {
         }
 
         dbLoadResultDialog.getTableForMap().clear();
+        dbLoadResultDialog.removeListenersFromButtons();
         dbLoadResultDialog.getTablePanel().removeAll();
     }
 

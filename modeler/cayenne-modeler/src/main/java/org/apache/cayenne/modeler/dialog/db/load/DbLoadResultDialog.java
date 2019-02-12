@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.map.DataMap;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -36,8 +32,13 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.map.DataMap;
 
 /**
  * @since 4.1
@@ -122,6 +123,15 @@ public class DbLoadResultDialog extends JDialog {
         tableForMap.put(dataMap, tokensTable);
         tablePanel.add(tablePane);
         return tokensTableModel;
+    }
+
+    public void removeListenersFromButtons() {
+        for(ActionListener actionListener : okButton.getActionListeners()) {
+            okButton.removeActionListener(actionListener);
+        }
+        for(ActionListener actionListener : revertButton.getActionListeners()) {
+            revertButton.removeActionListener(actionListener);
+        }
     }
 
     public synchronized void addRowToOutput(String output, DataMap dataMap) {
