@@ -20,10 +20,6 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -35,6 +31,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.modeler.Application;
+
 /**
  */
 public class ValidationResultBrowserView extends JDialog {
@@ -44,6 +45,8 @@ public class ValidationResultBrowserView extends JDialog {
     protected JButton closeButton;
 
     public ValidationResultBrowserView() {
+        super(Application.getFrame());
+
         this.closeButton = new JButton("Close");
 
         this.messageLabel = new JTextArea();
