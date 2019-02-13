@@ -815,6 +815,7 @@
 						<!-- Java 8 is too strict about Javadoc omissions --> 
 						<doclint>${javadoc.doclint}</doclint>
 						<additionalOptions>${javadoc.additionalOptions}</additionalOptions>
+						<source>1.8</source>
 					</configuration>
 				</plugin>
 				<plugin>
