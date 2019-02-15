@@ -25,31 +25,30 @@ import javax.swing.undo.CompoundEdit;
 
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 
 public class RelationshipUndoableEdit extends CompoundEdit {
 
     private DbRelationship relationship;
-	
+
+	public RelationshipUndoableEdit(DbRelationship relationship) {
+		this.relationship = relationship;
+	}
+
     @Override
 	public void redo() throws CannotRedoException {
-		super.redo();
-		
-		ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(
-				relationship, false);
-
-		dialog.setVisible(true);
+		new DbRelationshipDialog(Application.getInstance().getFrameController().getProjectController())
+				.modifyRaltionship(relationship)
+				.startUp();
 	}
 
 	@Override
 	public void undo() throws CannotUndoException {
-		super.undo();
-		
-		ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(
-				relationship, false);
-
-		dialog.setVisible(true);
+		new DbRelationshipDialog(Application.getInstance().getFrameController().getProjectController())
+				.modifyRaltionship(relationship)
+				.startUp();
 	}
 
 	@Override
@@ -62,8 +61,14 @@ public class RelationshipUndoableEdit extends CompoundEdit {
 		return "Undo Edit relationship";
 	}
 
-	public RelationshipUndoableEdit(DbRelationship relationship) {
-		this.relationship = relationship;
+	@Override
+	public boolean isSignificant() {
+    	return true;
+	}
+
+	@Override
+	public boolean canUndo() {
+		return true;
 	}
 
 	public void addDbJoinAddUndo(final DbJoin join) {

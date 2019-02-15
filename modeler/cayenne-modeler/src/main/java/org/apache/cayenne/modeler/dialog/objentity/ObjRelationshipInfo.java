@@ -18,6 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
@@ -31,27 +43,14 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
+import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
-import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
-
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 
 public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
 
@@ -289,40 +288,17 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
      */
     protected void createRelationship() {
 
-        DbRelationship dbRel = getLastRelationship();
-        DbEntity source = dbRel != null ? dbRel.getTargetEntity() : null;
+        DbEntity dbEntity = relationship.getSourceEntity().getDbEntity();
 
-        DbRelationshipTarget targetModel = new DbRelationshipTarget(mediator, getStartEntity(), source);
-        targetModel.startupAction();
+        DbRelationshipDialog dbRelationshipDialog = new DbRelationshipDialog(mediator)
+                .createNewRaltionship(dbEntity);
 
-        if (!targetModel.isSavePressed()) {
-            return;
-        }
+        dbRelationshipDialog.startUp();
 
-        DbRelationship dbRelationship = new DbRelationship();
-        dbRelationship.setSourceEntity(targetModel.getSource());
-        dbRelationship.setTargetEntityName(targetModel.getTarget());
-        dbRelationship.setToMany(targetModel.isToMany());
-
-        dbRelationship.setName(createNamingStrategy(NameGeneratorPreferences
-                .getInstance()
-                .getLastUsedStrategies()
-                .get(0)).relationshipName(dbRelationship));
-
-        targetModel.getSource().addRelationship(dbRelationship);
-
-        // TODO: creating relationship outside of ResolveDbRelationshipDialog
-        // confuses it to send incorrect event - CHANGE instead of ADD
-        ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(dbRelationship);
-
-        dialog.setVisible(true);
-        if (dialog.isCancelPressed()) {
-            targetModel.getSource().removeRelationship(dbRelationship.getName());
-        } else {
+        Optional<DbRelationship> dbRelationship = dbRelationshipDialog.getRelationship();
+        if(dbRelationship.isPresent()) {
             MultiColumnBrowser pathBrowser = getPathBrowser();
-            Object[] oldPath = targetModel.isSource1Selected()
-                    ? new Object[] { getStartEntity() }
-                    : pathBrowser.getSelectionPath().getPath();
+            Object[] oldPath = new Object[] { getStartEntity() };
 
             // Update the view
             EntityTreeModel treeModel = (EntityTreeModel) pathBrowser.getModel();
@@ -337,8 +313,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             path[path.length - 1] = dbRelationship;
             pathBrowser.setSelectionPath(new TreePath(path));
         }
-
-        dialog.dispose();
     }
 
     public ObjectNameGenerator createNamingStrategy(String strategyClass) {
