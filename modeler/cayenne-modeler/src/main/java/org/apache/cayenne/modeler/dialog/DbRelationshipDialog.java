@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.table.TableColumn;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -218,6 +216,20 @@ public class DbRelationshipDialog extends CayenneController {
                 reverseRelationship.setToDependentPK(!setToDepPk);
             } else {
                 relationship.setToDependentPK(view.getToDepPk().isSelected());
+            }
+        });
+
+        view.getUseExpressionForJoin().addActionListener(select -> {
+            if(view.getUseExpressionForJoin().isSelected()) {
+                view.getJoinButtons().setVisible(false);
+                view.getTableScrollPane().setVisible(false);
+
+                view.getCustomExpressionField().setVisible(true);
+            } else {
+                view.getJoinButtons().setVisible(true);
+                view.getTableScrollPane().setVisible(true);
+
+                view.getCustomExpressionField().setVisible(true);
             }
         });
     }

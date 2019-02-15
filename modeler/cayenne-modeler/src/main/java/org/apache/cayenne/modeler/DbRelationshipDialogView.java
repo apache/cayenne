@@ -57,6 +57,12 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private JButton removeButton;
     private  JButton saveButton;
     private JButton cancelButton;
+    private JCheckBox useExpressionForJoin;
+
+    private JScrollPane tableScrollPane;
+    private JPanel joinButtons;
+
+    private JTextField customExpressionField;
 
     private boolean cancelPressed;
 
@@ -85,6 +91,10 @@ public class DbRelationshipDialogView extends CayenneDialog {
         saveButton = new JButton("Done");
 
         cancelButton = new JButton("Cancel");
+
+        useExpressionForJoin = new JCheckBox();
+
+        customExpressionField = new JTextField(25);
 
         table = new AttributeTable();
 
@@ -128,14 +138,22 @@ public class DbRelationshipDialogView extends CayenneDialog {
         builder.addLabel("Reverse Relationship Name:", cc.xy(1, 17));
         builder.add(reverseName, cc.xywh(3, 17, 1, 1));
 
-        builder.addSeparator("Joins", cc.xywh(1, 19, 5, 1));
-        builder.add(new JScrollPane(table), cc.xywh(1, 21, 3, 3, "fill, fill"));
+        builder.addLabel("Use expression for join:", cc.xy(1, 19));
+        builder.add(useExpressionForJoin, cc.xywh(3, 19, 1, 1));
 
-        JPanel joinButtons = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        tableScrollPane = new JScrollPane(table);
+
+        builder.addSeparator("Joins", cc.xywh(1, 21, 5, 1));
+        builder.add(tableScrollPane, cc.xywh(1, 23, 3, 3, "fill, fill"));
+
+        builder.addLabel("Use expression for join:", cc.xy(1, 23));
+        builder.add(customExpressionField, cc.xywh(3, 23, 1, 1));
+
+        joinButtons = new JPanel(new FlowLayout(FlowLayout.LEADING));
         joinButtons.add(addButton);
         joinButtons.add(removeButton);
 
-        builder.add(joinButtons, cc.xywh(5, 21, 1, 3));
+        builder.add(joinButtons, cc.xywh(5, 23, 1, 3));
 
         getContentPane().add(builder.getPanel(), BorderLayout.CENTER);
         JButton[] buttons = {cancelButton, saveButton};
@@ -211,6 +229,22 @@ public class DbRelationshipDialogView extends CayenneDialog {
 
     public boolean isCancelPressed() {
         return cancelPressed;
+    }
+
+    public JCheckBox getUseExpressionForJoin() {
+        return useExpressionForJoin;
+    }
+
+    public JScrollPane getTableScrollPane() {
+        return tableScrollPane;
+    }
+
+    public JPanel getJoinButtons() {
+        return joinButtons;
+    }
+
+    public JTextField getCustomExpressionField() {
+        return customExpressionField;
     }
 
     public void setCancelPressed(boolean cancelPressed) {
