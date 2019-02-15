@@ -223,4 +223,12 @@ public class ObjectSelect_RunIT extends ServerCase {
 
 		assertEquals(1, artists.size());
 	}
+
+	@Test
+	public void testForCustomJoin() {
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.prefetch(Artist.PAINTING_ARRAY.disjoint())
+				.select(context);
+		System.out.println();
+	}
 }

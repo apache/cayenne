@@ -33,6 +33,8 @@ import java.util.Optional;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.CustomExpDbJoin;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -134,6 +136,15 @@ public class DbRelationshipDialog extends CayenneController {
                 .getFromMetaData(projectController.getApplication().getMetaData(),
                         relationship,
                         ObjectInfo.COMMENT));
+
+        for(DbJoin dbJoin : relationship.getJoins()) {
+            if(dbJoin instanceof CustomExpDbJoin) {
+                view.getUseExpressionForJoin().setSelected(true);
+                view.getCustomExpressionField().setText(((CustomExpDbJoin)dbJoin).getJoinExpression().toString());
+
+                view.showExpressionField(true);
+            }
+        }
     }
 
     private void initController() {
@@ -221,15 +232,9 @@ public class DbRelationshipDialog extends CayenneController {
 
         view.getUseExpressionForJoin().addActionListener(select -> {
             if(view.getUseExpressionForJoin().isSelected()) {
-                view.getJoinButtons().setVisible(false);
-                view.getTableScrollPane().setVisible(false);
-
-                view.getCustomExpressionField().setVisible(true);
+                view.showExpressionField(true);
             } else {
-                view.getJoinButtons().setVisible(true);
-                view.getTableScrollPane().setVisible(true);
-
-                view.getCustomExpressionField().setVisible(true);
+                view.showExpressionField(false);
             }
         });
     }
@@ -284,7 +289,8 @@ public class DbRelationshipDialog extends CayenneController {
         stopEditing();
 
         DbJoinTableModel model = (DbJoinTableModel) view.getTable().getModel();
-        boolean updatingReverse = model.getObjectList().size() > 0;
+        boolean updatingReverse = model.getObjectList().size() > 0 ||
+                !view.getCustomExpressionField().getText().isEmpty();
 
         // handle name update
         handleNameUpdate(relationship, view.getNameField().getText().trim());
@@ -296,6 +302,18 @@ public class DbRelationshipDialog extends CayenneController {
         ObjectInfo.putToMetaData(projectController.getApplication().getMetaData(),
                 relationship,
                 ObjectInfo.COMMENT, view.getComment().getText());
+
+        if(view.getUseExpressionForJoin().isSelected()) {
+            relationship.setUseJoinExp(true);
+            relationship.removeAllJoins();
+            DbJoin dbJoin = new CustomExpDbJoin(relationship,
+                    ExpressionFactory.exp(view.getCustomExpressionField().getText()));
+            relationship.addJoin(dbJoin);
+        } else {
+            relationship.setUseJoinExp(false);
+            relationship.getJoins().removeIf(dbJoin -> dbJoin instanceof CustomExpDbJoin);
+        }
+
         // If new reverse DbRelationship was created, add it to the target
         // Don't create reverse with no joins - makes no sense...
         if (updatingReverse) {

@@ -28,6 +28,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.map.CustomExpDbJoin;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 
@@ -66,16 +67,28 @@ class TableTreeStage implements TranslationStage {
 
         ExpressionNodeBuilder expressionNodeBuilder = null;
         String sourceAlias = context.getTableTree().aliasForPath(node.getAttributePath().getParent());
-        for (DbJoin dbJoin : joins) {
-            DbAttribute src = dbJoin.getSource();
-            DbAttribute dst = dbJoin.getTarget();
-            ExpressionNodeBuilder joinExp = table(sourceAlias).column(src)
-                    .eq(table(node.getTableAlias()).column(dst));
 
-            if (expressionNodeBuilder != null) {
-                expressionNodeBuilder = expressionNodeBuilder.and(joinExp);
-            } else {
-                expressionNodeBuilder = joinExp;
+        if(node.getRelationship().isUseJoinExp()) {
+            for(DbJoin dbJoin : joins) {
+                ExpressionNodeBuilder joinExp = exp(() -> context.getQualifierTranslator().translate(((CustomExpDbJoin)dbJoin).getJoinExpression()));
+                if (expressionNodeBuilder != null) {
+                    expressionNodeBuilder = expressionNodeBuilder.and(joinExp);
+                } else {
+                    expressionNodeBuilder = joinExp;
+                }
+            }
+        } else {
+            for (DbJoin dbJoin : joins) {
+                DbAttribute src = dbJoin.getSource();
+                DbAttribute dst = dbJoin.getTarget();
+                ExpressionNodeBuilder joinExp = table(sourceAlias).column(src)
+                        .eq(table(node.getTableAlias()).column(dst));
+
+                if (expressionNodeBuilder != null) {
+                    expressionNodeBuilder = expressionNodeBuilder.and(joinExp);
+                } else {
+                    expressionNodeBuilder = joinExp;
+                }
             }
         }
 

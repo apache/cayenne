@@ -55,7 +55,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private TableColumnPreferences tablePreferences;
     private JButton addButton;
     private JButton removeButton;
-    private  JButton saveButton;
+    private JButton saveButton;
     private JButton cancelButton;
     private JCheckBox useExpressionForJoin;
 
@@ -173,6 +173,13 @@ public class DbRelationshipDialogView extends CayenneDialog {
             return;
         }
         super.setVisible(b);
+    }
+
+    public void showExpressionField(boolean show) {
+        joinButtons.setVisible(!show);
+        tableScrollPane.setVisible(!show);
+
+        customExpressionField.setVisible(show);
     }
 
     public JTextField getNameField() {

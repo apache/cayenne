@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.configuration.xml;
 
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.CustomExpDbJoin;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -33,6 +35,7 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
     private static final String DB_RELATIONSHIP_TAG = "db-relationship";
     public static final String DB_ATTRIBUTE_PAIR_TAG = "db-attribute-pair";
+    public static final String DB_ATTRIBUTE_JOIN = "db-attribute-join";
 
     private DataMap map;
 
@@ -53,6 +56,10 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
             case DB_ATTRIBUTE_PAIR_TAG:
                 createDbAttributePair(attributes);
+                return true;
+
+            case DB_ATTRIBUTE_JOIN:
+                createDbAttributeJoinExp(attributes);
                 return true;
         }
 
@@ -88,6 +95,12 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
         DbJoin join = new DbJoin(dbRelationship);
         join.setSourceName(attributes.getValue("source"));
         join.setTargetName(attributes.getValue("target"));
+        dbRelationship.addJoin(join);
+    }
+
+    private void createDbAttributeJoinExp(Attributes attributes) {
+        CustomExpDbJoin join = new CustomExpDbJoin(dbRelationship);
+        join.setJoinExpression(ExpressionFactory.exp(attributes.getValue("joinExp")));
         dbRelationship.addJoin(join);
     }
 
