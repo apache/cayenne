@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableColumn;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
@@ -142,12 +143,16 @@ public class DbRelationshipDialog extends CayenneController {
             String selectedItem = (String)view.getTargetEntities().getSelectedItem();
             if(relationship.getTargetEntityName() == null) {
                 relationship.setTargetEntityName(selectedItem);
-            } else {
+            } else if(!relationship.getTargetEntityName().equals(selectedItem)){
                 if (WarningDialogByDbTargetChange.showWarningDialog(projectController, relationship)) {
                     // clear joins...
                     relationship.removeAllJoins();
                     relationship.setTargetEntityName(selectedItem);
+                } else {
+                    view.getTargetEntities().setSelectedItem(relationship.getTargetEntityName());
                 }
+                relationship.setToDependentPK(false);
+                view.getToDepPk().setSelected(relationship.isValidForDepPk());
                 projectController.fireDbRelationshipEvent(new RelationshipEvent(this, relationship, relationship.getSourceEntity()));
             }
             enableInfo();
@@ -157,6 +162,7 @@ public class DbRelationshipDialog extends CayenneController {
             DbJoinTableModel model = (DbJoinTableModel) view.getTable().getModel();
 
             DbJoin join = new DbJoin(relationship);
+            relationship.addJoin(join);
             model.addRow(join);
 
             view.getTable().select(model.getRowCount() - 1);
@@ -168,6 +174,15 @@ public class DbRelationshipDialog extends CayenneController {
             int row = view.getTable().getSelectedRow();
 
             DbJoin join = model.getJoin(row);
+
+            relationship.removeJoin(join);
+            if(relationship.isValidForDepPk()) {
+                view.getToDepPk().setEnabled(true);
+            } else {
+                view.getToDepPk().setEnabled(false);
+                view.getToDepPk().setSelected(false);
+                relationship.setToDependentPK(false);
+            }
 
             model.removeRow(join);
         });
@@ -192,7 +207,19 @@ public class DbRelationshipDialog extends CayenneController {
             }
         });
 
-        view.getToDepPk().setEnabled(false);
+        view.getToDepPk().setEnabled(relationship.isValidForDepPk());
+        view.getToDepPk().addActionListener(selected -> {
+            boolean isSelected = view.getToDepPk().isSelected();
+            DbRelationship reverseRelationship = relationship.getReverseRelationship();
+            if(reverseRelationship != null && reverseRelationship.isToDependentPK() && isSelected) {
+                boolean setToDepPk = JOptionPane.showConfirmDialog(Application.getFrame(), "Unset reverse relationship's \"To Dep PK\" setting?",
+                        "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
+                relationship.setToDependentPK(setToDepPk);
+                reverseRelationship.setToDependentPK(!setToDepPk);
+            } else {
+                relationship.setToDependentPK(view.getToDepPk().isSelected());
+            }
+        });
     }
 
     private void enableInfo() {
@@ -200,6 +227,17 @@ public class DbRelationshipDialog extends CayenneController {
 
         view.getTable().setModel(new DbJoinTableModel(relationship,
                 projectController, this, true));
+
+        view.getTable().getModel().addTableModelListener(change -> {
+            if(change.getLastRow() != Integer.MAX_VALUE) {
+                if(relationship.isValidForDepPk()) {
+                    view.getToDepPk().setEnabled(true);
+                } else {
+                    view.getToDepPk().setEnabled(false);
+                }
+            }
+        });
+
         TableColumn sourceColumn = view.getTable().getColumnModel().getColumn(DbJoinTableModel.SOURCE);
         JComboBox comboBox = Application.getWidgetFactory().createComboBox(
                 ModelerUtil.getDbAttributeNames(relationship.getSourceEntity()), true);
@@ -242,12 +280,6 @@ public class DbRelationshipDialog extends CayenneController {
         model.commit();
 
         relationship.setToMany(view.getToMany().isSelected());
-
-        // check "to dep pk" setting,
-        // maybe this is no longer valid
-        if (relationship.isToDependentPK() && !relationship.isValidForDepPk()) {
-            relationship.setToDependentPK(false);
-        }
 
         ObjectInfo.putToMetaData(projectController.getApplication().getMetaData(),
                 relationship,

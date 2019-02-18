@@ -138,20 +138,7 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             rel.setName((String) aValue);
             mediator.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
-        }
-//        else if (column == TARGET) {
-//            // If target column
-//            DbEntity target = (DbEntity) aValue;
-//
-//            if (WarningDialogByDbTargetChange.showWarningDialog(mediator, rel)) {
-//                // clear joins...
-//                rel.removeAllJoins();
-//                rel.setTargetEntityName(target);
-//            }
-//
-//            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
-//        }
-        else if (column == TO_DEPENDENT_KEY) {
+        } else if (column == TO_DEPENDENT_KEY) {
             boolean flag = (Boolean) aValue;
 
             // make sure reverse relationship "to-dep-pk" is unset.

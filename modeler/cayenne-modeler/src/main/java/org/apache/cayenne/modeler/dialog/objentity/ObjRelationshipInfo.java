@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.dialog.objentity;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;

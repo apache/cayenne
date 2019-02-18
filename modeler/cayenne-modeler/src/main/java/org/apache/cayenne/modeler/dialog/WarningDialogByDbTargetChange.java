@@ -19,16 +19,21 @@
 
 package org.apache.cayenne.modeler.dialog;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import java.awt.BorderLayout;
+import java.util.Collection;
+
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.ProjectUtil;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Collection;
 
 /**
  * @since 4.0
@@ -45,12 +50,15 @@ public class WarningDialogByDbTargetChange {
 
     public static boolean showWarningDialog(ProjectController mediator, DbRelationship relationship) {
 
+        int result;
         Collection<ObjRelationship> objRelationshipsForDbRelationship = ProjectUtil
                 .findObjRelationshipsForDbRelationship(mediator, relationship);
         Collection<ObjAttribute> fObjAttributesForDbRelationship = ProjectUtil
                 .findObjAttributesForDbRelationship(mediator, relationship);
         if (fObjAttributesForDbRelationship.isEmpty() && objRelationshipsForDbRelationship.isEmpty()) {
-            return true;
+            result = JOptionPane.showConfirmDialog(Application.getFrame(), "Changing target entity will reset all joins.",
+                    "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            return (result == JOptionPane.OK_OPTION);
         }
 
         JPanel dialogPanel = new JPanel();
@@ -79,7 +87,7 @@ public class WarningDialogByDbTargetChange {
         }
 
         dialogPanel.add(scrollPane, BorderLayout.SOUTH);
-        int result = JOptionPane.showConfirmDialog(Application.getFrame(), dialogPanel,
+        result = JOptionPane.showConfirmDialog(Application.getFrame(), dialogPanel,
                 "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         return (result == JOptionPane.OK_OPTION);
     }
