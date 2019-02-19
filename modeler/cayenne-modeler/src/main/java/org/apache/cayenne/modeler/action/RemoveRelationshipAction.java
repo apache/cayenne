@@ -125,11 +125,12 @@ public class RemoveRelationshipAction extends RemoveAction implements
 	public void removeDbRelationships(DbEntity entity, DbRelationship[] rels) {
 		ProjectController mediator = getProjectController();
 
-		for (DbRelationship rel : rels) {
-			entity.removeRelationship(rel.getName());
+		for(int i = 0; i < rels.length; i++) {
+			rels[i] = entity.getRelationship(rels[i].getName());
+			entity.removeRelationship(rels[i].getName());
 
 			RelationshipEvent e = new RelationshipEvent(Application.getFrame(),
-					rel, entity, MapEvent.REMOVE);
+					rels[i], entity, MapEvent.REMOVE);
 			mediator.fireDbRelationshipEvent(e);
 		}
 

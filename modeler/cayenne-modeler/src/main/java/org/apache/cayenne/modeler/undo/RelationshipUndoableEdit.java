@@ -18,38 +18,45 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.CompoundEdit;
 
-import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.modeler.dialog.ResolveDbRelationshipDialog;
-import org.apache.cayenne.modeler.util.ProjectUtil;
+import org.apache.cayenne.map.event.MapEvent;
+import org.apache.cayenne.map.event.RelationshipEvent;
+import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ProjectController;
 
-public class RelationshipUndoableEdit extends CompoundEdit {
+public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 
     private DbRelationship relationship;
-	
+    private DbRelationship prevRelationship;
+    private ProjectController projectController;
+
+	public RelationshipUndoableEdit(DbRelationship relationship) {
+		this.projectController = Application.getInstance().getFrameController().getProjectController();
+		this.relationship = relationship;
+		this.prevRelationship = copyRelationship(relationship);
+	}
+
     @Override
 	public void redo() throws CannotRedoException {
-		super.redo();
-		
-		ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(
-				relationship, false);
-
-		dialog.setVisible(true);
+		fireDbRelationshipEvent(relationship, prevRelationship);
 	}
 
 	@Override
 	public void undo() throws CannotUndoException {
-		super.undo();
-		
-		ResolveDbRelationshipDialog dialog = new ResolveDbRelationshipDialog(
-				relationship, false);
+		fireDbRelationshipEvent(prevRelationship, relationship);
+	}
 
-		dialog.setVisible(true);
+	private void fireDbRelationshipEvent(DbRelationship relToFire, DbRelationship currRel) {
+		DbEntity dbEntity = currRel.getSourceEntity();
+		dbEntity.removeRelationship(currRel.getName());
+		dbEntity.addRelationship(relToFire);
+		projectController
+				.fireDbRelationshipEvent(
+						new RelationshipEvent(this, relToFire, relToFire.getSourceEntity(), MapEvent.ADD));
 	}
 
 	@Override
@@ -62,62 +69,14 @@ public class RelationshipUndoableEdit extends CompoundEdit {
 		return "Undo Edit relationship";
 	}
 
-	public RelationshipUndoableEdit(DbRelationship relationship) {
-		this.relationship = relationship;
-	}
-
-	public void addDbJoinAddUndo(final DbJoin join) {
-		this.addEdit(new AbstractUndoableEdit() {
-			
-
-			@Override
-			public void redo() throws CannotRedoException {
-				relationship.addJoin(join);
-			}
-
-			@Override
-			public void undo() throws CannotUndoException {
-				relationship.removeJoin(join);
-			}
-		});
-	}
-
-	public void addDbJoinRemoveUndo(final DbJoin join) {
-		this.addEdit(new AbstractUndoableEdit() {
-
-			
-
-			@Override
-			public void redo() throws CannotRedoException {
-				relationship.removeJoin(join);
-			}
-
-			@Override
-			public void undo() throws CannotUndoException {
-				relationship.addJoin(join);
-			}
-
-		});
-	}
-
-	public void addNameUndo(final DbRelationship relationship,
-			final String oldName, final String newName) {
-		this.addEdit(new AbstractUndoableEdit() {
-
-			
-
-			@Override
-			public void redo() throws CannotRedoException {
-				ProjectUtil.setRelationshipName(relationship.getSourceEntity(),
-						relationship, newName);
-			}
-
-			@Override
-			public void undo() throws CannotUndoException {
-				ProjectUtil.setRelationshipName(relationship.getSourceEntity(),
-						relationship, oldName);
-			}
-
-		});
+	private DbRelationship copyRelationship(DbRelationship dbRelationship) {
+		DbRelationship rel = new DbRelationship();
+		rel.setName(dbRelationship.getName());
+		rel.setToDependentPK(dbRelationship.isToDependentPK());
+		rel.setToMany(dbRelationship.isToMany());
+		rel.setTargetEntityName(dbRelationship.getTargetEntityName());
+		rel.setSourceEntity(dbRelationship.getSourceEntity());
+		rel.setJoins(rel.getJoins());
+		return rel;
 	}
 }

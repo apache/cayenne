@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.action;
 
+import java.awt.event.ActionEvent;
+
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -32,12 +34,11 @@ import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.util.DeleteRuleUpdater;
-
-import java.awt.event.ActionEvent;
 
 public class CreateRelationshipAction extends CayenneAction {
 
@@ -102,12 +103,9 @@ public class CreateRelationshipAction extends CayenneAction {
             DbEntity dbEnt = getProjectController().getCurrentDbEntity();
             if (dbEnt != null) {
 
-                DbRelationship rel = new DbRelationship();
-                rel.setName(NameBuilder.builder(rel, dbEnt).name());
-                createDbRelationship(dbEnt, rel);
-
-                application.getUndoManager().addEdit(
-                        new CreateRelationshipUndoableEdit(dbEnt, new DbRelationship[]{rel}));
+                new DbRelationshipDialog(getProjectController())
+                        .createNewRaltionship(dbEnt)
+                        .startUp();
             }
         }
     }
@@ -124,8 +122,6 @@ public class CreateRelationshipAction extends CayenneAction {
 
     public void createDbRelationship(DbEntity dbEntity, DbRelationship rel) {
         ProjectController mediator = getProjectController();
-
-        rel.setSourceEntity(dbEntity);
         dbEntity.addRelationship(rel);
 
         fireDbRelationshipEvent(this, mediator, dbEntity, rel);

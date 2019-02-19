@@ -19,23 +19,16 @@
 
 package org.apache.cayenne.modeler.editor.dbentity;
 
+import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.JOptionPane;
-
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.WarningDialogByDbTargetChange;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
@@ -145,17 +138,6 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
             rel.setName((String) aValue);
             mediator.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
-        } else if (column == TARGET) {
-            // If target column
-            DbEntity target = (DbEntity) aValue;
-
-            if (WarningDialogByDbTargetChange.showWarningDialog(mediator, rel)) {
-                // clear joins...
-                rel.removeAllJoins();
-                rel.setTargetEntityName(target);
-            }
-
-            mediator.fireDbRelationshipEvent(new RelationshipEvent(eventSource, rel, entity));
         } else if (column == TO_DEPENDENT_KEY) {
             boolean flag = (Boolean) aValue;
 
@@ -213,6 +195,8 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
     public boolean isCellEditable(int row, int col) {
         DbRelationship rel = getRelationship(row);
         if (rel == null) {
+            return false;
+        } else if(col == TARGET) {
             return false;
         } else if (col == TO_DEPENDENT_KEY) {
             return rel.isValidForDepPk();
