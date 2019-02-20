@@ -43,6 +43,12 @@ public interface SQLActionVisitor {
     <T> SQLAction objectSelectAction(SelectQuery<T> query);
 
     /**
+     * Creates an action to execute a FluentSelect.
+     * @since 4.2
+     */
+    <T> SQLAction objectSelectAction(FluentSelect<T> query);
+
+    /**
      * Creates an action to execute a SQLTemplate.
      */
     SQLAction sqlAction(SQLTemplate query);

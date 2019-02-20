@@ -20,14 +20,14 @@ package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.Select;
 
 /**
  * @since 3.0
  */
 class MySQLSelectAction extends SelectAction {
 
-	<T> MySQLSelectAction(SelectQuery<T> query, DataNode dataNode) {
+	<T> MySQLSelectAction(Select<T> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

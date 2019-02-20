@@ -20,11 +20,11 @@ package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.Select;
 
 public class IngresSelectAction extends SelectAction {
 
-	public <T> IngresSelectAction(SelectQuery<T> query, DataNode dataNode) {
+	public <T> IngresSelectAction(Select<T> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

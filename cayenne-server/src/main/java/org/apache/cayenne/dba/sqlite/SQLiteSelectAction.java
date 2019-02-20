@@ -19,20 +19,15 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.apache.cayenne.query.Select;
 
 /**
  * @since 4.1
  */
 public class SQLiteSelectAction extends SelectAction {
 
-    public SQLiteSelectAction(SelectQuery<?> query, DataNode dataNode) {
+    public SQLiteSelectAction(Select<?> query, DataNode dataNode) {
         super(query, dataNode);
     }
 

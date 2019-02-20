@@ -243,17 +243,17 @@ public class ColumnSelectTest {
         ColumnSelect<Artist> q = new ColumnSelect<>();
 
         assertFalse(q.distinct);
-        assertFalse(q.suppressDistinct);
+        assertFalse(q.metaData.isSuppressingDistinct());
 
         q.distinct();
 
         assertTrue(q.distinct);
-        assertFalse(q.suppressDistinct);
+        assertFalse(q.metaData.isSuppressingDistinct());
 
         q.suppressDistinct();
 
         assertFalse(q.distinct);
-        assertTrue(q.suppressDistinct);
+        assertTrue(q.metaData.isSuppressingDistinct());
     }
 
 }

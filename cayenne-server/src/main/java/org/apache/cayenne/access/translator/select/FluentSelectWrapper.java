@@ -25,60 +25,53 @@ import java.util.Objects;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.ColumnSelect;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Select;
 
 /**
  * @since 4.2
  */
-public class ColumnSelectWrapper implements TranslatableQueryWrapper {
+public class FluentSelectWrapper implements TranslatableQueryWrapper {
 
-    private final ColumnSelect<?> columnSelect;
+    private final FluentSelect<?> select;
 
-    public ColumnSelectWrapper(ColumnSelect<?> columnSelect) {
-        this.columnSelect = Objects.requireNonNull(columnSelect);
+    public FluentSelectWrapper(FluentSelect<?> select) {
+        this.select = Objects.requireNonNull(select);
     }
 
     @Override
     public boolean isDistinct() {
-        return columnSelect.isDistinct();
+        return select.isDistinct();
     }
 
     @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
-        return columnSelect.getMetaData(resolver);
-    }
-
-    @Override
-    public PrefetchTreeNode getPrefetchTree() {
-        return columnSelect.getPrefetches();
+        return select.getMetaData(resolver);
     }
 
     @Override
     public Expression getQualifier() {
-        return columnSelect.getWhere();
+        return select.getWhere();
     }
 
     @Override
     public Collection<Ordering> getOrderings() {
-        return columnSelect.getOrderings();
+        return select.getOrderings();
     }
 
     @Override
     public Collection<BaseProperty<?>> getColumns() {
-        return columnSelect.getColumns();
+        return select.getColumns();
     }
 
     @Override
     public Expression getHavingQualifier() {
-        return columnSelect.getHaving();
+        return select.getHaving();
     }
 
     @Override
-    public Select<?> unwrap() {
-        return columnSelect;
+    public FluentSelect<?> unwrap() {
+        return select;
     }
 }

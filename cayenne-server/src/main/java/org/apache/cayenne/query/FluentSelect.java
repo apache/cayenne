@@ -28,6 +28,7 @@ import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -37,39 +38,26 @@ import org.apache.cayenne.map.ObjEntity;
  *
  * @since 4.0
  */
-public abstract class FluentSelect<T> extends IndirectQuery implements Select<T> {
+public abstract class FluentSelect<T> extends AbstractQuery implements Select<T> {
 
+    // root
     protected Class<?> entityType;
     protected String entityName;
     protected String dbEntityName;
+
     protected Expression where;
     protected Expression having;
-    protected Collection<Ordering> orderings;
-    protected PrefetchTreeNode prefetches;
-    protected int limit;
-    protected int offset;
-    protected int pageSize;
-    protected int statementFetchSize;
-    protected QueryCacheStrategy cacheStrategy;
-    protected String cacheGroup;
-
     boolean havingExpressionIsActive = false;
+
+    protected Collection<Ordering> orderings;
 
     protected FluentSelect() {
     }
 
-    /**
-     * Translates self to a SelectQuery.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    protected Query createReplacementQuery(EntityResolver resolver) {
-
-        @SuppressWarnings("rawtypes")
-        SelectQuery replacement = new SelectQuery();
-
+    protected Object resolveRoot(EntityResolver resolver) {
+        Object root;
         if (entityType != null) {
-            replacement.setRoot(entityType);
+            root = entityType;
         } else if (entityName != null) {
 
             ObjEntity entity = resolver.getObjEntity(entityName);
@@ -77,7 +65,7 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
                 throw new CayenneRuntimeException("Unrecognized ObjEntity name: %s", entityName);
             }
 
-            replacement.setRoot(entity);
+            root = entity;
         } else if (dbEntityName != null) {
 
             DbEntity entity = resolver.getDbEntity(dbEntityName);
@@ -85,47 +73,27 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
                 throw new CayenneRuntimeException("Unrecognized DbEntity name: %s", dbEntityName);
             }
 
-            replacement.setRoot(entity);
+            root = entity;
         } else {
             throw new CayenneRuntimeException("Undefined root entity of the query");
         }
-
-        replacement.setQualifier(where);
-        replacement.setHavingQualifier(having);
-        replacement.addOrderings(orderings);
-        replacement.setPrefetchTree(prefetches);
-        replacement.setCacheStrategy(cacheStrategy);
-        replacement.setCacheGroup(cacheGroup);
-        replacement.setFetchLimit(limit);
-        replacement.setFetchOffset(offset);
-        replacement.setPageSize(pageSize);
-        replacement.setStatementFetchSize(statementFetchSize);
-
-        return replacement;
-    }
-
-    public String getCacheGroup() {
-        return cacheGroup;
-    }
-
-    public QueryCacheStrategy getCacheStrategy() {
-        return cacheStrategy;
+        return root;
     }
 
     public int getStatementFetchSize() {
-        return statementFetchSize;
+        return getBaseMetaData().getStatementFetchSize();
     }
 
     public int getPageSize() {
-        return pageSize;
+        return getBaseMetaData().getPageSize();
     }
 
     public int getLimit() {
-        return limit;
+        return getBaseMetaData().getFetchLimit();
     }
 
     public int getOffset() {
-        return offset;
+        return getBaseMetaData().getFetchOffset();
     }
 
     public Class<?> getEntityType() {
@@ -159,7 +127,7 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
     }
 
     public PrefetchTreeNode getPrefetches() {
-        return prefetches;
+        return getBaseMetaData().getPrefetchTree();
     }
 
     void setActiveExpression(Expression exp) {
@@ -168,7 +136,6 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
         } else {
             where = exp;
         }
-        replacementQuery = null;
     }
 
     Expression getActiveExpression() {
@@ -202,5 +169,42 @@ public abstract class FluentSelect<T> extends IndirectQuery implements Select<T>
     @Override
     public ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
         return context.batchIterator(this, size);
+    }
+
+    @Override
+    public SQLAction createSQLAction(SQLActionVisitor visitor) {
+        return visitor.objectSelectAction(this);
+    }
+
+    @Override
+    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+        super.route(router, resolver, substitutedQuery);
+
+        // suppress prefetches for paginated queries.. instead prefetches will be resolved per row...
+        if (getPageSize() <= 0) {
+            routePrefetches(router, resolver);
+        }
+    }
+
+    public boolean isFetchingDataRows() {
+        return false;
+    }
+
+    private void routePrefetches(QueryRouter router, EntityResolver resolver) {
+        new FluentSelectPrefetchRouterAction().route(this, router, resolver);
+    }
+
+    /**
+     * @since 4.2
+     */
+    public Collection<BaseProperty<?>> getColumns() {
+        return null;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public boolean isDistinct() {
+        return false;
     }
 }

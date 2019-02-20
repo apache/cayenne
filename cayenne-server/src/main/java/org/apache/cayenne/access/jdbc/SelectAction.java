@@ -30,7 +30,7 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.Select;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,13 +65,13 @@ public class SelectAction extends BaseSQLAction {
 
 	}
 
-	protected SelectQuery<?> query;
+	protected Select<?> query;
 	protected QueryMetadata queryMetadata;
 
 	/**
 	 * @since 4.0
 	 */
-	public SelectAction(SelectQuery<?> query, DataNode dataNode) {
+	public SelectAction(Select<?> query, DataNode dataNode) {
 		super(dataNode);
 		this.query = query;
 		this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
@@ -163,10 +163,10 @@ public class SelectAction extends BaseSQLAction {
 		// needed, as the SQL result count does not directly correspond to the
 		// number of objects returned from Cayenne.
 
-		int fetchLimit = query.getFetchLimit();
+		int fetchLimit = queryMetadata.getFetchLimit();
 		int offset = translator.isSuppressingDistinct()
-				? query.getFetchOffset()
-				: getInMemoryOffset(query.getFetchOffset());
+				? queryMetadata.getFetchOffset()
+				: getInMemoryOffset(queryMetadata.getFetchOffset());
 
 		if (fetchLimit > 0 || offset > 0) {
 			return new LimitResultIterator<>(iterator, offset, fetchLimit);

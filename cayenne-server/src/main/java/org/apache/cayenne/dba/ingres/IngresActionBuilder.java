@@ -20,6 +20,7 @@ package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -34,6 +35,14 @@ public class IngresActionBuilder extends JdbcActionBuilder {
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
+        return new IngresSelectAction(query, dataNode);
+    }
+
+    /**
+     * @since 4.2
+     */
+    @Override
+    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
         return new IngresSelectAction(query, dataNode);
     }
 }

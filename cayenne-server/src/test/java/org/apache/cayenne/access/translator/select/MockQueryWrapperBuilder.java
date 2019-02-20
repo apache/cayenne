@@ -104,11 +104,6 @@ class MockQueryWrapperBuilder {
             }
 
             @Override
-            public PrefetchTreeNode getPrefetchTree() {
-                return prefetchTreeNode;
-            }
-
-            @Override
             public Expression getQualifier() {
                 return qualifier;
             }

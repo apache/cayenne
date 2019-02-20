@@ -329,11 +329,11 @@ public class SelectQueryMetadataCacheKeyTest {
     }
 
     private TraversalHandler newHandler() {
-        return new SelectQueryMetadata.ToCacheKeyTraversalHandler(registry, cacheKey = new StringBuilder());
+        return new ToCacheKeyTraversalHandler(registry, cacheKey = new StringBuilder());
     }
 
     private PrefetchProcessor newPrefetchProcessor() {
-        return new SelectQueryMetadata.ToCacheKeyPrefetchProcessor(cacheKey = new StringBuilder());
+        return new ToCacheKeyPrefetchProcessor(cacheKey = new StringBuilder());
     }
 
     /* ************* Test types *************** */

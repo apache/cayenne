@@ -40,7 +40,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
@@ -348,7 +348,7 @@ public class DataNode implements QueryEngine {
 	/**
 	 * @since 4.0
 	 */
-	public SelectTranslator selectTranslator(SelectQuery<?> query) {
+	public SelectTranslator selectTranslator(Select<?> query) {
 		return selectTranslatorFactory.translator(query, getAdapter(), getEntityResolver());
 	}
 

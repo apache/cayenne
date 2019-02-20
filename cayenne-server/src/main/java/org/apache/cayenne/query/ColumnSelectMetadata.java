@@ -28,16 +28,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.types.ValueObjectType;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTFunctionCall;
-import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -58,12 +52,12 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
- * @since 3.0
+ * @since 4.2
  */
-class SelectQueryMetadata extends BaseQueryMetadata {
+class ColumnSelectMetadata extends BaseQueryMetadata {
 
-	private static final long serialVersionUID = 7465922769303943945L;
-	
+	private static final long serialVersionUID = -3622675304651257963L;
+
 	private Map<String, String> pathSplitAliases;
 	private boolean isSingleResultSetMapping;
 	private boolean suppressingDistinct;
@@ -74,7 +68,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		this.pathSplitAliases = new HashMap<>(info.getPathSplitAliases());
 	}
 
-	boolean resolve(Object root, EntityResolver resolver, SelectQuery<?> query) {
+	boolean resolve(Object root, EntityResolver resolver, ColumnSelect<?> query) {
 
 		if (super.resolve(root, resolver)) {
 			// generate unique cache key, but only if we are caching..
@@ -84,7 +78,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 
 			resolveAutoAliases(query);
 			buildResultSetMappingForColumns(query, resolver);
-			isSingleResultSetMapping = query.canReturnScalarValue() && super.isSingleResultSetMapping();
+			isSingleResultSetMapping = query.isSingleColumn() && super.isSingleResultSetMapping();
 
 			return true;
 		}
@@ -92,7 +86,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		return false;
 	}
 
-	private String makeCacheKey(SelectQuery<?> query, EntityResolver resolver) {
+	private String makeCacheKey(ColumnSelect<?> query, EntityResolver resolver) {
 
 		// create a unique key based on entity or columns, qualifier, ordering, fetch offset and limit
 
@@ -115,15 +109,15 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 			}
 		}
 
-		if (query.getQualifier() != null) {
+		if (query.getWhere() != null) {
 			key.append('/');
 			if(traversalHandler == null) {
 				traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
 			}
-			query.getQualifier().traverse(traversalHandler);
+			query.getWhere().traverse(traversalHandler);
 		}
 
-		if (!query.getOrderings().isEmpty()) {
+		if (query.getOrderings() != null && !query.getOrderings().isEmpty()) {
 			for (Ordering o : query.getOrderings()) {
 				key.append('/').append(o.getSortSpecString());
 				if (!o.isAscending()) {
@@ -136,25 +130,25 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 			}
 		}
 
-		if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
+		if (fetchOffset > 0 || fetchLimit > 0) {
 			key.append('/');
-			if (query.getFetchOffset() > 0) {
-				key.append('o').append(query.getFetchOffset());
+			if (fetchOffset > 0) {
+				key.append('o').append(fetchOffset);
 			}
-			if (query.getFetchLimit() > 0) {
-				key.append('l').append(query.getFetchLimit());
+			if (fetchLimit > 0) {
+				key.append('l').append(fetchLimit);
 			}
 		}
 
 		// add prefetch to cache key per CAY-2349
-		if(query.getPrefetchTree() != null) {
-			query.getPrefetchTree().traverse(new ToCacheKeyPrefetchProcessor(key));
+		if(prefetchTree != null) {
+			prefetchTree.traverse(new ToCacheKeyPrefetchProcessor(key));
 		}
 
 		return key.toString();
 	}
 
-	private void resolveAutoAliases(SelectQuery<?> query) {
+	private void resolveAutoAliases(ColumnSelect<?> query) {
 		resolveQualifierAliases(query);
 		resolveColumnsAliases(query);
         resolveOrderingAliases(query);
@@ -162,14 +156,14 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		// TODO: include aliases in prefetches? flattened attributes?
 	}
 
-	private void resolveQualifierAliases(SelectQuery<?> query) {
-		Expression qualifier = query.getQualifier();
+	private void resolveQualifierAliases(ColumnSelect<?> query) {
+		Expression qualifier = query.getWhere();
 		if (qualifier != null) {
 			resolveAutoAliases(qualifier);
 		}
 	}
 
-	private void resolveColumnsAliases(SelectQuery<?> query) {
+	private void resolveColumnsAliases(ColumnSelect<?> query) {
         Collection<BaseProperty<?>> columns = query.getColumns();
         if(columns != null) {
             for(BaseProperty<?> property : columns) {
@@ -181,8 +175,8 @@ class SelectQueryMetadata extends BaseQueryMetadata {
         }
     }
 
-    private void resolveOrderingAliases(SelectQuery<?> query) {
-        List<Ordering> orderings = query.getOrderings();
+    private void resolveOrderingAliases(ColumnSelect<?> query) {
+        Collection<Ordering> orderings = query.getOrderings();
         if(orderings != null) {
             for(Ordering ordering : orderings) {
                 Expression sortSpec = ordering.getSortSpec();
@@ -193,8 +187,8 @@ class SelectQueryMetadata extends BaseQueryMetadata {
         }
     }
 
-    private void resolveHavingQualifierAliases(SelectQuery<?> query) {
-        Expression havingQualifier = query.getHavingQualifier();
+    private void resolveHavingQualifierAliases(ColumnSelect<?> query) {
+        Expression havingQualifier = query.getHaving();
         if(havingQualifier != null) {
             resolveAutoAliases(havingQualifier);
         }
@@ -227,40 +221,15 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		}
 	}
 
-	/**
-	 * @since 3.0
-	 */
 	@Override
 	public Map<String, String> getPathSplitAliases() {
 		return pathSplitAliases != null ? pathSplitAliases : Collections.emptyMap();
 	}
 
 	/**
-	 * @since 3.0
-	 */
-	public void addPathSplitAliases(String path, String... aliases) {
-		if (aliases == null) {
-			throw new NullPointerException("Null aliases");
-		}
-
-		if (aliases.length == 0) {
-			throw new IllegalArgumentException("No aliases specified");
-		}
-
-		if (pathSplitAliases == null) {
-			pathSplitAliases = new HashMap<>();
-		}
-
-		for (String alias : aliases) {
-			pathSplitAliases.put(alias, path);
-		}
-	}
-
-	/**
 	 * Build DB result descriptor, that will be used to read and convert raw result of ColumnSelect
-	 * @since 4.0
 	 */
-	private void buildResultSetMappingForColumns(SelectQuery<?> query, EntityResolver resolver) {
+	private void buildResultSetMappingForColumns(ColumnSelect<?> query, EntityResolver resolver) {
 		if(query.getColumns() == null || query.getColumns().isEmpty()) {
 			return;
 		}
@@ -333,7 +302,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	 * @param resolver entity resolver to get ObjEntity and ClassDescriptor
 	 * @return Entity result
 	 */
-	private EntityResult buildEntityResultForColumn(SelectQuery<?> query, BaseProperty<?> column, EntityResolver resolver) {
+	private EntityResult buildEntityResultForColumn(ColumnSelect<?> query, BaseProperty<?> column, EntityResolver resolver) {
 		// This method is actually repeating logic of DescriptorColumnExtractor.
 		// Here we don't care about intermediate joins and few other things so it's shorter.
 	 	// Logic of these methods should be unified and simplified, possibly to a single source of metadata,
@@ -383,8 +352,8 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		descriptor.visitAllProperties(visitor);
 
 		// Collection columns for joint prefetch
-		if(query.getPrefetchTree() != null) {
-			for (PrefetchTreeNode prefetch : query.getPrefetchTree().adjacentJointNodes()) {
+		if(prefetchTree != null) {
+			for (PrefetchTreeNode prefetch : prefetchTree.adjacentJointNodes()) {
 				// for each prefetch add columns from the target entity
 				Expression prefetchExp = ExpressionFactory.exp(prefetch.getPath());
 				ASTDbPath dbPrefetch = (ASTDbPath) oe.translateToDbPath(prefetchExp);
@@ -427,25 +396,16 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		return result;
 	}
 
-	/**
-	 * @since 4.0
-	 */
 	@Override
 	public boolean isSingleResultSetMapping() {
 		return isSingleResultSetMapping;
 	}
 
-	/**
-	 * @since 4.0
-	 */
 	@Override
 	public boolean isSuppressingDistinct() {
 		return suppressingDistinct;
 	}
 
-	/**
-	 * @since 4.0
-	 */
 	public void setSuppressingDistinct(boolean suppressingDistinct) {
 		this.suppressingDistinct = suppressingDistinct;
 	}

@@ -18,8 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -31,7 +34,12 @@ import org.apache.cayenne.query.SelectQuery;
 public class DefaultSelectTranslatorFactory implements SelectTranslatorFactory {
 
 	@Override
-	public SelectTranslator translator(SelectQuery<?> query, DbAdapter adapter, EntityResolver entityResolver) {
-		return adapter.getSelectTranslator(query, entityResolver);
+	public SelectTranslator translator(Select<?> query, DbAdapter adapter, EntityResolver entityResolver) {
+		if(query instanceof SelectQuery) {
+			return adapter.getSelectTranslator((SelectQuery<?>)query, entityResolver);
+		} else if(query instanceof FluentSelect) {
+			return adapter.getSelectTranslator((FluentSelect<?>)query, entityResolver);
+		}
+		throw new CayenneRuntimeException("Unsupported type of Select query %s", query);
 	}
 }

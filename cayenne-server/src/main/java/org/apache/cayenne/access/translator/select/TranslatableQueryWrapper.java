@@ -42,8 +42,6 @@ public interface TranslatableQueryWrapper {
 
     QueryMetadata getMetaData(EntityResolver resolver);
 
-    PrefetchTreeNode getPrefetchTree();
-
     Expression getQualifier();
 
     Collection<Ordering> getOrderings();

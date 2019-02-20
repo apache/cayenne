@@ -57,7 +57,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
 
     private static final long serialVersionUID = -156124021150949227L;
 
-    protected boolean fetchingDataRows;
+    protected ObjectSelectMetadata metaData = new ObjectSelectMetadata();
 
     /**
      * Creates a ObjectSelect that selects objects of a given persistent class.
@@ -151,17 +151,6 @@ public class ObjectSelect<T> extends FluentSelect<T> {
     }
 
     protected ObjectSelect() {
-    }
-
-    /**
-     * Translates self to a SelectQuery.
-     */
-    @SuppressWarnings({"deprecation", "unchecked"})
-    @Override
-    protected Query createReplacementQuery(EntityResolver resolver) {
-        SelectQuery<?> replacement = (SelectQuery<?>) super.createReplacementQuery(resolver);
-        replacement.setFetchingDataRows(fetchingDataRows);
-        return replacement;
     }
 
     /**
@@ -365,7 +354,6 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         Collections.addAll(this.orderings, orderings);
-        replacementQuery = null;
 
         return this;
     }
@@ -386,7 +374,6 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         }
 
         this.orderings.addAll(orderings);
-        replacementQuery = null;
 
         return this;
     }
@@ -397,17 +384,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * @return this object
      */
     public ObjectSelect<T> prefetch(PrefetchTreeNode prefetch) {
-
-        if (prefetch == null) {
-            return this;
-        }
-
-        if (prefetches == null) {
-            prefetches = new PrefetchTreeNode();
-        }
-
-        prefetches.merge(prefetch);
-        replacementQuery = null;
+        metaData.mergePrefetch(prefetch);
         return this;
     }
 
@@ -418,17 +395,10 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * @return this object
      */
     public ObjectSelect<T> prefetch(String path, int semantics) {
-
         if (path == null) {
             return this;
         }
-
-        if (prefetches == null) {
-            prefetches = new PrefetchTreeNode();
-        }
-
-        prefetches.addPath(path).setSemantics(semantics);
-        replacementQuery = null;
+        metaData.addPrefetch(path, semantics);
         return this;
     }
 
@@ -436,13 +406,8 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * Resets query fetch limit - a parameter that defines max number of objects
      * that should be ever be fetched from the database.
      */
-    @SuppressWarnings("unchecked")
     public ObjectSelect<T> limit(int fetchLimit) {
-        if (this.limit != fetchLimit) {
-            this.limit = fetchLimit;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setFetchLimit(fetchLimit);
         return this;
     }
 
@@ -451,11 +416,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * should be skipped when reading data from the database.
      */
     public ObjectSelect<T> offset(int fetchOffset) {
-        if (this.offset != fetchOffset) {
-            this.offset = fetchOffset;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setFetchOffset(fetchOffset);
         return this;
     }
 
@@ -465,11 +426,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * parts of the result are ever going to be accessed.
      */
     public ObjectSelect<T> pageSize(int pageSize) {
-        if (this.pageSize != pageSize) {
-            this.pageSize = pageSize;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setPageSize(pageSize);
         return this;
     }
 
@@ -480,25 +437,13 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * @see Statement#setFetchSize(int)
      */
     public ObjectSelect<T> statementFetchSize(int size) {
-        if (this.statementFetchSize != size) {
-            this.statementFetchSize = size;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setStatementFetchSize(size);
         return this;
     }
 
     public ObjectSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
-        if (this.cacheStrategy != strategy) {
-            this.cacheStrategy = strategy;
-            this.replacementQuery = null;
-        }
-
-        if(this.cacheGroup != null) {
-            this.cacheGroup = null;
-            this.replacementQuery = null;
-        }
-
+        setCacheStrategy(strategy);
+        setCacheGroup(null);
         return this;
     }
 
@@ -507,8 +452,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
     }
 
     public ObjectSelect<T> cacheGroup(String cacheGroup) {
-        this.cacheGroup = cacheGroup;
-        this.replacementQuery = null;
+        setCacheGroup(cacheGroup);
         return this;
     }
 
@@ -568,10 +512,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      */
     @SuppressWarnings("unchecked")
     public ObjectSelect<DataRow> fetchDataRows() {
-        if(!fetchingDataRows) {
-            fetchingDataRows = true;
-            replacementQuery = null;
-        }
+        metaData.setFetchingDataRows(true);
         return (ObjectSelect<DataRow>) this;
     }
 
@@ -725,7 +666,20 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         return context.selectFirst(limit(1));
     }
 
+    @Override
     public boolean isFetchingDataRows() {
-        return fetchingDataRows;
+        return metaData.isFetchingDataRows();
+    }
+
+    @Override
+    public QueryMetadata getMetaData(EntityResolver resolver) {
+        Object root = resolveRoot(resolver);
+        metaData.resolve(root, resolver, this);
+        return metaData;
+    }
+
+    @Override
+    protected BaseQueryMetadata getBaseMetaData() {
+        return metaData;
     }
 }

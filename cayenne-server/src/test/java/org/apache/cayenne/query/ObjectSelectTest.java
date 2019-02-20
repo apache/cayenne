@@ -372,11 +372,11 @@ public class ObjectSelectTest {
 	public void testCacheGroups_Collection() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertNull(q.getCacheStrategy());
+		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
 
 		q.cacheGroup("a");
-		assertNull(q.getCacheStrategy());
+		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
 		assertEquals("a", q.getCacheGroup());
 	}
 
@@ -384,7 +384,7 @@ public class ObjectSelectTest {
 	public void testCacheStrategy() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertNull(q.getCacheStrategy());
+		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
 
 		q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, "b");
@@ -400,7 +400,7 @@ public class ObjectSelectTest {
 	public void testLocalCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertNull(q.getCacheStrategy());
+		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
 
 		q.localCache("a");
@@ -416,7 +416,7 @@ public class ObjectSelectTest {
 	public void testSharedCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertNull(q.getCacheStrategy());
+		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
 
 		q.sharedCache("b");

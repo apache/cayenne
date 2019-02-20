@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -59,6 +60,11 @@ public interface DbAdapter {
 	 * @since 4.0
 	 */
 	SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
+
+	/**
+	 * @since 4.2
+	 */
+	SelectTranslator getSelectTranslator(FluentSelect<?> query, EntityResolver entityResolver);
 
 	/**
 	 * @since 4.2

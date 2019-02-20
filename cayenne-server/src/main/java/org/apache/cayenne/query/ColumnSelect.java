@@ -70,41 +70,23 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     // package private for tests
     boolean singleColumn = true;
     boolean distinct;
-    boolean suppressDistinct;
+
+    ColumnSelectMetadata metaData = new ColumnSelectMetadata();
 
     protected ColumnSelect() {
-        super();
     }
 
     /**
      * Copy constructor to convert ObjectSelect to ColumnSelect
      */
     protected ColumnSelect(ObjectSelect<T> select) {
-        super();
-        this.name = select.name;
         this.entityType = select.entityType;
         this.entityName = select.entityName;
         this.dbEntityName = select.dbEntityName;
         this.where = select.where;
         this.having = select.having;
         this.orderings = select.orderings;
-        this.prefetches = select.prefetches;
-        this.limit = select.limit;
-        this.offset = select.offset;
-        this.pageSize = select.pageSize;
-        this.statementFetchSize = select.statementFetchSize;
-        this.cacheStrategy = select.cacheStrategy;
-        this.cacheGroup = select.cacheGroup;
-    }
-
-    @Override
-    protected Query createReplacementQuery(EntityResolver resolver) {
-        SelectQuery<?> replacement = (SelectQuery)super.createReplacementQuery(resolver);
-        replacement.setColumns(columns);
-        replacement.setCanReturnScalarValue(singleColumn);
-        replacement.setDistinct(distinct);
-        replacement.setSuppressDistinct(suppressDistinct);
-        return replacement;
+        this.metaData.copyFromInfo(select.metaData);
     }
 
     /**
@@ -143,7 +125,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         this.entityType = entityType;
         this.entityName = entityName;
         this.dbEntityName = dbEntityName;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -233,7 +214,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         }
 
         Collections.addAll(this.orderings, orderings);
-        replacementQuery = null;
         return this;
     }
 
@@ -253,7 +233,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         }
 
         this.orderings.addAll(orderings);
-        replacementQuery = null;
         return this;
     }
 
@@ -263,17 +242,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * @return this object
      */
     public ColumnSelect<T> prefetch(PrefetchTreeNode prefetch) {
-
-        if (prefetch == null) {
-            return this;
-        }
-
-        if (prefetches == null) {
-            prefetches = new PrefetchTreeNode();
-        }
-
-        prefetches.merge(prefetch);
-        replacementQuery = null;
+        metaData.mergePrefetch(prefetch);
         return this;
     }
 
@@ -284,17 +253,10 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * @return this object
      */
     public ColumnSelect<T> prefetch(String path, int semantics) {
-
         if (path == null) {
             return this;
         }
-
-        if (prefetches == null) {
-            prefetches = new PrefetchTreeNode();
-        }
-
-        prefetches.addPath(path).setSemantics(semantics);
-        replacementQuery = null;
+        metaData.addPrefetch(path, semantics);
         return this;
     }
 
@@ -303,11 +265,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * that should be ever be fetched from the database.
      */
     public ColumnSelect<T> limit(int fetchLimit) {
-        if (this.limit != fetchLimit) {
-            this.limit = fetchLimit;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setFetchLimit(fetchLimit);
         return this;
     }
 
@@ -316,11 +274,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * should be skipped when reading data from the database.
      */
     public ColumnSelect<T> offset(int fetchOffset) {
-        if (this.offset != fetchOffset) {
-            this.offset = fetchOffset;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setFetchOffset(fetchOffset);
         return this;
     }
 
@@ -330,11 +284,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * parts of the result are ever going to be accessed.
      */
     public ColumnSelect<T> pageSize(int pageSize) {
-        if (this.pageSize != pageSize) {
-            this.pageSize = pageSize;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setPageSize(pageSize);
         return this;
     }
 
@@ -345,25 +295,13 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * @see Statement#setFetchSize(int)
      */
     public ColumnSelect<T> statementFetchSize(int size) {
-        if (this.statementFetchSize != size) {
-            this.statementFetchSize = size;
-            this.replacementQuery = null;
-        }
-
+        this.metaData.setStatementFetchSize(size);
         return this;
     }
 
     public ColumnSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
-        if (this.cacheStrategy != strategy) {
-            this.cacheStrategy = strategy;
-            this.replacementQuery = null;
-        }
-
-        if(this.cacheGroup != null) {
-            this.cacheGroup = null;
-            this.replacementQuery = null;
-        }
-
+        setCacheStrategy(strategy);
+        setCacheGroup(null);
         return this;
     }
 
@@ -372,8 +310,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     public ColumnSelect<T> cacheGroup(String cacheGroup) {
-        this.cacheGroup = cacheGroup;
-        this.replacementQuery = null;
+        setCacheGroup(cacheGroup);
         return this;
     }
 
@@ -451,7 +388,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         columns.add(firstProperty);
         Collections.addAll(columns, otherProperties);
         singleColumn = false;
-        replacementQuery = null;
         return (ColumnSelect<Object[]>)this;
     }
 
@@ -478,7 +414,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
         columns.addAll(properties);
         singleColumn = false;
-        replacementQuery = null;
         return (ColumnSelect<Object[]>)this;
     }
 
@@ -490,7 +425,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
             this.columns.clear(); // if we don't clear then return type will be incorrect
         }
         this.columns.add(property);
-        this.replacementQuery = null;
         return (ColumnSelect<E>) this;
     }
 
@@ -640,9 +574,8 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * Explicitly request distinct in query.
      */
     public ColumnSelect<T> distinct() {
-        this.suppressDistinct = false;
+        metaData.setSuppressingDistinct(false);
         this.distinct = true;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -650,12 +583,12 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * Explicitly suppress distinct in query.
      */
     public ColumnSelect<T> suppressDistinct() {
-        this.suppressDistinct = true;
+        metaData.setSuppressingDistinct(true);
         this.distinct = false;
-        this.replacementQuery = null;
         return this;
     }
 
+    @Override
     public Collection<BaseProperty<?>> getColumns() {
         return columns;
     }
@@ -663,6 +596,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     /**
      * @since 4.2
      */
+    @Override
     public boolean isDistinct() {
         return distinct;
     }
@@ -670,5 +604,21 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));
+    }
+
+    boolean isSingleColumn() {
+        return singleColumn;
+    }
+
+    @Override
+    public QueryMetadata getMetaData(EntityResolver resolver) {
+        Object root = resolveRoot(resolver);
+        metaData.resolve(root, resolver, this);
+        return metaData;
+    }
+
+    @Override
+    protected BaseQueryMetadata getBaseMetaData() {
+        return metaData;
     }
 }

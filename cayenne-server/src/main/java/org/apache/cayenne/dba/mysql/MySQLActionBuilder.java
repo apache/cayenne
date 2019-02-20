@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -36,6 +37,14 @@ class MySQLActionBuilder extends JdbcActionBuilder {
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
+        return new MySQLSelectAction(query, dataNode);
+    }
+
+    /**
+     * @since 4.2
+     */
+    @Override
+    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
         return new MySQLSelectAction(query, dataNode);
     }
 

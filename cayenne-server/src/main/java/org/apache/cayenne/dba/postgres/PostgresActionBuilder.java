@@ -22,6 +22,7 @@ package org.apache.cayenne.dba.postgres;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -53,6 +54,14 @@ class PostgresActionBuilder extends JdbcActionBuilder {
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
+        return new PostgresSelectAction(query, dataNode);
+    }
+
+    /**
+     * @since 4.2
+     */
+    @Override
+    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
         return new PostgresSelectAction(query, dataNode);
     }
 }

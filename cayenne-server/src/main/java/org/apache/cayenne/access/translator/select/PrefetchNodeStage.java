@@ -50,19 +50,19 @@ class PrefetchNodeStage implements TranslationStage {
     }
 
     private void updatePrefetchNodes(TranslatorContext context) {
-        if(context.getQuery().getPrefetchTree() == null) {
+        if(context.getMetadata().getPrefetchTree() == null) {
             return;
         }
         // Set entity name, in case MixedConversionStrategy will be used to select objects from this query
         // Note: all prefetch nodes will point to query root, it is not a problem until select query can't
         // perform some sort of union or sub-queries.
-        for(PrefetchTreeNode prefetch : context.getQuery().getPrefetchTree().getChildren()) {
+        for(PrefetchTreeNode prefetch : context.getMetadata().getPrefetchTree().getChildren()) {
             prefetch.setEntityName(context.getMetadata().getObjEntity().getName());
         }
     }
 
     private void processJoint(TranslatorContext context) {
-        PrefetchTreeNode prefetch = context.getQuery().getPrefetchTree();
+        PrefetchTreeNode prefetch = context.getMetadata().getPrefetchTree();
         if(prefetch == null) {
             return;
         }

@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.translator.procedure.ProcedureTranslator;
 import org.apache.cayenne.dba.JdbcActionBuilder;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
@@ -37,6 +38,14 @@ class HSQLActionBuilder extends JdbcActionBuilder {
 
     @Override
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
+        return new HSQLSelectAction(query, dataNode);
+    }
+
+    /**
+     * @since 4.2
+     */
+    @Override
+    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
         return new HSQLSelectAction(query, dataNode);
     }
 
