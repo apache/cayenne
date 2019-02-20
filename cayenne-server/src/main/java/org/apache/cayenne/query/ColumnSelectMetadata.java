@@ -35,40 +35,40 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 class ColumnSelectMetadata extends ObjectSelectMetadata {
 
-	private static final long serialVersionUID = -3622675304651257963L;
+    private static final long serialVersionUID = -3622675304651257963L;
 
-	private static final ScalarResultSegment SCALAR_RESULT_SEGMENT
-			= new DefaultScalarResultSegment(null, -1);
-	private static final EntityResultSegment ENTITY_RESULT_SEGMENT
-			= new DefaultEntityResultSegment(null, null, -1);
+    private static final ScalarResultSegment SCALAR_RESULT_SEGMENT
+            = new DefaultScalarResultSegment(null, -1);
+    private static final EntityResultSegment ENTITY_RESULT_SEGMENT
+            = new DefaultEntityResultSegment(null, null, -1);
 
-	private boolean isSingleResultSetMapping;
-	private boolean suppressingDistinct;
+    private boolean isSingleResultSetMapping;
+    private boolean suppressingDistinct;
 
-	boolean resolve(Object root, EntityResolver resolver, ColumnSelect<?> query) {
+    boolean resolve(Object root, EntityResolver resolver, ColumnSelect<?> query) {
 
-		if (super.resolve(root, resolver)) {
-			// generate unique cache key, but only if we are caching..
-			if (cacheStrategy != null && cacheStrategy != QueryCacheStrategy.NO_CACHE) {
-				this.cacheKey = makeCacheKey(query, resolver);
-			}
+        if (super.resolve(root, resolver)) {
+            // generate unique cache key, but only if we are caching..
+            if (cacheStrategy != null && cacheStrategy != QueryCacheStrategy.NO_CACHE) {
+                this.cacheKey = makeCacheKey(query, resolver);
+            }
 
-			resolveAutoAliases(query);
-			buildResultSetMappingForColumns(query);
-			isSingleResultSetMapping = query.isSingleColumn();
-			return true;
-		}
+            resolveAutoAliases(query);
+            buildResultSetMappingForColumns(query);
+            isSingleResultSetMapping = query.isSingleColumn();
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	protected void resolveAutoAliases(FluentSelect<?> query) {
-		super.resolveAutoAliases(query);
-		resolveColumnsAliases(query);
-	}
+    @Override
+    protected void resolveAutoAliases(FluentSelect<?> query) {
+        super.resolveAutoAliases(query);
+        resolveColumnsAliases(query);
+    }
 
-	protected void resolveColumnsAliases(FluentSelect<?> query) {
+    protected void resolveColumnsAliases(FluentSelect<?> query) {
         Collection<BaseProperty<?>> columns = query.getColumns();
         if(columns != null) {
             for(BaseProperty<?> property : columns) {
@@ -80,57 +80,57 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
         }
     }
 
-	@Override
-	public Map<String, String> getPathSplitAliases() {
-		return pathSplitAliases != null ? pathSplitAliases : Collections.emptyMap();
-	}
+    @Override
+    public Map<String, String> getPathSplitAliases() {
+        return pathSplitAliases != null ? pathSplitAliases : Collections.emptyMap();
+    }
 
-	/**
-	 * NOTE: this is a dirty logic, we calculate hollow resultSetMapping here and later in translator
-	 * (see ColumnExtractorStage and extractors) discard this and calculate it with full info.
-	 *
-	 * This result set mapping required by paginated queries that need only result type (entity/scalar) not
-	 * full info. So we can optimize this a bit and pair calculation with translation that do same thing to provide
-	 * result column descriptors.
-	 */
-	private void buildResultSetMappingForColumns(ColumnSelect<?> query) {
-		if(query.getColumns() == null || query.getColumns().isEmpty()) {
-			return;
-		}
+    /**
+     * NOTE: this is a dirty logic, we calculate hollow resultSetMapping here and later in translator
+     * (see ColumnExtractorStage and extractors) discard this and calculate it with full info.
+     *
+     * This result set mapping required by paginated queries that need only result type (entity/scalar) not
+     * full info. So we can optimize this a bit and pair calculation with translation that do same thing to provide
+     * result column descriptors.
+     */
+    private void buildResultSetMappingForColumns(ColumnSelect<?> query) {
+        if(query.getColumns() == null || query.getColumns().isEmpty()) {
+            return;
+        }
 
-		resultSetMapping = new ArrayList<>(query.getColumns().size());
-		for(BaseProperty<?> column : query.getColumns()) {
-			// for each column we need only to know if it's entity or scalar
-			Expression exp = column.getExpression();
-			boolean fullObject = false;
-			if(exp.getType() == Expression.OBJ_PATH) {
-				// check if this is toOne relation
-				Object rel = exp.evaluate(getObjEntity());
-				// it this path is toOne relation, than select full object for it
-				fullObject = rel instanceof ObjRelationship && !((ObjRelationship) rel).isToMany();
-			} else if(exp.getType() == Expression.FULL_OBJECT) {
-				fullObject = true;
-			}
+        resultSetMapping = new ArrayList<>(query.getColumns().size());
+        for(BaseProperty<?> column : query.getColumns()) {
+            // for each column we need only to know if it's entity or scalar
+            Expression exp = column.getExpression();
+            boolean fullObject = false;
+            if(exp.getType() == Expression.OBJ_PATH) {
+                // check if this is toOne relation
+                Object rel = exp.evaluate(getObjEntity());
+                // it this path is toOne relation, than select full object for it
+                fullObject = rel instanceof ObjRelationship && !((ObjRelationship) rel).isToMany();
+            } else if(exp.getType() == Expression.FULL_OBJECT) {
+                fullObject = true;
+            }
 
-			if(fullObject) {
-				resultSetMapping.add(ENTITY_RESULT_SEGMENT);
-			} else {
-				resultSetMapping.add(SCALAR_RESULT_SEGMENT);
-			}
-		}
-	}
+            if(fullObject) {
+                resultSetMapping.add(ENTITY_RESULT_SEGMENT);
+            } else {
+                resultSetMapping.add(SCALAR_RESULT_SEGMENT);
+            }
+        }
+    }
 
-	@Override
-	public boolean isSingleResultSetMapping() {
-		return isSingleResultSetMapping;
-	}
+    @Override
+    public boolean isSingleResultSetMapping() {
+        return isSingleResultSetMapping;
+    }
 
-	@Override
-	public boolean isSuppressingDistinct() {
-		return suppressingDistinct;
-	}
+    @Override
+    public boolean isSuppressingDistinct() {
+        return suppressingDistinct;
+    }
 
-	public void setSuppressingDistinct(boolean suppressingDistinct) {
-		this.suppressingDistinct = suppressingDistinct;
-	}
+    public void setSuppressingDistinct(boolean suppressingDistinct) {
+        this.suppressingDistinct = suppressingDistinct;
+    }
 }

@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
@@ -38,15 +47,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * A specialized PrefetchTreeNode used for joint prefetch resolving.
@@ -187,9 +187,11 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
                     .getRelationship()
                     .getDbRelationships()
                     .get(0);
-            for (final DbJoin join : r.getJoins()) {
-                appendColumn(targetSource, join.getTargetName(), prefix
-                        + join.getTargetName());
+            if(!r.isUseJoinExp()) {
+                for (final DbJoin join : r.getJoins()) {
+                    appendColumn(targetSource, join.getTargetName(), prefix
+                            + join.getTargetName());
+                }
             }
         }
 
@@ -213,6 +215,9 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
             private boolean visitRelationship(ArcProperty arc) {
                 DbRelationship dbRel = arc.getRelationship().getDbRelationships().get(0);
+                if(dbRel.isUseJoinExp()) {
+                    return false;
+                }
                 for (DbAttribute attribute : dbRel.getSourceAttributes()) {
                     String target = attribute.getName();
 

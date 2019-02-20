@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.ashwood;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -39,14 +47,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Implements dependency sorting algorithms for ObjEntities, DbEntities and
@@ -117,14 +117,11 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 					for (DbJoin join : candidate.getJoins()) {
 						DbAttribute targetAttribute = join.getTarget();
-						if (targetAttribute.isPrimaryKey()) {
+						if (targetAttribute != null && targetAttribute.isPrimaryKey()) {
 
 							if (newReflexive) {
-								List<DbRelationship> reflexiveRels = reflexiveDbEntities.get(destination);
-								if (reflexiveRels == null) {
-									reflexiveRels = new ArrayList<>(1);
-									reflexiveDbEntities.put(destination, reflexiveRels);
-								}
+								List<DbRelationship> reflexiveRels = reflexiveDbEntities
+										.computeIfAbsent(destination, k -> new ArrayList<>(1));
 								reflexiveRels.add(candidate);
 								newReflexive = false;
 							}

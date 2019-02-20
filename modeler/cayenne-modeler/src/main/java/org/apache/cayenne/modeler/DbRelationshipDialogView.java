@@ -22,9 +22,11 @@ package org.apache.cayenne.modeler;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import java.awt.BorderLayout;
@@ -35,14 +37,13 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
-import org.apache.cayenne.modeler.util.CayenneDialog;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.PanelFactory;
 
 /**
  * @since 4.2
  */
-public class DbRelationshipDialogView extends CayenneDialog {
+public class DbRelationshipDialogView extends JDialog {
 
     private JTextField name;
     private JComboBox<String> targetEntities;
@@ -62,16 +63,16 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private JScrollPane tableScrollPane;
     private JPanel joinButtons;
 
-    private JTextField customExpressionField;
+    private JScrollPane textAreaScrollPane;
+    private JTextArea customExpressionField;
 
     private boolean cancelPressed;
 
     public DbRelationshipDialogView() {
-        super(Application.getFrame(), "Create dbRelationship", true);
+        super(Application.getFrame());
 
         initView();
-        this.pack();
-        this.centerWindow();
+        setPreferredSize(new Dimension(650, 500));
     }
 
     private void initView() {
@@ -94,7 +95,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
 
         useExpressionForJoin = new JCheckBox();
 
-        customExpressionField = new JTextField(25);
+        customExpressionField = new JTextArea();
 
         table = new AttributeTable();
 
@@ -110,7 +111,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
                 new FormLayout(
                         "right:max(50dlu;pref), 3dlu, fill:min(150dlu;pref), 3dlu, fill:min(50dlu;pref)",
                         "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, " +
-                                "p, 3dlu, p, 9dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
+                                "p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, top:14dlu, 3dlu, top:p:grow"));
         builder.setDefaultDialogBorder();
 
         builder.addSeparator("Create dbRelationship", cc.xywh(1, 1, 5, 1));
@@ -146,8 +147,9 @@ public class DbRelationshipDialogView extends CayenneDialog {
         builder.addSeparator("Joins", cc.xywh(1, 21, 5, 1));
         builder.add(tableScrollPane, cc.xywh(1, 23, 3, 3, "fill, fill"));
 
-        builder.addLabel("Use expression for join:", cc.xy(1, 23));
-        builder.add(customExpressionField, cc.xywh(3, 23, 1, 1));
+        textAreaScrollPane = new JScrollPane(customExpressionField);
+        builder.add(textAreaScrollPane, cc.xywh(1, 23, 3, 3, "fill, fill"));
+        textAreaScrollPane.setVisible(false);
 
         joinButtons = new JPanel(new FlowLayout(FlowLayout.LEADING));
         joinButtons.add(addButton);
@@ -165,6 +167,8 @@ public class DbRelationshipDialogView extends CayenneDialog {
         reverseName.setEnabled(enable);
         addButton.setEnabled(enable);
         removeButton.setEnabled(enable);
+        useExpressionForJoin.setEnabled(enable);
+        textAreaScrollPane.setEnabled(enable);
     }
 
     @Override
@@ -179,7 +183,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
         joinButtons.setVisible(!show);
         tableScrollPane.setVisible(!show);
 
-        customExpressionField.setVisible(show);
+        textAreaScrollPane.setVisible(show);
     }
 
     public JTextField getNameField() {
@@ -250,12 +254,16 @@ public class DbRelationshipDialogView extends CayenneDialog {
         return joinButtons;
     }
 
-    public JTextField getCustomExpressionField() {
+    public JTextArea getCustomExpressionField() {
         return customExpressionField;
     }
 
     public void setCancelPressed(boolean cancelPressed) {
         this.cancelPressed = cancelPressed;
+    }
+
+    public JScrollPane getTextAreaScrollPane() {
+        return textAreaScrollPane;
     }
 
     final class AttributeTable extends CayenneTable {

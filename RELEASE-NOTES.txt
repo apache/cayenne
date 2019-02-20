@@ -22,6 +22,7 @@ CAY-2517 EventManager: optimization of adding listeners
 CAY-2518 Add method to append having qualifier expression to ObjectSelect
 CAY-2520 Split ObjectId into several specialized variants
 CAY-2522 Make ObjectSelect a direct query
+CAY-2529 Custom expression in DbJoin
 CAY-2540 Modeler: redesign dbRelationship editor dialog
 CAY-2543 Move ResultSetMapping generation from metadata to translator
 

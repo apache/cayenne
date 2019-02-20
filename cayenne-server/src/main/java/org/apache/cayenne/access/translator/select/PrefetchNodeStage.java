@@ -113,16 +113,34 @@ class PrefetchNodeStage implements TranslationStage {
             PathTranslationResult result = pathTranslator
                     .translatePath(context.getMetadata().getDbEntity(), path);
             result.getDbRelationship().ifPresent(r -> {
-                DbEntity targetEntity = r.getTargetEntity();
+                DbEntity entity;
+                String finalPathPart, currPath;
+                if(r.isUseJoinExp()) {
+                    entity = r.getSourceEntity();
+                    currPath = buildCurrPath(path, r);
+                    finalPathPart = r.getSourceEntityName() + ".";
+                } else {
+                    entity = r.getTargetEntity();
+                    currPath = path;
+                    finalPathPart = currPath + '.';
+                }
                 context.getTableTree().addJoinTable(path, r, JoinType.INNER);
-                for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
+                for (DbAttribute pk : entity.getPrimaryKeys()) {
                     // note that we may select a source attribute, but label it as target for simplified snapshot processing
-                    String finalPath = path + '.' + pk.getName();
-                    String alias = context.getTableTree().aliasForPath(path);
+                    String finalPath = finalPathPart + pk.getName();
+                    String alias = context.getTableTree().aliasForPath(currPath);
                     Node columnNode = table(alias).column(pk).build();
                     context.addResultNode(columnNode, finalPath).setDbAttribute(pk);
                 }
             });
         }
+    }
+
+    private String buildCurrPath(String path, DbRelationship r) {
+        int index = path.indexOf(r.getName());
+        if(index < 1) {
+            return "";
+        }
+        return path.substring(0, index - 1);
     }
 }

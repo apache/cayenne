@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +28,8 @@ import org.apache.cayenne.exp.parser.ASTFalse;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ExpressionTest {
 
@@ -440,6 +440,14 @@ public class ExpressionTest {
 			return node;
 		});
 		assertEquals("true and true", transformed.toString());
+	}
+
+	@Test
+	public void testFromToString() {
+		Expression e1 = ExpressionFactory.exp("artist.id = painting.artistId");
+		Expression e2 = ExpressionFactory.exp(e1.toString());
+
+		assertEquals(e1, e2);
 	}
 
 }

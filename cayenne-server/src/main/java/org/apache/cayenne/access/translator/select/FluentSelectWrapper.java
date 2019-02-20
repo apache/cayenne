@@ -74,4 +74,9 @@ public class FluentSelectWrapper implements TranslatableQueryWrapper {
     public FluentSelect<?> unwrap() {
         return select;
     }
+
+    @Override
+    public boolean needsResultSetMapping() {
+        return getColumns() != null && !getColumns().isEmpty();
+    }
 }

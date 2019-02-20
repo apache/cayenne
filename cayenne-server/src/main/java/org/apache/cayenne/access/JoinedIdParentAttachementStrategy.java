@@ -26,6 +26,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -46,11 +47,8 @@ class JoinedIdParentAttachementStrategy implements ParentAttachmentStrategy {
                 .getResolver()
                 .getDescriptor();
 
-        relatedIdPrefix = node
-                .getIncoming()
-                .getRelationship()
-                .getReverseDbRelationshipPath()
-                + ".";
+        ObjRelationship relationship = node.getIncoming().getRelationship();
+        relatedIdPrefix = buildRelatedIdPrefix(relationship);
 
         sourceEntities = parentDescriptor.getEntityInheritanceTree().allSubEntities();
 
@@ -79,5 +77,11 @@ class JoinedIdParentAttachementStrategy implements ParentAttachmentStrategy {
         }
 
         node.linkToParent(object, parentObject);
+    }
+
+    private String buildRelatedIdPrefix(ObjRelationship relationship) {
+        return relationship.hasReverseDdRelationship() ?
+                relationship.getReverseDbRelationshipPath() + "."
+                : relationship.getSourceEntity().getDbEntityName() + ".";
     }
 }

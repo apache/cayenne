@@ -19,14 +19,21 @@
 
 package org.apache.cayenne.query;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.CayenneMapEntry;
+
+import static org.apache.cayenne.exp.ExpressionFactory.dbPathExp;
+import static org.apache.cayenne.exp.ExpressionFactory.fullObjectExp;
 
 /**
  * Preprocessor and router of SelectQuery prefetches.
@@ -72,15 +79,18 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
         Iterator<CayenneMapEntry> it = classDescriptor.getEntity().resolvePathComponents(
                 prefetchPath);
 
-        ObjRelationship relationship = null;
+        List<ObjRelationship> relationships = new ArrayList<>();
         while (it.hasNext()) {
-            relationship = (ObjRelationship) it.next();
+            relationships.add((ObjRelationship) it.next());
         }
 
-        if (relationship == null) {
+        if (relationships.isEmpty()) {
             throw new CayenneRuntimeException("Invalid prefetch '%s' for entity '%s'"
                     , prefetchPath, classDescriptor.getEntity().getName());
         }
+
+        ObjRelationship firstRelationship = relationships.get(0);
+        ObjRelationship lastRelationship = relationships.get(relationships.size() - 1);
 
         // chain query and entity qualifiers
         Expression queryQualifier = query.getWhere();
@@ -95,24 +105,55 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
                     : entityQualifier;
         }
 
-        // create and configure PrefetchSelectQuery
-        PrefetchSelectQuery<?> prefetchQuery = new PrefetchSelectQuery<>(prefetchPath, relationship);
+        PrefetchSelectQuery<?> prefetchQuery = new PrefetchSelectQuery<>(prefetchPath, lastRelationship);
         prefetchQuery.setStatementFetchSize(query.getStatementFetchSize());
 
-        prefetchQuery.setQualifier(classDescriptor.getEntity()
-                .translateToRelatedEntity(queryQualifier, prefetchPath));
-
-        if (relationship.isSourceIndependentFromTargetChange()) {
-            // setup extra result columns to be able to relate result rows to the parent
-            // result objects.
-            prefetchQuery.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
+        if(!hasReverseDdRelationship(relationships)) {
+            prefetchQuery.setRoot(firstRelationship.getSourceEntity());
+            prefetchQuery.setColumns(buildColumn(lastRelationship, prefetchPath));
+            prefetchQuery.setQualifier(query.getWhere());
+            if (lastRelationship.isSourceIndependentFromTargetChange()) {
+                // setup extra result columns to be able to relate result rows to the parent
+                // result objects.
+                StringBuilder path = new StringBuilder();
+                for(ObjRelationship relationship : relationships) {
+                    if(path.length() != 0) {
+                        path.append(".");
+                    }
+                    path.append(relationship.getDbRelationshipPath());
+                    prefetchQuery.addResultPath("db:" + path);
+                }
+            }
+        } else {
+            prefetchQuery.setQualifier(classDescriptor.getEntity()
+                    .translateToRelatedEntity(queryQualifier, prefetchPath));
+            if (lastRelationship.isSourceIndependentFromTargetChange()) {
+                // setup extra result columns to be able to relate result rows to the parent
+                // result objects.
+                prefetchQuery.addResultPath("db:" + lastRelationship.getReverseDbRelationshipPath());
+            }
         }
 
         // pass prefetch subtree to enable joint prefetches...
         prefetchQuery.setPrefetchTree(node);
-
         // route...
         prefetchQuery.route(router, resolver, null);
+        return true;
+    }
+
+    private BaseProperty<?> buildColumn(ObjRelationship relationship, String path) {
+        Expression fullObjectExp = fullObjectExp(dbPathExp(path));
+        Class<?> classType = resolver.getClassDescriptor(relationship.getTargetEntityName()).getObjectClass();
+        return PropertyFactory.createBase(fullObjectExp, classType);
+    }
+
+    private boolean hasReverseDdRelationship(List<ObjRelationship> relationships) {
+        for(ObjRelationship relationship : relationships) {
+            if(!relationship.hasReverseDdRelationship()) {
+                return false;
+            }
+        }
+
         return true;
     }
 

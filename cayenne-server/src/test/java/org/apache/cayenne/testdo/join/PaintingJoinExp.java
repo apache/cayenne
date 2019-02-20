@@ -17,40 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
+package org.apache.cayenne.testdo.join;
 
-import java.util.Collection;
+import org.apache.cayenne.testdo.join.auto._PaintingJoinExp;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.property.BaseProperty;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Select;
+public class PaintingJoinExp extends _PaintingJoinExp {
 
-/**
- * This interface allows transparently use different queries (namely SelectQuery, ObjectSelect and ColumnSelect)
- * in translator and as subqueries.
- *
- * @since 4.2
- */
-public interface TranslatableQueryWrapper {
+    private static final long serialVersionUID = 1L; 
 
-    boolean isDistinct();
-
-    QueryMetadata getMetaData(EntityResolver resolver);
-
-    Expression getQualifier();
-
-    Collection<Ordering> getOrderings();
-
-    Collection<BaseProperty<?>> getColumns();
-
-    Expression getHavingQualifier();
-
-    Select<?> unwrap();
-
-    default boolean needsResultSetMapping() {
-        return getColumns() != null && !getColumns().isEmpty();
-    }
 }

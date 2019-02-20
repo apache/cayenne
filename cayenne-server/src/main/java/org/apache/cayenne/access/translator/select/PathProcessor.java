@@ -115,7 +115,7 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     }
 
     protected void appendCurrentPath(String nextSegment) {
-        if(currentDbPath.length() > 0) {
+        if(currentDbPath.length() > 0 && currentDbPath.charAt(currentDbPath.length() - 1) != ':') {
             currentDbPath.append('.');
         }
         currentDbPath.append(nextSegment);

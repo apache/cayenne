@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
@@ -39,11 +44,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @since 3.0
@@ -128,6 +128,10 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             private void visitRelationship(ArcProperty property) {
                 ObjRelationship rel = property.getRelationship();
                 DbRelationship dbRel = rel.getDbRelationships().get(0);
+
+                if(dbRel.isUseJoinExp()) {
+                    throw new CayenneRuntimeException("Ejbql query doesn't support custom expressions in join.");
+                }
 
                 for (DbJoin join : dbRel.getJoins()) {
                     DbAttribute src = join.getSource();

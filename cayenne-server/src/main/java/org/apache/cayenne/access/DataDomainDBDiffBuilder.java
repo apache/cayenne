@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.access;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
@@ -31,10 +36,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Processes object diffs, generating DB diffs. Can be used for both UPDATE and
@@ -177,6 +178,9 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
                 throw new IllegalArgumentException("Bad arcId: " + arcId);
             }
 
+        } else if(relationship.isReadOnly()) {
+            throw new CayenneRuntimeException("Attempt to modify relationship marked as read-only: '%s'. ",
+                    relationship.getName());
         } else {
             if (!relationship.isToMany() && relationship.isToPK()) {
                 doArcCreated(targetNodeId, arcId);

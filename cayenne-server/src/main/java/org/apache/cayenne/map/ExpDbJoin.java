@@ -5,29 +5,27 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 
-public class CustomExpDbJoin extends DbJoin {
+public class ExpDbJoin extends DbJoin {
 
     protected Expression joinExpression;
 
-    public CustomExpDbJoin() {
+    public ExpDbJoin() {
         super();
     }
 
-    public CustomExpDbJoin(DbRelationship dbRelationship) {
+    public ExpDbJoin(DbRelationship dbRelationship) {
         super(dbRelationship);
     }
 
-    public CustomExpDbJoin(DbRelationship relationship, Expression joinExpression) {
+    public ExpDbJoin(DbRelationship relationship, Expression joinExpression) {
         super(relationship);
 
         this.joinExpression = joinExpression;
     }
 
     @Override
-    public CustomExpDbJoin createReverseJoin() {
-        CustomExpDbJoin reverse = new CustomExpDbJoin();
-        reverse.setJoinExpression(joinExpression);
-        return reverse;
+    public ExpDbJoin createReverseJoin() {
+        return this;
     }
 
     public void setJoinExpression(Expression joinExpression) {
@@ -40,7 +38,7 @@ public class CustomExpDbJoin extends DbJoin {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("db-attribute-join")
+        encoder.start("db-join")
                 .attribute("joinExp", getJoinExpression().toString())
                 .end();
     }

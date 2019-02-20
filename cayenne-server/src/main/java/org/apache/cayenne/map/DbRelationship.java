@@ -183,6 +183,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * the same join semantics. Returns null if no such relationship exists.
      */
     public DbRelationship getReverseRelationship() {
+        if(!hasReverseDdRelationship()) {
+            return null;
+        }
+
         DbEntity target = getTargetEntity();
 
         if (target == null) {
@@ -311,6 +315,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
     public boolean isValidForDepPk() {
         // handle case with no joins
         if (getJoins().size() == 0) {
+            return false;
+        }
+
+        if(isUseJoinExp()) {
             return false;
         }
 
@@ -546,5 +554,9 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
 
     public boolean isUseJoinExp() {
         return useJoinExp;
+    }
+
+    public boolean hasReverseDdRelationship() {
+        return !useJoinExp;
     }
 }
