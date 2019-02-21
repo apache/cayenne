@@ -251,6 +251,15 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 	}
 
 	/**
+	 * used by select translator
+	 * @since 4.2
+	 */
+	@Override
+	public void setResultSetMapping(List<Object> resultSetMapping) {
+		this.resultSetMapping = resultSetMapping;
+	}
+
+	/**
 	 * @since 4.0
 	 */
 	@Override

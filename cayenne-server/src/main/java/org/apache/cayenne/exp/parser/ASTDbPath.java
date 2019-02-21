@@ -35,6 +35,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -193,5 +194,15 @@ public class ASTDbPath extends ASTPath {
 	@Override
 	public int getType() {
 		return Expression.DB_PATH;
+	}
+
+	/**
+	 * Helper method to evaluate path expression with Cayenne Entity.
+	 */
+	protected CayenneMapEntry evaluateEntityNode(Entity entity) {
+		if(entity instanceof ObjEntity) {
+			entity = ((ObjEntity) entity).getDbEntity();
+		}
+		return super.evaluateEntityNode(entity);
 	}
 }

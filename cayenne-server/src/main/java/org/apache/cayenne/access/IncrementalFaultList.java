@@ -72,6 +72,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	protected int idWidth;
 
 	IncrementalListHelper helper;
+	protected QueryMetadata metadata;
 
 	/**
 	 * Defines the upper limit on the size of fetches. This is needed to avoid
@@ -102,7 +103,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 *            maximum number of fetches in one query
 	 */
 	public IncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
-		QueryMetadata metadata = query.getMetaData(dataContext.getEntityResolver());
+		this.metadata = query.getMetaData(dataContext.getEntityResolver());
 		if (metadata.getPageSize() <= 0) {
 			throw new CayenneRuntimeException("Not a paginated query; page size: " + metadata.getPageSize());
 		}
@@ -122,7 +123,6 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		this.internalQuery.setFetchingDataRows(metadata.isFetchingDataRows());
 		this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
 
-		this.helper = createHelper(metadata);
 		this.idWidth = metadata.getDbEntity().getPrimaryKeys().size();
 
 		List<Object> elementsUnsynced = new ArrayList<>();
@@ -141,6 +141,13 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		} else {
 			return new PersistentListHelper();
 		}
+	}
+
+	IncrementalListHelper getHelper() {
+		if(helper == null) {
+			helper = createHelper(metadata);
+		}
+		return helper;
 	}
 
 	/**
@@ -223,7 +230,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			List<Object> ids = new ArrayList<>(pageSize);
 			for (int i = fromIndex; i < toIndex; i++) {
 				Object object = elements.get(i);
-				if (helper.unresolvedSuspect(object)) {
+				if (getHelper().unresolvedSuspect(object)) {
 					quals.add(buildIdQualifier(object));
 					ids.add(object);
 				}
@@ -258,7 +265,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 	void updatePageWithResults(List<Object> objects, int fromIndex, int toIndex) {
 		for (Object object : objects) {
-			helper.updateWithResolvedObjectInRange(object, fromIndex, toIndex);
+			getHelper().updateWithResolvedObjectInRange(object, fromIndex, toIndex);
 		}
 
 		unfetchedObjects -= objects.size();
@@ -307,7 +314,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 				for (Object object : objects) {
 
-					if (helper.replacesObject(object, id)) {
+					if (getHelper().replacesObject(object, id)) {
 						found = true;
 						break;
 					}
@@ -506,7 +513,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		synchronized (elements) {
 			Object o = elements.get(index);
 
-			if (helper.unresolvedSuspect(o)) {
+			if (getHelper().unresolvedSuspect(o)) {
 				// read this page
 				int pageStart = pageIndex(index) * pageSize;
 				resolveInterval(pageStart, pageStart + pageSize);
@@ -522,7 +529,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.List#indexOf(Object)
 	 */
 	public int indexOf(Object o) {
-		return helper.indexOfObject(o);
+		return getHelper().indexOfObject(o);
 	}
 
 	/**
@@ -535,7 +542,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	}
 
 	public int lastIndexOf(Object o) {
-		return helper.lastIndexOfObject(o);
+		return getHelper().lastIndexOfObject(o);
 	}
 
 	public E remove(int index) {

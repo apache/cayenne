@@ -140,7 +140,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 int dataIdx = entry.getKey();
                 for (int i = fromIndex; i < toIndex; i++) {
                     Object[] object = (Object[])elements.get(i);
-                    if (helper.unresolvedSuspect(object[dataIdx])) {
+                    if (getHelper().unresolvedSuspect(object[dataIdx])) {
                         Expression nextQualifier = buildIdQualifier(dataIdx, object);
                         if(nextQualifier != null) {
                             quals.add(nextQualifier);
@@ -173,7 +173,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
     }
 
     void updatePageWithResults(List<Persistent> objects, int dataIndex) {
-        MixedArrayListHelper helper = (MixedArrayListHelper)this.helper;
+        MixedArrayListHelper helper = (MixedArrayListHelper)getHelper();
         for (Persistent object : objects) {
             helper.updateWithResolvedObject(object, dataIndex);
         }

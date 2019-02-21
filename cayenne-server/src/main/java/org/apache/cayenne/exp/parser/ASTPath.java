@@ -22,7 +22,10 @@ package org.apache.cayenne.exp.parser;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.PathComponent;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -91,13 +94,20 @@ public abstract class ASTPath extends SimpleNode {
 	 * Helper method to evaluate path expression with Cayenne Entity.
 	 */
 	protected CayenneMapEntry evaluateEntityNode(Entity entity) {
-		Iterator<CayenneMapEntry> path = entity.resolvePathComponents(this);
-		CayenneMapEntry next = null;
+		Iterator<PathComponent<Attribute, Relationship>> path = entity.resolvePath(this, getPathAliases()).iterator();
+		PathComponent<Attribute, Relationship> next = null;
 		while (path.hasNext()) {
 			next = path.next();
 		}
 
-		return next;
+		if(next == null) {
+			return null;
+		}
+
+		if(next.getRelationship() != null) {
+			return next.getRelationship();
+		}
+		return next.getAttribute();
 	}
 
 	@Override

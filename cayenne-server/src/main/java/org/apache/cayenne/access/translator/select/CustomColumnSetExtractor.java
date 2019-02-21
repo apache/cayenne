@@ -60,6 +60,8 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     private void extractSimpleProperty(BaseProperty<?> property) {
         Node sqlNode = context.getQualifierTranslator().translate(property);
         context.addResultNode(sqlNode, true, property, property.getAlias());
+        String name = property.getName() == null ? property.getExpression().expName() : property.getName();
+        context.getSqlResult().addColumnResult(name);
     }
 
     private boolean isFullObjectProp(BaseProperty<?> property) {
@@ -108,14 +110,14 @@ class CustomColumnSetExtractor implements ColumnExtractor {
 
     private String calculatePrefix(String prefix, BaseProperty<?> property) {
         Expression propertyExpression = property.getExpression();
-        int expressionType = property.getExpression().getType();
+        int expressionType = propertyExpression.getType();
 
         if(expressionType == Expression.FULL_OBJECT && propertyExpression.getOperandCount() > 0) {
             Object op = propertyExpression.getOperand(0);
             if(op instanceof ASTPath) {
                 prefix = ((ASTPath) op).getPath();
             }
-        } else if(propertyExpression instanceof ASTPath) {
+        } else if(expressionType == Expression.DB_PATH || expressionType == Expression.OBJ_PATH) {
             prefix = ((ASTPath) propertyExpression).getPath();
         }
 

@@ -49,6 +49,7 @@ public class DefaultSelectTranslator implements SelectTranslator {
             new LimitOffsetStage(),
             new ColumnDescriptorStage(),
             new TableTreeStage(),
+            new SQLResultStage(),
             new SQLGenerationStage()
     };
 

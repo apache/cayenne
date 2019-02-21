@@ -52,4 +52,7 @@ public interface TranslatableQueryWrapper {
 
     Select<?> unwrap();
 
+    default boolean needsResultSetMapping() {
+        return getColumns() != null && !getColumns().isEmpty();
+    }
 }

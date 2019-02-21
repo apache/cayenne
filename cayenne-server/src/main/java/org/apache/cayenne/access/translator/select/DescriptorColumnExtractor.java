@@ -22,9 +22,11 @@ package org.apache.cayenne.access.translator.select;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -44,9 +46,11 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
 
     private final ClassDescriptor descriptor;
     private final PathTranslator pathTranslator;
+    private final Set<String> columnTracker = new HashSet<>();
 
+    private EntityResult entityResult;
     private String prefix;
-    private Set<String> columnTracker = new HashSet<>();
+    private String labelPrefix;
 
     DescriptorColumnExtractor(TranslatorContext context, ClassDescriptor descriptor) {
         super(context);
@@ -56,14 +60,31 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
 
     public void extract(String prefix) {
         this.prefix = prefix;
-        String labelPrefix = prefix;
+        boolean newEntityResult = false;
+        this.labelPrefix = null;
         TranslatorContext.DescriptorType type = TranslatorContext.DescriptorType.OTHER;
-        if(prefix != null && prefix.length() > 2 && prefix.startsWith(PREFETCH_PREFIX)) {
+
+        if(prefix != null && prefix.startsWith(PREFETCH_PREFIX)) {
             type = TranslatorContext.DescriptorType.PREFETCH;
             labelPrefix = prefix.substring(2);
-        } else if(descriptor.getEntity().getDbEntity() == context.getRootDbEntity()) {
-            type = TranslatorContext.DescriptorType.ROOT;
+            if(context.getQuery().needsResultSetMapping()) {
+                entityResult = context.getRootEntityResult();
+                if (entityResult == null) {
+                    throw new CayenneRuntimeException("Can't process prefetch descriptor without root.");
+                }
+                newEntityResult = false;
+            }
+        } else {
+            if(context.getQuery().needsResultSetMapping()) {
+                entityResult = new EntityResult(descriptor.getObjectClass());
+                newEntityResult = true;
+            }
+            if(descriptor.getEntity().getDbEntity() == context.getRootDbEntity()){
+                type = TranslatorContext.DescriptorType.ROOT;
+                context.setRootEntityResult(entityResult);
+            }
         }
+
         context.markDescriptorStart(type);
 
         descriptor.visitAllProperties(this);
@@ -75,7 +96,12 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
             String columnUniqueName = alias + '.' + dba.getName();
             if(columnTracker.add(columnUniqueName)) {
                 addDbAttribute(prefix, labelPrefix, dba);
+                addEntityResultField(dba);
             }
+        }
+
+        if(newEntityResult) {
+            context.getSqlResult().addEntityResult(entityResult);
         }
         context.markDescriptorEnd(type);
     }
@@ -90,6 +116,7 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
             ResultNodeDescriptor resultNodeDescriptor = processTranslationResult(result, i);
             if(resultNodeDescriptor != null && i == count - 1) {
                 resultNodeDescriptor.setJavaType(oa.getType());
+                addEntityResultField(oa.getDbAttribute());
             }
         }
 
@@ -109,6 +136,7 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         int count = result.getDbAttributes().size();
         for(int i=0; i<count; i++) {
             processTranslationResult(result, i);
+            addEntityResultField(result.getDbAttributes().get(i));
         }
 
         return true;
@@ -136,6 +164,13 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         }
 
         return null;
+    }
+
+    private void addEntityResultField(DbAttribute attribute) {
+        String name = labelPrefix == null ? attribute.getName() : labelPrefix + '.' + attribute.getName();
+        if(context.getQuery().needsResultSetMapping()) {
+            entityResult.addDbField(name, name);
+        }
     }
 
     @Override

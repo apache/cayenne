@@ -226,6 +226,12 @@ public interface QueryMetadata {
     List<Object> getResultSetMapping();
 
     /**
+     * @since 4.2
+     */
+    default void setResultSetMapping(List<Object> resultSetMapping) {
+    }
+
+    /**
      * @return should the result be mapped to single object (scalar or entity)
      * @see QueryMetadata#getResultSetMapping()
      * @since 4.0

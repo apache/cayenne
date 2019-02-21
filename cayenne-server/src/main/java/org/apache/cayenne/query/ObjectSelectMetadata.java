@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -36,7 +37,7 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 
 	private static final long serialVersionUID = -4936484509363047672L;
 
-	private Map<String, String> pathSplitAliases;
+	protected Map<String, String> pathSplitAliases;
 
 	@Override
 	void copyFromInfo(QueryMetadata info) {
@@ -59,7 +60,7 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 		return false;
 	}
 
-	private String makeCacheKey(FluentSelect<?> query, EntityResolver resolver) {
+	protected String makeCacheKey(FluentSelect<?> query, EntityResolver resolver) {
 
 		// create a unique key based on entity or columns, qualifier, ordering, fetch offset and limit
 
@@ -72,6 +73,14 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 			key.append(entity.getName());
 		} else if (dbEntity != null) {
 			key.append("db:").append(dbEntity.getName());
+		}
+
+		if (query.getColumns() != null && !query.getColumns().isEmpty()) {
+			traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
+			for (BaseProperty<?> property : query.getColumns()) {
+				key.append("/c:");
+				property.getExpression().traverse(traversalHandler);
+			}
 		}
 
 		if (query.getWhere() != null) {
@@ -111,20 +120,27 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 		return key.toString();
 	}
 
-	private void resolveAutoAliases(ObjectSelect<?> query) {
+	protected void resolveAutoAliases(FluentSelect<?> query) {
 		resolveQualifierAliases(query);
         resolveOrderingAliases(query);
+		resolveHavingQualifierAliases(query);
 	}
 
-	private void resolveQualifierAliases(ObjectSelect<?> query) {
+	protected void resolveQualifierAliases(FluentSelect<?> query) {
 		Expression qualifier = query.getWhere();
 		if (qualifier != null) {
 			resolveAutoAliases(qualifier);
 		}
 	}
 
+	protected void resolveHavingQualifierAliases(FluentSelect<?> query) {
+		Expression havingQualifier = query.getHaving();
+		if(havingQualifier != null) {
+			resolveAutoAliases(havingQualifier);
+		}
+	}
 
-	private void resolveOrderingAliases(ObjectSelect<?> query) {
+	protected void resolveOrderingAliases(FluentSelect<?> query) {
         Collection<Ordering> orderings = query.getOrderings();
         if(orderings != null) {
             for(Ordering ordering : orderings) {
@@ -136,7 +152,7 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
         }
     }
 
-	private void resolveAutoAliases(Expression expression) {
+	protected void resolveAutoAliases(Expression expression) {
 		Map<String, String> aliases = expression.getPathAliases();
 		if (!aliases.isEmpty()) {
 			if (pathSplitAliases == null) {
