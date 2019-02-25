@@ -26,7 +26,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
@@ -108,26 +108,39 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         }
     }
 
+    /**
+     * Extracts prefix for this extractor from property.
+     * This will be just a db path for this property, if any exists.
+     */
     private String calculatePrefix(String prefix, BaseProperty<?> property) {
-        Expression propertyExpression = property.getExpression();
-        int expressionType = propertyExpression.getType();
-
-        if(expressionType == Expression.FULL_OBJECT && propertyExpression.getOperandCount() > 0) {
-            Object op = propertyExpression.getOperand(0);
-            if(op instanceof ASTPath) {
-                prefix = ((ASTPath) op).getPath();
+        Expression exp = property.getExpression();
+        int expressionType = exp.getType();
+        if(expressionType == Expression.FULL_OBJECT && exp.getOperandCount() > 0) {
+            Object op = exp.getOperand(0);
+            if(op instanceof Expression) {
+                exp = (Expression)op;
             }
-        } else if(expressionType == Expression.DB_PATH || expressionType == Expression.OBJ_PATH) {
-            prefix = ((ASTPath) propertyExpression).getPath();
+        }
+        return dbPathOrDefault(exp, prefix);
+    }
+
+    private String dbPathOrDefault(Expression pathExp, String defaultPrefix) {
+        // normalize to db path first
+        if(pathExp.getType() == Expression.OBJ_PATH) {
+            pathExp = context.getMetadata().getObjEntity().translateToDbPath(pathExp);
         }
 
-        return prefix;
+        if(pathExp.getType() != Expression.DB_PATH) {
+            return defaultPrefix;
+        }
+
+        return ((ASTDbPath)pathExp).getPath();
     }
 
     private void ensureJoin(String prefix) {
         // ensure all joins for given property
         if(!Util.isEmptyString(prefix)) {
-            PathTranslationResult result = context.getPathTranslator().translatePath(context.getMetadata().getObjEntity(), prefix);
+            PathTranslationResult result = context.getPathTranslator().translatePath(context.getMetadata().getDbEntity(), prefix);
             result.getDbRelationship().ifPresent(relationship
                     -> context.getTableTree().addJoinTable(result.getFinalPath(), relationship, JoinType.LEFT_OUTER));
         }
