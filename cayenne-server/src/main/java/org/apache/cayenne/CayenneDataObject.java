@@ -112,6 +112,23 @@ public class CayenneDataObject extends BaseDataObject {
 		buffer.append("]");
 	}
 
+	/**
+	 * Serialization support.
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		writeSerialized(out);
+	}
+
+	/**
+	 * Serialization support.
+	 */
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		readSerialized(in);
+		if(values == null) {
+			values = new HashMap<>();
+		}
+	}
+
 	@Override
 	protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		super.readState(in);

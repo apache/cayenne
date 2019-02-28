@@ -128,4 +128,38 @@ public class DataObjectSerializationIT extends ServerCase {
         assertNull(deserialized.getObjectContext());
         assertEquals(null, deserialized.getArtistName());
     }
+
+    @Test
+    public void testSerializeModifiedMapBasedObject() throws Exception {
+        ObjectId objectId = new ObjectId("test", "id", 42);
+
+        CayenneDataObject dataObject = new CayenneDataObject();
+        dataObject.setObjectContext(context);
+        dataObject.setObjectId(objectId);
+        dataObject.writePropertyDirectly("test", 123);
+        dataObject.setPersistenceState(PersistenceState.MODIFIED);
+
+        CayenneDataObject cloned = Util.cloneViaSerialization(dataObject);
+        assertEquals(PersistenceState.MODIFIED, cloned.getPersistenceState());
+        assertEquals(123, cloned.readProperty("test"));
+        assertNull(cloned.getObjectContext());
+        assertEquals(dataObject.getObjectId(), cloned.getObjectId());
+    }
+
+    @Test
+    public void testSerializeCommittedMapBasedObject() throws Exception {
+        ObjectId objectId = new ObjectId("test", "id", 42);
+
+        CayenneDataObject dataObject = new CayenneDataObject();
+        dataObject.setObjectContext(context);
+        dataObject.setObjectId(objectId);
+        dataObject.writePropertyDirectly("test", 123);
+        dataObject.setPersistenceState(PersistenceState.COMMITTED);
+
+        CayenneDataObject cloned = Util.cloneViaSerialization(dataObject);
+        assertEquals(PersistenceState.HOLLOW, cloned.getPersistenceState());
+        assertNull(cloned.readProperty("test"));
+        assertNull(cloned.getObjectContext());
+        assertEquals(dataObject.getObjectId(), cloned.getObjectId());
+    }
 }
