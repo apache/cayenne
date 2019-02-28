@@ -19,6 +19,23 @@
 
 package org.apache.cayenne.modeler.dialog.db.merge;
 
+import javax.sql.DataSource;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
+import java.awt.Component;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.dba.DbAdapter;
@@ -53,26 +70,10 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.validation.SimpleValidationFailure;
+import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.Component;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 public class MergerOptions extends CayenneController {
 
@@ -88,6 +89,7 @@ public class MergerOptions extends CayenneController {
     protected String defaultCatalog;
     protected String defaultSchema;
     private MergerTokenFactoryProvider mergerTokenFactoryProvider;
+    private List<ValidationFailure> failuresList;
 
     public MergerOptions(ProjectController parent,
                          String title,
@@ -106,6 +108,7 @@ public class MergerOptions extends CayenneController {
         this.defaultCatalog = defaultCatalog;
         this.defaultSchema = defaultSchema;
         this.view.setTitle(title);
+        this.failuresList = new ArrayList<>();
         initController();
 
         prepareMigrator();
@@ -134,14 +137,11 @@ public class MergerOptions extends CayenneController {
         builder.bindToAction(view.getCancelButton(), "closeAction()");
 
         // refresh SQL if different tables were selected
-        view.getTabs().addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                if (view.getTabs().getSelectedIndex() == 1) {
-                    // this assumes that some tables where checked/unchecked... not very
-                    // efficient
-                    refreshGeneratorAction();
-                }
+        view.getTabs().addChangeListener(e -> {
+            if (view.getTabs().getSelectedIndex() == 1) {
+                // this assumes that some tables where checked/unchecked... not very
+                // efficient
+                refreshGeneratorAction();
             }
         });
     }
@@ -202,9 +202,13 @@ public class MergerOptions extends CayenneController {
 
             if (token instanceof AbstractToDbToken) {
                 AbstractToDbToken tdb = (AbstractToDbToken) token;
-                for (String sql : tdb.createSql(adapter)) {
-                    buf.append(sql);
-                    buf.append(lineEnd);
+                try {
+                    for (String sql : tdb.createSql(adapter)) {
+                        buf.append(sql);
+                        buf.append(lineEnd);
+                    }
+                } catch (CayenneRuntimeException ex) {
+                    failuresList.add(new SimpleValidationFailure("Create SQL error", ex.getUnlabeledMessage()));
                 }
             }
         }
@@ -329,7 +333,8 @@ public class MergerOptions extends CayenneController {
 
     private void reportFailures(MergerContext mergerContext) {
         ValidationResult failures = mergerContext.getValidationResult();
-        if (failures == null || !failures.hasFailures()) {
+        failuresList.forEach(failures::addFailure);
+        if (!failures.hasFailures()) {
             JOptionPane.showMessageDialog(getView(), "Migration Complete.");
         } else {
             new ValidationResultBrowser(this).startupAction(
