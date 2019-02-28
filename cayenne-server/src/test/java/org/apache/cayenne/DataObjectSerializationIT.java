@@ -131,7 +131,7 @@ public class DataObjectSerializationIT extends ServerCase {
 
     @Test
     public void testSerializeModifiedMapBasedObject() throws Exception {
-        ObjectId objectId = new ObjectId("test", "id", 42);
+        ObjectId objectId = ObjectId.of("test", "id", 42);
 
         CayenneDataObject dataObject = new CayenneDataObject();
         dataObject.setObjectContext(context);
@@ -148,7 +148,7 @@ public class DataObjectSerializationIT extends ServerCase {
 
     @Test
     public void testSerializeCommittedMapBasedObject() throws Exception {
-        ObjectId objectId = new ObjectId("test", "id", 42);
+        ObjectId objectId = ObjectId.of("test", "id", 42);
 
         CayenneDataObject dataObject = new CayenneDataObject();
         dataObject.setObjectContext(context);
