@@ -118,9 +118,11 @@ public class PropertyUtilsTest {
     public void simpleNumericDefinition() throws Exception {
         importUtils.addType(NumericProperty.class.getName());
 
+        ObjEntity entity = new ObjEntity("test");
         ObjAttribute attribute = new ObjAttribute();
         attribute.setName("test");
         attribute.setType("int");
+        entity.addAttribute(attribute);
 
         String definition = propertyUtils.propertyDefinition(attribute);
         assertEquals("public static final NumericProperty<Integer> TEST = PropertyFactory.createNumeric(\"test\", Integer.class);",
@@ -131,12 +133,29 @@ public class PropertyUtilsTest {
     public void simpleStringDefinition() throws Exception {
         importUtils.addType(StringProperty.class.getName());
 
+        ObjEntity entity = new ObjEntity("test");
         ObjAttribute attribute = new ObjAttribute();
         attribute.setName("test");
         attribute.setType("java.lang.String");
+        entity.addAttribute(attribute);
 
         String definition = propertyUtils.propertyDefinition(attribute);
         assertEquals("public static final StringProperty<String> TEST = PropertyFactory.createString(\"test\", String.class);",
+                definition);
+    }
+
+    @Test
+    public void uppercaseNameDefinition() throws Exception {
+        importUtils.addType(StringProperty.class.getName());
+
+        ObjEntity entity = new ObjEntity("test");
+        ObjAttribute attribute = new ObjAttribute();
+        attribute.setName("URL");
+        attribute.setType("java.lang.String");
+        entity.addAttribute(attribute);
+
+        String definition = propertyUtils.propertyDefinition(attribute);
+        assertEquals("public static final StringProperty<String> URL_ = PropertyFactory.createString(\"URL\", String.class);",
                 definition);
     }
 
@@ -145,9 +164,11 @@ public class PropertyUtilsTest {
         importUtils.addType(CustomProperty.class.getName());
         importUtils.addType(TimestampType.class.getName());
 
+        ObjEntity entity = new ObjEntity("test");
         ObjAttribute attribute = new ObjAttribute();
         attribute.setName("test");
         attribute.setType("org.apache.cayenne.access.types.TimestampType");
+        entity.addAttribute(attribute);
 
         String definition = propertyUtils.propertyDefinition(attribute);
         assertEquals("public static final CustomProperty<TimestampType> TEST = new CustomProperty(\"test\", TimestampType.class);",
