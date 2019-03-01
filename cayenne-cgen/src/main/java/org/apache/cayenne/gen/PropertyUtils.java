@@ -48,6 +48,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
@@ -56,6 +57,7 @@ import org.apache.cayenne.map.ObjRelationship;
 public class PropertyUtils {
 
     private static final String PK_PROPERTY_SUFFIX = "_PK_PROPERTY";
+    private static final char DUPLICATE_NAME_SUFFIX = '_';
     private static final Map<String, String> FACTORY_METHODS = new HashMap<>();
 
     static {
@@ -164,7 +166,7 @@ public class PropertyUtils {
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(ExpressionFactory.dbPathExp(\"%s\"), %s.class);",
                 importUtils.formatJavaType(propertyType),
                 attributeType,
-                utils.capitalizedAsConstant(attribute.getName() + PK_PROPERTY_SUFFIX),
+                utils.capitalizedAsConstant(attribute.getName()) + PK_PROPERTY_SUFFIX,
                 propertyFactoryMethod,
                 attribute.getName(),
                 attributeType
@@ -182,11 +184,22 @@ public class PropertyUtils {
         return String.format("public static final %s<%s> %s = %s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
                 attributeType,
-                utils.capitalizedAsConstant(attribute.getName()),
+                generatePropertyName(attribute),
                 propertyDescriptor.getPropertyFactoryMethod(),
                 attribute.getName(),
                 attributeType
         );
+    }
+
+    protected String generatePropertyName(ObjAttribute attribute) {
+        StringUtils utils = StringUtils.getInstance();
+        ObjEntity entity = attribute.getEntity();
+        String name = utils.capitalizedAsConstant(attribute.getName());
+        // ensure that final name is unique
+        while(entity.getAttribute(name) != null) {
+            name = name + DUPLICATE_NAME_SUFFIX;
+        }
+        return name;
     }
 
     public String propertyDefinition(ObjAttribute attribute) throws ClassNotFoundException {
