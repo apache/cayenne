@@ -31,6 +31,7 @@ CAY-2332 Property API: unable to use eq() and in() methods for toMany relationsh
 CAY-2509 Result of resolving lazily faulted relationships can be out-of-date
 CAY-2530 DB Import and Class Generation from Project is performed for removed datamaps
 CAY-2531 Importing same schema after Import Revert clears all entities in datamap
+CAY-2533 Modeler: Exception on validating ObjRelationship without db path
 CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
 
@@ -83,7 +84,6 @@ CAY-2501 Modeler: DbImport ui not loading columns for MySQL connector v8.0
 CAY-2502 DataMap in DataNode tree view disappears after dbImport
 CAY-2504 Broken detection logic of NoopEventBridge in DataRowStoreFactory
 CAY-2505 EventBridge providers should be bound without scope
-CAY-2533 Modeler: Exception on validating ObjRelationship without db path
 
 ----------------------------------
 Release: 4.1.M2
