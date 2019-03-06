@@ -32,48 +32,59 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
+import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
+import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
+import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 
 public class ObjRelationshipInfo extends CayenneController implements TreeSelectionListener {
 
-    static final String COLLECTION_TYPE_MAP = "java.util.Map";
-    static final String COLLECTION_TYPE_SET = "java.util.Set";
-    static final String COLLECTION_TYPE_COLLECTION = "java.util.Collection";
-    static final String DEFAULT_MAP_KEY = "ID (default)";
+    private static final String COLLECTION_TYPE_MAP = "java.util.Map";
+    private static final String COLLECTION_TYPE_SET = "java.util.Set";
+    private static final String COLLECTION_TYPE_COLLECTION = "java.util.Collection";
+    private static final String DEFAULT_MAP_KEY = "ID (default)";
 
     protected ObjRelationship relationship;
 
-    protected List<DbRelationship> dbRelationships;
+    private List<DbRelationship> dbRelationships;
 
-    protected List<DbRelationship> savedDbRelationships;
-    protected ObjEntity objectTarget;
-    protected List<ObjEntity> objectTargets;
-    protected List<String> targetCollections;
-    protected List<String> mapKeys;
-    protected String targetCollection;
-    protected String mapKey;
-    protected ObjRelationshipInfoView view;
-    protected String currentPath;
-    protected ProjectController mediator;
+    private List<DbRelationship> savedDbRelationships;
+    private ObjEntity objectTarget;
+    private List<ObjEntity> objectTargets;
+    private List<String> targetCollections;
+    private List<String> mapKeys;
+    private String targetCollection;
+    private String mapKey;
+    private ObjRelationshipInfoView view;
+    private String currentPath;
+    private ProjectController mediator;
+
+    private RelationshipUndoableEdit undo;
+    private boolean isCreate = false;
 
     /**
      * Starts options dialog.
@@ -87,30 +98,11 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         view.setVisible(true);
     }
 
-    public ObjRelationshipInfo(ProjectController mediator, ObjRelationship relationship) {
+    public ObjRelationshipInfo(ProjectController mediator) {
         super(mediator);
-        this.view = new ObjRelationshipInfoView(mediator);
+        this.view = new ObjRelationshipInfoView();
         this.mediator = mediator;
         getPathBrowser().addTreeSelectionListener(this);
-        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
-        this.relationship = relationship;
-        this.view.getRelationshipName().setText(relationship.getName());
-        this.mapKey = relationship.getMapKey();
-        this.targetCollection = relationship.getCollectionType();
-        if (targetCollection == null) {
-            targetCollection = ObjRelationship.DEFAULT_COLLECTION_TYPE;
-        }
-
-        this.objectTarget = relationship.getTargetEntity();
-        if (objectTarget != null) {
-            updateTargetCombo(objectTarget.getDbEntity());
-            view.targetCombo.setSelectedItem(objectTarget.getName());
-        }
-
-        // validate -
-        // current limitation is that an ObjRelationship must have source
-        // and target entities present, with DbEntities chosen.
-        validateCanMap();
 
         this.targetCollections = new ArrayList<>(4);
         targetCollections.add(COLLECTION_TYPE_COLLECTION);
@@ -119,28 +111,38 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         targetCollections.add(COLLECTION_TYPE_SET);
 
         for (String s : targetCollections) {
-            view.collectionTypeCombo.addItem(s);
+            view.getCollectionTypeCombo().addItem(s);
         }
 
         this.mapKeys = new ArrayList<>();
-        initMapKeys();
+    }
 
-        // setup path
-        dbRelationships = new ArrayList<>(relationship.getDbRelationships());
-        selectPath();
-        updateCollectionChoosers();
+    public ObjRelationshipInfo createRelationship(ObjEntity objEntity) {
+        ObjRelationship rel = new ObjRelationship();
+        rel.setName(NameBuilder.builder(rel, objEntity).name());
+        rel.setSourceEntity(objEntity);
+        DeleteRuleUpdater.updateObjRelationship(rel);
+        isCreate = true;
+        return modifyRelationship(rel);
+    }
 
-        // add dummy last relationship if we are not connected
-        connectEnds();
+    public ObjRelationshipInfo modifyRelationship(ObjRelationship rel) {
+        this.relationship = rel;
+        this.undo = new RelationshipUndoableEdit(rel);
+        // validate -
+        // current limitation is that an ObjRelationship must have source
+        // and target entities present, with DbEntities chosen.
+        validateCanMap();
+
         initFromModel();
         initController();
+        return this;
     }
 
     private void initController() {
         view.getCancelButton().addActionListener(e -> view.dispose());
         view.getSaveButton().addActionListener(e -> saveMapping());
         view.getNewRelButton().addActionListener(e -> createRelationship());
-        view.getSelectPathButton().addActionListener(e -> selectPath());
         view.getCollectionTypeCombo().addActionListener(e -> setCollectionType());
         view.getMapKeysCombo().addActionListener(e -> setMapKey());
         view.getTargetCombo().addItemListener(e -> {
@@ -154,72 +156,84 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
                 }
             }
         });
+        view.getDeleteRule().addActionListener(e -> setDeleteRule());
+        view.getUsedForLocking().addActionListener(e -> setUsedForLocking());
+        view.getComment().addActionListener(e -> setComment());
     }
 
-    void initFromModel() {
+    private void initFromModel() {
+        view.getSourceEntityLabel().setText(relationship.getSourceEntity().getName());
+        this.view.getRelationshipName().setText(relationship.getName());
+        this.mapKey = relationship.getMapKey();
+        this.targetCollection = relationship.getCollectionType();
+        if (targetCollection == null) {
+            targetCollection = ObjRelationship.DEFAULT_COLLECTION_TYPE;
+        }
+        this.objectTarget = relationship.getTargetEntity();
+        if (objectTarget != null) {
+            updateTargetCombo(objectTarget.getDbEntity());
+            view.getTargetCombo().setSelectedItem(objectTarget.getName());
+        }
+        view.getUsedForLocking().setSelected(relationship.isUsedForLocking());
+        view.getDeleteRule().setSelectedItem(DeleteRule.deleteRuleName(relationship.getDeleteRule()));
+        view.getComment().setText(
+                ObjectInfo.getFromMetaData(mediator.getApplication().getMetaData(),
+                        relationship,
+                        ObjectInfo.COMMENT));
 
-        if (view.pathBrowser.getModel() == null) {
+        setSemantics();
+        // setup path
+        dbRelationships = new ArrayList<>(relationship.getDbRelationships());
+        this.savedDbRelationships = dbRelationships;
+        initMapKeys();
+        updateCollectionChoosers();
+        // add dummy last relationship if we are not connected
+        connectEnds();
+
+        if (view.getPathBrowser().getModel() == null) {
             EntityTreeModel treeModel = new EntityTreeModel(getStartEntity());
             treeModel.setFilter(new EntityTreeRelationshipFilter());
 
-            view.pathBrowser.setModel(treeModel);
+            view.getPathBrowser().setModel(treeModel);
 
             setSelectionPath(getSavedDbRelationships());
         }
+
+        view.getSaveButton().setEnabled(!this.dbRelationships.isEmpty());
     }
 
     /**
      * Selects path in browser
      */
-    void setSelectionPath(List<DbRelationship> rels) {
+    private void setSelectionPath(List<DbRelationship> rels) {
         Object[] path = new Object[rels.size() + 1];
         path[0] = getStartEntity();
 
         System.arraycopy(rels.toArray(), 0, path, 1, rels.size());
 
-        view.pathBrowser.setSelectionPath(new TreePath(path));
+        view.getPathBrowser().setSelectionPath(new TreePath(path));
     }
 
-    public void setCollectionType() {
-        setTargetCollection((String) view.collectionTypeCombo.getSelectedItem());
+    private void setCollectionType() {
+        setTargetCollection((String) view.getCollectionTypeCombo().getSelectedItem());
 
         if (COLLECTION_TYPE_MAP.equals(targetCollection)) {
-            view.mapKeysLabel.setEnabled(true);
-            view.mapKeysCombo.setEnabled(true);
+            view.getMapKeysLabel().setEnabled(true);
+            view.getMapKeysCombo().setEnabled(true);
             setMapKey();
         } else {
-            view.mapKeysLabel.setEnabled(false);
-            view.mapKeysCombo.setEnabled(false);
+            view.getMapKeysLabel().setEnabled(false);
+            view.getMapKeysCombo().setEnabled(false);
         }
     }
 
     public void setMapKey() {
-        setMapKey((String) view.mapKeysCombo.getSelectedItem());
+        setMapKey((String) view.getMapKeysCombo().getSelectedItem());
     }
 
     @Override
     public Component getView() {
         return view;
-    }
-
-    public void setSavedDbRelationships(List<DbRelationship> rels) {
-        this.savedDbRelationships = rels;
-
-        String currPath = "";
-        for (DbRelationship rel : rels) {
-            currPath += "->" + rel.getName();
-        }
-
-        if (rels.size() > 0) {
-            currPath = currPath.substring(2);
-        }
-
-        currentPath = currPath;
-        view.currentPathLabel.setText(currPath);
-    }
-
-    public void selectPath() {
-        setSavedDbRelationships(new ArrayList<>(dbRelationships));
     }
 
     /**
@@ -235,18 +249,18 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
      */
     protected void updateCollectionChoosers() {
         boolean collectionTypeEnabled = isToMany();
-        view.collectionTypeCombo.setEnabled(collectionTypeEnabled);
-        view.collectionTypeLabel.setEnabled(collectionTypeEnabled);
+        view.getCollectionTypeCombo().setEnabled(collectionTypeEnabled);
+        view.getCollectionTypeLabel().setEnabled(collectionTypeEnabled);
         if (collectionTypeEnabled) {
-            view.collectionTypeCombo.setSelectedItem(targetCollection);
+            view.getCollectionTypeCombo().setSelectedItem(targetCollection);
         }
 
         boolean mapKeysEnabled = collectionTypeEnabled
-                && ObjRelationshipInfo.COLLECTION_TYPE_MAP.equals(view.collectionTypeCombo.getSelectedItem());
-        view.mapKeysCombo.setEnabled(mapKeysEnabled);
-        view.mapKeysLabel.setEnabled(mapKeysEnabled);
+                && ObjRelationshipInfo.COLLECTION_TYPE_MAP.equals(view.getCollectionTypeCombo().getSelectedItem());
+        view.getMapKeysCombo().setEnabled(mapKeysEnabled);
+        view.getMapKeysLabel().setEnabled(mapKeysEnabled);
         if (mapKeysEnabled) {
-            view.mapKeysCombo.setSelectedItem(mapKey);
+            view.getMapKeysCombo().setSelectedItem(mapKey);
         }
     }
 
@@ -260,26 +274,43 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
     protected void saveMapping() {
         if (!getDbRelationships().equals(getSavedDbRelationships())) {
-            if (JOptionPane.showConfirmDialog(getView(),
+            if (getSavedDbRelationships().isEmpty() || JOptionPane.showConfirmDialog(getView(),
                     "You have changed Db Relationship path. Do you want it to be saved?", "Save ObjRelationship",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                selectPath();
+                this.savedDbRelationships = new ArrayList<>(dbRelationships);
             }
         }
 
-        if (savePath()) {
-            mediator.fireObjRelationshipEvent(new RelationshipEvent(Application.getFrame(), getRelationship(),
-                    getRelationship().getSourceEntity()));
+        savePath();
+        relationship.getSourceEntity().addRelationship(relationship);
+        if(isCreate) {
+            fireObjRelationshipEvent(this);
+            Application.getInstance().getUndoManager().addEdit(
+                    new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
+        } else {
+            mediator.fireObjRelationshipEvent(new RelationshipEvent(this, relationship,
+                    relationship.getSourceEntity(), MapEvent.CHANGE));
+            Application.getInstance().getUndoManager().addEdit(undo);
         }
-        view.sourceEntityLabel.setText(relationship.getSourceEntity().getName());
+
+        view.getSourceEntityLabel().setText(relationship.getSourceEntity().getName());
         view.dispose();
+    }
+
+    private void fireObjRelationshipEvent(Object src) {
+        mediator.fireObjRelationshipEvent(new RelationshipEvent(src, relationship, relationship.getSourceEntity(), MapEvent.ADD));
+
+        RelationshipDisplayEvent rde = new RelationshipDisplayEvent(src, relationship, relationship.getSourceEntity(), mediator.getCurrentDataMap(),
+                (DataChannelDescriptor) mediator.getProject().getRootNode());
+
+        mediator.fireObjRelationshipDisplayEvent(rde);
     }
 
     /**
      * @return relationship path browser
      */
     public MultiColumnBrowser getPathBrowser() {
-        return view.pathBrowser;
+        return view.getPathBrowser();
     }
 
     /**
@@ -330,6 +361,31 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         }
     }
 
+    private void setDeleteRule() {
+        relationship.setDeleteRule(DeleteRule.deleteRuleForName(
+                String.valueOf(view.getDeleteRule().getSelectedItem())));
+    }
+
+    private void setUsedForLocking() {
+        relationship.setUsedForLocking(view.getUsedForLocking().isSelected());
+    }
+
+    private void setComment() {
+        ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(),
+                relationship,
+                ObjectInfo.COMMENT,
+                view.getComment().getText());
+    }
+
+    private void setSemantics() {
+        StringBuilder semantics =  new StringBuilder(20);
+        semantics.append(relationship.isToMany() ? "to many" : "to one");
+        if (relationship.isReadOnly()) {
+            semantics.append(", read-only");
+        }
+        view.getSemanticsLabel().setText(semantics.toString());
+    }
+
     /**
      * Sets list of DB Relationships current ObjRelationship is mapped to
      */
@@ -373,13 +429,13 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         for (ObjAttribute attribute : this.objectTarget.getAttributes()) {
             mapKeys.add(attribute.getName());
         }
-        view.mapKeysCombo.removeAllItems();
+        view.getMapKeysCombo().removeAllItems();
         for (String s : mapKeys)
-            view.mapKeysCombo.addItem(s);
+            view.getMapKeysCombo().addItem(s);
 
         if (mapKey != null && !mapKeys.contains(mapKey)) {
             mapKey = DEFAULT_MAP_KEY;
-            view.mapKeysCombo.setSelectedItem(mapKey);
+            view.getMapKeysCombo().setSelectedItem(mapKey);
         }
     }
 
@@ -396,14 +452,10 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             objectTargets.addAll(dbTarget.getDataMap().getMappedEntities(dbTarget));
             objectTargets.sort(Comparators.getNamedObjectComparator());
         }
-        view.targetCombo.removeAllItems();
+        view.getTargetCombo().removeAllItems();
         for (ObjEntity s : objectTargets) {
-            view.targetCombo.addItem(s.getName());
+            view.getTargetCombo().addItem(s.getName());
         }
-    }
-
-    public ObjRelationship getRelationship() {
-        return relationship;
     }
 
     /**
@@ -433,6 +485,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
      */
     public void setDbRelationships(List<DbRelationship> rels) {
         this.dbRelationships = rels;
+        view.getSaveButton().setEnabled(true);
 
         updateTargetCombo(rels.size() > 0 ? rels.get(rels.size() - 1).getTargetEntity() : null);
         updateCollectionChoosers();

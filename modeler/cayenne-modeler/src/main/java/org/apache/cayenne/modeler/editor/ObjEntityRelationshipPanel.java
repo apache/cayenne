@@ -18,6 +18,34 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -49,34 +77,6 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
 
 /**
  * Displays ObjRelationships for the edited ObjEntity.
@@ -183,7 +183,9 @@ public class ObjEntityRelationshipPanel extends JPanel implements ObjEntityDispl
             }
 
             ObjRelationshipTableModel model = (ObjRelationshipTableModel) table.getModel();
-            new ObjRelationshipInfo(mediator, model.getRelationship(row)).startupAction();
+            new ObjRelationshipInfo(mediator)
+                    .modifyRelationship(model.getRelationship(row))
+                    .startupAction();
 
             // This is required for a table to be updated properly
             table.cancelEditing();

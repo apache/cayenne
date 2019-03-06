@@ -23,6 +23,9 @@ import javax.swing.undo.CannotUndoException;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
@@ -30,32 +33,53 @@ import org.apache.cayenne.modeler.ProjectController;
 
 public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 
-    private DbRelationship relationship;
-    private DbRelationship prevRelationship;
-    private ProjectController projectController;
+	private static final long serialVersionUID = -1864303176024098961L;
 
-	public RelationshipUndoableEdit(DbRelationship relationship) {
+	private Relationship relationship;
+    private Relationship prevRelationship;
+    private ProjectController projectController;
+    private boolean useDb;
+
+	public RelationshipUndoableEdit(Relationship relationship) {
 		this.projectController = Application.getInstance().getFrameController().getProjectController();
 		this.relationship = relationship;
+		this.useDb = relationship instanceof DbRelationship;
 		this.prevRelationship = copyRelationship(relationship);
 	}
 
     @Override
 	public void redo() throws CannotRedoException {
-		fireDbRelationshipEvent(relationship, prevRelationship);
+		fireRelationshipEvent(relationship, prevRelationship);
 	}
 
 	@Override
 	public void undo() throws CannotUndoException {
-		fireDbRelationshipEvent(prevRelationship, relationship);
+		fireRelationshipEvent(prevRelationship, relationship);
 	}
 
-	private void fireDbRelationshipEvent(DbRelationship relToFire, DbRelationship currRel) {
-		DbEntity dbEntity = currRel.getSourceEntity();
+	private void fireRelationshipEvent(Relationship relToFire, Relationship currRel) {
+		if(useDb) {
+			fireDbRelationshipEvent(relToFire, currRel);
+		} else {
+			fireObjRelationshipEvent(relToFire, currRel);
+		}
+	}
+
+	private void fireDbRelationshipEvent(Relationship relToFire, Relationship currRel) {
+		DbEntity dbEntity = ((DbRelationship)currRel).getSourceEntity();
 		dbEntity.removeRelationship(currRel.getName());
 		dbEntity.addRelationship(relToFire);
 		projectController
 				.fireDbRelationshipEvent(
+						new RelationshipEvent(this, relToFire, relToFire.getSourceEntity(), MapEvent.ADD));
+	}
+
+	private void fireObjRelationshipEvent(Relationship relToFire, Relationship currRel) {
+		ObjEntity objEntity = ((ObjRelationship) currRel).getSourceEntity();
+		objEntity.removeRelationship(currRel.getName());
+		objEntity.addRelationship(relToFire);
+		projectController
+				.fireObjRelationshipEvent(
 						new RelationshipEvent(this, relToFire, relToFire.getSourceEntity(), MapEvent.ADD));
 	}
 
@@ -69,14 +93,31 @@ public class RelationshipUndoableEdit extends CayenneUndoableEdit {
 		return "Undo Edit relationship";
 	}
 
-	private DbRelationship copyRelationship(DbRelationship dbRelationship) {
+	private Relationship copyRelationship(Relationship relationship) {
+		return useDb ? getDbRelationship(relationship) : getObjRelationship(relationship);
+	}
+
+	private DbRelationship getDbRelationship(Relationship dbRelationship) {
 		DbRelationship rel = new DbRelationship();
 		rel.setName(dbRelationship.getName());
-		rel.setToDependentPK(dbRelationship.isToDependentPK());
+		rel.setToDependentPK(((DbRelationship)dbRelationship).isToDependentPK());
 		rel.setToMany(dbRelationship.isToMany());
 		rel.setTargetEntityName(dbRelationship.getTargetEntityName());
 		rel.setSourceEntity(dbRelationship.getSourceEntity());
 		rel.setJoins(rel.getJoins());
+		return rel;
+	}
+
+	private ObjRelationship getObjRelationship(Relationship objRelationship) {
+		ObjRelationship rel = new ObjRelationship();
+		rel.setName(objRelationship.getName());
+		rel.setTargetEntityName(objRelationship.getTargetEntityName());
+		rel.setSourceEntity(objRelationship.getSourceEntity());
+		rel.setDeleteRule(((ObjRelationship)objRelationship).getDeleteRule());
+		rel.setUsedForLocking(((ObjRelationship)objRelationship).isUsedForLocking());
+		rel.setDbRelationshipPath(((ObjRelationship)objRelationship).getDbRelationshipPath());
+		rel.setCollectionType(((ObjRelationship)objRelationship).getCollectionType());
+		rel.setMapKey(((ObjRelationship)objRelationship).getMapKey());
 		return rel;
 	}
 }
