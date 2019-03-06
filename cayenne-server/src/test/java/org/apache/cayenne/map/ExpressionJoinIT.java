@@ -145,8 +145,10 @@ public class ExpressionJoinIT extends ServerCase {
                 .selectOne(context);
         assertNotNull(artist);
 
-        List<PaintingJoinExp> paintings = artist.getPaintings();
+        assertTrue(artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName()) instanceof List);
+        List<PaintingJoinExp> paintings = (List<PaintingJoinExp>)artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName());
         assertEquals(10, paintings.size());
+        assertTrue(paintings.get(0).getPaintingName().startsWith("abcd"));
     }
 
     @Test
@@ -157,8 +159,10 @@ public class ExpressionJoinIT extends ServerCase {
                 .selectOne(context);
         assertNotNull(artist);
 
-        List<PaintingJoinExp> paintings = artist.getPaintings();
+        assertTrue(artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName()) instanceof List);
+        List<PaintingJoinExp> paintings = (List<PaintingJoinExp>)artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName());
         assertEquals(10, paintings.size());
+        assertTrue(paintings.get(0).getPaintingName().startsWith("abcd"));
     }
 
     @Test
@@ -169,8 +173,10 @@ public class ExpressionJoinIT extends ServerCase {
                 .selectOne(context);
         assertNotNull(artist);
 
-        List<PaintingJoinExp> paintings = artist.getPaintings();
+        assertTrue(artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName()) instanceof List);
+        List<PaintingJoinExp> paintings = (List<PaintingJoinExp>)artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName());
         assertEquals(10, paintings.size());
+        assertTrue(paintings.get(0).getPaintingName().startsWith("abcd"));
     }
 
     @Test
@@ -181,8 +187,8 @@ public class ExpressionJoinIT extends ServerCase {
                 .selectOne(context);
         assertNotNull(painting);
 
-        ArtistJoinExp artist = painting.getToArtist();
-        assertNotNull(artist);
+        assertTrue(painting.readPropertyDirectly(PaintingJoinExp.TO_ARTIST.getName()) instanceof ArtistJoinExp);
+        ArtistJoinExp artist = (ArtistJoinExp) painting.readPropertyDirectly(PaintingJoinExp.TO_ARTIST.getName());
         assertEquals("qwerty", artist.getArtistName());
     }
 
@@ -194,8 +200,8 @@ public class ExpressionJoinIT extends ServerCase {
                 .selectOne(context);
         assertNotNull(painting);
 
-        ArtistJoinExp artist = painting.getToArtist();
-        assertNotNull(artist);
+        assertTrue(painting.readPropertyDirectly(PaintingJoinExp.TO_ARTIST.getName()) instanceof ArtistJoinExp);
+        ArtistJoinExp artist = (ArtistJoinExp) painting.readPropertyDirectly(PaintingJoinExp.TO_ARTIST.getName());
         assertEquals("qwerty", artist.getArtistName());
     }
 
@@ -207,8 +213,8 @@ public class ExpressionJoinIT extends ServerCase {
                 .selectOne(context);
         assertNotNull(painting);
 
-        ArtistJoinExp artist = painting.getToArtist();
-        assertNotNull(artist);
+        assertTrue(painting.readPropertyDirectly(PaintingJoinExp.TO_ARTIST.getName()) instanceof ArtistJoinExp);
+        ArtistJoinExp artist = (ArtistJoinExp) painting.readPropertyDirectly(PaintingJoinExp.TO_ARTIST.getName());
         assertEquals("qwerty", artist.getArtistName());
     }
 
@@ -232,7 +238,10 @@ public class ExpressionJoinIT extends ServerCase {
 
         ArtistJoinExp artist = artistSelectQuery.selectOne(context);
 
-        assertEquals(10, artist.getPaintings().size());
+        assertTrue(artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName()) instanceof List);
+        List<PaintingJoinExp> paintings = (List<PaintingJoinExp>)artist.readPropertyDirectly(ArtistJoinExp.PAINTINGS.getName());
+        assertEquals(10, paintings.size());
+        assertTrue(paintings.get(0).getPaintingName().startsWith("abcd"));
     }
 
     @Test
@@ -243,7 +252,9 @@ public class ExpressionJoinIT extends ServerCase {
                         .dot(PaintingInfoJoinExp.INFO)
                         .eq("abcde1"))
                 .select(context);
+
         assertEquals(1, artists.size());
+        assertEquals("qwerty", artists.get(0).getArtistName());
     }
 
     @Test
