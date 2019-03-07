@@ -8,6 +8,15 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.0.2
+Date:
+----------------------------------
+
+Bug Fixes:
+
+CAY-2550 Modeler: ObjAttribute inspector modifies wrong columns in attribute table
+
+----------------------------------
 Release: 4.0.1
 Date: December 20, 2018
 ----------------------------------

@@ -401,7 +401,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 					attributeSaved.setDbAttributePath(attributePath.toString());
 
 					if (!attribute.getDbAttributePath().equals(attributePath.toString()) && isChange) {
-						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 					}
 					return true;
 				}
@@ -411,7 +411,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 					attributeSaved.setDbAttributePath(attributePath.toString());
 					if (attributePath.length() == 0) {
-						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 						return false;
 					}
 					return true;
@@ -442,14 +442,14 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 				if (attribute instanceof EmbeddedAttribute) {
 					changeAttributeObject();
 				} else {
-					model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
-					model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
+					model.setUpdatedValueAt(attributeSaved.getName(), row, 0);
+					model.setUpdatedValueAt(attributeSaved.getType(), row, 1);
 				}
 
-				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 			} else {
-				model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
-				model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
+				model.setUpdatedValueAt(attributeSaved.getName(), row, 0);
+				model.setUpdatedValueAt(attributeSaved.getType(), row, 1);
 			}
 		} else {
 
@@ -466,14 +466,14 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 					compareAndSetOverrideInEmbeddedAttribute(attributeSaved, overrides, currentOverrAttr);
 				}
 
-				model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
-				model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
-				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+				model.setUpdatedValueAt(attributeSaved.getName(), row, 0);
+				model.setUpdatedValueAt(attributeSaved.getType(), row, 1);
+				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 			}
 
 			if (attributeSaved instanceof EmbeddedAttribute && attribute instanceof EmbeddedAttribute) {
 
-				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 				if (embeddableModel.isAttributeOverrideChange()) {
 					Map<String, String> overrides;
 					overrides = ((EmbeddedAttribute) attribute).getAttributeOverrides();
@@ -495,7 +495,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		}
 		if (attributeSaved instanceof EmbeddedAttribute) {
 			attributeSaved.setDbAttributePath(null);
-			model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+			model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 		}
 
 		model.getEntity().removeAttribute(attribute.getName());
