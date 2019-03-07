@@ -25,6 +25,7 @@ CAY-2522 Make ObjectSelect a direct query
 CAY-2540 Modeler: redesign dbRelationship editor dialog
 CAY-2542 Redesign ObjRelationship editor dialog
 CAY-2543 Move ResultSetMapping generation from metadata to translator
+CAY-2549 Modeler: Redesign ObjAttribute editor dialog
 
 Bug Fixes:
 

@@ -39,6 +39,7 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.util.CayenneMapEntry;
 
@@ -51,6 +52,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.TreePath;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -62,6 +64,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogView.EMBEDDABLE_PANEL;
+import static org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialogView.FLATTENED_PANEL;
 
 public class ObjAttributeInfoDialog extends CayenneController implements TreeSelectionListener {
 
@@ -82,7 +87,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 	public ObjAttributeInfoDialog(ProjectController mediator, int row, ObjAttributeTableModel model) {
 		super(mediator);
-		this.view = new ObjAttributeInfoDialogView(mediator);
+		this.view = new ObjAttributeInfoDialogView();
 		this.mediator = mediator;
 		this.model = model;
 		this.row = row;
@@ -148,8 +153,12 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 			view.getCurrentPathLabel().setText("");
 		}
 		view.getSourceEntityLabel().setText(attribute.getEntity().getName());
-
 		view.getTypeComboBox().setSelectedItem(attribute.getType());
+		view.getUsedForLockingCheckBox().setSelected(attribute.isUsedForLocking());
+		view.getCommentField().setText(ObjectInfo
+				.getFromMetaData(mediator.getApplication().getMetaData(),
+						attr,
+						ObjectInfo.COMMENT));
 
 		BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
 		builder.bindToAction(view.getCancelButton(), "closeAction()");
@@ -218,6 +227,25 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
                 }
             }
         });
+
+		view.getTypeComboBox().addActionListener(e -> {
+			boolean isType = false;
+			String[] typeNames = ModelerUtil.getRegisteredTypeNames();
+			for (String typeName : typeNames) {
+				if (view.getTypeComboBox().getSelectedItem() == null ||
+						typeName.equals(view.getTypeComboBox().getSelectedItem().toString())) {
+					isType = true;
+				}
+			}
+
+			if (isType || !mediator.getEmbeddableNamesInCurrentDataDomain()
+					.contains((String)view.getTypeComboBox().getSelectedItem())) {
+				((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), FLATTENED_PANEL);
+			} else {
+				((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), EMBEDDABLE_PANEL);
+				view.getCurrentPathLabel().setText("");
+			}
+		});
 
 		view.getAttributeName().addKeyListener(new KeyListener() {
 
@@ -346,6 +374,11 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 				attributeSaved.setType(view.getTypeComboBox().getSelectedItem().toString());
 			}
 			attributeSaved.setName(view.getAttributeName().getText());
+			attributeSaved.setUsedForLocking(view.getUsedForLockingCheckBox().isSelected());
+			ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(),
+					attributeSaved,
+					ObjectInfo.COMMENT,
+					view.getCommentField().getText());
 		}
 
 		if (!(attributeSaved instanceof EmbeddedAttribute) || isRegistredType(attributeSaved.getType())) {
@@ -388,7 +421,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 					attributeSaved.setDbAttributePath(attributePath.toString());
 
 					if (!attribute.getDbAttributePath().equals(attributePath.toString()) && isChange) {
-						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 					}
 					return true;
 				}
@@ -398,13 +431,14 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 					attributeSaved.setDbAttributePath(attributePath.toString());
 					if (attributePath.length() == 0) {
-						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+						model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 						return false;
 					}
 					return true;
 				}
 			}
 		}
+
 		return false;
 	}
 
@@ -415,7 +449,21 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		return isOverrideTableChange
 				|| !attribute.getName().equals(view.getAttributeName().getText())
 				|| (attribute.getType() == null && view.getTypeComboBox().getSelectedItem() != null)
-				|| !Objects.equals(attribute.getType(), view.getTypeComboBox().getSelectedItem());
+				|| !Objects.equals(attribute.getType(), view.getTypeComboBox().getSelectedItem())
+				|| attribute.isUsedForLocking() != view.getUsedForLockingCheckBox().isSelected()
+				|| !ObjectInfo.getFromMetaData(
+						mediator.getApplication().getMetaData(), attribute, ObjectInfo.COMMENT)
+				.equals(view.getCommentField().getText());
+	}
+
+	private void updateTable() {
+		model.setUpdatedValueAt(attributeSaved.getName(), row, 0);
+		model.setUpdatedValueAt(attributeSaved.getType(), row, 1);
+		model.setUpdatedValueAt(attributeSaved.isUsedForLocking(), row, 4);
+		model.setUpdatedValueAt(ObjectInfo
+				.getFromMetaData(mediator.getApplication().getMetaData(),
+						attributeSaved,
+						ObjectInfo.COMMENT), row, 5);
 	}
 
 	public void saveMapping() {
@@ -429,14 +477,12 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 				if (attribute instanceof EmbeddedAttribute) {
 					changeAttributeObject();
 				} else {
-					model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
-					model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
+					updateTable();
 				}
 
-				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 			} else {
-				model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
-				model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
+				updateTable();
 			}
 		} else {
 			if ((attributeSaved instanceof EmbeddedAttribute && !(attribute instanceof EmbeddedAttribute))
@@ -450,14 +496,13 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 					compareAndSetOverrideInEmbeddedAttribute(attributeSaved, overrides, currentOverrAttr);
 				}
 
-				model.setUpdatedValueAt(attributeSaved.getName(), row, 1);
-				model.setUpdatedValueAt(attributeSaved.getType(), row, 2);
-				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+				updateTable();
+				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 			}
 
 			if (attributeSaved instanceof EmbeddedAttribute && attribute instanceof EmbeddedAttribute) {
 
-				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+				model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 				if (embeddableModel.isAttributeOverrideChange()) {
 					Map<String, String> overrides;
 					overrides = ((EmbeddedAttribute) attribute).getAttributeOverrides();
@@ -479,7 +524,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		}
 		if (attributeSaved instanceof EmbeddedAttribute) {
 			attributeSaved.setDbAttributePath(null);
-			model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 3);
+			model.setUpdatedValueAt(attributeSaved.getDbAttributePath(), row, 2);
 		}
 
 		model.getEntity().removeAttribute(attribute.getName());
@@ -604,6 +649,14 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		attributeSaved.setParent(attribute.getParent());
 		attributeSaved.setType(attribute.getType());
 		attributeSaved.setUsedForLocking(attribute.isUsedForLocking());
+		String comment = ObjectInfo
+				.getFromMetaData(mediator.getApplication().getMetaData(),
+						attribute,
+						ObjectInfo.COMMENT);
+		ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(),
+				attributeSaved,
+				ObjectInfo.COMMENT,
+				comment);
 
 		if (attributeSaved instanceof EmbeddedAttribute) {
 			Map<String, String> attrOverrides;

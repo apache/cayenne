@@ -23,7 +23,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.TableColumnPreferences;
 import org.apache.cayenne.modeler.util.CayenneTable;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -32,6 +31,7 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -47,36 +47,34 @@ import java.awt.event.ComponentListener;
 
 public class ObjAttributeInfoDialogView extends JDialog {
 
+    static final String EMBEDDABLE_PANEL = "EMBEDDABLE_PANEL";
+    static final String FLATTENED_PANEL = "FLATTENED_PANEL";
+
     /**
      * // * Browser to select path for attribute //
      */
-    protected MultiColumnBrowser pathBrowser;
+    private MultiColumnBrowser pathBrowser;
 
-    protected JButton cancelButton;
-    protected JButton saveButton;
-    protected JButton selectPathButton;
+    private JButton cancelButton;
+    private JButton saveButton;
+    private JButton selectPathButton;
 
-    protected JTextField attributeName;
-    protected JLabel currentPathLabel;
-    protected JLabel sourceEntityLabel;
+    private JTextField attributeName;
+    private JLabel currentPathLabel;
+    private JLabel sourceEntityLabel;
 
-    protected JComboBox<String> typeComboBox;
-    protected JPanel typeManagerPane;
+    private JComboBox<String> typeComboBox;
+    private JPanel typeManagerPane;
 
-    protected CayenneTable overrideAttributeTable;
-    protected TableColumnPreferences tablePreferences;
-    
-    ProjectController mediator;
+    private CayenneTable overrideAttributeTable;
+    private TableColumnPreferences tablePreferences;
 
-    static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
-    
-    static final String EMBEDDABLE_PANEL = "EMBEDDABLE_PANEL"; 
-    static final String FLATTENED_PANEL = "FLATTENED_PANEL"; 
+    private JCheckBox usedForLockingCheckBox;
+    private JTextField commentField;
 
-    public ObjAttributeInfoDialogView(final ProjectController mediator) {
+    private static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
 
-        this.mediator = mediator;
-
+    public ObjAttributeInfoDialogView() {
         // create widgets
         this.cancelButton = new JButton("Cancel");
         this.saveButton = new JButton("Done");
@@ -89,6 +87,9 @@ public class ObjAttributeInfoDialogView extends JDialog {
         this.typeComboBox = Application.getWidgetFactory().createComboBox(ModelerUtil.getRegisteredTypeNames(), false);
         AutoCompletion.enable(typeComboBox, false, true);
         typeComboBox.getRenderer();
+
+        this.usedForLockingCheckBox = new JCheckBox();
+        this.commentField = new JTextField();
 
         overrideAttributeTable = new CayenneTable();
         tablePreferences = new TableColumnPreferences(getClass(), "overrideAttributeTable");
@@ -105,7 +106,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         final PanelBuilder builder = new PanelBuilder(
                 new FormLayout(
                         "right:max(50dlu;pref), 3dlu, 200dlu, 15dlu, right:max(30dlu;pref), 3dlu, 200dlu",
-                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 6dlu, p, 6dlu, p, 3dlu, fill:p:grow"));
+                        "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 6dlu, p, 6dlu, p, 3dlu, fill:p:grow"));
         builder.setDefaultDialogBorder();
         builder.addSeparator("ObjAttribute Information", cc.xywh(1, 1, 7, 1));
 
@@ -118,10 +119,16 @@ public class ObjAttributeInfoDialogView extends JDialog {
         builder.addLabel("Current Db Path:", cc.xy(1, 7));
         builder.add(currentPathLabel, cc.xywh(3, 7, 5, 1));
 
-        builder.addLabel("Type:", cc.xy(1, 9));
+        builder.addLabel("Java Type:", cc.xy(1, 9));
         builder.add(typeComboBox, cc.xywh(3, 9, 1, 1));
 
-        builder.addSeparator("Mapping to DbAttributes", cc.xywh(1, 11, 7, 1));
+        builder.addLabel("Used for locking:", cc.xy(1, 11));
+        builder.add(usedForLockingCheckBox, cc.xywh(3, 11, 1, 1));
+
+        builder.addLabel("Comment:", cc.xy(1, 13));
+        builder.add(commentField, cc.xywh(3, 13, 1, 1));
+
+        builder.addSeparator("Mapping to DbAttributes", cc.xywh(1, 15, 7, 1));
 
         typeManagerPane = new JPanel();
         typeManagerPane.setLayout(new CardLayout());
@@ -160,7 +167,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         typeManagerPane.add(builderPathPane.getPanel(), FLATTENED_PANEL);
         typeManagerPane.add(embeddablePane.getPanel(), EMBEDDABLE_PANEL);
 
-        builder.add(typeManagerPane, cc.xywh(1, 13, 7, 1));
+        builder.add(typeManagerPane, cc.xywh(1, 17, 7, 1));
 
         add(builder.getPanel(), BorderLayout.CENTER);
 
@@ -189,23 +196,6 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
         JButton[] buttons = {cancelButton, saveButton};
         add(PanelFactory.createButtonPanel(buttons), BorderLayout.SOUTH);
-
-        typeComboBox.addActionListener(e -> {
-            boolean isType = false;
-            String[] typeNames = ModelerUtil.getRegisteredTypeNames();
-            for (String typeName : typeNames) {
-                if (typeComboBox.getSelectedItem() == null || typeName.equals(typeComboBox.getSelectedItem().toString())) {
-                    isType = true;
-                }
-            }
-
-            if (isType || !mediator.getEmbeddableNamesInCurrentDataDomain().contains((String)typeComboBox.getSelectedItem())) {
-                ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, FLATTENED_PANEL);
-            } else {
-                ((CardLayout) typeManagerPane.getLayout()).show(typeManagerPane, EMBEDDABLE_PANEL);
-                getCurrentPathLabel().setText("");
-            }
-        });
     }
 
     public CayenneTable getOverrideAttributeTable() {
@@ -246,5 +236,17 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
     public JLabel getSourceEntityLabel() {
         return sourceEntityLabel;
+    }
+
+    public JCheckBox getUsedForLockingCheckBox() {
+        return usedForLockingCheckBox;
+    }
+
+    public JTextField getCommentField() {
+        return commentField;
+    }
+
+    public JPanel getTypeManagerPane() {
+        return typeManagerPane;
     }
 }
