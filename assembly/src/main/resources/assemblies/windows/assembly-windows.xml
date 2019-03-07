@@ -97,7 +97,7 @@
 			<outputDirectory>lib/third-party</outputDirectory>
 			<!-- Include only a minimal set of dependencies to run cayenne-server and ant tasks -->
 			<includes>
-				<include>org.slf4j:slf-api</include>
+				<include>org.slf4j:slf4j-api</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
