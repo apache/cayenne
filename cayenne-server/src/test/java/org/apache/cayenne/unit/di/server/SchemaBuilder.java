@@ -19,6 +19,21 @@
 
 package org.apache.cayenne.unit.di.server;
 
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
@@ -42,21 +57,6 @@ import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Default implementation of the AccessStack that has a single DataNode per DataMap.
@@ -82,7 +82,7 @@ public class SchemaBuilder {
 			"qualified.map.xml", "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml",
 			"inheritance-vertical.map.xml", "oneway-rels.map.xml", "unsupported-distinct-types.map.xml",
 			"array-type.map.xml", "cay-2032.map.xml", "weighted-sort.map.xml", "hybrid-data-object.map.xml",
-			"java8.map.xml", "inheritance-with-enum.map.xml" };
+			"java8.map.xml", "cay-2521.map.xml", "inheritance-with-enum.map.xml" };
 
 	// hardcoded dependent entities that should be excluded
 	// if LOBs are not supported

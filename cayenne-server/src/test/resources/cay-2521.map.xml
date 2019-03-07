@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2521"/>
+	<db-entity name="ISSUE">
+		<db-attribute name="home_team_id" type="INTEGER" length="10"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="location_id" type="INTEGER" length="10"/>
+	</db-entity>
+	<db-entity name="LOCATION">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+		<db-attribute name="name" type="VARCHAR" length="45"/>
+		<db-attribute name="team_id" type="INTEGER" length="10"/>
+	</db-entity>
+	<db-entity name="TEAM1">
+		<db-attribute name="home_location_id" type="INTEGER" length="10"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<obj-entity name="Issue" className="org.apache.cayenne.testdo.cay_2521.Issue" dbEntityName="ISSUE"/>
+	<obj-entity name="Location" className="org.apache.cayenne.testdo.cay_2521.Location" dbEntityName="LOCATION">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="Team" className="org.apache.cayenne.testdo.cay_2521.Team" dbEntityName="TEAM1"/>
+	<db-relationship name="HOME_TEAM" source="ISSUE" target="TEAM1">
+		<db-attribute-pair source="home_team_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="LOCATION" source="ISSUE" target="LOCATION">
+		<db-attribute-pair source="location_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="ISSUES" source="LOCATION" target="ISSUE" toMany="true">
+		<db-attribute-pair source="id" target="location_id"/>
+	</db-relationship>
+	<db-relationship name="TEAM" source="LOCATION" target="TEAM1">
+		<db-attribute-pair source="team_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="HOME_TEAM" source="LOCATION" target="TEAM1">
+		<db-attribute-pair source="id" target="home_location_id"/>
+	</db-relationship>
+	<db-relationship name="ISSUES" source="TEAM1" target="ISSUE" toMany="true">
+		<db-attribute-pair source="id" target="home_team_id"/>
+	</db-relationship>
+	<db-relationship name="LOCATIONS" source="TEAM1" target="LOCATION" toMany="true">
+		<db-attribute-pair source="id" target="team_id"/>
+	</db-relationship>
+	<db-relationship name="HOME_LOCATION" source="TEAM1" target="LOCATION">
+		<db-attribute-pair source="home_location_id" target="id"/>
+	</db-relationship>
+	<obj-relationship name="location" source="Issue" target="Location" deleteRule="Cascade" db-relationship-path="LOCATION"/>
+	<obj-relationship name="homeTeam" source="Issue" target="Team" deleteRule="Cascade" db-relationship-path="HOME_TEAM"/>
+	<obj-relationship name="issues" source="Location" target="Issue" deleteRule="Cascade" db-relationship-path="ISSUES"/>
+	<obj-relationship name="team" source="Location" target="Team" deleteRule="Cascade" db-relationship-path="TEAM"/>
+	<obj-relationship name="homeTeam" source="Location" target="Team" deleteRule="Cascade" db-relationship-path="HOME_TEAM"/>
+	<obj-relationship name="locations" source="Team" target="Location" deleteRule="Cascade" db-relationship-path="LOCATIONS"/>
+	<obj-relationship name="homeLocation" source="Team" target="Location" deleteRule="Cascade" db-relationship-path="HOME_LOCATION"/>
+	<obj-relationship name="issues" source="Team" target="Issue" deleteRule="Cascade" db-relationship-path="ISSUES"/>
+	<dbImport xmlns="http://cayenne.apache.org/schema/10/dbimport">
+		<forceDataMapCatalog>false</forceDataMapCatalog>
+		<forceDataMapSchema>false</forceDataMapSchema>
+		<namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
+		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
+		<skipRelationshipsLoading>false</skipRelationshipsLoading>
+		<useJava7Types>false</useJava7Types>
+		<usePrimitives>true</usePrimitives>
+	</dbImport>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<destDir>../java</destDir>
+		<mode>entity</mode>
+		<template>templates/v4_1/subclass.vm</template>
+		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>false</createPKProperties>
+		<client>false</client>
+	</cgen>
+</data-map>

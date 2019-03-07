@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -26,14 +32,16 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.JoinType;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.util.CayenneMapEntry;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Translates parts of the query to SQL. Always works in the context of parent
@@ -444,7 +452,7 @@ public abstract class QueryAssemblerHelper {
 	 */
 	protected void processRelTermination(DbRelationship rel, JoinType joinType, String joinSplitAlias) {
 
-		if (forceJoinForRelations || rel.isToMany()) {
+		if (forceJoinForRelations || rel.isToMany() || !rel.isToPK()) {
 			// append joins
 			queryAssembler.dbRelationshipAdded(rel, joinType, joinSplitAlias);
 		}
