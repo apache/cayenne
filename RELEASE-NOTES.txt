@@ -38,6 +38,7 @@ CAY-2535 Imposible to import stored proceedure apart from db tables
 CAY-2537 Generate DB Schema: Schema Generation Complete popup window is hidden
 CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
+CAY-2553 Wrong disjoint prefetch query qualifier
 
 ----------------------------------
 Release: 4.1.M3
