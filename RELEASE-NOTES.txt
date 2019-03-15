@@ -40,8 +40,8 @@ CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
 
 ----------------------------------
-Release: 4.1.M3
-Date:
+Release: 4.1.B1
+Date: March 7, 2019
 ----------------------------------
 Changes/New Features:
 

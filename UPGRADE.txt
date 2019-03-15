@@ -27,10 +27,10 @@ UPGRADING TO 4.1.M2
 * Per CAY-2377 All code deprecated in Cayenne 4.0 was removed, please review your code before upgrading.
 
 * Per CAY-2372 three new modules extracted from Cayenne core. No changes to the packages or api have been made,
-    so you should only include additional module to your project (if it where used).
+    so only include additional modules to your project if you use them.
 
-    - cayenne-web module contains all logic related to bootstrapping Cayenne inside servlet container.
-      WebModule is autoloaded, so you shouldn't add it to runtime explicitly anymore.
+    - cayenne-web module contains all logic related to bootstrapping Cayenne inside a servlet container.
+      WebModule is autoloaded, so you shouldn't add it to runtime explicitly any more.
     - cayenne-osgi module contains OSGi related functionality.
     - cayenne-rop-server ROP server part.
 
@@ -580,7 +580,7 @@ UPGRADING TO 3.0M1
 UPGRADING TO 2.0.x
 
 Since 2.0, Cayenne is an Apache project, so all "org.objectstyle.*" java packages 
-where renamed to "org.apache.*" analogues. Since 1.2.x and 2.0.x release lines maintain
+were renamed to "org.apache.*" analogues. Since 1.2.x and 2.0.x release lines maintain
 full compatibility with each other, differing only in package names, upgrading to 2.0.x
 can be a first step in a safe upgrade to the latest version of Cayenne.
 
