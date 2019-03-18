@@ -75,7 +75,7 @@ Here is example of Cayenne Maven plugin setup that will do it:
 <plugin>
     <groupId>org.apache.cayenne.plugins</groupId>
     <artifactId>cayenne-maven-plugin</artifactId>
-    <version>4.1.M2</version>
+    <version>4.1.B1</version>
 
     <dependencies>
         <dependency>
@@ -118,7 +118,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.1.M2'
+        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.1.B1'
         classpath 'mysql:mysql-connector-java:8.0.13'
     }
 }
@@ -159,7 +159,7 @@ gradlew build
     <dependency>
         <groupId>org.apache.cayenne</groupId>
         <artifactId>cayenne-server</artifactId>
-        <version>4.1.M2</version>
+        <version>4.1.B1</version>
     </dependency>
 </dependencies>
 ```
@@ -167,7 +167,7 @@ gradlew build
 ##### Gradle
 
 ```groovy
-compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.1.M2'
+compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.1.B1'
  
 // or, if Gradle plugin is used
 compile cayenne.dependency('server')
