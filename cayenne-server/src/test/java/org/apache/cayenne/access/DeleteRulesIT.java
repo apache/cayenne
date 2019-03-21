@@ -338,16 +338,15 @@ public class DeleteRulesIT extends ServerCase {
         ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
 
         assertNotNull(changes);
-        Collection<NodeDiff> diffs = new ArrayList<NodeDiff>();
+        Collection<NodeDiff> diffs = new ArrayList<>();
         changes.appendDiffs(diffs);
-        Iterator<?> it = diffs.iterator();
-        while (it.hasNext()) {
-            Object diff = it.next();
+        for (Object diff : diffs) {
             if (diff instanceof ArcOperation) {
                 ArcOperation arcDelete = (ArcOperation) diff;
                 if (arcDelete.getNodeId().equals(a.getObjectId())
                         && arcDelete.getTargetNodeId().equals(b.getObjectId())
-                        && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B.getName()) && arcDelete.isDelete()) {
+                        && arcDelete.getArcId().getForwardArc().equals(DeleteRuleFlatA.FLAT_B.getName())
+                        && arcDelete.isDelete()) {
                     return;
                 }
             }
@@ -360,16 +359,15 @@ public class DeleteRulesIT extends ServerCase {
         ObjectDiff changes = context.getObjectStore().changes.get(a.getObjectId());
 
         if (changes != null) {
-            Collection<NodeDiff> diffs = new ArrayList<NodeDiff>();
+            Collection<NodeDiff> diffs = new ArrayList<>();
             changes.appendDiffs(diffs);
-            Iterator<?> it = diffs.iterator();
-            while (it.hasNext()) {
-                Object diff = it.next();
+            for (Object diff : diffs) {
                 if (diff instanceof ArcOperation) {
                     ArcOperation arcDelete = (ArcOperation) diff;
                     if (arcDelete.getNodeId().equals(a.getObjectId())
                             && arcDelete.getTargetNodeId().equals(b.getObjectId())
-                            && arcDelete.getArcId().equals(DeleteRuleFlatA.FLAT_B.getName()) && !arcDelete.isDelete()) {
+                            && arcDelete.getArcId().getForwardArc().equals(DeleteRuleFlatA.FLAT_B.getName())
+                            && !arcDelete.isDelete()) {
                         fail("Join was  deleted for flattened relationship");
                     }
                 }

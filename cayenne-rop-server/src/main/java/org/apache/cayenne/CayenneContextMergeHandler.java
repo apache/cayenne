@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
@@ -47,6 +48,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
 
     // ******* DataChannelListener methods *******
 
+    @Override
     public void graphChanged(final GraphEvent e) {
         // process flush
         if (shouldProcessEvent(e) && e.getDiff() != null) {
@@ -63,6 +65,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
         }
     }
 
+    @Override
     public void graphFlushed(final GraphEvent e) {
         // TODO (Andrus, 10/17/2005) - there are a few problems with commit processing:
 
@@ -92,6 +95,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
         }
     }
 
+    @Override
     public void graphRolledback(final GraphEvent e) {
 
         // TODO: andrus, 3/29/2007: per CAY-771, if a LOCAL peer context posted the event,
@@ -122,6 +126,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
 
     // ******* GraphChangeHandler methods *********
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         // do not unregister the node just yet... only put replaced id in deadIds to
         // remove it later. Otherwise stored operations will not work
@@ -138,14 +143,17 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
         }
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         // ignore
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         context.getGraphManager().unregisterNode(nodeId);
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
@@ -164,7 +172,8 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
         }
     }
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         // null source or target likely means the object is not faulted yet... Faults
         // shouldn't get disturbed by adding/removing arcs
 
@@ -194,7 +203,8 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
         }
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 
         // null source or target likely means the object is not faulted yet... Faults
         // shouldn't get disturbed by adding/removing arcs

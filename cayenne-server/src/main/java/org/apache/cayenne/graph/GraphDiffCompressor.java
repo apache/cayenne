@@ -93,7 +93,8 @@ public class GraphDiffCompressor {
             return new CompoundDiff(compressed);
         }
 
-        public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+        @Override
+        public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 
             if (targetNodeId != null) {
                 List<NodeDiff> diffs = diffsByNode.get(nodeId);
@@ -116,7 +117,8 @@ public class GraphDiffCompressor {
             registerDiff(new ArcCreateOperation(nodeId, targetNodeId, arcId));
         }
 
-        public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+        @Override
+        public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 
             if (targetNodeId != null) {
                 List<NodeDiff> diffs = diffsByNode.get(nodeId);
@@ -139,31 +141,35 @@ public class GraphDiffCompressor {
             registerDiff(new ArcDeleteOperation(nodeId, targetNodeId, arcId));
         }
 
+        @Override
         public void nodeCreated(Object nodeId) {
             registerDiff(new NodeCreateOperation(nodeId));
 
             if (createdNodes == null) {
-                createdNodes = new HashSet<Object>();
+                createdNodes = new HashSet<>();
             }
 
             createdNodes.add(nodeId);
         }
 
+        @Override
         public void nodeIdChanged(Object nodeId, Object newId) {
             registerDiff(new NodeIdChangeOperation(nodeId, newId));
         }
 
+        @Override
         public void nodeRemoved(Object nodeId) {
 
             registerDiff(new NodeDeleteOperation(nodeId));
 
             if (deletedNodes == null) {
-                deletedNodes = new HashSet<Object>();
+                deletedNodes = new HashSet<>();
             }
 
             deletedNodes.add(nodeId);
         }
 
+        @Override
         public void nodePropertyChanged(
                 Object nodeId,
                 String property,
@@ -195,13 +201,9 @@ public class GraphDiffCompressor {
         private void registerDiff(NodeDiff diff) {
 
             compressed.add(diff);
-            List<NodeDiff> diffs = diffsByNode.get(diff.getNodeId());
-            if (diffs == null) {
-                diffs = new ArrayList<>();
-                diffsByNode.put(diff.getNodeId(), diffs);
-            }
-
-            diffs.add(diff);
+            diffsByNode
+                    .computeIfAbsent(diff.getNodeId(), k -> new ArrayList<>())
+                    .add(diff);
         }
     }
 }

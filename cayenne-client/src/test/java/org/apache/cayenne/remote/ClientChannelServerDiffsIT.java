@@ -24,6 +24,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.MockEventManager;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.LifecycleEvent;
@@ -227,6 +228,7 @@ public class ClientChannelServerDiffsIT extends ClientCase {
             size = 0;
         }
 
+        @Override
         public void nodePropertyChanged(
                 Object nodeId,
                 String property,
@@ -236,22 +238,27 @@ public class ClientChannelServerDiffsIT extends ClientCase {
             size++;
         }
 
-        public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+        @Override
+        public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
             size++;
         }
 
-        public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+        @Override
+        public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
             size++;
         }
 
+        @Override
         public void nodeCreated(Object nodeId) {
             size++;
         }
 
+        @Override
         public void nodeIdChanged(Object nodeId, Object newId) {
             size++;
         }
 
+        @Override
         public void nodeRemoved(Object nodeId) {
             size++;
         }

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di;
 
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 
 public class DataChannelSyncStats implements GraphChangeHandler {
@@ -29,22 +30,27 @@ public class DataChannelSyncStats implements GraphChangeHandler {
     public int nodePropertiesChanged;
     public int nodesRemoved;
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         arcsCreated++;
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
         arcsDeleted++;
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         nodesCreated++;
     }
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         nodeIdsChanged++;
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
@@ -53,6 +59,7 @@ public class DataChannelSyncStats implements GraphChangeHandler {
         nodePropertiesChanged++;
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         nodesRemoved++;
     }

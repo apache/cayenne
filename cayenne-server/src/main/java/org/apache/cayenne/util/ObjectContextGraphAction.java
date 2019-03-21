@@ -23,6 +23,7 @@ import java.io.Serializable;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
@@ -81,14 +82,14 @@ public class ObjectContextGraphAction implements Serializable {
                 context.getGraphManager().arcDeleted(
                         object.getObjectId(),
                         ((Persistent) oldValue).getObjectId(),
-                        property.getName());
+                        new ArcId(property));
             }
 
             if (newValue instanceof Persistent) {
                 context.getGraphManager().arcCreated(
                         object.getObjectId(),
                         ((Persistent) newValue).getObjectId(),
-                        property.getName());
+                        new ArcId(property));
             }
         }
     }

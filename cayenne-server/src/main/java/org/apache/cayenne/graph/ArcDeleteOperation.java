@@ -27,15 +27,15 @@ public class ArcDeleteOperation extends NodeDiff {
 	private static final long serialVersionUID = 3614253207710845385L;
 	
 	protected Object targetNodeId;
-	protected Object arcId;
+	protected ArcId arcId;
 
-	public ArcDeleteOperation(Object nodeId, Object targetNodeId, Object arcId) {
+	public ArcDeleteOperation(Object nodeId, Object targetNodeId, ArcId arcId) {
 		super(nodeId);
 		this.targetNodeId = targetNodeId;
 		this.arcId = arcId;
 	}
 
-	public ArcDeleteOperation(Object nodeId, Object targetNodeId, Object arcId, int diffId) {
+	public ArcDeleteOperation(Object nodeId, Object targetNodeId, ArcId arcId, int diffId) {
 		super(nodeId, diffId);
 		this.targetNodeId = targetNodeId;
 		this.arcId = arcId;

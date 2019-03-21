@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomainSyncBucket.PropagatedValueFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DbAttribute;
@@ -150,6 +151,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
     // GraphChangeHandler methods.
     // ==================================================
 
+    @Override
     public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
         // note - no checking for phantom mod... assuming there is no phantom
         // diffs
@@ -161,7 +163,8 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         currentPropertyDiff.put(property, newValue);
     }
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         String arcIdString = arcId.toString();
         ObjRelationship relationship = objEntity.getRelationship(arcIdString);
 
@@ -184,14 +187,15 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         }
     }
 
-    private void doArcCreated(Object targetNodeId, Object arcId) {
+    private void doArcCreated(Object targetNodeId, ArcId arcId) {
         if (currentArcDiff == null) {
             currentArcDiff = new HashMap<>();
         }
         currentArcDiff.put(arcId, targetNodeId);
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 
         String arcIdString = arcId.toString();
         ObjRelationship relationship = objEntity.getRelationship(arcIdString);
@@ -214,7 +218,7 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         }
     }
 
-    private void doArcDeleted(Object targetNodeId, Object arcId) {
+    private void doArcDeleted(Object targetNodeId, ArcId arcId) {
         if (currentArcDiff == null) {
             currentArcDiff = new HashMap<>();
             currentArcDiff.put(arcId, null);
@@ -228,15 +232,18 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
         }
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         // need to append PK columns
         this.currentId = nodeId;
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         // noop
     }
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         // noop
     }

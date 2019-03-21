@@ -24,6 +24,7 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.model.MutableObjectChange;
@@ -129,12 +130,12 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 	}
 
 	@Override
-	public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 		// do nothing
 	}
 
 	@Override
-	public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+	public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 		// do nothing
 	}
 }

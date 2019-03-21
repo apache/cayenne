@@ -29,6 +29,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.access.event.SnapshotEventListener;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
@@ -430,11 +431,11 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
             parentChanges.apply(new GraphChangeHandler() {
 
                 @Override
-                public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+                public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
                 }
 
                 @Override
-                public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+                public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
                 }
 
                 @Override
@@ -963,8 +964,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.2
      */
     @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
-        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId.toString(), false);
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId, false);
 
         if (lifecycleEventInducedChanges != null) {
             registerLifecycleEventInducedChange(diff);
@@ -977,8 +978,8 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * @since 1.2
      */
     @Override
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
-        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId.toString(), true);
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+        NodeDiff diff = new ArcOperation(nodeId, targetNodeId, arcId, true);
 
         if (lifecycleEventInducedChanges != null) {
             registerLifecycleEventInducedChange(diff);

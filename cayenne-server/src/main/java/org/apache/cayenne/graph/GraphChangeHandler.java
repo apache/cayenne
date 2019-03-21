@@ -56,10 +56,10 @@ public interface GraphChangeHandler {
     /**
      * Notifies implementing object that a new arc was created between two nodes.
      */
-    void arcCreated(Object nodeId, Object targetNodeId, Object arcId);
+    void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId);
 
     /**
      * Notifies implementing object that an arc between two nodes was deleted.
      */
-    void arcDeleted(Object nodeId, Object targetNodeId, Object arcId);
+    void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId);
 }

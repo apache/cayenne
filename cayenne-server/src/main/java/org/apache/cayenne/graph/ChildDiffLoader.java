@@ -75,10 +75,12 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		this.context = context;
 	}
 
+	@Override
 	public void nodeIdChanged(Object nodeId, Object newId) {
 		throw new CayenneRuntimeException("Not supported");
 	}
 
+	@Override
 	public void nodeCreated(Object nodeId) {
 
 		setExternalChange(Boolean.TRUE);
@@ -108,6 +110,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 	}
 
+	@Override
 	public void nodeRemoved(Object nodeId) {
 		setExternalChange(Boolean.TRUE);
 		Persistent object = findObject(nodeId);
@@ -122,6 +125,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 	}
 
+	@Override
 	public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
 
 		// this change is for simple property, so no need to convert targets to
@@ -141,7 +145,8 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 	}
 
-	public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+	@Override
+	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 
 		final Persistent source = findObject(nodeId);
 		final Persistent target = findObject(targetNodeId);
@@ -185,7 +190,8 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		}
 	}
 
-	public void arcDeleted(Object nodeId, final Object targetNodeId, Object arcId) {
+	@Override
+	public void arcDeleted(Object nodeId, final Object targetNodeId, ArcId arcId) {
 		final Persistent source = findObject(nodeId);
 
 		// needed as sometime temporary objects are evoked from the context

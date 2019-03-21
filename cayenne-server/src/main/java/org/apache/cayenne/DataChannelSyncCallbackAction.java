@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphManager;
@@ -87,6 +88,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
         }
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         Op op = seenIds.put(nodeId, Op.INSERT);
         if (op == null) {
@@ -103,6 +105,7 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
         }
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         Op op = seenIds.put(nodeId, Op.DELETE);
         
@@ -128,19 +131,23 @@ public abstract class DataChannelSyncCallbackAction implements GraphChangeHandle
         }
     }
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         // TODO: andrus, 9/21/2006 - should we register to-many relationship updates?
         nodeUpdated(nodeId);
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
         // TODO: andrus, 9/21/2006 - should we register to-many relationship updates?
         nodeUpdated(nodeId);
     }
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,

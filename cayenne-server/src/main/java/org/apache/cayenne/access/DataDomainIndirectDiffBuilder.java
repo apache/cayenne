@@ -24,6 +24,7 @@ import java.util.HashSet;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DbEntity;
@@ -74,7 +75,7 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     }
 
     @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         ObjEntity entity = resolver.getObjEntity(((ObjectId) nodeId).getEntityName());
         ObjRelationship relationship = entity.getRelationship(arcId.toString());
 
@@ -114,7 +115,7 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     }
 
     @Override
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 
         ObjEntity entity = resolver.getObjEntity(((ObjectId) nodeId).getEntityName());
         ObjRelationship relationship = entity.getRelationship(arcId.toString());

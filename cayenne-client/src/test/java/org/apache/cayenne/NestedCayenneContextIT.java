@@ -20,6 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.SelectById;
@@ -261,24 +262,30 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 			final int[] arcDiffs = new int[1];
 
 			diffs.apply(new GraphChangeHandler() {
-				public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+				@Override
+				public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 					arcDiffs[0]++;
 				}
 
-				public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+				@Override
+				public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 					arcDiffs[0]--;
 				}
 
+				@Override
 				public void nodeCreated(Object nodeId) {
 				}
 
+				@Override
 				public void nodeIdChanged(Object nodeId, Object newId) {
 				}
 
+				@Override
 				public void nodePropertyChanged(Object nodeId,
 						String property, Object oldValue, Object newValue) {
 				}
 
+				@Override
 				public void nodeRemoved(Object nodeId) {
 				}
 			});
@@ -356,11 +363,11 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 			diffs.apply(new GraphChangeHandler() {
 
 				@Override
-				public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+				public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 				}
 
 				@Override
-				public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+				public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 				}
 
 				@Override
@@ -644,24 +651,30 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 		final int[] newNodes = new int[1];
 
 		diffs.apply(new GraphChangeHandler() {
-			public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+			@Override
+			public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 				arcDiffs[0]++;
 			}
 
-			public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+			@Override
+			public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 				arcDiffs[0]--;
 			}
 
+			@Override
 			public void nodeCreated(Object nodeId) {
 				newNodes[0]++;
 			}
 
+			@Override
 			public void nodeIdChanged(Object nodeId, Object newId) {
 			}
 
+			@Override
 			public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
 			}
 
+			@Override
 			public void nodeRemoved(Object nodeId) {
 				newNodes[0]--;
 			}

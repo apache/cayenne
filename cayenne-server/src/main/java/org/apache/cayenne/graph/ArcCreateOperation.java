@@ -27,15 +27,15 @@ public class ArcCreateOperation extends NodeDiff {
 	private static final long serialVersionUID = 2497511574121718987L;
 	
 	protected Object targetNodeId;
-	protected Object arcId;
+	protected ArcId arcId;
 
-	public ArcCreateOperation(Object nodeId, Object targetNodeId, Object arcId) {
+	public ArcCreateOperation(Object nodeId, Object targetNodeId, ArcId arcId) {
 		super(nodeId);
 		this.targetNodeId = targetNodeId;
 		this.arcId = arcId;
 	}
 
-	public ArcCreateOperation(Object nodeId, Object targetNodeId, Object arcId, int diffId) {
+	public ArcCreateOperation(Object nodeId, Object targetNodeId, ArcId arcId, int diffId) {
 		super(nodeId, diffId);
 		this.targetNodeId = targetNodeId;
 		this.arcId = arcId;

@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.graph.ArcCreateOperation;
 import org.apache.cayenne.graph.ArcDeleteOperation;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
@@ -57,30 +58,35 @@ class ClientReturnDiffFilter implements GraphChangeHandler {
         return new CompoundDiff(diffs);
     }
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         if (isClientArc(nodeId, targetNodeId, arcId)) {
             diffs.add(new ArcCreateOperation(nodeId, targetNodeId, arcId));
         }
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
         if (isClientArc(nodeId, targetNodeId, arcId)) {
             diffs.add(new ArcDeleteOperation(nodeId, targetNodeId, arcId));
         }
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         if (isClientNode(nodeId)) {
             diffs.add(new NodeCreateOperation(nodeId));
         }
     }
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         if (isClientNode(nodeId)) {
             diffs.add(new NodeIdChangeOperation(nodeId, newId));
         }
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
@@ -96,6 +102,7 @@ class ClientReturnDiffFilter implements GraphChangeHandler {
         }
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         if (isClientNode(nodeId)) {
             diffs.add(new NodeDeleteOperation(nodeId));

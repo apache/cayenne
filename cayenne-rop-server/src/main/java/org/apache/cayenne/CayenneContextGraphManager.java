@@ -23,6 +23,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.ArcCreateOperation;
 import org.apache.cayenne.graph.ArcDeleteOperation;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
@@ -274,13 +275,13 @@ final class CayenneContextGraphManager extends GraphMap {
     }
 
     @Override
-    public synchronized void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    public synchronized void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         stateLog.arcCreated(nodeId, targetNodeId, arcId);
         processChange(new ArcCreateOperation(nodeId, targetNodeId, arcId));
     }
 
     @Override
-    public synchronized void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    public synchronized void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
         stateLog.arcDeleted(nodeId, targetNodeId, arcId);
         processChange(new ArcDeleteOperation(nodeId, targetNodeId, arcId));
     }
@@ -337,20 +338,24 @@ final class CayenneContextGraphManager extends GraphMap {
      */
     class RollbackChangeHandler implements GraphChangeHandler {
 
-        public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+        @Override
+        public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
             context.mergeHandler.arcCreated(nodeId, targetNodeId, arcId);
             CayenneContextGraphManager.this.arcCreated(nodeId, targetNodeId, arcId);
         }
 
-        public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+        @Override
+        public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
             context.mergeHandler.arcDeleted(nodeId, targetNodeId, arcId);
             CayenneContextGraphManager.this.arcDeleted(nodeId, targetNodeId, arcId);
         }
 
+        @Override
         public void nodeCreated(Object nodeId) {
             CayenneContextGraphManager.this.nodeCreated(nodeId);
         }
 
+        @Override
         public void nodeIdChanged(Object nodeId, Object newId) {
             CayenneContextGraphManager.this.nodeIdChanged(nodeId, newId);
         }
@@ -358,6 +363,7 @@ final class CayenneContextGraphManager extends GraphMap {
         /**
          * Need to write property directly to this context
          */
+        @Override
         public void nodePropertyChanged(
                 Object nodeId,
                 String property,
@@ -372,6 +378,7 @@ final class CayenneContextGraphManager extends GraphMap {
                     newValue);
         }
 
+        @Override
         public void nodeRemoved(Object nodeId) {
             CayenneContextGraphManager.this.nodeRemoved(nodeId);
         }

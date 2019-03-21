@@ -19,6 +19,7 @@
 package org.apache.cayenne.commitlog;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.model.MutableObjectChange;
@@ -64,7 +65,7 @@ class DiffProcessor implements GraphChangeHandler {
 	}
 
 	@Override
-	public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+	public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 		ObjectId id = (ObjectId) nodeId;
 		String relationshipName = arcId.toString();
 
@@ -83,7 +84,7 @@ class DiffProcessor implements GraphChangeHandler {
 	}
 
 	@Override
-	public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 
 		ObjectId id = (ObjectId) nodeId;
 		String relationshipName = arcId.toString();

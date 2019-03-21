@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphManager;
 
@@ -28,7 +29,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * Tracks dirty Persistent objects.
@@ -150,20 +150,24 @@ class ObjectContextStateLog implements GraphChangeHandler {
 
     // *** GraphChangeHandler methods
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         if (dirtyIds.remove(nodeId)) {
             dirtyIds.add(newId);
         }
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         dirtyIds.add(nodeId);
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         dirtyIds.add(nodeId);
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
@@ -172,11 +176,13 @@ class ObjectContextStateLog implements GraphChangeHandler {
         dirtyIds.add(nodeId);
     }
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         dirtyIds.add(nodeId);
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
         dirtyIds.add(nodeId);
     }
 

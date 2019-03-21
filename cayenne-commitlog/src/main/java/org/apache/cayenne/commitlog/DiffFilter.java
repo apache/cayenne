@@ -19,6 +19,7 @@
 package org.apache.cayenne.commitlog;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
@@ -73,14 +74,14 @@ class DiffFilter implements GraphChangeHandler {
 	}
 
 	@Override
-	public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+	public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 		if (entityFactory.getEntity((ObjectId) nodeId).isIncluded(arcId.toString())) {
 			delegate.arcCreated(nodeId, targetNodeId, arcId);
 		}
 	}
 
 	@Override
-	public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+	public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
 		if (entityFactory.getEntity((ObjectId) nodeId).isIncluded(arcId.toString())) {
 			delegate.arcDeleted(nodeId, targetNodeId, arcId);
 		}

@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -52,7 +53,7 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
     }
 
     @Override
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
 
         final Persistent source = findObject(nodeId);
         final Persistent target = findObject(targetNodeId);
@@ -83,11 +84,11 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
                 return false;
             }
         });
-        context.propertyChanged(source, (String) arcId, null, target);
+        context.propertyChanged(source, arcId.toString(), null, target);
     }
 
     @Override
-    public void arcDeleted(Object nodeId, final Object targetNodeId, Object arcId) {
+    public void arcDeleted(Object nodeId, final Object targetNodeId, ArcId arcId) {
         final Persistent source = findObject(nodeId);
 
         // needed as sometime temporary objects are evoked from the context before
@@ -133,7 +134,7 @@ class CayenneContextChildDiffLoader extends ChildDiffLoader {
             }
         });
 
-        context.propertyChanged(source, (String) arcId, target[0], null);
+        context.propertyChanged(source, arcId.toString(), target[0], null);
     }
 
 }

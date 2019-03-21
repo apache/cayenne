@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
@@ -161,9 +162,10 @@ class ObjectContextDeleteAction {
             // joins must be removed even if they are non-existent or ignored in the
             // object graph
             if (processFlattened) {
+                ArcId arcId = new ArcId(property);
                 for (Persistent relatedObject : relatedObjects) {
-                    context.getGraphManager().arcDeleted(object.getObjectId()
-                            , relatedObject.getObjectId(), relationship.getName());
+                    context.getGraphManager()
+                            .arcDeleted(object.getObjectId(), relatedObject.getObjectId(), arcId);
                 }
             }
 

@@ -25,6 +25,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeDiff;
@@ -195,16 +196,16 @@ class ObjectDiff extends NodeDiff {
 
             ArcOperation arcDiff = (ArcOperation) diff;
             Object targetId = arcDiff.getTargetNodeId();
-            String arcId = arcDiff.getArcId().toString();
+            ArcId arcId = arcDiff.getArcId();
 
-            ArcProperty property = (ArcProperty) getClassDescriptor().getProperty(arcId);
+            ArcProperty property = (ArcProperty) getClassDescriptor().getProperty(arcId.getForwardArc());
 
             // note that some collection properties implement
             // 'SingleObjectArcProperty',
             // so we cant't do 'instanceof SingleObjectArcProperty'
             // TODO: andrus, 3.22.2006 - should we consider this a bug?
 
-            if (property == null && arcId.startsWith(ASTDbPath.DB_PREFIX)) {
+            if (property == null && arcId.getForwardArc().startsWith(ASTDbPath.DB_PREFIX)) {
                 addPhantomFkDiff(arcDiff);
                 addDiff = false;
             } else if (property instanceof ToManyProperty) {
@@ -232,10 +233,10 @@ class ObjectDiff extends NodeDiff {
                 } else if (property.getComplimentaryReverseArc() == null) {
 
                     // register complimentary arc diff
-                    String arc = ASTDbPath.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath();
-                    ArcOperation complimentartyOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc,
-                            arcDiff.isDelete());
-                    parent.registerDiff(targetId, complimentartyOp);
+                    ArcId arc = arcId.getReverseId();
+                    //new ArcId(ASTDbPath.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath(), property.getName());
+                    ArcOperation complimentaryOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc, arcDiff.isDelete());
+                    parent.registerDiff(targetId, complimentaryOp);
                 }
 
             } else if (property instanceof ToOneProperty) {
@@ -244,7 +245,7 @@ class ObjectDiff extends NodeDiff {
                     currentArcSnapshot = new HashMap<>();
                 }
 
-                currentArcSnapshot.put(arcId, targetId);
+                currentArcSnapshot.put(arcId.getForwardArc(), targetId);
             } else {
                 String message = (property == null) ? "No property for arcId " + arcId
                         : "Unrecognized property for arcId " + arcId + ": " + property;
@@ -443,10 +444,10 @@ class ObjectDiff extends NodeDiff {
     static final class ArcOperation extends NodeDiff {
 
         private Object targetNodeId;
-        private Object arcId;
+        private ArcId arcId;
         private boolean delete;
 
-        public ArcOperation(Object nodeId, Object targetNodeId, Object arcId, boolean delete) {
+        ArcOperation(Object nodeId, Object targetNodeId, ArcId arcId, boolean delete) {
 
             super(nodeId);
             this.targetNodeId = targetNodeId;
@@ -498,7 +499,7 @@ class ObjectDiff extends NodeDiff {
             throw new UnsupportedOperationException();
         }
 
-        public Object getArcId() {
+        public ArcId getArcId() {
             return arcId;
         }
 

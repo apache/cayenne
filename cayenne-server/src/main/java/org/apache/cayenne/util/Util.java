@@ -26,6 +26,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -741,7 +742,7 @@ public class Util {
 			});
 
 			sourceObject.getObjectContext().getGraphManager()
-					.arcCreated(targetObject.getObjectId(), sourceObject.getObjectId(), reverseArc.getName());
+					.arcCreated(targetObject.getObjectId(), sourceObject.getObjectId(), new ArcId(reverseArc));
 
 			markAsDirty(targetObject);
 		}
@@ -771,7 +772,7 @@ public class Util {
 			});
 
 			sourceObject.getObjectContext().getGraphManager()
-					.arcDeleted(targetObject.getObjectId(), sourceObject.getObjectId(), reverseArc.getName());
+					.arcDeleted(targetObject.getObjectId(), sourceObject.getObjectId(), new ArcId(reverseArc));
 
 			markAsDirty(targetObject);
 		}

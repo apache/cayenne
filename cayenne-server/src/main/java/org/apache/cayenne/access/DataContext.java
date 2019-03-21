@@ -44,6 +44,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -566,20 +567,18 @@ public class DataContext extends BaseContext {
                 if (!property.isFault(persistent)) {
 
                     Object value = property.readProperty(persistent);
-                    Collection<Map.Entry> collection = (value instanceof Map) ? ((Map) value).entrySet()
+                    @SuppressWarnings("unchecked")
+                    Collection<Map.Entry> collection = (value instanceof Map)
+                            ? ((Map) value).entrySet()
                             : (Collection) value;
 
-                    Iterator<Map.Entry> it = collection.iterator();
-                    while (it.hasNext()) {
-                        Object target = it.next();
-
+                    for (Object target : collection) {
                         if (target instanceof Persistent) {
                             Persistent targetDO = (Persistent) target;
 
                             // make sure it is registered
                             registerNewObject(targetDO);
-                            getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(),
-                                    property.getName());
+                            getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                         }
                     }
                 }
@@ -595,7 +594,7 @@ public class DataContext extends BaseContext {
 
                     // make sure it is registered
                     registerNewObject(targetDO);
-                    getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), property.getName());
+                    getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
                 }
                 return true;
             }

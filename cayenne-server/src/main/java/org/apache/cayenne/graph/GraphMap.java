@@ -51,44 +51,54 @@ public class GraphMap implements GraphManager {
     /**
      * Returns an immutable collection of registered nodes.
      */
+    @Override
     public Collection<Object> registeredNodes() {
         return Collections.unmodifiableCollection(nodes.values());
     }
 
+    @Override
     public synchronized Object getNode(Object nodeId) {
         return nodes.get(nodeId);
     }
 
+    @Override
     public synchronized void registerNode(Object nodeId, Object nodeObject) {
         nodes.put(nodeId, nodeObject);
     }
 
+    @Override
     public synchronized Object unregisterNode(Object nodeId) {
         return nodes.remove(nodeId);
     }
 
     // *** methods for tracking local changes declared in GraphChangeHandler interface
-    
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         // noop
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
         // noop
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         // noop
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         // noop
     }
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         // noop
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,

@@ -21,6 +21,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.SelectQuery;
@@ -190,27 +191,30 @@ public class NestedCayenneContextTooneIT extends RemoteCayenneCase {
 
         diffs.apply(new GraphChangeHandler() {
 
-            public void arcCreated(Object nodeId, Object targetNodeId,
-                                   Object arcId) {
+            @Override
+            public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
                 arcDiffs[0]++;
             }
 
-            public void arcDeleted(Object nodeId, Object targetNodeId,
-                                   Object arcId) {
+            @Override
+            public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
                 arcDiffs[0]--;
             }
 
+            @Override
             public void nodeCreated(Object nodeId) {
                 newNodes[0]++;
             }
 
+            @Override
             public void nodeIdChanged(Object nodeId, Object newId) {
             }
 
-            public void nodePropertyChanged(Object nodeId, String property,
-                                            Object oldValue, Object newValue) {
+            @Override
+            public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
             }
 
+            @Override
             public void nodeRemoved(Object nodeId) {
                 newNodes[0]--;
             }

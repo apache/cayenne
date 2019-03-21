@@ -25,6 +25,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectStore.SnapshotEventDecorator;
 import org.apache.cayenne.access.event.SnapshotEvent;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
@@ -87,6 +88,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
     // *** GraphEventListener methods
 
+    @Override
     public void graphChanged(GraphEvent event) {
         // parent received external change
         if (shouldProcessEvent(event)) {
@@ -107,6 +109,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         }
     }
 
+    @Override
     public void graphFlushed(GraphEvent event) {
 
         // peer is committed
@@ -130,6 +133,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         }
     }
 
+    @Override
     public void graphRolledback(GraphEvent event) {
         // TODO: andrus, 3/26/2006 - enable this once all ObjectStore diffs implement
         // working undo operation
@@ -141,14 +145,17 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
     // *** GraphChangeHandler methods
 
+    @Override
     public void nodeIdChanged(Object nodeId, Object newId) {
         context.getObjectStore().processIdChange(nodeId, newId);
     }
 
+    @Override
     public void nodeCreated(Object nodeId) {
         // noop
     }
 
+    @Override
     public void nodeRemoved(Object nodeId) {
         ObjectStore os = context.getObjectStore();
         synchronized (os) {
@@ -156,6 +163,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         }
     }
 
+    @Override
     public void nodePropertyChanged(
             Object nodeId,
             String property,
@@ -173,11 +181,13 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
         }
     }
 
-    public void arcCreated(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
         arcChanged(nodeId, targetNodeId, arcId);
     }
 
-    public void arcDeleted(Object nodeId, Object targetNodeId, Object arcId) {
+    @Override
+    public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
         arcChanged(nodeId, targetNodeId, arcId);
     }
 
