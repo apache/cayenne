@@ -23,19 +23,20 @@ CAY-2518 Add method to append having qualifier expression to ObjectSelect
 CAY-2520 Split ObjectId into several specialized variants
 CAY-2522 Make ObjectSelect a direct query
 CAY-2540 Modeler: redesign dbRelationship editor dialog
-CAY-2542 Redesign ObjRelationship editor dialog
+CAY-2542 Modeler: redesign ObjRelationship editor dialog
 CAY-2543 Move ResultSetMapping generation from metadata to translator
 CAY-2549 Modeler: Redesign ObjAttribute editor dialog
+CAY-2555 Use explicit ArcId in GraphChangeHandler methods
 
 Bug Fixes:
 
 CAY-2332 Property API: unable to use eq() and in() methods for toMany relationships
 CAY-2509 Result of resolving lazily faulted relationships can be out-of-date
-CAY-2530 DB Import and Class Generation from Project is performed for removed datamaps
-CAY-2531 Importing same schema after Import Revert clears all entities in datamap
+CAY-2530 Modeler: DB Import and Class Generation from Project is performed for removed datamaps
+CAY-2531 Modeler: Importing same schema after Import Revert clears all entities in datamap
 CAY-2533 Modeler: Exception on validating ObjRelationship without db path
-CAY-2535 Imposible to import stored proceedure apart from db tables
-CAY-2537 Generate DB Schema: Schema Generation Complete popup window is hidden
+CAY-2535 Modeler: Impossible to import stored procedure apart from db tables
+CAY-2537 Modeler: Schema Generation Complete popup window is hidden
 CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
 
