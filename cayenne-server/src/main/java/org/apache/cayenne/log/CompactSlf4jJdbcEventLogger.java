@@ -18,12 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.log;
 
-import org.apache.cayenne.access.translator.DbAttributeBinding;
-import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DbAttribute;
 
 /**
  * @since 4.1
@@ -41,6 +41,8 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     private static final String SELECT = "SELECT";
     private static final String FROM   = "FROM";
     private static final char   SPACE  = ' ';
+
+    private static final Pattern UNION_PATTERN = Pattern.compile(UNION, Pattern.CASE_INSENSITIVE);
 
     public CompactSlf4jJdbcEventLogger(@Inject RuntimeProperties runtimeProperties) {
         super(runtimeProperties);
@@ -53,7 +55,7 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
         }
 
         String str;
-        if (sql.toUpperCase().contains(UNION)) {
+        if (UNION_PATTERN.matcher(sql).find()) {
             str = processUnionSql(sql);
         } else {
             str = trimSqlSelectColumns(sql);
@@ -63,8 +65,8 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     }
 
     protected String processUnionSql(String sql) {
-        String modified = Pattern.compile(UNION.toLowerCase(), Pattern.CASE_INSENSITIVE)
-                .matcher(sql).replaceAll(UNION);
+        String modified = UNION_PATTERN.matcher(sql)
+                .replaceAll(UNION);
         String[] queries = modified.split(UNION);
         return Arrays.stream(queries)
                 .map(this::trimSqlSelectColumns)
@@ -72,12 +74,13 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     }
 
     protected String trimSqlSelectColumns(String sql) {
-        int selectIndex = sql.toUpperCase().indexOf(SELECT);
+        String str = sql.toUpperCase();
+        int selectIndex = str.indexOf(SELECT);
         if (selectIndex == -1) {
             return sql;
         }
         selectIndex += SELECT.length();
-        int fromIndex = sql.toUpperCase().indexOf(FROM);
+        int fromIndex = str.indexOf(FROM);
         String columns = sql.substring(selectIndex, fromIndex);
         String[] columnsArray = columns.split(",");
         if (columnsArray.length <= 3) {
