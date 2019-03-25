@@ -48,18 +48,18 @@ Start by creating a one-to-many ARTIST/PAINTING relationship:
 
 - Select the ARTIST DbEntity on the left and click on the "Properties" tab.
 
-- Click on "Create Relationship" button on the entity toolbar image:icon-relationship.png[] - a relationship
-called "untitledRel" is created.
+- Click on "Create Relationship" button on the entity toolbar image:icon-relationship.png[] - relationship
+configuration dialog is presented.
 
 - Choose the "Target" to be "Painting".
 
-- Click on the "Database Mapping" button image:icon-edit.png[] - relationship
-configuration dialog is presented. Here you can assign a name to the
-relationship and also its complimentary reverse relationship. This name can be
+- Assign names for relationship and reverse relationship. This name can be
 anything (this is really a symbolic name of the database referential
 constraint), but it is recommended to use a valid Java identifier, as this will
 save some typing later. We'll call the relationship "paintings" and reverse
 relationship "artist".
+
+- Check "ToMany" checkbox for "paintings" relationship
 
 - Click on "Add" button on the right to add a join
 
@@ -72,11 +72,7 @@ image::modeler-dbrelationship.png[align="center"]
 - Click "Done" to confirm the changes and close the dialog.
 
 - Two complimentary relationships have been created - from ARTIST to PAINTING
-and back. Still you may have noticed one thing is missing - "paintings"
-relationship should be to-many, but "To Many" checkbox is not checked. Let's
-change that - check the checkbox for "paintings" relationship, and then click on
-PAINTING DbEntity, and uncheck "artist" relationship "To Many" to make the
-reverse relationship "to-one" as it should be.
+and back.
 
 - Repeat the steps above to create a many-to-one relationship from PAINTING to GALLERY, calling the relationships pair
 "gallery" and "paintings".
