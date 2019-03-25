@@ -167,7 +167,7 @@
 						<executions>
 							<execution>
 								<id>javadoc</id>
-								<phase>generate-resources</phase>
+								<phase>${build.docs}</phase>
 								<goals>
 									<goal>javadoc</goal>
 								</goals>

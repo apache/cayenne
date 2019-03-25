@@ -38,6 +38,10 @@
         <module>asciidoc</module>
     </modules>
 
+	<properties>
+		<build.docs>generate-resources</build.docs>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -49,4 +53,14 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>src</id>
+			<properties>
+				<build.docs>none</build.docs>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>
