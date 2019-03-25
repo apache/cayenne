@@ -34,6 +34,10 @@
 
 	<description>An assembly of Cayenne into a generically runnable package.</description>
 
+	<properties>
+		<build.docs>process-resources</build.docs>
+	</properties>
+
 	<dependencies>
 
 		<dependency>
@@ -186,6 +190,9 @@
 		<!-- SOURCE assembly - the base assembly of a release build -->
 		<profile>
 			<id>src</id>
+			<properties>
+				<build.docs>none</build.docs>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -240,7 +247,7 @@
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
 							<execution>
-								<phase>process-resources</phase>
+								<phase>${build.docs}</phase>
 								<configuration>
 									<tasks>
 										<copy todir="${project.build.directory}/doc-staging">

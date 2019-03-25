@@ -83,7 +83,7 @@
                             <!-- generate standalone html help -->
                             <execution>
                                 <id>asciidoctor-html-standalone</id>
-                                <phase>generate-resources</phase>
+                                <phase>${build.docs}</phase>
                                 <goals>
                                     <goal>process-asciidoc</goal>
                                 </goals>
@@ -100,7 +100,7 @@
                             <!-- generate PDF -->
                             <execution>
                                 <id>generate-pdf-doc</id>
-                                <phase>generate-resources</phase>
+                                <phase>${build.docs}</phase>
                                 <goals>
                                     <goal>process-asciidoc</goal>
                                 </goals>
