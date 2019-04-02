@@ -1,4 +1,3 @@
-<!-- 
 /*****************************************************************
  *   Licensed to the Apache Software Foundation (ASF) under one
  *  or more contributor license agreements.  See the NOTICE file
@@ -17,37 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
- -->
-<%@ page contentType="text/html" %>
-<%@ page import="org.apache.cayenne.tutorial.persistent.*" %>
-<%@ page import="org.apache.cayenne.*" %>
-<%@ page import="org.apache.cayenne.query.*" %>
-<%@ page import="java.util.*" %>
-// tag::content[]
-<%
-    ObjectContext context = BaseContext.getThreadObjectContext();
-    List<Artist> artists = ObjectSelect.query(Artist.class)
-                .orderBy(Artist.NAME.asc())
-                .select(context);
-%>
-<html>
-    <head>
-        <title>Main</title>
-    </head>
-    <body>
-        <h2>Artists:</h2>
-        
-        <% if(artists.isEmpty()) {%>
-        <p>No artists found</p>
-        <% } else { 
-        	for(Artist a : artists) {
-        %>
-        <p><a href="detail.jsp?id=<%=Cayenne.intPKForObject(a)%>"> <%=a.getName()%> </a></p>
-        <%
-            }
-            } %>
-        <hr>
-        <p><a href="detail.jsp">Create new artist...</a></p>
-    </body>	
-</html>
-// end::content[]
+package org.apache.cayenne.tutorial.pojo;
+
+import org.apache.cayenne.tutorial.persistent.Gallery;
+
+public class GalleryPojo {
+
+    private String name;
+
+    public GalleryPojo(Gallery gallery) {
+        this.name = gallery.getName();
+    }
+
+    public String getName() {
+        return name;
+    }
+}
