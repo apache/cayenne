@@ -19,6 +19,20 @@
 
 package org.apache.cayenne.modeler;
 
+import javax.swing.event.EventListenerList;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.prefs.Preferences;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -114,20 +128,6 @@ import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.project.ConfigurationNodeParentGetter;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.util.IDUtil;
-
-import javax.swing.event.EventListenerList;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.prefs.Preferences;
 
 /**
  * A controller that works with the project tree, tracking selection and
@@ -298,8 +298,7 @@ public class ProjectController extends CayenneController {
 
                 fileChangeTracker.reconfigure();
 
-                entityResolver = new EntityResolver(
-                        ((DataChannelDescriptor) currentProject.getRootNode()).getDataMaps());
+                entityResolver = new EntityResolver();
 
                 updateEntityResolver();
             }
@@ -310,9 +309,8 @@ public class ProjectController extends CayenneController {
 
         Collection<DataMap> dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
 
-        entityResolver.setDataMaps(dataMaps);
-
         for (DataMap dataMap : dataMaps) {
+            entityResolver.addDataMap(dataMap);
             dataMap.setNamespace(entityResolver);
         }
     }
