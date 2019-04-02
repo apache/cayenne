@@ -60,14 +60,14 @@ public class GenericResponseTest {
 
     @Test
     public void testSerialization() throws Exception {
-        List list = new ArrayList();
-        list.add(new HashMap());
+        List<Object> list = new ArrayList<>();
+        list.add(new HashMap<>());
 
         GenericResponse r = new GenericResponse();
         r.addBatchUpdateCount(new int[] { 1, 2, 3 });
         r.addResultList(list);
 
-        GenericResponse sr = (GenericResponse) Util.cloneViaSerialization(r);
+        GenericResponse sr = Util.cloneViaSerialization(r);
         assertNotNull(sr);
         assertEquals(2, sr.size());
 

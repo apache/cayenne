@@ -1,7 +1,5 @@
 package org.apache.cayenne.joda.access.types;
 
-import org.apache.cayenne.joda.access.types.LocalDateType;
-
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockPreparedStatement;
 

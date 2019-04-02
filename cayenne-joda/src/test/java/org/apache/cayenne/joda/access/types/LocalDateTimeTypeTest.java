@@ -3,7 +3,6 @@ package org.apache.cayenne.joda.access.types;
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockPreparedStatement;
 
-import org.apache.cayenne.joda.access.types.LocalDateTimeType;
 import org.joda.time.LocalDateTime;
 
 import java.sql.PreparedStatement;

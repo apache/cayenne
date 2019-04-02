@@ -23,7 +23,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.GroupByNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,7 +69,7 @@ public class GroupByStageTest {
     @Test
     public void groupByWithAggregates() {
         context.addResultNode(new ColumnNode("t0", "column", null, null));
-        context.addResultNode(new EmptyNode(), true, Property.COUNT, "count");
+        context.addResultNode(new EmptyNode(), true, PropertyFactory.COUNT, "count");
 
         GroupByStage stage = new GroupByStage();
         stage.perform(context);

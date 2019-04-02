@@ -19,9 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.FunctionExpressionFactory;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;

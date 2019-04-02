@@ -22,11 +22,9 @@ package org.apache.cayenne.access.translator.select;
 import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
 
