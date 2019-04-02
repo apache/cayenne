@@ -19,10 +19,16 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.ObjectId;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
@@ -32,15 +38,6 @@ import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Represents a virtual shared namespace for zero or more DataMaps. Unlike
@@ -360,6 +357,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     public synchronized void addDataMap(DataMap map) {
         if (!maps.contains(map)) {
+            checkForDuplicatedNames(map);
             maps.add(map);
             map.setNamespace(this);
             refreshMappingCache();
@@ -370,6 +368,39 @@ public class EntityResolver implements MappingNamespace, Serializable {
         if (mappingCache == null) {
             refreshMappingCache();
         }
+    }
+
+    private void checkForDuplicatedNames(DataMap map) {
+        for(DbEntity entity : map.getDbEntities()) {
+            DbEntity foundDbEntity = getDbEntity(entity.getName());
+            if(foundDbEntity != null) {
+                processWarning(entity.getName(), map.getName(), foundDbEntity.getDataMap().getName());
+            }
+        }
+        for(ObjEntity entity : map.getObjEntities()) {
+            ObjEntity foundObjEntity = getObjEntity(entity.getName());
+            if(foundObjEntity != null) {
+                processWarning(entity.getName(), map.getName(), foundObjEntity.getDataMap().getName());
+            }
+        }
+        for(Procedure procedure : map.getProcedures()) {
+            Procedure foundProcedure = getProcedure(procedure.getName());
+            if(foundProcedure != null) {
+                processWarning(procedure.getName(), map.getName(), foundProcedure.getDataMap().getName());
+            }
+        }
+        for(Embeddable embeddable : map.getEmbeddables()) {
+            Embeddable foundEmbeddable = getEmbeddable(embeddable.getClassName());
+            if(foundEmbeddable != null) {
+                processWarning(embeddable.getClassName(), map.getName(), foundEmbeddable.getDataMap().getName());
+            }
+        }
+    }
+
+    private void processWarning(String duplicatedName, String dataMapName, String originalDataMapName) {
+        logger.warn("Duplicated name " + duplicatedName + " was found in " +
+                dataMapName + ". This name was also found in " +
+                originalDataMapName + ".");
     }
 
     /**
