@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
  * @since 4.1
  */
 @UseServerRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-public class VerticalInheritanceMultipleAttributes extends ServerCase {
+public class VerticalInheritanceMultipleAttributesIT extends ServerCase {
 
     @Inject
     protected ObjectContext context;
