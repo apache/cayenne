@@ -50,6 +50,7 @@ import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
+import org.apache.cayenne.access.types.DurationValueType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.FloatType;
@@ -58,6 +59,7 @@ import org.apache.cayenne.access.types.LocalDateTimeValueType;
 import org.apache.cayenne.access.types.LocalDateValueType;
 import org.apache.cayenne.access.types.LocalTimeValueType;
 import org.apache.cayenne.access.types.LongType;
+import org.apache.cayenne.access.types.PeriodValueType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.TimeType;
 import org.apache.cayenne.access.types.TimestampType;
@@ -423,6 +425,8 @@ public class ServerModule implements Module {
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
                 .add(LocalDateTimeValueType.class)
+                .add(DurationValueType.class)
+                .add(PeriodValueType.class)
                 .add(CharacterValueType.class);
 
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);

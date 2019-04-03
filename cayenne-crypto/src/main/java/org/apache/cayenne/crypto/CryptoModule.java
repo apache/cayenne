@@ -18,6 +18,16 @@
  */
 package org.apache.cayenne.crypto;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Types;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
+import java.util.Date;
+
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
@@ -42,6 +52,7 @@ import org.apache.cayenne.crypto.transformer.value.BytesConverter;
 import org.apache.cayenne.crypto.transformer.value.BytesToBytesConverter;
 import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.DoubleConverter;
+import org.apache.cayenne.crypto.transformer.value.DurationConverter;
 import org.apache.cayenne.crypto.transformer.value.FloatConverter;
 import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
 import org.apache.cayenne.crypto.transformer.value.LazyValueTransformerFactory;
@@ -49,6 +60,7 @@ import org.apache.cayenne.crypto.transformer.value.LocalDateConverter;
 import org.apache.cayenne.crypto.transformer.value.LocalDateTimeConverter;
 import org.apache.cayenne.crypto.transformer.value.LocalTimeConverter;
 import org.apache.cayenne.crypto.transformer.value.LongConverter;
+import org.apache.cayenne.crypto.transformer.value.PeriodConverter;
 import org.apache.cayenne.crypto.transformer.value.ShortConverter;
 import org.apache.cayenne.crypto.transformer.value.Utf8StringConverter;
 import org.apache.cayenne.crypto.transformer.value.UtilDateConverter;
@@ -56,14 +68,6 @@ import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Types;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 
 /**
  * Contains cryptography extensions for Cayenne.
@@ -193,6 +197,7 @@ public class CryptoModule implements Module {
         mapBuilder.put(LocalDate.class.getName(), LocalDateConverter.INSTANCE);
         mapBuilder.put(LocalTime.class.getName(), LocalTimeConverter.INSTANCE);
         mapBuilder.put(LocalDateTime.class.getName(), LocalDateTimeConverter.INSTANCE);
-
+        mapBuilder.put(Duration.class.getName(), DurationConverter.INSTANCE);
+        mapBuilder.put(Period.class.getName(), PeriodConverter.INSTANCE);
     }
 }

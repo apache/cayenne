@@ -19,24 +19,28 @@
 
 package org.apache.cayenne.access.types;
 
+import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
+import java.time.temporal.ChronoField;
+
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.testdo.java8.DurationTestEntity;
 import org.apache.cayenne.testdo.java8.LocalDateTestEntity;
 import org.apache.cayenne.testdo.java8.LocalDateTimeTestEntity;
 import org.apache.cayenne.testdo.java8.LocalTimeTestEntity;
-import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.testdo.java8.PeriodTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoField;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,6 +60,8 @@ public class Java8TimeIT extends ServerCase {
 		dbHelper.deleteAll("LOCAL_DATE_TEST");
 		dbHelper.deleteAll("LOCAL_DATETIME_TEST");
 		dbHelper.deleteAll("LOCAL_TIME_TEST");
+		dbHelper.deleteAll("DURATION_TEST");
+		dbHelper.deleteAll("PERIOD_TEST");
 	}
 
 	@Test
@@ -139,6 +145,36 @@ public class Java8TimeIT extends ServerCase {
 				.min(LocalDateTimeTestEntity.TIMESTAMP)
 				.selectOne(context);
 		assertEquals(localDateTime, value2);
+	}
+
+	@Test
+	public void testJava8Duration() {
+		DurationTestEntity durationTestEntity = context.newObject(DurationTestEntity.class);
+		Duration duration = Duration.ofDays(10);
+		durationTestEntity.setDurationField(duration);
+
+		context.commitChanges();
+
+		DurationTestEntity testRead = ObjectSelect.query(DurationTestEntity.class).selectOne(context);
+
+		assertNotNull(testRead.getDurationField());
+		assertEquals(Duration.class, testRead.getDurationField().getClass());
+		assertEquals(duration, testRead.getDurationField());
+	}
+
+	@Test
+	public void testJava8Period() {
+		PeriodTestEntity periodTestEntity = context.newObject(PeriodTestEntity.class);
+		Period period = Period.of(100, 10, 5);
+		periodTestEntity.setPeriodField(period);
+
+		context.commitChanges();
+
+		PeriodTestEntity testRead = ObjectSelect.query(PeriodTestEntity.class).selectOne(context);
+
+		assertNotNull(testRead.getPeriodField());
+		assertEquals(Period.class, testRead.getPeriodField().getClass());
+		assertEquals(period, testRead.getPeriodField());
 	}
 
 }

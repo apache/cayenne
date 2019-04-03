@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
@@ -35,12 +38,14 @@ import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
+import org.apache.cayenne.access.types.DurationValueType;
 import org.apache.cayenne.access.types.FloatType;
 import org.apache.cayenne.access.types.IntegerType;
 import org.apache.cayenne.access.types.LocalDateTimeValueType;
 import org.apache.cayenne.access.types.LocalDateValueType;
 import org.apache.cayenne.access.types.LocalTimeValueType;
 import org.apache.cayenne.access.types.LongType;
+import org.apache.cayenne.access.types.PeriodValueType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.TimeType;
 import org.apache.cayenne.access.types.TimestampType;
@@ -130,9 +135,6 @@ import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.xml.sax.XMLReader;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 public class ServerCaseModule implements Module {
 
     protected DefaultScope testScope;
@@ -217,6 +219,8 @@ public class ServerCaseModule implements Module {
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
                 .add(LocalDateTimeValueType.class)
+                .add(DurationValueType.class)
+                .add(PeriodValueType.class)
                 .add(CharacterValueType.class);
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
 
