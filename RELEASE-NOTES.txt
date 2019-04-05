@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Bug Fixes:
 CAY-2550 Modeler: ObjAttribute inspector modifies wrong columns in attribute table
+CAY-2559 Modeler: Warning dialog shows wrong information after changing target entity in dbRelationship
 
 ----------------------------------
 Release: 4.1.B1
