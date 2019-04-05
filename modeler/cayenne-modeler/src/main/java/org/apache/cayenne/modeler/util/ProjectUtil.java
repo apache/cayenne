@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.modeler.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
@@ -37,17 +43,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Provides utility methods to perform various manipulations with project objects.
@@ -380,7 +379,7 @@ public class ProjectUtil {
         Entity parent = attribute.getEntity();
 
         if (parent == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         Collection<DbRelationship> parentRelationships = (Collection<DbRelationship>) parent
@@ -406,12 +405,12 @@ public class ProjectUtil {
         Entity parent = attribute.getEntity();
 
         if (parent == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         DataMap map = parent.getDataMap();
         if (map == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         Collection<DbRelationship> relationships = new ArrayList<DbRelationship>();
@@ -470,12 +469,14 @@ public class ProjectUtil {
             for (DataMap map : domain.getDataMaps()) {
                 for (ObjEntity entity : map.getObjEntities()) {
                     for (ObjAttribute objAttribute : entity.getAttributes()) {
-                        if(objAttribute.getDbAttributePath() != null) {
-                            dbAttrPathByDot = objAttribute.getDbAttributePath()
-                                    .split(Pattern.quote("."));
-                            for (String partOfPath : dbAttrPathByDot) {
-                                if (partOfPath.equals(relationship.getName())) {
-                                    attributes.add(objAttribute);
+                        if(objAttribute.isFlattened()) {
+                            Iterator<?> it = objAttribute.getDbPathIterator();
+                            while(it.hasNext()) {
+                                Object entry = it.next();
+                                if(entry instanceof DbRelationship) {
+                                    if(entry.equals(relationship)) {
+                                        attributes.add(objAttribute);
+                                    }
                                 }
                             }
                         }
