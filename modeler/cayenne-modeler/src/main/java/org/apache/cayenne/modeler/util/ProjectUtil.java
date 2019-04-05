@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.modeler.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.Attribute;
@@ -37,17 +42,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Provides utility methods to perform various manipulations with project objects.
@@ -465,19 +463,18 @@ public class ProjectUtil {
                                                                                DbRelationship relationship) {
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
         List<ObjAttribute> attributes = new ArrayList<>();
-        String[] dbAttrPathByDot;
         if (domain != null) {
             for (DataMap map : domain.getDataMaps()) {
                 for (ObjEntity entity : map.getObjEntities()) {
                     for (ObjAttribute objAttribute : entity.getAttributes()) {
-                        if(objAttribute.getDbAttributePath() != null) {
-                            dbAttrPathByDot = objAttribute.getDbAttributePath()
-                                    .split(Pattern.quote("."));
-                            for (String partOfPath : dbAttrPathByDot) {
-                                if (partOfPath.equals(relationship.getName())) {
-                                    attributes.add(objAttribute);
+                        if(objAttribute.isFlattened()) {
+                            objAttribute.getDbPathIterator().forEachRemaining(entry -> {
+                                if(entry instanceof DbRelationship) {
+                                    if(entry.equals(relationship)) {
+                                        attributes.add(objAttribute);
+                                    }
                                 }
-                            }
+                            });
                         }
                     }
                 }
