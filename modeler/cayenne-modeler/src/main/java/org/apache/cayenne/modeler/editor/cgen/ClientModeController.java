@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 
 /**
  * @since 4.1
@@ -38,5 +39,7 @@ public class ClientModeController extends StandardModeController {
     @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
         cgenConfiguration.setClient(true);
+        cgenConfiguration.setTemplate(ClientClassGenerationAction.SUBCLASS_TEMPLATE);
+        cgenConfiguration.setSuperTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
     }
 }

@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import java.awt.*;
 
-import java.awt.Component;
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
 /**
  * @since 4.1
@@ -54,6 +55,8 @@ public class StandardModeController extends GeneratorController {
     @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
         cgenConfiguration.setClient(false);
+        cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
+        cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
     }
 
 }
