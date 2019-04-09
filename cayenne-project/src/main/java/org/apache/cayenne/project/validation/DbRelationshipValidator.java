@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 class DbRelationshipValidator extends ConfigurationNodeValidator {
 
@@ -48,25 +48,27 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
                     toString(relationship));
         } else {
             // validate joins
-            for (DbJoin join : relationship.getJoins()) {
-                if (join.getSource() == null && join.getTarget() == null) {
-                    addFailure(
-                            validationResult,
-                            relationship,
-                            "DbRelationship '%s' has a join with no source and target attributes selected",
-                            toString(relationship));
-                } else if (join.getSource() == null) {
-                    addFailure(
-                            validationResult,
-                            relationship,
-                            "DbRelationship '%s' has a join with no source attribute selected",
-                            toString(relationship));
-                } else if (join.getTarget() == null) {
-                    addFailure(
-                            validationResult,
-                            relationship,
-                            "DbRelationship '%s' has a join with no target attribute selected",
-                            toString(relationship));
+            if(!relationship.isUseJoinExp()) {
+                for (DbJoin join : relationship.getJoins()) {
+                    if (join.getSource() == null && join.getTarget() == null) {
+                        addFailure(
+                                validationResult,
+                                relationship,
+                                "DbRelationship '%s' has a join with no source and target attributes selected",
+                                toString(relationship));
+                    } else if (join.getSource() == null) {
+                        addFailure(
+                                validationResult,
+                                relationship,
+                                "DbRelationship '%s' has a join with no source attribute selected",
+                                toString(relationship));
+                    } else if (join.getTarget() == null) {
+                        addFailure(
+                                validationResult,
+                                relationship,
+                                "DbRelationship '%s' has a join with no target attribute selected",
+                                toString(relationship));
+                    }
                 }
             }
         }

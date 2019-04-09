@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
 
 /**
  * A DbRelationship is a descriptor of a database inter-table relationship based
@@ -47,6 +47,8 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
     // source
     // column)
     protected boolean toDependentPK;
+
+    private boolean useJoinExp = false;
 
     public DbRelationship() {
         super();
@@ -181,6 +183,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
      * the same join semantics. Returns null if no such relationship exists.
      */
     public DbRelationship getReverseRelationship() {
+        if(!hasReverseDdRelationship()) {
+            return null;
+        }
+
         DbEntity target = getTargetEntity();
 
         if (target == null) {
@@ -309,6 +315,10 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
     public boolean isValidForDepPk() {
         // handle case with no joins
         if (getJoins().size() == 0) {
+            return false;
+        }
+
+        if(isUseJoinExp()) {
             return false;
         }
 
@@ -536,5 +546,17 @@ public class DbRelationship extends Relationship implements ConfigurationNode {
             return null;
         }
         return this.sourceEntity.name;
+    }
+
+    public void setUseJoinExp(boolean useJoinExp) {
+        this.useJoinExp = useJoinExp;
+    }
+
+    public boolean isUseJoinExp() {
+        return useJoinExp;
+    }
+
+    public boolean hasReverseDdRelationship() {
+        return !useJoinExp;
     }
 }

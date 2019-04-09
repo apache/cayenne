@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.join"/>
+	<db-entity name="ARTIST_JOIN_EXP">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_NAME" type="CHAR" length="254"/>
+	</db-entity>
+	<db-entity name="PAINTING_INFO_JOIN_EXP">
+		<db-attribute name="INFO" type="CHAR" length="254"/>
+		<db-attribute name="INFO_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="INFO_JOIN_ID" type="INTEGER"/>
+	</db-entity>
+	<db-entity name="PAINTING_JOIN_EXP">
+		<db-attribute name="PAINTING_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PAINTING_JOIN_ID" type="INTEGER"/>
+		<db-attribute name="PAINTING_NAME" type="CHAR" length="254"/>
+	</db-entity>
+	<obj-entity name="ArtistJoinExp" className="org.apache.cayenne.testdo.join.ArtistJoinExp" dbEntityName="ARTIST_JOIN_EXP">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+	</obj-entity>
+	<obj-entity name="PaintingInfoJoinExp" className="org.apache.cayenne.testdo.join.PaintingInfoJoinExp" dbEntityName="PAINTING_INFO_JOIN_EXP">
+		<obj-attribute name="infoJoinId" type="int" db-attribute-path="INFO_JOIN_ID"/>
+		<obj-attribute name="info" type="java.lang.String" db-attribute-path="INFO"/>
+	</obj-entity>
+	<obj-entity name="PaintingJoinExp" className="org.apache.cayenne.testdo.join.PaintingJoinExp" dbEntityName="PAINTING_JOIN_EXP">
+		<obj-attribute name="paintingJoinId" type="int" db-attribute-path="PAINTING_JOIN_ID"/>
+		<obj-attribute name="paintingName" type="java.lang.String" db-attribute-path="PAINTING_NAME"/>
+	</obj-entity>
+	<db-relationship name="paintings" source="ARTIST_JOIN_EXP" target="PAINTING_JOIN_EXP" toMany="true">
+		<db-join joinExp="length(db:ARTIST_NAME) = length(db:paintings.PAINTING_NAME)"/>
+	</db-relationship>
+	<db-relationship name="toPainting" source="PAINTING_INFO_JOIN_EXP" target="PAINTING_JOIN_EXP">
+		<db-join joinExp="(sqrt(db:INFO_JOIN_ID) = sqrt(db:toPainting.PAINTING_JOIN_ID)) and (length(db:INFO) = length(db:toPainting.PAINTING_NAME))"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="PAINTING_JOIN_EXP" target="ARTIST_JOIN_EXP">
+		<db-join joinExp="length(db:PAINTING_NAME) = length(db:toArtist.ARTIST_NAME)"/>
+	</db-relationship>
+	<db-relationship name="paintingInfo" source="PAINTING_JOIN_EXP" target="PAINTING_INFO_JOIN_EXP">
+		<db-join joinExp="sqrt(db:PAINTING_JOIN_ID) = sqrt(db:paintingInfo.INFO_JOIN_ID)"/>
+	</db-relationship>
+	<obj-relationship name="paintings" source="ArtistJoinExp" target="PaintingJoinExp" deleteRule="Deny" db-relationship-path="paintings"/>
+	<obj-relationship name="toPainting" source="PaintingInfoJoinExp" target="PaintingJoinExp" deleteRule="Nullify" db-relationship-path="toPainting"/>
+	<obj-relationship name="toArtist" source="PaintingJoinExp" target="ArtistJoinExp" deleteRule="Nullify" db-relationship-path="toArtist"/>
+	<obj-relationship name="paintingInfo" source="PaintingJoinExp" target="PaintingInfoJoinExp" deleteRule="Cascade" db-relationship-path="paintingInfo"/>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<destDir>../java</destDir>
+		<mode>entity</mode>
+		<template>templates/v4_1/subclass.vm</template>
+		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>false</createPKProperties>
+		<client>false</client>
+	</cgen>
+</data-map>

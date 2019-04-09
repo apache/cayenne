@@ -23,12 +23,16 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.Util;
+
+import static org.apache.cayenne.exp.ExpressionFactory.*;
 
 /**
  * A query that selects objects related to a given object via a mapped relationship.
@@ -116,15 +120,23 @@ public class RelationshipQuery extends IndirectQuery {
 
         ObjRelationship relationship = getRelationship(resolver);
 
-        // build executable select...
-        Expression qualifier = ExpressionFactory.matchDbExp(relationship
-                .getReverseDbRelationshipPath(), objectId);
+        if(relationship.hasReverseDdRelationship()) {
+            Expression qualifier = matchDbExp(relationship.getReverseDbRelationshipPath(), objectId);
 
-        SelectQuery<Object> query = new SelectQuery<Object>(
-                (ObjEntity) relationship.getTargetEntity(),
-                qualifier);
-        query.setStatementFetchSize(statementFetchSize);
-        return query;
+            return ObjectSelect.query(Object.class, relationship.getTargetEntity().getName())
+                    .where(qualifier)
+                    .statementFetchSize(statementFetchSize);
+        } else {
+            Expression qualifier = matchAllDbExp(objectId.getIdSnapshot(), Expression.EQUAL_TO);
+            Expression fullObjectExp = fullObjectExp(ExpressionFactory.pathExp(relationship.getName()));
+            Class<?> classType = resolver.getClassDescriptor(relationship.getTargetEntityName()).getObjectClass();
+            BaseProperty<?> baseProperty = PropertyFactory.createBase(fullObjectExp, classType);
+
+            return ObjectSelect.query(classType, relationship.getSourceEntity().getName())
+                    .column(baseProperty)
+                    .where(qualifier)
+                    .statementFetchSize(statementFetchSize);
+        }
     }
 
     /**

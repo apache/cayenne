@@ -20,16 +20,25 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.JoinNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTJoinPath;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ExpDbJoin;
+import org.apache.cayenne.map.MappingNamespace;
+import org.apache.cayenne.map.ObjEntity;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
@@ -66,11 +75,19 @@ class TableTreeStage implements TranslationStage {
 
         ExpressionNodeBuilder expressionNodeBuilder = null;
         String sourceAlias = context.getTableTree().aliasForPath(node.getAttributePath().getParent());
-        for (DbJoin dbJoin : joins) {
-            DbAttribute src = dbJoin.getSource();
-            DbAttribute dst = dbJoin.getTarget();
-            ExpressionNodeBuilder joinExp = table(sourceAlias).column(src)
-                    .eq(table(node.getTableAlias()).column(dst));
+
+        for(DbJoin dbJoin : joins) {
+            ExpressionNodeBuilder joinExp;
+            if(node.getRelationship().isUseJoinExp()) {
+                Expression modifiedExpression = ((ExpDbJoin)dbJoin).getJoinExpression()
+                        .transform(new ExpressionTransformer(node));
+                joinExp = exp(() -> context.getQualifierTranslator().translate(modifiedExpression));
+            } else {
+                DbAttribute src = dbJoin.getSource();
+                DbAttribute dst = dbJoin.getTarget();
+                joinExp = table(sourceAlias).column(src)
+                        .eq(table(node.getTableAlias()).column(dst));
+            }
 
             if (expressionNodeBuilder != null) {
                 expressionNodeBuilder = expressionNodeBuilder.and(joinExp);
@@ -100,5 +117,65 @@ class TableTreeStage implements TranslationStage {
             }
         }
         return expressionNodeBuilder;
+    }
+
+    final class ExpressionTransformer implements Function<Object, Object> {
+
+        private PathComponents attributePath;
+        private DbRelationship dbRelationship;
+
+        ExpressionTransformer(TableTreeNode tableTreeNode) {
+            this.attributePath = tableTreeNode.getAttributePath();
+            this.dbRelationship = tableTreeNode.getRelationship();
+        }
+
+        @Override
+        public Object apply(Object input) {
+            if(input instanceof ASTPath) {
+                ASTPath pathExpression = buildExpression((ASTPath) input);
+                String prefix = buildPrefix(attributePath);
+                String expressionPath = buildPath(attributePath, pathExpression, prefix);
+                Expression resultExpression = ExpressionFactory.dbPathExp(expressionPath);
+
+                if(prefix.isEmpty() ||
+                        (!expressionPath.contains(dbRelationship.getName()) &&
+                                attributePath.getParent().isEmpty())) {
+                    return new ASTJoinPath((ASTDbPath) resultExpression, null);
+                } else {
+                    return new ASTJoinPath((ASTDbPath) resultExpression, prefix);
+                }
+            }
+
+            return input;
+        }
+
+        private ASTPath buildExpression(ASTPath astPath) {
+            if(astPath instanceof ASTObjPath) {
+                DbEntity dbEntity = dbRelationship.getSourceEntity();
+                MappingNamespace mns = dbEntity.getDataMap().getNamespace();
+                for (ObjEntity objEntity : mns.getObjEntities()) {
+                    if (dbEntity.equals(objEntity.getDbEntity())) {
+                        return (ASTPath) objEntity.translateToDbPath(astPath);
+                    }
+                }
+            }
+
+            return astPath;
+        }
+
+        private String buildPath(PathComponents pathComponents, ASTPath astPath, String prefix) {
+            String expressionPath = astPath.getPath();
+            String parentPath = pathComponents.getParent();
+            String path = parentPath != null && !parentPath.isEmpty() ?
+                    parentPath + "." + expressionPath :
+                    expressionPath;
+            return path.replace(prefix, "");
+        }
+
+        private String buildPrefix(PathComponents pathComponents) {
+            String attrPath = pathComponents.getPath();
+            int index = attrPath.indexOf(":");
+            return index > 0 ? attrPath.substring(0, index + 1) : "";
+        }
     }
 }

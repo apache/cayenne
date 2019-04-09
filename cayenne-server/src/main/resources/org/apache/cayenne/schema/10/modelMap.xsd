@@ -145,7 +145,10 @@
 	<xs:element name="db-relationship">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element minOccurs="1" maxOccurs="unbounded" ref="cay:db-attribute-pair"/>
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:element ref="cay:db-attribute-pair"/>
+					<xs:element ref="cay:db-join"/>
+				</xs:choice>
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
@@ -159,6 +162,11 @@
 		<xs:complexType>
 			<xs:attribute name="source" use="required" type="xs:string"/>
 			<xs:attribute name="target" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="db-join">
+		<xs:complexType>
+			<xs:attribute name="joinExp" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="obj-relationship">

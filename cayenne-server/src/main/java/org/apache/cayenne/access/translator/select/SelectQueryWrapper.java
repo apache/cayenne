@@ -26,6 +26,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -73,5 +74,14 @@ public class SelectQueryWrapper implements TranslatableQueryWrapper {
     @Override
     public SelectQuery<?> unwrap() {
         return selectQuery;
+    }
+
+    @Override
+    public boolean needsResultSetMapping() {
+        if(selectQuery instanceof PrefetchSelectQuery) {
+            return false;
+        } else {
+            return getColumns() != null && !getColumns().isEmpty();
+        }
     }
 }

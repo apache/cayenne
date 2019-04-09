@@ -19,11 +19,22 @@
 
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
@@ -33,11 +44,8 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import static org.apache.cayenne.exp.ExpressionFactory.dbPathExp;
+import static org.apache.cayenne.exp.ExpressionFactory.fullObjectExp;
 
 /**
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
@@ -155,33 +163,61 @@ class HierarchicalObjectResolver {
                 if (currentQuery == null
                         || (maxIdQualifierSize > 0 && qualifiersCount + joins.size() > maxIdQualifierSize)) {
 
-                    createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
+                    if (relationship.hasReverseDdRelationship()) {
+                        createDisjointByIdPrefetchQualifier(pathPrefix,
+                                currentQuery,
+                                getJoinsNames(joins, DbJoin::getTargetName),
+                                values);
+                        currentQuery = new PrefetchSelectQuery<>(node.getPath(), relationship);
+                    } else {
+                        createDisjointByIdPrefetchQualifier(pathPrefix,
+                                currentQuery,
+                                getPksNames(lastDbRelationship),
+                                values);
+                        currentQuery = createInversedQuery(node.getPath(), relationship);
+                    }
 
-                    currentQuery = new PrefetchSelectQuery<>(node.getPath(), relationship);
                     currentQuery.setFetchingDataRows(true);
                     queries.add(currentQuery);
                     qualifiersCount = 0;
                     values = new HashSet<>();
                 }
 
-                List<Object> joinValues = new ArrayList<>(joins.size());
-                for (DbJoin join : joins) {
-                    Object targetValue = dataRow.get(join.getSourceName());
-                    joinValues.add(targetValue);
+                List<Object> joinValues;
+                if(relationship.hasReverseDdRelationship()) {
+                    joinValues = getValues(
+                            getJoinsNames(joins, DbJoin::getSourceName),
+                            dataRow);
+                } else {
+                    joinValues = getValues(getPksNames(lastDbRelationship), dataRow);
                 }
 
                 if(values.add(joinValues)) {
                     qualifiersCount += joins.size();
                 }
             }
+
             // add final part of values
-            createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
+            if (relationship.hasReverseDdRelationship()) {
+                createDisjointByIdPrefetchQualifier(pathPrefix,
+                        currentQuery,
+                        getJoinsNames(joins, DbJoin::getTargetName),
+                        values);
+            } else {
+                createDisjointByIdPrefetchQualifier(pathPrefix,
+                        currentQuery,
+                        getPksNames(lastDbRelationship),
+                        values);
+            }
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
             String reversePath = null;
             if (relationship.isSourceIndependentFromTargetChange()) {
-                reversePath = "db:" + relationship.getReverseDbRelationshipPath();
+                reversePath = "db:";
+                reversePath += relationship.hasReverseDdRelationship() ?
+                        relationship.getReverseDbRelationshipPath() :
+                        relationship.getDbRelationshipPath();
             }
 
             List<DataRow> dataRows = new ArrayList<>();
@@ -203,17 +239,45 @@ class HierarchicalObjectResolver {
             return true;
         }
 
+        private PrefetchSelectQuery<DataRow> createInversedQuery(String path, ObjRelationship relationship) {
+            PrefetchSelectQuery<DataRow> currentQuery = new PrefetchSelectQuery<>(path, relationship);
+            currentQuery.setRoot(relationship.getSourceEntity());
+            Expression fullObjectExp = fullObjectExp(dbPathExp(relationship.getDbRelationshipPath()));
+            Class<?> targetClassType = context.getEntityResolver().getClassDescriptor(relationship.getTargetEntityName()).getObjectClass();
+            BaseProperty<?> baseProperty = PropertyFactory.createBase(fullObjectExp, targetClassType);
+            currentQuery.setColumns(baseProperty);
+            return currentQuery;
+        }
+
+        private List<Object> getValues(List<String> names, DataRow dataRow) {
+            List<Object> joinValues = new ArrayList<>(names.size());
+            for(String name : names) {
+                Object targetValue = dataRow.get(name);
+                joinValues.add(targetValue);
+            }
+            return joinValues;
+        }
+
+        private List<String> getPksNames(DbRelationship dbRelationship) {
+            return dbRelationship.getSourceEntity().getPrimaryKeys()
+                    .stream().map(DbAttribute::getName).collect(Collectors.toList());
+        }
+
+        private List<String> getJoinsNames(List<DbJoin> joins, Function<? super DbJoin, ? extends String> func) {
+            return joins.stream().map(func).collect(Collectors.toList());
+        }
+
         private void createDisjointByIdPrefetchQualifier(String pathPrefix, PrefetchSelectQuery currentQuery,
-                                                         List<DbJoin> joins, Set<List<Object>> values) {
+                                                         List<String> names, Set<List<Object>> values) {
             Expression allJoinsQualifier;
             if(currentQuery != null) {
                 Expression[] qualifiers = new Expression[values.size()];
                 int i = 0;
                 for(List<Object> joinValues : values) {
                     allJoinsQualifier = null;
-                    for(int j=0; j<joins.size(); j++) {
+                    for(int j = 0; j < names.size(); j++) {
                         Expression joinQualifier = ExpressionFactory
-                                .matchDbExp(pathPrefix + joins.get(j).getTargetName(), joinValues.get(j));
+                                .matchDbExp(pathPrefix + names.get(j), joinValues.get(j));
                         if (allJoinsQualifier == null) {
                             allJoinsQualifier = joinQualifier;
                         } else {

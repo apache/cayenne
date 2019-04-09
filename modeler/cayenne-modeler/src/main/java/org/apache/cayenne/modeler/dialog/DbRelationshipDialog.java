@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.table.TableColumn;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -35,6 +33,10 @@ import java.util.Optional;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.ExpDbJoin;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -69,6 +71,8 @@ public class DbRelationshipDialog extends CayenneController {
     private RelationshipUndoableEdit undo;
 
     public DbRelationshipDialog(ProjectController projectController) {
+        super(projectController);
+
         this.view = new DbRelationshipDialogView();
         this.projectController = projectController;
     }
@@ -101,15 +105,19 @@ public class DbRelationshipDialog extends CayenneController {
             throw new CayenneRuntimeException("Null DataMap: %s", relationship.getSourceEntity());
         }
 
-        initController();
         initFromModel();
+        initController();
 
         return this;
     }
 
     public void startUp() {
+        view.pack();
+        view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        view.setModal(true);
+        makeCloseableOnEscape();
+        centerView();
         view.setVisible(true);
-        view.dispose();
     }
 
     private void initFromModel() {
@@ -118,46 +126,90 @@ public class DbRelationshipDialog extends CayenneController {
         view.getTargetEntities().setModel(targetComboBoxModel);
 
         view.getSourceName().setText(relationship.getSourceEntityName());
+        view.getToDepPk().setEnabled(relationship.isValidForDepPk());
         view.getToDepPk().setSelected(relationship.isToDependentPK());
         view.getToMany().setSelected(relationship.isToMany());
-
         view.getNameField().setText(relationship.getName());
         if(reverseRelationship != null) {
             view.getReverseName().setText(reverseRelationship.getName());
         }
-
-        if(relationship.getTargetEntity() == null) {
-            enableOptions(false);
-        } else {
-            enableInfo();
-        }
-
         view.getComment().setText(ObjectInfo
                 .getFromMetaData(projectController.getApplication().getMetaData(),
                         relationship,
                         ObjectInfo.COMMENT));
+
+        if(relationship.getTargetEntity() == null) {
+            view.enableOptions(false);
+        } else {
+            enableInfo();
+        }
+
+        for(DbJoin dbJoin : relationship.getJoins()) {
+            if(dbJoin instanceof ExpDbJoin) {
+                view.getUseExpressionForJoin().setSelected(true);
+                view.getCustomExpressionField().setText(((ExpDbJoin)dbJoin).getJoinExpression().toString());
+                view.showExpressionField(true);
+                view.getReverseName().setEnabled(false);
+            }
+        }
     }
 
     private void initController() {
+        initButtons();
+
         view.getTargetEntities().addActionListener(action -> {
-            String selectedItem = (String)view.getTargetEntities().getSelectedItem();
+            String selectedItem = (String) view.getTargetEntities().getSelectedItem();
             if(relationship.getTargetEntityName() == null) {
                 relationship.setTargetEntityName(selectedItem);
             } else if(!relationship.getTargetEntityName().equals(selectedItem)){
                 if (WarningDialogByDbTargetChange.showWarningDialog(projectController, relationship)) {
-                    // clear joins...
                     relationship.removeAllJoins();
                     relationship.setTargetEntityName(selectedItem);
-                } else {
-                    view.getTargetEntities().setSelectedItem(relationship.getTargetEntityName());
                 }
                 relationship.setToDependentPK(false);
-                view.getToDepPk().setSelected(relationship.isValidForDepPk());
+                view.getToDepPk().setEnabled(relationship.isValidForDepPk());
                 projectController.fireDbRelationshipEvent(new RelationshipEvent(this, relationship, relationship.getSourceEntity()));
             }
             enableInfo();
         });
 
+        view.addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                view.setCancelPressed(true);
+            }
+        });
+
+        view.getToDepPk().addActionListener(selected -> {
+            boolean isSelected = view.getToDepPk().isSelected();
+            DbRelationship reverseRelationship = relationship.getReverseRelationship();
+            if(isSelected && reverseRelationship != null && reverseRelationship.isToDependentPK()) {
+                boolean setToDepPk = JOptionPane.showConfirmDialog(Application.getFrame(), "Unset reverse relationship's \"To Dep PK\" setting?",
+                        "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
+                relationship.setToDependentPK(setToDepPk);
+                reverseRelationship.setToDependentPK(!setToDepPk);
+            } else {
+                relationship.setToDependentPK(view.getToDepPk().isSelected());
+            }
+        });
+
+        view.getUseExpressionForJoin().addActionListener(select -> {
+            if(view.getUseExpressionForJoin().isSelected()) {
+                view.showExpressionField(true);
+                view.getToDepPk().setEnabled(false);
+                view.getReverseName().setEnabled(false);
+                view.getToDepPk().setSelected(false);
+            } else {
+                view.showExpressionField(false);
+                view.getReverseName().setEnabled(true);
+                view.getToDepPk().setEnabled(relationship.isValidForDepPk());
+                view.getToDepPk().setSelected(relationship.isToDependentPK());
+            }
+        });
+    }
+
+    private void initButtons() {
         view.getAddButton().addActionListener(e -> {
             DbJoinTableModel model = (DbJoinTableModel) view.getTable().getModel();
 
@@ -189,41 +241,20 @@ public class DbRelationshipDialog extends CayenneController {
 
         view.getSaveButton().addActionListener(e -> {
             view.setCancelPressed(false);
-            save();
-            view.dispose();
-            view.setVisible(false);
+            if(save()) {
+                view.dispose();
+                view.setVisible(false);
+            }
         });
 
         view.getCancelButton().addActionListener(e -> {
             view.setCancelPressed(true);
             view.setVisible(false);
         });
-
-        view.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                view.setCancelPressed(true);
-            }
-        });
-
-        view.getToDepPk().setEnabled(relationship.isValidForDepPk());
-        view.getToDepPk().addActionListener(selected -> {
-            boolean isSelected = view.getToDepPk().isSelected();
-            DbRelationship reverseRelationship = relationship.getReverseRelationship();
-            if(reverseRelationship != null && reverseRelationship.isToDependentPK() && isSelected) {
-                boolean setToDepPk = JOptionPane.showConfirmDialog(Application.getFrame(), "Unset reverse relationship's \"To Dep PK\" setting?",
-                        "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
-                relationship.setToDependentPK(setToDepPk);
-                reverseRelationship.setToDependentPK(!setToDepPk);
-            } else {
-                relationship.setToDependentPK(view.getToDepPk().isSelected());
-            }
-        });
     }
 
     private void enableInfo() {
-        enableOptions(true);
+        view.enableOptions(true);
 
         view.getTable().setModel(new DbJoinTableModel(relationship,
                 projectController, this, true));
@@ -255,10 +286,6 @@ public class DbRelationshipDialog extends CayenneController {
         view.getTablePreferences().bind(view.getTable(), null, null, null, DbJoinTableModel.SOURCE, true);
     }
 
-    private void enableOptions(boolean enable) {
-        view.enableOptions(enable);
-    }
-
     private void stopEditing() {
         // Stop whatever editing may be taking place
         int col_index = view.getTable().getEditingColumn();
@@ -268,25 +295,45 @@ public class DbRelationshipDialog extends CayenneController {
         }
     }
 
-    private void save() {
+    private boolean save() {
         stopEditing();
 
         DbJoinTableModel model = (DbJoinTableModel) view.getTable().getModel();
-        boolean updatingReverse = model.getObjectList().size() > 0;
+        boolean updatingReverse = model.getObjectList().size() > 0 && !view.getUseExpressionForJoin().isSelected();
 
         // handle name update
         handleNameUpdate(relationship, view.getNameField().getText().trim());
-
         model.commit();
 
         relationship.setToMany(view.getToMany().isSelected());
-
         ObjectInfo.putToMetaData(projectController.getApplication().getMetaData(),
                 relationship,
                 ObjectInfo.COMMENT, view.getComment().getText());
+
+        if(view.getUseExpressionForJoin().isSelected()) {
+            relationship.setToDependentPK(false);
+        }
+
+        if(view.getUseExpressionForJoin().isSelected()) {
+            relationship.setUseJoinExp(true);
+            relationship.removeAllJoins();
+            try {
+                Expression expression = ExpressionFactory.exp(view.getCustomExpressionField().getText());
+                DbJoin dbJoin = new ExpDbJoin(relationship, expression);
+                relationship.addJoin(dbJoin);
+            } catch (ExpressionException e) {
+                JOptionPane.showConfirmDialog(Application.getFrame(), "Wrong expression.",
+                        "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                return false;
+            }
+        } else {
+            relationship.setUseJoinExp(false);
+            relationship.getJoins().removeIf(dbJoin -> dbJoin instanceof ExpDbJoin);
+        }
+
         // If new reverse DbRelationship was created, add it to the target
         // Don't create reverse with no joins - makes no sense...
-        if (updatingReverse) {
+        if (updatingReverse && !relationship.isUseJoinExp()) {
 
             // If didn't find anything, create reverseDbRel
             if (reverseRelationship == null) {
@@ -300,6 +347,7 @@ public class DbRelationshipDialog extends CayenneController {
                 reverseRelationship.setTargetEntityName(relationship.getSourceEntity());
                 reverseRelationship.setToMany(!relationship.isToMany());
                 relationship.getTargetEntity().addRelationship(reverseRelationship);
+                reverseRelationship.setUseJoinExp(relationship.isUseJoinExp());
 
                 // fire only if the relationship is to the same entity...
                 // this is needed to update entity view...
@@ -326,6 +374,7 @@ public class DbRelationshipDialog extends CayenneController {
         }
 
         fireDbRelationshipEvent(isCreate);
+        return true;
     }
 
     private void handleNameUpdate(DbRelationship relationship, String userInputName) {

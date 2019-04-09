@@ -27,15 +27,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Default mutable implementation of {@link QueryMetadata}.

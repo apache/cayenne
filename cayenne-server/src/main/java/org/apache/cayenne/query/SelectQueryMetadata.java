@@ -244,7 +244,9 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	 * @since 4.0
 	 */
 	private void buildResultSetMappingForColumns(SelectQuery<?> query, EntityResolver resolver) {
-		if(query.getColumns() == null || query.getColumns().isEmpty()) {
+		if(query.getColumns() == null
+				|| query.getColumns().isEmpty()
+				|| query instanceof PrefetchSelectQuery) {
 			return;
 		}
 

@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.map;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Function;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.ConfigurationNode;
@@ -36,18 +46,6 @@ import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.Function;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database

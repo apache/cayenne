@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.map;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -28,12 +34,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Describes an association between two Java classes mapped as source and target
@@ -507,6 +507,16 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
         return path.toString();
     }
 
+    public boolean hasReverseDdRelationship() {
+        List<DbRelationship> relationships = getDbRelationships();
+        for(DbRelationship dbRelationship : relationships) {
+            if(!dbRelationship.hasReverseDdRelationship()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Returns a reversed dbRelationship path.
      * 
@@ -679,7 +689,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     public void recalculateReadOnlyValue() {
         // not flattened, always read/write
         if (dbRelationships.size() < 2) {
-            this.readOnly = false;
+            this.readOnly = dbRelationships.size() == 1 && dbRelationships.get(0).isUseJoinExp();
             return;
         }
 

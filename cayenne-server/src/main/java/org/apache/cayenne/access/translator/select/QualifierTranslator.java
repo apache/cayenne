@@ -48,6 +48,7 @@ import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
+import org.apache.cayenne.exp.parser.ASTJoinPath;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
@@ -55,7 +56,10 @@ import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.DbAttribute;
 
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.aliased;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.function;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.value;
 import static org.apache.cayenne.exp.Expression.*;
 
 /**
@@ -168,6 +172,13 @@ class QualifierTranslator implements TraversalHandler {
                 String dbPath = (String)node.getOperand(0);
                 PathTranslationResult dbResult = pathTranslator.translatePath(context.getMetadata().getDbEntity(), dbPath);
                 return processPathTranslationResult(node, parentNode, dbResult);
+
+            case JOIN_PATH:
+                ASTJoinPath joinPath = (ASTJoinPath) node;
+                PathTranslationResult joinResult = pathTranslator.translatePath(context.getMetadata().getDbEntity(),
+                        joinPath.getPathExp().getPath(),
+                        joinPath.getPrefix());
+                return processPathTranslationResult(node, parentNode, joinResult);
 
             case FUNCTION_CALL:
                 ASTFunctionCall functionCall = (ASTFunctionCall)node;
