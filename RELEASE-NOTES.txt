@@ -40,6 +40,7 @@ CAY-2537 Modeler: Schema Generation Complete popup window is hidden
 CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
 CAY-2559 Modeler: Warning dialog shows wrong information after changing target entity in dbRelationship
+CAY-2561 Modeler: cgen type combobox doesn't set templates
 
 ----------------------------------
 Release: 4.1.B1
