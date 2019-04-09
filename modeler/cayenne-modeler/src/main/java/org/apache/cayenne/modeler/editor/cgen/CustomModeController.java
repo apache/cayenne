@@ -19,19 +19,19 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.modeler.CodeTemplateManager;
-import org.apache.cayenne.modeler.dialog.cgen.TemplateDialog;
-import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
-import org.apache.cayenne.swing.BindingBuilder;
-
 import javax.swing.DefaultComboBoxModel;
 import java.awt.Component;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.modeler.CodeTemplateManager;
+import org.apache.cayenne.modeler.dialog.cgen.TemplateDialog;
+import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.swing.BindingBuilder;
 
 /**
  * @since 4.1
@@ -184,5 +184,7 @@ public class CustomModeController extends GeneratorController {
     @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
         cgenConfiguration.setClient(false);
+        cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
+        cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
     }
 }
