@@ -46,8 +46,6 @@ jdk:
 matrix:
   allow_failures:
     - jdk: openjdk-ea
-    # allow failures on PostgreSQL as it just hangs too often
-    - env: DB_PROFILE=postgres-docker
 
 script:
   - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
