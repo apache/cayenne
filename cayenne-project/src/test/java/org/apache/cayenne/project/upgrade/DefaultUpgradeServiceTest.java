@@ -64,10 +64,16 @@ public class DefaultUpgradeServiceTest {
         metaData = upgradeService.getUpgradeType(getResourceForVersion("6"));
         assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
 
+        metaData = upgradeService.getUpgradeType(getResourceForVersion("9"));
+        assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
+
         metaData = upgradeService.getUpgradeType(getResourceForVersion("10"));
         assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
 
         metaData = upgradeService.getUpgradeType(getResourceForVersion("11"));
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
+
+        metaData = upgradeService.getUpgradeType(getResourceForVersion("12"));
         assertEquals(UpgradeType.DOWNGRADE_NEEDED, metaData.getUpgradeType());
     }
 

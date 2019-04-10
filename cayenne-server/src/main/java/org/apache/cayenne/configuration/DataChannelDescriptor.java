@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader.DEFAULT_PROJECT_VERSION;
+
 /**
  * A descriptor of a DataChannel normally loaded from XML configuration.
  * 
@@ -43,8 +45,8 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 	/**
 	 * The namespace in which the data map XML file will be created.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/10/domain";
-	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/10/domain.xsd";
+	private String schemaXsd;
+	private String schemaXsdLocation;
 
 	protected String name;
 	protected Map<String, String> properties;
@@ -57,15 +59,16 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 		properties = new HashMap<>();
 		dataMaps = new ArrayList<>(5);
 		nodeDescriptors = new ArrayList<>(3);
+		setProjectVersion(DEFAULT_PROJECT_VERSION);
 	}
 
 	@Override
 	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 
 		encoder.start("domain")
-				.attribute("xmlns", SCHEMA_XSD)
+				.attribute("xmlns", schemaXsd)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
-				.attribute("xsi:schemaLocation", SCHEMA_XSD + " " + SCHEMA_XSD_LOCATION, true)
+				.attribute("xsi:schemaLocation", schemaXsd + " " + schemaXsdLocation, true)
 				.projectVersion();
 
 		if (!properties.isEmpty()) {
@@ -157,5 +160,14 @@ public class DataChannelDescriptor implements ConfigurationNode, Serializable, X
 
 	public void setDefaultNodeName(String defaultDataNodeName) {
 		this.defaultNodeName = defaultDataNodeName;
+	}
+
+	public String getSchemaXsd() {
+		return schemaXsd;
+	}
+
+	public void setProjectVersion(String projectVersion) {
+		this.schemaXsd = "http://cayenne.apache.org/schema/" + projectVersion + "/domain";
+		this.schemaXsdLocation = "https://cayenne.apache.org/schema/" + projectVersion + "/domain.xsd";
 	}
 }

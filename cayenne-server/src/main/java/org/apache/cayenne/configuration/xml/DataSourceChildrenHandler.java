@@ -167,5 +167,20 @@ class DataSourceChildrenHandler extends NamespaceAwareNestedTagHandler {
                 throw new ConfigurationException("Non-numeric 'max' attribute '%s'", nfex, max);
             }
         }
+
+        String maxQueueWaitTime = attributes.getValue("maxQueueWaitTime");
+        if (maxQueueWaitTime != null) {
+            try {
+                dataSourceDescriptor.setMaxQueueWaitTime(Integer.parseInt(maxQueueWaitTime));
+            } catch (NumberFormatException nfex) {
+                logger.info("Non-numeric 'maxQueueWaitTime' attribute", nfex);
+                throw new ConfigurationException("Non-numeric 'maxQueueWaitTime' attribute '%s'", nfex, max);
+            }
+        }
+
+        String validationQuery = attributes.getValue("validationQuery");
+        if (validationQuery != null) {
+            dataSourceDescriptor.setValidationQuery(validationQuery);
+        }
     }
 }

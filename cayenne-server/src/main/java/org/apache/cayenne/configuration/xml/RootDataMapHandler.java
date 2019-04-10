@@ -30,11 +30,12 @@ public class RootDataMapHandler extends VersionAwareHandler {
 
     public RootDataMapHandler(LoaderContext loaderContext) {
         super(loaderContext, "data-map");
-        setTargetNamespace(DataMap.SCHEMA_XSD);
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
+        setTargetNamespace(DataMap.getSchemaXsdForVersion(attributes.getValue("project-version")));
+
         if(targetNamespace.equals(namespaceURI) && "data-map".equals(localName)) {
             return new DataMapHandler(this);
         }

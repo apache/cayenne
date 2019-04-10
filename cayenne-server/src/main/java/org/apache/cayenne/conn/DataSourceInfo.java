@@ -25,6 +25,7 @@ import java.util.Objects;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.PasswordEncoding;
 import org.apache.cayenne.configuration.PlainTextPasswordEncoder;
+import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -53,6 +54,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	protected String adapterClassName;
 	protected int minConnections = 1;
 	protected int maxConnections = 1;
+	protected int maxQueueWaitTime = UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT;
 	protected String passwordEncoderClass = PlainTextPasswordEncoder.class.getName();
 	protected String passwordEncoderKey = "";
 	protected String passwordLocation = PASSWORD_LOCATION_MODEL;
@@ -60,6 +62,7 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	protected String passwordSourceFilename = "";
 	protected final String passwordSourceModel = "Not Applicable";
 	protected String passwordSourceUrl = "";
+	protected String validationQuery = null;
 
 	@Override
 	public boolean equals(Object obj) {
@@ -106,6 +109,10 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 			return false;
 		}
 
+		if (this.maxQueueWaitTime != dsi.maxQueueWaitTime) {
+			return false;
+		}
+
 		if (!Util.nullSafeEquals(this.passwordEncoderClass, dsi.passwordEncoderClass)) {
 			return false;
 		}
@@ -130,6 +137,10 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 			return false;
 		}
 
+		if (!Util.nullSafeEquals(this.validationQuery, dsi.validationQuery)) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -137,9 +148,9 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 	public int hashCode() {
 		return Objects.hash(userName, password, jdbcDriver,
 				dataSourceUrl, adapterClassName, minConnections,
-				maxConnections, passwordEncoderClass, passwordEncoderKey,
-				passwordLocation, passwordSourceFilename, passwordSourceModel,
-				passwordSourceUrl);
+				maxConnections, maxQueueWaitTime, passwordEncoderClass,
+				passwordEncoderKey, passwordLocation, passwordSourceFilename,
+				passwordSourceModel, passwordSourceUrl, validationQuery);
 	}
 
 	/**
@@ -155,6 +166,8 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 		encoder.start("connectionPool")
 				.attribute("min", minConnections)
 				.attribute("max", String.valueOf(maxConnections))
+				.attribute("maxQueueWaitTime", String.valueOf(maxQueueWaitTime))
+				.attribute("validationQuery", validationQuery)
 				.end();
 
 		encoder.start("login").attribute("userName", userName);
@@ -217,6 +230,22 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 
 	public int getMaxConnections() {
 		return maxConnections;
+	}
+
+	public void setMaxQueueWaitTime(int maxQueueWaitTime) {
+		this.maxQueueWaitTime = maxQueueWaitTime;
+	}
+
+	public int getMaxQueueWaitTime() {
+		return maxQueueWaitTime;
+	}
+
+	public void setValidationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
+	}
+
+	public String getValidationQuery() {
+		return validationQuery;
 	}
 
 	public void setUserName(String userName) {
@@ -403,9 +432,12 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 				.append("\n   password: ");
 
 		buffer.append("**********");
-		buffer.append("\n   driver: ").append(jdbcDriver).append("\n   db adapter class: ").append(adapterClassName)
-				.append("\n   url: ").append(dataSourceUrl).append("\n   min. connections: ").append(minConnections)
-				.append("\n   max. connections: ").append(maxConnections);
+		buffer.append("\n   driver: ").append(jdbcDriver)
+				.append("\n   db adapter class: ").append(adapterClassName)
+				.append("\n   url: ").append(dataSourceUrl)
+				.append("\n   min. connections: ").append(minConnections)
+				.append("\n   max. connections: ").append(maxConnections)
+				.append("\n   max. queue wait time: ").append(maxQueueWaitTime);
 
 		if (!PlainTextPasswordEncoder.class.getName().equals(passwordEncoderClass)) {
 			buffer.append("\n   encoder class: ").append(passwordEncoderClass).append("\n   encoder key: ")
@@ -416,6 +448,8 @@ public class DataSourceInfo implements Cloneable, Serializable, XMLSerializable 
 			buffer.append("\n   password location: ").append(passwordLocation).append("\n   password source: ")
 					.append(getPasswordSource());
 		}
+
+		buffer.append("\n	validation query: ").append(validationQuery);
 
 		buffer.append("\n]");
 		return buffer.toString();

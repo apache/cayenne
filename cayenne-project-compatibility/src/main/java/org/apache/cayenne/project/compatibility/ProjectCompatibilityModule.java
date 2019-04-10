@@ -28,6 +28,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.upgrade.UpgradeService;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V10;
+import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V11;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V7;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V8;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler_V9;
@@ -49,6 +50,7 @@ public class ProjectCompatibilityModule implements Module {
                 .add(UpgradeHandler_V7.class)
                 .add(UpgradeHandler_V8.class)
                 .add(UpgradeHandler_V9.class)
-                .add(UpgradeHandler_V10.class);
+                .add(UpgradeHandler_V10.class)
+                .add(UpgradeHandler_V11.class);
     }
 }

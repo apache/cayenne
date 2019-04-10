@@ -50,6 +50,7 @@ Changes/New Features:
 
 CAY-2446 Run Disjoint By Id queries outside of synchronized block
 CAY-2447 Crypto support for LocalDateTime
+CAY-2469 Allow maxQueueWaitTime and validationQuery to be set in XML project
 CAY-2471 Support multiple XML project versions
 CAY-2473 Modeler: cleanup attributes and relationship editors
 CAY-2474 Modeler: swap buttons in dialog toolbar

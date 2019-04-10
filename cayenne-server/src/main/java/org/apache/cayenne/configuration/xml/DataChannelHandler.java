@@ -41,12 +41,14 @@ final class DataChannelHandler extends VersionAwareHandler {
         super(loaderContext, DOMAIN_TAG);
         this.xmlDataChannelDescriptorLoader = xmlDataChannelDescriptorLoader;
         this.descriptor = dataChannelDescriptor;
-        setTargetNamespace(DataChannelDescriptor.SCHEMA_XSD);
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String name, Attributes attributes) {
+
+        descriptor.setProjectVersion(attributes.getValue("project-version"));
+        setTargetNamespace(descriptor.getSchemaXsd());
 
         if (localName.equals(DOMAIN_TAG)) {
             return new DataChannelChildrenHandler(xmlDataChannelDescriptorLoader, this);

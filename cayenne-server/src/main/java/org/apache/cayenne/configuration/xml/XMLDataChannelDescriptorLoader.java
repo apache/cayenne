@@ -27,9 +27,7 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.Util;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.xml.sax.InputSource;
@@ -52,8 +50,12 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 
 	/**
 	 * Versions of project XML files that this loader can read.
+	 * See DefaultUpgradeService.MIN/MAX_SUPPORTED_VERSION in cayenne-project.
 	 */
-	static final String[] SUPPORTED_PROJECT_VERSIONS = {"10"};
+	static final String[] SUPPORTED_PROJECT_VERSIONS = {"10", "11"};
+
+	public static final String DEFAULT_PROJECT_VERSION = "10";
+
 	static {
 		Arrays.sort(SUPPORTED_PROJECT_VERSIONS);
 	}

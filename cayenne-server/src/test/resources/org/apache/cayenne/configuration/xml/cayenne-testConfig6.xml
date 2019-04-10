@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<domain project-version="11" xmlns="http://cayenne.apache.org/schema/11/domain">
+	<map name="testConfigMap3_1" location="testConfigMap3_1.map.xml" />
+	<map name="testConfigMap3_2" location="testConfigMap3_2.map.xml" />
+	<node name="testConfigNode6" adapter="org.example.test.Adapter"
+		factory="org.example.test.DataSourceFactory"
+		schema-update-strategy="org.example.test.SchemaUpdateStrategy">
+		<map-ref name="testConfigMap3_2" />
+		<data-source>
+			<connectionPool min="1" max="1" maxQueueWaitTime="2000" validationQuery="SELECT 1 FROM VALIDATE"/>
+			<login />
+		</data-source>
+	</node>
+</domain>
