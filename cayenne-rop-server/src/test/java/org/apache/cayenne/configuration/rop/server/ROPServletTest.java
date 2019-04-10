@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.server;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import com.mockrunner.mock.web.MockServletConfig;
 import com.mockrunner.mock.web.MockServletContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
@@ -32,11 +36,10 @@ import org.apache.cayenne.rop.ROPServlet;
 import org.junit.After;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ROPServletTest {
 
@@ -116,7 +119,7 @@ public class ROPServletTest {
 		assertEquals(Arrays.asList(name + ".xml"), locations);
 
 		Collection<Module> modules = runtime.getModules();
-		assertEquals(4, modules.size());
+		assertEquals(5, modules.size());
 		Object[] marray = modules.toArray();
 
 		if(marray[0] instanceof ServerModule){
@@ -147,7 +150,7 @@ public class ROPServletTest {
 		assertNotNull(runtime);
 
 		Collection<Module> modules = runtime.getModules();
-		assertEquals(6, modules.size());
+		assertEquals(7, modules.size());
 
 		Object[] marray = modules.toArray();
 		if(marray[0] instanceof ServerModule){
@@ -179,7 +182,7 @@ public class ROPServletTest {
 		servlet.init(config);
 		runtime = WebUtil.getCayenneRuntime(context);
 		Collection<Module> modules = runtime.getModules();
-		assertEquals(5, modules.size());
+		assertEquals(6, modules.size());
 
 		Object[] marray = modules.toArray();
 
