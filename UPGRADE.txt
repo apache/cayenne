@@ -10,6 +10,8 @@ UPGRADING TO 4.2.M1
 * Per CAY-2520 ObjectId can't be instantiated directly, ObjectId.of(..) methods should be used.
     E.g. ObjectId.of("Artist", 1) instead of new ObjectId("Artist", 1).
 
+* Per CAY-2525 FrontBase and OpenBase adapters were deprecated.
+
 * Per CAY-2467 Property class is replaced with a type-aware Property API, it's mostly backwards compatible.
     To take advantage of this new API you should regenerate code via Modeler ("Tools" -> "Generate Classes") or cgen tools.
 

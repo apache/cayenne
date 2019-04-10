@@ -59,7 +59,9 @@ import org.apache.cayenne.resource.ResourceLocator;
  * </pre>
  *
  * @since 1.1
+ * @deprecated since 4.2
  */
+@Deprecated
 public class OpenBaseAdapter extends JdbcAdapter {
 
     public OpenBaseAdapter(@Inject RuntimeProperties runtimeProperties,

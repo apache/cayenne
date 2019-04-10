@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.dba.openbase;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.IDUtil;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -38,9 +29,20 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.IDUtil;
+
 /**
  * @since 1.1
+ * @deprecated since 4.2
  */
+@Deprecated
 public class OpenBasePkGenerator extends JdbcPkGenerator {
 
     /**

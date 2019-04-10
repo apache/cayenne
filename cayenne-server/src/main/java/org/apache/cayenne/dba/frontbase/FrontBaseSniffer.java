@@ -19,17 +19,19 @@
 
 package org.apache.cayenne.dba.frontbase;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 /**
  * @since 1.2
+ * @deprecated since 4.2
  */
+@Deprecated
 public class FrontBaseSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;

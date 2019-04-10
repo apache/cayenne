@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.dba.frontbase;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
@@ -30,13 +34,11 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * @since 1.2
+ * @deprecated since 4.2
  */
+@Deprecated
 public class FrontBasePkGenerator extends JdbcPkGenerator {
 
     /**
