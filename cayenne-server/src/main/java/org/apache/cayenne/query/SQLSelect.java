@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -26,13 +33,6 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A selecting query based on raw SQL and featuring fluent API.
@@ -93,7 +93,9 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * Creates a query that selects scalar values and uses default routing.
+	 * @deprecated since 4.2. Use {@link #scalarQuery(String, Class<T>)} method.
 	 */
+	@Deprecated
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String sql) {
 		return scalarQuery(sql, type);
 	}
@@ -101,7 +103,9 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	/**
 	 * Creates a query that selects scalar values and uses routing based on the
 	 * provided DataMap name.
+	 * @deprecated since 4.2. Use {@link #scalarQuery(String, String, Class<T>)} method.
 	 */
+	@Deprecated
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String dataMapName, String sql) {
 		SQLSelect<T> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;

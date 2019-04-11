@@ -18,6 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
@@ -34,14 +42,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
@@ -404,7 +404,8 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		long id = SQLSelect
-				.scalarQuery(Integer.class, "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
+				.scalarQuery( "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)",
+						Integer.class)
 				.params("a", "painting3").selectOne(context);
 
 		assertEquals(3l, id);
@@ -414,8 +415,8 @@ public class SQLSelectIT extends ServerCase {
 	public void test_SelectLongArray() throws Exception {
 		createPaintingsDataSet();
 
-		List<Integer> ids = SQLSelect.scalarQuery(Integer.class,
-				"SELECT PAINTING_ID FROM PAINTING ORDER BY PAINTING_ID").select(context);
+		List<Integer> ids = SQLSelect.scalarQuery("SELECT PAINTING_ID FROM PAINTING ORDER BY PAINTING_ID",
+				Integer.class).select(context);
 
 		assertEquals(20, ids.size());
 		assertEquals(2l, ids.get(1).intValue());
@@ -435,7 +436,8 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		Integer id = SQLSelect
-				.scalarQuery(Integer.class, "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
+				.scalarQuery( "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)",
+						Integer.class)
 				.paramsArray("painting3").selectOne(context);
 
 		assertEquals(3l, id.intValue());
@@ -446,8 +448,9 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		List<Integer> ids = SQLSelect
-				.scalarQuery(Integer.class,
-						"SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a) OR PAINTING_TITLE = #bind($b) ORDER BY PAINTING_ID")
+				.scalarQuery("SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a) " +
+						"OR PAINTING_TITLE = #bind($b) ORDER BY PAINTING_ID",
+						Integer.class)
 				.paramsArray("painting3", "painting2").select(context);
 
 		assertEquals(2l, ids.get(0).intValue());
@@ -463,10 +466,10 @@ public class SQLSelectIT extends ServerCase {
 
 		List<Integer> ids = SQLSelect
 				.scalarQuery(
-						Integer.class,
 						"SELECT PAINTING_ID FROM PAINTING #chain('OR' 'WHERE') "
 								+ "#chunk($a) ESTIMATED_PRICE #bindEqual($a) #end "
-								+ "#chunk($b) PAINTING_TITLE #bindEqual($b) #end #end ORDER BY PAINTING_ID")
+								+ "#chunk($b) PAINTING_TITLE #bindEqual($b) #end #end ORDER BY PAINTING_ID",
+						Integer.class)
 				.paramsArray(null, "painting1").select(context);
 
 		assertEquals(1, ids.size());
@@ -486,10 +489,10 @@ public class SQLSelectIT extends ServerCase {
 
 		List<Integer> ids = SQLSelect
 				.scalarQuery(
-						Integer.class,
 						"SELECT PAINTING_ID FROM PAINTING #chain('OR' 'WHERE') "
 								+ "#chunk($a) ESTIMATED_PRICE #bindEqual($a) #end "
-								+ "#chunk($b) PAINTING_TITLE #bindEqual($b) #end #end ORDER BY PAINTING_ID")
+								+ "#chunk($b) PAINTING_TITLE #bindEqual($b) #end #end ORDER BY PAINTING_ID",
+						Integer.class)
 				.params(params).select(context);
 
 		assertEquals(1, ids.size());

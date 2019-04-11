@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -31,10 +35,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -157,8 +157,8 @@ public class OneWayRelationshipsIT extends ServerCase {
 
 		assertEquals(2, t3.getToManyOneWayDb().size());
 
-		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery(Integer.class, "oneway-rels",
-				"SELECT TABLE3_ID FROM oneway_table4");
+		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
+				"oneway-rels",Integer.class);
 
 		List<Integer> fks = context.select(fksQuery);
 		assertEquals(2, fks.size());
@@ -186,8 +186,8 @@ public class OneWayRelationshipsIT extends ServerCase {
 
 		assertEquals(2, t3.getToManyOneWayDb().size());
 
-		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery(Integer.class, "oneway-rels",
-				"SELECT TABLE3_ID FROM oneway_table4");
+		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
+				"oneway-rels", Integer.class);
 
 		List<Integer> fks = context.select(fksQuery);
 		assertEquals(2, fks.size());
@@ -216,8 +216,8 @@ public class OneWayRelationshipsIT extends ServerCase {
 
 		assertEquals(1, t3.getToManyOneWayDb().size());
 
-		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery(Integer.class, "oneway-rels",
-				"SELECT TABLE3_ID FROM oneway_table4");
+		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
+				"oneway-rels", Integer.class);
 
 		List<Integer> fks = context.select(fksQuery);
 		assertEquals(2, fks.size());
