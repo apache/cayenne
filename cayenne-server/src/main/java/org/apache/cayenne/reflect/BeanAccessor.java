@@ -37,6 +37,10 @@ public class BeanAccessor implements Accessor {
 	protected Object nullValue;
 
 	public BeanAccessor(Class<?> objectClass, String propertyName, Class<?> propertyType) {
+		this( objectClass, propertyName, propertyType, defaultBooleanGetterName( propertyName ), defaultGetterName( propertyName ), defaultSetterName( propertyName ) );
+	}
+
+	protected BeanAccessor(Class<?> objectClass, String propertyName, Class<?> propertyType, String booleanGetterName, String getterName, String setterName ) {
 		if (objectClass == null) {
 			throw new IllegalArgumentException("Null objectClass");
 		}
@@ -48,14 +52,21 @@ public class BeanAccessor implements Accessor {
 		if (propertyName.length() == 0) {
 			throw new IllegalArgumentException("Empty propertyName");
 		}
+		
+		if (booleanGetterName == null) {
+			throw new IllegalArgumentException("Null booleanGetterName");
+		}
+		
+		if (getterName ==  null) {
+			throw new IllegalArgumentException("Null getterName");
+		}
+		
+		if (setterName == null) {
+			throw new IllegalArgumentException("Null setterName");
+		}
 
 		this.propertyName = propertyName;
 		this.nullValue = PropertyUtils.defaultNullValueForType(propertyType);
-
-		String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
-		String isGetterName = "is" + capitalized;
-		String getGetterName = "get" + capitalized;
-		String setterName = "set" + capitalized;
 
 		Method[] publicMethods = objectClass.getMethods();
 
@@ -63,7 +74,7 @@ public class BeanAccessor implements Accessor {
 		for (Method method : publicMethods) {
 			Class<?> returnType = method.getReturnType();
 			// following Java Bean naming conventions, "is" methods are preferred over "get" methods
-			if (method.getName().equals(isGetterName) && returnType.equals(Boolean.TYPE) && method.getParameterTypes().length == 0) {
+			if (method.getName().equals(booleanGetterName) && returnType.equals(Boolean.TYPE) && method.getParameterTypes().length == 0) {
 				getter = method;
 				break;
 			}
@@ -71,7 +82,7 @@ public class BeanAccessor implements Accessor {
 			// This is the same behavior as Class.getMethod(String, Class...) except that
 			// Class.getMethod prefers synthetic methods generated for interfaces
 			// over methods with more specific return types in a super class.
-			if (method.getName().equals(getGetterName) && method.getParameterTypes().length == 0) {
+			if (method.getName().equals(getterName) && method.getParameterTypes().length == 0) {
 				if (returnType.isPrimitive()) {
 					getter = returnType.equals(Void.TYPE) ? null : method;
 					if (returnType.equals(Boolean.TYPE)) {
@@ -151,5 +162,20 @@ public class BeanAccessor implements Accessor {
 		} catch (Throwable th) {
 			throw new PropertyException("Error writing property: " + propertyName, this, object, th);
 		}
+	}
+	
+	private static String defaultSetterName( String propertyName ) {
+		final String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		return "set" + capitalized;
+	}
+
+	private static String defaultGetterName( String propertyName ) {
+		final String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		return "get" + capitalized;
+	}
+
+	private static String defaultBooleanGetterName( String propertyName ) {
+		final String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
+		return "is" + capitalized;
 	}
 }
