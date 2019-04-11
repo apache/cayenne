@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.access;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -37,6 +42,7 @@ import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
 import org.apache.cayenne.testdo.numeric_types.DecimalPKTest1;
 import org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity;
 import org.apache.cayenne.testdo.numeric_types.LongEntity;
+import org.apache.cayenne.testdo.numeric_types.NumberTest;
 import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -44,10 +50,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -73,6 +75,7 @@ public class NumericTypesIT extends ServerCase {
 
     protected TableHelper tSmallintTest;
     protected TableHelper tTinyintTest;
+    protected TableHelper tNumberTest;
 
     @Before
     public void setUp() throws Exception {
@@ -81,6 +84,10 @@ public class NumericTypesIT extends ServerCase {
 
         tTinyintTest = new TableHelper(dbHelper, "TINYINT_TEST");
         tTinyintTest.setColumns("ID", "TINYINT_COL");
+
+        tNumberTest = new TableHelper(dbHelper, "NUMBER_TEST");
+        tNumberTest.setColumns("ID", "DOUBLE_ATTR",
+                "NUMERIC_ATTR", "REAL_ATTR", "SMALLINT_ATTR", "TINYINT_ATTR");
     }
 
     protected void createShortDataSet() throws Exception {
@@ -91,6 +98,10 @@ public class NumericTypesIT extends ServerCase {
     protected void createTinyintDataSet() throws Exception {
         tTinyintTest.insert(1, 81);
         tTinyintTest.insert(2, 50);
+    }
+
+    private void createNumberDataSet() throws SQLException {
+        tNumberTest.insert(1, 1, 1, 1, 1, 1);
     }
 
     @Test
@@ -327,5 +338,35 @@ public class NumericTypesIT extends ServerCase {
         BigInteger readValue2 = ObjectSelect.query(BigIntegerEntity.class)
                 .column(calculated).selectOne(context);
         assertEquals(i.add(BigInteger.ONE), readValue2);
+    }
+
+    @Test
+    public void testNumberSelect() throws SQLException {
+        createNumberDataSet();
+
+        NumberTest numberTest = ObjectSelect.query(NumberTest.class)
+                .selectFirst(context);
+        assertNotNull(numberTest);
+        assertEquals(1D, numberTest.getDoubleAttr());
+        assertEquals(new BigDecimal(1), numberTest.getNumericAttr());
+        assertEquals(1f, numberTest.getRealAttr());
+        assertEquals((short)1, numberTest.getSmallintAttr());
+        assertEquals((byte)1, numberTest.getTinyintAttr());
+    }
+
+    @Test
+    public void testNumberInQualifier() throws SQLException {
+        createNumberDataSet();
+
+        Number num = 1D;
+
+        Expression qual = ExpressionFactory.matchExp("doubleAttr", num);
+        List<NumberTest> numberTests = ObjectSelect.query(NumberTest.class)
+                .where(qual)
+                .select(context);
+        assertEquals(1, numberTests.size());
+
+        NumberTest numberTest = numberTests.get(0);
+        assertEquals(1D, numberTest.getDoubleAttr());
     }
 }

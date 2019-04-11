@@ -58,6 +58,7 @@ import org.apache.cayenne.access.types.LocalDateTimeValueType;
 import org.apache.cayenne.access.types.LocalDateValueType;
 import org.apache.cayenne.access.types.LocalTimeValueType;
 import org.apache.cayenne.access.types.LongType;
+import org.apache.cayenne.access.types.NumberType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.TimeType;
 import org.apache.cayenne.access.types.TimestampType;
@@ -407,6 +408,7 @@ public class ServerModule implements Module {
                 .add(new IntegerType())
                 .add(new LongType())
                 .add(new ShortType(false))
+                .add(new NumberType())
                 .add(new ByteArrayType(false, true))
                 .add(new DateType())
                 .add(new TimeType())

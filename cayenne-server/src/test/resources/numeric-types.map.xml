@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.numeric_types"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
@@ -36,6 +36,14 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="LONG_FIELD" type="BIGINT"/>
 	</db-entity>
+	<db-entity name="NUMBER_TEST">
+		<db-attribute name="DOUBLE_ATTR" type="DOUBLE"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NUMERIC_ATTR" type="NUMERIC"/>
+		<db-attribute name="REAL_ATTR" type="REAL"/>
+		<db-attribute name="SMALLINT_ATTR" type="SMALLINT"/>
+		<db-attribute name="TINYINT_ATTR" type="TINYINT"/>
+	</db-entity>
 	<db-entity name="SMALLINT_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="SMALLINT_COL" type="SMALLINT"/>
@@ -69,6 +77,13 @@
 	</obj-entity>
 	<obj-entity name="LongEntity" className="org.apache.cayenne.testdo.numeric_types.LongEntity" dbEntityName="LONG_ENTITY">
 		<obj-attribute name="longField" type="java.lang.Long" db-attribute-path="LONG_FIELD"/>
+	</obj-entity>
+	<obj-entity name="NumberTest" className="org.apache.cayenne.testdo.numeric_types.NumberTest" clientClassName="test.client.NumberTest" dbEntityName="NUMBER_TEST" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="smallintAttr" type="java.lang.Number" db-attribute-path="SMALLINT_ATTR"/>
+		<obj-attribute name="doubleAttr" type="java.lang.Number" db-attribute-path="DOUBLE_ATTR"/>
+		<obj-attribute name="numericAttr" type="java.lang.Number" db-attribute-path="NUMERIC_ATTR"/>
+		<obj-attribute name="tinyintAttr" type="java.lang.Number" db-attribute-path="TINYINT_ATTR"/>
+		<obj-attribute name="realAttr" type="java.lang.Number" db-attribute-path="REAL_ATTR"/>
 	</obj-entity>
 	<obj-entity name="SmallintTestEntity" className="org.apache.cayenne.testdo.numeric_types.SmallintTestEntity" dbEntityName="SMALLINT_TEST">
 		<obj-attribute name="smallintCol" type="java.lang.Short" db-attribute-path="SMALLINT_COL"/>

@@ -120,6 +120,7 @@ public final class ModelerUtil {
                 Integer.class.getName(),
                 Long.class.getName(),
                 Short.class.getName(),
+                Number.class.getName(),
                 Time.class.getName(),
                 Timestamp.class.getName(),
                 GregorianCalendar.class.getName(),
