@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.dba.frontbase;
 
+import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -36,13 +43,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Function;
-
 /**
  * DbAdapter implementation for <a href="http://www.frontbase.com/">FrontBase
  * RDBMS</a>. Sample connection settings to use with FrontBase are shown below:
@@ -55,6 +55,7 @@ import java.util.function.Function;
  * </pre>
  * 
  * @since 1.2
+ * @deprecated since 4.2
  */
 // TODO, Andrus 11/8/2005:
 // Limitations (also see FrontBaseStackAdapter in unit tests):
@@ -64,6 +65,7 @@ import java.util.function.Function;
 // FrontBase, however aliases don't work ( ORDER BY UPPER(t0.ARTIST_NAME)) ...
 // not sure
 // what to do about it.
+@Deprecated
 public class FrontBaseAdapter extends JdbcAdapter {
 
 	public FrontBaseAdapter(@Inject RuntimeProperties runtimeProperties,

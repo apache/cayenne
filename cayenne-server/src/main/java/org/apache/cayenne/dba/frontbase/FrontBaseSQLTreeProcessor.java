@@ -29,7 +29,9 @@ import org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor;
 
 /**
  * @since 4.2
+ * @deprecated since 4.2
  */
+@Deprecated
 public class FrontBaseSQLTreeProcessor extends BaseSQLTreeProcessor {
 
     @Override

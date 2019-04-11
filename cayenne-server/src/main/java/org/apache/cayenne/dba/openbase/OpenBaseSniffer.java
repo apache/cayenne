@@ -19,19 +19,21 @@
 
 package org.apache.cayenne.dba.openbase;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
 import org.apache.cayenne.configuration.server.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 /**
  * Detects OpenBase DB from JDBC metadata.
  * 
  * @since 1.2
+ * @deprecated since 4.2
  */
+@Deprecated
 public class OpenBaseSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;
