@@ -59,7 +59,7 @@ import org.apache.cayenne.resource.ResourceLocator;
  * </pre>
  *
  * @since 1.1
- * @deprecated since 4.2
+ * @deprecated since 4.2, OpenBase is pretty much obsolete and not tested
  */
 @Deprecated
 public class OpenBaseAdapter extends JdbcAdapter {
