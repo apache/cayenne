@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.server;
 
+import java.util.Map;
+
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
@@ -35,6 +37,8 @@ import org.apache.cayenne.rop.ServerHttpRemoteService;
  */
 public class ROPServerModule implements Module {
 
+    protected Map<String, String> eventBridgeProperties;
+
     /**
      * @since 4.0
      */
@@ -42,7 +46,22 @@ public class ROPServerModule implements Module {
         return binder.bindMap(String.class, Constants.SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP);
     }
 
+    public ROPServerModule() {}
+
+    /**
+     * @deprecated since 4.2 ROPServerModule became autoloaded.
+     * You need to contribute eventBridgeProperties yourself.
+     */
+    @Deprecated
+    public ROPServerModule(Map<String, String> eventBridgeProperties) {
+        this.eventBridgeProperties = eventBridgeProperties;
+    }
+
     public void configure(Binder binder) {
+        if(eventBridgeProperties != null) {
+            MapBuilder<String> mapBuilder = contributeROPBridgeProperties(binder);
+            mapBuilder.putAll(eventBridgeProperties);
+        }
         binder.bind(RemoteService.class).to(ServerHttpRemoteService.class);
 		binder.bind(ROPSerializationService.class).toProvider(ServerHessianSerializationServiceProvider.class);
     }
