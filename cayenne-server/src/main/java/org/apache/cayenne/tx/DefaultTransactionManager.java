@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
