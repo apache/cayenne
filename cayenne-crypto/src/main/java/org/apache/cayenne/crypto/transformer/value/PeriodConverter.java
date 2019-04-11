@@ -27,15 +27,11 @@ import java.time.Period;
  */
 public class PeriodConverter implements BytesConverter<Period> {
 
-    private static final String DEFAULT_CHARSET = "UTF-8";
-
     public static final BytesConverter<Period> INSTANCE = new PeriodConverter();
 
-    private Charset utf8;
+    private static Charset utf8 = Charset.forName("UTF-8");
 
-    PeriodConverter() {
-        this.utf8 = Charset.forName(DEFAULT_CHARSET);
-    }
+    PeriodConverter() {}
 
     @Override
     public Period fromBytes(byte[] bytes) {
