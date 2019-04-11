@@ -44,7 +44,9 @@ ${importUtils.addType("java.io.ObjectOutputStream")}##
 #if( $createPKProperties )
 ${importUtils.addType("org.apache.cayenne.exp.ExpressionFactory")}##
 #end
-#if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) || (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}))
+#if((${object.DeclaredAttributes} && !${object.DeclaredAttributes.isEmpty()}) ||
+        (${object.DeclaredRelationships} && !${object.DeclaredRelationships.isEmpty()}) ||
+        $createPKProperties)
 ${importUtils.addType('org.apache.cayenne.exp.Property')}##
 #end
 #foreach( $attr in ${object.DeclaredAttributes} )
