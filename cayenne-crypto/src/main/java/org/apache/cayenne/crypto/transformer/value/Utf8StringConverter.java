@@ -25,15 +25,11 @@ import java.nio.charset.Charset;
  */
 public final class Utf8StringConverter implements BytesConverter<String> {
 
-    static final String DEFAULT_CHARSET = "UTF-8";
-
     public static final BytesConverter<String> INSTANCE = new Utf8StringConverter();
 
-    private Charset utf8;
+    static Charset utf8 = Charset.forName("UTF-8");
 
-    Utf8StringConverter() {
-        this.utf8 = Charset.forName(DEFAULT_CHARSET);
-    }
+    Utf8StringConverter() {}
 
     @Override
     public byte[] toBytes(String value) {

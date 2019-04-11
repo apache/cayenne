@@ -18,26 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
 import org.apache.cayenne.crypto.transformer.bytes.BytesEncryptor;
 import org.apache.cayenne.crypto.unit.SwapBytesTransformer;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class DefaultEncryptorTest {
 
@@ -88,12 +83,12 @@ public class DefaultEncryptorTest {
         byte[] b1_t = (byte[]) e.encrypt(encryptor, s1);
 
         assertNotNull(b1_t);
-        assertEquals(s1, new String(decryptor.decrypt(b1_t, 0, null), Utf8StringConverter.DEFAULT_CHARSET));
+        assertEquals(s1, new String(decryptor.decrypt(b1_t, 0, null), Utf8StringConverter.utf8.name()));
 
         byte[] b2_t = (byte[]) e.encrypt(encryptor, s2);
 
         assertNotNull(b2_t);
-        assertEquals(s2, new String(decryptor.decrypt(b2_t, 0, null), Utf8StringConverter.DEFAULT_CHARSET));
+        assertEquals(s2, new String(decryptor.decrypt(b2_t, 0, null), Utf8StringConverter.utf8.name()));
     }
 
     @Test
@@ -117,7 +112,7 @@ public class DefaultEncryptorTest {
         assertNotEquals(s1_t, s1);
 
         byte[] b1_t = Base64.getDecoder().decode(s1_t);
-        assertEquals(s1, new String(decryptor.decrypt(b1_t, 0, null), Utf8StringConverter.DEFAULT_CHARSET));
+        assertEquals(s1, new String(decryptor.decrypt(b1_t, 0, null), Utf8StringConverter.utf8.name()));
 
         String s2_t = (String) e.encrypt(encryptor, s2);
 
@@ -125,6 +120,6 @@ public class DefaultEncryptorTest {
         assertNotEquals(s2_t, s2);
 
         byte[] b2_t = Base64.getDecoder().decode(s2_t);
-        assertEquals(s2, new String(decryptor.decrypt(b2_t, 0, null), Utf8StringConverter.DEFAULT_CHARSET));
+        assertEquals(s2, new String(decryptor.decrypt(b2_t, 0, null), Utf8StringConverter.utf8.name()));
     }
 }
