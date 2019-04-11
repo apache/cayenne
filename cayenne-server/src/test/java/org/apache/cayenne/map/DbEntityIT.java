@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.map;
 
+import java.util.Collection;
+
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
@@ -28,8 +30,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
-
-import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -270,6 +270,6 @@ public class DbEntityIT extends ServerCase {
         Expression e1 = ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'aa'");
         Expression translated = paintingE.translateToRelatedEntity(e1, "toArtist");
 
-        assertEquals("failure: " + translated, ExpressionFactory.exp("db:ARTIST_NAME = 'aa'"), translated);
+        assertEquals("failure: " + translated, ExpressionFactory.exp("db:paintingArray.toArtist.ARTIST_NAME = 'aa'"), translated);
     }
 }
