@@ -45,13 +45,7 @@ public class BeanAccessor implements Accessor {
 			throw new IllegalArgumentException("Null objectClass");
 		}
 
-		if (propertyName == null) {
-			throw new IllegalArgumentException("Null propertyName");
-		}
-
-		if (propertyName.length() == 0) {
-			throw new IllegalArgumentException("Empty propertyName");
-		}
+		checkPropertyName(propertyName);
 		
 		if (booleanGetterName == null) {
 			throw new IllegalArgumentException("Null booleanGetterName");
@@ -165,17 +159,30 @@ public class BeanAccessor implements Accessor {
 	}
 	
 	private static String defaultSetterName( String propertyName ) {
+		checkPropertyName(propertyName);
 		final String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 		return "set" + capitalized;
 	}
 
 	private static String defaultGetterName( String propertyName ) {
+		checkPropertyName(propertyName);
 		final String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 		return "get" + capitalized;
 	}
 
 	private static String defaultBooleanGetterName( String propertyName ) {
+		checkPropertyName(propertyName);
 		final String capitalized = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 		return "is" + capitalized;
+	}
+
+	private static void checkPropertyName(String propertyName) {
+		if (propertyName == null) {
+			throw new IllegalArgumentException("Null propertyName");
+		}
+
+		if (propertyName.length() == 0) {
+			throw new IllegalArgumentException("Empty propertyName");
+		}
 	}
 }
