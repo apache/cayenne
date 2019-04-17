@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -45,10 +46,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.GENERATED_PROJECT)
 public class IdentityColumnsIT extends ServerCase {
@@ -338,5 +336,26 @@ public class IdentityColumnsIT extends ServerCase {
 
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
+    }
+
+    /**
+     * This will fail if commit will attempt to update generated PK.
+     * See CAY-2566.
+     */
+    @Test
+    public void testUpdateMasterEntity() {
+        GeneratedColumnTestEntity idObject = context.newObject(GeneratedColumnTestEntity.class);
+        idObject.setName("aaa");
+        context.commitChanges();
+
+        GeneratedColumnDep dependent = context.newObject(GeneratedColumnDep.class);
+        dependent.setName("aaa");
+        dependent.setToMaster(idObject);
+
+        try {
+            context.commitChanges();
+        } catch(CayenneRuntimeException ex) {
+            fail("Commit should succeed");
+        }
     }
 }

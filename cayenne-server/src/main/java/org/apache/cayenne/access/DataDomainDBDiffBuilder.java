@@ -33,6 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -178,7 +179,9 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
             }
 
         } else {
-            if (!relationship.isToMany() && relationship.isToPK()) {
+            List<DbRelationship> dbRelationships = relationship.getDbRelationships();
+            DbRelationship lastDbRelationship = dbRelationships.get(dbRelationships.size() - 1);
+            if (!relationship.isToMany() && lastDbRelationship.isToPK() && !lastDbRelationship.isToDependentPK()) {
                 doArcCreated(targetNodeId, arcId);
             }
         }
@@ -209,8 +212,12 @@ class DataDomainDBDiffBuilder implements GraphChangeHandler {
                 throw new IllegalArgumentException("Bad arcId: " + arcId);
             }
 
-        } else if (!relationship.isSourceIndependentFromTargetChange()) {
-            doArcDeleted(targetNodeId, arcId);
+        } else {
+            List<DbRelationship> dbRelationships = relationship.getDbRelationships();
+            DbRelationship lastDbRelationship = dbRelationships.get(dbRelationships.size() - 1);
+            if (!relationship.isToMany() && lastDbRelationship.isToPK() && !lastDbRelationship.isToDependentPK()) {
+                doArcDeleted(targetNodeId, arcId);
+            }
         }
     }
 
