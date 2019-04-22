@@ -30,7 +30,9 @@ import org.apache.cayenne.util.HashCodeBuilder;
  * 'hashCode' implementations adequate for use as a map key.
  * 
  * @since 4.0
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 final class DbArcId {
 
     private int hashCode;

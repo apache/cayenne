@@ -28,7 +28,6 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -38,16 +37,18 @@ import org.apache.cayenne.map.ObjRelationship;
  * and to-many relationships.
  * 
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
-    private final DataDomainFlushAction parent;
+    private final LegacyDataDomainFlushAction parent;
     private final EntityResolver resolver;
     private final Collection<ObjectId> indirectModifications;
     private final Collection<FlattenedArcKey> flattenedInserts;
     private final Collection<FlattenedArcKey> flattenedDeletes;
 
-    DataDomainIndirectDiffBuilder(DataDomainFlushAction parent) {
+    DataDomainIndirectDiffBuilder(LegacyDataDomainFlushAction parent) {
         this.parent = parent;
         this.indirectModifications = parent.getResultIndirectlyModifiedIds();
         this.resolver = parent.getDomain().getEntityResolver();

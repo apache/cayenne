@@ -38,7 +38,9 @@ import org.apache.cayenne.map.ObjRelationship;
  * Builds update qualifier snapshots, including optimistic locking.
  * 
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 class DataNodeSyncQualifierDescriptor {
 
 	private List<DbAttribute> attributes;

@@ -38,14 +38,16 @@ import java.util.Map;
  * A sync bucket that holds flattened queries.
  * 
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 class DataDomainFlattenedBucket {
 
-    final DataDomainFlushAction parent;
+    final LegacyDataDomainFlushAction parent;
     final Map<DbEntity, List<FlattenedArcKey>> insertArcKeys;
     final Map<DbEntity, DeleteBatchQuery> flattenedDeleteQueries;
 
-    DataDomainFlattenedBucket(DataDomainFlushAction parent) {
+    DataDomainFlattenedBucket(LegacyDataDomainFlushAction parent) {
         this.parent = parent;
         this.insertArcKeys = new HashMap<>();
         this.flattenedDeleteQueries = new HashMap<>();
