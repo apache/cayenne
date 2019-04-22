@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -56,7 +57,7 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
     protected String catalog;
     protected String schema;
-    protected Collection<DbAttribute> primaryKey;
+    protected List<DbAttribute> primaryKey;
 
     /**
      * @since 1.2
@@ -184,8 +185,8 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
      *
      * @since 3.0
      */
-    public Collection<DbAttribute> getPrimaryKeys() {
-        return Collections.unmodifiableCollection(primaryKey);
+    public List<DbAttribute> getPrimaryKeys() {
+        return Collections.unmodifiableList(primaryKey);
     }
 
     /**

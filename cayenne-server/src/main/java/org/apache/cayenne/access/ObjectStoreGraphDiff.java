@@ -44,7 +44,7 @@ import java.util.Map.Entry;
  * 
  * @since 1.2
  */
-class ObjectStoreGraphDiff implements GraphDiff {
+public class ObjectStoreGraphDiff implements GraphDiff {
 
     private ObjectStore objectStore;
     private GraphDiff resolvedDiff;
@@ -55,7 +55,7 @@ class ObjectStoreGraphDiff implements GraphDiff {
         preprocess(objectStore);
     }
 
-    Map<Object, ObjectDiff> getChangesByObjectId() {
+    public Map<Object, ObjectDiff> getChangesByObjectId() {
         return objectStore.getChangesByObjectId();
     }
 

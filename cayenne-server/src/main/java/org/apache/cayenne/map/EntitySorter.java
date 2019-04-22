@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.map;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -50,4 +51,24 @@ public interface EntitySorter {
      * Sorts a list of objects belonging to the ObjEntity.
      */
     void sortObjectsForEntity(ObjEntity entity, List<?> objects, boolean deleteOrder);
+
+    /**
+     * @return comparator for {@link DbEntity}
+     * @since 4.2
+     */
+    Comparator<DbEntity> getDbEntityComparator();
+
+    /**
+     * @return comparator for {@link ObjEntity}
+     * @since 4.2
+     */
+    Comparator<ObjEntity> getObjEntityComparator();
+
+    /**
+     * @param entity to check
+     * @return is entity has reflexive relationships
+     *
+     * @since 4.2
+     */
+    boolean isReflexive(DbEntity entity);
 }
