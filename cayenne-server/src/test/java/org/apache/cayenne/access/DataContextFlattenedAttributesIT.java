@@ -20,10 +20,14 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -49,6 +53,9 @@ import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextFlattenedAttributesIT extends ServerCase {
+
+    @Inject
+    private ServerRuntime runtime;
 
     @Inject
     private DataContext context;
@@ -106,6 +113,21 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             tPaintingInfo.insert(i, "painting review" + i);
         }
 
+    }
+
+    @Test
+    public void testSelect() throws Exception {
+        createTestDataSet();
+
+        CompoundPainting result = ObjectSelect
+                .query(CompoundPainting.class)
+                .orderBy(CompoundPainting.PAINTING_ID_PK_PROPERTY.asc())
+                .selectFirst(context);
+
+        assertNotNull(result);
+
+        result.setArtistName("new A");
+        context.commitChanges();
     }
 
     @Test
@@ -376,5 +398,49 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         o1.setTextReview("X1");
 
         context.commitChanges();
+    }
+
+    @Test
+    public void testUpdateDifferentContext() {
+        Object id;
+        {
+            // insert
+            ObjectContext context1 = runtime.newContext();
+            CompoundPainting o1 = context1.newObject(CompoundPainting.class);
+            o1.setArtistName("A1");
+            o1.setEstimatedPrice(new BigDecimal(1d));
+            o1.setGalleryName("G1");
+            o1.setPaintingTitle("P1");
+            o1.setTextReview("T1");
+
+            context1.commitChanges();
+            id = o1.getObjectId().getIdSnapshot().get(CompoundPainting.PAINTING_ID_PK_COLUMN);
+        }
+
+        {
+            // read and update
+            ObjectContext context2 = runtime.newContext();
+            CompoundPainting o2 = SelectById.query(CompoundPainting.class, id).selectFirst(context2);
+
+            o2.setArtistName("AX1");
+            o2.setEstimatedPrice(new BigDecimal(2d));
+            o2.setGalleryName("XG1");
+            o2.setPaintingTitle("PX1");
+            o2.setTextReview("TX1");
+
+            context2.commitChanges();
+        }
+
+        {
+            // read and check
+            ObjectContext context3 = runtime.newContext();
+            CompoundPainting o3 = SelectById.query(CompoundPainting.class, id).selectFirst(context3);
+
+            assertEquals("AX1", o3.getArtistName());
+            assertEquals("2.00", o3.getEstimatedPrice().toPlainString());
+            assertEquals("XG1", o3.getGalleryName());
+            assertEquals("PX1", o3.getPaintingTitle());
+            assertEquals("TX1", o3.getTextReview());
+        }
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance_vertical"/>
 	<db-entity name="IV1_ROOT">
@@ -117,7 +117,7 @@
 		<obj-attribute name="attr1" type="java.lang.String" db-attribute-path="impl.ATTR1"/>
 		<obj-attribute name="attr2" type="java.lang.String" db-attribute-path="impl.ATTR2"/>
 	</obj-entity>
-	<obj-entity name="IvImplWithLock" superEntityName="IvBaseWithLock" className="org.apache.cayenne.testdo.inheritance_vertical.IvImplWithLock">
+	<obj-entity name="IvImplWithLock" superEntityName="IvBaseWithLock" className="org.apache.cayenne.testdo.inheritance_vertical.IvImplWithLock" lock-type="optimistic">
 		<qualifier><![CDATA[type = "I"]]></qualifier>
 		<obj-attribute name="attr1" type="java.lang.String" db-attribute-path="impl.ATTR1"/>
 	</obj-entity>
