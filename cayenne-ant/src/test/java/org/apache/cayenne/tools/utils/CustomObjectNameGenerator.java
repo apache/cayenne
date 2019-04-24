@@ -33,9 +33,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.Util;
 import org.jvnet.inflector.Noun;
 
-/**
- * @since 4.2
- */
 public class CustomObjectNameGenerator implements ObjectNameGenerator {
 
     private DbEntityNameStemmer dbEntityNameStemmer;
