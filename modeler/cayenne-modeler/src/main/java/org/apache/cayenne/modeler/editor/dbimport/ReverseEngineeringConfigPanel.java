@@ -19,20 +19,23 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.util.Vector;
+
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.modeler.util.TextAdapter;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.util.Vector;
+import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 
 /**
  * @since 4.1
@@ -73,7 +76,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         panelBuilder.append("Force datamap schema:", forceDataMapSchema);
         panelBuilder.append("Use Java primitive types:", usePrimitives);
         panelBuilder.append("Use java.util.Date type:", useJava7Types);
-        panelBuilder.append(strategyCombo);
+        panelBuilder.append("Naming strategy:", strategyCombo);
 
         add(panelBuilder.getPanel());
     }
@@ -97,22 +100,18 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         return projectController.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
     }
 
-    private void initStrategy() {
+    void initStrategy(ReverseEngineering reverseEngineering) {
         Vector<String> arr = NameGeneratorPreferences
                 .getInstance()
                 .getLastUsedStrategies();
         strategyCombo.setModel(new DefaultComboBoxModel<>(arr));
+        strategyCombo.setSelectedItem(reverseEngineering.getNamingStrategy());
     }
 
     private void initFormElements() {
-        strategyCombo = new JComboBox<>();
-        strategyCombo.addActionListener(e -> {
-            getReverseEngineeringBySelectedMap().setNamingStrategy(
-                    (String) ReverseEngineeringConfigPanel.this.getStrategyCombo().getSelectedItem()
-            );
-            projectController.setDirty(true);
-        });
-        strategyCombo.setVisible(false);
+        strategyCombo = Application.getWidgetFactory().createComboBox();
+        AutoCompletion.enable(strategyCombo, false, true);
+        strategyCombo.setToolTipText("Naming strategy to use");
 
         JTextField meaningfulPkField = new JTextField();
         meaningfulPkField.setToolTipText("<html>Regular expression to filter tables with meaningful primary keys.<br>" +
@@ -152,7 +151,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                 "By default <b>java.time.*</b> types will be used.</html>");
         usePrimitives = new JCheckBox();
         usePrimitives.setToolTipText("<html>Use primitive types (e.g. int) or Object types (e.g. java.lang.Integer)</html>");
-        initStrategy();
     }
 
     private void initListeners() {
@@ -180,6 +178,25 @@ public class ReverseEngineeringConfigPanel extends JPanel {
             getReverseEngineeringBySelectedMap().setUseJava7Types(useJava7Types.isSelected());
             projectController.setDirty(true);
         });
+        strategyCombo.addActionListener(e -> {
+            String strategy = (String) ReverseEngineeringConfigPanel.this.getStrategyCombo().getSelectedItem();
+            checkStrategy(strategy);
+            getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
+            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategy);
+            projectController.setDirty(true);
+        });
+    }
+
+    private void checkStrategy(String strategy) {
+        try{
+            Thread.currentThread().getContextClassLoader().loadClass(strategy);
+        } catch(Exception ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    strategy + " not found. Please, add naming strategy to classpath.",
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     JComboBox<String> getStrategyCombo() {
