@@ -41,12 +41,14 @@ import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 class DataDomainInsertBucket extends DataDomainSyncBucket {
 
     List<FlattenedInsert> flattenedInserts;
 
-    DataDomainInsertBucket(DataDomainFlushAction parent) {
+    DataDomainInsertBucket(LegacyDataDomainFlushAction parent) {
         super(parent);
     }
 
@@ -222,13 +224,14 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
     private static class FlattenedInsert {
         private final String path;
         private final Persistent object;
+
         private FlattenedInsert(String path, Persistent object) {
             this.path = path;
             this.object = object;
         }
 
         private void register(ObjectStore objectStore) {
-            objectStore.markFlattenedPath(object.getObjectId(), path);
+            objectStore.markFlattenedPath(object.getObjectId(), path, ObjectId.of("tmp"));
         }
     }
 }

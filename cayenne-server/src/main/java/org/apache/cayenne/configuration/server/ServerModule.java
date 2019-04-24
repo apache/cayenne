@@ -29,9 +29,14 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
+import org.apache.cayenne.access.LegacyDataDomainFlushActionFactory;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.dbsync.DefaultSchemaUpdateStrategyFactory;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory;
+import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
+import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
 import org.apache.cayenne.access.jdbc.SQLTemplateProcessor;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
@@ -473,12 +478,10 @@ public class ServerModule implements Module {
 
         binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
 
-        // a default DBAdapterFactory used to load custom and automatic
-        // DbAdapters
+        // a default DBAdapterFactory used to load custom and automatic DbAdapters
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
 
-        // binding AshwoodEntitySorter without scope, as this is a stateful
-        // object and is
+        // binding AshwoodEntitySorter without scope, as this is a stateful object and is
         // configured by the owning domain
         binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
 
@@ -501,5 +504,8 @@ public class ServerModule implements Module {
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
+
+        binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
+        binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
     }
 }

@@ -24,6 +24,11 @@ import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
+import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
+import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
+import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
@@ -39,6 +44,7 @@ import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -74,6 +80,9 @@ public class DataContextFactoryTest {
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
             binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+            binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
+            binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
+            binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -110,6 +119,9 @@ public class DataContextFactoryTest {
             binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
             binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+            binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
+            binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
+            binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

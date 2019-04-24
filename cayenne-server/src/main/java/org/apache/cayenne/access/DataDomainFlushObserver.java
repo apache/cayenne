@@ -36,7 +36,9 @@ import org.apache.cayenne.util.Util;
  * Used as an observer for DataContext commit operations.
  * 
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 class DataDomainFlushObserver implements OperationObserver {
 
     /**

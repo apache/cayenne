@@ -24,6 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.flush.DefaultDataDomainFlushAction;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -46,10 +47,12 @@ import java.util.Map;
  * DataContextCommitAction resolves primary key dependencies, referential integrity
  * dependencies (including multi-reflexive entities), generates primary keys, creates
  * batches for massive data modifications, assigns operations to data nodes.
- * 
+ *
  * @since 1.2
+ * @deprecated this implementation is deprecated since 4.2, {@link DefaultDataDomainFlushAction} is used
  */
-class DataDomainFlushAction {
+@Deprecated
+public class LegacyDataDomainFlushAction implements org.apache.cayenne.access.flush.DataDomainFlushAction {
 
     private final DataDomain domain;
     private DataContext context;
@@ -69,7 +72,7 @@ class DataDomainFlushAction {
 
     private JdbcEventLogger logger;
 
-    DataDomainFlushAction(DataDomain domain) {
+    public LegacyDataDomainFlushAction(DataDomain domain) {
         this.domain = domain;
     }
 
@@ -117,7 +120,7 @@ class DataDomainFlushAction {
         flattenedBucket.addFlattenedDelete(flattenedEntity, flattenedDeleteInfo);
     }
 
-    GraphDiff flush(DataContext context, GraphDiff changes) {
+    public GraphDiff flush(DataContext context, GraphDiff changes) {
 
         if (changes == null) {
             return new CompoundDiff();

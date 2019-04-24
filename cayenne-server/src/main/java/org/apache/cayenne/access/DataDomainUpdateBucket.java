@@ -40,10 +40,12 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 class DataDomainUpdateBucket extends DataDomainSyncBucket {
 
-    DataDomainUpdateBucket(DataDomainFlushAction parent) {
+    DataDomainUpdateBucket(LegacyDataDomainFlushAction parent) {
         super(parent);
     }
 

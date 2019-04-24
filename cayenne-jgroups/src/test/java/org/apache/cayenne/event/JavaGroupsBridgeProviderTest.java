@@ -20,6 +20,10 @@
 package org.apache.cayenne.event;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
+import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
+import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -93,6 +97,8 @@ public class JavaGroupsBridgeProviderTest {
             binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
             binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
+            binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
         }
     }
 }

@@ -48,16 +48,18 @@ import java.util.function.Supplier;
  * A superclass of batch query wrappers.
  * 
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecated {@link LegacyDataDomainFlushAction}
  */
+@Deprecated
 abstract class DataDomainSyncBucket {
 
     final Map<ClassDescriptor, List<Persistent>> objectsByDescriptor;
-    final DataDomainFlushAction parent;
+    final LegacyDataDomainFlushAction parent;
 
     List<DbEntity> dbEntities;
     Map<DbEntity, Collection<DbEntityClassDescriptor>> descriptorsByDbEntity;
 
-    DataDomainSyncBucket(DataDomainFlushAction parent) {
+    DataDomainSyncBucket(LegacyDataDomainFlushAction parent) {
         this.objectsByDescriptor = new HashMap<>();
         this.parent = parent;
     }

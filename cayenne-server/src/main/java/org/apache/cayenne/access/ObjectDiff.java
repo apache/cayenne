@@ -51,7 +51,7 @@ import java.util.Map;
  * A dynamic GraphDiff that represents a delta between object simple properties
  * at diff creation time and its current state.
  */
-class ObjectDiff extends NodeDiff {
+public class ObjectDiff extends NodeDiff {
 
     private final String entityName;
 
@@ -144,11 +144,11 @@ class ObjectDiff extends NodeDiff {
         return classDescriptor;
     }
 
-    Object getSnapshotValue(String propertyName) {
+    public Object getSnapshotValue(String propertyName) {
         return snapshot != null ? snapshot.get(propertyName) : null;
     }
 
-    ObjectId getArcSnapshotValue(String propertyName) {
+    public ObjectId getArcSnapshotValue(String propertyName) {
         Object value = arcSnapshot != null ? arcSnapshot.get(propertyName) : null;
 
         if (value instanceof Fault) {
@@ -158,6 +158,20 @@ class ObjectDiff extends NodeDiff {
             arcSnapshot.put(propertyName, value);
         }
 
+        return (ObjectId) value;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public ObjectId getCurrentArcSnapshotValue(String propertyName) {
+        Object value = currentArcSnapshot != null ? currentArcSnapshot.get(propertyName) : null;
+        if (value instanceof Fault) {
+            Persistent target = (Persistent) ((Fault) value).resolveFault(object, propertyName);
+
+            value = target != null ? target.getObjectId() : null;
+            currentArcSnapshot.put(propertyName, value);
+        }
         return (ObjectId) value;
     }
 
@@ -462,7 +476,7 @@ class ObjectDiff extends NodeDiff {
         @Override
         public int hashCode() {
             // assuming String and ObjectId provide a good hashCode
-            return arcId.hashCode() + targetNodeId.hashCode() + 5;
+            return 31 * arcId.hashCode() + targetNodeId.hashCode();
         }
 
         @Override

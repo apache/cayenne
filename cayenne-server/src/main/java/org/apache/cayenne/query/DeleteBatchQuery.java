@@ -22,6 +22,7 @@ package org.apache.cayenne.query;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -91,7 +92,11 @@ public class DeleteBatchQuery extends BatchQuery {
         rows.add(new BatchQueryRow(null, dataObjectId) {
             @Override
             public Object getValue(int i) {
-                return qualifier.get(dbAttributes.get(i).getName());
+                Object value = qualifier.get(dbAttributes.get(i).getName());
+                if(value instanceof Supplier) {
+                    return ((Supplier) value).get();
+                }
+                return value;
             }
         });
     }

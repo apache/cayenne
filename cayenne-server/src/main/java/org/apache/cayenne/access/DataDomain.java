@@ -28,6 +28,8 @@ import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.access.flush.DataDomainFlushAction;
+import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.BeforeScopeEnd;
@@ -106,6 +108,12 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 * @since 4.1
 	 */
 	protected List<DataChannelSyncFilter> syncFilters;
+
+	/**
+	 * @since 4.2
+	 */
+	@Inject
+	protected DataDomainFlushActionFactory flushActionFactory;
 
 	protected Map<String, DataNode> nodes;
 	protected Map<String, DataNode> nodesByDataMapName;
@@ -618,9 +626,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 							+ "Unsupported context: %s", originatingContext);
 		}
 
-		DataDomainFlushAction action = new DataDomainFlushAction(this);
-		action.setJdbcEventLogger(jdbcEventLogger);
-
+		DataDomainFlushAction action = flushActionFactory.createFlushAction(this);
 		return action.flush((DataContext) originatingContext, childChanges);
 	}
 
