@@ -37,6 +37,7 @@ cdbimport {
             name 'SCHEMA_01'
             excludeRelationship 'test2s'
             excludeRelationship 'test1'
+            namingStrategy 'org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator'
         }
 
     }

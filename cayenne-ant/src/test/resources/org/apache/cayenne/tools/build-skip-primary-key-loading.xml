@@ -27,7 +27,8 @@
                    adapter="org.apache.cayenne.dba.hsqldb.HSQLDBAdapter"
                    driver="org.hsqldb.jdbcDriver"
                    url="jdbc:hsqldb:hsql://localhost/bookmarker"
-                   username="sa" skipPrimaryKeyLoading="true">
+                   username="sa" skipPrimaryKeyLoading="true"
+                   namingStrategy="org.apache.cayenne.tools.utils.CustomObjectNameGenerator">
         </cdbimport>
     </target>
 
