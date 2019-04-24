@@ -144,7 +144,7 @@ public class ClassGenerationAction {
         String superClassName = SUPERCLASS_PREFIX + stringUtils.stripPackageName(qualifiedClassName);
 
         String superPackageName = cgenConfiguration.getSuperPkg();
-        if (superPackageName == null) {
+        if (superPackageName == null || superPackageName.isEmpty()) {
             superPackageName = packageName + ".auto";
         }
 

@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import javax.swing.JOptionPane;
+import java.awt.Component;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
+
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -89,7 +95,8 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
                 !cgenConfiguration.isCreatePKProperties() && !cgenConfiguration.isCreatePropertyNames() &&
                 cgenConfiguration.getOutputPattern().equals("*.java") &&
                 cgenConfiguration.getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE) &&
-                cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+                cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE) &&
+                (cgenConfiguration.getSuperPkg() == null || cgenConfiguration.getSuperPkg().isEmpty());
 
     }
 

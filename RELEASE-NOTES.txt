@@ -18,6 +18,7 @@ CAY-2559 Modeler: Warning dialog shows wrong information after changing target e
 CAY-2561 Modeler: cgen type combobox doesn't set templates
 CAY-2564 No import for Property after generation classes with pk properties
 CAY-2566 Flush action generates update for PK attribute in case of toDepPK relationship
+CAY-2568 Class Generation: Superclass Package setting persistence
 CAY-2569 Custom 'Naming Strategy' in Cayenne Modeler
 
 ----------------------------------

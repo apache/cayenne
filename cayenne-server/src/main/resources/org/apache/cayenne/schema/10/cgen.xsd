@@ -38,6 +38,7 @@
                     <xs:element name="usePkgPath" minOccurs="0" type="xs:boolean"/>
                     <xs:element name="overwrite" minOccurs="0" type="xs:boolean"/>
                     <xs:element name="createPropertyNames" minOccurs="0" type="xs:boolean"/>
+                    <xs:element name="superPkg" minOccurs="0" type="xs:string"/>
                     <xs:element name="createPKProperties" minOccurs="0" type="xs:boolean"/>
                     <xs:element name="client" minOccurs="0" type="xs:boolean"/>
                 </xs:sequence>

@@ -16,6 +16,7 @@
         <outputPattern>*.txt</outputPattern>
         <makePairs>true</makePairs>
         <usePkgPath>true</usePkgPath>
+        <superPkg>test</superPkg>
         <overwrite>false</overwrite>
         <createPropertyNames>false</createPropertyNames>
     </cgen>
