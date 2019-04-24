@@ -50,6 +50,7 @@
                             <excludeRelationship>test12s</excludeRelationship>
                             <excludeRelationship>test11</excludeRelationship>
                         </schema>
+                        <namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
                     </dbimport>
                     <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
 

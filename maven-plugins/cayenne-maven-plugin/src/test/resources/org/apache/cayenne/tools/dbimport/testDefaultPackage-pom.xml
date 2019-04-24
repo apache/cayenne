@@ -42,6 +42,7 @@
                     <dbimport>
                         <defaultPackage>com.example.test</defaultPackage>
                         <schema>SCHEMA_01</schema>
+                        <namingStrategy>org.apache.cayenne.stubs.CustomObjectNameGenerator</namingStrategy>
                     </dbimport>
                     <project implementation="org.apache.cayenne.stubs.CayenneProjectStub"/>
 
