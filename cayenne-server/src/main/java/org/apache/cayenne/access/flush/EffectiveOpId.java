@@ -27,6 +27,7 @@ import org.apache.cayenne.ObjectId;
  * Helper value-object class that used to compare operations by "effective" id (i.e. by id snapshot,
  * that will include replacement id if any).
  * This class is not used directly by Cayenne, it's designed to ease custom implementations.
+ * @since 4.2
  */
 @SuppressWarnings("unused")
 public class EffectiveOpId {

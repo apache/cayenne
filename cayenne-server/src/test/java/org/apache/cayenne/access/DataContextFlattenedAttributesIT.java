@@ -26,7 +26,6 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
-import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.PersistentDescriptor;
@@ -113,21 +112,6 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             tPaintingInfo.insert(i, "painting review" + i);
         }
 
-    }
-
-    @Test
-    public void testSelect() throws Exception {
-        createTestDataSet();
-
-        CompoundPainting result = ObjectSelect
-                .query(CompoundPainting.class)
-                .orderBy(CompoundPainting.PAINTING_ID_PK_PROPERTY.asc())
-                .selectFirst(context);
-
-        assertNotNull(result);
-
-        result.setArtistName("new A");
-        context.commitChanges();
     }
 
     @Test
@@ -414,7 +398,7 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             o1.setTextReview("T1");
 
             context1.commitChanges();
-            id = o1.getObjectId().getIdSnapshot().get(CompoundPainting.PAINTING_ID_PK_COLUMN);
+            id = Cayenne.pkForObject(o1);
         }
 
         {

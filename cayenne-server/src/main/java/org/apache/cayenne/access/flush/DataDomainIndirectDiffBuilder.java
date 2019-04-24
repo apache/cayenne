@@ -34,6 +34,8 @@ import org.apache.cayenne.map.ObjRelationship;
 /**
  * A processor of ObjectStore indirect changes, such as flattened relationships
  * and to-many relationships.
+ *
+ * @since 4.2
  */
 final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
