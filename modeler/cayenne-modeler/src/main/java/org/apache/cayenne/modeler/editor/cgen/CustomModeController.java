@@ -177,6 +177,7 @@ public class CustomModeController extends GeneratorController {
         view.getOverwrite().setSelected(cgenConfiguration.isOverwrite());
         view.getCreatePropertyNames().setSelected(cgenConfiguration.isCreatePropertyNames());
         view.getPkProperties().setSelected(cgenConfiguration.isCreatePKProperties());
+        view.getSuperPkg().setText(cgenConfiguration.getSuperPkg());
         updateComboBoxes();
         getParentController().setInitFromModel(false);
     }

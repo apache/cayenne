@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.gen.xml;
 
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * @since 4.1
@@ -50,6 +50,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String EXCLUDE_EMBEDDABLES_TAG = "excludeEmbeddables";
     private static final String CREATE_PK_PROPERTIES = "createPKProperties";
     private static final String CLIENT_TAG = "client";
+    private static final String SUPER_PKG_TAG = "superPkg";
 
     public static final String TRUE = "true";
 
@@ -114,6 +115,9 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
                 break;
             case CLIENT_TAG:
                 createClient(data);
+                break;
+            case SUPER_PKG_TAG:
+                createSuperPkg(data);
                 break;
         }
     }
@@ -234,6 +238,13 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         } else {
             configuration.setClient(false);
         }
+    }
+
+    private void createSuperPkg(String data) {
+        if(data.trim().length() == 0) {
+            return;
+        }
+        configuration.setSuperPkg(data);
     }
 
     private void createConfig() {

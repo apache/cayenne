@@ -29,6 +29,7 @@ CAY-2543 Move ResultSetMapping generation from metadata to translator
 CAY-2549 Modeler: Redesign ObjAttribute editor dialog
 CAY-2555 Use explicit ArcId in GraphChangeHandler methods
 CAY-2563 Deprecate old scalarQuery methods in SQLSelect
+CAY-2568 Class Generation: Superclass Package setting persistence
 CAY-2569 Custom 'Naming Strategy' in Cayenne Modeler
 
 Bug Fixes:
