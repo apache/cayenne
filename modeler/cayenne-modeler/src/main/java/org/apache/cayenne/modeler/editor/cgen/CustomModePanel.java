@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -28,9 +36,6 @@ import org.apache.cayenne.modeler.util.ComboBoxAdapter;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * @since 4.1
@@ -45,6 +50,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
     private TextAdapter outputPattern;
     private JCheckBox createPropertyNames;
     private JCheckBox pkProperties;
+    private TextAdapter superPkg;
 
     private JButton manageTemplatesLink;
 
@@ -84,6 +90,17 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.outputPattern = new TextAdapter(outputPatternField) {
             protected void updateModel(String text) {
                 getCgenByDataMap().setOutputPattern(text);
+                if(!codeGeneratorControllerBase.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
+            }
+        };
+
+        JTextField superPkgField = new JTextField();
+        this.superPkg = new TextAdapter(superPkgField) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+                getCgenByDataMap().setSuperPkg(text);
                 if(!codeGeneratorControllerBase.isInitFromModel()) {
                     projectController.setDirty(true);
                 }
@@ -133,6 +150,8 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.append("Create PK properties:", pkProperties);
         builder.nextLine();
 
+        builder.append("Superclass package:", superPkg.getComponent());
+
         setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
 
@@ -177,5 +196,9 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     public JCheckBox getPkProperties() {
         return pkProperties;
+    }
+
+    public TextAdapter getSuperPkg() {
+        return superPkg;
     }
 }
