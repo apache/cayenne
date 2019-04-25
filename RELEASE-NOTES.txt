@@ -11,6 +11,10 @@ https://issues.apache.org/jira/browse/CAY
 Release: 4.1.B2
 Date:
 ----------------------------------
+
+Changes:
+CAY-2570 Use MySQL adapter for latest versions of MariaDB
+
 Bug Fixes:
 
 CAY-2550 Modeler: ObjAttribute inspector modifies wrong columns in attribute table
