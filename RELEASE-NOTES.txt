@@ -12,6 +12,9 @@ Release: 4.0.2
 Date:
 ----------------------------------
 
+Changes/New Features:
+CAY-2570 Use MySQL adapter for latest versions of MariaDB
+
 Bug Fixes:
 
 CAY-2550 Modeler: ObjAttribute inspector modifies wrong columns in attribute table
