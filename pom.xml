@@ -1397,6 +1397,70 @@
 			</build>
 		</profile>
 		<profile>
+			<id>mariadb-docker</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>mariadb-docker</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+					<version>5.1.42</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<configuration>
+							<systemPropertyVariables>
+								<!-- See https://hub.docker.com/_/mariadb/ for details-->
+								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
+								<cayenneAdapter>org.apache.cayenne.dba.mysql.MySQLAdapter</cayenneAdapter>
+								<cayenneJdbcUsername>root</cayenneJdbcUsername>
+								<cayenneJdbcPassword />
+								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne?useUnicode=true&amp;characterEncoding=UTF-8&amp;generateSimpleParameterMetadata=true&amp;useSSL=false</cayenneJdbcUrl>
+								<cayenneJdbcDriver>com.mysql.jdbc.Driver</cayenneJdbcDriver>
+							</systemPropertyVariables>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<configuration>
+							<images>
+								<image>
+									<alias>db</alias>
+									<name>mariadb:10.4</name>
+									<run>
+										<ports>
+											<port>${db.host}:${db.port}:3306</port>
+										</ports>
+										<wait>
+											<log>MySQL init process done. Ready for start up.</log>
+											<time>60000</time>
+										</wait>
+										<env>
+											<MYSQL_ALLOW_EMPTY_PASSWORD>yes</MYSQL_ALLOW_EMPTY_PASSWORD>
+											<MYSQL_DATABASE>cayenne</MYSQL_DATABASE>
+										</env>
+										<cmd>
+											--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+										</cmd>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>oracle</id>
 			<activation>
 				<property>

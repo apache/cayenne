@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
+import java.util.Objects;
+
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
@@ -48,14 +50,13 @@ import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
 import org.apache.cayenne.dba.h2.H2Sniffer;
 import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
 import org.apache.cayenne.dba.ingres.IngresSniffer;
+import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
 import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.OracleSniffer;
 import org.apache.cayenne.dba.postgres.PostgresSniffer;
 import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
-import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
-import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.dba.sybase.SybaseSniffer;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -72,8 +73,6 @@ import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.slf4j.Logger;
 import org.xml.sax.XMLReader;
-
-import java.util.Objects;
 
 /**
  * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
@@ -115,7 +114,7 @@ public class ToolsModule implements Module {
                 .add(FrontBaseSniffer.class).add(IngresSniffer.class).add(SQLiteSniffer.class).add(DB2Sniffer.class)
                 .add(H2Sniffer.class).add(HSQLDBSniffer.class).add(SybaseSniffer.class).add(DerbySniffer.class)
                 .add(SQLServerSniffer.class).add(OracleSniffer.class).add(PostgresSniffer.class)
-                .add(MySQLSniffer.class);
+                .add(MySQLSniffer.class).add(MariaDBSniffer.class);
 
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);

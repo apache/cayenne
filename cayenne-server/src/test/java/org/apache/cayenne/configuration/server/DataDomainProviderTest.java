@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectId;
@@ -72,6 +76,7 @@ import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.ingres.IngresSniffer;
+import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
@@ -113,10 +118,6 @@ import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResource;
 import org.junit.Test;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -175,7 +176,8 @@ public class DataDomainProviderTest {
                     .add(OpenBaseSniffer.class).add(FrontBaseSniffer.class).add(IngresSniffer.class)
                     .add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)
                     .add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
-                    .add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class);
+                    .add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class)
+                    .add(MariaDBSniffer.class);
             ServerModule.contributeDomainFilters(binder);
             ServerModule.contributeDomainQueryFilters(binder);
             ServerModule.contributeDomainSyncFilters(binder);

@@ -107,6 +107,7 @@ import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.ingres.IngresSniffer;
+import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
@@ -366,7 +367,8 @@ public class ServerModule implements Module {
                 .add(SQLServerSniffer.class)
                 .add(OracleSniffer.class)
                 .add(PostgresSniffer.class)
-                .add(MySQLSniffer.class);
+                .add(MySQLSniffer.class)
+                .add(MariaDBSniffer.class);
 
         //installing Pk for adapters
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
