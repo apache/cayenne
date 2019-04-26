@@ -51,6 +51,8 @@ public class ROPServerModule implements Module {
     /**
      * @deprecated since 4.2 ROPServerModule became autoloaded.
      * You need to contribute eventBridgeProperties yourself.
+     * Use {@link #contributeROPBridgeProperties(Binder)} to
+     * contribute properties.
      */
     @Deprecated
     public ROPServerModule(Map<String, String> eventBridgeProperties) {
