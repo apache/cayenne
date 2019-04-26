@@ -326,7 +326,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		encodeObjRelationshipsAsXML(encoder, delegate);
 
 		// descriptors at the end just to keep logic from older versions
-		encoder.nested(getQueryDescriptors(), delegate);
+		encoder.nested(new TreeMap<>(getQueryDescriptorMap()), delegate);
 
 		delegate.visitDataMap(this);
 		encoder.end();
