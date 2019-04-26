@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.testdo.cay_2032;
 
-import org.apache.cayenne.testdo.cay_2032.auto._User;
+import org.apache.cayenne.testdo.cay_2032.auto._Users;
 
-public class User extends _User {
+public class Users extends _Users {
 
     private static final long serialVersionUID = 1L; 
 
