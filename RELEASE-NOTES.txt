@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 
 Changes:
+
 CAY-2570 Use MySQL adapter for latest versions of MariaDB
 
 Bug Fixes:
@@ -24,6 +25,7 @@ CAY-2564 No import for Property after generation classes with pk properties
 CAY-2566 Flush action generates update for PK attribute in case of toDepPK relationship
 CAY-2568 Class Generation: Superclass Package setting persistence
 CAY-2569 Custom 'Naming Strategy' in Cayenne Modeler
+CAY-2572 Queries are not sorted by name in data map XML
 
 ----------------------------------
 Release: 4.1.B1
