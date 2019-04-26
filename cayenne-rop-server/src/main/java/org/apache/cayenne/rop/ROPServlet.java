@@ -18,16 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.rop;
 
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.configuration.rop.server.ROPServerModule;
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.configuration.web.WebConfiguration;
-import org.apache.cayenne.configuration.web.WebUtil;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.remote.ClientMessage;
-import org.apache.cayenne.remote.RemoteService;
-import org.apache.cayenne.remote.RemoteSession;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -37,6 +27,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
+
+import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.configuration.rop.server.ROPServerModule;
+import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.configuration.web.WebConfiguration;
+import org.apache.cayenne.configuration.web.WebUtil;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.remote.ClientMessage;
+import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.remote.RemoteSession;
 
 public class ROPServlet extends HttpServlet {
 
@@ -56,12 +56,13 @@ public class ROPServlet extends HttpServlet {
         String configurationLocation = configAdapter.getConfigurationLocation();
         Map<String, String> eventBridgeParameters = configAdapter.getOtherParameters();
 
-        Collection<Module> modules = configAdapter.createModules(new ROPServerModule(
-                eventBridgeParameters));
+        Collection<Module> modules = configAdapter.createModules();
 
         ServerRuntime runtime = ServerRuntime.builder()
                 .addConfig(configurationLocation)
                 .addModules(modules)
+                .addModule(binder ->
+                        ROPServerModule.contributeROPBridgeProperties(binder).putAll(eventBridgeParameters))
                 .build();
 
         this.remoteService = runtime.getInjector().getInstance(RemoteService.class);

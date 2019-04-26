@@ -16,34 +16,37 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.configuration.rop.server;
 
-package org.apache.cayenne.configuration;
-
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
-import org.apache.cayenne.configuration.rop.client.ProtostuffModule;
-import org.apache.cayenne.configuration.rop.server.ROPServerModule;
 import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.web.WebModule;
 import org.apache.cayenne.di.Module;
 
 /**
- * @since 4.0
+ * @since 4.2
  */
-public class ProtostuffServerModuleProvider implements CayenneServerModuleProvider {
+public class ROPServerModuleProvider implements CayenneServerModuleProvider {
 
     @Override
     public Module module() {
-        return new ProtostuffModule();
+        return new ROPServerModule();
     }
 
     @Override
     public Class<? extends Module> moduleType() {
-        return ProtostuffModule.class;
+        return ROPServerModule.class;
     }
 
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        return Collections.singletonList(ROPServerModule.class);
+        List<Class<? extends Module>> modules = new ArrayList<>();
+        modules.add(ServerModule.class);
+        modules.add(WebModule.class);
+        return modules;
     }
 }
