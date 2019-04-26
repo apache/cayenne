@@ -28,9 +28,6 @@ import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
-/**
- * @since 4.2
- */
 public class MariaDBSniffer implements DbAdapterDetector {
 
     public static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
