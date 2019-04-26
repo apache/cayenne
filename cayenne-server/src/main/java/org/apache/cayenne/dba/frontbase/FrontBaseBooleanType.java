@@ -29,9 +29,7 @@ import org.apache.cayenne.access.types.BooleanType;
  * "setObject", as binding via "setBoolean" only works for BIT.
  * 
  * @since 1.2
- * @deprecated since 4.2
  */
-@Deprecated
 class FrontBaseBooleanType extends BooleanType {
 
     @Override

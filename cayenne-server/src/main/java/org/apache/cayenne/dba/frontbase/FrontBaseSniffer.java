@@ -29,9 +29,7 @@ import org.apache.cayenne.di.Inject;
 
 /**
  * @since 1.2
- * @deprecated since 4.2
  */
-@Deprecated
 public class FrontBaseSniffer implements DbAdapterDetector {
 
     protected AdhocObjectFactory objectFactory;

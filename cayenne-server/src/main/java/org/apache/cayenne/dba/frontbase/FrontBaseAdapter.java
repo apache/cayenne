@@ -55,7 +55,6 @@ import org.apache.cayenne.resource.ResourceLocator;
  * </pre>
  * 
  * @since 1.2
- * @deprecated since 4.2, FrontBase is pretty much obsolete and not tested
  */
 // TODO, Andrus 11/8/2005:
 // Limitations (also see FrontBaseStackAdapter in unit tests):
@@ -65,7 +64,6 @@ import org.apache.cayenne.resource.ResourceLocator;
 // FrontBase, however aliases don't work ( ORDER BY UPPER(t0.ARTIST_NAME)) ...
 // not sure
 // what to do about it.
-@Deprecated
 public class FrontBaseAdapter extends JdbcAdapter {
 
 	public FrontBaseAdapter(@Inject RuntimeProperties runtimeProperties,

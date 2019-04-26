@@ -30,11 +30,9 @@ import org.apache.cayenne.util.MemoryClob;
  * A char type that uses a real clob for insertion.
  * 
  * @since 1.2
- * @deprecated since 4.2
  */
 // actually this is the way CLOBs must be handled by default, but there are still some
 // issues with other adapters, so we can't move this to a superclass yet.
-@Deprecated
 class FrontBaseCharType extends CharType {
 
     FrontBaseCharType() {
