@@ -18,6 +18,12 @@
  */
 package org.apache.cayenne.dbsync.reverse.filters;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
@@ -29,12 +35,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 /**
  * @since 4.0
@@ -376,16 +376,27 @@ public final class FiltersConfigBuilder {
             }
 
             for (Schema schema : catalog.getSchemas()) {
-                if (schema.getIncludeTables().isEmpty() && catalog.getIncludeTables().isEmpty() && engineering.getIncludeTables().isEmpty()) {
+                if (hasCatalogEmptyInclude(catalog, schema)) {
                     schema.addIncludeTable(new IncludeTable());
                 }
             }
         }
 
         for (Schema schema : engineering.getSchemas()) {
-            if (schema.getIncludeTables().isEmpty() && engineering.getIncludeTables().isEmpty()) {
+            if (hasSchemaEmptyInclude(schema)) {
                 schema.addIncludeTable(new IncludeTable());
             }
         }
+    }
+
+    private boolean hasCatalogEmptyInclude(Catalog catalog, Schema schema) {
+        return catalog.getIncludeTables().isEmpty() &&
+                catalog.getIncludeProcedures().isEmpty() &&
+                hasSchemaEmptyInclude(schema);
+    }
+
+    private boolean hasSchemaEmptyInclude(Schema schema) {
+           return schema.getIncludeTables().isEmpty() && engineering.getIncludeTables().isEmpty() &&
+                   schema.getIncludeProcedures().isEmpty() && engineering.getIncludeProcedures().isEmpty();
     }
 }

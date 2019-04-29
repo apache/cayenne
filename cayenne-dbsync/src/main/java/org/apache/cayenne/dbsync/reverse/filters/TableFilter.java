@@ -19,11 +19,11 @@
 package org.apache.cayenne.dbsync.reverse.filters;
 
 
-import org.apache.cayenne.util.Util;
-
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+
+import org.apache.cayenne.util.Util;
 
 /**
  * TableFilter contain at least one IncludeTable always.
@@ -37,11 +37,6 @@ public class TableFilter {
      * Includes can contain only one include table
      */
     public TableFilter(SortedSet<IncludeTableFilter> includes, SortedSet<Pattern> excludes) {
-        if (includes.isEmpty()) {
-            throw new IllegalArgumentException("TableFilter should contain at least one IncludeTableFilter always " +
-                    "and it is builder responsibility. If you need table filter without includes, use EmptyTableFilter");
-        }
-
         this.includes = includes;
         this.excludes = excludes;
     }
