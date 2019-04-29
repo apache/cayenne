@@ -37,6 +37,7 @@ CAY-2570 Use MySQL adapter for latest versions of MariaDB
 Bug Fixes:
 
 CAY-2332 Property API: unable to use eq() and in() methods for toMany relationships
+CAY-2506 Java class generated for Embeddable object is not serializable
 CAY-2509 Result of resolving lazily faulted relationships can be out-of-date
 CAY-2530 Modeler: DB Import and Class Generation from Project is performed for removed datamaps
 CAY-2531 Modeler: Importing same schema after Import Revert clears all entities in datamap

@@ -1,5 +1,7 @@
 package org.apache.cayenne.testdo.embeddable.auto;
 
+import java.io.Serializable;
+
 import org.apache.cayenne.Persistent;
 
 /** 
@@ -8,7 +10,7 @@ import org.apache.cayenne.Persistent;
  * since it may be overwritten next time code is regenerated. 
  * If you need to make any customizations, please use subclass. 
  */
-public abstract class _Embeddable1 {
+public abstract class _Embeddable1 implements Serializable {
 
     // special properties injected by Cayenne
     private Persistent owner;
