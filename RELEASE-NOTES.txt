@@ -19,6 +19,7 @@ CAY-2570 Use MySQL adapter for latest versions of MariaDB
 Bug Fixes:
 
 CAY-2506 Java class generated for Embeddable object is not serializable
+CAY-2538 Modeler: dbImport configuration unclear behavior
 CAY-2550 Modeler: ObjAttribute inspector modifies wrong columns in attribute table
 CAY-2559 Modeler: Warning dialog shows wrong information after changing target entity in dbRelationship
 CAY-2561 Modeler: cgen type combobox doesn't set templates
