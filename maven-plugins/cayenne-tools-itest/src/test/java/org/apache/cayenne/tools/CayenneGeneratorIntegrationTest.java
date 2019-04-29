@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.junit.Test;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -127,7 +127,7 @@ public class CayenneGeneratorIntegrationTest {
         assertContents("org/apache/cayenne/testdo/embeddable/Embeddable1.java", "Embeddable1",
                 "org.apache.cayenne.testdo.embeddable", "_Embeddable1");
         assertContents("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java", "_Embeddable1",
-                "org.apache.cayenne.testdo.embeddable.auto", "Object");
+                "org.apache.cayenne.testdo.embeddable.auto", "Serializable");
     }
 
     private String convertPath(String unixPath) {

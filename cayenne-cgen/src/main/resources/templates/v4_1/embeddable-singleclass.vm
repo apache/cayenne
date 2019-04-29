@@ -35,6 +35,7 @@
 ##
 ##
 ${importUtils.setPackage($subPackageName)}##
+${importUtils.addType("java.io.Serializable")}##
 ${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
 ${importUtils.addType("${basePackageName}.${baseClassName}")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
@@ -46,7 +47,7 @@ $importUtils.addType(${attr.Type})##
 #end
 ${importUtils.generate()}
 
-public abstract class ${subClassName} extends ${baseClassName} {
+public abstract class ${subClassName} implements Serializable {
 
 ## Create property names
 #if( $createPropertyNames )

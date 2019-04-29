@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.tools;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Pattern;
+
 import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.Project;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -270,7 +270,7 @@ public class CayenneGeneratorTaskTest {
 
 		File _e = new File(mapDir, convertPath("org/apache/cayenne/testdo/embeddable/auto/_Embeddable1.java"));
 		assertTrue(_e.exists());
-		assertContents(_e, "_Embeddable1", "org.apache.cayenne.testdo.embeddable.auto", "Object");
+		assertContents(_e, "_Embeddable1", "org.apache.cayenne.testdo.embeddable.auto", "Serializable");
 	}
 
 	private String convertPath(String unixPath) {
