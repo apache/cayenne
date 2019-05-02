@@ -22,6 +22,8 @@ package org.apache.cayenne.access.translator.select;
 import java.util.Arrays;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
+import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.BetweenNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.BitwiseNotNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
@@ -80,6 +82,12 @@ public class QualifierTranslatorTest {
         attribute.setName("a");
         attribute.setDbAttributePath("a");
         entity.addAttribute(attribute);
+
+        ObjAttribute attribute2 = new ObjAttribute();
+        attribute2.setName("b");
+        attribute2.setDbAttributePath("b");
+        entity.addAttribute(attribute2);
+
         entity.setDbEntity(dbEntity);
 
         DataMap dataMap = new DataMap();
@@ -448,6 +456,20 @@ public class QualifierTranslatorTest {
         assertEquals(" 1=1", ((TextNode)and.getChild(0)).getText());
         assertThat(and.getChild(1), instanceOf(TextNode.class));
         assertEquals(" 1=0", ((TextNode)and.getChild(1)).getText());
+    }
+
+    @Test
+    public void translateComplexAnd() {
+        Node and = translate("a < 2 and b in (5,6) and b = 7");
+        assertNotNull(and);
+
+        assertThat(and, instanceOf(OpExpressionNode.class));
+        assertEquals("AND", ((OpExpressionNode)and).getOp());
+        assertEquals(3, and.getChildrenCount());
+
+        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
+        and.visit(visitor);
+        assertEquals(" ( t0.a < 2 ) AND t0.b IN ( 5, 6) AND ( t0.b = 7 )", visitor.getSQLString());
     }
 
     @Test

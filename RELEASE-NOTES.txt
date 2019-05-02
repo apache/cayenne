@@ -51,6 +51,7 @@ CAY-2553 Wrong disjoint prefetch query qualifier
 CAY-2559 Modeler: Warning dialog shows wrong information after changing target entity in dbRelationship
 CAY-2561 Modeler: cgen type combobox doesn't set templates
 CAY-2572 Queries are not sorted by name in data map XML
+CAY-2575 Select translator: Wrong translation of IN Expression
 
 ----------------------------------
 Release: 4.1.B1

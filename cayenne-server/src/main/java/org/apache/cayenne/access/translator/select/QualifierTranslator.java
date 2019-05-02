@@ -297,13 +297,31 @@ class QualifierTranslator implements TraversalHandler {
         return expressionNodeBuilder.build();
     }
 
+    private boolean nodeProcessed(Expression node) {
+        // must be in sync with expressionNodeToSqlNode() method
+        switch (node.getType()) {
+            case NOT_IN: case IN: case NOT_BETWEEN: case BETWEEN: case NOT:
+            case BITWISE_NOT: case EQUAL_TO: case NOT_EQUAL_TO: case LIKE: case NOT_LIKE:
+            case LIKE_IGNORE_CASE: case NOT_LIKE_IGNORE_CASE: case OBJ_PATH: case DB_PATH:
+            case FUNCTION_CALL: case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case NEGATIVE:
+            case BITWISE_AND: case BITWISE_LEFT_SHIFT: case BITWISE_OR: case BITWISE_RIGHT_SHIFT: case BITWISE_XOR:
+            case OR: case AND: case LESS_THAN: case LESS_THAN_EQUAL_TO: case GREATER_THAN: case GREATER_THAN_EQUAL_TO:
+            case TRUE: case FALSE: case ASTERISK: case EXISTS: case SUBQUERY: case ENCLOSING_OBJECT: case FULL_OBJECT:
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public void endNode(Expression node, Expression parentNode) {
         if(expressionsToSkip.contains(node) || expressionsToSkip.contains(parentNode)) {
             return;
         }
-        if(currentNode.getParent() != null) {
-            currentNode = currentNode.getParent();
+
+        if(nodeProcessed(node)) {
+            if (currentNode.getParent() != null) {
+                currentNode = currentNode.getParent();
+            }
         }
     }
 
