@@ -21,19 +21,103 @@ public abstract class _DurationTestEntity extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final BaseProperty<Duration> DURATION_FIELD = PropertyFactory.createBase("durationField", Duration.class);
+    public static final BaseProperty<Duration> DURATION_VARCHAR = PropertyFactory.createBase("durationVarchar", Duration.class);
+    public static final BaseProperty<Duration> DURATION_BIG_INT = PropertyFactory.createBase("durationBigInt", Duration.class);
+    public static final BaseProperty<Duration> DURATION_NUMERIC = PropertyFactory.createBase("durationNumeric", Duration.class);
+    public static final BaseProperty<Duration> DURATION_DECIMAL = PropertyFactory.createBase("durationDecimal", Duration.class);
+    public static final BaseProperty<Duration> DURATION_LONG_VARCHAR = PropertyFactory.createBase("durationLongVarchar", Duration.class);
+    public static final BaseProperty<Duration> DURATION_NVARCHAR = PropertyFactory.createBase("durationNVarchar", Duration.class);
+    public static final BaseProperty<Duration> DURATION_LONG_NVARCHAR = PropertyFactory.createBase("durationLongNVarchar", Duration.class);
+    public static final BaseProperty<Duration> DURATION_INT = PropertyFactory.createBase("durationInt", Duration.class);
 
-    protected Duration durationField;
+    protected Duration durationVarchar;
+    protected Duration durationBigInt;
+    protected Duration durationNumeric;
+    protected Duration durationDecimal;
+    protected Duration durationLongVarchar;
+    protected Duration durationNVarchar;
+    protected Duration durationLongNVarchar;
+    protected Duration durationInt;
 
 
-    public void setDurationField(Duration durationField) {
-        beforePropertyWrite("durationField", this.durationField, durationField);
-        this.durationField = durationField;
+    public void setDurationVarchar(Duration durationVarchar) {
+        beforePropertyWrite("durationVarchar", this.durationVarchar, durationVarchar);
+        this.durationVarchar = durationVarchar;
     }
 
-    public Duration getDurationField() {
-        beforePropertyRead("durationField");
-        return this.durationField;
+    public Duration getDurationVarchar() {
+        beforePropertyRead("durationVarchar");
+        return this.durationVarchar;
+    }
+
+    public void setDurationBigInt(Duration durationBigInt) {
+        beforePropertyWrite("durationBigInt", this.durationBigInt, durationBigInt);
+        this.durationBigInt = durationBigInt;
+    }
+
+    public Duration getDurationBigInt() {
+        beforePropertyRead("durationBigInt");
+        return this.durationBigInt;
+    }
+
+    public void setDurationNumeric(Duration durationNumeric) {
+        beforePropertyWrite("durationNumeric", this.durationNumeric, durationNumeric);
+        this.durationNumeric = durationNumeric;
+    }
+
+    public Duration getDurationNumeric() {
+        beforePropertyRead("durationNumeric");
+        return this.durationNumeric;
+    }
+
+    public void setDurationDecimal(Duration durationDecimal) {
+        beforePropertyWrite("durationDecimal", this.durationDecimal, durationDecimal);
+        this.durationDecimal = durationDecimal;
+    }
+
+    public Duration getDurationDecimal() {
+        beforePropertyRead("durationDecimal");
+        return this.durationDecimal;
+    }
+
+    public void setDurationLongVarchar(Duration durationLongVarchar) {
+        beforePropertyWrite("durationLongVarchar", this.durationLongVarchar, durationLongVarchar);
+        this.durationLongVarchar = durationLongVarchar;
+    }
+
+    public Duration getDurationLongVarchar() {
+        beforePropertyRead("durationLongVarchar");
+        return this.durationLongVarchar;
+    }
+
+    public void setDurationNVarchar(Duration durationNVarchar) {
+        beforePropertyWrite("durationNVarchar", this.durationNVarchar, durationNVarchar);
+        this.durationNVarchar = durationNVarchar;
+    }
+
+    public Duration getDurationNVarchar() {
+        beforePropertyRead("durationNVarchar");
+        return this.durationNVarchar;
+    }
+
+    public void setDurationLongNVarchar(Duration durationLongNVarchar) {
+        beforePropertyWrite("durationLongNVarchar", this.durationLongNVarchar, durationLongNVarchar);
+        this.durationLongNVarchar = durationLongNVarchar;
+    }
+
+    public Duration getDurationLongNVarchar() {
+        beforePropertyRead("durationLongNVarchar");
+        return this.durationLongNVarchar;
+    }
+
+    public void setDurationInt(Duration durationInt) {
+        beforePropertyWrite("durationInt", this.durationInt, durationInt);
+        this.durationInt = durationInt;
+    }
+
+    public Duration getDurationInt() {
+        beforePropertyRead("durationInt");
+        return this.durationInt;
     }
 
     @Override
@@ -43,8 +127,22 @@ public abstract class _DurationTestEntity extends BaseDataObject {
         }
 
         switch(propName) {
-            case "durationField":
-                return this.durationField;
+            case "durationVarchar":
+                return this.durationVarchar;
+            case "durationBigInt":
+                return this.durationBigInt;
+            case "durationNumeric":
+                return this.durationNumeric;
+            case "durationDecimal":
+                return this.durationDecimal;
+            case "durationLongVarchar":
+                return this.durationLongVarchar;
+            case "durationNVarchar":
+                return this.durationNVarchar;
+            case "durationLongNVarchar":
+                return this.durationLongNVarchar;
+            case "durationInt":
+                return this.durationInt;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -57,8 +155,29 @@ public abstract class _DurationTestEntity extends BaseDataObject {
         }
 
         switch (propName) {
-            case "durationField":
-                this.durationField = (Duration)val;
+            case "durationVarchar":
+                this.durationVarchar = (Duration)val;
+                break;
+            case "durationBigInt":
+                this.durationBigInt = (Duration)val;
+                break;
+            case "durationNumeric":
+                this.durationNumeric = (Duration)val;
+                break;
+            case "durationDecimal":
+                this.durationDecimal = (Duration)val;
+                break;
+            case "durationLongVarchar":
+                this.durationLongVarchar = (Duration)val;
+                break;
+            case "durationNVarchar":
+                this.durationNVarchar = (Duration)val;
+                break;
+            case "durationLongNVarchar":
+                this.durationLongNVarchar = (Duration)val;
+                break;
+            case "durationInt":
+                this.durationInt = (Duration)val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -76,13 +195,27 @@ public abstract class _DurationTestEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(this.durationField);
+        out.writeObject(this.durationVarchar);
+        out.writeObject(this.durationBigInt);
+        out.writeObject(this.durationNumeric);
+        out.writeObject(this.durationDecimal);
+        out.writeObject(this.durationLongVarchar);
+        out.writeObject(this.durationNVarchar);
+        out.writeObject(this.durationLongNVarchar);
+        out.writeObject(this.durationInt);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        this.durationField = (Duration)in.readObject();
+        this.durationVarchar = (Duration)in.readObject();
+        this.durationBigInt = (Duration)in.readObject();
+        this.durationNumeric = (Duration)in.readObject();
+        this.durationDecimal = (Duration)in.readObject();
+        this.durationLongVarchar = (Duration)in.readObject();
+        this.durationNVarchar = (Duration)in.readObject();
+        this.durationLongNVarchar = (Duration)in.readObject();
+        this.durationInt = (Duration)in.readObject();
     }
 
 }

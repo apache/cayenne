@@ -151,15 +151,50 @@ public class Java8TimeIT extends ServerCase {
 	public void testJava8Duration() {
 		DurationTestEntity durationTestEntity = context.newObject(DurationTestEntity.class);
 		Duration duration = Duration.ofDays(10);
-		durationTestEntity.setDurationField(duration);
+		durationTestEntity.setDurationBigInt(duration);
+		durationTestEntity.setDurationDecimal(duration);
+		durationTestEntity.setDurationInt(duration);
+		durationTestEntity.setDurationLongNVarchar(duration);
+		durationTestEntity.setDurationLongVarchar(duration);
+		durationTestEntity.setDurationNumeric(duration);
+		durationTestEntity.setDurationVarchar(duration);
+		durationTestEntity.setDurationNVarchar(duration);
 
 		context.commitChanges();
 
 		DurationTestEntity testRead = ObjectSelect.query(DurationTestEntity.class).selectOne(context);
 
-		assertNotNull(testRead.getDurationField());
-		assertEquals(Duration.class, testRead.getDurationField().getClass());
-		assertEquals(duration, testRead.getDurationField());
+		assertNotNull(testRead.getDurationBigInt());
+		assertEquals(Duration.class, testRead.getDurationBigInt().getClass());
+		assertEquals(duration, testRead.getDurationBigInt());
+
+		assertNotNull(testRead.getDurationDecimal());
+		assertEquals(Duration.class, testRead.getDurationDecimal().getClass());
+		assertEquals(duration, testRead.getDurationDecimal());
+
+		assertNotNull(testRead.getDurationInt());
+		assertEquals(Duration.class, testRead.getDurationInt().getClass());
+		assertEquals(duration, testRead.getDurationInt());
+
+		assertNotNull(testRead.getDurationLongNVarchar());
+		assertEquals(Duration.class, testRead.getDurationLongNVarchar().getClass());
+		assertEquals(duration, testRead.getDurationLongNVarchar());
+
+		assertNotNull(testRead.getDurationLongVarchar());
+		assertEquals(Duration.class, testRead.getDurationLongVarchar().getClass());
+		assertEquals(duration, testRead.getDurationLongVarchar());
+
+		assertNotNull(testRead.getDurationNumeric());
+		assertEquals(Duration.class, testRead.getDurationNumeric().getClass());
+		assertEquals(duration, testRead.getDurationNumeric());
+
+		assertNotNull(testRead.getDurationVarchar());
+		assertEquals(Duration.class, testRead.getDurationVarchar().getClass());
+		assertEquals(duration, testRead.getDurationVarchar());
+
+		assertNotNull(testRead.getDurationNVarchar());
+		assertEquals(Duration.class, testRead.getDurationNVarchar().getClass());
+		assertEquals(duration, testRead.getDurationNVarchar());
 	}
 
 	@Test

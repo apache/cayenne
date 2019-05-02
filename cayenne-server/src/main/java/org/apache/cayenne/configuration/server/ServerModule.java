@@ -50,7 +50,7 @@ import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
-import org.apache.cayenne.access.types.DurationValueType;
+import org.apache.cayenne.access.types.DurationType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.FloatType;
@@ -413,8 +413,11 @@ public class ServerModule implements Module {
                 .add(new DateType())
                 .add(new TimeType())
                 .add(new TimestampType())
+                .add(new DurationType())
                 // should be converted from ExtendedType to ValueType
-                .add(new UtilDateType()).add(new CalendarType<>(GregorianCalendar.class)).add(new CalendarType<>(Calendar.class));
+                .add(new UtilDateType())
+                .add(new CalendarType<>(GregorianCalendar.class))
+                .add(new CalendarType<>(Calendar.class));
         contributeUserTypes(binder);
         contributeTypeFactories(binder);
 
@@ -425,7 +428,6 @@ public class ServerModule implements Module {
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
                 .add(LocalDateTimeValueType.class)
-                .add(DurationValueType.class)
                 .add(PeriodValueType.class)
                 .add(CharacterValueType.class);
 

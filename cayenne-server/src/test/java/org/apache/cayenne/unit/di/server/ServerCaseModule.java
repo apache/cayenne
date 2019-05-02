@@ -38,7 +38,7 @@ import org.apache.cayenne.access.types.CharacterValueType;
 import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.DoubleType;
-import org.apache.cayenne.access.types.DurationValueType;
+import org.apache.cayenne.access.types.DurationType;
 import org.apache.cayenne.access.types.FloatType;
 import org.apache.cayenne.access.types.IntegerType;
 import org.apache.cayenne.access.types.LocalDateTimeValueType;
@@ -210,7 +210,8 @@ public class ServerCaseModule implements Module {
                 .add(new TimestampType())
                 .add(new UtilDateType())
                 .add(new CalendarType<>(GregorianCalendar.class))
-                .add(new CalendarType<>(Calendar.class));
+                .add(new CalendarType<>(Calendar.class))
+                .add(new DurationType());
         ServerModule.contributeUserTypes(binder);
         ServerModule.contributeTypeFactories(binder);
         ServerModule.contributeValueObjectTypes(binder)
@@ -219,7 +220,6 @@ public class ServerCaseModule implements Module {
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
                 .add(LocalDateTimeValueType.class)
-                .add(DurationValueType.class)
                 .add(PeriodValueType.class)
                 .add(CharacterValueType.class);
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);

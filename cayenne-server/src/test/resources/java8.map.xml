@@ -5,7 +5,14 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.java8"/>
 	<db-entity name="DURATION_TEST">
-		<db-attribute name="DurationField" type="VARCHAR" length="100"/>
+		<db-attribute name="DurationBigInt" type="BIGINT"/>
+		<db-attribute name="DurationDecimal" type="DECIMAL"/>
+		<db-attribute name="DurationInt" type="INTEGER" length="100"/>
+		<db-attribute name="DurationLongNVarchar" type="LONGNVARCHAR" length="100"/>
+		<db-attribute name="DurationLongVarchar" type="LONGVARCHAR" length="100"/>
+		<db-attribute name="DurationNVarchar" type="NVARCHAR" length="100"/>
+		<db-attribute name="DurationNumeric" type="NUMERIC"/>
+		<db-attribute name="DurationVarchar" type="VARCHAR" length="100"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="LOCAL_DATETIME_TEST">
@@ -25,7 +32,14 @@
 		<db-attribute name="PeriodField" type="VARCHAR" length="100"/>
 	</db-entity>
 	<obj-entity name="DurationTest" className="org.apache.cayenne.testdo.java8.DurationTestEntity" dbEntityName="DURATION_TEST">
-		<obj-attribute name="durationField" type="java.time.Duration" db-attribute-path="DurationField"/>
+		<obj-attribute name="durationVarchar" type="java.time.Duration" db-attribute-path="DurationVarchar"/>
+		<obj-attribute name="durationBigInt" type="java.time.Duration" db-attribute-path="DurationBigInt"/>
+		<obj-attribute name="durationNumeric" type="java.time.Duration" db-attribute-path="DurationNumeric"/>
+		<obj-attribute name="durationDecimal" type="java.time.Duration" db-attribute-path="DurationDecimal"/>
+		<obj-attribute name="durationLongVarchar" type="java.time.Duration" db-attribute-path="DurationLongVarchar"/>
+		<obj-attribute name="durationNVarchar" type="java.time.Duration" db-attribute-path="DurationNVarchar"/>
+		<obj-attribute name="durationLongNVarchar" type="java.time.Duration" db-attribute-path="DurationLongNVarchar"/>
+		<obj-attribute name="durationInt" type="java.time.Duration" db-attribute-path="DurationInt"/>
 	</obj-entity>
 	<obj-entity name="LocalDateTest" className="org.apache.cayenne.testdo.java8.LocalDateTestEntity" dbEntityName="LOCAL_DATE_TEST">
 		<obj-attribute name="date" type="java.time.LocalDate" db-attribute-path="DateField"/>
