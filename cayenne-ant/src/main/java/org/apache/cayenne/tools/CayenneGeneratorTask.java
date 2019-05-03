@@ -27,6 +27,7 @@ import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenModule;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
@@ -104,6 +105,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         validateAttributes();
 
         injector = new ToolsInjectorBuilder()
+                .addModule(new CgenModule())
                 .addModule(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)))
                 .create();
 
