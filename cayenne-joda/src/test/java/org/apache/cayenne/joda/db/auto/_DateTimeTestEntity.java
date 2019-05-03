@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.joda.time.DateTime;
 
@@ -21,7 +22,7 @@ public abstract class _DateTimeTestEntity extends BaseDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final BaseProperty<DateTime> TIMESTAMP = PropertyFactory.createBase("timestamp", DateTime.class);
+    public static final DateProperty<DateTime> TIMESTAMP = PropertyFactory.createDate("timestamp", DateTime.class);
 
     protected DateTime timestamp;
 

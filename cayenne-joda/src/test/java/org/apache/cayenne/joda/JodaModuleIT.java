@@ -61,6 +61,11 @@ public class JodaModuleIT {
         assertNotNull(timestamp);
         assertEquals(DateTime.class, timestamp.getClass());
         assertEquals(dateTime, timestamp);
+        
+        testRead = ObjectSelect.query(DateTimeTestEntity.class)
+        	.where(DateTimeTestEntity.TIMESTAMP.between(dateTime, dateTime))
+        	.selectOne(context);
+        assertNotNull(testRead);
     }
 
     @Test
