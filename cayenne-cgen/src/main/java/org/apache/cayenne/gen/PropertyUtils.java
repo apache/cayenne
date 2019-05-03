@@ -79,6 +79,13 @@ public class PropertyUtils {
             java.sql.Time.class,
             java.sql.Timestamp.class
     );
+    
+    private static final List<String> JODA_DATE_TYPES = Arrays.asList(
+    		"org.joda.time.LocalDate",
+            "org.joda.time.LocalTime",
+            "org.joda.time.LocalDateTime",
+            "org.joda.time.DateTime"
+    );
 
     private final ImportUtils importUtils;
 
@@ -181,12 +188,21 @@ public class PropertyUtils {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
-        return String.format("public static final %s<%s> %s = %s(\"%s\", %s.class);",
-                importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
-                attributeType,
+        return String.format("public static final %s %s = %s(\"%s\", %s.class);",
+                propertyTypeDefinition(attribute),
                 generatePropertyName(attribute),
                 propertyDescriptor.getPropertyFactoryMethod(),
                 attribute.getName(),
+                attributeType
+        );
+    }
+    
+    public String propertyTypeDefinition(ObjAttribute attribute) throws ClassNotFoundException {
+        StringUtils utils = StringUtils.getInstance();
+        String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
+        return String.format("%s<%s>",
+                importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
                 attributeType
         );
     }
@@ -323,11 +339,14 @@ public class PropertyUtils {
         return FACTORY_METHODS.get(propertyType);
     }
 
-    private String getPropertyTypeForType(String attributeType) throws ClassNotFoundException {
+    protected String getPropertyTypeForType(String attributeType) throws ClassNotFoundException {
         if(TypesMapping.JAVA_BYTES.equals(attributeType)) {
             return BaseProperty.class.getName();
         }
-
+        if (JODA_DATE_TYPES.contains(attributeType)) {
+            return DateProperty.class.getName();
+        }
+        
         Class<?> javaClass = Class.forName(attributeType);
         if (Number.class.isAssignableFrom(javaClass)) {
             return NumericProperty.class.getName();
@@ -362,6 +381,11 @@ public class PropertyUtils {
     }
 
     private PropertyDescriptor getPropertyDescriptor(String attrType) {
+    	if (JODA_DATE_TYPES.contains(attrType)) {
+    		return new PropertyDescriptor(DateProperty.class.getName(), 
+    			"PropertyFactory." + factoryMethodForPropertyType(DateProperty.class.getName()));
+    	}
+    	
         try {
             Class<?> type = adhocObjectFactory.getJavaClass(attrType);
             for(PropertyDescriptorCreator creator : propertyList) {
