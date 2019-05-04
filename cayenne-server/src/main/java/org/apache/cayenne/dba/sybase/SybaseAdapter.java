@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.sybase;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 import java.util.function.Function;
@@ -42,7 +41,6 @@ import org.apache.cayenne.dba.DefaultQuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.dba.sqlserver.SQLServerTreeProcessor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -81,7 +79,7 @@ public class SybaseAdapter extends JdbcAdapter {
      */
     @Override
     public Function<Node, Node> getSqlTreeProcessor() {
-        return new SQLServerTreeProcessor();
+        return new SybaseSQLTreeProcessor();
     }
 
     /**
@@ -124,8 +122,7 @@ public class SybaseAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void bindParameter(PreparedStatement statement, ParameterBinding binding)
-            throws SQLException, Exception {
+    public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 
         // Sybase driver doesn't like CLOBs and BLOBs as parameters
         if (binding.getValue() == null) {

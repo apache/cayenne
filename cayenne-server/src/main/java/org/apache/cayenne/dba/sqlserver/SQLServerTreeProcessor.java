@@ -20,109 +20,17 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
-import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.TopNode;
-import org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor;
 import org.apache.cayenne.dba.sqlserver.sqltree.SQLServerColumnNode;
+import org.apache.cayenne.dba.sybase.SybaseSQLTreeProcessor;
 
 /**
  * @since 4.2
  */
-public class SQLServerTreeProcessor extends BaseSQLTreeProcessor {
-
-    @Override
-    protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
-        // SQLServer uses "SELECT DISTINCT TOP N" or "SELECT TOP N" instead of LIMIT
-        // Offset will be calculated in-memory
-        replaceChild(parent, index, new EmptyNode(), false);
-        if(child.getLimit() > 0) {
-            int limit = child.getLimit() + child.getOffset();
-            // we have root actually as input for processor, but it's better to keep processor stateless
-            // root shouldn't be far from limit's parent (likely it will be parent itself)
-            Node root = getRoot(parent);
-            int idx = 0;
-            if(root.getChild(0).getType() == NodeType.DISTINCT) {
-                idx = 1;
-            }
-            root.addChild(idx, new TopNode(limit));
-        }
-    }
-
-    private Node getRoot(Node node) {
-        while(node.getParent() != null) {
-            node = node.getParent();
-        }
-        return node;
-    }
+public class SQLServerTreeProcessor extends SybaseSQLTreeProcessor {
 
     @Override
     protected void onColumnNode(Node parent, ColumnNode child, int index) {
         replaceChild(parent, index,  new SQLServerColumnNode(child));
-    }
-
-    @Override
-    protected void onFunctionNode(Node parent, FunctionNode child, int index) {
-        String functionName = child.getFunctionName();
-        Node replacement = null;
-        switch (functionName) {
-            case "LENGTH":
-                replacement = new FunctionNode("LEN", child.getAlias(), true);
-                break;
-            case "LOCATE":
-                replacement = new FunctionNode("CHARINDEX", child.getAlias(), true);
-                break;
-            case "MOD":
-                replacement = new OpExpressionNode("%");
-                break;
-            case "TRIM":
-                Node rtrim = new FunctionNode("RTRIM", null, true);
-                replacement = new FunctionNode("LTRIM", child.getAlias(), true);
-                for(int i=0; i<child.getChildrenCount(); i++) {
-                    rtrim.addChild(child.getChild(i));
-                }
-                replacement.addChild(rtrim);
-                parent.replaceChild(index, replacement);
-                return;
-            case "CURRENT_DATE":
-                replacement = new FunctionNode("{fn CURDATE()}", child.getAlias(), false);
-                break;
-            case "CURRENT_TIME":
-                replacement = new FunctionNode("{fn CURTIME()}", child.getAlias(), false);
-                break;
-            case "CURRENT_TIMESTAMP":
-                replacement = new FunctionNode("CURRENT_TIMESTAMP", child.getAlias(), false);
-                break;
-
-            case "YEAR":
-            case "MONTH":
-            case "WEEK":
-            case "DAY_OF_YEAR":
-            case "DAY":
-            case "DAY_OF_MONTH":
-            case "DAY_OF_WEEK":
-            case "HOUR":
-            case "MINUTE":
-            case "SECOND":
-                replacement = new FunctionNode("DATEPART", child.getAlias(), true);
-                if("DAY_OF_MONTH".equals(functionName)) {
-                    functionName = "DAY";
-                } else if("DAY_OF_WEEK".equals(functionName)) {
-                    functionName = "WEEKDAY";
-                } else if("DAY_OF_YEAR".equals(functionName)) {
-                    functionName = "DAYOFYEAR";
-                }
-                replacement.addChild(new TextNode(functionName));
-                break;
-        }
-
-        if(replacement != null) {
-            replaceChild(parent, index, replacement);
-        }
     }
 }

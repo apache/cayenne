@@ -74,6 +74,10 @@ import org.apache.cayenne.resource.ResourceLocator;
  */
 public class SQLServerAdapter extends SybaseAdapter {
 
+	/**
+	 * @deprecated since 4.2 unused
+	 */
+	@Deprecated
 	public static final String TRIM_FUNCTION = "RTRIM";
 
 	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
