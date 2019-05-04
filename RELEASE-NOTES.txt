@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.1.B2
-Date:
+Date: May 4, 2019
 ----------------------------------
 
 Changes:
