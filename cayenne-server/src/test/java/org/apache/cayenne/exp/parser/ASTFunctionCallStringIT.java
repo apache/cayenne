@@ -88,7 +88,7 @@ public class ASTFunctionCallStringIT extends ServerCase {
     public void testASTConcat() throws Exception {
         Artist a1 = createArtist("Pablo");
         Artist a2 = ObjectSelect.query(Artist.class)
-                .where(Artist.ARTIST_NAME.concat(" ", "Picasso").eq("Pablo Picasso")).selectOne(context);
+                .where(Artist.ARTIST_NAME.trim().concat(" ", "Picasso").eq("Pablo Picasso")).selectOne(context);
         assertEquals(a1, a2);
     }
 

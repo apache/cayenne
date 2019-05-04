@@ -38,7 +38,7 @@ public class TrimmingColumnNode extends Node {
     public QuotingAppendable append(QuotingAppendable buffer) {
         boolean isResult = isResultNode();
         if(columnNode.getAlias() == null || isResult) {
-            if(isCharType()) {
+            if(isCharType() && isAllowedForTrimming()) {
                 appendRtrim(buffer);
                 appendAlias(buffer, isResult);
             } else if(isComparisionWithClob()) {
@@ -70,6 +70,17 @@ public class TrimmingColumnNode extends Node {
     private boolean isCharType() {
         return columnNode.getAttribute() != null
                 && columnNode.getAttribute().getType() == Types.CHAR;
+    }
+
+    protected boolean isAllowedForTrimming() {
+        Node parent = getParent();
+        while(parent != null) {
+            if(parent.getType() == NodeType.JOIN || parent.getType() == NodeType.FUNCTION) {
+                return false;
+            }
+            parent = parent.getParent();
+        }
+        return true;
     }
 
     protected boolean isResultNode() {
