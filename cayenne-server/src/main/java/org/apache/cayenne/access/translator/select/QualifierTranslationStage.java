@@ -49,26 +49,7 @@ class QualifierTranslationStage implements TranslationStage {
             }
         }
 
-        // Attaching root Db entity's qualifier
-        DbEntity dbEntity = context.getMetadata().getDbEntity();
-        if (dbEntity != null) {
-            Expression dbQualifier = dbEntity.getQualifier();
-            if (dbQualifier != null) {
-                dbQualifier = dbQualifier.transform(node -> {
-                    if (node instanceof ASTObjPath) {
-                        return new ASTDbPath(((SimpleNode) node).getOperand(0));
-                    }
-                    return node;
-                });
-
-                expression = expression == null ? dbQualifier : expression.andExp(dbQualifier);
-            }
-        }
-
         Node qualifierNode = translator.translate(expression);
-
-        if(qualifierNode != null) {
-            context.getSelectBuilder().where(qualifierNode);
-        }
+        context.setQualifierNode(qualifierNode);
     }
 }

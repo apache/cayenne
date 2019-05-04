@@ -48,6 +48,7 @@ public class DefaultSelectTranslator implements SelectTranslator {
             new DistinctStage(),
             new LimitOffsetStage(),
             new ColumnDescriptorStage(),
+            new TableTreeQualifierStage(),
             new TableTreeStage(),
             new SQLResultStage(),
             new SQLGenerationStage()

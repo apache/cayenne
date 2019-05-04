@@ -87,6 +87,8 @@ public class TranslatorContext implements SQLGenerationContext {
     // List of SQL tree nodes that describe resulting rows of this query
     private final List<ResultNodeDescriptor> resultNodeList;
 
+    // resulting qualifier for this query ('where' qualifier and qualifiers from entities)
+    private Node qualifierNode;
     // if true SQL generation stage will be skipped, needed for nested queries translation
     private boolean skipSQLGeneration;
     // translated SQL string
@@ -254,6 +256,14 @@ public class TranslatorContext implements SQLGenerationContext {
 
     EntityResult getRootEntityResult() {
         return rootEntityResult;
+    }
+
+    void setQualifierNode(Node qualifierNode) {
+        this.qualifierNode = qualifierNode;
+    }
+
+    Node getQualifierNode() {
+        return qualifierNode;
     }
 
     enum DescriptorType {

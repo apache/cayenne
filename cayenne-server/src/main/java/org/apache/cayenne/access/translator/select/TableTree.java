@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DbEntity;
@@ -97,8 +98,17 @@ class TableTree {
 
     public void visit(TableNodeVisitor visitor) {
         visitor.visit(rootNode);
-        for(TableTreeNode node : tableNodes.values()) {
-            visitor.visit(node);
+
+        // as we can spawn new nodes while processing existing,
+        // we need multiple iterations until all rows are processed
+        int initialSize = 0;
+        int currentSize = tableNodes.size();
+        while(initialSize != currentSize) {
+            tableNodes.values().stream().skip(initialSize)
+                    .collect(Collectors.toList()) // copy collection in case of concurrent modification in visitor
+                    .forEach(visitor::visit);
+            initialSize = currentSize;
+            currentSize = tableNodes.size();
         }
     }
 

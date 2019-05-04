@@ -24,10 +24,6 @@ import java.util.List;
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.JoinNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 
@@ -45,7 +41,6 @@ class TableTreeStage implements TranslationStage {
             if(node.getRelationship() != null) {
                 tableNode = getJoin(node, tableNode).on(getJoinExpression(context, node));
             }
-
             context.getSelectBuilder().from(tableNode);
         });
     }
@@ -79,26 +74,6 @@ class TableTreeStage implements TranslationStage {
             }
         }
 
-        expressionNodeBuilder = attachTargetQualifier(context, node, expressionNodeBuilder);
-
-        return expressionNodeBuilder;
-    }
-
-    private ExpressionNodeBuilder attachTargetQualifier(TranslatorContext context, TableTreeNode node, ExpressionNodeBuilder expressionNodeBuilder) {
-        Expression dbQualifier = node.getRelationship().getTargetEntity().getQualifier();
-        if (dbQualifier != null) {
-            String pathToRoot = node.getAttributePath().getPath();
-            dbQualifier = dbQualifier.transform(input -> input instanceof ASTPath
-                    ? new ASTDbPath(pathToRoot + '.' + ((ASTPath) input).getPath())
-                    : input
-            );
-            Node translatedQualifier = context.getQualifierTranslator().translate(dbQualifier);
-            if (expressionNodeBuilder != null) {
-                expressionNodeBuilder = expressionNodeBuilder.and(node(translatedQualifier));
-            } else {
-                expressionNodeBuilder = exp(node(translatedQualifier));
-            }
-        }
         return expressionNodeBuilder;
     }
 }

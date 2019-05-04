@@ -62,19 +62,15 @@ public class QualifierTranslationStageTest {
         QualifierTranslationStage stage = new QualifierTranslationStage();
         stage.perform(context);
 
-        Node select = context.getSelectBuilder().build();
+        assertNotNull(context.getQualifierNode());
 
-        // Content of "select" node:
+        // Content of "Qualifier" node:
         //
-        //      Where
-        //        |
         //   OpExpression
         //    /        \
         // Column     Value
 
-        assertEquals(1, select.getChildrenCount());
-        assertThat(select.getChild(0), instanceOf(WhereNode.class));
-        Node op = select.getChild(0).getChild(0);
+        Node op = context.getQualifierNode();
         assertThat(op, instanceOf(OpExpressionNode.class));
         assertEquals(">=", ((OpExpressionNode)op).getOp());
         assertEquals(2, op.getChildrenCount());
