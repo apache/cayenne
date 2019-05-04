@@ -18,9 +18,6 @@
  */
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Module;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,6 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+
+import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Module;
 
 /**
  * Auto-loads DI modules using ServiceLoader. To make a module auto-loadable, you will need to ship the jar with a file
@@ -47,12 +47,27 @@ public class ModuleLoader {
      * @throws DIRuntimeException if auto-loaded modules have circular override dependencies.
      */
     public List<Module> load(Class<? extends ModuleProvider> providerClass) {
+        return loadModules(ServiceLoader.load(providerClass));
+    }
 
+    /**
+     * Auto-loads all modules declared on classpath. Modules are loaded from the SPI declarations stored in
+     * "META-INF/services/&lt;full.provider.class.name&gt;", and then sorted in the order of override dependency.
+     *
+     * @return a sorted collection of auto-loadable modules.
+     * @throws DIRuntimeException if auto-loaded modules have circular override dependencies.
+     * @since 4.2
+     */
+    public List<Module> load(Class<? extends ModuleProvider> providerClass, ClassLoader classLoader) {
+        return loadModules(ServiceLoader.load(providerClass, classLoader));
+    }
+
+    private List<Module> loadModules(ServiceLoader<? extends ModuleProvider> serviceLoader) {
         // map providers by class
 
         Map<Class<? extends Module>, ModuleProvider> providers = new HashMap<>();
 
-        for (ModuleProvider provider : ServiceLoader.load(providerClass)) {
+        for (ModuleProvider provider : serviceLoader) {
 
             ModuleProvider existing = providers.put(provider.moduleType(), provider);
             if (existing != null && !existing.getClass().equals(provider.getClass())) {

@@ -27,6 +27,8 @@ import java.util.function.Predicate;
 
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
@@ -41,7 +43,7 @@ import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.tools.ToolsInjectorBuilder;
+import org.apache.cayenne.tools.CayenneToolsModuleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,8 +141,9 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
 
     public void generateAction() {
         CgenConfiguration cgenConfiguration = createConfiguration();
-        ClassGenerationAction generator = new ToolsInjectorBuilder()
-                .create()
+        ClassGenerationAction generator = DIBootstrap
+                .createInjector(new ModuleLoader()
+                        .load(CayenneToolsModuleProvider.class))
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(cgenConfiguration);
 

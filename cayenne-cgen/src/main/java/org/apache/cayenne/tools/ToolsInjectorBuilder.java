@@ -48,7 +48,7 @@ public class ToolsInjectorBuilder {
     }
 
     private Collection<? extends Module> autoLoadedModules() {
-        return new ModuleLoader().load(CayenneToolsModuleProvider.class);
+        return new ModuleLoader().load(CayenneToolsModuleProvider.class, getClass().getClassLoader());
     }
 
     public Injector create() {
