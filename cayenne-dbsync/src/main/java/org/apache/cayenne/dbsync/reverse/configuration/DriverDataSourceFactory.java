@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import java.sql.Driver;
-
 import javax.sql.DataSource;
+import java.sql.Driver;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
@@ -47,7 +46,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
 			throw new IllegalArgumentException("'nodeDescriptor' contains no datasource descriptor");
 		}
 
-		Driver driver = objectFactory.newInstance(Driver.class, properties.getJdbcDriver());
+		Driver driver = (Driver)objectFactory.getJavaClass(properties.getJdbcDriver()).newInstance();
 		return new DriverDataSource(driver, properties.getDataSourceUrl(), properties.getUserName(),
 				properties.getPassword());
 	}
