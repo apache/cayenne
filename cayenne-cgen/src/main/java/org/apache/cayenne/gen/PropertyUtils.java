@@ -362,17 +362,28 @@ public class PropertyUtils {
     }
 
     private PropertyDescriptor getPropertyDescriptor(String attrType) {
+    	Class<?> type = null;
         try {
-            Class<?> type = adhocObjectFactory.getJavaClass(attrType);
-            for(PropertyDescriptorCreator creator : propertyList) {
-                Optional<PropertyDescriptor> optionalPropertyDescriptor = creator.apply(type);
-                if(optionalPropertyDescriptor.isPresent()) {
-                    return optionalPropertyDescriptor.get();
-                }
-            }
-        } catch (DIRuntimeException ex) {
-            return PropertyDescriptor.defaultDescriptor();
+            type = adhocObjectFactory.getJavaClass(attrType);
+        } catch (DIRuntimeException ex) {}
+        
+        if (type == null) {
+        	try {
+				type = Class.forName(attrType); // retry with default class loader
+			} catch (ClassNotFoundException ex) {
+				System.out.println("WARN: Class not found: " + attrType);
+			}
         }
+        
+        if (type != null) {
+	        for(PropertyDescriptorCreator creator : propertyList) {
+	            Optional<PropertyDescriptor> optionalPropertyDescriptor = creator.apply(type);
+	            if(optionalPropertyDescriptor.isPresent()) {
+	                return optionalPropertyDescriptor.get();
+	            }
+	        }
+        }
+        
         return PropertyDescriptor.defaultDescriptor();
     }
 }
