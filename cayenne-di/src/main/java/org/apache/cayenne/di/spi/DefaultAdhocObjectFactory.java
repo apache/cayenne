@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.net.URLClassLoader;
+import java.util.Arrays;
+
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIRuntimeException;
@@ -86,7 +89,13 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         }
 
         ClassLoader classLoader = classLoaderManager.getClassLoader(className.replace('.', '/'));
-
+        if (classLoader instanceof URLClassLoader) {
+        	System.out.println("Classloader for " + className + ": " + classLoader + "[" + 
+        			Arrays.toString(((URLClassLoader)classLoader).getURLs()) + "]");
+        } else {
+        	System.out.println("Classloader for " + className + ": " + classLoader);
+        }
+        
         // use custom logic on failure only, assuming primitives and arrays are
         // not that common
         try {

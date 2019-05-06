@@ -365,13 +365,16 @@ public class PropertyUtils {
     	Class<?> type = null;
         try {
             type = adhocObjectFactory.getJavaClass(attrType);
-        } catch (DIRuntimeException ex) {}
+        } catch (DIRuntimeException ex) {
+			System.out.println("WARN: Class not found by adhoc factory: " + attrType);
+        }
         
         if (type == null) {
         	try {
+        		System.out.println("Default classloader: " + getClass().getClassLoader());
 				type = Class.forName(attrType); // retry with default class loader
 			} catch (ClassNotFoundException ex) {
-				System.out.println("WARN: Class not found: " + attrType);
+				System.out.println("WARN: Class not found by default classloader: " + attrType);
 			}
         }
         
