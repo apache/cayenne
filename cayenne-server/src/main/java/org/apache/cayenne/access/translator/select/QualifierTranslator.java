@@ -55,7 +55,10 @@ import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.DbAttribute;
 
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.aliased;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.function;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.value;
 import static org.apache.cayenne.exp.Expression.*;
 
 /**
@@ -354,6 +357,8 @@ class QualifierTranslator implements TraversalHandler {
                     return null;
                 }
             }
+        } else if(node.getType() == FUNCTION_CALL) {
+            return null;
         }
 
         PathTranslationResult result = null;
