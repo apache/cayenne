@@ -345,8 +345,7 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     protected DbAttribute findDbAttribute(Expression node) {
-        int len = node.getOperandCount();
-        if (len != 2) {
+        if(node.getType() == Expression.LIST) {
             if (node instanceof SimpleNode) {
                 Expression parent = (Expression) ((SimpleNode) node).jjtGetParent();
                 if (parent != null) {

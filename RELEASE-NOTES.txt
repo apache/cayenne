@@ -54,6 +54,7 @@ CAY-2572 Queries are not sorted by name in data map XML
 CAY-2573 DI field injection is triggered when creating sql Driver
 CAY-2575 Select translator: Wrong translation of IN Expression
 CAY-2576 Ant cgen task is broken
+CAY-2577 Between property with extended type failure
 
 ----------------------------------
 Release: 4.1.B1
