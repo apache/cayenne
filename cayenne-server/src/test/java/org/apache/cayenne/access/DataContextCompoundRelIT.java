@@ -22,8 +22,12 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
+import org.apache.cayenne.testdo.compound.CompoundOrder;
+import org.apache.cayenne.testdo.compound.CompoundOrderLine;
+import org.apache.cayenne.testdo.compound.CompoundOrderLineInfo;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -101,6 +105,34 @@ public class DataContextCompoundRelIT extends ServerCase {
 
         assertEquals(1, objs.size());
         assertEquals("d1", objs.get(0).getName());
+    }
+
+    @Test
+    public void testToOne() {
+        {
+            CompoundOrder order = context.newObject(CompoundOrder.class);
+            order.setInfo("order");
+
+            CompoundOrderLine line = context.newObject(CompoundOrderLine.class);
+            line.setOrder(order);
+            line.setLineNumber(1);
+
+            CompoundOrderLineInfo info = context.newObject(CompoundOrderLineInfo.class);
+            info.setLine(line);
+            info.setInfo("info");
+
+            context.commitChanges();
+            context.invalidateObjects(order, line, info);
+        }
+
+        {
+            CompoundOrder order = ObjectSelect.query(CompoundOrder.class).selectFirst(context1);
+            CompoundOrderLine line = order.getLines().get(0);
+            CompoundOrderLineInfo info = line.getInfo();
+
+            assertEquals(1, line.getLineNumber());
+            assertEquals("info", info.getInfo());
+        }
     }
 
     @Test

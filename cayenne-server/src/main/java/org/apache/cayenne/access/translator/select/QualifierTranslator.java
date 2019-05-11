@@ -23,7 +23,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -54,6 +54,8 @@ import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.aliased;
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.function;
@@ -249,30 +251,22 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     private Node createMultiAttributeMatch(Expression node, Expression parentNode, PathTranslationResult result) {
-        ObjectId objectId = null;
+        DbRelationship relationship = result.getDbRelationship()
+                .orElseThrow(() -> new CayenneRuntimeException("Incorrect path '%s' translation, relationship expected"
+                        , result.getFinalPath()));
+
+        DbEntity targetEntity = relationship.getTargetEntity();
+        if(result.getDbAttributes().size() != targetEntity.getPrimaryKeys().size()) {
+            throw new CayenneRuntimeException("Unsupported or incorrect mapping for relationship '%s.%s': " +
+                    "target entity has different count of primary keys than count of joins."
+                    , relationship.getSourceEntityName(), relationship.getName());
+        }
+
         expressionsToSkip.add(node);
         expressionsToSkip.add(parentNode);
 
-        int siblings = parentNode.getOperandCount();
-        for(int i=0; i<siblings; i++) {
-            Object operand = parentNode.getOperand(i);
-            if(node == operand) {
-                continue;
-            }
-
-            if(operand instanceof Persistent) {
-                objectId = ((Persistent) operand).getObjectId();
-                break;
-            } else if(operand instanceof ObjectId) {
-                objectId = (ObjectId)operand;
-                break;
-            } else if(operand instanceof ASTObjPath) {
-                // TODO: support comparision of multi attribute ObjPath with other multi attribute ObjPath
-                throw new UnsupportedOperationException("Comparision of multiple attributes not supported for ObjPath");
-            }
-        }
-
-        if(objectId == null) {
+        Map<String, Object> valueSnapshot = getMultiAttributeValueSnapshot(node, parentNode);
+        if(valueSnapshot == null) {
             throw new CayenneRuntimeException("Multi attribute ObjPath isn't matched with valid value. " +
                     "List or Persistent object required.");
         }
@@ -280,15 +274,16 @@ class QualifierTranslator implements TraversalHandler {
         ExpressionNodeBuilder expressionNodeBuilder = null;
         ExpressionNodeBuilder eq;
 
-        Iterator<DbAttribute> pkIt = result.getDbRelationship().get().getTargetEntity().getPrimaryKeys().iterator();
-        int count = result.getDbAttributes().size();
+        String path = result.getLastAttributePath();
+        String alias = context.getTableTree().aliasForPath(path);
 
-        for(int i=0; i<count; i++) {
-            String path = result.getAttributePaths().get(i);
-            DbAttribute attribute = result.getDbAttributes().get(i);
-            DbAttribute pk = pkIt.next();
-            String alias = context.getTableTree().aliasForPath(path);
-            Object nextValue = objectId.getIdSnapshot().get(pk.getName());
+        // convert snapshot if we have attributes from source, not target
+        if(result.getLastAttribute().getEntity() == relationship.getSourceEntity()) {
+            valueSnapshot = relationship.srcFkSnapshotWithTargetSnapshot(valueSnapshot);
+        }
+
+        for(DbAttribute attribute : result.getDbAttributes()) {
+            Object nextValue = valueSnapshot.get(attribute.getName());
             eq = table(alias).column(attribute).eq(value(nextValue));
             if (expressionNodeBuilder == null) {
                 expressionNodeBuilder = eq;
@@ -298,6 +293,27 @@ class QualifierTranslator implements TraversalHandler {
         }
 
         return expressionNodeBuilder.build();
+    }
+
+    private Map<String, Object> getMultiAttributeValueSnapshot(Expression node, Expression parentNode) {
+        int siblings = parentNode.getOperandCount();
+        for(int i=0; i<siblings; i++) {
+            Object operand = parentNode.getOperand(i);
+            if(node == operand) {
+                continue;
+            }
+
+            if(operand instanceof Persistent) {
+                return ((Persistent) operand).getObjectId().getIdSnapshot();
+            } else if(operand instanceof ObjectId) {
+                return  ((ObjectId) operand).getIdSnapshot();
+            } else if(operand instanceof ASTObjPath) {
+                // TODO: support comparision of multi attribute ObjPath with other multi attribute ObjPath
+                throw new UnsupportedOperationException("Comparision of multiple attributes not supported for ObjPath");
+            }
+        }
+
+        return null;
     }
 
     private boolean nodeProcessed(Expression node) {
