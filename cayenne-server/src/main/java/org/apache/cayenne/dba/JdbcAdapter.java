@@ -55,6 +55,7 @@ import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -456,7 +457,14 @@ public class JdbcAdapter implements DbAdapter {
 
         boolean first = true;
 
-        for (DbJoin join : rel.getJoins()) {
+        // sort joins in the order PK are set in target, to avoid errors on some DBs
+        List<DbJoin> joins = rel.getJoins();
+        if(rel.isToPK()) {
+            List<DbAttribute> pks = rel.getTargetEntity().getPrimaryKeys();
+            joins.sort(Comparator.comparingInt(join -> pks.indexOf(join.getTarget())));
+        }
+
+        for (DbJoin join : joins) {
             if (first) {
                 first = false;
             } else {
