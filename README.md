@@ -19,7 +19,7 @@
 Apache Cayenne
 ==============
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server.svg)](https://cayenne.apache.org/download/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server/4.1.B2.svg)](https://cayenne.apache.org/download/)
 [![Build Status](https://travis-ci.org/apache/cayenne.svg)](https://travis-ci.org/apache/cayenne)
 
 <!-- Broken maven badge: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/) -->
