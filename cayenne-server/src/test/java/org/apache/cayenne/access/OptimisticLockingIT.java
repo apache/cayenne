@@ -26,6 +26,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.locking.LockingHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -454,9 +455,35 @@ public class OptimisticLockingIT extends ServerCase {
         SimpleLockingTestEntity object1 = object.getToSimpleLockingTest();
         object.setToSimpleLockingTest(null);
         context.commitChanges();
+        assertNull(object.getToSimpleLockingTest());
 
         // change to-one relationship to non-null and save... should lock on null value
         object.setToSimpleLockingTest(object1);
+        context.commitChanges();
+        assertNotNull(object.getToSimpleLockingTest());
+    }
+    
+    @Test
+    public void testTransientInsertAndDeleteOfToManyRelationship() throws Exception {
+        createLockingOnToOneDataSet();
+
+        List<RelLockingTestEntity> allObjects = new SelectQuery<>(
+                RelLockingTestEntity.class).select(context);
+        assertEquals(1, allObjects.size());
+
+        RelLockingTestEntity object = allObjects.get(0);
+        
+        LockingHelper object1 = object.getLockingHelpers().get(0);
+        
+        // create and then immediately delete a to-many relationship value 
+        LockingHelper object2 = context.newObject(LockingHelper.class);
+        object.addToLockingHelpers(object2);
+        object.removeFromLockingHelpers(object2);
+        context.deleteObject(object2);
+        assertEquals(1, object.getLockingHelpers().size());
+
+        object1.setName("updated"); // this will force the commit to actually execute some SQL
+
         context.commitChanges();
     }
     
