@@ -441,6 +441,26 @@ public class OptimisticLockingIT extends ServerCase {
     }
 
     @Test
+    public void testSuccessLockingOnToOneNull() throws Exception {
+        createLockingOnToOneDataSet();
+
+        List<RelLockingTestEntity> allObjects = new SelectQuery<>(
+                RelLockingTestEntity.class).select(context);
+        assertEquals(1, allObjects.size());
+
+        RelLockingTestEntity object = allObjects.get(0);
+
+        // set to-one relationship to null and save
+        SimpleLockingTestEntity object1 = object.getToSimpleLockingTest();
+        object.setToSimpleLockingTest(null);
+        context.commitChanges();
+
+        // change to-one relationship to non-null and save... should lock on null value
+        object.setToSimpleLockingTest(object1);
+        context.commitChanges();
+    }
+    
+    @Test
     public void testFailLockingOnToOne() throws Exception {
         createLockingOnToOneDataSet();
 

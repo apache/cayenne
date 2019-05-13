@@ -70,8 +70,11 @@ class OptimisticLockQualifierBuilder implements PropertyVisitor {
             for(DbJoin join : dbRelationship.getJoins()) {
                 DbAttribute source = join.getSource();
                 if(!source.isPrimaryKey()) {
+                    Object valueObjectId = value != null 
+                        ? ObjectIdValueSupplier.getFor(value, join.getTargetName()) 
+                        : null;
                     dbRow.getQualifier()
-                            .addAdditionalQualifier(source, ObjectIdValueSupplier.getFor(value, join.getTargetName()), true);
+                            .addAdditionalQualifier(source, valueObjectId, true);
                 }
             }
         }
