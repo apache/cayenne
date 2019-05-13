@@ -103,6 +103,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     public void execute() throws BuildException {
         validateAttributes();
 
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
         injector = new ToolsInjectorBuilder()
                 .addModule(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorTask.class)))
                 .create();
@@ -113,6 +115,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         loadAction.setMainDataMapFile(map);
         loadAction.setAdditionalDataMapFiles(additionalMaps);
         try {
+            Thread.currentThread().setContextClassLoader(CayenneGeneratorTask.class.getClassLoader());
 
             DataMap dataMap = loadAction.getMainDataMap();
 
@@ -140,6 +143,8 @@ public class CayenneGeneratorTask extends CayenneTask {
         }
         catch (Exception e) {
             throw new BuildException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(loader);
         }
     }
 

@@ -371,6 +371,7 @@ public class PropertyUtils {
                 }
             }
         } catch (DIRuntimeException ex) {
+            System.out.println("WARN: Class not found: " + attrType + ". Will use default PropertyDescriptor.");
             return PropertyDescriptor.defaultDescriptor();
         }
         return PropertyDescriptor.defaultDescriptor();
