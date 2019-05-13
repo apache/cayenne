@@ -39,7 +39,7 @@ import org.apache.cayenne.exp.FunctionExpressionFactory;
  * @see org.apache.cayenne.exp.property
  * @since 4.2
  */
-public class StringProperty<E extends CharSequence> extends BaseProperty<E> {
+public class StringProperty<E extends CharSequence> extends BaseProperty<E> implements ComparableProperty<E> {
 
     /**
      * Constructs a new property with the given name and expression

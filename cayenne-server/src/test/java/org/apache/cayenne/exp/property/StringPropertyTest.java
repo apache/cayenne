@@ -164,6 +164,18 @@ public class StringPropertyTest {
     }
 
     @Test
+    public void compare() {
+        assertEquals(exp("path > 'abc'"),  property.gt("abc"));
+        assertEquals(exp("path > other"),  property.gt(other));
+        assertEquals(exp("path >= 'abc'"), property.gte("abc"));
+        assertEquals(exp("path >= other"), property.gte(other));
+        assertEquals(exp("path < 'abc'"),  property.lt("abc"));
+        assertEquals(exp("path < other"),  property.lt(other));
+        assertEquals(exp("path <= 'abc'"), property.lte("abc"));
+        assertEquals(exp("path <= other"), property.lte(other));
+    }
+
+    @Test
     public void alias() {
         assertEquals("path", property.getName());
         assertNull(property.getAlias());

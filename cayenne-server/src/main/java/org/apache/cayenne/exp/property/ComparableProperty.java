@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.FunctionExpressionFactory;
  * @see org.apache.cayenne.exp.property
  * @since 4.2
  */
-// TODO: bound <E> to <E extends Comparable> once deprecated Property class is removed
 public interface ComparableProperty<E> extends Property<E> {
 
     /**
