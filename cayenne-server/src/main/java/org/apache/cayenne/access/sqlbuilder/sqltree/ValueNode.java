@@ -63,8 +63,13 @@ public class ValueNode extends Node {
         return buffer;
     }
 
+    protected void appendNullValue(QuotingAppendable buffer) {
+        buffer.append(" NULL");
+    }
+
     private void appendValue(Object val, QuotingAppendable buffer) {
         if(val == null) {
+            appendNullValue(buffer);
             return;
         }
 

@@ -34,7 +34,7 @@ public class EqualNode extends ExpressionNode {
     public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
         Node child = getChild(1);
         if (child.getType() == NodeType.VALUE && ((ValueNode) child).getValue() == null) {
-            buffer.append(" IS NULL");
+            buffer.append(" IS");
         } else {
             buffer.append(" =");
         }

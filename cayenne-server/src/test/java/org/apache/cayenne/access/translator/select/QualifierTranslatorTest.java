@@ -484,6 +484,17 @@ public class QualifierTranslatorTest {
     }
 
     @Test
+    public void translateNullComparision() {
+        Node or = translate("a > null");
+        assertNotNull(or);
+        assertThat(or, instanceOf(OpExpressionNode.class));
+        assertEquals(">", ((OpExpressionNode)or).getOp());
+        assertEquals(2, or.getChildrenCount());
+        assertThat(or.getChild(0), instanceOf(ColumnNode.class));
+        assertThat(or.getChild(1), instanceOf(ValueNode.class));
+    }
+
+    @Test
     public void translateComplexExp() {
         Node result = translate("(a >= 1 + 2 / 3 << 4) and (db:b != true)");
 

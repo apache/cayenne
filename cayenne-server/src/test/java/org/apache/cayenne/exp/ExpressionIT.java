@@ -23,6 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -123,6 +124,26 @@ public class ExpressionIT extends ServerCase {
 
 		Expression e4 = ExpressionFactory.matchExp("paintingTitle", "x4");
 		assertNull(e4.first(paintingList));
+	}
+
+	@Test
+	public void testLessThanNull() {
+		Artist a1 = context.newObject(Artist.class);
+		a1.setArtistName("Picasso");
+		context.commitChanges();
+
+		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String)null)).select(context);
+		assertTrue("Less than 'NULL' never matches anything", artists.isEmpty());
+	}
+
+	@Test
+	public void testInNull() {
+		Artist a1 = context.newObject(Artist.class);
+		a1.setArtistName("Picasso");
+		context.commitChanges();
+
+		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String)null)).select(context);
+		assertEquals(1, artists.size());
 	}
 
 }

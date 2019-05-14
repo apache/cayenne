@@ -35,7 +35,7 @@ public class NotEqualNode extends ExpressionNode {
         String expStr = " <> ";
         Node child = getChild(1);
         if (child.getType() == NodeType.VALUE && ((ValueNode) child).getValue() == null) {
-            expStr = " IS NOT NULL";
+            expStr = " IS NOT";
         }
         buffer.append(expStr);
     }
