@@ -411,4 +411,8 @@ public class UnitDbAdapter {
     public boolean supportsLongIn() {
         return true;
     }
+
+    public boolean supportsNullComparision() {
+        return true;
+    }
 }

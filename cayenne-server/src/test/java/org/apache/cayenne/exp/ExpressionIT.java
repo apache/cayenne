@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -27,6 +28,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -50,6 +52,9 @@ public class ExpressionIT extends ServerCase {
 
 	@Inject
 	private ServerRuntime runtime;
+
+	@Inject
+    private UnitDbAdapter adapter;
 
     @Test
 	public void testMatch() {
@@ -132,8 +137,18 @@ public class ExpressionIT extends ServerCase {
 		a1.setArtistName("Picasso");
 		context.commitChanges();
 
-		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String)null)).select(context);
-		assertTrue("Less than 'NULL' never matches anything", artists.isEmpty());
+        List<Artist> artists;
+		try {
+            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String) null)).select(context);
+        } catch (CayenneRuntimeException ex) {
+		    if(adapter.supportsNullComparision()) {
+		        throw ex;
+            } else {
+		        return;
+            }
+        }
+
+        assertTrue("Less than 'NULL' never matches anything", artists.isEmpty());
 	}
 
 	@Test
@@ -142,7 +157,16 @@ public class ExpressionIT extends ServerCase {
 		a1.setArtistName("Picasso");
 		context.commitChanges();
 
-		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String)null)).select(context);
+        List<Artist> artists;
+        try {
+            artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String) null)).select(context);
+        } catch (CayenneRuntimeException ex) {
+            if(adapter.supportsNullComparision()) {
+                throw ex;
+            } else {
+                return;
+            }
+        }
 		assertEquals(1, artists.size());
 	}
 
