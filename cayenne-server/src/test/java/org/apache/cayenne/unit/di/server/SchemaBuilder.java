@@ -74,7 +74,7 @@ public class SchemaBuilder {
 			"locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml",
 			"relationships-activity.map.xml", "relationships-delete-rules.map.xml",
 			"relationships-collection-to-many.map.xml", "relationships-child-master.map.xml",
-			"relationships-clob.map.xml", "relationships-flattened.map.xml", "relationships-set-to-many.map.xml",
+			"relationships-clob.map.xml", "relationships-flattened.map.xml", "relationships-many-to-many-join.map.xml", "relationships-set-to-many.map.xml",
 			"relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml",
 			"uuid.map.xml", "multi-tier.map.xml", "reflexive.map.xml", "delete-rules.map.xml",
             "lifecycle-callbacks-order.map.xml", "lifecycles.map.xml", "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml",
