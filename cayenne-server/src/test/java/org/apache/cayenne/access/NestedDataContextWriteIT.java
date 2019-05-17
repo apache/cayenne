@@ -656,4 +656,17 @@ public class NestedDataContextWriteIT extends ServerCase {
         assertEquals(artist.getPaintingArray().get(0).getObjectContext(), context);
 
     }
+    
+    @Test
+    public void testTwoStageCommit() {
+        DataContext parent = createDataContext();
+        ObjectContext child = runtime.newContext(parent);
+
+        Painting painting = child.newObject(Painting.class);
+        painting.setPaintingTitle("222");
+        
+        child.commitChangesToParent();
+        parent.commitChanges();
+        assertTrue(!painting.getObjectId().isTemporary());
+    }
 }
