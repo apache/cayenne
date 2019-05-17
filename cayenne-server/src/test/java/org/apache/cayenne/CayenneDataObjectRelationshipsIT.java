@@ -346,4 +346,21 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         artist.setArtistName("updated artist name"); // this will force the commit to actually execute some SQL
         context.commitChanges();
     }
+    
+    @Test
+    public void testTransientSetAndNullOfToOneRelationship() throws Exception {
+        createArtistWithPaintingDataSet();
+
+        Artist artist = ObjectSelect.query(Artist.class).selectOne(context);
+
+        Painting object2 = context.newObject(Painting.class);
+        object2.setPaintingTitle("Title");
+        object2.setToArtist(artist);
+        object2.setToArtist(null);
+        context.commitChanges();
+        
+        context.invalidateObjects(object2);
+        assertNull(object2.getToArtist());
+    }
+    
 }
