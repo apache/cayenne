@@ -80,7 +80,7 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
     private void updateId(DbRowOp dbRow) {
         ObjectId id = dbRow.getChangeId();
         if (!id.isReplacementIdAttached()) {
-            if (id.isTemporary()) {
+            if (id == dbRow.getObject().getObjectId() && id.isTemporary()) {
                 throw new CayenneRuntimeException("PK for the object %s is not set during insert.", dbRow.getObject());
             }
             return;

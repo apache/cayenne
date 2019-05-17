@@ -139,6 +139,18 @@ public class Values {
         return snapshot == null || snapshot.isEmpty();
     }
 
+    public void clear() {
+        if(snapshot != null) {
+            snapshot.clear();
+        }
+        if(updatedAttributes != null) {
+            updatedAttributes.clear();
+        }
+        if(flattenedIds != null) {
+            flattenedIds.clear();
+        }
+    }
+
     public boolean isSameBatch(Values other) {
         if(snapshot == null) {
             return other.snapshot == null;

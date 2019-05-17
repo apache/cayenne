@@ -41,6 +41,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
+import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -82,7 +83,8 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         List<DbRowOp> dbRowOps = createDbRowOps(objectStore, objectStoreGraphDiff);
         updateObjectIds(dbRowOps);
         List<DbRowOp> deduplicatedOps = mergeSameObjectIds(dbRowOps);
-        List<DbRowOp> sortedOps = sort(deduplicatedOps);
+        List<DbRowOp> filteredOps = filterOps(deduplicatedOps);
+        List<DbRowOp> sortedOps = sort(filteredOps);
         List<? extends Query> queries = createQueries(sortedOps);
         executeQueries(queries);
         createReplacementIds(objectStore, afterCommitDiff, sortedOps);
@@ -130,6 +132,12 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         // reuse list
         dbRowOps.clear();
         dbRowOps.addAll(index.values());
+        return dbRowOps;
+    }
+
+    protected List<DbRowOp> filterOps(List<DbRowOp> dbRowOps) {
+        // clear phantom update (this can be from insert/delete of arc with transient object)
+        dbRowOps.forEach(row -> row.accept(PhantomDbRowOpCleaner.INSTANCE));
         return dbRowOps;
     }
 
@@ -207,4 +215,17 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         objectStore.postprocessAfterCommit(afterCommitDiff);
     }
 
+    protected static class PhantomDbRowOpCleaner implements DbRowOpVisitor<Void> {
+
+        protected static final DbRowOpVisitor<Void> INSTANCE = new PhantomDbRowOpCleaner();
+
+        @Override
+        public Void visitUpdate(UpdateDbRowOp dbRow) {
+            //
+            if(dbRow.getChangeId().isTemporary() && !dbRow.getChangeId().isReplacementIdAttached()) {
+                dbRow.getValues().clear();
+            }
+            return null;
+        }
+    }
 }

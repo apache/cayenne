@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -327,5 +328,22 @@ public class CayenneDataObjectRelationshipsIT extends ServerCase {
         context.commitChanges();
 
         assertFalse(list.isFault());
+    }
+
+    @Test
+    public void testTransientInsertAndDeleteOfToManyRelationship() throws Exception {
+        createArtistWithPaintingDataSet();
+
+        Artist artist = ObjectSelect.query(Artist.class).selectOne(context);
+
+        // create and then immediately delete a to-many relationship value
+        Painting object2 = context.newObject(Painting.class);
+        artist.addToPaintingArray(object2);
+        artist.removeFromPaintingArray(object2);
+        context.deleteObject(object2);
+        assertEquals(1, artist.getPaintingArray().size());
+
+        artist.setArtistName("updated artist name"); // this will force the commit to actually execute some SQL
+        context.commitChanges();
     }
 }

@@ -66,7 +66,7 @@ class DbRowOpFactory {
         this.rootRowOpProcessor = new RootRowOpProcessor(this);
     }
 
-    private void udpateDiff(ObjectDiff diff) {
+    private void updateDiff(ObjectDiff diff) {
         ObjectId id = (ObjectId)diff.getNodeId();
         this.diff = diff;
         this.descriptor = resolver.getClassDescriptor(id.getEntityName());
@@ -75,7 +75,7 @@ class DbRowOpFactory {
     }
 
     Collection<? extends DbRowOp> createRows(ObjectDiff diff) {
-        udpateDiff(diff);
+        updateDiff(diff);
         DbEntity rootEntity = descriptor.getEntity().getDbEntity();
         DbRowOp row = getOrCreate(rootEntity, object.getObjectId(), DbRowOpType.forObject(object));
         rootRowOpProcessor.setDiff(diff);
