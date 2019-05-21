@@ -61,6 +61,7 @@ public class CayenneProjects {
     public static final String REFLEXIVE_PROJECT = "cayenne-reflexive.xml";
     public static final String RELATIONSHIPS_PROJECT = "cayenne-relationships.xml";
     public static final String RELATIONSHIPS_ACTIVITY_PROJECT = "cayenne-relationships-activity.xml";
+    public static final String RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT = "cayenne-relationships-many-to-many-join.xml";
     public static final String RELATIONSHIPS_CHILD_MASTER_PROJECT = "cayenne-relationships-child-master.xml";
     public static final String RELATIONSHIPS_CLOB_PROJECT = "cayenne-relationships-clob.xml";
     public static final String RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT = "cayenne-relationships-collection-to-many.xml";
