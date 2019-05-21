@@ -8,7 +8,7 @@
 	"License"); you may not use this file except in compliance
 	with the License.  You may obtain a copy of the License at
 	
-	http://www.apache.org/licenses/LICENSE-2.0
+	https://www.apache.org/licenses/LICENSE-2.0
 	
 	Unless required by applicable law or agreed to in writing,
 	software distributed under the License is distributed on an
@@ -17,7 +17,7 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cayenne-parent</artifactId>
@@ -45,7 +45,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-	<url>http://cayenne.apache.org/</url>
+	<url>https://cayenne.apache.org/</url>
 	<modules>
 		<module>build-tools</module>
 		<module>cayenne-ant</module>
@@ -92,9 +92,9 @@
 			<unsubscribe>user-unsubscribe@cayenne.apache.org</unsubscribe>
 			<archive>https://lists.apache.org/list.html?user@cayenne.apache.org</archive>
 			<otherArchives>
-				<otherArchive>http://mail-archives.apache.org/mod_mbox/cayenne-user</otherArchive>
-				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.user</otherArchive>
-				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.user</otherArchive>
+				<otherArchive>https://mail-archives.apache.org/mod_mbox/cayenne-user</otherArchive>
+				<otherArchive>https://cayenne.markmail.org/search/+list:org.apache.cayenne.user</otherArchive>
+				<otherArchive>https://dir.gmane.org/gmane.comp.java.cayenne.user</otherArchive>
 			</otherArchives>
 		</mailingList>
 		<mailingList>
@@ -104,9 +104,9 @@
 			<unsubscribe>dev-unsubscribe@cayenne.apache.org</unsubscribe>
 			<archive>https://lists.apache.org/list.html?dev@cayenne.apache.org</archive>
 			<otherArchives>
-				<otherArchive>http://mail-archives.apache.org/mod_mbox/cayenne-dev</otherArchive>
-				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.dev</otherArchive>
-				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.devel</otherArchive>
+				<otherArchive>https://mail-archives.apache.org/mod_mbox/cayenne-dev</otherArchive>
+				<otherArchive>https://cayenne.markmail.org/search/+list:org.apache.cayenne.dev</otherArchive>
+				<otherArchive>https://dir.gmane.org/gmane.comp.java.cayenne.devel</otherArchive>
 			</otherArchives>
 		</mailingList>
 		<mailingList>
@@ -115,8 +115,8 @@
 			<unsubscribe>commits-unsubscribe@cayenne.apache.org</unsubscribe>
 			<archive>https://lists.apache.org/list.html?commits@cayenne.apache.org</archive>
 			<otherArchives>
-				<otherArchive>http://mail-archives.apache.org/mod_mbox/cayenne-commits</otherArchive>
-				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.commits</otherArchive>
+				<otherArchive>https://mail-archives.apache.org/mod_mbox/cayenne-commits</otherArchive>
+				<otherArchive>https://cayenne.markmail.org/search/+list:org.apache.cayenne.commits</otherArchive>
 			</otherArchives>
 		</mailingList>
 	</mailingLists>
@@ -280,7 +280,7 @@
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -292,7 +292,7 @@
 	</scm>
 	<organization>
 		<name>Apache Cayenne</name>
-		<url>http://cayenne.apache.org/</url>
+		<url>https://cayenne.apache.org/</url>
 	</organization>
 	<dependencyManagement>
 		<dependencies>
