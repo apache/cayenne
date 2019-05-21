@@ -261,7 +261,7 @@ public class PersistentObjectList<E> extends RelationshipFault<E> implements Lis
             // TODO: here we assume that all objects were removed,
             // while removeAll may technically return true and remove only some objects...
             // need a smarter approach
-            postprocessRemove((E)c);
+            postprocessRemove((Collection<? extends E>)c);
             return true;
         }
 
@@ -269,7 +269,7 @@ public class PersistentObjectList<E> extends RelationshipFault<E> implements Lis
     }
 
     @Override
-    public boolean retainAll(Collection c) {
+    public boolean retainAll(Collection<?> c) {
         // TODO: handle object graoh change notifications on object removals...
         return resolvedObjectList().retainAll(c);
     }
@@ -408,7 +408,7 @@ public class PersistentObjectList<E> extends RelationshipFault<E> implements Lis
      * @return whether object should be added to {@link #removedFromUnresolved} during
      *         removal
      */
-    protected boolean shouldAddToRemovedFromUnresolvedList(Object object) {
+    protected boolean shouldAddToRemovedFromUnresolvedList(E object) {
         return true;
     }
 
