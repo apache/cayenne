@@ -35,15 +35,17 @@ class ArcTarget {
     private final ObjectId sourceId;
     private final ObjectId targetId;
     private final ArcId arcId;
+    private final boolean delete;
 
-    ArcTarget(ObjectId sourceId, ObjectId targetId, ArcId arcId) {
+    ArcTarget(ObjectId sourceId, ObjectId targetId, ArcId arcId, boolean delete) {
         this.sourceId = Objects.requireNonNull(sourceId);
         this.targetId = Objects.requireNonNull(targetId);
         this.arcId = Objects.requireNonNull(arcId);
+        this.delete = delete;
     }
 
     ArcTarget getReversed() {
-        return new ArcTarget(targetId, sourceId, arcId.getReverseId());
+        return new ArcTarget(targetId, sourceId, arcId.getReverseId(), delete);
     }
 
     ArcId getArcId() {
@@ -68,6 +70,9 @@ class ArcTarget {
         }
 
         ArcTarget arcTarget = (ArcTarget) o;
+        if(delete != arcTarget.delete) {
+            return false;
+        }
         if (!sourceId.equals(arcTarget.sourceId)) {
             return false;
         }
@@ -82,6 +87,7 @@ class ArcTarget {
         int result = sourceId.hashCode();
         result = 31 * result + targetId.hashCode();
         result = 31 * result + arcId.hashCode();
+        result = 31 * result + (delete ? 1 : 0);
         return result;
     }
 }

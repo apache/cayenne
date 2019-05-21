@@ -70,7 +70,7 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         if(snapshotId != null) {
             actualTargetId = snapshotId;
         }
-        ArcTarget arcTarget = new ArcTarget((ObjectId) nodeId, actualTargetId, arcId);
+        ArcTarget arcTarget = new ArcTarget((ObjectId) nodeId, actualTargetId, arcId, !created);
         if(factory.getProcessedArcs().contains(arcTarget.getReversed())) {
             return;
         }

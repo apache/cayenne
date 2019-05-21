@@ -53,14 +53,10 @@ public class Values {
             snapshot = new HashMap<>();
             updatedAttributes = new ArrayList<>();
         }
-        computeSnapshotValue(attribute.getName(), value);
+        snapshot.put(attribute.getName(), value);
         if(!updatedAttributes.contains(attribute)) {
             updatedAttributes.add(attribute);
         }
-    }
-
-    private void computeSnapshotValue(String attribute, Object value) {
-        snapshot.putIfAbsent(attribute, value);
     }
 
     public void merge(Values other) {
@@ -68,7 +64,7 @@ public class Values {
             this.snapshot = other.snapshot;
             this.updatedAttributes = other.updatedAttributes;
         } else if(other.snapshot != null) {
-            other.snapshot.forEach(this::computeSnapshotValue);
+            other.snapshot.forEach(snapshot::putIfAbsent);
             other.updatedAttributes.forEach(attr -> {
                 if(!updatedAttributes.contains(attr)) {
                     updatedAttributes.add(attr);
