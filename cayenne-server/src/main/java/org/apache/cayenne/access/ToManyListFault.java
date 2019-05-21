@@ -31,6 +31,6 @@ public class ToManyListFault extends Fault {
      */
     @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        return new ToManyList(sourceObject, relationshipName);
+        return new ToManyList<>(sourceObject, relationshipName);
     }
 }

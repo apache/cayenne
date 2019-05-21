@@ -93,7 +93,7 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
 
     public Object setValue(Object value) throws CayenneRuntimeException {
         resolvedObjectMap();
-        return setValueDirectly(objectMap);
+        return setValueDirectly(value);
     }
 
     public Object setValueDirectly(Object value) throws CayenneRuntimeException {

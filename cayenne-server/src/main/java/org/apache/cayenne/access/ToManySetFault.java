@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.util.PersistentObjectSet;
 
 /**
  * @since 3.0
@@ -29,7 +28,7 @@ public class ToManySetFault extends Fault {
 
     @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {
-        return new PersistentObjectSet(sourceObject, relationshipName);
+        return new ToManySet<>(sourceObject, relationshipName);
     }
 
 }

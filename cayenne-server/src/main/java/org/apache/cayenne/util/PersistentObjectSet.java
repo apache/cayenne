@@ -32,15 +32,15 @@ import org.apache.cayenne.ValueHolder;
 /**
  * @since 3.0
  */
-public class PersistentObjectSet extends RelationshipFault 
-    implements Set, ValueHolder, PersistentObjectCollection {
+public class PersistentObjectSet<E> extends RelationshipFault<E>
+    implements Set<E>, ValueHolder<Object>, PersistentObjectCollection<E> {
 
     // wrapped objects set
-    protected Set objectSet;
+    protected Set<E> objectSet;
 
     // track additions/removals in unresolved...
-    protected Set addedToUnresolved;
-    protected Set removedFromUnresolved;
+    protected Set<E> addedToUnresolved;
+    protected Set<E> removedFromUnresolved;
 
     // exists for the benefit of manual serialization schemes such as the one in Hessian.
     private PersistentObjectSet() {
@@ -53,6 +53,7 @@ public class PersistentObjectSet extends RelationshipFault
     /**
      * Returns whether this list is not yet resolved and requires a fetch.
      */
+    @Override
     public boolean isFault() {
 
         if (objectSet != null) {
@@ -62,7 +63,7 @@ public class PersistentObjectSet extends RelationshipFault
         // object may be in an inconsistent state during construction time
         // synchronize??
         else if (isTransientParent()) {
-            objectSet = new HashSet();
+            objectSet = new HashSet<>();
             return false;
         }
         else {
@@ -73,19 +74,21 @@ public class PersistentObjectSet extends RelationshipFault
     /**
      * Turns itself into a fault, thus forcing a refresh on the next access.
      */
+    @Override
     public void invalidate() {
         setObjectSet(null);
     }
 
+    @Override
     public Object setValueDirectly(Object value) throws CayenneRuntimeException {
-        Object old = this.objectSet;
+        Set<E> old = this.objectSet;
 
         if (value == null || value instanceof Set) {
-            setObjectSet((Set) value);
+            setObjectSet((Set<E>) value);
         } else if (value instanceof Collection) {
             // we can wrap non-set collections on the fly - this is needed for prefetch handling...
             // although it seems to be breaking the contract for 'setValueDirectly' ???
-            setObjectSet(new HashSet((Collection) value));
+            setObjectSet(new HashSet<>((Collection<E>) value));
         } else {
             throw new CayenneRuntimeException("Value must be a list, got: %s", value.getClass().getName());
         }
@@ -93,20 +96,22 @@ public class PersistentObjectSet extends RelationshipFault
         return old;
     }
 
-    public Object getValue() throws CayenneRuntimeException {
+    @Override
+    public Set<E> getValue() throws CayenneRuntimeException {
         return resolvedObjectSet();
     }
 
-    public Object getValueDirectly() throws CayenneRuntimeException {
+    @Override
+    public Set<E> getValueDirectly() throws CayenneRuntimeException {
         return objectSet;
     }
 
     public Object setValue(Object value) throws CayenneRuntimeException {
         resolvedObjectSet();
-        return setValueDirectly(objectSet);
+        return setValueDirectly(value);
     }
 
-    public void setObjectSet(Set objectSet) {
+    public void setObjectSet(Set<E> objectSet) {
         this.objectSet = objectSet;
     }
 
@@ -114,7 +119,8 @@ public class PersistentObjectSet extends RelationshipFault
     // Standard Set Methods.
     // ====================================================
 
-    public boolean add(Object o) {
+    @Override
+    public boolean add(E o) {
         if ((isFault()) ? addLocal(o) : objectSet.add(o)) {
             postprocessAdd(o);
             return true;
@@ -123,7 +129,8 @@ public class PersistentObjectSet extends RelationshipFault
         return false;
     }
 
-    public boolean addAll(Collection c) {
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
         if (resolvedObjectSet().addAll(c)) {
             // TODO: here we assume that all objects were added, while addAll may
             // technically return true and add only some objects... need a smarter
@@ -136,16 +143,19 @@ public class PersistentObjectSet extends RelationshipFault
         return false;
     }
 
+    @Override
     public void clear() {
-        Set resolved = resolvedObjectSet();
+        Set<E> resolved = resolvedObjectSet();
         postprocessRemove(resolved);
         resolved.clear();
     }
 
+    @Override
     public boolean contains(Object o) {
         return resolvedObjectSet().contains(o);
     }
 
+    @Override
     public boolean containsAll(Collection c) {
         return resolvedObjectSet().containsAll(c);
     }
@@ -168,38 +178,46 @@ public class PersistentObjectSet extends RelationshipFault
         return 53 + resolvedObjectSet().hashCode();
     }
 
+    @Override
     public boolean isEmpty() {
         return resolvedObjectSet().isEmpty();
     }
 
-    public Iterator iterator() {
+    @Override
+    public Iterator<E> iterator() {
         return resolvedObjectSet().iterator();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
     public boolean remove(Object o) {
-        if ((isFault()) ? removeLocal(o) : objectSet.remove(o)) {
-            postprocessRemove(o);
+        E object = (E) o;
+        if ((isFault()) ? removeLocal(object) : objectSet.remove(o)) {
+            postprocessRemove(object);
             return true;
         }
 
         return false;
     }
 
-    public boolean removeAll(Collection c) {
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean removeAll(Collection<?> c) {
         if (resolvedObjectSet().removeAll(c)) {
             // TODO: here we assume that all objects were removed, while removeAll may
             // technically return true and remove only some objects... need a smarter
             // approach
-            postprocessRemove(c);
+            postprocessRemove((Collection<? extends E>) c);
             return true;
         }
 
         return false;
     }
 
-    public boolean retainAll(Collection c) {
-    	Collection toRemove = new HashSet(resolvedObjectSet().size());
-    	for (Object object : resolvedObjectSet()) {
+    @Override
+    public boolean retainAll(Collection<?> c) {
+    	Collection<E> toRemove = new HashSet<>(resolvedObjectSet().size());
+    	for (E object : resolvedObjectSet()) {
 			if (!c.contains(object)) {
 				toRemove.add(object);
 			}
@@ -212,15 +230,18 @@ public class PersistentObjectSet extends RelationshipFault
         return result;
     }
 
+    @Override
     public int size() {
         return resolvedObjectSet().size();
     }
 
+    @Override
     public Object[] toArray() {
         return resolvedObjectSet().toArray();
     }
 
-    public Object[] toArray(Object[] a) {
+    @Override
+    public <T> T[] toArray(T[] a) {
         return resolvedObjectSet().toArray(a);
     }
 
@@ -232,7 +253,7 @@ public class PersistentObjectSet extends RelationshipFault
     /**
      * Returns internal objects list resolving it if needed.
      */
-    protected Set resolvedObjectSet() {
+    protected Set<E> resolvedObjectSet() {
         if (isFault()) {
 
             synchronized (this) {
@@ -240,8 +261,8 @@ public class PersistentObjectSet extends RelationshipFault
                 // now that we obtained the lock, check
                 // if another thread just resolved the list
                 if (isFault()) {
-                    List localList = resolveFromDB();
-                    this.objectSet = new HashSet(localList);
+                    List<E> localList = resolveFromDB();
+                    this.objectSet = new HashSet<>(localList);
                 }
             }
         }
@@ -255,7 +276,7 @@ public class PersistentObjectSet extends RelationshipFault
     }
     
     @Override
-    protected void mergeLocalChanges(List resolved) {
+    protected void mergeLocalChanges(List<E> resolved) {
 
         // only merge if an object is in an uncommitted state
         // any other state means that our local tracking
@@ -270,7 +291,7 @@ public class PersistentObjectSet extends RelationshipFault
             // do not include transient objects...
             if (addedToUnresolved != null) {
 
-                for (Object next : addedToUnresolved) {
+                for (E next : addedToUnresolved) {
 
                     if (next instanceof Persistent) {
                         Persistent dataObject = (Persistent) next;
@@ -290,14 +311,14 @@ public class PersistentObjectSet extends RelationshipFault
         clearLocalChanges();
     }
 
-    boolean addLocal(Object object) {
+    boolean addLocal(E object) {
 
         if (removedFromUnresolved != null) {
             removedFromUnresolved.remove(object);
         }
 
         if (addedToUnresolved == null) {
-            addedToUnresolved = new HashSet();
+            addedToUnresolved = new HashSet<>();
         }
 
         addedToUnresolved.add(object);
@@ -307,35 +328,37 @@ public class PersistentObjectSet extends RelationshipFault
         return true;
     }
 
-    boolean removeLocal(Object object) {
+    boolean removeLocal(E object) {
         if (addedToUnresolved != null) {
             addedToUnresolved.remove(object);
         }
 
         if (removedFromUnresolved == null) {
-            removedFromUnresolved = new HashSet();
+            removedFromUnresolved = new HashSet<>();
         }
 
-        removedFromUnresolved.add(object);
+        if (shouldAddToRemovedFromUnresolvedSet(object)) {
+            removedFromUnresolved.add(object);
+        }
 
         // this is really meaningless, since we don't know
         // if an object was present in the list
         return true;
     }
 
-    void postprocessAdd(Collection<?> collection) {
-        for (Object next : collection) {
+    protected void postprocessAdd(Collection<? extends E> collection) {
+        for (E next : collection) {
             postprocessAdd(next);
         }
     }
 
-    void postprocessRemove(Collection<?> collection) {
-        for (Object next : collection) {
+    protected void postprocessRemove(Collection<? extends E> collection) {
+        for (E next : collection) {
             postprocessRemove(next);
         }
     }
 
-    void postprocessAdd(Object addedObject) {
+    protected void postprocessAdd(E addedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -351,7 +374,7 @@ public class PersistentObjectSet extends RelationshipFault
         }
     }
 
-    void postprocessRemove(Object removedObject) {
+    protected void postprocessRemove(E removedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -367,12 +390,17 @@ public class PersistentObjectSet extends RelationshipFault
         }
     }
 
+    protected boolean shouldAddToRemovedFromUnresolvedSet(E object) {
+        return true;
+    }
+
     @Override
     public String toString() {
         return (objectSet != null) ? objectSet.toString() : "[<unresolved>]";
     }
 
-    public void addDirectly(Object target) {
+    @Override
+    public void addDirectly(E target) {
         if (isFault()) {
             addLocal(target);
         }
@@ -381,7 +409,8 @@ public class PersistentObjectSet extends RelationshipFault
         }
     }
 
-    public void removeDirectly(Object target) {
+    @Override
+    public void removeDirectly(E target) {
         if (isFault()) {
             removeLocal(target);
         }
