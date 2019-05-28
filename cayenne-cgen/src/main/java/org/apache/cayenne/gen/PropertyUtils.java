@@ -361,7 +361,7 @@ public class PropertyUtils {
         return EntityProperty.class.getName();
     }
 
-    private PropertyDescriptor getPropertyDescriptor(String attrType) {
+    public PropertyDescriptor getPropertyDescriptor(String attrType) {
         try {
             Class<?> type = adhocObjectFactory.getJavaClass(attrType);
             for(PropertyDescriptorCreator creator : propertyList) {

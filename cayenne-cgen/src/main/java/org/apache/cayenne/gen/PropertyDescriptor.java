@@ -36,11 +36,11 @@ public class PropertyDescriptor {
         return new PropertyDescriptor(BaseProperty.class.getName(), "PropertyFactory.createBase");
     }
 
-    String getPropertyType() {
+    public String getPropertyType() {
         return propertyType;
     }
 
-    String getPropertyFactoryMethod() {
+    public String getPropertyFactoryMethod() {
         return propertyFactoryMethod;
     }
 }
