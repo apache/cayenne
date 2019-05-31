@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
 
 /**
  * Represents a class generation "artifact" which is a facade to a metadata object used
@@ -63,5 +63,5 @@ public interface Artifact {
      * after the context is initialized by code generator, so this method can use
      * predefined keys from the context.
      */
-    void postInitContext(VelocityContext context);
+    void postInitContext(Context context);
 }

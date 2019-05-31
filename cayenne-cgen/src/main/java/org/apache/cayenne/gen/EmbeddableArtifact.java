@@ -19,7 +19,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.map.Embeddable;
-import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
 
 /**
  * {@link Artifact} facade for an {@link Embeddable}.
@@ -62,7 +62,7 @@ public class EmbeddableArtifact implements Artifact {
         }
     }
 
-    public void postInitContext(VelocityContext context) {
+    public void postInitContext(Context context) {
         // noop - no special keys...
     }
 }
