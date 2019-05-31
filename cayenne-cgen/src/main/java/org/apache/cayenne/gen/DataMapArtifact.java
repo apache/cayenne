@@ -22,7 +22,7 @@ package org.apache.cayenne.gen;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.Util;
-import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -62,7 +62,7 @@ public class DataMapArtifact implements Artifact {
         return this;
     }
 
-    public void postInitContext(VelocityContext context) {
+    public void postInitContext(Context context) {
         DataMapUtils dataMapUtils = new DataMapUtils();
         context.put(DATAMAP_UTILS_KEY, dataMapUtils);
     }

@@ -55,6 +55,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.velocity.tools</groupId>
+            <artifactId>velocity-tools-generic</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.cayenne</groupId>
             <artifactId>cayenne-server</artifactId>
             <version>${project.version}</version>

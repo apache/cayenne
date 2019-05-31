@@ -20,7 +20,7 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.velocity.VelocityContext;
+import org.apache.velocity.context.Context;
 
 /**
  * {@link Artifact} facade for an ObjEntity.
@@ -81,7 +81,7 @@ public class EntityArtifact implements Artifact {
         }
     }
 
-    public void postInitContext(VelocityContext context) {
+    public void postInitContext(Context context) {
         EntityUtils metadata = new EntityUtils(
                 entity.getDataMap(),
                 entity,
