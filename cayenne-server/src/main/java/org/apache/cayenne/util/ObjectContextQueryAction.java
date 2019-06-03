@@ -360,7 +360,7 @@ public abstract class ObjectContextQueryAction {
             return !DONE;
         }
 
-        QueryCache queryCache = getQueryCache();
+        QueryCache queryCache = getLocalQueryCache();
         QueryCacheEntryFactory factory = getCacheObjectFactory();
 
         if (cache) {
@@ -384,6 +384,13 @@ public abstract class ObjectContextQueryAction {
      */
     protected QueryCache getQueryCache() {
         return ((BaseContext) actingContext).getQueryCache();
+    }
+    
+    /**
+     * @since 4.2
+     */
+    protected QueryCache getLocalQueryCache() {
+        return ((BaseContext) actingContext).getLocalQueryCache();
     }
 
     /**
