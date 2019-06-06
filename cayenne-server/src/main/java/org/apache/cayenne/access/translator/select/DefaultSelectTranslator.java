@@ -438,7 +438,8 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 
 		for(Property<?> property : query.getColumns()) {
 			joinTableAliasForProperty[0] = null;
-			int expressionType = property.getExpression().getType();
+			Expression propertyExpression = property.getExpression();
+			int expressionType = propertyExpression.getType();
 
 			// forbid direct selection of toMany relationships columns
 			if(property.getType() != null && (expressionType == Expression.OBJ_PATH || expressionType == Expression.DB_PATH)
@@ -457,7 +458,7 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 			// Qualifier Translator in case of Object Columns have side effect -
 			// it will create required joins, that we catch with listener above.
 			// And we force created join alias for all columns of Object we select.
-			qualifierTranslator.setQualifier(property.getExpression());
+			qualifierTranslator.setQualifier(propertyExpression);
 			qualifierTranslator.setForceJoinForRelations(objectProperty);
 			StringBuilder builder = qualifierTranslator.appendPart(new StringBuilder());
 
@@ -482,13 +483,15 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 					builder.append(" AS ").append(alias);
 				}
 
-				int type = getJdbcTypeForProperty(property);
+				DbAttribute attribute = getAttributeForProperty(propertyExpression);
+				int type = attribute == null ? getJdbcTypeForProperty(property) : attribute.getType();
 				ColumnDescriptor descriptor;
 				if(property.getType() != null) {
 					descriptor = new ColumnDescriptor(builder.toString(), type, property.getType().getCanonicalName());
 				} else {
 					descriptor = new ColumnDescriptor(builder.toString(), type);
 				}
+				descriptor.setAttribute(attribute);
 				descriptor.setDataRowKey(alias);
 				descriptor.setIsExpression(true);
 				columns.add(descriptor);
@@ -509,18 +512,18 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		return columns;
 	}
 
-	private int getJdbcTypeForProperty(Property<?> property) {
-		int expressionType = property.getExpression().getType();
+	private DbAttribute getAttributeForProperty(Expression propertyExpression) {
+		int expressionType = propertyExpression.getType();
 		if(expressionType == Expression.OBJ_PATH) {
 			// Scan obj path, stop as soon as DbAttribute found
 			for (PathComponent<ObjAttribute, ObjRelationship> component :
-					getQueryMetadata().getObjEntity().resolvePath(property.getExpression(), getPathAliases())) {
+					getQueryMetadata().getObjEntity().resolvePath(propertyExpression, getPathAliases())) {
 				if(component.getAttribute() != null) {
 					Iterator<CayenneMapEntry> dbPathIterator = component.getAttribute().getDbPathIterator();
 					while (dbPathIterator.hasNext()) {
 						Object pathPart = dbPathIterator.next();
 						if (pathPart instanceof DbAttribute) {
-							return ((DbAttribute) pathPart).getType();
+							return ((DbAttribute) pathPart);
 						}
 					}
 				}
@@ -528,12 +531,17 @@ public class DefaultSelectTranslator extends QueryAssembler implements SelectTra
 		} else if(expressionType == Expression.DB_PATH) {
 			// Scan db path, stop as soon as DbAttribute found
 			for (PathComponent<DbAttribute, DbRelationship> component :
-					getQueryMetadata().getDbEntity().resolvePath(property.getExpression(), getPathAliases())) {
+					getQueryMetadata().getDbEntity().resolvePath(propertyExpression, getPathAliases())) {
 				if(component.getAttribute() != null) {
-					return component.getAttribute().getType();
+					return component.getAttribute();
 				}
 			}
 		}
+
+		return null;
+	}
+
+	private int getJdbcTypeForProperty(Property<?> property) {
 		// NOTE: If no attribute found or expression have some other type
 	 	// return JDBC type based on Java type of the property.
 		// This can lead to incorrect behavior in case we deal with some custom type
