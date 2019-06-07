@@ -15,6 +15,7 @@ Date:
 Bug Fixes:
 
 CAY-2573 DI field injection is triggered when creating sql Driver
+CAY-2582 Double insert of manyToMany relationship mapped to Set
 
 ----------------------------------
 Release: 4.1.B2
