@@ -110,6 +110,10 @@ public class PersistentObjectSet extends RelationshipFault
         this.objectSet = objectSet;
     }
 
+    protected boolean shouldAddToRemovedFromUnresolvedSet(Object object) {
+        return true;
+    }
+
     // ====================================================
     // Standard Set Methods.
     // ====================================================
@@ -323,19 +327,19 @@ public class PersistentObjectSet extends RelationshipFault
         return true;
     }
 
-    void postprocessAdd(Collection<?> collection) {
+    protected void postprocessAdd(Collection<?> collection) {
         for (Object next : collection) {
             postprocessAdd(next);
         }
     }
 
-    void postprocessRemove(Collection<?> collection) {
+    protected void postprocessRemove(Collection<?> collection) {
         for (Object next : collection) {
             postprocessRemove(next);
         }
     }
 
-    void postprocessAdd(Object addedObject) {
+    protected void postprocessAdd(Object addedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {
@@ -351,7 +355,7 @@ public class PersistentObjectSet extends RelationshipFault
         }
     }
 
-    void postprocessRemove(Object removedObject) {
+    protected void postprocessRemove(Object removedObject) {
 
         // notify ObjectContext
         if (relationshipOwner.getObjectContext() != null) {

@@ -1,11 +1,8 @@
 package org.apache.cayenne.testdo.relationships_many_to_many_join.auto;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.Set;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Author;
 
@@ -15,7 +12,7 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.Author;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Song extends BaseDataObject {
+public abstract class _Song extends CayenneDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -24,87 +21,23 @@ public abstract class _Song extends BaseDataObject {
     public static final Property<String> NAME = Property.create("name", String.class);
     public static final Property<Set<Author>> AUTHORS = Property.create("authors", Set.class);
 
-    protected String name;
-
-    protected Object authors;
-
     public void setName(String name) {
-        beforePropertyWrite("name", this.name, name);
-        this.name = name;
+        writeProperty("name", name);
     }
-
     public String getName() {
-        beforePropertyRead("name");
-        return this.name;
+        return (String)readProperty("name");
     }
 
     public void addToAuthors(Author obj) {
         addToManyTarget("authors", obj, true);
     }
-
     public void removeFromAuthors(Author obj) {
         removeToManyTarget("authors", obj, true);
     }
-
     @SuppressWarnings("unchecked")
     public Set<Author> getAuthors() {
         return (Set<Author>)readProperty("authors");
     }
 
-    @Override
-    public Object readPropertyDirectly(String propName) {
-        if(propName == null) {
-            throw new IllegalArgumentException();
-        }
-
-        switch(propName) {
-            case "name":
-                return this.name;
-            case "authors":
-                return this.authors;
-            default:
-                return super.readPropertyDirectly(propName);
-        }
-    }
-
-    @Override
-    public void writePropertyDirectly(String propName, Object val) {
-        if(propName == null) {
-            throw new IllegalArgumentException();
-        }
-
-        switch (propName) {
-            case "name":
-                this.name = (String)val;
-                break;
-            case "authors":
-                this.authors = val;
-                break;
-            default:
-                super.writePropertyDirectly(propName, val);
-        }
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        writeSerialized(out);
-    }
-
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        readSerialized(in);
-    }
-
-    @Override
-    protected void writeState(ObjectOutputStream out) throws IOException {
-        super.writeState(out);
-        out.writeObject(this.name);
-        out.writeObject(this.authors);
-    }
-
-    @Override
-    protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        super.readState(in);
-        this.name = (String)in.readObject();
-        this.authors = in.readObject();
-    }
 
 }
