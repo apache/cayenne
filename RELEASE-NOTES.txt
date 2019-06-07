@@ -56,6 +56,7 @@ CAY-2575 Select translator: Wrong translation of IN Expression
 CAY-2576 Ant cgen task is broken
 CAY-2577 Between property with extended type failure
 CAY-2578 Wrong bindings in select of related entity by compound FK
+CAY-2582 Double insert of manyToMany relationship mapped to Set
 
 ----------------------------------
 Release: 4.1.B1
