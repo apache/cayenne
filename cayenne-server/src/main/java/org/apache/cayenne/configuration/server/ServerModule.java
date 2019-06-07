@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.access.DataDomain;
@@ -55,6 +58,7 @@ import org.apache.cayenne.access.types.TimeType;
 import org.apache.cayenne.access.types.TimestampType;
 import org.apache.cayenne.access.types.UUIDValueType;
 import org.apache.cayenne.access.types.UtilDateType;
+import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
@@ -98,14 +102,13 @@ import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.event.EventManagerProvider;
+import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
@@ -114,9 +117,6 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.velocity.VelocitySQLTemplateProcessor;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
@@ -342,7 +342,7 @@ public class ServerModule implements Module {
 
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
-        binder.bind(EventManager.class).to(DefaultEventManager.class);
+        binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
 
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
 
