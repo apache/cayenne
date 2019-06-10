@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import org.slf4j.Logger;
+
 /**
  * @since 4.2
  */
@@ -25,5 +27,5 @@ public interface ToolsUtilsFactory {
 
     ImportUtils createImportUtils();
 
-    PropertyUtils createPropertyUtils(ImportUtils importUtils);
+    PropertyUtils createPropertyUtils(Logger logger, ImportUtils importUtils);
 }

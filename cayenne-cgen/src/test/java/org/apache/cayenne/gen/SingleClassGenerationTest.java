@@ -24,11 +24,15 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.velocity.VelocityContext;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SingleClassGenerationTest extends ClassGenerationCase {
+
+    Logger logger = LoggerFactory.getLogger(SingleClassGenerationTest.class);
 
     @Test
     public void testNotContainsPropertyImport() throws Exception {
@@ -39,7 +43,9 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY,
+                getInjector().getInstance(ToolsUtilsFactory.class)
+                        .createPropertyUtils(logger, importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
         assertFalse(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
@@ -58,7 +64,9 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY,
+                getInjector().getInstance(ToolsUtilsFactory.class)
+                        .createPropertyUtils(logger, importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
         assertTrue(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
@@ -76,7 +84,9 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY,
+                getInjector().getInstance(ToolsUtilsFactory.class)
+                        .createPropertyUtils(logger, importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
         assertFalse(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
@@ -99,7 +109,9 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
         context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY, getInjector().getInstance(ToolsUtilsFactory.class).createPropertyUtils(importUtils));
+        context.put(Artifact.PROPERTY_UTILS_KEY,
+                getInjector().getInstance(ToolsUtilsFactory.class)
+                        .createPropertyUtils(logger, importUtils));
 
         String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
         assertTrue(res.contains("org.apache.cayenne.exp.property.NumericProperty"));

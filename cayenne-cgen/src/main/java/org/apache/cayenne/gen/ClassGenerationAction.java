@@ -169,10 +169,10 @@ public class ClassGenerationAction {
 	 * VelocityContext initialization method called once per each artifact and
 	 * template type combination.
 	 */
-	void resetContextForArtifactTemplate(Artifact artifact, TemplateType templateType) {
+	void resetContextForArtifactTemplate(Artifact artifact) {
         ImportUtils importUtils = utilsFactory.createImportUtils();
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
-		context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory.createPropertyUtils(importUtils));
+		context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory.createPropertyUtils(logger, importUtils));
 		artifact.postInitContext(context);
 	}
 
@@ -260,7 +260,7 @@ public class ClassGenerationAction {
 			try (Writer out = openWriter(type)) {
 				if (out != null) {
 
-					resetContextForArtifactTemplate(artifact, type);
+					resetContextForArtifactTemplate(artifact);
 					getTemplate(type).merge(context, out);
 				}
 			}

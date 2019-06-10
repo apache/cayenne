@@ -50,6 +50,7 @@ import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.slf4j.Logger;
 
 /**
  * @since 4.2
@@ -85,15 +86,22 @@ public class PropertyUtils {
     private List<PropertyDescriptorCreator> propertyList;
     private AdhocObjectFactory adhocObjectFactory;
 
+    private Logger logger;
+
     public PropertyUtils(ImportUtils importUtils) {
         this.importUtils = importUtils;
         this.propertyList = new ArrayList<>();
+
     }
 
-    public PropertyUtils(ImportUtils importUtils, AdhocObjectFactory adhocObjectFactory, List<PropertyDescriptorCreator> propertyList) {
+    public PropertyUtils(ImportUtils importUtils,
+                         AdhocObjectFactory adhocObjectFactory,
+                         List<PropertyDescriptorCreator> propertyList,
+                         Logger logger) {
         this.importUtils = importUtils;
         this.adhocObjectFactory = adhocObjectFactory;
         this.propertyList = propertyList;
+        this.logger = logger;
     }
 
     public void addImportForPK(EntityUtils entityUtils) throws ClassNotFoundException {
@@ -371,7 +379,9 @@ public class PropertyUtils {
                 }
             }
         } catch (DIRuntimeException ex) {
-            System.out.println("WARN: Class not found: " + attrType + ". Will use default PropertyDescriptor.");
+            if(logger != null) {
+                logger.warn("WARN: Class not found: " + attrType + ". Will use default PropertyDescriptor.");
+            }
             return PropertyDescriptor.defaultDescriptor();
         }
         return PropertyDescriptor.defaultDescriptor();

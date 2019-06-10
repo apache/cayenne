@@ -24,6 +24,7 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
 import org.apache.cayenne.tools.ToolsConstants;
+import org.slf4j.Logger;
 
 /**
  * @since 4.2
@@ -42,7 +43,7 @@ public class DefaultToolsUtilsFactory implements ToolsUtilsFactory {
     }
 
     @Override
-    public PropertyUtils createPropertyUtils(ImportUtils importUtils) {
-        return new PropertyUtils(importUtils, objectFactory, propertyList);
+    public PropertyUtils createPropertyUtils(Logger logger, ImportUtils importUtils) {
+        return new PropertyUtils(importUtils, objectFactory, propertyList, logger);
     }
 }

@@ -59,7 +59,7 @@ public interface Artifact {
     /**
      * A callback method that allows each artifact to add its own special keys to the
      * context. Invoked from
-     * {@link ClassGenerationAction#resetContextForArtifactTemplate(Artifact, TemplateType)},
+     * {@link ClassGenerationAction#resetContextForArtifactTemplate(Artifact)},
      * after the context is initialized by code generator, so this method can use
      * predefined keys from the context.
      */

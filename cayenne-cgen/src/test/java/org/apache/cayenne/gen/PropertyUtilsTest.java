@@ -44,6 +44,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -57,6 +59,7 @@ public class PropertyUtilsTest {
 
     PropertyUtils propertyUtils;
     ImportUtils importUtils;
+    Logger logger = LoggerFactory.getLogger(PropertyUtilsTest.class);
 
     @Before
     public void setup() {
@@ -68,7 +71,7 @@ public class PropertyUtilsTest {
                         ServerModule.contributeUserTypes(binder)
                                 .add(new TimestampType()))
                 .getInstance(ToolsUtilsFactory.class)
-                .createPropertyUtils(importUtils);
+                .createPropertyUtils(logger, importUtils);
     }
 
     @Test
