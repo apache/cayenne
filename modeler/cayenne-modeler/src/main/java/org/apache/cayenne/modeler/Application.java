@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.modeler;
 
+import javax.swing.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Inject;
@@ -34,14 +42,6 @@ import org.apache.cayenne.pref.CayenneProjectPreferences;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.swing.BindingFactory;
 import org.apache.cayenne.util.IDUtil;
-
-import javax.swing.*;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 /**
  * A main modeler application class that provides a number of services to the Modeler

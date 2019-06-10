@@ -130,7 +130,9 @@ public final class ModelerUtil {
                 "java.lang.Byte[]",
                 "java.time.LocalDate",
                 "java.time.LocalTime",
-                "java.time.LocalDateTime"
+                "java.time.LocalDateTime",
+                "java.time.Duration",
+                "java.time.Period"
         };
         Arrays.sort(nonPrimitivesNames);
 

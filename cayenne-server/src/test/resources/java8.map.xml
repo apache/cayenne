@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.java8"/>
+	<db-entity name="DURATION_TEST">
+		<db-attribute name="DurationBigInt" type="BIGINT"/>
+		<db-attribute name="DurationDecimal" type="DECIMAL"/>
+		<db-attribute name="DurationInt" type="INTEGER" length="100"/>
+		<db-attribute name="DurationLongNVarchar" type="LONGNVARCHAR" length="100"/>
+		<db-attribute name="DurationLongVarchar" type="LONGVARCHAR" length="100"/>
+		<db-attribute name="DurationNVarchar" type="NVARCHAR" length="100"/>
+		<db-attribute name="DurationNumeric" type="NUMERIC"/>
+		<db-attribute name="DurationVarchar" type="VARCHAR" length="100"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="LOCAL_DATETIME_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TimestampField" type="TIMESTAMP"/>
@@ -16,6 +27,20 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TimeField" type="TIME"/>
 	</db-entity>
+	<db-entity name="PERIOD_TEST">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PeriodField" type="VARCHAR" length="100"/>
+	</db-entity>
+	<obj-entity name="DurationTest" className="org.apache.cayenne.testdo.java8.DurationTestEntity" dbEntityName="DURATION_TEST">
+		<obj-attribute name="durationVarchar" type="java.time.Duration" db-attribute-path="DurationVarchar"/>
+		<obj-attribute name="durationBigInt" type="java.time.Duration" db-attribute-path="DurationBigInt"/>
+		<obj-attribute name="durationNumeric" type="java.time.Duration" db-attribute-path="DurationNumeric"/>
+		<obj-attribute name="durationDecimal" type="java.time.Duration" db-attribute-path="DurationDecimal"/>
+		<obj-attribute name="durationLongVarchar" type="java.time.Duration" db-attribute-path="DurationLongVarchar"/>
+		<obj-attribute name="durationNVarchar" type="java.time.Duration" db-attribute-path="DurationNVarchar"/>
+		<obj-attribute name="durationLongNVarchar" type="java.time.Duration" db-attribute-path="DurationLongNVarchar"/>
+		<obj-attribute name="durationInt" type="java.time.Duration" db-attribute-path="DurationInt"/>
+	</obj-entity>
 	<obj-entity name="LocalDateTest" className="org.apache.cayenne.testdo.java8.LocalDateTestEntity" dbEntityName="LOCAL_DATE_TEST">
 		<obj-attribute name="date" type="java.time.LocalDate" db-attribute-path="DateField"/>
 	</obj-entity>
@@ -24,5 +49,8 @@
 	</obj-entity>
 	<obj-entity name="LocalTimeTest" className="org.apache.cayenne.testdo.java8.LocalTimeTestEntity" dbEntityName="LOCAL_TIME_TEST">
 		<obj-attribute name="time" type="java.time.LocalTime" db-attribute-path="TimeField"/>
+	</obj-entity>
+	<obj-entity name="PeriodTest" className="org.apache.cayenne.testdo.java8.PeriodTestEntity" dbEntityName="PERIOD_TEST">
+		<obj-attribute name="periodField" type="java.time.Period" db-attribute-path="PeriodField"/>
 	</obj-entity>
 </data-map>
