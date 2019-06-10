@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access.jdbc.reader;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
@@ -32,13 +39,6 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * @since 4.0
@@ -108,7 +108,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		}
 	}
 
-	private RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
+	protected RowReader<?> createFullRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,
 			PostprocessorFactory postProcessorFactory) {
 
 		if (queryMetadata.getPageSize() > 0) {
@@ -120,7 +120,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		}
 	}
 
-	private class PostprocessorFactory {
+	protected class PostprocessorFactory {
 
 		private QueryMetadata queryMetadata;
 		private ExtendedTypeMap extendedTypes;
