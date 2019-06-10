@@ -18,11 +18,12 @@
  */
 package org.apache.cayenne.crypto;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
-import org.apache.cayenne.di.Module;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.Module;
 
 /**
  * @since 4.0
@@ -41,7 +42,7 @@ public class CryptoServerModuleProvider implements CayenneServerModuleProvider {
 
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        // we don't override anything, we only decorate ServerModule services...
-        return Collections.emptyList();
+        Collection modules = Collections.singletonList(ServerModule.class);
+        return modules;
     }
 }

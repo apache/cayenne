@@ -18,6 +18,14 @@
  */
 package org.apache.cayenne.crypto;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
@@ -33,37 +41,10 @@ import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.BytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.DefaultBytesTransformerFactory;
 import org.apache.cayenne.crypto.transformer.bytes.LazyBytesTransformerFactory;
-import org.apache.cayenne.crypto.transformer.value.Base64StringConverter;
-import org.apache.cayenne.crypto.transformer.value.BigDecimalConverter;
-import org.apache.cayenne.crypto.transformer.value.BigIntegerConverter;
-import org.apache.cayenne.crypto.transformer.value.BooleanConverter;
-import org.apache.cayenne.crypto.transformer.value.ByteConverter;
-import org.apache.cayenne.crypto.transformer.value.BytesConverter;
-import org.apache.cayenne.crypto.transformer.value.BytesToBytesConverter;
-import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
-import org.apache.cayenne.crypto.transformer.value.DoubleConverter;
-import org.apache.cayenne.crypto.transformer.value.FloatConverter;
-import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
-import org.apache.cayenne.crypto.transformer.value.LazyValueTransformerFactory;
-import org.apache.cayenne.crypto.transformer.value.LocalDateConverter;
-import org.apache.cayenne.crypto.transformer.value.LocalDateTimeConverter;
-import org.apache.cayenne.crypto.transformer.value.LocalTimeConverter;
-import org.apache.cayenne.crypto.transformer.value.LongConverter;
-import org.apache.cayenne.crypto.transformer.value.ShortConverter;
-import org.apache.cayenne.crypto.transformer.value.Utf8StringConverter;
-import org.apache.cayenne.crypto.transformer.value.UtilDateConverter;
-import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
+import org.apache.cayenne.crypto.transformer.value.*;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Types;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 
 /**
  * Contains cryptography extensions for Cayenne.
@@ -135,7 +116,7 @@ public class CryptoModule implements Module {
         binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(DEFAULT_COLUMN_MAPPER_PATTERN));
 
         binder.decorate(BatchTranslatorFactory.class).before(CryptoBatchTranslatorFactoryDecorator.class);
-        binder.decorate(RowReaderFactory.class).before(CryptoRowReaderFactoryDecorator.class);
+        binder.bind(RowReaderFactory.class).to(CryptoRowReaderFactoryDecorator.class);
 
         // decorate Crypto's own services to allow Cayenne to operate over plaintext entities even if crypto keys are
         // not available.

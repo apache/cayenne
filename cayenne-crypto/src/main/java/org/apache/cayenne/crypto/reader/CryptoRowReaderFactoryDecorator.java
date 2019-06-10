@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.reader;
 
+import java.sql.ResultSet;
+import java.util.Map;
+
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.crypto.map.ColumnMapper;
@@ -41,9 +43,6 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
 
-import java.sql.ResultSet;
-import java.util.Map;
-
 public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
     private TransformerFactory transformerFactory;
@@ -51,8 +50,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     private BytesTransformerFactory bytesTransformerFactory;
     private ValueTransformerFactory valueTransformerFactory;
 
-    public CryptoRowReaderFactoryDecorator(@Inject RowReaderFactory delegate,
-                                           @Inject TransformerFactory transformerFactory,
+    public CryptoRowReaderFactoryDecorator(@Inject TransformerFactory transformerFactory,
                                            @Inject ColumnMapper columnMapper,
                                            @Inject BytesTransformerFactory bytesTransformerFactory,
                                            @Inject ValueTransformerFactory valueTransformerFactory) {
