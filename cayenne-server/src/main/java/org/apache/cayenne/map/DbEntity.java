@@ -19,6 +19,17 @@
 
 package org.apache.cayenne.map;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.ConfigurationNode;
@@ -37,17 +48,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.commons.collections.Transformer;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database
@@ -692,115 +692,18 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
 
         String translatePath(String path) {
 
-            // algorithm to determine the translated path:
-            // 0. If relationship has at least one to-many component, travel all
-            // the way
-            // back, and then all the way forward
-            // 1. If relationship path equals to input, travel one step back,
-            // and then one
-            // step forward.
-            // 2. If input completely includes relationship path, use input's
-            // remaining
-            // tail.
-            // 3. If relationship path and input have none or some leading
-            // components in
-            // common,
-            // (a) strip common leading part;
-            // (b) reverse the remaining relationship part;
-            // (c) append remaining input to the reversed remaining
-            // relationship.
-
-            // case (0)
-            if (toMany) {
-                PathComponentIterator pathIt = createPathIterator(path);
-                Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
-
-                // for inserts from the both ends use LinkedList
-                LinkedList<String> finalPath = new LinkedList<String>();
-
-                // append remainder of the relationship, reversing it
-                while (relationshipIt.hasNext()) {
-                    DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
-                    prependReversedPath(finalPath, nextDBR);
-                }
-
-                while (pathIt.hasNext()) {
-                    // components may be attributes or relationships
-                    PathComponent<Attribute, Relationship> component = pathIt.next();
-                    appendPath(finalPath, component);
-                }
-
-                return convertToPath(finalPath);
-            }
-            // case (1)
-            if (path.equals(relationshipPath)) {
-
-                LinkedList<String> finalPath = new LinkedList<String>();
-                PathComponentIterator pathIt = createPathIterator(path);
-
-                // just do one step back and one step forward to create correct
-                // joins...
-                // find last rel...
-                DbRelationship lastDBR = null;
-
-                while (pathIt.hasNext()) {
-                    // relationship path components must be DbRelationships
-                    lastDBR = (DbRelationship) pathIt.next().getRelationship();
-                }
-
-                if (lastDBR != null) {
-                    prependReversedPath(finalPath, lastDBR);
-                    appendPath(finalPath, lastDBR);
-                }
-
-                return convertToPath(finalPath);
-            }
-
-            // case (2)
-            String relationshipPathWithDot = relationshipPath + Entity.PATH_SEPARATOR;
-            if (path.startsWith(relationshipPathWithDot)) {
-                return path.substring(relationshipPathWithDot.length());
-            }
-
-            // case (3)
-            PathComponentIterator pathIt = createPathIterator(path);
-            Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
-
-            // for inserts from the both ends use LinkedList
-            LinkedList<String> finalPath = new LinkedList<String>();
-
-            while (relationshipIt.hasNext() && pathIt.hasNext()) {
-                // relationship path components must be DbRelationships
-                DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
-
-                // expression components may be attributes or relationships
-                PathComponent<Attribute, Relationship> component = pathIt.next();
-
-                if (nextDBR != component.getRelationship()) {
-                    // found split point
-                    // consume the last iteration components,
-                    // then break out to finish the iterators independently
-                    prependReversedPath(finalPath, nextDBR);
-                    appendPath(finalPath, component);
-                    break;
-                }
-
-                break;
-            }
-
-            // append remainder of the relationship, reversing it
-            while (relationshipIt.hasNext()) {
-                DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
-                prependReversedPath(finalPath, nextDBR);
-            }
-
+            LinkedList<String> finalPath = new LinkedList<>();
+            PathComponentIterator pathIt = createPathIterator(relationshipPath);
             while (pathIt.hasNext()) {
-                // components may be attributes or relationships
-                PathComponent<Attribute, Relationship> component = pathIt.next();
-                appendPath(finalPath, component);
+                // relationship path components must be DbRelationships
+                DbRelationship lastDBR = (DbRelationship) pathIt.next().getRelationship();
+                if(lastDBR != null) {
+                    prependReversedPath(finalPath, lastDBR);
+                }
             }
 
-            return convertToPath(finalPath);
+            finalPath.add(path);
+            return Util.join(finalPath, Entity.PATH_SEPARATOR);
         }
 
         private String convertToPath(List<String> path) {
