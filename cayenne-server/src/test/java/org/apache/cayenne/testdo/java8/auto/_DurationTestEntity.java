@@ -26,8 +26,6 @@ public abstract class _DurationTestEntity extends BaseDataObject {
     public static final BaseProperty<Duration> DURATION_NUMERIC = PropertyFactory.createBase("durationNumeric", Duration.class);
     public static final BaseProperty<Duration> DURATION_DECIMAL = PropertyFactory.createBase("durationDecimal", Duration.class);
     public static final BaseProperty<Duration> DURATION_LONG_VARCHAR = PropertyFactory.createBase("durationLongVarchar", Duration.class);
-    public static final BaseProperty<Duration> DURATION_NVARCHAR = PropertyFactory.createBase("durationNVarchar", Duration.class);
-    public static final BaseProperty<Duration> DURATION_LONG_NVARCHAR = PropertyFactory.createBase("durationLongNVarchar", Duration.class);
     public static final BaseProperty<Duration> DURATION_INT = PropertyFactory.createBase("durationInt", Duration.class);
 
     protected Duration durationVarchar;
@@ -35,8 +33,6 @@ public abstract class _DurationTestEntity extends BaseDataObject {
     protected Duration durationNumeric;
     protected Duration durationDecimal;
     protected Duration durationLongVarchar;
-    protected Duration durationNVarchar;
-    protected Duration durationLongNVarchar;
     protected Duration durationInt;
 
 
@@ -90,26 +86,6 @@ public abstract class _DurationTestEntity extends BaseDataObject {
         return this.durationLongVarchar;
     }
 
-    public void setDurationNVarchar(Duration durationNVarchar) {
-        beforePropertyWrite("durationNVarchar", this.durationNVarchar, durationNVarchar);
-        this.durationNVarchar = durationNVarchar;
-    }
-
-    public Duration getDurationNVarchar() {
-        beforePropertyRead("durationNVarchar");
-        return this.durationNVarchar;
-    }
-
-    public void setDurationLongNVarchar(Duration durationLongNVarchar) {
-        beforePropertyWrite("durationLongNVarchar", this.durationLongNVarchar, durationLongNVarchar);
-        this.durationLongNVarchar = durationLongNVarchar;
-    }
-
-    public Duration getDurationLongNVarchar() {
-        beforePropertyRead("durationLongNVarchar");
-        return this.durationLongNVarchar;
-    }
-
     public void setDurationInt(Duration durationInt) {
         beforePropertyWrite("durationInt", this.durationInt, durationInt);
         this.durationInt = durationInt;
@@ -137,10 +113,6 @@ public abstract class _DurationTestEntity extends BaseDataObject {
                 return this.durationDecimal;
             case "durationLongVarchar":
                 return this.durationLongVarchar;
-            case "durationNVarchar":
-                return this.durationNVarchar;
-            case "durationLongNVarchar":
-                return this.durationLongNVarchar;
             case "durationInt":
                 return this.durationInt;
             default:
@@ -170,12 +142,6 @@ public abstract class _DurationTestEntity extends BaseDataObject {
             case "durationLongVarchar":
                 this.durationLongVarchar = (Duration)val;
                 break;
-            case "durationNVarchar":
-                this.durationNVarchar = (Duration)val;
-                break;
-            case "durationLongNVarchar":
-                this.durationLongNVarchar = (Duration)val;
-                break;
             case "durationInt":
                 this.durationInt = (Duration)val;
                 break;
@@ -200,8 +166,6 @@ public abstract class _DurationTestEntity extends BaseDataObject {
         out.writeObject(this.durationNumeric);
         out.writeObject(this.durationDecimal);
         out.writeObject(this.durationLongVarchar);
-        out.writeObject(this.durationNVarchar);
-        out.writeObject(this.durationLongNVarchar);
         out.writeObject(this.durationInt);
     }
 
@@ -213,8 +177,6 @@ public abstract class _DurationTestEntity extends BaseDataObject {
         this.durationNumeric = (Duration)in.readObject();
         this.durationDecimal = (Duration)in.readObject();
         this.durationLongVarchar = (Duration)in.readObject();
-        this.durationNVarchar = (Duration)in.readObject();
-        this.durationLongNVarchar = (Duration)in.readObject();
         this.durationInt = (Duration)in.readObject();
     }
 

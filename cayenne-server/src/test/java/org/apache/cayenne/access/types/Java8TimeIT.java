@@ -154,11 +154,9 @@ public class Java8TimeIT extends ServerCase {
 		durationTestEntity.setDurationBigInt(duration);
 		durationTestEntity.setDurationDecimal(duration);
 		durationTestEntity.setDurationInt(duration);
-		durationTestEntity.setDurationLongNVarchar(duration);
 		durationTestEntity.setDurationLongVarchar(duration);
 		durationTestEntity.setDurationNumeric(duration);
 		durationTestEntity.setDurationVarchar(duration);
-		durationTestEntity.setDurationNVarchar(duration);
 
 		context.commitChanges();
 
@@ -176,10 +174,6 @@ public class Java8TimeIT extends ServerCase {
 		assertEquals(Duration.class, testRead.getDurationInt().getClass());
 		assertEquals(duration, testRead.getDurationInt());
 
-		assertNotNull(testRead.getDurationLongNVarchar());
-		assertEquals(Duration.class, testRead.getDurationLongNVarchar().getClass());
-		assertEquals(duration, testRead.getDurationLongNVarchar());
-
 		assertNotNull(testRead.getDurationLongVarchar());
 		assertEquals(Duration.class, testRead.getDurationLongVarchar().getClass());
 		assertEquals(duration, testRead.getDurationLongVarchar());
@@ -191,10 +185,6 @@ public class Java8TimeIT extends ServerCase {
 		assertNotNull(testRead.getDurationVarchar());
 		assertEquals(Duration.class, testRead.getDurationVarchar().getClass());
 		assertEquals(duration, testRead.getDurationVarchar());
-
-		assertNotNull(testRead.getDurationNVarchar());
-		assertEquals(Duration.class, testRead.getDurationNVarchar().getClass());
-		assertEquals(duration, testRead.getDurationNVarchar());
 	}
 
 	@Test

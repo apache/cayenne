@@ -29,13 +29,9 @@ public class DurationType implements ExtendedType<Duration> {
             return val.toString();
         } else if(type == Types.LONGVARCHAR) {
             return val.toString();
-        } else if(type == Types.NVARCHAR) {
-            return val.toString();
-        } else if(type == Types.LONGNVARCHAR) {
-            return val.toString();
         } else {
             throw new IllegalArgumentException(
-                    "Only INTEGER, NUMERIC, DECIMAL, BIGINT, VARCHAR, LONGVARCHAR, NVARCHAR, LONGNVARCHAR " +
+                    "Only INTEGER, NUMERIC, DECIMAL, BIGINT, VARCHAR, LONGVARCHAR " +
                             "can be mapped as '" + getClassName()
                             + "', got " + TypesMapping.getSqlNameByType(type));
         }
@@ -72,12 +68,6 @@ public class DurationType implements ExtendedType<Duration> {
             case Types.LONGVARCHAR:
                 val = Duration.parse(rs.getString(index));
                 break;
-            case Types.NVARCHAR:
-                val = Duration.parse(rs.getNString(index));
-                break;
-            case Types.LONGNVARCHAR:
-                val = Duration.parse(rs.getNString(index));
-                break;
         }
 
         if(rs.wasNull()) {
@@ -110,12 +100,6 @@ public class DurationType implements ExtendedType<Duration> {
                 break;
             case Types.LONGVARCHAR:
                 val = Duration.parse(rs.getString(index));
-                break;
-            case Types.NVARCHAR:
-                val = Duration.parse(rs.getNString(index));
-                break;
-            case Types.LONGNVARCHAR:
-                val = Duration.parse(rs.getNString(index));
                 break;
         }
 
