@@ -137,8 +137,20 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates query that selects scalar value and uses default routing
 	 *
 	 * @since 4.1
+	 * @deprecated since 4.2. Use {@link #arrayQuery(String)}
 	 */
+	@Deprecated
 	public static SQLSelect<Object[]> scalarQuery(String sql) {
+		SQLSelect<Object[]> query = new SQLSelect<>(sql);
+		return query.useScalar();
+	}
+
+	/**
+	 *  Creates query that selects scalar value and uses default routing
+	 *
+	 *  @since 4.2
+	 */
+	public static SQLSelect<Object[]> arrayQuery(String sql) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		return query.useScalar();
 	}
@@ -147,8 +159,22 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates query that selects scalar values (as Object[]) and uses routing based on the
 	 * provided DataMap name.
 	 * @since 4.1
+	 * @deprecated since 4.2. Use {@link #arrayQuery(String, String)}
 	 */
+	@Deprecated
 	public static SQLSelect<Object[]> scalarQuery(String sql, String dataMapName) {
+		SQLSelect<Object[]> query = new SQLSelect<>(sql);
+		query.dataMapName = dataMapName;
+		return query.useScalar();
+	}
+
+	/**
+	 * Creates query that selects scalar values (as Object[]) and uses routing based on the
+	 * provided DataMap name.
+	 *
+	 * @since 4.2
+	 */
+	public static SQLSelect<Object[]> arrayQuery(String sql, String dataMapName) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
 		return query.useScalar();
@@ -158,8 +184,20 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates query that selects scalar values (as Object[]) and uses default routing
 	 *
 	 * @since 4.1
+	 * @deprecated since 4.2. Use {@link #arrayQuery(String, Class, Class...)}
 	 */
+	@Deprecated
 	public static SQLSelect<Object[]> scalarQuery(String sql, Class<?> firstType, Class<?>... types) {
+		SQLSelect<Object[]> query = new SQLSelect<>(sql);
+		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
+	}
+
+	/**
+	 * Creates query that selects scalar values (as Object[]) and uses default routing
+	 *
+	 * @since 4.2
+	 */
+	public static SQLSelect<Object[]> arrayQuery(String sql, Class<?> firstType, Class<?>... types) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
 	}
@@ -169,8 +207,28 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * provided DataMap name.
 	 *
 	 * @since 4.1
+	 * @deprecated since 4.2. Use {@link #arrayQuery(String, String, Class, Class...)}
 	 */
-	public static SQLSelect<Object[]> scalarQuery(String sql, String dataMapName, Class<?> firstType, Class<?>... types) {
+	@Deprecated
+	public static SQLSelect<Object[]> scalarQuery(String sql,
+												  String dataMapName,
+												  Class<?> firstType,
+												  Class<?>... types) {
+		SQLSelect<Object[]> query = new SQLSelect<>(sql);
+		query.dataMapName = dataMapName;
+		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
+	}
+
+	/**
+	 * Creates query that selects scalar values (as Object[]) and uses routing based on the
+	 * provided DataMap name.
+	 *
+	 * @since 4.2
+	 */
+	public static SQLSelect<Object[]> arrayQuery(String sql,
+												 String dataMapName,
+												 Class<?> firstType,
+												 Class<?>... types) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
 		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
@@ -259,7 +317,20 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		return this;
 	}
 
+	/**
+	 * @deprecated since 4.2
+	 * Use {@link #param(String, Object)}
+	 */
+	@Deprecated
 	public SQLSelect<T> params(String name, Object value) {
+		params(Collections.singletonMap(name, value));
+		return this;
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public SQLSelect<T> param(String name, Object value) {
 		params(Collections.singletonMap(name, value));
 		return this;
 	}

@@ -30,7 +30,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -151,7 +150,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayWithDefaultTypesReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
-		List<Object[]> result = SQLSelect.scalarQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
+		List<Object[]> result = SQLSelect.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
 				.select(context);
 
 		assertEquals(2, result.size());
@@ -165,7 +164,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
-		SQLSelect.scalarQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT",
+		SQLSelect.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT",
 				Integer.class, String.class).select(context);
 	}
 
@@ -173,7 +172,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayWithOneObjectDefaultTypesReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
-		List<Object[]> result = SQLSelect.scalarQuery("SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST_CT")
+		List<Object[]> result = SQLSelect.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST_CT")
 				.select(context);
 
 		assertEquals(2, result.size());
@@ -186,7 +185,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_ObjectArrayQueryWithDefaultTypes() throws Exception {
 		createPaintingsDataSet();
 
-		List<Object[]> result = SQLSelect.scalarQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
+		List<Object[]> result = SQLSelect.arrayQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
 				.select(context);
 
 		assertEquals(20, result.size());
@@ -197,7 +196,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_ObjectQueryWithDefaultType() throws Exception {
 		createPaintingsDataSet();
 
-		List<Object[]> result = SQLSelect.scalarQuery("SELECT PAINTING_ID FROM PAINTING")
+		List<Object[]> result = SQLSelect.arrayQuery("SELECT PAINTING_ID FROM PAINTING")
 				.select(context);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof Object[]);
@@ -208,7 +207,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_ObjectArrayQueryException() throws Exception {
 		createPaintingsDataSet();
 
-		SQLSelect<Object[]> query = SQLSelect.scalarQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
+		SQLSelect<Object[]> query = SQLSelect.arrayQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
 		context.performQuery(query);
 	}
 
@@ -226,7 +225,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayWithCustomType() throws SQLException {
 		createArtistDataSet();
 
-		List<Object[]> results = SQLSelect.scalarQuery("SELECT * FROM ARTIST_CT",
+		List<Object[]> results = SQLSelect.arrayQuery("SELECT * FROM ARTIST_CT",
 				Integer.class, String.class, LocalDateTime.class).select(context);
 
 		assertEquals(2, results.size());
@@ -241,7 +240,7 @@ public class SQLSelectIT extends ServerCase {
 
 		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class,
 				"SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)");
-		q1.params("a", "painting3").columnNameCaps(CapsStrategy.UPPER);
+		q1.param("a", "painting3").columnNameCaps(CapsStrategy.UPPER);
 
 		assertFalse(q1.isFetchingDataRows());
 		Painting a = context.selectOne(q1);
@@ -255,7 +254,7 @@ public class SQLSelectIT extends ServerCase {
 		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class,
 				"SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a) OR PAINTING_TITLE = #bind($b)")
 				.columnNameCaps(CapsStrategy.UPPER);
-		q1.params("a", "painting3").params("b", "painting4");
+		q1.param("a", "painting3").param("b", "painting4");
 
 		List<Painting> result = context.select(q1);
 		assertEquals(2, result.size());
@@ -299,7 +298,7 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		SQLSelect<Painting> q1 = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
-				.append(" WHERE PAINTING_TITLE = #bind($a)").params("a", "painting3")
+				.append(" WHERE PAINTING_TITLE = #bind($a)").param("a", "painting3")
 				.columnNameCaps(CapsStrategy.UPPER);
 
 		List<Painting> result = context.select(q1);
@@ -312,7 +311,7 @@ public class SQLSelectIT extends ServerCase {
 
 		List<Painting> result = SQLSelect
 				.query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
-				.params("a", "painting3").columnNameCaps(CapsStrategy.UPPER).select(context);
+				.param("a", "painting3").columnNameCaps(CapsStrategy.UPPER).select(context);
 
 		assertEquals(1, result.size());
 	}
@@ -322,7 +321,7 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		Painting a = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
-				.params("a", "painting3").columnNameCaps(CapsStrategy.UPPER).selectOne(context);
+				.param("a", "painting3").columnNameCaps(CapsStrategy.UPPER).selectOne(context);
 
 		assertEquals("painting3", a.getPaintingTitle());
 	}
@@ -355,12 +354,9 @@ public class SQLSelectIT extends ServerCase {
 
 		final int[] count = new int[1];
 		SQLSelect.query(Painting.class, "SELECT * FROM PAINTING").columnNameCaps(CapsStrategy.UPPER)
-				.iterate(context, new ResultIteratorCallback<Painting>() {
-					@Override
-					public void next(Painting object) {
-						assertNotNull(object.getPaintingTitle());
-						count[0]++;
-					}
+				.iterate(context, object -> {
+					assertNotNull(object.getPaintingTitle());
+					count[0]++;
 				});
 
 		assertEquals(20, count[0]);
@@ -406,7 +402,7 @@ public class SQLSelectIT extends ServerCase {
 		long id = SQLSelect
 				.scalarQuery( "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)",
 						Integer.class)
-				.params("a", "painting3").selectOne(context);
+				.param("a", "painting3").selectOne(context);
 
 		assertEquals(3l, id);
 	}

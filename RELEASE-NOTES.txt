@@ -34,6 +34,7 @@ CAY-2563 Deprecate old scalarQuery methods in SQLSelect
 CAY-2568 Class Generation: Superclass Package setting persistence
 CAY-2569 Custom 'Naming Strategy' in Cayenne Modeler
 CAY-2570 Use MySQL adapter for latest versions of MariaDB
+CAY-2585 Rename scalarQuery and params methods in SQLSelect
 
 Bug Fixes:
 
