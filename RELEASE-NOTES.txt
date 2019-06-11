@@ -14,6 +14,7 @@ Date:
 
 Bug Fixes:
 
+CAY-2553 Wrong disjoint prefetch query qualifier
 CAY-2573 DI field injection is triggered when creating sql Driver
 CAY-2582 Double insert of manyToMany relationship mapped to Set
 CAY-2584 Crypto: can't use ColumnSelect with encrypted columns
