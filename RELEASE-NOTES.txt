@@ -19,6 +19,7 @@ CAY-2570 Use MySQL adapter for latest versions of MariaDB
 
 Bug Fixes:
 
+CAY-2417 Modeler: wrong title in attribute context menu
 CAY-2550 Modeler: ObjAttribute inspector modifies wrong columns in attribute table
 CAY-2553 Wrong disjoint prefetch query qualifier
 CAY-2559 Modeler: Warning dialog shows wrong information after changing target entity in dbRelationship
