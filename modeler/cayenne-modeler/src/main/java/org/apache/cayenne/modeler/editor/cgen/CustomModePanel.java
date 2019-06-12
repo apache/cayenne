@@ -50,6 +50,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
     private TextAdapter outputPattern;
     private JCheckBox createPropertyNames;
     private JCheckBox pkProperties;
+    private JCheckBox clientMode;
     private TextAdapter superPkg;
 
     private JButton manageTemplatesLink;
@@ -109,6 +110,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         this.createPropertyNames = new JCayenneCheckBox();
         this.pkProperties = new JCayenneCheckBox();
+        this.clientMode= new JCayenneCheckBox();
         this.manageTemplatesLink = new JButton("Customize Templates...");
         this.manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
 
@@ -148,6 +150,9 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.nextLine();
 
         builder.append("Create PK properties:", pkProperties);
+        builder.nextLine();
+
+        builder.append("Client mode: ", clientMode);
         builder.nextLine();
 
         builder.append("Superclass package:", superPkg.getComponent());
@@ -196,6 +201,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     public JCheckBox getPkProperties() {
         return pkProperties;
+    }
+
+    public JCheckBox getClientMode() {
+        return clientMode;
     }
 
     public TextAdapter getSuperPkg() {

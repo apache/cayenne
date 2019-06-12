@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.slf4j.Logger;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -41,6 +32,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.slf4j.Logger;
 
 public class ClassGenerationAction {
 
@@ -71,10 +71,9 @@ public class ClassGenerationAction {
     protected VelocityContext context;
     protected Map<String, Template> templateCache;
 
-	public ClassGenerationAction(CgenConfiguration cgenConfiguration) {
+	public ClassGenerationAction() {
 		this.context = new VelocityContext();
 		this.templateCache = new HashMap<>(5);
-		this.cgenConfiguration = cgenConfiguration;
 	}
 
 	public String defaultTemplateName(TemplateType type) {

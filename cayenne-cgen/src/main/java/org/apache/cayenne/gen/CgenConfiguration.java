@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.gen;
 
+import java.io.Serializable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.map.DataMap;
@@ -26,12 +36,6 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-
-import java.io.Serializable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Used to keep config of class generation action.
@@ -77,7 +81,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     private boolean client;
 
-    public CgenConfiguration() {
+    public CgenConfiguration(boolean client) {
         this.outputPattern = "*.java";
         this.timestamp = 0L;
         this.usePkgPath = true;
@@ -91,12 +95,21 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.excludeEmbeddableArtifacts = new ArrayList<>();
         this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
-        this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
-        this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
+        this.client = client;
+
+        if(!client) {
+            this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
+            this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
+            this.queryTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
+            this.querySuperTemplate = ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
+        } else {
+            this.template = ClientClassGenerationAction.SUBCLASS_TEMPLATE;
+            this.superTemplate = ClientClassGenerationAction.SUPERCLASS_TEMPLATE;
+            this.queryTemplate = ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE;
+            this.querySuperTemplate = ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE;
+        }
         this.embeddableTemplate = ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
         this.embeddableSuperTemplate = ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
-        this.queryTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
-        this.querySuperTemplate = ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
     }
 
     public void resetCollections(){

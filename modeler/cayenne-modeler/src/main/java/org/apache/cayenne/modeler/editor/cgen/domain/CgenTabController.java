@@ -62,8 +62,9 @@ public class CgenTabController extends GeneratorsTabController {
                 if(cgenConfiguration == null) {
                     cgenConfiguration = createConfiguration(dataMap);
                 }
-                ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction(cgenConfiguration) :
-                        new ClassGenerationAction(cgenConfiguration);
+                ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction() :
+                        new ClassGenerationAction();
+                classGenerationAction.setCgenConfiguration(cgenConfiguration);
                 classGenerationAction.prepareArtifacts();
                 classGenerationAction.execute();
             } catch (Exception e) {
@@ -78,7 +79,7 @@ public class CgenTabController extends GeneratorsTabController {
     }
 
     public CgenConfiguration createConfiguration(DataMap dataMap) {
-        CgenConfiguration cgenConfiguration = new CgenConfiguration();
+        CgenConfiguration cgenConfiguration = new CgenConfiguration(false);
         Application.getInstance().getInjector().injectMembers(cgenConfiguration);
         cgenConfiguration.setDataMap(dataMap);
         Path basePath = Paths.get(ModelerUtil.initOutputFolder());

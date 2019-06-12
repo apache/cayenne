@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.gen;
 
+import java.io.File;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
@@ -28,13 +35,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,10 +51,10 @@ public class ClassGenerationActionTest {
 	protected CgenConfiguration cgenConfiguration;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		writers = new ArrayList<>(3);
-		cgenConfiguration = new CgenConfiguration();
-		action = new ClassGenerationAction(cgenConfiguration) {
+		cgenConfiguration = new CgenConfiguration(false);
+		action = new ClassGenerationAction() {
 
 			@Override
 			protected Writer openWriter(TemplateType templateType) throws Exception {
@@ -63,6 +63,7 @@ public class ClassGenerationActionTest {
 				return writer;
 			}
 		};
+		action.setCgenConfiguration(cgenConfiguration);
 	}
 
 	@After
@@ -216,16 +217,16 @@ public class ClassGenerationActionTest {
 
 		if (isClient) {
 
-			action = new ClientClassGenerationAction(cgenConfiguration) {
+			action = new ClientClassGenerationAction() {
 				@Override
-				protected Writer openWriter(TemplateType templateType) throws Exception {
+				protected Writer openWriter(TemplateType templateType) {
 					StringWriter writer = new StringWriter();
 					writers.add(writer);
 					return writer;
 				}
 
 			};
-
+			action.setCgenConfiguration(cgenConfiguration);
 		}
 
 		cgenConfiguration.setMakePairs(true);

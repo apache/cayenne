@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import java.io.File;
+
 import foundrylogic.vpp.VPPConfig;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -34,8 +36,6 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
 import org.apache.velocity.VelocityContext;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 /**
  * An Ant task to perform class generation based on CayenneDataMap.
@@ -144,8 +144,9 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     private ClassGenerationAction createGenerator(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
-        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction(cgenConfiguration) :
-                new ClassGenerationAction(cgenConfiguration);
+        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction() :
+                new ClassGenerationAction();
+        classGenerationAction.setCgenConfiguration(cgenConfiguration);
         injector.injectMembers(classGenerationAction);
 
         return classGenerationAction;
@@ -170,14 +171,14 @@ public class CayenneGeneratorTask extends CayenneTask {
             return cgenConfiguration;
         } else {
             logger.info("Using default cgen config.");
-            cgenConfiguration = new CgenConfiguration();
+            cgenConfiguration = new CgenConfiguration(false);
             cgenConfiguration.setDataMap(dataMap);
             return cgenConfiguration;
         }
     }
 
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
-        CgenConfiguration cgenConfiguration = new CgenConfiguration();
+        CgenConfiguration cgenConfiguration = new CgenConfiguration(client != null ? client : false);
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.setRelPath(destDir != null ? destDir.toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
@@ -198,7 +199,6 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setQueryTemplate(querytemplate != null ? querytemplate : cgenConfiguration.getQueryTemplate());
         cgenConfiguration.setQuerySuperTemplate(querysupertemplate != null ? querysupertemplate : cgenConfiguration.getQuerySuperTemplate());
         cgenConfiguration.setCreatePKProperties(createpkproperties != null ? createpkproperties : cgenConfiguration.isCreatePKProperties());
-        cgenConfiguration.setClient(client != null ? client : cgenConfiguration.isClient());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
                 cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);

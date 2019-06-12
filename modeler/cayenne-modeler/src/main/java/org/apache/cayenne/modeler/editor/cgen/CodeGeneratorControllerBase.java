@@ -19,23 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.CellRenderers;
-import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.validation.ValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
-
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +35,19 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
+
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.util.ModelerUtil;
+import org.apache.cayenne.validation.ValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
 
 /**
  * @since 4.1
@@ -121,7 +119,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         }
 
         try {
-            cgenConfiguration = new CgenConfiguration();
+            cgenConfiguration = new CgenConfiguration(false);
             cgenConfiguration.setForce(true);
             cgenConfiguration.setDataMap(map);
 

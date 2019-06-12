@@ -206,8 +206,10 @@ public class CgenTask extends BaseCayenneTask {
 
     ClassGenerationAction createGenerator(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
-        return cgenConfiguration.isClient() ? new ClientClassGenerationAction(cgenConfiguration) :
-                new ClassGenerationAction(cgenConfiguration);
+        ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ? new ClientClassGenerationAction() :
+                new ClassGenerationAction();
+        classGenerationAction.setCgenConfiguration(cgenConfiguration);
+        return classGenerationAction;
     }
 
     CgenConfiguration buildConfiguration(DataMap dataMap) {
@@ -222,7 +224,7 @@ public class CgenTask extends BaseCayenneTask {
             return cgenConfiguration;
         } else {
             getLogger().info("Using default cgen config.");
-            cgenConfiguration = new CgenConfiguration();
+            cgenConfiguration = new CgenConfiguration(false);
             cgenConfiguration.setRelPath(getDestDirFile().getPath());
             cgenConfiguration.setDataMap(dataMap);
             return cgenConfiguration;
@@ -230,7 +232,7 @@ public class CgenTask extends BaseCayenneTask {
     }
 
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
-        CgenConfiguration cgenConfiguration = new CgenConfiguration();
+        CgenConfiguration cgenConfiguration = new CgenConfiguration(client != null ? client : false);
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.setRelPath(getDestDirFile() != null ? getDestDirFile().toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
@@ -251,7 +253,6 @@ public class CgenTask extends BaseCayenneTask {
         cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
         cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
         cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
-        cgenConfiguration.setClient(client != null ? client : cgenConfiguration.isClient());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
                 cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);

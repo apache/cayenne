@@ -61,7 +61,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         super(parentHandler);
         this.metaData = metaData;
         this.targetNamespace = CgenExtension.NAMESPACE;
-        this.configuration = new CgenConfiguration();
+        this.configuration = new CgenConfiguration(false);
     }
 
     @Override

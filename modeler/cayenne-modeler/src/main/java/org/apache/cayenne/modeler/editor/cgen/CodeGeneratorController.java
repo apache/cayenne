@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.JOptionPane;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
@@ -43,12 +43,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.JOptionPane;
-import java.awt.Component;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Predicate;
 
 /**
  * @since 4.1
@@ -80,9 +74,12 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         super.startup(dataMap);
         classesSelectedAction();
         CgenConfiguration cgenConfiguration = createConfiguration();
-        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ? prevGeneratorController.get(dataMap) : cgenConfiguration.isClient() ?
-                generatorSelector.getClientGeneratorController() : isDefaultConfig(cgenConfiguration) ?
-                generatorSelector.getStandartController() : generatorSelector.getCustomModeController();
+        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ?
+                prevGeneratorController.get(dataMap) : isDefaultConfig(cgenConfiguration) ?
+                cgenConfiguration.isClient() ? generatorSelector.getClientGeneratorController() :
+                        generatorSelector.getStandartController() :
+                generatorSelector.getCustomModeController();
+
         prevGeneratorController.put(dataMap, modeController);
         generatorSelector.setSelectedController(modeController);
         classesSelector.startup();
@@ -91,11 +88,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     private boolean isDefaultConfig(CgenConfiguration cgenConfiguration) {
-        return cgenConfiguration.isMakePairs() && cgenConfiguration.isUsePkgPath() && !cgenConfiguration.isOverwrite() &&
-                !cgenConfiguration.isCreatePKProperties() && !cgenConfiguration.isCreatePropertyNames() &&
-                cgenConfiguration.getOutputPattern().equals("*.java") &&
-                cgenConfiguration.getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE) &&
-                cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE) &&
+        return cgenConfiguration.isMakePairs() && cgenConfiguration.isUsePkgPath() &&
+                !cgenConfiguration.isOverwrite() && !cgenConfiguration.isCreatePKProperties() &&
+                !cgenConfiguration.isCreatePropertyNames() && cgenConfiguration.getOutputPattern().equals("*.java") &&
+                (cgenConfiguration.getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE) ||
+                        cgenConfiguration.getTemplate().equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE)) &&
+                (cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE) ||
+                        cgenConfiguration.getSuperTemplate().equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE)) &&
                 (cgenConfiguration.getSuperPkg() == null || cgenConfiguration.getSuperPkg().isEmpty());
 
     }
@@ -145,8 +144,9 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     public void generateAction() {
         CgenConfiguration cgenConfiguration = createConfiguration();
         ClassGenerationAction generator = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction(cgenConfiguration) :
-                new ClassGenerationAction(cgenConfiguration);
+                new ClientClassGenerationAction() :
+                new ClassGenerationAction();
+        generator.setCgenConfiguration(cgenConfiguration);
 
         try {
             generator.prepareArtifacts();
