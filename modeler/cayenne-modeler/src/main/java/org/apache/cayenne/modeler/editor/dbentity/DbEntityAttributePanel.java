@@ -18,6 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.dbentity;
 
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
+import java.awt.BorderLayout;
+import java.util.List;
+
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -40,17 +51,6 @@ import org.apache.cayenne.modeler.util.PanelFactory;
 import org.apache.cayenne.modeler.util.UIUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.swing.components.LimitedTextField;
-
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.util.List;
 
 /**
  * Detail view of the DbEntity attributes.
@@ -119,6 +119,16 @@ public class DbEntityAttributePanel extends JPanel implements DbEntityDisplayLis
 
         List<?> listAttrs = model.getObjectList();
         int[] newSel = new int[attrs.length];
+
+        Application.getInstance().getActionManager()
+                .getAction(RemoveAttributeRelationshipAction.class)
+                .setCurrentSelectedPanel(parentPanel.getAttributePanel());
+        Application.getInstance().getActionManager()
+                .getAction(CutAttributeRelationshipAction.class)
+                .setCurrentSelectedPanel(parentPanel.getAttributePanel());
+        Application.getInstance().getActionManager()
+                .getAction(CopyAttributeRelationshipAction.class)
+                .setCurrentSelectedPanel(parentPanel.getAttributePanel());
 
         parentPanel.updateActions(attrs);
 
