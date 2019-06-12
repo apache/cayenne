@@ -179,6 +179,15 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         List listRels = model.getObjectList();
         int[] newSel = new int[rels.length];
 
+        Application.getInstance().getActionManager()
+                .getAction(RemoveAttributeRelationshipAction.class)
+                .setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
+        Application.getInstance().getActionManager()
+                .getAction(CutAttributeRelationshipAction.class)
+                .setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
+        Application.getInstance().getActionManager()
+                .getAction(CopyAttributeRelationshipAction.class)
+                .setCurrentSelectedPanel(parentPanel.getRelationshipPanel());
         parentPanel.updateActions(rels);
 
         for (int i = 0; i < rels.length; i++) {

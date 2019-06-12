@@ -14,6 +14,7 @@ Date:
 
 Bug Fixes:
 
+CAY-2417 Modeler: wrong title in attribute context menu
 CAY-2553 Wrong disjoint prefetch query qualifier
 CAY-2573 DI field injection is triggered when creating sql Driver
 CAY-2580 Cgen: Can't use custom templates for client mode
