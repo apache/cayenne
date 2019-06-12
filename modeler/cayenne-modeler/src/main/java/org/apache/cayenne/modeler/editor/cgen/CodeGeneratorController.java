@@ -32,6 +32,7 @@ import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.EmbeddableEvent;
@@ -77,9 +78,12 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         super.startup(dataMap);
         classesSelectedAction();
         CgenConfiguration cgenConfiguration = createConfiguration();
-        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ? prevGeneratorController.get(dataMap) : cgenConfiguration.isClient() ?
-                generatorSelector.getClientGeneratorController() : isDefaultConfig(cgenConfiguration) ?
-                generatorSelector.getStandartController() : generatorSelector.getCustomModeController();
+        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ?
+                prevGeneratorController.get(dataMap) : isDefaultConfig(cgenConfiguration) ?
+                cgenConfiguration.isClient() ? generatorSelector.getClientGeneratorController() :
+                        generatorSelector.getStandartController() :
+                generatorSelector.getCustomModeController();
+
         prevGeneratorController.put(dataMap, modeController);
         generatorSelector.setSelectedController(modeController);
         classesSelector.startup();
@@ -88,11 +92,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     private boolean isDefaultConfig(CgenConfiguration cgenConfiguration) {
-        return cgenConfiguration.isMakePairs() && cgenConfiguration.isUsePkgPath() && !cgenConfiguration.isOverwrite() &&
-                !cgenConfiguration.isCreatePKProperties() && !cgenConfiguration.isCreatePropertyNames() &&
-                cgenConfiguration.getOutputPattern().equals("*.java") &&
-                cgenConfiguration.getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE) &&
-                cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE) &&
+        return cgenConfiguration.isMakePairs() && cgenConfiguration.isUsePkgPath() &&
+                !cgenConfiguration.isOverwrite() && !cgenConfiguration.isCreatePKProperties() &&
+                !cgenConfiguration.isCreatePropertyNames() && cgenConfiguration.getOutputPattern().equals("*.java") &&
+                (cgenConfiguration.getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE) ||
+                        cgenConfiguration.getTemplate().equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE)) &&
+                (cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE) ||
+                        cgenConfiguration.getSuperTemplate().equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE)) &&
                 (cgenConfiguration.getSuperPkg() == null || cgenConfiguration.getSuperPkg().isEmpty());
 
     }

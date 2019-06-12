@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
-import org.apache.cayenne.modeler.pref.FSPath;
-import org.apache.cayenne.resource.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -34,6 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
+import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages code generation templates.
@@ -58,6 +58,8 @@ public class CodeTemplateManager {
 
 	private List<String> standardSubclassTemplates;
 	private List<String> standardSuperclassTemplates;
+	private List<String> standardClientSubclassTemplates;
+	private List<String> standardClientSuperclassTemplates;
 	private Map<String, String> customTemplates;
 	private Map<String, String> reverseCustomTemplate;
 	private Map<String, String> standardTemplates;
@@ -77,15 +79,18 @@ public class CodeTemplateManager {
 	}
 
 	public CodeTemplateManager(Application application) {
-		standardSuperclassTemplates = new ArrayList<>(3);
-
+		standardSuperclassTemplates = new ArrayList<>(2);
 		standardSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
-		standardSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
 
-		standardSubclassTemplates = new ArrayList<>(3);
-		standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
-		standardSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
+		standardClientSuperclassTemplates = new ArrayList<>();
+		standardClientSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
+
+		standardSubclassTemplates = new ArrayList<>(2);
 		standardSubclassTemplates.add(SINGLE_SERVER_CLASS);
+		standardSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
+
+		standardClientSubclassTemplates = new ArrayList<>();
+		standardClientSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 
 		standartEmbeddableTemplates = new ArrayList<>();
 		standartEmbeddableTemplates.add(SINGLE_EMBEDDABLE_CLASS);
@@ -190,8 +195,16 @@ public class CodeTemplateManager {
 		return standardSubclassTemplates;
 	}
 
+	public List<String> getStandardClientSubclassTemplates() {
+		return standardClientSubclassTemplates;
+	}
+
 	public List<String> getStandardSuperclassTemplates() {
 		return standardSuperclassTemplates;
+	}
+
+	public List<String> getStandardClientSuperclassTemplates() {
+		return standardClientSuperclassTemplates;
 	}
 
 	public List<String> getStandartEmbeddableTemplates() {

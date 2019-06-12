@@ -84,7 +84,7 @@ public class CgenTabController extends GeneratorsTabController {
     }
 
     public CgenConfiguration createConfiguration(DataMap dataMap) {
-        CgenConfiguration cgenConfiguration = new CgenConfiguration();
+        CgenConfiguration cgenConfiguration = new CgenConfiguration(false);
         Application.getInstance().getInjector().injectMembers(cgenConfiguration);
         cgenConfiguration.setDataMap(dataMap);
         Path basePath = Paths.get(ModelerUtil.initOutputFolder());

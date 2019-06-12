@@ -172,14 +172,14 @@ public class CayenneGeneratorTask extends CayenneTask {
             return cgenConfiguration;
         } else {
             logger.info("Using default cgen config.");
-            cgenConfiguration = new CgenConfiguration();
+            cgenConfiguration = new CgenConfiguration(false);
             cgenConfiguration.setDataMap(dataMap);
             return cgenConfiguration;
         }
     }
 
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
-        CgenConfiguration cgenConfiguration = new CgenConfiguration();
+        CgenConfiguration cgenConfiguration = new CgenConfiguration(client != null ? client : false);
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.setRelPath(destDir != null ? destDir.toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
@@ -200,7 +200,6 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setQueryTemplate(querytemplate != null ? querytemplate : cgenConfiguration.getQueryTemplate());
         cgenConfiguration.setQuerySuperTemplate(querysupertemplate != null ? querysupertemplate : cgenConfiguration.getQuerySuperTemplate());
         cgenConfiguration.setCreatePKProperties(createpkproperties != null ? createpkproperties : cgenConfiguration.isCreatePKProperties());
-        cgenConfiguration.setClient(client != null ? client : cgenConfiguration.isClient());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
                 cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);

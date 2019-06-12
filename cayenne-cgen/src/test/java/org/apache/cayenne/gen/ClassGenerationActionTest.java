@@ -53,7 +53,7 @@ public class ClassGenerationActionTest extends CgenCase {
 	@Before
 	public void setUp() throws Exception {
 		writers = new ArrayList<>(3);
-		cgenConfiguration = new CgenConfiguration();
+		cgenConfiguration = new CgenConfiguration(false);
 		action = new TestClassGenerationAction(getUnitTestInjector().getInstance(ClassGenerationActionFactory.class)
 				.createAction(cgenConfiguration), writers);
 	}

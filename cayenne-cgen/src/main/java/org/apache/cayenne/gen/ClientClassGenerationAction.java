@@ -102,8 +102,6 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
     public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
         super.setCgenConfiguration(cgenConfiguration);
-        cgenConfiguration.setTemplate(SUBCLASS_TEMPLATE);
-        cgenConfiguration.setSuperTemplate(SUPERCLASS_TEMPLATE);
         cgenConfiguration.setQueryTemplate(DMAP_SUBCLASS_TEMPLATE);
         cgenConfiguration.setQuerySuperTemplate(DMAP_SUPERCLASS_TEMPLATE);
     }

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.DefaultComboBoxModel;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.cgen.TemplateDialog;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
@@ -57,20 +58,24 @@ public class CustomModeController extends GeneratorController {
         BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
         builder.bindToAction(view.getManageTemplatesLink(), "popPreferencesAction()");
 
-        updateTemplates();
     }
 
     protected void updateTemplates() {
+        boolean isClient = cgenConfiguration.isClient();
         CodeTemplateManager templateManager = getApplication().getCodeTemplateManager();
 
         List<String> customTemplates = new ArrayList<>(templateManager.getCustomTemplates().keySet());
         Collections.sort(customTemplates);
 
-        List<String> superTemplates = new ArrayList<>(templateManager.getStandardSuperclassTemplates());
+        List<String> superTemplates = isClient ?
+                new ArrayList<>(templateManager.getStandardClientSuperclassTemplates()) :
+                new ArrayList<>(templateManager.getStandardSuperclassTemplates());
         Collections.sort(superTemplates);
         superTemplates.addAll(customTemplates);
 
-        List<String> subTemplates = new ArrayList<>(templateManager.getStandardSubclassTemplates());
+        List<String> subTemplates = isClient ?
+                new ArrayList<>(templateManager.getStandardClientSubclassTemplates()) :
+                new ArrayList<>(templateManager.getStandardSubclassTemplates());
         Collections.sort(subTemplates);
         subTemplates.addAll(customTemplates);
 
@@ -167,10 +172,40 @@ public class CustomModeController extends GeneratorController {
                 getParentController().getProjectController().setDirty(true);
             }
         });
+
+        view.getClientMode().addActionListener(val -> {
+            boolean isSelected = view.getClientMode().isSelected();
+            cgenConfiguration.setClient(isSelected);
+            if(isSelected) {
+                cgenConfiguration.setTemplate(ClientClassGenerationAction.SUBCLASS_TEMPLATE);
+                cgenConfiguration.setSuperTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
+            } else {
+                cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
+                cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+            }
+            updateTemplates();
+            String templateName = getApplication().getCodeTemplateManager().getNameByPath(
+                    isSelected ?
+                            ClientClassGenerationAction.SUBCLASS_TEMPLATE :
+                            ClassGenerationAction.SUBCLASS_TEMPLATE,
+                    cgenConfiguration.getRootPath());
+            String superTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+                    isSelected ?
+                            ClientClassGenerationAction.SUBCLASS_TEMPLATE :
+                            ClassGenerationAction.SUBCLASS_TEMPLATE,
+                    cgenConfiguration.getRootPath());
+            view.getSubclassTemplate().setItem(templateName);
+            view.getSuperclassTemplate().setItem(superTemplateName);
+            if(!getParentController().isInitFromModel()) {
+                getParentController().getProjectController().setDirty(true);
+            }
+        });
     }
 
     public void initForm(CgenConfiguration cgenConfiguration){
         super.initForm(cgenConfiguration);
+        view.getClientMode().setSelected(cgenConfiguration.isClient());
+        updateTemplates();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
         view.getPairs().setSelected(cgenConfiguration.isMakePairs());
         view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
@@ -184,8 +219,6 @@ public class CustomModeController extends GeneratorController {
 
     @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
-        cgenConfiguration.setClient(false);
-        cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
-        cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+        // Do nothing
     }
 }

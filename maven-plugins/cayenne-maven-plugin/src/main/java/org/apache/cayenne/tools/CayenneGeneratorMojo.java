@@ -320,7 +320,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			return cgenConfiguration;
 		} else {
 			logger.info("Using default cgen config.");
-			cgenConfiguration = new CgenConfiguration();
+			cgenConfiguration = new CgenConfiguration(false);
 			cgenConfiguration.setDataMap(dataMap);
 			cgenConfiguration.setRelPath(defaultDir.getPath());
 			return cgenConfiguration;
@@ -328,7 +328,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	}
 
 	private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
-		CgenConfiguration cgenConfiguration = new CgenConfiguration();
+		CgenConfiguration cgenConfiguration = new CgenConfiguration(client != null ? client : false);
 		cgenConfiguration.setDataMap(dataMap);
 		cgenConfiguration.setRelPath(destDir != null ? destDir.getPath() : defaultDir.getPath());
 		cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
@@ -349,7 +349,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
 		cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
 		cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
-		cgenConfiguration.setClient(client != null ? client : cgenConfiguration.isClient());
 		if(!cgenConfiguration.isMakePairs()) {
 			if(template == null) {
 				cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
