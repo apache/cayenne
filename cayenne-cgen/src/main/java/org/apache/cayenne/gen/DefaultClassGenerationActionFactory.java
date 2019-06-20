@@ -36,6 +36,7 @@ public class DefaultClassGenerationActionFactory implements ClassGenerationActio
                 new ClassGenerationAction();
         classGenerationAction.setCgenConfiguration(cgenConfiguration);
         classGenerationAction.setUtilsFactory(utilsFactory);
+        classGenerationAction.setStringUtils(utilsFactory.createStringUtils());
         return classGenerationAction;
     }
 

@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.cayenne.project.validation.NameValidationHelper;
 import org.apache.cayenne.util.Util;
 
@@ -29,12 +33,20 @@ public class StringUtils {
 
     private static StringUtils sharedInstance;
 
+    private List<String> dictionary;
+
+    @Deprecated
     public static StringUtils getInstance() {
         if (null == sharedInstance) {
-            sharedInstance = new StringUtils();
+            sharedInstance = new StringUtils(Collections.emptyList());
         }
 
         return sharedInstance;
+    }
+
+    public StringUtils(List<String> dictionary) {
+        this.dictionary = dictionary;
+        sharedInstance = this;
     }
 
     /**
@@ -42,6 +54,7 @@ public class StringUtils {
      * keywords.
      */
     public String formatVariableName(String variableName) {
+        variableName = buildName(variableName);
         if (NameValidationHelper.getInstance().isReservedJavaKeyword(variableName)) {
             return "_" + variableName;
         }
@@ -56,7 +69,7 @@ public class StringUtils {
      * @since 1.2
      */
     public String stripPackageName(String fullyQualifiedClassName) {
-        return Util.stripPackageName(fullyQualifiedClassName);
+        return buildName(Util.stripPackageName(fullyQualifiedClassName));
     }
 
     /**
@@ -126,7 +139,7 @@ public class StringUtils {
             buffer.append(Character.toUpperCase(charArray[i]));
         }
 
-        return buffer.toString();
+        return buildName(buffer.toString());
     }
 
     /**
@@ -204,5 +217,18 @@ public class StringUtils {
         }
 
         return buffer.toString();
+    }
+
+    private String buildName(String name) {
+        if(name == null) {
+            return null;
+        }
+        for(String pattern : dictionary) {
+            if(Pattern.compile(pattern).matcher(name).matches()) {
+                return "_" + name;
+            }
+        }
+
+        return name;
     }
 }

@@ -35,15 +35,30 @@ public class DefaultToolsUtilsFactory implements ToolsUtilsFactory {
     private AdhocObjectFactory objectFactory;
 
     @Inject(ToolsConstants.CUSTOM_PROPERTIES)
-    List<PropertyDescriptorCreator> propertyList;
+    private List<PropertyDescriptorCreator> propertyList;
+
+    @Inject(ToolsConstants.PATTERN_PROPERTIES)
+    private List<String> namePatternDictionary;
 
     @Override
-    public ImportUtils createImportUtils() {
-        return new ImportUtils();
+    public ImportUtils createImportUtils(StringUtils stringUtils) {
+        return new ImportUtils(stringUtils);
     }
 
     @Override
-    public PropertyUtils createPropertyUtils(Logger logger, ImportUtils importUtils) {
-        return new PropertyUtils(importUtils, objectFactory, propertyList, logger);
+    public PropertyUtils createPropertyUtils(Logger logger,
+                                             ImportUtils importUtils,
+                                             StringUtils stringUtils) {
+        return new PropertyUtils(importUtils,
+                stringUtils,
+                objectFactory,
+                propertyList,
+                logger);
     }
+
+    @Override
+    public StringUtils createStringUtils() {
+        return new StringUtils(namePatternDictionary);
+    }
+
 }

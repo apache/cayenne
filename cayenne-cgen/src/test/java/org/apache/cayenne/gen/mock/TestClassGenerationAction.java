@@ -36,6 +36,7 @@ public class TestClassGenerationAction extends ClassGenerationAction {
         super();
         setCgenConfiguration(classGenerationAction.getCgenConfiguration());
         setUtilsFactory(classGenerationAction.getUtilsFactory());
+        setStringUtils(classGenerationAction.getStringUtils());
         this.writers = writers;
     }
 

@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -28,9 +32,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -64,7 +65,12 @@ public class EntityUtilsTest {
             callbacks[i].addCallbackMethod("callback2");
             callbacks[i].addCallbackMethod("callback3");
         }
-        entityUtils = new EntityUtils(dataMap, objEntity, "TestBaseClass", "TestSuperClass", "TestSubClass");
+        entityUtils = new EntityUtils(dataMap,
+                objEntity,
+                "TestBaseClass",
+                "TestSuperClass",
+                "TestSubClass",
+                new StringUtils(Collections.singletonList("[0-9].*")));
         
         boolean hasNoDuplicates = true;
         Set<String> callbackNames = new LinkedHashSet<String>();
@@ -94,7 +100,9 @@ public class EntityUtilsTest {
         dataMap.addDbEntity(dbEntity);
         dataMap.addObjEntity(objEntity);
 
-        entityUtils = new EntityUtils(dataMap, objEntity, "TestBaseClass", "TestSuperClass", "TestSubClass");
+        entityUtils = new EntityUtils(dataMap, objEntity, "TestBaseClass",
+                "TestSuperClass", "TestSubClass",
+                new StringUtils(Collections.singletonList("[0-9].*")));
 
         assertTrue(entityUtils.declaresDbAttribute(exists));
         assertFalse(entityUtils.declaresDbAttribute(notExists));

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collections;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +33,7 @@ public class StringUtilsTest {
 
     @Before
     public void setUp() throws Exception {
-        stringUtils = new StringUtils();
+        stringUtils = new StringUtils(Collections.singletonList("[0-9].*"));
     }
 
     @After
@@ -120,5 +122,11 @@ public class StringUtilsTest {
         assertEquals("EntityEntity", stringUtils.replaceWildcardInStringWithString("*", "**", "Entity"));
         assertEquals("EditEntityReport.vm", stringUtils.replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
         assertEquals("Entity", stringUtils.replaceWildcardInStringWithString("*", "*", "Entity"));
+    }
+
+    @Test
+    public void addUnderscore() {
+        assertEquals("_1Test", stringUtils.stripPackageName("1Test"));
+        assertEquals("_1LAST_NAME", stringUtils.capitalizedAsConstant("1LastName"));
     }
 }

@@ -25,7 +25,11 @@ import org.slf4j.Logger;
  */
 public interface ToolsUtilsFactory {
 
-    ImportUtils createImportUtils();
+    ImportUtils createImportUtils(StringUtils stringUtils);
 
-    PropertyUtils createPropertyUtils(Logger logger, ImportUtils importUtils);
+    PropertyUtils createPropertyUtils(Logger logger,
+                                      ImportUtils importUtils,
+                                      StringUtils stringUtils);
+
+    StringUtils createStringUtils();
 }

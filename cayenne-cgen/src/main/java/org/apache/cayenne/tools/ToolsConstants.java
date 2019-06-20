@@ -25,4 +25,6 @@ public interface ToolsConstants {
 
     String CUSTOM_PROPERTIES = "cayenne.cgen.properties";
 
+    String PATTERN_PROPERTIES = "cayenne.cgen.characters";
+
 }

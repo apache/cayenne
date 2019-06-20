@@ -53,9 +53,7 @@ public class EntityUtils {
     protected Collection<String> callbackNames;
 
     public EntityUtils(DataMap dataMap, ObjEntity objEntity, String fqnBaseClass, String fqnSuperClass,
-            String fqnSubClass) {
-
-        StringUtils stringUtils = StringUtils.getInstance();
+            String fqnSubClass, StringUtils stringUtils) {
 
         this.baseClassName = stringUtils.stripPackageName(fqnBaseClass);
         this.basePackageName = stringUtils.stripClass(fqnBaseClass);

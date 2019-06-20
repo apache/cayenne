@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collections;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +35,7 @@ public class ImportUtilsTest {
 
     @Before
     public void setUp() throws Exception {
-        importUtils = new ImportUtils();
+        importUtils = new ImportUtils(new StringUtils(Collections.singletonList("[0-9].*")));
     }
 
     @After

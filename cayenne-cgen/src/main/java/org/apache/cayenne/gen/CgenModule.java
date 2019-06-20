@@ -50,9 +50,16 @@ public class CgenModule implements Module{
                 .add(NumericPropertyDescriptorCreator.class)
                 .add(DatePropertyDescriptorCreator.class)
                 .add(StringPropertyDescriptorCreator.class);
+
+        contributeNamePatterns(binder)
+                .add("[0-9].*");
     }
 
     public static ListBuilder<PropertyDescriptorCreator> contributeUserProperties(Binder binder) {
         return binder.bindList(PropertyDescriptorCreator.class, ToolsConstants.CUSTOM_PROPERTIES);
+    }
+
+    public static ListBuilder<String> contributeNamePatterns(Binder binder) {
+        return binder.bindList(String.class, ToolsConstants.PATTERN_PROPERTIES);
     }
 }

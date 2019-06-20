@@ -34,7 +34,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.gen.ImportUtils;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -75,6 +74,7 @@ public class ClassGenerationAction {
     protected Map<String, Template> templateCache;
 
     private ToolsUtilsFactory utilsFactory;
+    private StringUtils stringUtils;
 
 	/**
 	Optionally allows user-defined tools besides {@link ImportUtils} for working with velocity templates.<br/>
@@ -124,23 +124,20 @@ public class ClassGenerationAction {
 	public String customTemplateName(TemplateType type) {
 		switch (type) {
 			case ENTITY_SINGLE_CLASS:
-				return cgenConfiguration.getTemplate();
 			case ENTITY_SUBCLASS:
 				return cgenConfiguration.getTemplate();
 			case ENTITY_SUPERCLASS:
 				return cgenConfiguration.getSuperTemplate();
 			case EMBEDDABLE_SINGLE_CLASS:
-				return cgenConfiguration.getEmbeddableTemplate();
 			case EMBEDDABLE_SUBCLASS:
 				return cgenConfiguration.getEmbeddableTemplate();
 			case EMBEDDABLE_SUPERCLASS:
 				return cgenConfiguration.getEmbeddableSuperTemplate();
 			case DATAMAP_SINGLE_CLASS:
+			case DATAMAP_SUBCLASS:
 				return cgenConfiguration.getQueryTemplate();
 			case DATAMAP_SUPERCLASS:
 				return cgenConfiguration.getQuerySuperTemplate();
-			case DATAMAP_SUBCLASS:
-				return cgenConfiguration.getQueryTemplate();
 			default:
 				throw new IllegalArgumentException("Invalid template type: " + type);
 		}
@@ -150,8 +147,6 @@ public class ClassGenerationAction {
      * VelocityContext initialization method called once per artifact.
      */
     public void resetContextForArtifact(Artifact artifact) {
-        StringUtils stringUtils = StringUtils.getInstance();
-
         String qualifiedClassName = artifact.getQualifiedClassName();
         String packageName = stringUtils.stripClass(qualifiedClassName);
         String className = stringUtils.stripPackageName(qualifiedClassName);
@@ -160,7 +155,7 @@ public class ClassGenerationAction {
         String basePackageName = stringUtils.stripClass(qualifiedBaseClassName);
         String baseClassName = stringUtils.stripPackageName(qualifiedBaseClassName);
 
-        String superClassName = SUPERCLASS_PREFIX + stringUtils.stripPackageName(qualifiedClassName);
+        String superClassName = SUPERCLASS_PREFIX + className;
 
         String superPackageName = cgenConfiguration.getSuperPkg();
         if (superPackageName == null || superPackageName.isEmpty()) {
@@ -188,9 +183,10 @@ public class ClassGenerationAction {
 	 * template type combination.
 	 */
 	void resetContextForArtifactTemplate(Artifact artifact) {
-        ImportUtils importUtils = utilsFactory.createImportUtils();
+        ImportUtils importUtils = utilsFactory.createImportUtils(stringUtils);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
-		context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory.createPropertyUtils(logger, importUtils));
+		context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory
+				.createPropertyUtils(logger, importUtils, stringUtils));
 		artifact.postInitContext(context);
 	}
 
@@ -377,7 +373,7 @@ public class ClassGenerationAction {
 		String packageName = (String) context.get(Artifact.SUPER_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
-		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
+		String filename = stringUtils.replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
 		File dest = new File(mkpath(new File(cgenConfiguration.buildPath().toString()), packageName), filename);
 
 		if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate())) {
@@ -396,7 +392,7 @@ public class ClassGenerationAction {
 		String packageName = (String) context.get(Artifact.SUB_PACKAGE_KEY);
 		String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
-		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
+		String filename = stringUtils.replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
 		File dest = new File(mkpath(new File(Objects.requireNonNull(cgenConfiguration.buildPath()).toString()), packageName), filename);
 
 		if (dest.exists()) {
@@ -502,5 +498,13 @@ public class ClassGenerationAction {
 
 	public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
 		this.utilsFactory = utilsFactory;
+	}
+
+	public StringUtils getStringUtils() {
+		return stringUtils;
+	}
+
+	public void setStringUtils(StringUtils stringUtils) {
+		this.stringUtils = stringUtils;
 	}
 }

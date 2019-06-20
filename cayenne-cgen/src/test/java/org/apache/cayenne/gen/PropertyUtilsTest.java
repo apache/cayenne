@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,8 @@ public class PropertyUtilsTest {
 
     @Before
     public void setup() {
-        importUtils = new ImportUtils();
+        StringUtils stringUtils = new StringUtils(Collections.singletonList("[0-9].*"));
+        importUtils = new ImportUtils(stringUtils);
 
         DefaultScope testScope = new DefaultScope();
         propertyUtils = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule(),
@@ -71,7 +73,7 @@ public class PropertyUtilsTest {
                         ServerModule.contributeUserTypes(binder)
                                 .add(new TimestampType()))
                 .getInstance(ToolsUtilsFactory.class)
-                .createPropertyUtils(logger, importUtils);
+                .createPropertyUtils(logger, importUtils, stringUtils);
     }
 
     @Test

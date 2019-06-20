@@ -82,23 +82,27 @@ public class PropertyUtils {
     );
 
     private final ImportUtils importUtils;
+    private final StringUtils stringUtils;
 
     private List<PropertyDescriptorCreator> propertyList;
     private AdhocObjectFactory adhocObjectFactory;
 
     private Logger logger;
 
-    public PropertyUtils(ImportUtils importUtils) {
+    public PropertyUtils(ImportUtils importUtils, StringUtils stringUtils) {
         this.importUtils = importUtils;
+        this.stringUtils = stringUtils;
         this.propertyList = new ArrayList<>();
 
     }
 
     public PropertyUtils(ImportUtils importUtils,
+                         StringUtils stringUtils,
                          AdhocObjectFactory adhocObjectFactory,
                          List<PropertyDescriptorCreator> propertyList,
                          Logger logger) {
         this.importUtils = importUtils;
+        this.stringUtils = stringUtils;
         this.adhocObjectFactory = adhocObjectFactory;
         this.propertyList = propertyList;
         this.logger = logger;
@@ -164,8 +168,6 @@ public class PropertyUtils {
     }
 
     public String propertyDefinition(DbAttribute attribute) throws ClassNotFoundException {
-        StringUtils utils = StringUtils.getInstance();
-
         String attributeType = TypesMapping.getJavaBySqlType(attribute.getType());
         String propertyType = getPropertyTypeForType(TypesMapping.getJavaBySqlType(attribute.getType()));
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
@@ -174,7 +176,7 @@ public class PropertyUtils {
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(ExpressionFactory.dbPathExp(\"%s\"), %s.class);",
                 importUtils.formatJavaType(propertyType),
                 attributeType,
-                utils.capitalizedAsConstant(attribute.getName()) + PK_PROPERTY_SUFFIX,
+                stringUtils.capitalizedAsConstant(attribute.getName()) + PK_PROPERTY_SUFFIX,
                 propertyFactoryMethod,
                 attribute.getName(),
                 attributeType
@@ -186,8 +188,7 @@ public class PropertyUtils {
             return propertyDefinition((EmbeddedAttribute)attribute);
         }
 
-        StringUtils utils = StringUtils.getInstance();
-        String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
+        String attributeType = stringUtils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
         return String.format("public static final %s<%s> %s = %s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
@@ -200,9 +201,8 @@ public class PropertyUtils {
     }
 
     protected String generatePropertyName(ObjAttribute attribute) {
-        StringUtils utils = StringUtils.getInstance();
         ObjEntity entity = attribute.getEntity();
-        String name = utils.capitalizedAsConstant(attribute.getName());
+        String name = stringUtils.capitalizedAsConstant(attribute.getName());
         // ensure that final name is unique
         while(entity.getAttribute(name) != null) {
             name = name + DUPLICATE_NAME_SUFFIX;
@@ -215,8 +215,6 @@ public class PropertyUtils {
     }
 
     public String propertyDefinition(EmbeddedAttribute attribute) throws ClassNotFoundException {
-        StringUtils utils = StringUtils.getInstance();
-
         Embeddable embeddable = attribute.getEmbeddable();
         Collection<EmbeddableAttribute> attributes = embeddable.getAttributes();
 
@@ -224,11 +222,11 @@ public class PropertyUtils {
         int i = 0;
         for(EmbeddableAttribute embeddableAttribute : attributes) {
             PropertyDescriptor propertyDescriptor = getPropertyDescriptor(embeddableAttribute.getType());
-            String attributeType = utils.stripGeneric(importUtils.formatJavaType(embeddableAttribute.getType(), false));
+            String attributeType = stringUtils.stripGeneric(importUtils.formatJavaType(embeddableAttribute.getType(), false));
             String path = attribute.getAttributeOverrides()
                     .getOrDefault(embeddableAttribute.getName(), embeddableAttribute.getDbAttributeName());
 
-            String propertyName = utils.capitalizedAsConstant(attribute.getName()) + "_" + utils.capitalizedAsConstant(embeddableAttribute.getName());
+            String propertyName = stringUtils.capitalizedAsConstant(attribute.getName()) + "_" + stringUtils.capitalizedAsConstant(embeddableAttribute.getName());
             attributesDefinitions[i++] =  String.format("public static final %s<%s> %s " +
                             "= %s(ExpressionFactory.dbPathExp(\"%s\"), %s.class);",
                     importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
@@ -264,8 +262,6 @@ public class PropertyUtils {
     }
 
     private String mapRelationshipDefinition(ObjRelationship relationship, boolean client) {
-        StringUtils utils = StringUtils.getInstance();
-
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
         String mapKeyType = importUtils.formatJavaType(EntityUtils.getMapKeyTypeInternal(relationship));
@@ -275,7 +271,7 @@ public class PropertyUtils {
                 importUtils.formatJavaType(propertyType),
                 mapKeyType,
                 attributeType,
-                utils.capitalizedAsConstant(relationship.getName()),
+                stringUtils.capitalizedAsConstant(relationship.getName()),
                 propertyFactoryMethod,
                 relationship.getName(),
                 mapKeyType,
@@ -284,8 +280,6 @@ public class PropertyUtils {
     }
 
     private String collectionRelationshipDefinition(ObjRelationship relationship, boolean client) {
-        StringUtils utils = StringUtils.getInstance();
-
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
         String entityType = getRelatedTypeName(relationship, client);
@@ -293,7 +287,7 @@ public class PropertyUtils {
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),
                 entityType,
-                utils.capitalizedAsConstant(relationship.getName()),
+                stringUtils.capitalizedAsConstant(relationship.getName()),
                 propertyFactoryMethod,
                 relationship.getName(),
                 entityType
@@ -311,8 +305,6 @@ public class PropertyUtils {
     }
 
     private String toOneRelationshipDefinition(ObjRelationship relationship, boolean client) {
-        StringUtils utils = StringUtils.getInstance();
-
         String propertyType = EntityProperty.class.getName();
         String propertyFactoryMethod = "createEntity";
         String attributeType = getRelatedTypeName(relationship, client);
@@ -320,7 +312,7 @@ public class PropertyUtils {
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),
                 attributeType,
-                utils.capitalizedAsConstant(relationship.getName()),
+                stringUtils.capitalizedAsConstant(relationship.getName()),
                 propertyFactoryMethod,
                 relationship.getName(),
                 attributeType

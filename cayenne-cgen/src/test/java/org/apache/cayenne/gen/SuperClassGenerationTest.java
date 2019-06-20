@@ -41,13 +41,14 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         ObjEntity objEntity = new ObjEntity("TEST1");
 
         VelocityContext context = new VelocityContext();
-        ImportUtils importUtils = new ImportUtils();
+        ToolsUtilsFactory utilsFactory = getInjector().getInstance(ToolsUtilsFactory.class);
+        StringUtils stringUtils = utilsFactory.createStringUtils();
+        ImportUtils importUtils = utilsFactory.createImportUtils(stringUtils);
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
-        context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY,
-                getInjector().getInstance(ToolsUtilsFactory.class)
-                        .createPropertyUtils(logger, importUtils));
+        context.put(Artifact.STRING_UTILS_KEY, stringUtils);
+        context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory
+                        .createPropertyUtils(logger, importUtils, stringUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertFalse(res.contains(NumericProperty.class.getName()));
@@ -62,13 +63,14 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         objEntity.addAttribute(attr);
 
         VelocityContext context = new VelocityContext();
-        ImportUtils importUtils = new ImportUtils();
+        ToolsUtilsFactory utilsFactory = getInjector().getInstance(ToolsUtilsFactory.class);
+        StringUtils stringUtils = utilsFactory.createStringUtils();
+        ImportUtils importUtils = utilsFactory.createImportUtils(stringUtils);
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
-        context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY,
-                getInjector().getInstance(ToolsUtilsFactory.class)
-                        .createPropertyUtils(logger, importUtils));
+        context.put(Artifact.STRING_UTILS_KEY, stringUtils);
+        context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory
+                        .createPropertyUtils(logger, importUtils, stringUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertTrue(res.contains(NumericProperty.class.getName()));
@@ -82,13 +84,14 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         objEntity.addRelationship(rel);
 
         VelocityContext context = new VelocityContext();
-        ImportUtils importUtils = new ImportUtils();
+        ToolsUtilsFactory utilsFactory = getInjector().getInstance(ToolsUtilsFactory.class);
+        StringUtils stringUtils = utilsFactory.createStringUtils();
+        ImportUtils importUtils = utilsFactory.createImportUtils(stringUtils);
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
-        context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
-        context.put(Artifact.PROPERTY_UTILS_KEY,
-                getInjector().getInstance(ToolsUtilsFactory.class)
-                        .createPropertyUtils(logger, importUtils));
+        context.put(Artifact.STRING_UTILS_KEY, stringUtils);
+        context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory
+                        .createPropertyUtils(logger, importUtils, stringUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertFalse(res.contains(NumericProperty.class.getName()));
@@ -108,13 +111,15 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
         objEntity.addRelationship(rel);
 
         VelocityContext context = new VelocityContext();
-        ImportUtils importUtils = new ImportUtils();
+        ToolsUtilsFactory utilsFactory = getInjector().getInstance(ToolsUtilsFactory.class);
+        StringUtils stringUtils = utilsFactory.createStringUtils();
+        ImportUtils importUtils = utilsFactory.createImportUtils(stringUtils);
         context.put(Artifact.OBJECT_KEY, objEntity);
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
-        context.put(Artifact.STRING_UTILS_KEY, StringUtils.getInstance());
+        context.put(Artifact.STRING_UTILS_KEY, stringUtils);
         context.put(Artifact.PROPERTY_UTILS_KEY,
-                getInjector().getInstance(ToolsUtilsFactory.class)
-                        .createPropertyUtils(logger, importUtils));
+                utilsFactory
+                        .createPropertyUtils(logger, importUtils, stringUtils));
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertTrue(res.contains(NumericProperty.class.getName()));

@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.util.Util;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.util.Util;
 
 /**
  * Methods for mangling strings.
@@ -53,13 +53,18 @@ public class ImportUtils {
 
 	protected String packageName;
 
+	private final StringUtils stringUtils;
+
+	public ImportUtils(StringUtils stringUtils) {
+		this.stringUtils = stringUtils;
+	}
+
 	protected boolean canRegisterType(String typeName) {
 		// Not sure why this would ever happen, but it did
 		if (null == typeName) {
             return false;
         }
 
-		StringUtils stringUtils = StringUtils.getInstance();
 		String typeClassName = stringUtils.stripPackageName(typeName);
 		String typePackageName = stringUtils.stripClass(typeName);
 
@@ -91,7 +96,6 @@ public class ImportUtils {
             return;
         }
 
-		StringUtils stringUtils = StringUtils.getInstance();
 		String typeClassName = stringUtils.stripPackageName(typeName);
 
 		reservedImportTypesMap.put(typeClassName, typeName);
@@ -109,7 +113,6 @@ public class ImportUtils {
             return;
         }
 
-		StringUtils stringUtils = StringUtils.getInstance();
 		String typePackageName = stringUtils.stripClass(typeName);
 		if (typePackageName.equals(packageName)) {
             return;
@@ -147,7 +150,6 @@ public class ImportUtils {
 	 */
 	public String formatJavaType(String typeName) {
 		if (typeName != null) {
-			StringUtils stringUtils = StringUtils.getInstance();
 			String typeClassName = stringUtils.stripPackageName(typeName);
 
 			if (!reservedImportTypesMap.containsKey(typeClassName)
