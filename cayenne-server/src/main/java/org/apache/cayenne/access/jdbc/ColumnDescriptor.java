@@ -149,10 +149,6 @@ public class ColumnDescriptor {
         return name;
     }
 
-    public void setAttribute(DbAttribute attribute) {
-        this.attribute = attribute;
-    }
-
     /**
      * Returns a DbAttribute for this column. Since columns descriptors can be
      * initialized in a context where a DbAttribite is unknown, this method may
@@ -164,9 +160,6 @@ public class ColumnDescriptor {
         return attribute;
     }
 
-    /**
-     * @since 4.2
-     */
     public void setAttribute(DbAttribute attribute) {
         this.attribute = attribute;
     }

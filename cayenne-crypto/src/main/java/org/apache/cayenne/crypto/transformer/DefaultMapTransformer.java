@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
@@ -41,6 +42,7 @@ public class DefaultMapTransformer implements MapTransformer {
     @Override
     public void transform(Map<String, Object> map) {
 
+        mapKeys = mergeSameKeys(mapKeys);
         int len = mapKeys.length;
 
         for (int i = 0; i < len; i++) {
@@ -51,5 +53,9 @@ public class DefaultMapTransformer implements MapTransformer {
                 map.put(mapKeys[i], transformed);
             }
         }
+    }
+
+    private String[] mergeSameKeys(String[] keys) {
+        return Arrays.stream(keys).distinct().toArray(String[]::new);
     }
 }
