@@ -19,6 +19,8 @@
 package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
@@ -54,12 +56,16 @@ class IdRowReader<T> extends BaseRowReader<T> {
             throw new CayenneRuntimeException("Root DBEntity has no PK defined: %s", dbEntity);
         }
 
-        int[] pk = new int[len];
         ColumnDescriptor[] columns = descriptor.getColumns();
-        for (int i = 0, j = 0; i < columns.length; i++) {
+
+        Set<DbAttribute> addedAttributes = new HashSet<>();
+        int[] pk = new int[len];
+        int index = 0;
+        for(int i = 0; i < columns.length; i++) {
             DbAttribute a = dbEntity.getAttribute(columns[i].getName());
-            if (a != null && a.isPrimaryKey()) {
-                pk[j++] = i;
+            if(a != null && a.isPrimaryKey() && !addedAttributes.contains(a)) {
+                pk[index++] = i;
+                addedAttributes.add(a);
             }
         }
 
