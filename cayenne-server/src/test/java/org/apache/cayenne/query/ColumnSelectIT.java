@@ -36,6 +36,7 @@ import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -43,6 +44,8 @@ import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
@@ -1100,5 +1103,53 @@ public class ColumnSelectIT extends ServerCase {
                 .selectOne(context);
         assertNotNull(artist);
         assertTrue(artist.getArtistName().startsWith("artist"));
+    }
+
+    @Test
+    public void test2PkSelect() {
+        List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
+                PropertyFactory.createSelf(Artist.class),
+                PropertyFactory
+                        .createBase(ExpressionFactory
+                                .dbPathExp("paintingArray.toArtist.ARTIST_ID"),
+                                Integer.class))
+                .where(Artist.ARTIST_ID_PK_PROPERTY.eq(1L))
+                .pageSize(1)
+                .select(context);
+        assertEquals(1, results.size());
+        assertEquals("artist1", ((Artist)results.get(0)[0]).getArtistName());
+        assertEquals(1, results.get(0)[1]);
+    }
+
+    @Test
+    public void test2Objects2Pk() {
+        Artist artist = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_ID_PK_PROPERTY.eq(1L))
+                .selectFirst(context);
+        ArtistExhibit artistExhibit = context.newObject(ArtistExhibit.class);
+        Exhibit exhibit = context.newObject(Exhibit.class);
+        exhibit.setOpeningDate(new Date());
+        exhibit.setClosingDate(new Date());
+        artistExhibit.setToArtist(artist);
+        artistExhibit.setToExhibit(exhibit);
+        Gallery gallery = context.newObject(Gallery.class);
+        gallery.setGalleryName("Test");
+        exhibit.setToGallery(gallery);
+        context.commitChanges();
+
+        List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
+                Artist.ARTIST_NAME,
+                PropertyFactory.createSelf(Artist.class),
+                PropertyFactory
+                        .createBase(ExpressionFactory
+                                        .dbPathExp("artistExhibitArray.ARTIST_ID"),
+                                Integer.class))
+                .where(Artist.ARTIST_ID_PK_PROPERTY.eq(1L))
+                .pageSize(1)
+                .select(context);
+        assertEquals(1, results.size());
+        assertEquals("artist1", results.get(0)[0]);
+        assertEquals("artist1", ((Artist)results.get(0)[1]).getArtistName());
+        assertEquals(1, results.get(0)[2]);
     }
 }

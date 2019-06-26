@@ -54,11 +54,15 @@ class IdRowReader<T> extends BaseRowReader<T> {
             throw new CayenneRuntimeException("Root DBEntity has no PK defined: %s", dbEntity);
         }
 
-        int[] pk = new int[len];
         ColumnDescriptor[] columns = descriptor.getColumns();
-        for (int i = 0, j = 0; i < columns.length; i++) {
+
+        int[] pk = new int[len];
+        int offset = resultMetadata != null ?
+                resultMetadata.getColumnOffset() :
+                0;
+        for(int i = offset, j = 0; i < offset + len; i++) {
             DbAttribute a = dbEntity.getAttribute(columns[i].getName());
-            if (a != null && a.isPrimaryKey()) {
+            if(a != null && a.isPrimaryKey()) {
                 pk[j++] = i;
             }
         }
