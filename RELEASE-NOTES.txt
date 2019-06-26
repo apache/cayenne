@@ -20,6 +20,7 @@ CAY-2573 DI field injection is triggered when creating sql Driver
 CAY-2580 Cgen: Can't use custom templates for client mode
 CAY-2582 Double insert of manyToMany relationship mapped to Set
 CAY-2584 Crypto: can't use ColumnSelect with encrypted columns
+CAY-2586 Char can't be materialized to EnumType in some cases
 
 ----------------------------------
 Release: 4.1.B2

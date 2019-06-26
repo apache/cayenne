@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.ExtendedEnumeration;
-import org.apache.cayenne.dba.TypesMapping;
-
 import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
+import org.apache.cayenne.ExtendedEnumeration;
+import org.apache.cayenne.dba.TypesMapping;
 
 /**
  * An ExtendedType that handles an enum class. If Enum is mapped to a character column,
@@ -87,7 +87,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType<T> {
             return (rs.wasNull() || index < 0) ? null : values[i];
         } else {
             String string = rs.getString(index);
-            return string != null ? Enum.valueOf(enumClass, string) : null;
+            return string != null ? Enum.valueOf(enumClass, string.trim()) : null;
         }
     }
 
@@ -98,7 +98,7 @@ public class EnumType<T extends Enum<T>> implements ExtendedType<T> {
             return (rs.wasNull() || index < 0) ? null : values[i];
         } else {
             String string = rs.getString(index);
-            return string != null ? Enum.valueOf(enumClass, string) : null;
+            return string != null ? Enum.valueOf(enumClass, string.trim()) : null;
         }
     }
 
