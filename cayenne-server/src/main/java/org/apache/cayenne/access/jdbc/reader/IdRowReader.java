@@ -19,8 +19,6 @@
 package org.apache.cayenne.access.jdbc.reader;
 
 import java.sql.ResultSet;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
@@ -58,14 +56,14 @@ class IdRowReader<T> extends BaseRowReader<T> {
 
         ColumnDescriptor[] columns = descriptor.getColumns();
 
-        Set<DbAttribute> addedAttributes = new HashSet<>();
         int[] pk = new int[len];
-        int index = 0;
-        for(int i = 0; i < columns.length; i++) {
+        int offset = resultMetadata != null ?
+                resultMetadata.getColumnOffset() :
+                0;
+        for(int i = offset, j = 0; i < offset + len; i++) {
             DbAttribute a = dbEntity.getAttribute(columns[i].getName());
-            if(a != null && a.isPrimaryKey() && !addedAttributes.contains(a)) {
-                pk[index++] = i;
-                addedAttributes.add(a);
+            if(a != null && a.isPrimaryKey()) {
+                pk[j++] = i;
             }
         }
 
