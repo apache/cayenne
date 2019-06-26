@@ -18,21 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
+import org.apache.cayenne.testdo.enum_test.EnumEntity1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
@@ -84,5 +89,17 @@ public class EnumIT extends ServerCase {
         EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
+    }
+
+    @Test
+    public void testEnumMappedToChar() {
+        EnumEntity1 enumEntity1 = context.newObject(EnumEntity1.class);
+        enumEntity1.setEnumAttribute(Enum1.two);
+        context.commitChanges();
+
+        List<EnumEntity1> enumEntity1s = ObjectSelect.query(EnumEntity1.class)
+                .select(context);
+        assertEquals(1, enumEntity1s.size());
+        assertEquals(Enum1.two, enumEntity1s.get(0).getEnumAttribute());
     }
 }

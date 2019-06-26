@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/9/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap http://cayenne.apache.org/schema/9/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/9/modelMap https://cayenne.apache.org/schema/9/modelMap.xsd"
 	 project-version="9">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.enum_test"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
@@ -12,7 +12,14 @@
 		<db-attribute name="ENUM_ATTRIBUTE" type="VARCHAR" length="250"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="ENUM_ENTITY1">
+		<db-attribute name="ENUM_ATTRIBUTE" type="CHAR" length="5"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" dbEntityName="ENUM_ENTITY">
+		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
+	</obj-entity>
+	<obj-entity name="EnumEntity1" className="org.apache.cayenne.testdo.enum_test.EnumEntity1" dbEntityName="ENUM_ENTITY1" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
 	</obj-entity>
 </data-map>
