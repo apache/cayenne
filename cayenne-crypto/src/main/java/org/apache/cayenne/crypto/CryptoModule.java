@@ -139,7 +139,7 @@ public class CryptoModule implements Module {
         binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(DEFAULT_COLUMN_MAPPER_PATTERN));
 
         binder.decorate(BatchTranslatorFactory.class).before(CryptoBatchTranslatorFactoryDecorator.class);
-        binder.decorate(RowReaderFactory.class).before(CryptoRowReaderFactoryDecorator.class);
+        binder.bind(RowReaderFactory.class).to(CryptoRowReaderFactoryDecorator.class);
 
         // decorate Crypto's own services to allow Cayenne to operate over plaintext entities even if crypto keys are
         // not available.

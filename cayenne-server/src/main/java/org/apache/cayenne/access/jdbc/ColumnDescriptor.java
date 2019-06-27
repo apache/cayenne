@@ -160,9 +160,6 @@ public class ColumnDescriptor {
         return attribute;
     }
 
-    /**
-     * @since 4.2
-     */
     public void setAttribute(DbAttribute attribute) {
         this.attribute = attribute;
     }

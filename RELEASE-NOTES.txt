@@ -60,6 +60,7 @@ CAY-2577 Between property with extended type failure
 CAY-2578 Wrong bindings in select of related entity by compound FK
 CAY-2580 Cgen: Can't use custom templates for client mode
 CAY-2582 Double insert of manyToMany relationship mapped to Set
+CAY-2584 Crypto: can't use ColumnSelect with encrypted columns
 CAY-2588 IdRowReader: ArrayIndexOutOfBoundsException
 
 ----------------------------------

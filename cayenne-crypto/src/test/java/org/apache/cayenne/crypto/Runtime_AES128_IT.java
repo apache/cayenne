@@ -18,23 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.crypto;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.crypto.db.Table1;
-import org.apache.cayenne.crypto.db.Table2;
-import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
-import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.apache.cayenne.query.SelectQuery;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.crypto.db.Table1;
+import org.apache.cayenne.crypto.db.Table2;
+import org.apache.cayenne.crypto.db.Table7;
+import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
+import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SelectQuery;
+import org.junit.Before;
+import org.junit.Test;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
@@ -154,6 +158,200 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
         assertEquals(1, result.size());
         assertEquals(59, result.get(0).getPlainInt());
         assertEquals(61, result.get(0).getCryptoInt());
+    }
+
+    @Test
+    public void test_ColumnQueryObject() {
+
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setCryptoString("test");
+        context.commitChanges();
+
+        List<Table1> result = ObjectSelect
+                .columnQuery(Table1.class, PropertyFactory.createSelf(Table1.class))
+                .select(context);
+
+        assertEquals(1, result.size());
+        assertEquals(1, result.get(0).getCryptoInt());
+        assertEquals("test", result.get(0).getCryptoString());
+    }
+
+    @Test
+    public void test_ColumnQueryObjectWithPlainScalar() {
+
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setPlainInt(2);
+        t1.setCryptoString("test");
+        context.commitChanges();
+
+        List<Object[]> result = ObjectSelect
+                .columnQuery(Table1.class,
+                        PropertyFactory.createSelf(Table1.class),
+                        Table1.PLAIN_INT)
+                .select(context);
+
+        assertEquals(1, result.size());
+        assertEquals(1, ((Table1)result.get(0)[0]).getCryptoInt());
+        assertEquals("test", ((Table1)result.get(0)[0]).getCryptoString());
+        assertEquals(2, result.get(0)[1]);
+    }
+
+    @Test
+    public void test_ColumnQueryObjectWithEncryptedScalar() {
+
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setPlainInt(2);
+        t1.setCryptoString("test");
+        t1.setPlainString("Test");
+        context.commitChanges();
+
+        List<Object[]> result = ObjectSelect
+                .columnQuery(Table1.class,
+                        PropertyFactory.createSelf(Table1.class),
+                        Table1.CRYPTO_INT)
+                .select(context);
+
+        assertEquals(1, result.size());
+        assertEquals(1, ((Table1)result.get(0)[0]).getCryptoInt());
+        assertEquals("test", ((Table1)result.get(0)[0]).getCryptoString());
+        assertEquals(1, result.get(0)[1]);
+    }
+
+    @Test
+    public void testColumnQueryWithRelationshipWithTheSameNames() {
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setPlainInt(3);
+        t1.setCryptoString("test");
+        t1.setPlainString("Test");
+
+        Table7 t7 = context.newObject(Table7.class);
+        t7.setCryptoInt(2);
+        t7.setCryptoString("string");
+
+        t1.addToTable7s(t7);
+
+        context.commitChanges();
+
+        List<Object[]> result = ObjectSelect
+                .columnQuery(Table1.class,
+                        Table1.CRYPTO_INT,
+                        PropertyFactory.createSelf(Table1.class),
+                        Table1.CRYPTO_INT,
+                        Table1.TABLE7S.dot(Table7.CRYPTO_INT),
+                        Table1.TABLE7S.dot(Table7.CRYPTO_STRING))
+                .select(context);
+        assertEquals(1, result.size());
+        assertEquals(1, result.get(0)[0]);
+        assertEquals(1, ((Table1)result.get(0)[1]).getCryptoInt());
+        assertEquals("test", ((Table1)result.get(0)[1]).getCryptoString());
+        assertEquals(1, result.get(0)[2]);
+        assertEquals(2, result.get(0)[3]);
+        assertEquals("string", result.get(0)[4]);
+    }
+
+    @Test
+    public void testSelectWith2Objects() {
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setPlainInt(3);
+        t1.setCryptoString("test");
+        t1.setPlainString("Test");
+
+        Table7 t7 = context.newObject(Table7.class);
+        t7.setCryptoInt(2);
+        t7.setCryptoString("string");
+
+        t1.addToTable7s(t7);
+
+        context.commitChanges();
+
+        List<Object[]> result = ObjectSelect
+                .columnQuery(Table1.class,
+                        PropertyFactory.createSelf(Table1.class),
+                        Table1.TABLE7S.flat())
+                .select(context);
+        assertEquals(1, result.size());
+        assertEquals("test", ((Table1)result.get(0)[0]).getCryptoString());
+        assertTrue(result.get(0)[1] instanceof Table7);
+        assertEquals(2, ((Table7)result.get(0)[1]).getCryptoInt());
+    }
+
+    @Test
+    public void testObjectSelectWithPrefetch() {
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setPlainInt(3);
+        t1.setCryptoString("test");
+        t1.setPlainString("Test");
+
+        Table7 t7 = context.newObject(Table7.class);
+        t7.setCryptoInt(2);
+        t7.setCryptoString("string");
+
+        t1.addToTable7s(t7);
+
+        context.commitChanges();
+
+        List<Table1> table1s = ObjectSelect.query(Table1.class)
+                .prefetch(Table1.TABLE7S.disjoint())
+                .select(context);
+
+        assertEquals(1, table1s.size());
+        assertEquals("test", table1s.get(0).getCryptoString());
+        assertEquals("string", table1s.get(0).getTable7s().get(0).getCryptoString());
+    }
+
+    @Test
+    public void test_ColumnQuerySingleScalar() {
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setCryptoString("test");
+        context.commitChanges();
+
+        List<String> result = ObjectSelect
+                .columnQuery(Table1.class, Table1.CRYPTO_STRING)
+                .select(context);
+
+        assertEquals(1, result.size());
+        assertEquals("test", result.get(0));
+    }
+
+    @Test
+    public void test_ColumnQueryMultipleScalars() {
+        ObjectContext context = runtime.newContext();
+
+        Table1 t1 = context.newObject(Table1.class);
+        t1.setCryptoInt(1);
+        t1.setCryptoString("test");
+        t1.setPlainInt(2);
+        context.commitChanges();
+
+        List<Object[]> result = ObjectSelect
+                .columnQuery(Table1.class, Table1.CRYPTO_STRING, Table1.CRYPTO_INT, Table1.PLAIN_INT)
+                .select(context);
+
+        assertEquals(1, result.size());
+        assertEquals("test", result.get(0)[0]);
+        assertEquals(1, result.get(0)[1]);
+        assertEquals(2, result.get(0)[2]);
     }
 
 }
