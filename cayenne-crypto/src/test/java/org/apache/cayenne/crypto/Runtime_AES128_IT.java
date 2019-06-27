@@ -29,7 +29,6 @@ import org.apache.cayenne.crypto.db.Table2;
 import org.apache.cayenne.crypto.db.Table7;
 import org.apache.cayenne.crypto.transformer.value.IntegerConverter;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
-import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
@@ -172,7 +171,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
         context.commitChanges();
 
         List<Table1> result = ObjectSelect
-                .columnQuery(Table1.class, Property.createSelf(Table1.class))
+                .columnQuery(Table1.class, PropertyFactory.createSelf(Table1.class))
                 .select(context);
 
         assertEquals(1, result.size());
@@ -192,7 +191,9 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
         context.commitChanges();
 
         List<Object[]> result = ObjectSelect
-                .columnQuery(Table1.class, Property.createSelf(Table1.class), Table1.PLAIN_INT)
+                .columnQuery(Table1.class,
+                        PropertyFactory.createSelf(Table1.class),
+                        Table1.PLAIN_INT)
                 .select(context);
 
         assertEquals(1, result.size());
@@ -214,7 +215,9 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
         context.commitChanges();
 
         List<Object[]> result = ObjectSelect
-                .columnQuery(Table1.class, PropertyFactory.createSelf(Table1.class), Table1.CRYPTO_INT)
+                .columnQuery(Table1.class,
+                        PropertyFactory.createSelf(Table1.class),
+                        Table1.CRYPTO_INT)
                 .select(context);
 
         assertEquals(1, result.size());
@@ -243,17 +246,19 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
         List<Object[]> result = ObjectSelect
                 .columnQuery(Table1.class,
+                        Table1.CRYPTO_INT,
                         PropertyFactory.createSelf(Table1.class),
                         Table1.CRYPTO_INT,
                         Table1.TABLE7S.dot(Table7.CRYPTO_INT),
                         Table1.TABLE7S.dot(Table7.CRYPTO_STRING))
                 .select(context);
         assertEquals(1, result.size());
-        assertEquals(1, ((Table1)result.get(0)[0]).getCryptoInt());
-        assertEquals("test", ((Table1)result.get(0)[0]).getCryptoString());
-        assertEquals(1, result.get(0)[1]);
-        assertEquals(2, result.get(0)[2]);
-        assertEquals("string", result.get(0)[3]);
+        assertEquals(1, result.get(0)[0]);
+        assertEquals(1, ((Table1)result.get(0)[1]).getCryptoInt());
+        assertEquals("test", ((Table1)result.get(0)[1]).getCryptoString());
+        assertEquals(1, result.get(0)[2]);
+        assertEquals(2, result.get(0)[3]);
+        assertEquals("string", result.get(0)[4]);
     }
 
     @Test

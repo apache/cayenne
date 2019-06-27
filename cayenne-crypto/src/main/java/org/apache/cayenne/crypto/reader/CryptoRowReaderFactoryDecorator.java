@@ -81,7 +81,7 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
                                                  PostprocessorFactory postProcessorFactory) {
         RowReader<?> entityRowReader = super
                 .createEntityRowReader(descriptor, queryMetadata, resultMetadata, postProcessorFactory);
-        return new DecoratedFullRowReader(descriptor, entityRowReader);
+        return new DecoratedEntityRowReader(descriptor, entityRowReader, resultMetadata);
     }
 
     @Override
@@ -166,24 +166,23 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
         }
     }
 
-    private class DecoratedFullRowReader implements RowReader<Object> {
+    private abstract class DecoratedEntityFullRowReader implements RowReader<Object> {
 
-        private final RowDescriptor descriptor;
-        private final RowReader<?> delegateReader;
-        private boolean decryptorCompiled;
-        private MapTransformer decryptor;
+        final RowDescriptor descriptor;
+        final RowReader<?> delegateReader;
+        final EntityResultSegment resultMetadata;
+        boolean decryptorCompiled;
+        MapTransformer decryptor;
 
-        DecoratedFullRowReader(RowDescriptor descriptor, RowReader<?> delegateReader) {
+        DecoratedEntityFullRowReader(RowDescriptor descriptor,
+                                 RowReader<?> delegateReader,
+                                 EntityResultSegment resultMetadata) {
             this.descriptor = descriptor;
             this.delegateReader = delegateReader;
+            this.resultMetadata = resultMetadata;
         }
 
-        private void ensureDecryptorCompiled(Object row) {
-            if (!decryptorCompiled) {
-                decryptor = transformerFactory.decryptor(descriptor.getColumns(), row);
-                decryptorCompiled = true;
-            }
-        }
+        abstract void ensureDecryptorCompiled(Object row);
 
         @Override
         public Object readRow(ResultSet resultSet) {
@@ -198,6 +197,54 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
             }
 
             return row;
+        }
+    }
+
+    private class DecoratedEntityRowReader extends DecoratedEntityFullRowReader {
+
+        DecoratedEntityRowReader(RowDescriptor descriptor,
+                                 RowReader<?> delegateReader,
+                                 EntityResultSegment resultMetadata) {
+            super(descriptor, delegateReader, resultMetadata);
+        }
+
+        void ensureDecryptorCompiled(Object row) {
+            if (!decryptorCompiled) {
+                int offset = resultMetadata.getColumnOffset();
+                int fieldsSize = resultMetadata.getFields().size();
+                ColumnDescriptor[] columnDescriptors =
+                        new ColumnDescriptor[fieldsSize];
+                for(int i = offset, j = 0; i < offset + fieldsSize; i++) {
+                    columnDescriptors[j++] = descriptor.getColumns()[i];
+                }
+                decryptor = transformerFactory.decryptor(columnDescriptors, row);
+                decryptorCompiled = true;
+            }
+        }
+
+        @Override
+        public Object readRow(ResultSet resultSet) {
+            return super.readRow(resultSet);
+        }
+    }
+
+    private class DecoratedFullRowReader extends DecoratedEntityFullRowReader {
+
+        DecoratedFullRowReader(RowDescriptor descriptor,
+                               RowReader<?> delegateReader) {
+            super(descriptor, delegateReader, null);
+        }
+
+        void ensureDecryptorCompiled(Object row) {
+            if (!decryptorCompiled) {
+                decryptor = transformerFactory.decryptor(descriptor.getColumns(), row);
+                decryptorCompiled = true;
+            }
+        }
+
+        @Override
+        public Object readRow(ResultSet resultSet) {
+            return super.readRow(resultSet);
         }
     }
 }
