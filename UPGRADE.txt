@@ -18,6 +18,11 @@ UPGRADING TO 4.2.M1
 * Per CAY-2563 SQLSelect.scalarQuery(Class<T>, String) and SQLSelect.scalarQuery(Class<T>, String, String) methods
     were deprecated.
 
+* Per CAY-2585 SQLSelect.scalarQuery(String sql), SQLSelect.scalarQuery(String sql, String dataMapName),
+    SQLSelect.scalarQuery(String sql, Class<?> firstType, Class<?>... types),
+    SQLSelect.scalarQuery(String sql, String dataMapName, Class<?> firstType, Class<?>... types) and
+    SQLSelect.params(String name, Object value) were deprecated.
+
 UPGRADING TO 4.1.M3
 
 * Per CAY-2514 SERVER_CONTEXTS_SYNC_PROPERTY default value was set to false.
