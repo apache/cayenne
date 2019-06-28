@@ -37,7 +37,9 @@ import org.apache.cayenne.map.ObjRelationship;
 
 /**
  * @since 3.0
+ * @deprecated since 4.2
  */
+@Deprecated
 class SelectQueryMetadata extends BaseQueryMetadata {
 
 	private static final long serialVersionUID = 7465922769303943945L;

@@ -18,6 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.Ordering;
@@ -25,14 +30,11 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @since 4.0
+ * @deprecated since 4.2
  */
+@Deprecated
 public class SelectQueryDescriptor extends QueryDescriptor {
 
 	private static final long serialVersionUID = -8798258795351950215L;
