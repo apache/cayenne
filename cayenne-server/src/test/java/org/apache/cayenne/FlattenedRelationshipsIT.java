@@ -19,6 +19,8 @@
 
 package org.apache.cayenne;
 
+import java.util.List;
+
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
@@ -28,10 +30,13 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.relationships_flattened.Entity1;
+import org.apache.cayenne.testdo.relationships_flattened.Entity3;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
+import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -39,9 +44,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Types;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -200,7 +202,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
         // test 1: qualify on flattened attribute
         Expression qual1 = ExpressionFactory.matchExp("ft3Array.name", "t031");
-        SelectQuery query1 = new SelectQuery(FlattenedTest1.class, qual1);
+        SelectQuery query1 = new SelectQuery<>(FlattenedTest1.class, qual1);
         List<?> objects1 = context.performQuery(query1);
 
         assertEquals(1, objects1.size());
@@ -208,7 +210,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
         // test 2: qualify on flattened relationship
         Expression qual2 = ExpressionFactory.matchExp("ft3Array", obj131);
-        SelectQuery query2 = new SelectQuery(FlattenedTest1.class, qual2);
+        SelectQuery query2 = new SelectQuery<>(FlattenedTest1.class, qual2);
         List<?> objects2 = context.performQuery(query2);
 
         assertEquals(1, objects2.size());
@@ -231,7 +233,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
         context.invalidateObjects(ft1, ft2, ft3);
 
-        SelectQuery q = new SelectQuery(FlattenedTest3.class);
+        SelectQuery q = new SelectQuery<>(FlattenedTest3.class);
         q.setQualifier(ExpressionFactory.matchExp("name", "FT3Name"));
         List<?> results = context1.performQuery(q);
 
@@ -247,7 +249,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         createFlattenedTestDataSet();
 
         // fetch
-        List<?> ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
+        List<?> ft3s = context.performQuery(new SelectQuery<>(FlattenedTest3.class));
         assertEquals(1, ft3s.size());
         FlattenedTest3 ft3 = (FlattenedTest3) ft3s.get(0);
 
@@ -266,14 +268,14 @@ public class FlattenedRelationshipsIT extends ServerCase {
         createFlattenedTestDataSet();
 
         // fetch
-        List<?> ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
+        List<?> ft3s = context.performQuery(new SelectQuery<>(FlattenedTest3.class));
         assertEquals(1, ft3s.size());
         FlattenedTest3 ft3 = (FlattenedTest3) ft3s.get(0);
 
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
 
         // refetch
-        context.performQuery(new SelectQuery(FlattenedTest3.class));
+        context.performQuery(new SelectQuery<>(FlattenedTest3.class));
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
     }
 
@@ -329,4 +331,92 @@ public class FlattenedRelationshipsIT extends ServerCase {
         assertEquals(1, ObjectSelect.query(FlattenedTest5.class).selectCount(context));
     }
 
+    @Test
+    public void testSetFlattenedRelationship() {
+        FlattenedTest1 flattenedTest1 = context.newObject(FlattenedTest1.class);
+        flattenedTest1.setName("f1");
+        FlattenedTest3 flattenedTest3 = context.newObject(FlattenedTest3.class);
+        flattenedTest3.setName("f3");
+        flattenedTest3.setToFT1(flattenedTest1);
+
+        context.commitChanges();
+
+        List<FlattenedTest3> flattenedTest3s = ObjectSelect.query(FlattenedTest3.class)
+                .prefetch(FlattenedTest3.TO_FT1.disjoint())
+                .select(context);
+        assertEquals(1, flattenedTest3s.size());
+        assertEquals("f3", flattenedTest3s.get(0).getName());
+        assertEquals("f1", flattenedTest3s.get(0).getToFT1().getName());
+    }
+
+    @Test
+    public void testSecondToOneReverseToFk() {
+        FlattenedTest1 flattenedTest1 = context.newObject(FlattenedTest1.class);
+        flattenedTest1.setName("f1");
+        FlattenedTest4 flattenedTest4 = context.newObject(FlattenedTest4.class);
+        flattenedTest4.setName("f4");
+        flattenedTest1.addToFt4ArrayFor1(flattenedTest4);
+        context.commitChanges();
+    }
+
+    @Test
+    public void testSecondToOneToFk() {
+        Entity1 entity1 = context.newObject(Entity1.class);
+        Entity3 entity3 = context.newObject(Entity3.class);
+        entity1.setToEntity3(entity3);
+        context.commitChanges();
+
+        List<Entity1> entity1s = ObjectSelect.query(Entity1.class)
+                .prefetch(Entity1.TO_ENTITY3.disjoint())
+                .select(context);
+        assertEquals(1, entity1s.size());
+        assertNotNull(entity1s.get(0).getToEntity3());
+    }
+
+    @Test
+    public void testSetFlattenedCircular() {
+        FlattenedCircular flattenedCircular1 = context.newObject(FlattenedCircular.class);
+        FlattenedCircular flattenedCircular2 = context.newObject(FlattenedCircular.class);
+        flattenedCircular1.addToSide1s(flattenedCircular2);
+        context.commitChanges();
+
+        List<FlattenedCircular> flattenedCirculars = ObjectSelect.query(FlattenedCircular.class)
+                .prefetch(FlattenedCircular.SIDE1S.disjoint())
+                .select(context);
+
+        assertEquals(2, flattenedCirculars.size());
+    }
+
+    @Test
+    public void testFt1ToFt5Flattened() {
+        FlattenedTest1 flattenedTest1 = context.newObject(FlattenedTest1.class);
+        flattenedTest1.setName("f1");
+        FlattenedTest5 flattenedTest5 = context.newObject(FlattenedTest5.class);
+        flattenedTest5.setName("f5");
+        flattenedTest1.addToFt5Array(flattenedTest5);
+        context.commitChanges();
+
+        List<FlattenedTest1> flattenedTest1s = ObjectSelect.query(FlattenedTest1.class)
+                .prefetch(FlattenedTest1.FT5ARRAY.disjoint())
+                .select(context);
+        assertEquals(1, flattenedTest1s.size());
+        assertEquals(1, flattenedTest1s.get(0).getFt5Array().size());
+    }
+
+    @Test
+    public void testFt5ToFt1Flattened() {
+        FlattenedTest5 flattenedTest5 = context.newObject(FlattenedTest5.class);
+        flattenedTest5.setName("f5");
+        FlattenedTest1 flattenedTest1 = context.newObject(FlattenedTest1.class);
+        flattenedTest1.setName("f1");
+        flattenedTest5.setToFT1(flattenedTest1);
+        context.commitChanges();
+
+        List<FlattenedTest5> flattenedTest5s = ObjectSelect.query(FlattenedTest5.class)
+                .prefetch(FlattenedTest5.TO_FT1.disjoint())
+                .select(context);
+        assertEquals(1, flattenedTest5s.size());
+        assertEquals("f5", flattenedTest5s.get(0).getName());
+        assertEquals("f1", flattenedTest5s.get(0).getToFT1().getName());
+    }
 }

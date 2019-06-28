@@ -188,7 +188,6 @@ public class DbRelationshipTableModel extends CayenneTableModel<DbRelationship> 
                 .findObjRelationshipsForDbRelationship(mediator, relationship);
         for(ObjRelationship objRelationship : objRelationshipsForDbRelationship) {
             objRelationship.recalculateToManyValue();
-            objRelationship.recalculateReadOnlyValue();
         }
     }
 

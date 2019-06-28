@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.map;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -28,12 +34,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  * Describes an association between two Java classes mapped as source and target
@@ -272,7 +272,6 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
 
         dbRelationships.add(dbRel);
 
-        this.recalculateReadOnlyValue();
         this.recalculateToManyValue();
     }
 
@@ -283,7 +282,6 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     public void removeDbRelationship(DbRelationship dbRel) {
         refreshFromDeferredPath();
         if (dbRelationships.remove(dbRel)) {
-            this.recalculateReadOnlyValue();
             this.recalculateToManyValue();
         }
     }
@@ -419,7 +417,6 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      */
     public boolean isReadOnly() {
         refreshFromDeferredPath();
-        recalculateReadOnlyValue();
         return readOnly;
     }
 
@@ -591,7 +588,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
             return null;
         }
 
-        ObjEntity entity = (ObjEntity) getSourceEntity();
+        ObjEntity entity = getSourceEntity();
         if (entity == null) {
             throw new CayenneRuntimeException("Can't resolve DbRelationships, null source ObjEntity");
         }
@@ -628,7 +625,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
 
             if (dbRelationshipPath != null) {
 
-                ObjEntity entity = (ObjEntity) getSourceEntity();
+                ObjEntity entity = getSourceEntity();
                 if (entity == null) {
                     throw new CayenneRuntimeException("Can't resolve DbRelationships, null source ObjEntity");
                 }
@@ -650,7 +647,6 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
             }
 
             recalculateToManyValue();
-            recalculateReadOnlyValue();
     }
 
     /**
@@ -675,7 +671,9 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     /**
      * Recalculates a new readonly value based on the underlying
      * DbRelationships.
+     * @deprecated since 4.2
      */
+    @Deprecated
     public void recalculateReadOnlyValue() {
         // not flattened, always read/write
         if (dbRelationships.size() < 2) {

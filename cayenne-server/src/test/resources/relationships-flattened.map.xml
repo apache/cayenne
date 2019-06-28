@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_flattened"/>
 	<db-entity name="COMPLEX_JOIN">
@@ -14,6 +14,17 @@
 		<db-attribute name="FT1_FK" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="FT5_FK" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="ENTITY1">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="ENTITY2">
+		<db-attribute name="ENTITY1_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="ENTITY3">
+		<db-attribute name="ENTITY2_ID" type="INTEGER"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="FLATTENED_CIRCULAR">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -29,12 +40,12 @@
 	<db-entity name="FLATTENED_TEST_2">
 		<db-attribute name="FT1_ID" type="INTEGER"/>
 		<db-attribute name="FT2_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
 	<db-entity name="FLATTENED_TEST_3">
 		<db-attribute name="FT2_ID" type="INTEGER"/>
 		<db-attribute name="FT3_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
 	<db-entity name="FLATTENED_TEST_4">
 		<db-attribute name="FT3_ID" type="INTEGER"/>
@@ -45,6 +56,9 @@
 		<db-attribute name="FT5_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
+	<obj-entity name="Entity1" className="org.apache.cayenne.testdo.relationships_flattened.Entity1" dbEntityName="ENTITY1"/>
+	<obj-entity name="Entity2" className="org.apache.cayenne.testdo.relationships_flattened.Entity2" dbEntityName="ENTITY2"/>
+	<obj-entity name="Entity3" className="org.apache.cayenne.testdo.relationships_flattened.Entity3" dbEntityName="ENTITY3"/>
 	<obj-entity name="FlattenedCircular" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular" dbEntityName="FLATTENED_CIRCULAR"/>
 	<obj-entity name="FlattenedTest1" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1" dbEntityName="FLATTENED_TEST_1">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -72,6 +86,18 @@
 	</db-relationship>
 	<db-relationship name="toFT5" source="COMPLEX_JOIN2" target="FLATTENED_TEST_5">
 		<db-attribute-pair source="FT5_FK" target="FT5_ID"/>
+	</db-relationship>
+	<db-relationship name="toEntity2" source="ENTITY1" target="ENTITY2">
+		<db-attribute-pair source="ID" target="ENTITY1_ID"/>
+	</db-relationship>
+	<db-relationship name="toEntity3" source="ENTITY2" target="ENTITY3">
+		<db-attribute-pair source="ID" target="ENTITY2_ID"/>
+	</db-relationship>
+	<db-relationship name="toEntity1" source="ENTITY2" target="ENTITY1">
+		<db-attribute-pair source="ENTITY1_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toEntity2" source="ENTITY3" target="ENTITY2">
+		<db-attribute-pair source="ENTITY2_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ID" target="SIDE2_ID"/>
@@ -115,6 +141,7 @@
 	<db-relationship name="complexJoin2" source="FLATTENED_TEST_5" target="COMPLEX_JOIN2">
 		<db-attribute-pair source="FT5_ID" target="FT5_FK"/>
 	</db-relationship>
+	<obj-relationship name="toEntity3" source="Entity1" target="Entity3" deleteRule="Nullify" db-relationship-path="toEntity2.toEntity3"/>
 	<obj-relationship name="side1s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side1s.side1"/>
 	<obj-relationship name="side2s" source="FlattenedCircular" target="FlattenedCircular" db-relationship-path="side2s.side2"/>
 	<obj-relationship name="ft2Array" source="FlattenedTest1" target="FlattenedTest2" db-relationship-path="ft2Array"/>

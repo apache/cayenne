@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.map;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -38,19 +41,7 @@ import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjRelationshipIT extends ServerCase {
@@ -463,7 +454,6 @@ public class ObjRelationshipIT extends ServerCase {
         relationship.addDbRelationship(r3);
 
         assertTrue(relationship.isFlattened());
-        assertTrue(relationship.isReadOnly());
         assertTrue(relationship.isToMany());
 
     }
@@ -488,7 +478,6 @@ public class ObjRelationshipIT extends ServerCase {
         relationship.addDbRelationship(r2);
 
         assertTrue(relationship.isFlattened());
-        assertTrue(relationship.isReadOnly());
         assertTrue(relationship.isToMany());
     }
 

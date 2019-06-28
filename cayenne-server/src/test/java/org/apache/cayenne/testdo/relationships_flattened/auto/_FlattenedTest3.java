@@ -6,10 +6,8 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
@@ -26,7 +24,6 @@ public abstract class _FlattenedTest3 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> FT3_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("FT3_ID"), Integer.class);
     public static final String FT3_ID_PK_COLUMN = "FT3_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
@@ -61,6 +58,10 @@ public abstract class _FlattenedTest3 extends BaseDataObject {
     @SuppressWarnings("unchecked")
     public List<FlattenedTest4> getFt4Array() {
         return (List<FlattenedTest4>)readProperty("ft4Array");
+    }
+
+    public void setToFT1(FlattenedTest1 toFT1) {
+        setToOneTarget("toFT1", toFT1, true);
     }
 
     public FlattenedTest1 getToFT1() {

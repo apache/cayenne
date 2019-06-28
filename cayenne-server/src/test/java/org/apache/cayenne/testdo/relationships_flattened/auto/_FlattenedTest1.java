@@ -6,9 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
@@ -26,7 +24,6 @@ public abstract class _FlattenedTest1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> FT1_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("FT1_ID"), Integer.class);
     public static final String FT1_ID_PK_COLUMN = "FT1_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
@@ -67,6 +64,14 @@ public abstract class _FlattenedTest1 extends BaseDataObject {
         return (List<FlattenedTest2>)readProperty("ft2Array");
     }
 
+    public void addToFt3Array(FlattenedTest3 obj) {
+        addToManyTarget("ft3Array", obj, true);
+    }
+
+    public void removeFromFt3Array(FlattenedTest3 obj) {
+        removeToManyTarget("ft3Array", obj, true);
+    }
+
     @SuppressWarnings("unchecked")
     public List<FlattenedTest3> getFt3Array() {
         return (List<FlattenedTest3>)readProperty("ft3Array");
@@ -83,6 +88,14 @@ public abstract class _FlattenedTest1 extends BaseDataObject {
     @SuppressWarnings("unchecked")
     public List<FlattenedTest3> getFt3OverComplex() {
         return (List<FlattenedTest3>)readProperty("ft3OverComplex");
+    }
+
+    public void addToFt4ArrayFor1(FlattenedTest4 obj) {
+        addToManyTarget("ft4ArrayFor1", obj, true);
+    }
+
+    public void removeFromFt4ArrayFor1(FlattenedTest4 obj) {
+        removeToManyTarget("ft4ArrayFor1", obj, true);
     }
 
     @SuppressWarnings("unchecked")
