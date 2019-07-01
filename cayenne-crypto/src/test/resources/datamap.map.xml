@@ -38,6 +38,10 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TABLE1_ID" type="INTEGER"/>
 	</db-entity>
+	<db-entity name="TABLE8">
+		<db-attribute name="CRYPTO_BYTES" type="LONGVARBINARY"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<obj-entity name="Table1" className="org.apache.cayenne.crypto.db.Table1" dbEntityName="TABLE1">
 		<obj-attribute name="cryptoInt" type="int" db-attribute-path="CRYPTO_INT"/>
 		<obj-attribute name="cryptoString" type="java.lang.String" db-attribute-path="CRYPTO_STRING"/>
@@ -67,6 +71,9 @@
 	<obj-entity name="Table7" className="org.apache.cayenne.crypto.db.Table7" dbEntityName="TABLE7">
 		<obj-attribute name="cryptoInt" type="int" db-attribute-path="CRYPTO_INT"/>
 		<obj-attribute name="cryptoString" type="java.lang.String" db-attribute-path="CRYPTO_STRING"/>
+	</obj-entity>
+	<obj-entity name="Table8" className="org.apache.cayenne.crypto.db.Table8" lock-type="optimistic" dbEntityName="TABLE8">
+		<obj-attribute name="cryptoString" type="java.lang.String" lock="true" db-attribute-path="CRYPTO_BYTES"/>
 	</obj-entity>
 	<db-relationship name="table7s" source="TABLE1" target="TABLE7" toMany="true">
 		<db-attribute-pair source="ID" target="TABLE1_ID"/>

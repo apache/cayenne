@@ -71,6 +71,7 @@ CAY-2588 IdRowReader: ArrayIndexOutOfBoundsException
 CAY-2591 Modeler: project becomes dirty after click on dbImport or cgen tab
 CAY-2594 DbImport: AutoAdapter resolving inside an import operation hangs up the op on Hana DB
 CAY-2595 ObjAttributes are not sorted in alphabetical ordering on save
+CAY-2019 Optimistic locking always fails on CRYPTO columns
 
 ----------------------------------
 Release: 4.1.B1

@@ -30,12 +30,14 @@ import java.util.Date;
 
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
 import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
 import org.apache.cayenne.crypto.key.JceksKeySource;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.map.ColumnMapper;
+import org.apache.cayenne.crypto.map.CryptoDataMapLoader;
 import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
@@ -137,7 +139,8 @@ public class CryptoModule implements Module {
         binder.bind(BytesTransformerFactory.class).to(DefaultBytesTransformerFactory.class);
         binder.bind(KeySource.class).to(JceksKeySource.class);
         binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(DEFAULT_COLUMN_MAPPER_PATTERN));
-
+        binder.decorate(DataMapLoader.class).before(CryptoDataMapLoader.class);
+        
         binder.decorate(BatchTranslatorFactory.class).before(CryptoBatchTranslatorFactoryDecorator.class);
         binder.bind(RowReaderFactory.class).to(CryptoRowReaderFactoryDecorator.class);
 

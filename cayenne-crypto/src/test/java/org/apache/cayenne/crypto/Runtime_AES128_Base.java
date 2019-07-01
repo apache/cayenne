@@ -33,6 +33,7 @@ public class Runtime_AES128_Base {
     protected TableHelper table1;
     protected TableHelper table2;
     protected TableHelper table4;
+    protected TableHelper table8;
 
     protected void setUp(boolean compress, boolean useHMAC) throws Exception {
 
@@ -53,6 +54,9 @@ public class Runtime_AES128_Base {
 
         this.table4 = new TableHelper(dbHelper, "TABLE4").setColumns("ID", "PLAIN_STRING", "PLAIN_INT");
         table4.deleteAll();
+        
+        this.table8 = new TableHelper(dbHelper, "TABLE8").setColumns("ID", "CRYPTO_BYTES");
+        table8.deleteAll();
     }
 
     protected ServerRuntime createRuntime(Module crypto) {

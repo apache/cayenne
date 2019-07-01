@@ -20,8 +20,10 @@ package org.apache.cayenne.crypto;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.crypto.db.Table2;
+import org.apache.cayenne.crypto.db.Table8;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.junit.Before;
 import org.junit.Test;
@@ -161,6 +163,32 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
         assertArrayEquals(cryptoBytes1, result.get(0).getCryptoBytes());
         assertArrayEquals(cryptoBytes2, result.get(1).getCryptoBytes());
         assertArrayEquals(null, result.get(2).getCryptoBytes());
+    }
+    
+    @Test
+    public void test_SelectQueryWithOptimisticLocking() throws SQLException {
+        ObjectContext context = runtime.newContext();
+        
+        StringBuilder builder = new StringBuilder();
+        for (int i = 1; i <= 10; i++) {
+            builder.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        }
+        
+        String str = builder.toString();
+        
+        Table8 t1 = context.newObject(Table8.class);
+        t1.setCryptoString(str);
+        context.commitChanges();
+
+        ObjectSelect<Table8> select = ObjectSelect.query(Table8.class);
+        List<Table8> result = context.select(select);
+        assertEquals(str, result.get(0).getCryptoString());
+        
+        t1.setCryptoString(str + "A");
+        context.commitChanges(); // the update should execute without any locking in the WHERE clause
+        
+        result = context.select(select);
+        assertEquals(str+"A", result.get(0).getCryptoString());
     }
 
 }
