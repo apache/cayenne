@@ -22,6 +22,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.crypto.db.Table2;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.junit.Before;
 import org.junit.Test;
@@ -161,6 +162,34 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
         assertArrayEquals(cryptoBytes1, result.get(0).getCryptoBytes());
         assertArrayEquals(cryptoBytes2, result.get(1).getCryptoBytes());
         assertArrayEquals(null, result.get(2).getCryptoBytes());
+    }
+    
+    @Test
+    public void test_SelectQueryWithOptimisticLocking() throws SQLException {
+
+        byte[] cryptoBytes1 = "A".getBytes();
+
+        ObjectContext context = runtime.newContext();
+        
+        // enable optimistic locking on the crypto column which should be ignored
+        ObjEntity entity = context.getEntityResolver().getObjEntity(Table2.class);
+        entity.setDeclaredLockType(ObjEntity.LOCK_TYPE_OPTIMISTIC);
+        entity.getAttribute("cryptoBytes").setUsedForLocking(true);
+
+        Table2 t1 = context.newObject(Table2.class);
+        t1.setPlainBytes("A".getBytes());
+        t1.setCryptoBytes(cryptoBytes1);
+        context.commitChanges();
+
+        SelectQuery<Table2> select = SelectQuery.query(Table2.class);
+        List<Table2> result = context.select(select);
+        assertArrayEquals(cryptoBytes1, result.get(0).getCryptoBytes());
+        
+        t1.setPlainBytes("B".getBytes());
+        context.commitChanges();
+        
+        result = context.select(select);
+        assertArrayEquals(cryptoBytes1, result.get(0).getCryptoBytes());
     }
 
 }

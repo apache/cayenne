@@ -19,7 +19,9 @@
 package org.apache.cayenne.crypto.reader;
 
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.jdbc.RowDescriptor;
@@ -38,7 +40,9 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
@@ -109,7 +113,17 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
             ExtendedType t = originalConverters[i];
 
             if (attribute != null && columnMapper.isEncrypted(attribute)) {
-
+            	
+            	// disable optimistic locking for encrypted columns since the changing IV makes this infeasible
+            	DbEntity dbEntity = attribute.getEntity();
+            	dbEntity.getDataMap().getObjEntities().stream()
+            		.filter(objEntity -> objEntity.getDbEntity().equals(dbEntity) && objEntity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC)
+            		.flatMap(objEntity -> objEntity.getAttributes().stream())
+            		.filter(attr -> attr.getDbAttribute().equals(attribute) && attr.isUsedForLocking())
+            		.forEach(attr -> {
+            			attr.setUsedForLocking(false);
+            		});
+            	
                 // only char or binary columns can store encrypted data
                 if (TypesMapping.isBinary(attribute.getType())) {
                     t = typeMap.getRegisteredType(byte[].class);
