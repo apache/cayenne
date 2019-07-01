@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.builders;
 
+import java.util.Collections;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-
-import java.util.Collections;
+import org.apache.cayenne.map.Procedure;
 
 /**
  * @since 4.0.
@@ -104,6 +105,22 @@ public class DataMapBuilder extends DefaultBuilder<DataMap> {
                 .to(toSplit[0], toSplit[1])
 
                 .build());
+
+        return this;
+    }
+
+    public DataMapBuilder with(ProcedureBuilder... procedures) {
+        for(ProcedureBuilder builder : procedures) {
+            obj.addProcedure(builder.build());
+        }
+
+        return this;
+    }
+
+    public DataMapBuilder with(Procedure... procedures) {
+        for(Procedure procedure : procedures) {
+            obj.addProcedure(procedure);
+        }
 
         return this;
     }

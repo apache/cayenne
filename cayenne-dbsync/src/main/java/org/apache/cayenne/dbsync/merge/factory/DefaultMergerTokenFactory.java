@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge.factory;
 
+import java.util.Collection;
+
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.token.db.AddColumnToDb;
+import org.apache.cayenne.dbsync.merge.token.db.AddProcedureToDb;
 import org.apache.cayenne.dbsync.merge.token.db.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.CreateTableToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
+import org.apache.cayenne.dbsync.merge.token.db.DropProcedureToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropTableToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
@@ -34,8 +38,10 @@ import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetValueForNullToDb;
 import org.apache.cayenne.dbsync.merge.token.model.AddColumnToModel;
 import org.apache.cayenne.dbsync.merge.token.model.AddRelationshipToModel;
+import org.apache.cayenne.dbsync.merge.token.model.CreateProcedureToModel;
 import org.apache.cayenne.dbsync.merge.token.model.CreateTableToModel;
 import org.apache.cayenne.dbsync.merge.token.model.DropColumnToModel;
+import org.apache.cayenne.dbsync.merge.token.model.DropProcedureToModel;
 import org.apache.cayenne.dbsync.merge.token.model.DropRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.token.model.DropTableToModel;
 import org.apache.cayenne.dbsync.merge.token.model.SetAllowNullToModel;
@@ -46,8 +52,7 @@ import org.apache.cayenne.dbsync.merge.token.model.SetPrimaryKeyToModel;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-
-import java.util.Collection;
+import org.apache.cayenne.map.Procedure;
 
 /**
  * @since 4.0
@@ -153,6 +158,26 @@ public class DefaultMergerTokenFactory implements MergerTokenFactory {
     @Override
     public MergerToken createDropRelationshipToModel(DbEntity entity, DbRelationship rel) {
         return new DropRelationshipToModel(entity, rel);
+    }
+
+    @Override
+    public MergerToken createAddProcedureToDb(Procedure procedure) {
+        return new AddProcedureToDb(procedure);
+    }
+
+    @Override
+    public MergerToken createAddProcedureToModel(Procedure procedure) {
+        return new CreateProcedureToModel(procedure);
+    }
+
+    @Override
+    public MergerToken createDropProcedureToDb(Procedure procedure) {
+        return new DropProcedureToDb(procedure);
+    }
+
+    @Override
+    public MergerToken createDropProcedureToModel(Procedure procedure) {
+        return new DropProcedureToModel(procedure);
     }
 
     @Override

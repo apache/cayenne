@@ -19,16 +19,17 @@
 
 package org.apache.cayenne.dbsync.merge.token;
 
+import java.util.Collections;
+
 import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Procedure;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Collections;
 
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
@@ -45,6 +46,7 @@ public class TokensReverseTest {
         DbRelationship rel = new DbRelationship("rel");
         rel.setSourceEntity(entity);
         rel.addJoin(new DbJoin(rel, attr.getName(), "dontKnow"));
+        Procedure procedure = new Procedure("Test");
 
         testOneToOneReverse(factory().createAddColumnToDb(entity, attr));
         testOneToOneReverse(factory().createAddColumnToModel(entity, attr));
@@ -74,6 +76,11 @@ public class TokensReverseTest {
         testOneToOneReverse(factory().createSetPrimaryKeyToModel(entity, Collections.singleton(attr), Collections.singleton(attr2), "PK"));
 
         testOneToOneReverse(factory().createSetValueForNullToDb(entity, attr, new DefaultValueForNullProvider()));
+
+        testOneToOneReverse(factory().createDropProcedureToDb(procedure));
+        testOneToOneReverse(factory().createAddProcedureToDb(procedure));
+        testOneToOneReverse(factory().createDropProcedureToModel(procedure));
+        testOneToOneReverse(factory().createAddProcedureToModel(procedure));
     }
 
     private void testOneToOneReverse(MergerToken token) {

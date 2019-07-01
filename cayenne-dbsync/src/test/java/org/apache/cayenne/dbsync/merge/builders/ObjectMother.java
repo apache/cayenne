@@ -67,4 +67,12 @@ public class ObjectMother {
         return new DbAttributeBuilder();
     }
 
+    public static ProcedureBuilder procedure(String name) {
+        return procedure().name(name);
+    }
+
+    public static ProcedureBuilder procedure() {
+        return new ProcedureBuilder();
+    }
+
 }

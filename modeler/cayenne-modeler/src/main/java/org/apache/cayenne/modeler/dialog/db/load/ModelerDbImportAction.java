@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
@@ -37,10 +36,8 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DefaultDbImportAction;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.project.ProjectSaver;
@@ -145,14 +142,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     }
 
     @Override
-    protected void addMessageToLogs(String message, List<String> messages) {
-        String formattedMessage = String.format("    %-20s", message);
-        messages.add(formattedMessage);
-        resultDialog.addRowToOutput(formattedMessage, targetMap);
-        hasTokenToMerge = true;
-    }
-
-    @Override
     protected void logMessages(List<String> messages) {
         super.logMessages(messages);
         if (!hasTokenToMerge) {
@@ -169,31 +158,5 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Override
     protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
         return targetMap;
-    }
-
-    @Override
-    protected boolean checkIncludedProcedures(DataMap loadedDataMap, FiltersConfig filters) {
-        Collection<Procedure> procedures = loadedDataMap.getProcedures();
-        boolean hasProceduresToMerge = false;
-        for (Procedure procedure : procedures) {
-            if(!hasChangesForProcedure(procedure)) {
-               continue;
-            }
-            hasProceduresToMerge = true;
-            Procedure oldProcedure = targetMap.getProcedure(procedure.getName());
-
-            String msg = "";
-            if (oldProcedure != null) {
-                msg = "Replace procedure " + procedure.getName();
-            } else {
-                msg = "Create procedure " + procedure.getName();
-            }
-            String formattedMessage = String.format("    %-20s", msg);
-            resultDialog.addRowToOutput(formattedMessage, targetMap);
-        }
-        if(!hasTokenToMerge && !hasProceduresToMerge) {
-            resultDialog.addMsg(targetMap);
-        }
-        return hasProceduresToMerge;
     }
 }

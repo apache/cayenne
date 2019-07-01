@@ -292,6 +292,21 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testImportProcedure() throws Exception {
+        test("testImportProcedure");
+    }
+
+    @Test
+    public void testDropProcedure() throws Exception {
+        test("testDropProcedure");
+    }
+
+    @Test
+    public void testSameProcedures() throws Exception {
+        test("testSameProcedure");
+    }
+
+    @Test
     public void testFilteringConfig() throws Exception {
         DbImporterMojo cdbImport = getCdbImport("config/pom-01.xml");
 
@@ -420,6 +435,15 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
                         String sql = "DROP TABLE " + tableNameFull;
                         execute(stmt, sql);
+                    }
+                }
+
+                try(ResultSet procedures = connection.getMetaData()
+                        .getProcedures(null, null,"PROC")) {
+                    while(procedures.next()) {
+                        String schema = procedures.getString("PROCEDURE_SCHEM");
+                        String name = procedures.getString("PROCEDURE_NAME");
+                        execute(stmt, "DROP PROCEDURE " + (isBlank(schema) ? "" : schema + ".") + name);
                     }
                 }
 

@@ -54,14 +54,12 @@ import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
-import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
@@ -153,7 +151,6 @@ public class DefaultDbImportAction implements DbImportAction {
 
             syncDataMapProperties(targetDataMap, config);
             applyTokens(targetDataMap, tokens, config);
-            syncProcedures(targetDataMap, sourceDataMap, filters);
 
             saveLoaded(targetDataMap, config);
             this.loadedDataMap = null;
@@ -201,7 +198,7 @@ public class DefaultDbImportAction implements DbImportAction {
         }
         this.loadedDataMap = targetDataMap;
 
-        // In that moment our data map fills with sorce map
+        // In that moment our data map fills with source map
         // transform source DataMap before merging
         transformSourceBeforeMerge(sourceDataMap, targetDataMap, config);
 
@@ -219,7 +216,6 @@ public class DefaultDbImportAction implements DbImportAction {
 
         hasChanges |= checkDataMapProperties(targetDataMap, config);
         hasChanges |= hasTokensToImport(tokens);
-        hasChanges |= checkIncludedProcedures(sourceDataMap, filters);
         return sourceDataMap;
     }
 
@@ -274,24 +270,6 @@ public class DefaultDbImportAction implements DbImportAction {
 
         return defaultPackage.equals(targetDataMap.getDefaultPackage());
     }
-
-    protected boolean hasChangesForProcedure(Procedure procedure) {
-        PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
-        return proceduresFilter != null && proceduresFilter.isIncluded(procedure.getName());
-    }
-
-    protected boolean checkIncludedProcedures(DataMap loadedDataMap, FiltersConfig filters) {
-        Collection<Procedure> procedures = loadedDataMap.getProcedures();
-        boolean hasChanges = false;
-        for (Procedure procedure : procedures) {
-            if(!hasChangesForProcedure(procedure)) {
-                continue;
-            }
-            hasChanges = true;
-        }
-        return hasChanges;
-    }
-
 
     private void syncDataMapProperties(DataMap targetDataMap, DbImportConfiguration config) {
         String defaultPackage = config.getDefaultPackage();
@@ -384,8 +362,7 @@ public class DefaultDbImportAction implements DbImportAction {
         return dataMap;
     }
 
-    private List<MergerToken> reverse(MergerTokenFactory mergerTokenFactory, Iterable<MergerToken> mergeTokens)
-            throws IOException {
+    private List<MergerToken> reverse(MergerTokenFactory mergerTokenFactory, Iterable<MergerToken> mergeTokens) {
 
         List<MergerToken> tokens = new LinkedList<>();
         for (MergerToken token : mergeTokens) {
@@ -449,36 +426,8 @@ public class DefaultDbImportAction implements DbImportAction {
         relationshipsSanity(targetDataMap);
     }
 
-    protected void addMessageToLogs(String message, List<String> messages) {
-        messages.add(message);
-    }
-
     protected void logMessages(List<String> messages) {
         messages.forEach(logger::info);
-    }
-
-
-    protected void syncProcedures(DataMap targetDataMap, DataMap loadedDataMap, FiltersConfig filters) {
-        Collection<Procedure> procedures = loadedDataMap.getProcedures();
-        List<String> messages = new LinkedList<>();
-
-        for (Procedure procedure : procedures) {
-            PatternFilter proceduresFilter = filters.proceduresFilter(procedure.getCatalog(), procedure.getSchema());
-            if (proceduresFilter == null || !proceduresFilter.isIncluded(procedure.getName())) {
-                continue;
-            }
-
-            Procedure oldProcedure = targetDataMap.getProcedure(procedure.getName());
-            // maybe we need to compare oldProcedure's and procedure's fully qualified names?
-            if (oldProcedure != null) {
-                targetDataMap.removeProcedure(procedure.getName());
-                addMessageToLogs("Replace procedure " + procedure.getName(), messages);
-            } else {
-                addMessageToLogs("Add new procedure " + procedure.getName(), messages);
-            }
-            targetDataMap.addProcedure(procedure);
-        }
-        logMessages(messages);
     }
 
     /**

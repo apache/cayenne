@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.dbsync.merge;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.EmptyValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -30,11 +35,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Synchronization of data base store and Cayenne model.
@@ -62,6 +62,7 @@ public class DataMapMerger implements Merger<DataMap> {
         createDbEntityMerger(original, importedFromDb);
         createRelationshipMerger();
         createAttributeMerger();
+        createProcedureMerger(original ,importedFromDb);
 
         return createTokens();
     }
@@ -100,6 +101,11 @@ public class DataMapMerger implements Merger<DataMap> {
                 dbEntityMerger
         );
         mergerList.add(dbRelationshipMerger);
+    }
+
+    private void createProcedureMerger(DataMap original, DataMap imported) {
+        ProcedureMerger procedureMerger = new ProcedureMerger(tokenFactory, original, imported, filters);
+        mergerList.add(procedureMerger);
     }
 
     public static Builder builder(MergerTokenFactory tokenFactory) {
