@@ -10,6 +10,8 @@ UPGRADING TO 4.2.M1
 * Per CAY-2520 ObjectId can't be instantiated directly, ObjectId.of(..) methods should be used.
     E.g. ObjectId.of("Artist", 1) instead of new ObjectId("Artist", 1).
 
+* Per CAY-2523 SelectQuery was deprecated. Use ObjectSelect instead.
+
 * Per CAY-2525 OpenBase adapter was deprecated.
 
 * Per CAY-2467 Property class is replaced with a type-aware Property API, it's mostly backwards compatible.

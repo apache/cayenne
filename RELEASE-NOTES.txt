@@ -22,6 +22,7 @@ CAY-2517 EventManager: optimization of adding listeners
 CAY-2518 Add method to append having qualifier expression to ObjectSelect
 CAY-2520 Split ObjectId into several specialized variants
 CAY-2522 Make ObjectSelect a direct query
+CAY-2523 Deprecate SelectQuery
 CAY-2525 Deprecate OpenBase adapter
 CAY-2539 Import procedures with the help of MergerToken
 CAY-2540 Modeler: redesign dbRelationship editor dialog
