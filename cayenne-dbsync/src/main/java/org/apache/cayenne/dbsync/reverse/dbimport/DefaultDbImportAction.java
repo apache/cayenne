@@ -52,7 +52,6 @@ import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbload.ModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.dbload.ProxyModelMergeDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -87,7 +86,6 @@ public class DefaultDbImportAction implements DbImportAction {
     private final DataChannelDescriptorLoader dataChannelDescriptorLoader;
     private final DataChannelMetaData metaData;
     private boolean hasChanges;
-    private FiltersConfig filters;
     private Collection<MergerToken> tokens;
     private DataMap loadedDataMap;
 
@@ -212,7 +210,6 @@ public class DefaultDbImportAction implements DbImportAction {
            .build()
            .createMergeTokens(targetDataMap, sourceDataMap);
         tokens = log(sort(reverse(mergerTokenFactory, tokens)));
-        filters = loaderConfig.getFiltersConfig();
 
         hasChanges |= checkDataMapProperties(targetDataMap, config);
         hasChanges |= hasTokensToImport(tokens);

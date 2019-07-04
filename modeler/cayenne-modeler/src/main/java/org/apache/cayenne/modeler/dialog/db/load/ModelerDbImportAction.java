@@ -50,8 +50,8 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Inject
     private DataMap targetMap;
 
-    DataMap sourceDataMap;
-    DbImportConfiguration config;
+    private DataMap sourceDataMap;
+    private DbImportConfiguration config;
 
     private DbLoadResultDialog resultDialog;
     private boolean hasTokenToMerge;
