@@ -27,6 +27,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Procedure;
 
 /**
  * A interface used to tell about modifications performed on the model by
@@ -62,4 +63,7 @@ public interface ModelMergeDelegate {
 
     void objRelationshipRemoved(ObjRelationship rel);
 
+    void procedureAdded(Procedure procedure);
+
+    void procedureRemoved(Procedure procedure);
 }

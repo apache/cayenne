@@ -18,19 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
+import java.util.List;
+
 import org.apache.cayenne.dbsync.merge.builders.DbEntityBuilder;
 import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ProcedureParameter;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dataMap;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
+import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.procedure;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -462,6 +466,26 @@ public class DataMapMergerTest {
 
 
         assertEquals(0, dbMerger().createMergeTokens(dataMap1, dataMap2).size());
+    }
+
+    @Test
+    public void testProcedures() {
+        DataMap dataMap1 = dataMap().with(
+               procedure("proc1")
+                       .callParameters(new ProcedureParameter("test"))
+        ).build();
+
+        DataMap dataMap2 = dataMap().build();
+
+        PatternFilter patternFilter = new PatternFilter();
+        patternFilter.include("proc1");
+        FiltersConfig filtersConfig = FiltersConfig
+                .create(null, null, null, patternFilter);
+        DataMapMerger merger = DataMapMerger
+                .builder(factory())
+                .filters(filtersConfig)
+                .build();
+        assertEquals(1, merger.createMergeTokens(dataMap1, dataMap2).size());
     }
 
     private DataMapMerger dbMerger() {

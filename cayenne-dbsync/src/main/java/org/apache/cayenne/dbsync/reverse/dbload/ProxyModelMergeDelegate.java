@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Procedure;
 
 /**
  * @since 4.0
@@ -105,5 +106,15 @@ public class ProxyModelMergeDelegate implements ModelMergeDelegate {
     @Override
     public void objRelationshipRemoved(ObjRelationship rel) {
         delegate.objRelationshipRemoved(rel);
+    }
+
+    @Override
+    public void procedureAdded(Procedure procedure) {
+        delegate.procedureAdded(procedure);
+    }
+
+    @Override
+    public void procedureRemoved(Procedure procedure) {
+        delegate.procedureRemoved(procedure);
     }
 }

@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.Procedure;
 
 /**
  * A default noop implementation of {@link ModelMergeDelegate}.
@@ -85,6 +86,16 @@ public class DefaultModelMergeDelegate implements ModelMergeDelegate {
 
     @Override
     public void objRelationshipRemoved(ObjRelationship rel) {
+    }
+
+    @Override
+    public void procedureAdded(Procedure procedure) {
+
+    }
+
+    @Override
+    public void procedureRemoved(Procedure procedure) {
+
     }
 
 }

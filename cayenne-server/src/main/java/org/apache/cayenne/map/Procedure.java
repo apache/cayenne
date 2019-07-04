@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.map;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A mapping descriptor for a database stored procedure.
@@ -112,8 +112,8 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
     * Utility function to generate fully qualified name for procedure
     */
     public static String generateFullyQualifiedName(String catalog, String schema, String name) {
-        return (catalog != null ? catalog + '.' : "")
-                + (schema != null ? schema + '.' : "")
+        return (catalog != null && !catalog.isEmpty() ? catalog + '.' : "")
+                + (schema != null && !schema.isEmpty() ? schema + '.' : "")
                 + name;
     }
 
