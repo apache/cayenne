@@ -19,14 +19,6 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.QueryEngine;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLResult;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.QueryEngine;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SQLResult;
 
 /**
  * A query that executes unchanged (except for template preprocessing) "raw" SQL
@@ -622,6 +622,22 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	 */
 	public int getStatementFetchSize() {
 		return metaData.getStatementFetchSize();
+	}
+
+	/**
+	 * Sets query timeout.
+	 * @since 4.2
+	 */
+	public void setQueryTimeout(int queryTimeout) {
+		metaData.setQueryTimeout(queryTimeout);
+	}
+
+	/**
+	 * @return query timeout
+	 * @since 4.2
+	 */
+	public int getQueryTimeout() {
+		return metaData.getQueryTimeout();
 	}
 
 	/**

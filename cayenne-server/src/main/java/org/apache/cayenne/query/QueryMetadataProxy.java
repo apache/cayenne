@@ -133,6 +133,11 @@ public class QueryMetadataProxy implements QueryMetadata {
     }
 
     @Override
+    public int getQueryTimeout() {
+        return mdDelegate.getQueryTimeout();
+    }
+
+    @Override
     public boolean isSuppressingDistinct() {
         return mdDelegate.isSuppressingDistinct();
     }

@@ -18,13 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +27,8 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ObjectSelectTest {
 
@@ -426,6 +421,18 @@ public class ObjectSelectTest {
 		q.sharedCache();
 		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
+	}
+
+	@Test
+	public void testQueryTimeout() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
+		assertEquals(-1, query.getQueryTimeout());
+
+		query.queryTimeout(10);
+		assertEquals(10, query.getQueryTimeout());
+
+		query.queryTimeout(1).queryTimeout(2);
+		assertEquals(2, query.getQueryTimeout());
 	}
 
 }

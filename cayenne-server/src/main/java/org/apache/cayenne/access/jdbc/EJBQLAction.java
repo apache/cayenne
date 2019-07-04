@@ -19,7 +19,6 @@
 package org.apache.cayenne.access.jdbc;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -52,7 +51,7 @@ public class EJBQLAction extends BaseSQLAction {
     }
 
     @Override
-    public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
+    public void performAction(Connection connection, OperationObserver observer) throws Exception {
         EJBQLCompiledExpression compiledExpression = query.getExpression(dataNode.getEntityResolver());
         final EJBQLTranslatorFactory translatorFactory = dataNode.getAdapter().getEjbqlTranslatorFactory();
         final EJBQLTranslationContext context = new EJBQLTranslationContext(dataNode.getEntityResolver(), query,
@@ -93,6 +92,11 @@ public class EJBQLAction extends BaseSQLAction {
 
         if (md.getStatementFetchSize() != 0) {
             sqlQuery.setStatementFetchSize(md.getStatementFetchSize());
+        }
+
+        int queryTimeout = md.getQueryTimeout();
+        if(queryTimeout != QueryMetadata.QUERY_TIMEOUT_DEFAULT) {
+            sqlQuery.setQueryTimeout(queryTimeout);
         }
 
         actionFactory.sqlAction(sqlQuery).performAction(connection, observer);

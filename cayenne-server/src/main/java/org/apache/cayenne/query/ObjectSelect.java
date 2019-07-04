@@ -441,6 +441,17 @@ public class ObjectSelect<T> extends FluentSelect<T> {
         return this;
     }
 
+    /**
+     * Sets query timeout for PreparedStatement generated for this query.
+     *
+     * @see Statement#setQueryTimeout(int)
+     * @since 4.2
+     */
+    public ObjectSelect<T> queryTimeout(int timeout) {
+        this.metaData.setQueryTimeout(timeout);
+        return this;
+    }
+
     public ObjectSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
         setCacheStrategy(strategy);
         setCacheGroup(null);

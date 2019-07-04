@@ -27,15 +27,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Default mutable implementation of {@link QueryMetadata}.
@@ -50,6 +47,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 	int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
 
 	int statementFetchSize = QueryMetadata.FETCH_OFFSET_DEFAULT;
+	int queryTimeout = QueryMetadata.QUERY_TIMEOUT_DEFAULT;
 
 	int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
 	boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
@@ -383,6 +381,22 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 	 */
 	public int getStatementFetchSize() {
 		return statementFetchSize;
+	}
+
+	/**
+	 * Sets query timeout(0 means no limit, -1 if doesn't set)
+	 * @since 4.2
+	 */
+	void setQueryTimeout(int queryTimeout) {
+		this.queryTimeout = queryTimeout;
+	}
+
+	/**
+	 * @return query timeout
+	 * @since 4.2
+	 */
+	public int getQueryTimeout() {
+		return queryTimeout;
 	}
 
 	/**

@@ -19,20 +19,16 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.cayenne.access.jdbc.ColumnDescriptor;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.Procedure;
 
 /**
  * A query based on Procedure. Can be used as a select query, or as a query of an
@@ -429,5 +425,21 @@ public class ProcedureQuery extends AbstractQuery implements ParameterizedQuery 
      */
     public int getStatementFetchSize() {
         return metaData.getStatementFetchSize();
+    }
+
+    /**
+     * @return query timeout
+     * @since 4.2
+     */
+    public int getQueryTimeout() {
+        return metaData.getQueryTimeout();
+    }
+
+    /**
+     * Set's query timeout
+     * @since 4.2
+     */
+    public void setQueryTimeout(int timeout) {
+        metaData.setQueryTimeout(timeout);
     }
 }

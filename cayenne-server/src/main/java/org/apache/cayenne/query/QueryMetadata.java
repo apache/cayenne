@@ -63,6 +63,8 @@ public interface QueryMetadata {
      */
     int FETCH_OFFSET_DEFAULT = 0;
 
+    int QUERY_TIMEOUT_DEFAULT = -1;
+
     /**
      * Defines the name of the property for the query {@link #getPageSize() page size}.
      */
@@ -243,6 +245,12 @@ public interface QueryMetadata {
      * @since 3.0
      */
     int getStatementFetchSize();
+
+    /**
+     * @return query timeout
+     * @since 4.2
+     */
+    int getQueryTimeout();
 
     /**
      * @since 4.0

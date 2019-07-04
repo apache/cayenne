@@ -84,6 +84,13 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
         return getBaseMetaData().getStatementFetchSize();
     }
 
+    /**
+     * @since 4.2
+     */
+    public int getQueryTimeout() {
+        return getBaseMetaData().getQueryTimeout();
+    }
+
     public int getPageSize() {
         return getBaseMetaData().getPageSize();
     }

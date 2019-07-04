@@ -147,6 +147,11 @@ class DefaultQueryMetadata implements QueryMetadata {
         return QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
     }
 
+    @Override
+    public int getQueryTimeout() {
+        return QueryMetadata.QUERY_TIMEOUT_DEFAULT;
+    }
+
     /**
      * @since 4.0
      */

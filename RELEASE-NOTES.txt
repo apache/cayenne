@@ -39,6 +39,7 @@ CAY-2570 Use MySQL adapter for latest versions of MariaDB
 CAY-2579 Review and possibly relax usage of readonly flag of ObjRelationship
 CAY-2585 Rename scalarQuery and params methods in SQLSelect
 CAY-2589 - Allow optionally using a local query cache that is separate from the shared query cache.
+CAY-2590 Add method to set query timeout to queries
 
 Bug Fixes:
 

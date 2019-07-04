@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.List;
+
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -31,11 +36,6 @@ import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
 
 /**
  * A SQLAction that handles SelectQuery execution.
@@ -95,6 +95,11 @@ public class SelectAction extends BaseSQLAction {
 		int fetchSize = queryMetadata.getStatementFetchSize();
 		if (fetchSize != 0) {
 			statement.setFetchSize(fetchSize);
+		}
+
+		int queryTimeout = queryMetadata.getQueryTimeout();
+		if(queryTimeout != QueryMetadata.QUERY_TIMEOUT_DEFAULT) {
+			statement.setQueryTimeout(queryTimeout);
 		}
 
 		ResultSet rs;

@@ -255,6 +255,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	protected int offset;
 	protected int pageSize;
 	protected int statementFetchSize;
+	protected int queryTimeout;
 	protected PrefetchTreeNode prefetches;
 
 	public SQLSelect(String sql) {
@@ -440,6 +441,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setFetchOffset(offset);
 		template.setPageSize(pageSize);
 		template.setStatementFetchSize(statementFetchSize);
+		template.setQueryTimeout(queryTimeout);
 		template.setUseScalar(useScalar);
 
 		return template;
@@ -623,10 +625,27 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
+	 * Sets query timeout
+	 * @since 4.2
+	 */
+	public SQLSelect<T> queryTimeout(int queryTimeout) {
+		if(this.queryTimeout != queryTimeout) {
+			this.queryTimeout = queryTimeout;
+			this.replacementQuery = null;
+		}
+
+		return this;
+	}
+
+	/**
 	 * @return JBDC statement's fetch size
 	 */
 	public int getStatementFetchSize() {
 		return statementFetchSize;
+	}
+
+	public int getQueryTimeout() {
+		return queryTimeout;
 	}
 
 	/**

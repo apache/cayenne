@@ -35,6 +35,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * A SQLAction that runs a stored procedure. Note that ProcedureAction has
@@ -220,9 +221,15 @@ public class ProcedureAction extends BaseSQLAction {
 	 * @throws Exception
 	 */
 	protected void initStatement(CallableStatement statement) throws Exception {
-		int statementFetchSize = query.getMetaData(dataNode.getEntityResolver()).getStatementFetchSize();
+		QueryMetadata queryMetadata = query.getMetaData(dataNode.getEntityResolver());
+		int statementFetchSize = queryMetadata.getStatementFetchSize();
 		if (statementFetchSize != 0) {
 			statement.setFetchSize(statementFetchSize);
+		}
+
+		int queryTimeout = queryMetadata.getQueryTimeout();
+		if(queryTimeout != QueryMetadata.QUERY_TIMEOUT_DEFAULT) {
+			statement.setQueryTimeout(queryTimeout);
 		}
 	}
 }
