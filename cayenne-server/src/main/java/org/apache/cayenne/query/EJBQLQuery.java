@@ -18,19 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * An EJBQL query representation in Cayenne.
@@ -221,6 +218,20 @@ public class EJBQLQuery extends CacheableQuery {
     public int getStatementFetchSize() {
         return metadata.getStatementFetchSize();
     }
-    
-    
+
+    /**
+     * Sets query timeout.
+     * @since 4.2
+     */
+    public void setQueryTimeout(int queryTimeout) {
+        metadata.setQueryTimeout(queryTimeout);
+    }
+
+    /**
+     * @return query timeout
+     * @since 4.2
+     */
+    public int getQueryTimeout() {
+        return metadata.getQueryTimeout();
+    }
 }

@@ -146,6 +146,11 @@ class ObjectsFromDataRowsQuery implements Query, QueryMetadata {
     }
 
     @Override
+    public int getQueryTimeout() {
+        return QUERY_TIMEOUT_DEFAULT;
+    }
+
+    @Override
     public boolean isSuppressingDistinct() {
         return false;
     }

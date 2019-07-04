@@ -112,6 +112,11 @@ public class MockQueryMetadata implements QueryMetadata {
     }
 
     @Override
+    public int getQueryTimeout() {
+        return QueryMetadata.QUERY_TIMEOUT_DEFAULT;
+    }
+
+    @Override
     public boolean isSuppressingDistinct() {
         return false;
     }

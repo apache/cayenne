@@ -19,24 +19,24 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ResultBatchIterator;
-import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
-import org.apache.cayenne.exp.property.BaseProperty;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ResultBatchIterator;
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.ResultIteratorCallback;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
  * A query that selects persistent objects of a certain type or "raw data" (aka

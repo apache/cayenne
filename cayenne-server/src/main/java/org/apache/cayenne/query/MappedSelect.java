@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.sql.Statement;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ResultBatchIterator;
@@ -25,10 +29,6 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.QueryDescriptor;
-
-import java.sql.Statement;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A query that represents a named parameterized selecting query stored in the mapping. The
@@ -62,6 +62,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
     protected Integer fetchLimit;
     protected Integer fetchOffset;
     protected Integer statementFetchSize;
+    protected Integer queryTimeout;
     protected Integer pageSize;
     protected boolean forceNoCache;
 
@@ -102,6 +103,18 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
      */
     public MappedSelect<T> statementFetchSize(int statementFetchSize) {
         this.statementFetchSize = statementFetchSize;
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Sets query timeout for the PreparedStatement generated for this query.
+     *
+     * @see Statement#setQueryTimeout(int)
+     * @since 4.2
+     */
+    public MappedSelect<T> queryTimeout(int timeout) {
+        this.queryTimeout = timeout;
         this.replacementQuery = null;
         return this;
     }
@@ -214,6 +227,9 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (statementFetchSize != null) {
                     sqlTemplate.setStatementFetchSize(statementFetchSize);
                 }
+                if(queryTimeout != null) {
+                    sqlTemplate.setQueryTimeout(queryTimeout);
+                }
                 if (pageSize != null) {
                     sqlTemplate.setPageSize(pageSize);
                 }
@@ -232,6 +248,9 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 if (statementFetchSize != null) {
                     ejbqlQuery.setStatementFetchSize(statementFetchSize);
                 }
+                if(queryTimeout != null) {
+                    ejbqlQuery.setQueryTimeout(queryTimeout);
+                }
                 if (pageSize != null) {
                     ejbqlQuery.setPageSize(pageSize);
                 }
@@ -249,6 +268,9 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
                 }
                 if (statementFetchSize != null) {
                     procedureQuery.setStatementFetchSize(statementFetchSize);
+                }
+                if(queryTimeout != null) {
+                    procedureQuery.setQueryTimeout(queryTimeout);
                 }
                 if (pageSize != null) {
                     procedureQuery.setPageSize(pageSize);

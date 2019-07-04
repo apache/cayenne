@@ -299,6 +299,15 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         return this;
     }
 
+    /**
+     * Sets query timeout of PreparedStatement generated for this query.
+     * @see Statement#setQueryTimeout(int)
+     */
+    public ColumnSelect<T> queryTimeout(int timeout) {
+        this.metaData.setQueryTimeout(timeout);
+        return this;
+    }
+
     public ColumnSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
         setCacheStrategy(strategy);
         setCacheGroup(null);

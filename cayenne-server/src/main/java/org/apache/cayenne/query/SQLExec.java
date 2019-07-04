@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
@@ -25,12 +31,6 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.util.QueryResultBuilder;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A generic query based on raw SQL and featuring fluent API. While
@@ -65,6 +65,7 @@ public class SQLExec extends IndirectQuery {
     protected Map<String, Object> params;
     protected List<Object> positionalParams;
     protected boolean returnGeneratedKeys;
+    protected int queryTimeout;
 
     public SQLExec(String sql) {
         this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
@@ -220,6 +221,14 @@ public class SQLExec extends IndirectQuery {
         return this;
     }
 
+    /**
+     * @since 4.2
+     */
+    public SQLExec queryTimeout(int queryTimeout) {
+        this.queryTimeout = queryTimeout;
+        return this;
+    }
+
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -242,6 +251,7 @@ public class SQLExec extends IndirectQuery {
         template.setDefaultTemplate(getSql());
         template.setFetchingDataRows(true); // in case result set will be returned
         template.setReturnGeneratedKeys(returnGeneratedKeys);
+        template.setQueryTimeout(queryTimeout);
 
         if (positionalParams != null) {
             template.setParamsList(positionalParams);

@@ -226,6 +226,11 @@ public class StringIdQuery implements Query {
             }
 
             @Override
+            public int getQueryTimeout() {
+                return QueryMetadata.QUERY_TIMEOUT_DEFAULT;
+            }
+
+            @Override
             public boolean isSuppressingDistinct() {
                 return false;
             }
