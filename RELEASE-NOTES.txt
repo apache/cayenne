@@ -69,6 +69,7 @@ CAY-2582 Double insert of manyToMany relationship mapped to Set
 CAY-2584 Crypto: can't use ColumnSelect with encrypted columns
 CAY-2588 IdRowReader: ArrayIndexOutOfBoundsException
 CAY-2594 DbImport: AutoAdapter resolving inside an import operation hangs up the op on Hana DB
+CAY-2595 ObjAttributes are not sorted in alphabetical ordering on save
 
 ----------------------------------
 Release: 4.1.B1
