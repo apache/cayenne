@@ -147,7 +147,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
 
         // store attributes
-        encoder.nested(getDeclaredAttributes(), delegate);
+        encoder.nested(new TreeMap<>(attributes), delegate);
 
         for (Map.Entry<String, String> override : attributeOverrides.entrySet()) {
             encoder.start("attribute-override")
