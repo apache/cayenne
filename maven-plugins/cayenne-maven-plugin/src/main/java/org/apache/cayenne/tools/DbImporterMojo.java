@@ -107,6 +107,10 @@ public class DbImporterMojo extends AbstractMojo {
 
         final DbImportConfigurationValidator validator = new DbImportConfigurationValidator(
                 dbImportConfig, config, injector);
+
+        // TODO: "validator.validate()" creates an AutoAdapter (which checks for DB type), then  "DbImportAction.execute()"
+        //   does it again. We need to make AutoAdapter a DI singleton to avoid this extra operation
+
         try {
             validator.validate();
         } catch (Exception ex) {
