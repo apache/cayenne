@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -66,6 +56,16 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;
+
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.apache.cayenne.util.Util.isBlank;
 
@@ -143,6 +143,17 @@ public class DefaultDbImportAction implements DbImportAction {
         commit(config, loadDataMap(config));
     }
 
+    protected DbAdapter createAdapter(DataNodeDescriptor dataNodeDescriptor, DataSource dataSource) throws Exception {
+        DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+
+        // Warm up the AutoAdapter by calling any method. This to avoid AutoAdapter opening a connection later in
+        // the middle of import to detect the DB type. Opening two connections in the same thread causes issues with
+        // some DBs (namely com.sap.cloud.db.jdbc:ngdbc:2.4.56)
+        adapter.getPkGenerator();
+
+        return adapter;
+    }
+
     protected void commit(DbImportConfiguration config, DataMap sourceDataMap) throws Exception {
         if (hasChanges) {
             DataMap targetDataMap = loadedDataMap;
@@ -157,6 +168,7 @@ public class DefaultDbImportAction implements DbImportAction {
     }
 
     protected DataMap loadDataMap(DbImportConfiguration config) throws Exception {
+
         if (logger.isDebugEnabled()) {
             logger.debug("DB connection: " + config.getDataSourceInfo());
             logger.debug(String.valueOf(config));
@@ -164,7 +176,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
         DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
         DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
-        DbAdapter adapter = adapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+        DbAdapter adapter = createAdapter(dataNodeDescriptor, dataSource);
 
         DataMap sourceDataMap;
         DataMap targetDataMap = existingTargetMap(config);
