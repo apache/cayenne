@@ -21,11 +21,13 @@ package org.apache.cayenne.modeler.editor;
 import java.awt.event.ItemEvent;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
@@ -72,30 +74,43 @@ public abstract class GeneratorsTabController {
                 currPanel.getCheckConfig().setSelected(true);
             }
         });
+        if(selectedDataMaps.isEmpty() && type == CgenConfiguration.class) {
+            GeneratorsTab.TopGeneratorPanel topGeneratorPanel = view.getGenerationPanel();
+            topGeneratorPanel.getSelectAll().setSelected(true);
+            topGeneratorPanel.getGenerateAll().setEnabled(true);
+            for (Map.Entry<DataMap, GeneratorsPanel> entry : generatorsPanels.entrySet()) {
+                entry.getValue().getCheckConfig().setSelected(true);
+            }
+        }
     }
 
     private void initListenersForPanel(GeneratorsPanel panel) {
         panel.getCheckConfig().addItemListener(e -> {
             if(e.getStateChange() == ItemEvent.SELECTED) {
                 selectedDataMaps.add(panel.getDataMap());
+                if(selectedDataMaps.size() == generatorsPanels.size()) {
+                    view.getGenerationPanel().getSelectAll().setSelected(true);
+                }
             } else if(e.getStateChange() == ItemEvent.DESELECTED) {
                 selectedDataMaps.remove(panel.getDataMap());
+                view.getGenerationPanel().getSelectAll().setSelected(false);
             }
             setGenerateButtonDisabled();
         });
 
         panel.getToConfigButton().addActionListener(action -> showConfig(panel.getDataMap()));
 
-        view.getGenerationPanel().getSelectAll().addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED) {
+        view.getGenerationPanel().getSelectAll().addActionListener(e -> {
+            boolean isSelected = view.getGenerationPanel().getSelectAll().isSelected();
+            if(isSelected) {
                 getGeneratorsPanels().forEach((key, value) -> {
                     if (value.getCheckConfig().isEnabled()) {
                         value.getCheckConfig().setSelected(true);
                     }
                 });
-            } else if(e.getStateChange() == ItemEvent.DESELECTED) {
+            } else {
                 getGeneratorsPanels().forEach((key, value) -> {
-                    if(value.getCheckConfig().isEnabled()) {
+                    if (value.getCheckConfig().isEnabled()) {
                         value.getCheckConfig().setSelected(false);
                     }
                 });
