@@ -56,8 +56,11 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     private ProjectController projectController;
 
-    ReverseEngineeringConfigPanel(ProjectController projectController) {
+    private DbImportView dbImportView;
+
+    ReverseEngineeringConfigPanel(ProjectController projectController, DbImportView dbImportView) {
         this.projectController = projectController;
+        this.dbImportView = dbImportView;
         initFormElements();
         initListeners();
         buildView();
@@ -120,7 +123,9 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         meaningfulPk = new TextAdapter(meaningfulPkField) {
             protected void updateModel(String text) {
                 getReverseEngineeringBySelectedMap().setMeaningfulPkTables(text);
-                projectController.setDirty(true);
+                if(!dbImportView.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
             }
         };
 
@@ -130,7 +135,9 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         stripFromTableNames = new TextAdapter(stripFromTableNamesField) {
             protected void updateModel(String text) {
                 getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
-                projectController.setDirty(true);
+                if(!dbImportView.isInitFromModel()) {
+                    projectController.setDirty(true);
+                }
             }
         };
 
@@ -156,34 +163,48 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     private void initListeners() {
         skipRelationshipsLoading.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setSkipRelationshipsLoading(skipRelationshipsLoading.isSelected());
-            projectController.setDirty(true);
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
         });
         skipPrimaryKeyLoading.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setSkipPrimaryKeyLoading(skipPrimaryKeyLoading.isSelected());
-            projectController.setDirty(true);
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
         });
         forceDataMapCatalog.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setForceDataMapCatalog(forceDataMapCatalog.isSelected());
-            projectController.setDirty(true);
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
         });
         forceDataMapSchema.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setForceDataMapSchema(forceDataMapSchema.isSelected());
-            projectController.setDirty(true);
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
         });
         usePrimitives.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setUsePrimitives(usePrimitives.isSelected());
-            projectController.setDirty(true);
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
         });
         useJava7Types.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setUseJava7Types(useJava7Types.isSelected());
-            projectController.setDirty(true);
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
         });
         strategyCombo.addActionListener(e -> {
             String strategy = (String) ReverseEngineeringConfigPanel.this.getStrategyCombo().getSelectedItem();
             checkStrategy(strategy);
             getReverseEngineeringBySelectedMap().setNamingStrategy(strategy);
             NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategy);
-            projectController.setDirty(true);
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
         });
     }
 
