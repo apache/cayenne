@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.enum_test"/>
 	<property name="clientSupported" value="true"/>
@@ -15,11 +15,18 @@
 		<db-attribute name="ENUM_ATTRIBUTE" type="VARCHAR" length="250"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="ENUM_ENTITY_3">
+		<db-attribute name="ENUM_ATTRIBUTE" type="CHAR" length="5"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<obj-entity name="EnumEntity" className="org.apache.cayenne.testdo.enum_test.EnumEntity" dbEntityName="ENUM_ENTITY">
 		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
 	</obj-entity>
 	<obj-entity name="EnumEntity2" className="org.apache.cayenne.testdo.enum_test.EnumEntity2" dbEntityName="ENUM_ENTITY_2">
 		<qualifier><![CDATA[enumAttribute = enum:org.apache.cayenne.testdo.enum_test.Enum1.two]]></qualifier>
+		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
+	</obj-entity>
+	<obj-entity name="EnumEntity3" className="org.apache.cayenne.testdo.enum_test.EnumEntity3" dbEntityName="ENUM_ENTITY_3">
 		<obj-attribute name="enumAttribute" type="org.apache.cayenne.testdo.enum_test.Enum1" db-attribute-path="ENUM_ATTRIBUTE"/>
 	</obj-entity>
 </data-map>
