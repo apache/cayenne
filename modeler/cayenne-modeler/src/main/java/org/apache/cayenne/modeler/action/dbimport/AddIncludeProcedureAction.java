@@ -27,7 +27,7 @@ import org.apache.cayenne.modeler.Application;
  */
 public class AddIncludeProcedureAction extends AddPatternParamAction {
 
-    private static final String ACTION_NAME = "Add Include Procedure";
+    private static final String ACTION_NAME = "Include Procedure";
     private static final String ICON_NAME = "icon-dbi-includeProcedure.png";
 
     public AddIncludeProcedureAction(Application application) {

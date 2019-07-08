@@ -25,7 +25,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 
-import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
 /**
@@ -33,7 +32,7 @@ import java.awt.event.ActionEvent;
  */
 public class AddIncludeTableAction extends TreeManipulationAction {
 
-    private static final String ACTION_NAME = "Add Include Table";
+    private static final String ACTION_NAME = "Include Table";
     private static final String ICON_NAME = "icon-dbi-includeTable.png";
 
     public AddIncludeTableAction(Application application) {
