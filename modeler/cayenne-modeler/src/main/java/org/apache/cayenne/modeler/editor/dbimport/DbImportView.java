@@ -64,8 +64,11 @@ public class DbImportView extends JPanel {
 
     private ProjectController projectController;
 
+    private boolean initFromModel;
+
     public DbImportView(ProjectController projectController) {
         this.projectController = projectController;
+        this.initFromModel = false;
         initFormElements();
         buildForm();
         draggableTreePanel.getSourceTree().repaint();
@@ -183,7 +186,7 @@ public class DbImportView extends JPanel {
         ((ColorTreeRenderer) draggableTreePanel.getSourceTree().getCellRenderer()).
                 setReverseEngineeringTree(reverseEngineeringTree);
 
-        configPanel = new ReverseEngineeringConfigPanel(projectController);
+        configPanel = new ReverseEngineeringConfigPanel(projectController, this);
         configPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         configPanel.setVisible(false);
     }
@@ -192,6 +195,7 @@ public class DbImportView extends JPanel {
         DataMap map = projectController.getCurrentDataMap();
         treePanel.getReverseEngineeringTree().stopEditing();
         if (map != null) {
+            initFromModel = true;
             treeToolbar.unlockButtons();
             ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication()
                     .getMetaData().get(map, ReverseEngineering.class);
@@ -210,6 +214,7 @@ public class DbImportView extends JPanel {
             draggableTreePanel.getMoveButton().setEnabled(false);
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
         }
+        initFromModel = false;
     }
 
     public boolean isSkipRelationshipsLoading() {
@@ -267,5 +272,9 @@ public class DbImportView extends JPanel {
 
     public JButton getLoadDbSchemaButton() {
         return loadDbSchemaButton;
+    }
+
+    public boolean isInitFromModel() {
+        return initFromModel;
     }
 }
