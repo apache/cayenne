@@ -12,6 +12,9 @@ Release: 4.1.B3
 Date:
 ----------------------------------
 
+Changes/New Features:
+CAY-2592 Modeler: make all datamaps selected in global cgen tab
+
 Bug Fixes:
 
 CAY-2417 Modeler: wrong title in attribute context menu
