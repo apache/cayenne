@@ -80,25 +80,22 @@ public class Main {
                 + " at "
                 + System.getProperty("java.home"));
 
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(() -> {
 
-            public void run() {
+            Application application = injector.getInstance(Application.class);
+            Application.setInstance(application);
+            application.startup();
 
-                Application application = injector.getInstance(Application.class);
-                Application.setInstance(application);
-                application.startup();
+            // start initial project AFTER the app startup, as we need Application
+            // preferences to be bootstrapped.
 
-                // start initial project AFTER the app startup, as we need Application
-                // preferences to be bootstrapped.
+            File project = initialProjectFromArgs();
+            if (project == null) {
+                project = initialProjectFromPreferences();
+            }
 
-                File project = initialProjectFromArgs();
-                if (project == null) {
-                    project = initialProjectFromPreferences();
-                }
-
-                if (project != null) {
-                    new OpenProjectAction(application).openProject(project);
-                }
+            if (project != null) {
+                new OpenProjectAction(application).openProject(project);
             }
         });
 
