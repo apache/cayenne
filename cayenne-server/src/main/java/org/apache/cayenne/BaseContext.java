@@ -98,7 +98,6 @@ public abstract class BaseContext implements ObjectContext {
 	// registry
 	protected transient DataChannel channel;
 	protected transient QueryCache queryCache;
-	protected transient QueryCache localQueryCache;
 	protected transient EntityResolver entityResolver;
 
 	protected boolean validatingObjectsOnCommit = true;
@@ -470,40 +469,16 @@ public abstract class BaseContext implements ObjectContext {
 	@Override
 	public abstract Collection<?> uncommittedObjects();
 
-	/**
-	 * Used for storing cached query results available to all ObjectContexts.
-	 */
 	public QueryCache getQueryCache() {
 		attachToRuntimeIfNeeded();
 		return queryCache;
 	}
 
 	/**
-	 * Sets a QueryCache to be used for storing cached query results available to all ObjectContexts.
+	 * Sets a QueryCache to be used for storing cached query results.
 	 */
 	public void setQueryCache(QueryCache queryCache) {
 		this.queryCache = queryCache;
-	}
-	
-	/**
-	 * Used for storing cached query results available only to this ObjectContext.
-	 * By default the local query cache and the shared query cache will use the same underlying storage.
-	 * 
-	 * @since 4.2
-	 */
-	public QueryCache getLocalQueryCache() {
-		attachToRuntimeIfNeeded();
-		return localQueryCache != null ? localQueryCache : getQueryCache();
-	}
-
-	/**
-	 * Sets a QueryCache to be used for storing cached query results available only to this ObjectContext.
-	 * By default the local query cache and the shared query cache will use the same underlying storage.
-	 * 
-	 * @since 4.2
-	 */
-	public void setLocalQueryCache(QueryCache queryCache) {
-		this.localQueryCache = queryCache;
 	}
 
 	/**
