@@ -186,7 +186,8 @@ public class DefaultDbImportAction implements DbImportAction {
             putReverseEngineeringToConfig(dataMapReverseEngineering, config);
         }
         if ((dataMapReverseEngineering != null) && (!config.isUseDataMapReverseEngineering())) {
-            logger.warn("Found several dbimport configs. Configuration selected from 'build.gradle' file.");
+            logger.warn("Found several dbimport configs. DataMap dbimport config was skipped. " +
+                    "Configuration selected from build file");
         }
         if ((dataMapReverseEngineering == null) && (config.isUseDataMapReverseEngineering())) {
             logger.warn("Missing dbimport config. Database is imported completely.");
