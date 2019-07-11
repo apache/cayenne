@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -56,16 +66,6 @@ import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;
-
-import javax.sql.DataSource;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.sql.Connection;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.apache.cayenne.util.Util.isBlank;
 
@@ -235,7 +235,9 @@ public class DefaultDbImportAction implements DbImportAction {
         config.setTableTypes(reverseEngineering.getTableTypes());
         config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
         config.setNamingStrategy(reverseEngineering.getNamingStrategy());
-        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
+        config.setFiltersConfig(new FiltersConfigBuilder(
+                new ReverseEngineering(reverseEngineering))
+                .build());
         config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());
