@@ -239,6 +239,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testComplexChangeOrder");
     }
 
+    @Test
+    public void testConfigFromDataMap() throws Exception {
+        test("testConfigFromDataMap");
+    }
+
     /**
      * CREATE TABLE APP.A (
      * id INTEGER NOT NULL,
@@ -375,25 +380,25 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
             mapFileCopy = mapFile;
         }
 
-        DbImportConfiguration parameters = cdbImport.createConfig(mock(Logger.class));
-        prepareDatabase(name, parameters);
+        DbImportDataSourceConfig dataSource = cdbImport.getDataSource();
+        prepareDatabase(name, dataSource);
 
         try {
             cdbImport.execute();
             verifyResult(mapFile, mapFileCopy);
         } finally {
-            cleanDb(parameters);
+            cleanDb(dataSource);
         }
     }
 
-    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws Exception {
+    private void cleanDb(DbImportDataSourceConfig dataSource) throws Exception {
 
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
         // TODO: with in-memory Derby, it is easier to just stop and delete the database.. again see bootique-jdbc-test
 
-        Class.forName(dbImportConfiguration.getDriver()).newInstance();
+        Class.forName(dataSource.getDriver()).newInstance();
 
-        try (Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl())) {
+        try (Connection connection = DriverManager.getConnection(dataSource.getUrl())) {
 
             try (Statement stmt = connection.createStatement()) {
 
@@ -457,15 +462,15 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         }
     }
 
-    private void prepareDatabase(String sqlFile, DbImportConfiguration dbImportConfiguration) throws Exception {
+    private void prepareDatabase(String sqlFile, DbImportDataSourceConfig dataSource) throws Exception {
 
         URL sqlUrl = Objects.requireNonNull(ResourceUtil.getResource(getClass(), "dbimport/" + sqlFile + ".sql"));
 
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
 
-        Class.forName(dbImportConfiguration.getDriver()).newInstance();
+        Class.forName(dataSource.getDriver()).newInstance();
 
-        try (Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl())) {
+        try (Connection connection = DriverManager.getConnection(dataSource.getUrl())) {
             try (Statement stmt = connection.createStatement();) {
                 for (String sql : SQLReader.statements(sqlUrl, ";")) {
                     stmt.execute(sql);

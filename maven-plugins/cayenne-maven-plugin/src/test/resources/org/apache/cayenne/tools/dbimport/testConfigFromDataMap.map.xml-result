@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<db-entity name="PARENT">
+		<db-attribute name="COL2" type="CHAR" length="20"/>
+		<db-attribute name="COL3" type="DECIMAL" length="10" scale="2"/>
+		<db-attribute name="COL4" type="VARCHAR" length="50"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+	</db-entity>
+	<obj-entity name="Parent" className="Parent" dbEntityName="PARENT">
+		<obj-attribute name="col2" type="java.lang.String" db-attribute-path="COL2"/>
+		<obj-attribute name="col3" type="java.math.BigDecimal" db-attribute-path="COL3"/>
+		<obj-attribute name="col4" type="java.lang.String" db-attribute-path="COL4"/>
+	</obj-entity>
+	<dbImport xmlns="http://cayenne.apache.org/schema/10/dbimport">
+		<schema>
+            <name>SCHEMA_01</name>
+            <excludeColumn>COL5</excludeColumn>
+        </schema>
+		<forceDataMapCatalog>false</forceDataMapCatalog>
+		<forceDataMapSchema>true</forceDataMapSchema>
+		<namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
+		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
+		<skipRelationshipsLoading>false</skipRelationshipsLoading>
+		<useJava7Types>false</useJava7Types>
+		<usePrimitives>true</usePrimitives>
+	</dbImport>
+</data-map>

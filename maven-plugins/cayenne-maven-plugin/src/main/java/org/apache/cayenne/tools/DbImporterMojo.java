@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import java.io.File;
+
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
@@ -30,17 +32,15 @@ import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.util.Util;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-
-import java.io.File;
 
 /**
  * Maven mojo to reverse engineer datamap from DB.
@@ -192,6 +192,9 @@ public class DbImporterMojo extends AbstractMojo {
         return dbImportConfig;
     }
 
+    public DbImportDataSourceConfig getDataSource() {
+        return dataSource;
+    }
 }
 
 
