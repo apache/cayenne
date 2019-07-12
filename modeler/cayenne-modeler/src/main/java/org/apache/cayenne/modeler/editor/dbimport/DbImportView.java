@@ -213,6 +213,13 @@ public class DbImportView extends JPanel {
             draggableTreePanel.updateTree(projectController.getCurrentDataMap());
             draggableTreePanel.getMoveButton().setEnabled(false);
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
+            String[] tableTypes = reverseEngineering.getTableTypes();
+            if(tableTypes.length != 0) {
+                configPanel.getTableTypes().setText(String.join(",", tableTypes));
+            } else {
+                configPanel.getTableTypes().setText("TABLE, VIEW");
+                configPanel.getTableTypes().updateModel();
+            }
         }
         initFromModel = false;
     }

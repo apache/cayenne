@@ -40,6 +40,7 @@ CAY-2579 Review and possibly relax usage of readonly flag of ObjRelationship
 CAY-2585 Rename scalarQuery and params methods in SQLSelect
 CAY-2590 Add method to set query timeout to queries
 CAY-2592 Modeler: make all datamaps selected in global cgen tab
+CAY-2593 Add tableTypes field to dbImport config in dataMap
 
 Bug Fixes:
 

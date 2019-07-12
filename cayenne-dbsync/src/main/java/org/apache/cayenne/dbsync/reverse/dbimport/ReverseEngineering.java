@@ -19,16 +19,15 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.dbsync.xml.DbImportExtension;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.dbsync.xml.DbImportExtension;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * @since 4.0
@@ -169,6 +168,10 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         return tableTypes.toArray(new String[tableTypes.size()]);
     }
 
+    public Collection<String> getTableTypesCollection() {
+        return tableTypes;
+    }
+
     /*
      * Typical types are "TABLE",
      * "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY",
@@ -300,9 +303,16 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
                 .nested(this.getIncludeProcedures(), delegate)
                 .nested(this.getExcludeProcedures(), delegate)
                 .nested(this.getCatalogs(), delegate)
-                .nested(this.getSchemas(), delegate)
-                .simpleTag("db-type", Util.join(Arrays.asList(this.getTableTypes()), ","))
-                .simpleTag("defaultPackage", this.getDefaultPackage())
+                .nested(this.getSchemas(), delegate);
+        String[] tableTypes = this.getTableTypes();
+        if(tableTypes.length != 0) {
+            encoder.start("tableTypes");
+            for(String type : tableTypes) {
+                encoder.simpleTag("tableType", type);
+            }
+            encoder.end();
+        }
+        encoder.simpleTag("defaultPackage", this.getDefaultPackage())
                 .simpleTag("forceDataMapCatalog", Boolean.toString(this.isForceDataMapCatalog()))
                 .simpleTag("forceDataMapSchema", Boolean.toString(this.isForceDataMapSchema()))
                 .simpleTag("meaningfulPkTables", this.getMeaningfulPkTables())
