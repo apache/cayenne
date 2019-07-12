@@ -244,6 +244,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         test("testConfigFromDataMap");
     }
 
+    @Test
+    public void testTableTypesFromDataMapConfig() throws Exception {
+        test("testTableTypesMap");
+    }
+
     /**
      * CREATE TABLE APP.A (
      * id INTEGER NOT NULL,

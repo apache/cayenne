@@ -20,15 +20,13 @@
 package org.apache.cayenne.dbsync.xml;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.configuration.xml.DataMapLoaderListener;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -43,7 +41,7 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
 
     private static final String CATALOG_TAG = "catalog";
     private static final String SCHEMA_TAG = "schema";
-    private static final String TABLE_TYPE_TAG = "tableType";
+    private static final String TABLE_TYPES_TAG = "tableTypes";
     private static final String DEFAULT_PACKAGE_TAG = "defaultPackage";
     private static final String FORCE_DATAMAP_CATALOG_TAG = "forceDataMapCatalog";
     private static final String FORCE_DATAMAP_SCHEMA_TAG = "forceDataMapSchema";
@@ -76,8 +74,6 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         switch (localName) {
             case CONFIG_TAG:
-                createConfig();
-                return true;
             case OLD_CONFIG_TAG:
                 createConfig();
                 return true;
@@ -98,6 +94,8 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
                     return new SchemaHandler(this, configuration);
                 case INCLUDE_TABLE_TAG:
                     return new IncludeTableHandler(this , configuration);
+                case TABLE_TYPES_TAG:
+                    return new TableTypesHandler(this, configuration);
             }
         }
 
@@ -107,9 +105,6 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected void processCharData(String localName, String data) {
         switch (localName) {
-            case TABLE_TYPE_TAG:
-                createTableType(data);
-                break;
             case DEFAULT_PACKAGE_TAG:
                 createDefaultPackage(data);
                 break;
@@ -332,23 +327,9 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
         }
     }
 
-    private void createTableType(String tableType) {
-        if (tableType.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            configuration.addTableType(tableType);
-        }
-    }
-
     private void createConfig() {
         configuration = new ReverseEngineering();
-        loaderContext.addDataMapListener(new DataMapLoaderListener() {
-            @Override
-            public void onDataMapLoaded(DataMap dataMap) {
-                ConfigHandler.this.metaData.add(dataMap, configuration);
-            }
-        });
+        loaderContext.addDataMapListener(dataMap ->
+                ConfigHandler.this.metaData.add(dataMap, configuration));
     }
 }

@@ -90,19 +90,31 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
 
     private String[] getTableTypes() {
         String[] configTypes = config.getTableTypes();
-        if (configTypes != null && configTypes.length > 0) {
-            return configTypes;
+        String viewType = adapter.tableTypeForView();
+        String tableType = adapter.tableTypeForTable();
+
+        List<String> resultTableTypes = new ArrayList<>();
+        if(configTypes == null || configTypes.length == 0) {
+            addTypeToList(viewType, resultTableTypes);
+            addTypeToList(tableType, resultTableTypes);
+        } else {
+            for(String type : configTypes) {
+                if(type.equalsIgnoreCase("TABLE")) {
+                    addTypeToList(tableType, resultTableTypes);
+                } else if(type.equalsIgnoreCase("VIEW")) {
+                    addTypeToList(viewType, resultTableTypes);
+                } else {
+                    addTypeToList(type, resultTableTypes);
+                }
+            }
         }
 
-        List<String> list = new ArrayList<>(2);
-        String viewType = adapter.tableTypeForView();
-        if (viewType != null) {
-            list.add(viewType);
+        return resultTableTypes.toArray(new String[0]);
+    }
+
+    private void addTypeToList(String type, List<String> tableTypes) {
+        if(type != null) {
+            tableTypes.add(type);
         }
-        String tableType = adapter.tableTypeForTable();
-        if (tableType != null) {
-            list.add(tableType);
-        }
-        return list.toArray(new String[0]);
     }
 }

@@ -14,6 +14,7 @@ Date:
 
 Changes/New Features:
 CAY-2592 Modeler: make all datamaps selected in global cgen tab
+CAY-2593 Add tableTypes field to dbImport config in dataMap
 
 Bug Fixes:
 
