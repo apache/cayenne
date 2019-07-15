@@ -36,6 +36,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
+import org.apache.cayenne.validation.ValidationException;
 
 /**
  * @since 4.1
@@ -53,6 +54,8 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     private JCheckBox forceDataMapSchema;
     private JCheckBox usePrimitives;
     private JCheckBox useJava7Types;
+
+    private TextAdapter tableTypes;
 
     private ProjectController projectController;
 
@@ -80,6 +83,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         panelBuilder.append("Use Java primitive types:", usePrimitives);
         panelBuilder.append("Use java.util.Date type:", useJava7Types);
         panelBuilder.append("Naming strategy:", strategyCombo);
+        panelBuilder.append("Table types:", tableTypes.getComponent());
 
         add(panelBuilder.getPanel());
     }
@@ -137,6 +141,35 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                 getReverseEngineeringBySelectedMap().setStripFromTableNames(text);
                 if(!dbImportView.isInitFromModel()) {
                     projectController.setDirty(true);
+                }
+            }
+        };
+
+        JTextField tableTypesField = new JTextField();
+        tableTypesField.setToolTipText("<html>Default types to import is TABLE and VIEW.");
+        tableTypes = new TextAdapter(tableTypesField) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+                ReverseEngineering reverseEngineering = getReverseEngineeringBySelectedMap();
+                if(text == null || text.isEmpty()) {
+                    String[] tableTypesFromReverseEngineering = reverseEngineering.getTableTypes();
+                    tableTypes.setText(String.join(",", tableTypesFromReverseEngineering));
+                    JOptionPane.showMessageDialog(
+                            Application.getFrame(),
+                            "Table types field can't be empty.",
+                            "Error setting table types",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    reverseEngineering.getTableTypesCollection().clear();
+                    String[] types = text.split("\\s*,\\s*");
+                    for(String type : types) {
+                        if(!type.isEmpty()) {
+                            reverseEngineering.addTableType(type.trim());
+                        }
+                    }
+                    if(!dbImportView.isInitFromModel()) {
+                        projectController.setDirty(true);
+                    }
                 }
             }
         };
@@ -254,6 +287,10 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     JCheckBox getUseJava7Types() {
         return useJava7Types;
+    }
+
+    TextAdapter getTableTypes() {
+        return tableTypes;
     }
 
 }

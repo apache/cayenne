@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
+import javax.swing.*;
+import java.io.File;
+import java.sql.Connection;
+
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -34,10 +38,6 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import java.io.File;
-import java.sql.Connection;
 
 /**
  * @since 4.0
@@ -169,7 +169,12 @@ public class DbLoaderContext {
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
-        config.setTableTypes(new String[] {"TABLE", "VIEW", "SYSTEM TABLE"});
+        String[] tableTypes = reverseEngineering.getTableTypes();
+        if(tableTypes.length != 0) {
+            config.setTableTypes(tableTypes);
+        } else {
+            config.setTableTypes(new String[]{"TABLE", "VIEW"});
+        }
     }
 
     private void prepareDataMap() {

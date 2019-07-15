@@ -30,7 +30,7 @@
                     <xs:sequence>
                         <xs:element name="catalog" minOccurs="0" maxOccurs="unbounded" type="dbi:catalog"/>
                         <xs:element name="schema" minOccurs="0" maxOccurs="unbounded" type="dbi:schema"/>
-                        <xs:element name="tableType" minOccurs="0" maxOccurs="unbounded" type="dbi:db-type"/>
+                        <xs:element name="tableTypes" minOccurs="0" type="dbi:tableTypes"/>
 
                         <xs:element name="defaultPackage" minOccurs="0" type="xs:string"/>
                         <xs:element name="forceDataMapCatalog" minOccurs="0" type="xs:boolean"/>
@@ -55,6 +55,12 @@
             <xs:pattern value="[0-9a-zA-Z$_.]+"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:complexType name="tableTypes">
+        <xs:sequence>
+            <xs:element name="tableType" type="dbi:db-type" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
 
     <xs:complexType name="includeTable" mixed="true">
         <xs:sequence>
