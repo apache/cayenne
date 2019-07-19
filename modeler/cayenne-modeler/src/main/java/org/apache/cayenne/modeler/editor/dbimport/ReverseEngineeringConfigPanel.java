@@ -102,7 +102,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         stripFromTableNames.setText(reverseEngineering.getStripFromTableNames());
     }
 
-    private ReverseEngineering getReverseEngineeringBySelectedMap() {
+    ReverseEngineering getReverseEngineeringBySelectedMap() {
         DataMap dataMap = projectController.getCurrentDataMap();
         return projectController.getApplication().getMetaData().get(dataMap, ReverseEngineering.class);
     }

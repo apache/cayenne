@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.modeler.action;
 
+import javax.swing.JOptionPane;
+import javax.swing.tree.TreePath;
+import java.awt.event.ActionEvent;
+import java.sql.SQLException;
+
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
@@ -30,16 +35,11 @@ import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CayenneAction;
 
-import javax.swing.JOptionPane;
-import javax.swing.tree.TreePath;
-import java.awt.event.ActionEvent;
-import java.sql.SQLException;
-
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.URL_PROPERTY;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
 
 /**
  * @since 4.1
@@ -91,7 +91,9 @@ public class LoadDbSchemaAction extends CayenneAction {
                     draggableTreePanel.getSourceTree().updateTableColumns(databaseReverseEngineering);
                 } else {
                     ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
-                            .load(connectionInfo, getApplication().getClassLoadingService());
+                            .load(connectionInfo,
+                                    getApplication().getClassLoadingService(),
+                                    rootParent.getTableTypes());
                     draggableTreePanel.getSourceTree()
                             .setEnabled(true);
                     draggableTreePanel.getSourceTree()

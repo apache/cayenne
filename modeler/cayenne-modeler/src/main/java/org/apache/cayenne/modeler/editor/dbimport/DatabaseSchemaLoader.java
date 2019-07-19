@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
+import javax.swing.tree.TreePath;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
@@ -27,12 +33,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
-
-import javax.swing.tree.TreePath;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
 
 public class DatabaseSchemaLoader {
 
@@ -48,9 +48,14 @@ public class DatabaseSchemaLoader {
         databaseReverseEngineering = new ReverseEngineering();
     }
 
-    public ReverseEngineering load(DBConnectionInfo connectionInfo, ClassLoadingService loadingService) throws SQLException {
+    public ReverseEngineering load(DBConnectionInfo connectionInfo,
+                                   ClassLoadingService loadingService,
+                                   String[] tableTypesFromConfig) throws SQLException {
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
-            String[] types = {"TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
+            String[] types = tableTypesFromConfig != null && tableTypesFromConfig.length != 0 ?
+                    tableTypesFromConfig :
+                    new String[]{"TABLE", "VIEW", "SYSTEM TABLE",
+                            "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
             try (ResultSet rs = connection.getMetaData().getCatalogs()) {
                 String defaultCatalog = connection.getCatalog();
                 while (rs.next()) {

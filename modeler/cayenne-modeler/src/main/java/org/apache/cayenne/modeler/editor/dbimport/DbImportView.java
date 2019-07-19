@@ -284,4 +284,10 @@ public class DbImportView extends JPanel {
     public boolean isInitFromModel() {
         return initFromModel;
     }
+
+    public String[] getTableTypes() {
+        return configPanel
+                .getReverseEngineeringBySelectedMap()
+                .getTableTypes();
+    }
 }
