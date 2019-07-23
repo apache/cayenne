@@ -45,7 +45,7 @@ import org.slf4j.Logger;
 
 public class ModelerDbImportAction extends DefaultDbImportAction {
 
-    private static final String DIALOG_TITLE = "Reverse Engineering Result";
+    private static final String DIALOG_TITLE = "Db Import Result";
 
     @Inject
     private DataMap targetMap;

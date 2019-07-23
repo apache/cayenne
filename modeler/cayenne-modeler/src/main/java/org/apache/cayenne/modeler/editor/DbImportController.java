@@ -32,16 +32,18 @@ import org.apache.cayenne.modeler.dialog.db.load.DbLoadResultDialog;
  */
 public class DbImportController {
 
-    private static final String DIALOG_TITLE = "Reverse Engineering Result";
+    private static final String DIALOG_TITLE = "Db Import Result";
 
     private DbLoadResultDialog dbLoadResultDialog;
     private boolean globalImport;
 
     public DbImportController() {
-        this.dbLoadResultDialog = new DbLoadResultDialog(DIALOG_TITLE);
     }
 
     public DbLoadResultDialog createDialog() {
+        if(dbLoadResultDialog == null) {
+            dbLoadResultDialog = new DbLoadResultDialog(DIALOG_TITLE);
+        }
         return dbLoadResultDialog;
     }
 
