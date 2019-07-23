@@ -36,9 +36,8 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.Application;
 
 /**
  * @since 4.1
@@ -52,8 +51,6 @@ public class DbLoadResultDialog extends JDialog {
     private JButton revertButton;
     private String title;
 
-    private DefaultFormBuilder builder;
-
     private ConcurrentMap<DataMap, JTable> tableForMap;
     private JPanel tablePanel;
     private JPanel buttonPanel;
@@ -66,7 +63,7 @@ public class DbLoadResultDialog extends JDialog {
         this.tablePanel = new JPanel();
         this.tablePanel.setLayout(new BoxLayout(this.tablePanel, BoxLayout.Y_AXIS));
         this.scrollPane = new JScrollPane(tablePanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         initElements();
         buildElements();
@@ -74,14 +71,12 @@ public class DbLoadResultDialog extends JDialog {
     }
 
     private void configureDialog() {
-        this.setResizable(false);
+        this.setResizable(true);
         this.setTitle(title);
-        this.setLocationRelativeTo(null);
         this.setModal(false);
-        this.setAlwaysOnTop(true);
         this.setPreferredSize(new Dimension(400, 400));
-        this.scrollPane.setPreferredSize(new Dimension(400, 330));
         this.pack();
+        this.setLocationRelativeTo(Application.getFrame().getView());
     }
 
     private void initElements() {
@@ -90,14 +85,15 @@ public class DbLoadResultDialog extends JDialog {
     }
 
     public void buildElements() {
-        getRootPane().setDefaultButton(okButton);
-        FormLayout layout = new FormLayout("fill:200dlu");
-        builder = new DefaultFormBuilder(layout);
-        builder.append(scrollPane);
         buttonPanel.add(revertButton);
         buttonPanel.add(okButton);
-        builder.append(buttonPanel);
-        this.add(builder.getPanel());
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        this.add(mainPanel);
+
+        getRootPane().setDefaultButton(okButton);
     }
 
     private DefaultTableModel prepareTable(DataMap dataMap) {
