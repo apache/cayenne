@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.sybase;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
@@ -29,7 +28,6 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TopNode;
 import org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor;
-import org.apache.cayenne.dba.sqlserver.sqltree.SQLServerColumnNode;
 
 /**
  * @since 4.2
@@ -59,11 +57,6 @@ public class SybaseSQLTreeProcessor extends BaseSQLTreeProcessor {
             node = node.getParent();
         }
         return node;
-    }
-
-    @Override
-    protected void onColumnNode(Node parent, ColumnNode child, int index) {
-        replaceChild(parent, index,  new SQLServerColumnNode(child));
     }
 
     @Override
