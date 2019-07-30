@@ -33,8 +33,10 @@ import org.apache.cayenne.ObjectId;
 public class EffectiveOpId {
     private final String entityName;
     private final Map<String, Object> snapshot;
+    private final ObjectId id;
 
     public EffectiveOpId(ObjectId id) {
+        this.id = id;
         this.entityName = id.getEntityName();
         this.snapshot = id.getIdSnapshot();
     }
@@ -44,11 +46,13 @@ public class EffectiveOpId {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
+        EffectiveOpId that = (EffectiveOpId) o;
+
+        if(id == that.id) return true;
+
         if(snapshot.isEmpty()) {
             return false;
         }
-
-        EffectiveOpId that = (EffectiveOpId) o;
 
         if (!entityName.equals(that.entityName)) return false;
         return snapshot.equals(that.snapshot);
