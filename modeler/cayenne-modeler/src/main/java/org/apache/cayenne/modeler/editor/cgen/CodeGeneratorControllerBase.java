@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.awt.Component;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -80,6 +82,9 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         this.selectedEntitiesForDataMap = new HashMap<>();
         this.selectedEmbeddablesForDataMap = new HashMap<>();
         this.selectedDataMaps = new HashMap<>();
+        this.selectedEntities = new HashSet<>();
+        this.selectedEmbeddables = new HashSet<>();
+        this.isDataMapSelected = new HashSet<>();
     }
 
     public void startup(DataMap dataMap){
@@ -287,7 +292,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         else if (obj instanceof Embeddable) {
             name = ((Embeddable) obj).getClassName();
         }
-        
+
         if (validation == null) {
             return null;
         }

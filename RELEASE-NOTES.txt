@@ -76,6 +76,7 @@ CAY-2594 DbImport: AutoAdapter resolving inside an import operation hangs up the
 CAY-2595 ObjAttributes are not sorted in alphabetical ordering on save
 CAY-2596 DbImport xml config changes after dbImport plugin task execution
 CAY-2601 Modeler DbImport: result dialog issues
+CAY-2603 NPE reloading project in the model
 
 ----------------------------------
 Release: 4.1.B1
