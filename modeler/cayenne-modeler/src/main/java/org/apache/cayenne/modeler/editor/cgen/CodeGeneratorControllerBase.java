@@ -80,6 +80,9 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         this.selectedEntitiesForDataMap = new HashMap<>();
         this.selectedEmbeddablesForDataMap = new HashMap<>();
         this.selectedDataMaps = new HashMap<>();
+        this.selectedEntities = new HashSet<>();
+        this.selectedEmbeddables = new HashSet<>();
+        this.isDataMapSelected = new HashSet<>();
     }
 
     public void startup(DataMap dataMap){
@@ -287,7 +290,7 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         else if (obj instanceof Embeddable) {
             name = ((Embeddable) obj).getClassName();
         }
-        
+
         if (validation == null) {
             return null;
         }
