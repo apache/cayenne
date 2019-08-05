@@ -700,4 +700,11 @@ public class SQLTemplate extends AbstractQuery implements ParameterizedQuery {
 	public boolean isUseScalar() {
 		return useScalar;
 	}
+
+	/**
+	 * @since 4.2
+	 */
+    public void setResultMapper(Function<?,?> resultMapper) {
+		this.metaData.setResultMapper(resultMapper);
+    }
 }

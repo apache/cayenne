@@ -41,6 +41,7 @@ import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.reflect.PojoMapper;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -1151,5 +1152,40 @@ public class ColumnSelectIT extends ServerCase {
         assertEquals("artist1", results.get(0)[0]);
         assertEquals("artist1", ((Artist)results.get(0)[1]).getArtistName());
         assertEquals(1, results.get(0)[2]);
+    }
+
+    @Test
+    public void testMapToPojo() {
+        List<TestPojo> result = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.ARTIST_NAME.trim().length())
+                .where(Artist.ARTIST_NAME.like("artist%"))
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .map(TestPojo::new)
+                .select(context);
+
+        assertEquals(20, result.size());
+
+        TestPojo testPojo0 = result.get(0);
+        assertNotNull(testPojo0);
+        assertEquals("artist1", testPojo0.name);
+        assertNotNull(testPojo0.date);
+        assertEquals(7, testPojo0.length);
+
+        TestPojo testPojo19 = result.get(19);
+        assertNotNull(testPojo19);
+        assertEquals("artist20", testPojo19.name);
+        assertEquals(8, testPojo19.length);
+        assertNotNull(testPojo19.date);
+    }
+
+    static class TestPojo {
+        String name;
+        Date date;
+        int length;
+        TestPojo(Object[] data) {
+            name = (String)data[0];
+            date = (Date)data[1];
+            length = (Integer)data[2];
+        }
     }
 }

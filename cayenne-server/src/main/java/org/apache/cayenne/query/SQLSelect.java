@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
@@ -46,6 +47,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	private List<Class<?>> resultColumnsTypes;
 	private boolean useScalar;
 	private boolean isFetchingDataRows;
+	private Function<T, ?> resultMapper;
 
 	/**
 	 * Creates a query that selects DataRows and uses default routing.
@@ -443,6 +445,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setStatementFetchSize(statementFetchSize);
 		template.setQueryTimeout(queryTimeout);
 		template.setUseScalar(useScalar);
+		template.setResultMapper(resultMapper);
 
 		return template;
 	}
@@ -681,6 +684,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		}
 		prefetches.merge(node);
 		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <E> SQLSelect<E> map(Function<T, E> mapper) {
+		this.resultMapper = mapper;
+		return (SQLSelect<E>)this;
 	}
 
 	@SuppressWarnings("unchecked")
