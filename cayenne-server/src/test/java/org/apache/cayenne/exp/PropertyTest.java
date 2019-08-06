@@ -18,14 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.parser.ASTAbs;
 import org.apache.cayenne.exp.parser.ASTAvg;
 import org.apache.cayenne.exp.parser.ASTConcat;
@@ -47,6 +43,11 @@ import org.apache.cayenne.exp.parser.ASTUpper;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.reflect.TstJavaBean;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class PropertyTest {
 
@@ -348,7 +349,7 @@ public class PropertyTest {
         assertTrue(newProp.getExpression() instanceof ASTCount);
         assertEquals(p.getExpression(), newProp.getExpression().getOperand(0));
     }
-    
+
     @Test
     public void testCountDistinct() {
         Property<String> p = Property.create("test", String.class);
@@ -488,5 +489,14 @@ public class PropertyTest {
         assertEquals("string", newProp.getExpression().getOperand(1));
         assertEquals(3, newProp.getExpression().getOperand(2)); // getOperand unwrapping ASTScalar
         assertEquals(p2.getExpression(), newProp.getExpression().getOperand(3));
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void testMixDbAndObjPath() {
+        Property<Integer> dbPathProperty = Property
+                .create(ExpressionFactory.dbPathExp("db_path"), Integer.class);
+        Property<String> objPathProperty = Property
+                .create(ExpressionFactory.pathExp("obj_path"), String.class);
+        objPathProperty.dot(dbPathProperty);
     }
 }

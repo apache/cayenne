@@ -94,12 +94,7 @@ public class Property<E> {
      */
     protected Property(final String name, final Class<? super E> type) {
         this.name = name;
-        expressionProvider = new ExpressionProvider() {
-            @Override
-            public Expression get() {
-                return ExpressionFactory.pathExp(name);
-            }
-        };
+        expressionProvider = () -> ExpressionFactory.pathExp(name);
         this.type = type;
     }
 
@@ -114,12 +109,7 @@ public class Property<E> {
      */
     protected Property(final String name, final Expression expression, final Class<? super E> type) {
         this.name = name;
-        expressionProvider = new ExpressionProvider() {
-            @Override
-            public Expression get() {
-                return expression.deepCopy();
-            }
-        };
+        expressionProvider = () -> expression.deepCopy();
         this.type = type;
     }
 
@@ -200,6 +190,9 @@ public class Property<E> {
      * @return a newly created Property object.
      */
     public <T> Property<T> dot(Property<T> property) {
+        if(property.getExpression().getType() != getExpression().getType()) {
+            throw new CayenneRuntimeException("Can't process path with not the same segment's types.");
+        }
         return create(getName() + "." + property.getName(), property.getType());
     }
 
@@ -643,7 +636,7 @@ public class Property<E> {
     public Property<Long> count() {
         return create(FunctionExpressionFactory.countExp(getExpression()), Long.class);
     }
-    
+
     /**
      * @see FunctionExpressionFactory#countDistinctExp(Expression)
      * @since 4.1
