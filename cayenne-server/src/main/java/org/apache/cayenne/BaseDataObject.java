@@ -199,6 +199,14 @@ public abstract class BaseDataObject extends PersistentObject implements DataObj
     }
 
     Object readSimpleProperty(String property) {
+        // Special ID property
+        if(property.startsWith(Cayenne.PROPERTY_ID)) {
+            if(property.equals(Cayenne.PROPERTY_ID)) {
+                return Cayenne.pkForObject(this);
+            } else {
+                return getObjectId().getIdSnapshot().get(property.substring(Cayenne.PROPERTY_ID.length() + 1));
+            }
+        }
 
         // side effect - resolves HOLLOW object
         Object object = readProperty(property);
@@ -373,7 +381,7 @@ public abstract class BaseDataObject extends PersistentObject implements DataObj
             return;
         }
 
-        getObjectContext().propertyChanged(this, relationshipName, oldTarget, value);
+        objectContext.propertyChanged(this, relationshipName, oldTarget, value);
 
         if (setReverse) {
             // unset old reverse relationship

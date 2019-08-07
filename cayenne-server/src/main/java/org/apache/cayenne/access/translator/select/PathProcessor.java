@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -61,10 +62,21 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     public PathTranslationResult process(String path) {
         PathComponents components = new PathComponents(path);
         String[] rawComponents = components.getAll();
-        for(int i=0; i<rawComponents.length; i++) {
+        int length = rawComponents.length;
+        if(rawComponents[length - 1].startsWith(Cayenne.PROPERTY_ID)) {
+            if(length == 1) {
+                // resolve root id
+                processId(rawComponents[length - 1]);
+                return this;
+            } else {
+                // skip id, as it will be correctly resolved anyway...
+                length--;
+            }
+        }
+        for(int i=0; i<length; i++) {
             String next = rawComponents[i];
             isOuterJoin = false;
-            lastComponent = i == rawComponents.length - 1;
+            lastComponent = i == length - 1;
             String alias = pathSplitAliases.get(next);
             if(alias != null) {
                 currentAlias = next;
@@ -90,6 +102,8 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     abstract protected void processAliasedAttribute(String next, String alias);
 
     abstract protected void processNormalAttribute(String next);
+
+    abstract protected void processId(String id);
 
     @Override
     public List<DbAttribute> getDbAttributes() {

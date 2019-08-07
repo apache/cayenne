@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.exp.ExpressionException;
 
 import java.util.ArrayList;
@@ -82,6 +83,26 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
         PathComponent<Attribute, Relationship> aliasedPathComponent = getAliasedPathComponent(pathComp);
         if (aliasedPathComponent != null) {
             return aliasedPathComponent;
+        }
+
+        if(pathComp.startsWith(Cayenne.PROPERTY_ID)) {
+            DbEntity dbEntity;
+            if(currentEntity instanceof ObjEntity) {
+                dbEntity = ((ObjEntity) currentEntity).getDbEntity();
+            } else {
+                dbEntity = (DbEntity)currentEntity;
+            }
+
+            DbAttribute attribute;
+            if(pathComp.equals(Cayenne.PROPERTY_ID)) {
+                if (dbEntity.getPrimaryKeys().size() > 1) {
+                    throw invalidPathException("Can't resolve @id attribute, entity " + dbEntity.getName() + " has compound PK", pathComp);
+                }
+                attribute = dbEntity.getPrimaryKeys().iterator().next();
+            } else {
+                attribute = dbEntity.getAttribute(pathComp.substring(Cayenne.PROPERTY_ID.length() + 1));
+            }
+            return new AttributePathComponent<>(attribute);
         }
 
         throw invalidPathException("Can't resolve path component", pathComp);

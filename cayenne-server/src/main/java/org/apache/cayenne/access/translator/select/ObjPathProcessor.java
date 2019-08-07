@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.JoinType;
@@ -61,6 +63,20 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
 
         throw new IllegalStateException("Unable to resolve path: " + currentDbPath.toString()
                 + " (unknown '" + next + "' component)");
+    }
+
+    @Override
+    protected void processId(String id) {
+        if(id.equals(Cayenne.PROPERTY_ID)) {
+            for (DbAttribute attribute : entity.getDbEntity().getPrimaryKeys()) {
+                attributes.add(attribute);
+                attributePaths.add(currentDbPath.toString());
+            }
+        } else {
+            DbAttribute attribute = entity.getDbEntity().getAttribute(id.substring(Cayenne.PROPERTY_ID.length() + 1));
+            attributes.add(attribute);
+            attributePaths.add(currentDbPath.toString());
+        }
     }
 
     @Override

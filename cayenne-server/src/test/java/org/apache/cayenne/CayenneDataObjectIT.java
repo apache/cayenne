@@ -176,4 +176,17 @@ public class CayenneDataObjectIT extends ServerCase {
 		result.add(a); // list should be mutable
 		assertTrue(!result.isEmpty());
 	}
+
+	@Test
+	public void testReadIdProperty() {
+		Artist a = context.newObject(Artist.class);
+		Painting p = context.newObject(Painting.class);
+		p.setToArtist(a);
+
+		p.setObjectId(ObjectId.of("Painting", "PAINTING_ID", 321));
+		a.setObjectId(ObjectId.of("Artist", "ARTIST_ID", 123));
+
+		Object id2 = p.readNestedProperty("toArtist.@id");
+		assertEquals(123, id2);
+	}
 }

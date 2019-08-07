@@ -7,11 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -26,7 +25,7 @@ public abstract class _Exhibit extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> EXHIBIT_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("EXHIBIT_ID"), Integer.class);
+    public static final NumericIdProperty<Integer> EXHIBIT_ID_PK_PROPERTY = PropertyFactory.createNumericId("EXHIBIT_ID", "Exhibit", Integer.class);
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
     public static final DateProperty<Date> CLOSING_DATE = PropertyFactory.createDate("closingDate", Date.class);

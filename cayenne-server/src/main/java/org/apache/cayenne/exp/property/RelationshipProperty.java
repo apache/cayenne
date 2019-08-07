@@ -58,6 +58,10 @@ public interface RelationshipProperty<E> extends Property<E> {
                 property.getType());
     }
 
+    default <T> BaseIdProperty<T> dot(BaseIdProperty<T> property) {
+        return PropertyFactory.createBaseId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
+    }
+
     /**
      * Constructs a new property path by appending the argument to the existing property separated by a dot.
      *
@@ -69,6 +73,10 @@ public interface RelationshipProperty<E> extends Property<E> {
         return PropertyFactory.createNumeric(path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
                 property.getType());
+    }
+
+    default <T extends Number> NumericIdProperty<T> dot(NumericIdProperty<T> property) {
+        return PropertyFactory.createNumericId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
     }
 
     /**

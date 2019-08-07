@@ -372,4 +372,28 @@ public class PropertyFactory {
     public static <K, V extends Persistent> MapProperty<K, V> createMap(String name, Class<K> keyType, Class<V> entityType) {
         return createMap(name, null, keyType, entityType);
     }
+
+    public static <T> BaseIdProperty<T> createBaseId(String entityName, Class<T> propertyType) {
+        return createBaseId(null, null, entityName, propertyType);
+    }
+
+    public static <T> BaseIdProperty<T> createBaseId(String attribute, String entityName, Class<T> propertyType) {
+        return createBaseId(attribute, null, entityName, propertyType);
+    }
+
+    public static <T> BaseIdProperty<T> createBaseId(String attribute, String path, String entityName, Class<T> propertyType) {
+        return new BaseIdProperty<>(attribute, path, entityName, propertyType);
+    }
+
+    public static <T extends Number> NumericIdProperty<T> createNumericId(String entityName, Class<T> propertyType) {
+        return createNumericId(null, null, entityName, propertyType);
+    }
+
+    public static <T extends Number> NumericIdProperty<T> createNumericId(String attribute, String entityName, Class<T> propertyType) {
+        return createNumericId(attribute, null, entityName, propertyType);
+    }
+
+    public static <T extends Number> NumericIdProperty<T> createNumericId(String attribute, String path, String entityName, Class<T> propertyType) {
+        return new NumericIdProperty<>(attribute, path, entityName, propertyType);
+    }
 }
