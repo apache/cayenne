@@ -1178,6 +1178,25 @@ public class ColumnSelectIT extends ServerCase {
         assertNotNull(testPojo19.date);
     }
 
+    @Test
+    public void testDoubleMapToPojo() {
+        List<TestPojo2> result = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.ARTIST_NAME.trim().length())
+                .where(Artist.ARTIST_NAME.like("artist%"))
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .map(TestPojo::new)
+                .map(TestPojo2::new)
+                .select(context);
+        assertEquals(20, result.size());
+
+        TestPojo2 testPojo0 = result.get(0);
+        assertNotNull(testPojo0);
+        assertEquals("artist1", testPojo0.pojo.name);
+        assertNotNull(testPojo0.pojo.date);
+        assertEquals(7, testPojo0.pojo.length);
+
+    }
+
     static class TestPojo {
         String name;
         Date date;
@@ -1186,6 +1205,13 @@ public class ColumnSelectIT extends ServerCase {
             name = (String)data[0];
             date = (Date)data[1];
             length = (Integer)data[2];
+        }
+    }
+
+    static class TestPojo2 {
+        TestPojo pojo;
+        TestPojo2(TestPojo pojo) {
+            this.pojo = pojo;
         }
     }
 }

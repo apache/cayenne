@@ -136,8 +136,13 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 		this.suppressingDistinct = suppressingDistinct;
 	}
 
+	@SuppressWarnings("unchecked")
 	void setResultMapper(Function<?, ?> resultMapper) {
-		this.resultMapper = resultMapper;
+		if(this.resultMapper != null) {
+			this.resultMapper = this.resultMapper.andThen((Function)resultMapper);
+		} else {
+			this.resultMapper = resultMapper;
+		}
 	}
 
 	@Override
