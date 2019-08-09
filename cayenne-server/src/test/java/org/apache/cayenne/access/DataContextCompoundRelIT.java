@@ -20,10 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundOrder;
 import org.apache.cayenne.testdo.compound.CompoundOrderLine;
@@ -64,8 +61,7 @@ public class DataContextCompoundRelIT extends ServerCase {
         context.commitChanges();
         context.invalidateObjects(master, detail);
 
-        SelectQuery<CompoundPkTestEntity> q = SelectQuery.query(CompoundPkTestEntity.class);
-        List<CompoundPkTestEntity> objs = q.select(context1);
+        List<CompoundPkTestEntity> objs = ObjectSelect.query(CompoundPkTestEntity.class).select(context1);
 
         assertEquals(1, objs.size());
         assertEquals("m1", objs.get(0).getName());
@@ -99,9 +95,9 @@ public class DataContextCompoundRelIT extends ServerCase {
         context.commitChanges();
         context.invalidateObjects(master, master1, detail, detail1);
 
-        Expression qual = ExpressionFactory.matchExp("toCompoundPk", master);
-        SelectQuery<CompoundFkTestEntity> q = SelectQuery.query(CompoundFkTestEntity.class, qual);
-        List<CompoundFkTestEntity> objs = q.select(context1);
+        List<CompoundFkTestEntity> objs = ObjectSelect.query(CompoundFkTestEntity.class)
+                .where(CompoundFkTestEntity.TO_COMPOUND_PK.eq(master))
+                .select(context1);
 
         assertEquals(1, objs.size());
         assertEquals("d1", objs.get(0).getName());
@@ -160,9 +156,9 @@ public class DataContextCompoundRelIT extends ServerCase {
         context.commitChanges();
         context.invalidateObjects(master, master1, detail, detail1);
 
-        Expression qual = ExpressionFactory.matchExp("compoundFkArray", detail1);
-        SelectQuery<CompoundPkTestEntity> q = SelectQuery.query(CompoundPkTestEntity.class, qual);
-        List<CompoundPkTestEntity> objs = q.select(context1);
+        List<CompoundPkTestEntity> objs = ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.COMPOUND_FK_ARRAY.contains(detail1))
+                .select(context1);
 
         assertEquals(1, objs.size());
         assertEquals("m2", objs.get(0).getName());

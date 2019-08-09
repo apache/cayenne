@@ -34,6 +34,10 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * @deprecated as part of deprecation of SelectQuery
+ */
+@Deprecated
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextSelectQuerySplitAliasesIT extends ServerCase {
 

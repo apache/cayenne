@@ -26,16 +26,15 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -45,7 +44,6 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
@@ -55,7 +53,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,9 +60,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -157,8 +152,7 @@ public class DataContextIT extends ServerCase {
 	public void testCurrentSnapshot1() throws Exception {
 		createSingleArtistDataSet();
 
-		SelectQuery query = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("artist1"));
-		Artist artist = (Artist) context.performQuery(query).get(0);
+		Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
 
 		DataRow snapshot = context.currentSnapshot(artist);
 		assertEquals(artist.getArtistName(), snapshot.get("ARTIST_NAME"));
@@ -171,8 +165,7 @@ public class DataContextIT extends ServerCase {
 		createSingleArtistDataSet();
 
 		// test null values
-		SelectQuery<Artist> query = new SelectQuery<>(Artist.class, Artist.ARTIST_NAME.eq("artist1"));
-		Artist artist = (Artist) context.performQuery(query).get(0);
+		Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
 
 		artist.setArtistName(null);
 		artist.setDateOfBirth(null);
@@ -192,8 +185,7 @@ public class DataContextIT extends ServerCase {
 		createSingleArtistDataSet();
 
 		// test null values
-		SelectQuery query = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("artist1"));
-		Artist artist = (Artist) context.performQuery(query).get(0);
+		Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).selectFirst(context);
 
 		// test FK relationship snapshotting
 		Painting p1 = new Painting();
@@ -230,7 +222,7 @@ public class DataContextIT extends ServerCase {
 		// relationship
 		// is still a Fault
 		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
-		assertEquals(new Integer(33002), snapshot.get("GALLERY_ID"));
+		assertEquals(33002, snapshot.get("GALLERY_ID"));
 	}
 
 	/**
@@ -242,9 +234,8 @@ public class DataContextIT extends ServerCase {
 	public void testCharFetch() throws Exception {
 		createSingleArtistDataSet();
 
-		SelectQuery query = new SelectQuery(Artist.class);
-		Artist a = (Artist) context.performQuery(query).get(0);
-		assertEquals(a.getArtistName().trim(), a.getArtistName());
+		Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
+		assertEquals(artist.getArtistName().trim(), artist.getArtistName());
 	}
 
 	/**
@@ -256,9 +247,7 @@ public class DataContextIT extends ServerCase {
 	public void testCharInQualifier() throws Exception {
 		createArtistsDataSet();
 
-		Expression e = ExpressionFactory.matchExp("artistName", "artist1");
-		SelectQuery q = new SelectQuery(Artist.class, e);
-		List<Artist> artists = context.performQuery(q);
+		List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1")).select(context);
 		assertEquals(1, artists.size());
 	}
 
@@ -270,10 +259,10 @@ public class DataContextIT extends ServerCase {
 	public void testMultiObjRelFetch() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
-		SelectQuery q = new SelectQuery(Painting.class);
-		q.andQualifier(ExpressionFactory.matchExp("toArtist.artistName", "artist2"));
-		q.orQualifier(ExpressionFactory.matchExp("toArtist.artistName", "artist4"));
-		List<Painting> results = context.performQuery(q);
+		List<Painting> results = ObjectSelect.query(Painting.class)
+				.where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"))
+				.or(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist4"))
+				.select(context);
 
 		assertEquals(2, results.size());
 	}
@@ -286,10 +275,10 @@ public class DataContextIT extends ServerCase {
 	public void testMultiDbRelFetch() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
-		SelectQuery q = new SelectQuery("Painting");
-		q.andQualifier(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist2"));
-		q.orQualifier(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist4"));
-		List<?> results = context.performQuery(q);
+		List<Painting> results = ObjectSelect.query(Painting.class)
+				.where(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist2"))
+				.or(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist4"))
+				.select(context);
 
 		assertEquals(2, results.size());
 	}
@@ -298,7 +287,7 @@ public class DataContextIT extends ServerCase {
 	public void testSelectDate() throws Exception {
 		createGalleriesAndExhibitsDataSet();
 
-		List<Exhibit> objects = context.performQuery(new SelectQuery(Exhibit.class));
+		List<Exhibit> objects = ObjectSelect.query(Exhibit.class).select(context);
 		assertFalse(objects.isEmpty());
 
 		Exhibit e1 = objects.get(0);
@@ -317,11 +306,9 @@ public class DataContextIT extends ServerCase {
 		// to the query when query is using DISTINCT...
 		// verify that the result is not messed up
 
-		SelectQuery query = new SelectQuery(Artist.class);
-		query.addOrdering(Artist.ARTIST_NAME.ascInsensitive());
-		query.setDistinct(true);
-
-		List<Artist> objects = context.performQuery(query);
+		List<Artist> objects = ObjectSelect.query(Artist.class)
+				.orderBy(Artist.ARTIST_NAME.ascInsensitive())
+				.select(context);
 		assertEquals(5, objects.size());
 
 		Artist artist = objects.get(0);
@@ -340,8 +327,7 @@ public class DataContextIT extends ServerCase {
 	public void testSelect_DataRows() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
-		SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, null);
-		List<DataRow> objects = context.select(query);
+		List<DataRow> objects = ObjectSelect.dataRowQuery(Artist.class, null).select(context);
 
 		assertNotNull(objects);
 		assertEquals(7, objects.size());
@@ -352,8 +338,7 @@ public class DataContextIT extends ServerCase {
 	public void testPerformSelectQuery1() throws Exception {
 		createArtistsAndPaintingsDataSet();
 
-		SelectQuery query = new SelectQuery(Artist.class);
-		List<?> objects = context.performQuery(query);
+		List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
 
 		assertNotNull(objects);
 		assertEquals(7, objects.size());
@@ -365,14 +350,11 @@ public class DataContextIT extends ServerCase {
 		createArtistsAndPaintingsDataSet();
 
 		// do a query with complex qualifier
-		List<Expression> expressions = new ArrayList<Expression>();
-		expressions.add(ExpressionFactory.matchExp("artistName", "artist3"));
-		expressions.add(ExpressionFactory.matchExp("artistName", "artist5"));
-		expressions.add(ExpressionFactory.matchExp("artistName", "artist21"));
-
-		SelectQuery query = new SelectQuery(Artist.class, ExpressionFactory.joinExp(Expression.OR, expressions));
-
-		List<?> objects = context.performQuery(query);
+		List<?> objects = ObjectSelect.query(Artist.class)
+				.where(Artist.ARTIST_NAME.eq("artist3"))
+				.or(Artist.ARTIST_NAME.eq("artist5"))
+				.or(Artist.ARTIST_NAME.eq("artist21"))
+				.select(context);
 
 		assertNotNull(objects);
 		assertEquals(3, objects.size());
@@ -393,15 +375,16 @@ public class DataContextIT extends ServerCase {
 
 		createSingleArtistDataSet();
 
-		SelectQuery select = new SelectQuery(Painting.class, ExpressionFactory.exp("db:PAINTING_ID = 1"));
+		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class, ExpressionFactory.exp("db:PAINTING_ID = 1"));
 
-		assertEquals(0, context.performQuery(select).size());
+		assertEquals(0, query.select(context).size());
 
-		SQLTemplate query = new SQLTemplate(Painting.class,
+		SQLTemplate insert = new SQLTemplate(Painting.class,
 				"INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
 						+ "VALUES (1, 'PX', 33001, 1)");
-		context.performNonSelectingQuery(query);
-		assertEquals(1, context.performQuery(select).size());
+		context.performNonSelectingQuery(insert);
+
+		assertEquals(1, query.select(context).size());
 	}
 
 	@Test
@@ -413,10 +396,10 @@ public class DataContextIT extends ServerCase {
 						+ "VALUES ($pid, '$pt', $aid, $price)");
 
 		Map<String, Object> map = new HashMap<>();
-		map.put("pid", new Integer(1));
+		map.put("pid", 1);
 		map.put("pt", "P1");
-		map.put("aid", new Integer(33002));
-		map.put("price", new Double(1.1));
+		map.put("aid", 33002);
+		map.put("price", 1.1);
 
 		// single batch of parameters
 		query.setParameters(map);
@@ -439,9 +422,9 @@ public class DataContextIT extends ServerCase {
 		Map<String, Object>[] maps = new Map[3];
 		for (int i = 0; i < maps.length; i++) {
 			maps[i] = new HashMap<>();
-			maps[i].put("pid", new Integer(1 + i));
+			maps[i].put("pid", 1 + i);
 			maps[i].put("pt", "P-" + i);
-			maps[i].put("aid", new Integer(33002));
+			maps[i].put("aid", 33002);
 			maps[i].put("price", new BigDecimal("1." + i));
 		}
 
@@ -466,9 +449,7 @@ public class DataContextIT extends ServerCase {
 	public void testPerformPaginatedQuery() throws Exception {
 		createArtistsDataSet();
 
-		SelectQuery<Artist> query = SelectQuery.query(Artist.class);
-		query.setPageSize(5);
-		List<Artist> objects = context.select(query);
+		List<Artist> objects = ObjectSelect.query(Artist.class).pageSize(5).select(context);
 		assertNotNull(objects);
 		assertTrue(objects instanceof IncrementalFaultList<?>);
 		assertTrue(((IncrementalFaultList<Artist>) objects).elements.get(0) instanceof Long);
@@ -496,18 +477,11 @@ public class DataContextIT extends ServerCase {
 	public void testPerformPaginatedQueryBigPage() throws Exception {
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(Artist.class);
-		query.setPageSize(5);
-		final List<?> objects = context.performQuery(query);
+		final List<?> objects = ObjectSelect.query(Artist.class).pageSize(5).select(context);
 		assertNotNull(objects);
 		assertTrue(objects instanceof IncrementalFaultList<?>);
 
-		queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-			public void execute() {
-				assertEquals(7, objects.size());
-			}
-		});
+		queryInterceptor.runWithQueriesBlocked(() -> assertEquals(7, objects.size()));
 	}
 
 	@Test
@@ -515,9 +489,7 @@ public class DataContextIT extends ServerCase {
 
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(Artist.class);
-		query.setFetchingDataRows(true);
-		List<?> objects = context.performQuery(query);
+		List<?> objects = ObjectSelect.dataRowQuery(Artist.class).select(context);
 
 		assertNotNull(objects);
 		assertEquals(7, objects.size());
@@ -544,8 +516,7 @@ public class DataContextIT extends ServerCase {
 	public void testCommitChangesRO2() throws Exception {
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(ROArtist.class, Artist.ARTIST_NAME.eq("artist1"));
-		ROArtist a1 = (ROArtist) context.performQuery(query).get(0);
+		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 		a1.writeProperty(ROArtist.ARTIST_NAME.getName(), "abc");
 
 		try {
@@ -562,8 +533,7 @@ public class DataContextIT extends ServerCase {
 
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(ROArtist.class, Artist.ARTIST_NAME.eq("artist1"));
-		ROArtist a1 = (ROArtist) context.performQuery(query).get(0);
+		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 		context.deleteObjects(a1);
 
 		try {
@@ -579,8 +549,7 @@ public class DataContextIT extends ServerCase {
 	public void testCommitChangesRO4() throws Exception {
 		createArtistsDataSet();
 
-		SelectQuery query = new SelectQuery(ROArtist.class, Artist.ARTIST_NAME.eq("artist1"));
-		ROArtist a1 = (ROArtist) context.performQuery(query).get(0);
+		ROArtist a1 = ObjectSelect.query(ROArtist.class, Artist.ARTIST_NAME.eq("artist1")).selectOne(context);
 
 		Painting painting = context.newObject(Painting.class);
 		painting.setPaintingTitle("paint");
@@ -638,7 +607,7 @@ public class DataContextIT extends ServerCase {
 	public void testInvalidateObjects_Vararg() throws Exception {
 
 		DataRow row = new DataRow(10);
-		row.put("ARTIST_ID", new Integer(1));
+		row.put("ARTIST_ID", 1);
 		row.put("ARTIST_NAME", "ArtistXYZ");
 		row.put("DATE_OF_BIRTH", new Date());
 		DataObject object = context.objectFromDataRow(Artist.class, row);
@@ -661,7 +630,7 @@ public class DataContextIT extends ServerCase {
 	public void testInvalidateObjects() throws Exception {
 
 		DataRow row = new DataRow(10);
-		row.put("ARTIST_ID", new Integer(1));
+		row.put("ARTIST_ID", 1);
 		row.put("ARTIST_NAME", "ArtistXYZ");
 		row.put("DATE_OF_BIRTH", new Date());
 		DataObject object = context.objectFromDataRow(Artist.class, row);

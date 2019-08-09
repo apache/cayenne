@@ -23,8 +23,8 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.remote.RemoteCayenneCase;
 import org.apache.cayenne.remote.service.LocalConnection;
@@ -110,8 +110,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 		assertEquals(PersistenceState.DELETED, deleted.getPersistenceState());
 		assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
-		List<ClientMtTable1> objects = child
-				.select(new SelectQuery<>(ClientMtTable1.class));
+		List<ClientMtTable1> objects = ObjectSelect.query(ClientMtTable1.class).select(child);
 		assertEquals("All but NEW object must have been included", 3, objects.size());
 
 		for (ClientMtTable1 next : objects) {
@@ -138,10 +137,9 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 
 		final ObjectContext child = runtime.newContext(clientContext);
 
-		SelectQuery<ClientMtTable2> q = new SelectQuery<>(ClientMtTable2.class);
-		q.addPrefetch(ClientMtTable2.TABLE1.getName());
-
-		final List<ClientMtTable2> results = child.select(q);
+		final List<ClientMtTable2> results = ObjectSelect.query(ClientMtTable2.class)
+				.prefetch(ClientMtTable2.TABLE1.joint())
+				.select(child);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertEquals(2, results.size());
@@ -176,12 +174,10 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 
 		final ObjectContext child = runtime.newContext(clientContext);
 
-		SelectQuery<ClientMtTable1> q = new SelectQuery<>(
-				ClientMtTable1.class);
-		q.addOrdering("globalAttribute1", SortOrder.ASCENDING);
-		q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
-
-		final List<ClientMtTable1> results = child.select(q);
+		final List<ClientMtTable1> results = ObjectSelect.query(ClientMtTable1.class)
+				.prefetch(ClientMtTable1.TABLE2ARRAY.joint())
+				.orderBy(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc())
+				.select(child);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			ClientMtTable1 o1 = results.get(0);
@@ -304,8 +300,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 
 		final ObjectContext child = runtime.newContext(clientContext);
 
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-		List<ClientMtTable1> objects = child.select(query);
+		List<ClientMtTable1> objects = ObjectSelect.query(ClientMtTable1.class).select(child);
 
 		assertEquals(4, objects.size());
 
@@ -405,8 +400,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 		ObjectContext child = runtime.newContext(clientContext);
 
 		// make sure we fetch in predictable order
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-		List<ClientMtTable1> objects = child.select(query);
+		List<ClientMtTable1> objects = ObjectSelect.query(ClientMtTable1.class).select(child);
 
 		assertEquals(4, objects.size());
 
@@ -445,8 +439,7 @@ public class NestedCayenneContextIT extends RemoteCayenneCase {
 		ObjectContext child = runtime.newContext(clientContext);
 
 		// make sure we fetch in predictable order
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-		List<ClientMtTable1> objects = child.select(query);
+		List<ClientMtTable1> objects = ObjectSelect.query(ClientMtTable1.class).select(child);
 
 		assertEquals(4, objects.size());
 

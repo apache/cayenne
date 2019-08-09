@@ -21,9 +21,8 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -98,20 +97,12 @@ public class DataContextIteratedQueryIT extends ServerCase {
 
     @Test
     public void testIterate() throws Exception {
-
         createArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
         final int[] count = new int[1];
-
-        context.iterate(q1, new ResultIteratorCallback<Artist>() {
-
-            @Override
-            public void next(Artist object) {
-                assertNotNull(object.getArtistName());
-                count[0]++;
-            }
+        ObjectSelect.query(Artist.class).iterate(context, object -> {
+            assertNotNull(object.getArtistName());
+            count[0]++;
         });
 
         assertEquals(7, count[0]);
@@ -119,19 +110,12 @@ public class DataContextIteratedQueryIT extends ServerCase {
 
     @Test
     public void testIterateDataRows() throws Exception {
-
         createArtistsDataSet();
 
-        SelectQuery<DataRow> q1 = SelectQuery.dataRowQuery(Artist.class, null);
         final int[] count = new int[1];
-
-        context.iterate(q1, new ResultIteratorCallback<DataRow>() {
-
-            @Override
-            public void next(DataRow object) {
-                assertNotNull(object.get("ARTIST_ID"));
-                count[0]++;
-            }
+        ObjectSelect.dataRowQuery(Artist.class).iterate(context, object -> {
+            assertNotNull(object.get("ARTIST_ID"));
+            count[0]++;
         });
 
         assertEquals(7, count[0]);
@@ -139,12 +123,9 @@ public class DataContextIteratedQueryIT extends ServerCase {
 
     @Test
     public void testIterator() throws Exception {
-
         createArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-        try (ResultIterator<Artist> it = context.iterator(q1);) {
+        try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class).iterator(context)) {
             int count = 0;
 
             for (Artist a : it) {
@@ -159,9 +140,7 @@ public class DataContextIteratedQueryIT extends ServerCase {
     public void testBatchIterator() throws Exception {
         createLargeArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-        try (ResultBatchIterator<Artist> it = context.batchIterator(q1, 5);) {
+        try (ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchIterator(context, 5)) {
             int count = 0;
 
             for (List<Artist> artistList : it) {
@@ -176,12 +155,9 @@ public class DataContextIteratedQueryIT extends ServerCase {
 
     @Test
     public void testPerformIteratedQuery_Count() throws Exception {
-
         createArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
-
-        try (ResultIterator<?> it = context.performIteratedQuery(q1);) {
+        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
             int count = 0;
             while (it.hasNextRow()) {
                 it.nextRow();
@@ -196,7 +172,7 @@ public class DataContextIteratedQueryIT extends ServerCase {
     public void testPerformIteratedQuery_resolve() throws Exception {
         createArtistsAndPaintingsDataSet();
 
-        try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
+        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
             while (it.hasNextRow()) {
                 DataRow row = (DataRow) it.nextRow();
 
@@ -215,7 +191,7 @@ public class DataContextIteratedQueryIT extends ServerCase {
 
         assertEquals(7, tPainting.getRowCount());
 
-        try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
+        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
             while (it.hasNextRow()) {
                 DataRow row = (DataRow) it.nextRow();
 
@@ -235,7 +211,7 @@ public class DataContextIteratedQueryIT extends ServerCase {
     public void testPerformIteratedQuery_Transaction() throws Exception {
         createArtistsDataSet();
 
-        try (ResultIterator<?> it = context.performIteratedQuery(SelectQuery.query(Artist.class));) {
+        try (ResultIterator<?> it = context.performIteratedQuery(ObjectSelect.query(Artist.class))) {
             assertNull("Iterator transaction was not unbound from thread", BaseTransaction.getThreadTransaction());
         }
 

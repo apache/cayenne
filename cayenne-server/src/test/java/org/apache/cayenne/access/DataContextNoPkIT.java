@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.no_pk.NoPkTestEntity;
@@ -38,7 +38,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @UseServerRuntime(CayenneProjects.NO_PK_PROJECT)
 public class DataContextNoPkIT extends ServerCase {
@@ -58,24 +57,15 @@ public class DataContextNoPkIT extends ServerCase {
         noPkTestTable.insert(2);
     }
 
-    @Test
-    public void testNoPkFetchObjects() throws Exception {
-        try {
-            List objects = context.performQuery(new SelectQuery<>(NoPkTestEntity.class));
-            fail("Query for entity with no primary key must have failed, instead we got "
-                    + objects.size()
-                    + " rows.");
-        }
-        catch (CayenneRuntimeException ex) {
-            // exception expected
-        }
+    @Test(expected = CayenneRuntimeException.class)
+    public void testNoPkFetchObjects() {
+        ObjectSelect.query(NoPkTestEntity.class).select(context);
     }
 
     @Test
-    public void testNoPkFetchDataRows() throws Exception {
-        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(NoPkTestEntity.class);
+    public void testNoPkFetchDataRows() {
 
-        List<DataRow> rows = query.select(context);
+        List<DataRow> rows = ObjectSelect.dataRowQuery(NoPkTestEntity.class).select(context);
         assertNotNull(rows);
         assertEquals(2, rows.size());
 

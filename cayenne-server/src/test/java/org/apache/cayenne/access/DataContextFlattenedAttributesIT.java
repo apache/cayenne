@@ -24,10 +24,9 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.EJBQLQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -117,12 +116,11 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
     @Test
     public void testSelectCompound1() throws Exception {
         createTestDataSet();
-        SelectQuery<CompoundPainting> query = SelectQuery.query(CompoundPainting.class);
-        List<CompoundPainting> objects = query.select(context);
+        List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class).select(context);
 
         assertNotNull(objects);
         assertEquals(8, objects.size());
-        assertTrue("CompoundPainting expected, got null", objects.get(0) != null);
+        assertNotNull("CompoundPainting expected, got null", objects.get(0));
 
         for (CompoundPainting painting : objects) {
             Number id = (Number) painting.getObjectId().getIdSnapshot().get("PAINTING_ID");
@@ -159,10 +157,9 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
     @Test
     public void testSelectCompound2() throws Exception {
         createTestDataSet();
-        SelectQuery<CompoundPainting> query = SelectQuery.query(
-                CompoundPainting.class,
-                ExpressionFactory.matchExp("artistName", "artist2"));
-        List<CompoundPainting> objects = query.select(context);
+
+        List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class, CompoundPainting.ARTIST_NAME.eq("artist2"))
+                .select(context);
 
         assertNotNull(objects);
         assertEquals(2, objects.size());
@@ -191,9 +188,8 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
     @Test
     public void testSelectCompoundLongNames() throws Exception {
         createTestDataSet();
-        SelectQuery<CompoundPaintingLongNames> query = SelectQuery.query(CompoundPaintingLongNames.class);
         // the error was thrown on query execution
-        List<?> objects = context.performQuery(query);
+        List<?> objects = ObjectSelect.query(CompoundPaintingLongNames.class).select(context);
         assertNotNull(objects);
     }
 

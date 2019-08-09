@@ -61,12 +61,12 @@ public class ClientSelectQueryExpressionIT extends ClientCase {
     public void testDoubleSelectLikeExpression() throws Exception {
         createMtTable1DataSet();
 
-        List<ClientMtTable1> mtTable1List = context.select(SelectQuery.query(ClientMtTable1.class));
+        List<ClientMtTable1> mtTable1List = context.select(ObjectSelect.query(ClientMtTable1.class));
 
         Expression exp = ClientMtTable1.GLOBAL_ATTRIBUTE1.like("globalAttr1%");
         exp.filterObjects(mtTable1List);
 
-        List<ClientMtTable1> matchingMtTableList = context.select(SelectQuery.query(ClientMtTable1.class, exp));
+        List<ClientMtTable1> matchingMtTableList = context.select(ObjectSelect.query(ClientMtTable1.class, exp));
 
         assertEquals(11, matchingMtTableList.size());
     }

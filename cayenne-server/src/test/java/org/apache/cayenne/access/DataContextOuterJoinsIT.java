@@ -21,8 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -82,11 +81,10 @@ public class DataContextOuterJoinsIT extends ServerCase {
 		artistGroupHelper.insert(1, 33002);
 		artistGroupHelper.insert(1, 33004);
 
-		SelectQuery<Artist> missingToManyQuery = new SelectQuery<>(Artist.class);
-		missingToManyQuery.andQualifier(Artist.GROUP_ARRAY.outer().isNull());
-		missingToManyQuery.addOrdering(Artist.ARTIST_NAME.asc());
-
-		List<Artist> artists = missingToManyQuery.select(context);
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.where(Artist.GROUP_ARRAY.outer().isNull())
+				.orderBy(Artist.ARTIST_NAME.asc())
+				.select(context);
 		assertEquals(1, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 	}
@@ -102,20 +100,18 @@ public class DataContextOuterJoinsIT extends ServerCase {
 		paintingHelper.insert(33001, 33001, "P1");
 		paintingHelper.insert(33002, 33002, "P2");
 
-		SelectQuery<Artist> missingToManyQuery = SelectQuery.query(Artist.class);
-		missingToManyQuery.andQualifier(Artist.PAINTING_ARRAY.outer().isNull());
-		missingToManyQuery.addOrdering(Artist.ARTIST_NAME.asc());
-
-		List<Artist> artists = missingToManyQuery.select(context);
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.where(Artist.PAINTING_ARRAY.outer().isNull())
+				.orderBy(Artist.ARTIST_NAME.asc())
+				.select(context);
 		assertEquals(2, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 
-		SelectQuery<Artist> mixedConditionQuery = SelectQuery.query(Artist.class);
-		mixedConditionQuery.andQualifier(Artist.PAINTING_ARRAY.outer().isNull());
-		mixedConditionQuery.orQualifier(Artist.ARTIST_NAME.eq("AA1"));
-		mixedConditionQuery.addOrdering(Artist.ARTIST_NAME.asc());
-
-		artists = mixedConditionQuery.select(context);
+		artists = ObjectSelect.query(Artist.class)
+				.where(Artist.PAINTING_ARRAY.outer().isNull())
+				.or(Artist.ARTIST_NAME.eq("AA1"))
+				.orderBy(Artist.ARTIST_NAME.asc())
+				.select(context);
 		assertEquals(3, artists.size());
 		assertEquals("AA1", artists.get(0).getArtistName());
 		assertEquals("BB1", artists.get(1).getArtistName());
@@ -133,20 +129,18 @@ public class DataContextOuterJoinsIT extends ServerCase {
 		paintingHelper.insert(33001, 33001, "P1");
 		paintingHelper.insert(33002, 33002, "P2");
 
-		SelectQuery<Artist> missingToManyQuery = new SelectQuery<>(Artist.class);
-		missingToManyQuery.andQualifier(ExpressionFactory.exp("paintingArray+ = null"));
-		missingToManyQuery.addOrdering(Artist.ARTIST_NAME.asc());
-
-		List<Artist> artists = missingToManyQuery.select(context);
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.exp("paintingArray+ = null"))
+				.orderBy(Artist.ARTIST_NAME.asc())
+				.select(context);
 		assertEquals(2, artists.size());
 		assertEquals("BB1", artists.get(0).getArtistName());
 
-		SelectQuery<Artist> mixedConditionQuery = new SelectQuery<>(Artist.class);
-		mixedConditionQuery.andQualifier(Artist.PAINTING_ARRAY.outer().isNull());
-		mixedConditionQuery.orQualifier(Artist.ARTIST_NAME.eq("AA1"));
-		mixedConditionQuery.addOrdering(Artist.ARTIST_NAME.asc());
-
-		artists = mixedConditionQuery.select(context);
+		artists = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.exp("paintingArray+ = null"))
+				.or(Artist.ARTIST_NAME.eq("AA1"))
+				.orderBy(Artist.ARTIST_NAME.asc())
+				.select(context);
 		assertEquals(3, artists.size());
 		assertEquals("AA1", artists.get(0).getArtistName());
 		assertEquals("BB1", artists.get(1).getArtistName());
@@ -163,11 +157,9 @@ public class DataContextOuterJoinsIT extends ServerCase {
 		paintingHelper.insert(33002, 33002, "P2");
 		paintingHelper.insert(33003, null, "P3");
 
-		SelectQuery<Painting> query = new SelectQuery<>(Painting.class);
-
-		query.addOrdering("toArtist+.artistName", SortOrder.DESCENDING);
-
-		List<Painting> paintings = query.select(context);
+		List<Painting> paintings = ObjectSelect.query(Painting.class)
+				.orderBy(Painting.TO_ARTIST.outer().dot(Artist.ARTIST_NAME).desc())
+				.select(context);
 		assertEquals(3, paintings.size());
 	}
 }

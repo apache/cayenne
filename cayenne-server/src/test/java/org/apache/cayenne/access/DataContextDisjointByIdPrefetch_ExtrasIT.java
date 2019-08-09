@@ -22,7 +22,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.things.Bag;
@@ -123,10 +123,9 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery<Bag> query = SelectQuery.query(Bag.class);
-        query.addPrefetch(Bag.BALLS.disjointById());
-
-        final List<Bag> result = query.select(context);
+        final List<Bag> result = ObjectSelect.query(Bag.class)
+                .prefetch(Bag.BALLS.disjointById())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
@@ -150,9 +149,9 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testFlattenedMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery<Box> query = new SelectQuery<>(Box.class);
-        query.addPrefetch(Box.THINGS.disjointById());
-        final List<Box> result = query.select(context);
+        final List<Box> result = ObjectSelect.query(Box.class)
+                .prefetch(Box.THINGS.disjointById())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
@@ -176,9 +175,9 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testLongFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery<Bag> query = new SelectQuery<>(Bag.class);
-        query.addPrefetch(Bag.THINGS.disjointById());
-        final List<Bag> result = query.select(context);
+        final List<Bag> result = ObjectSelect.query(Bag.class)
+                .prefetch(Box.THINGS.disjointById())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
@@ -202,13 +201,11 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery<Ball> query = SelectQuery.query(Ball.class);
-        query.orQualifier(Ball.THING_VOLUME.eq(40).andExp(Ball.THING_WEIGHT.eq(30)));
-        query.orQualifier(Ball.THING_VOLUME.eq(20).andExp(Ball.THING_WEIGHT.eq(10)));
-
-        query.addPrefetch(Ball.THING.disjointById());
-
-        final List<Ball> balls = query.select(context);
+        final List<Ball> balls = ObjectSelect.query(Ball.class)
+                .or(Ball.THING_VOLUME.eq(40).andExp(Ball.THING_WEIGHT.eq(30)))
+                .or(Ball.THING_VOLUME.eq(20).andExp(Ball.THING_WEIGHT.eq(10)))
+                .prefetch(Ball.THING.disjointById())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertEquals(2, balls.size());
@@ -223,10 +220,10 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testJointPrefetchInParent() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery<Box> query = new SelectQuery<>(Box.class);
-        query.addPrefetch(Box.BALLS.disjointById());
-        query.addPrefetch(Box.BALLS.dot(Ball.THING).disjointById());
-        final List<Box> result = query.select(context);
+        final List<Box> result = ObjectSelect.query(Box.class)
+                .prefetch(Box.BALLS.disjointById())
+                .prefetch(Box.BALLS.dot(Ball.THING).disjointById())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
@@ -252,10 +249,10 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     public void testJointPrefetchInChild() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery<Bag> query = new SelectQuery<>(Bag.class);
-        query.addPrefetch(Bag.BOXES.disjointById());
-        query.addPrefetch(Bag.BOXES.dot(Box.BALLS).joint());
-        final List<Bag> result = context.select(query);
+        final List<Bag> result = ObjectSelect.query(Bag.class)
+                .prefetch(Bag.BOXES.disjointById())
+                .prefetch(Bag.BOXES.dot(Box.BALLS).joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());

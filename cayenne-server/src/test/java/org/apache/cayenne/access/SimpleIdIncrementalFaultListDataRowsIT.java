@@ -21,9 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -65,10 +63,8 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
         createArtistsDataSet();
 
-        SelectQuery q = SelectQuery.dataRowQuery(Artist.class);
-        q.setPageSize(6);
-        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-
+        ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class)
+                .pageSize(6).orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
         list = new SimpleIdIncrementalFaultList<>(context, q, 10000);
     }
 
@@ -101,7 +97,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     }
 
     @Test
-    public void testGet1() throws Exception {
+    public void testGet1() {
         assertEquals(1, list.idWidth);
         assertTrue(list.elements.get(0) instanceof Long);
         assertTrue(list.elements.get(19) instanceof Long);
@@ -115,15 +111,12 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     }
 
     @Test
-    public void testIndexOf1() throws Exception {
-
-        Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
-        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
-        List<?> artists = context1.performQuery(query);
+    public void testIndexOf1() {
+        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist20")).select(context);
 
         assertEquals(1, artists.size());
 
-        DataRow row = (DataRow) artists.get(0);
+        DataRow row = artists.get(0);
         assertEquals(19, list.indexOf(row));
 
         DataRow clone = new DataRow(row);
@@ -134,18 +127,16 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     }
 
     @Test
-    public void testIndexOf2() throws Exception {
+    public void testIndexOf2() {
 
         // resolve first page
         list.get(0);
 
-        Expression qual = ExpressionFactory.matchExp("artistName", "artist2");
-        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
-        List<?> artists = context1.performQuery(query);
+        List<DataRow> artists =  ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist2")).select(context);
 
         assertEquals(1, artists.size());
 
-        DataRow row = (DataRow) artists.get(0);
+        DataRow row = artists.get(0);
         assertEquals(1, list.indexOf(row));
 
         row.remove("ARTIST_NAME");
@@ -153,18 +144,16 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     }
 
     @Test
-    public void testLastIndexOf1() throws Exception {
+    public void testLastIndexOf1() {
 
         // resolve first page
         list.get(0);
 
-        Expression qual = ExpressionFactory.matchExp("artistName", "artist3");
-        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
-        List<?> artists = context1.performQuery(query);
+        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist3")).select(context);
 
         assertEquals(1, artists.size());
 
-        DataRow row = (DataRow) artists.get(0);
+        DataRow row = artists.get(0);
         assertEquals(2, list.lastIndexOf(row));
 
         row.remove("ARTIST_NAME");
@@ -172,15 +161,12 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     }
 
     @Test
-    public void testLastIndexOf2() throws Exception {
-
-        Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
-        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(Artist.class, qual);
-        List<?> artists = context1.performQuery(query);
+    public void testLastIndexOf2() {
+        List<DataRow> artists = ObjectSelect.dataRowQuery(Artist.class, Artist.ARTIST_NAME.eq("artist20")).select(context);
 
         assertEquals(1, artists.size());
 
-        DataRow row = (DataRow) artists.get(0);
+        DataRow row = artists.get(0);
         assertEquals(19, list.lastIndexOf(row));
 
         row.remove("ARTIST_ID");
@@ -188,7 +174,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
     }
 
     @Test
-    public void testIterator() throws Exception {
+    public void testIterator() {
         assertEquals(1, list.idWidth);
 
         Iterator<?> it = list.iterator();

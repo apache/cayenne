@@ -24,7 +24,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.RemoteIncrementalFaultList;
@@ -96,14 +96,10 @@ public class CayenneContextWithDataContextIT extends ClientCase {
 
     @Test
     public void testLocalCacheStaysLocal() {
-        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<ClientMtTable1> query = ObjectSelect.query(ClientMtTable1.class).localCache();
+        List<?> results = query.select(clientContext);
 
-        List<?> results = clientContext.performQuery(query);
-
-        assertSame(results, clientContext.getQueryCache().get(
-                query.getMetaData(clientContext.getEntityResolver())));
-
+        assertSame(results, clientContext.getQueryCache().get(query.getMetaData(clientContext.getEntityResolver())));
     }
 
     @Test

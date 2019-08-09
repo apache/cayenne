@@ -29,6 +29,7 @@ import static org.junit.Assert.*;
 
 /**
  */
+@Deprecated
 public class SelectQueryDescriptorTest {
 
     @Test
@@ -48,7 +49,7 @@ public class SelectQueryDescriptorTest {
         builder.setRoot(entity);
 
         assertTrue(builder.buildQuery() instanceof SelectQuery);
-        assertSame(entity, ((SelectQuery) builder.buildQuery()).getRoot());
+        assertSame(entity, builder.buildQuery().getRoot());
     }
 
     @Test
@@ -57,7 +58,7 @@ public class SelectQueryDescriptorTest {
         builder.setRoot("FakeRoot");
         builder.setQualifier(ExpressionFactory.exp("abc = 5"));
 
-        SelectQuery query = (SelectQuery) builder.buildQuery();
+        SelectQuery query = builder.buildQuery();
 
         assertEquals(ExpressionFactory.exp("abc = 5"), query.getQualifier());
     }
@@ -69,11 +70,10 @@ public class SelectQueryDescriptorTest {
         builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
         builder.setProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
 
-        Query query = builder.buildQuery();
+        SelectQuery<?> query = builder.buildQuery();
         assertTrue(query instanceof SelectQuery);
-        assertEquals(5, ((SelectQuery) query).getFetchLimit());
-        
-        assertEquals(6, ((SelectQuery) query).getStatementFetchSize());
+        assertEquals(5, query.getFetchLimit());
+        assertEquals(6, query.getStatementFetchSize());
 
         // TODO: test other properties...
     }

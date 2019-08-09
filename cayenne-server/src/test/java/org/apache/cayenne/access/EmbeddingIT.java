@@ -18,15 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
@@ -74,13 +70,10 @@ public class EmbeddingIT extends ServerCase {
     public void testSelect() throws Exception {
         createSelectDataSet();
 
-        SelectQuery query = new SelectQuery<>(EmbedEntity1.class);
-        query.addOrdering(EmbedEntity1.NAME.asc());
-
-        List<?> results = context.performQuery(query);
+        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
         assertEquals(2, results.size());
 
-        EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
+        EmbedEntity1 o1 = results.get(0);
 
         assertEquals("n1", o1.getName());
         Embeddable1 e11 = o1.getEmbedded1();
@@ -93,7 +86,7 @@ public class EmbeddingIT extends ServerCase {
         assertEquals("e3", e12.getEmbedded10());
         assertEquals("e4", e12.getEmbedded20());
 
-        EmbedEntity1 o2 = (EmbedEntity1) results.get(1);
+        EmbedEntity1 o2 = results.get(1);
 
         assertEquals("n2", o2.getName());
         Embeddable1 e21 = o2.getEmbedded1();
@@ -120,7 +113,7 @@ public class EmbeddingIT extends ServerCase {
     }
 
     @Test
-    public void testInsert() throws Exception {
+    public void testInsert() {
 
         EmbedEntity1 o1 = context.newObject(EmbedEntity1.class);
         o1.setName("NAME");
@@ -141,8 +134,7 @@ public class EmbeddingIT extends ServerCase {
 
         context.commitChanges();
 
-        SelectQuery<DataRow> query = SelectQuery.dataRowQuery(EmbedEntity1.class);
-        DataRow row = query.selectOne(context);
+        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(context);
         assertNotNull(row);
         assertEquals("E11", row.get("EMBEDDED10"));
         assertEquals("E12", row.get("EMBEDDED20"));
@@ -154,11 +146,8 @@ public class EmbeddingIT extends ServerCase {
     public void testUpdateEmbeddedProperties() throws Exception {
         createUpdateDataSet();
 
-        SelectQuery query = new SelectQuery<>(EmbedEntity1.class);
-        query.addOrdering(EmbedEntity1.NAME.asc());
-
-        List<?> results = context.performQuery(query);
-        EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
+        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
+        EmbedEntity1 o1 = results.get(0);
 
         Embeddable1 e11 = o1.getEmbedded1();
         e11.setEmbedded10("x1");
@@ -166,8 +155,8 @@ public class EmbeddingIT extends ServerCase {
         assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
 
         context.commitChanges();
-        SelectQuery<DataRow> query1 = SelectQuery.dataRowQuery(EmbedEntity1.class);
-        DataRow row = (DataRow) Cayenne.objectForQuery(context, query1);
+
+        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(context);
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
     }
@@ -176,11 +165,8 @@ public class EmbeddingIT extends ServerCase {
     public void testUpdateEmbedded() throws Exception {
         createUpdateDataSet();
 
-        SelectQuery query = new SelectQuery<>(EmbedEntity1.class);
-        query.addOrdering(EmbedEntity1.NAME.asc());
-
-        List<?> results = context.performQuery(query);
-        EmbedEntity1 o1 = (EmbedEntity1) results.get(0);
+        List<EmbedEntity1> results = ObjectSelect.query(EmbedEntity1.class).orderBy(EmbedEntity1.NAME.asc()).select(context);
+        EmbedEntity1 o1 = results.get(0);
 
         Embeddable1 e11 = new Embeddable1();
         e11.setEmbedded10("x1");
@@ -190,8 +176,8 @@ public class EmbeddingIT extends ServerCase {
         assertEquals(PersistenceState.MODIFIED, o1.getPersistenceState());
 
         context.commitChanges();
-        SelectQuery<DataRow> query1 = SelectQuery.dataRowQuery(EmbedEntity1.class);
-        DataRow row = query1.selectOne(context);
+
+        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(context);
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
     }

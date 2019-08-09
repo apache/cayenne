@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -62,10 +62,9 @@ public class CayenneContextMeaningfulPKIT extends ClientCase {
     public void testMeaningfulPK() throws Exception {
         deleteAndCreateTwoMeaningfulPKsDataSet();
 
-        SelectQuery query = new SelectQuery(ClientMeaningfulPk.class);
-        query.addOrdering(ClientMeaningfulPk.PK_PROPERTY, SortOrder.DESCENDING);
-
-        List<?> results = clientContext.performQuery(query);
+        List<?> results = ObjectSelect.query(ClientMeaningfulPk.class)
+                .orderBy(ClientMeaningfulPk.PK_PROPERTY, SortOrder.DESCENDING)
+                .select(clientContext);
         assertEquals(2, results.size());
     }
 

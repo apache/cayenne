@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -114,9 +114,9 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testOneToMany() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
-        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
-        List<Artist> result = query.select(context);
+        List<Artist> result = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
@@ -142,10 +142,10 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testManyToOne() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
-        SelectQuery<Painting> query = SelectQuery.query(Painting.class);
-        query.addPrefetch(Painting.TO_ARTIST.disjointById());
+        final List<Painting> result = ObjectSelect.query(Painting.class)
+                .prefetch(Painting.TO_ARTIST.disjointById())
+                .select(context);
 
-        final List<Painting> result = query.select(context);
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Painting b1 = result.get(0);
@@ -159,16 +159,14 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testFetchLimit() throws Exception {
         createThreeArtistsWithPlentyOfPaintingsDataSet();
 
-        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
-        query.addOrdering("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING);
-
-        query.setFetchLimit(2);
-
         // There will be only 2 bags in a result. The first bag has 5 boxes and
         // the second has 2. So we are expecting exactly 9 snapshots in the data
         // row store after performing the query.
-        final List<Artist> bags = query.select(context);
+        final List<Artist> bags = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .orderBy("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING)
+                .limit(2)
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
 
@@ -190,9 +188,9 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     public void testOneToOneRelationship() throws Exception {
         createTwoPaintingsWithInfosDataSet();
 
-        SelectQuery<Painting> query = SelectQuery.query(Painting.class);
-        query.addPrefetch(Painting.TO_PAINTING_INFO.disjointById());
-        final List<Painting> result = query.select(context);
+        final List<Painting> result = ObjectSelect.query(Painting.class)
+                .prefetch(Painting.TO_PAINTING_INFO.disjointById())
+                .select(context);
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             List<String> boxColors = new ArrayList<>();

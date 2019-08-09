@@ -39,6 +39,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Before;
 import org.junit.Test;
 
+@Deprecated
 public class SelectQueryTest {
 
 	private SelectQuery<?> query;

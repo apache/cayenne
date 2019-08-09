@@ -28,8 +28,8 @@ import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -167,13 +167,12 @@ public class CayenneIT extends ServerCase {
     public void testObjectForSelect() throws Exception {
         createOneArtist();
 
-        SelectQuery<Artist> query = SelectQuery.query(Artist.class, ExpressionFactory.matchDbExp("ARTIST_NAME", "artist2"));
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class, ExpressionFactory.matchDbExp("ARTIST_NAME", "artist2"));
 
         Artist object = context.selectOne(query);
 
         assertNotNull(object);
-        assertTrue(object instanceof Artist);
-        assertEquals("artist2", ((Artist) object).getArtistName());
+        assertEquals("artist2", object.getArtistName());
     }
 
     @Test
@@ -259,9 +258,9 @@ public class CayenneIT extends ServerCase {
     public void testIntPKForObject() throws Exception {
         createOneArtist();
 
-        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
+        List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
         assertEquals(1, objects.size());
-        DataObject object = (DataObject) objects.get(0);
+        DataObject object = objects.get(0);
 
         assertEquals(33002, Cayenne.intPKForObject(object));
     }
@@ -270,11 +269,11 @@ public class CayenneIT extends ServerCase {
     public void testPKForObject() throws Exception {
         createOneArtist();
 
-        List<?> objects = context.performQuery(new SelectQuery(Artist.class));
+        List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
         assertEquals(1, objects.size());
-        DataObject object = (DataObject) objects.get(0);
+        DataObject object = objects.get(0);
 
-        assertEquals(new Long(33002), Cayenne.pkForObject(object));
+        assertEquals(33002L, Cayenne.pkForObject(object));
     }
 
     @Test
@@ -285,7 +284,7 @@ public class CayenneIT extends ServerCase {
         assertEquals(1, objects.size());
         Artist object = (Artist) objects.get(0);
 
-        assertEquals(new Long(33002), Cayenne.pkForObject(object));
+        assertEquals(33002L, Cayenne.pkForObject(object));
     }
 
 }

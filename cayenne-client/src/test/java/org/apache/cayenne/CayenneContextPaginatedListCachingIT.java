@@ -19,9 +19,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -62,12 +60,11 @@ public class CayenneContextPaginatedListCachingIT extends ClientCase {
     public void testLocalCache() throws Exception {
         createSevenMtTable1sDataSet();
 
-        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-        query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
-        query.setPageSize(3);
-        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-
-        List<ClientMtTable1> result1 = query.select(context);
+        List<ClientMtTable1> result1 = ObjectSelect.query(ClientMtTable1.class)
+                .orderBy(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc())
+                .pageSize(3)
+                .localCache()
+                .select(context);
         assertEquals(7, result1.size());
 
         // ensure we can resolve all objects without a failure...

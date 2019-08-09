@@ -22,7 +22,7 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -101,10 +101,9 @@ public class DataContextJoinAliasesIT extends ServerCase {
         Artist picasso = Cayenne.objectForPK(context, Artist.class, 1);
         Artist dali = Cayenne.objectForPK(context, Artist.class, 2);
 
-        SelectQuery<Gallery> query = SelectQuery.query(Gallery.class);
-        query.andQualifier(ExpressionFactory.matchAllExp("|exhibitArray.artistExhibitArray.toArtist", picasso, dali));
-
-        List<Gallery> galleries = query.select(context);
+        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+                .where(ExpressionFactory.matchAllExp("|exhibitArray.artistExhibitArray.toArtist", picasso, dali))
+                .select(context);
 
         assertEquals(1, galleries.size());
         assertEquals("G1", galleries.get(0).getGalleryName());

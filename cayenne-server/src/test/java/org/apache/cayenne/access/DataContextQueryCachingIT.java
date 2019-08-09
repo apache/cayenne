@@ -24,9 +24,9 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -102,8 +102,7 @@ public class DataContextQueryCachingIT extends ServerCase {
 
     @Test
     public void testLocalCacheDataRowsRefresh() throws Exception {
-        SelectQuery<DataRow> select = SelectQuery.dataRowQuery(Artist.class);
-        select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<DataRow> select = ObjectSelect.dataRowQuery(Artist.class).localCache();
 
         MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
 
@@ -141,8 +140,7 @@ public class DataContextQueryCachingIT extends ServerCase {
     @Test
     public void testSharedCacheDataRowsRefresh() throws Exception {
 
-        SelectQuery<DataRow> select = SelectQuery.dataRowQuery(Artist.class);
-        select.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        ObjectSelect<DataRow> select = ObjectSelect.dataRowQuery(Artist.class).sharedCache();
 
         MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
 
@@ -182,8 +180,7 @@ public class DataContextQueryCachingIT extends ServerCase {
     @Test
     public void testLocalCacheDataObjectsRefresh() throws Exception {
 
-        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
-        select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).localCache();
 
         MockDataNode engine = MockDataNode.interceptNode(domain, getNode());
 
@@ -223,12 +220,12 @@ public class DataContextQueryCachingIT extends ServerCase {
     public void testLocalCacheRefreshObjectsRefresh() throws Exception {
         createInsertDataSet();
 
-        SelectQuery<Artist> select = new SelectQuery<>(Artist.class);
-        select.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE_REFRESH);
 
         // no cache yet...
 
-        List<Artist> objects1 = context.performQuery(select);
+        List<Artist> objects1 = query.select(context);
         assertEquals(1, objects1.size());
         Artist a1 = objects1.get(0);
         assertEquals("aaa", a1.getArtistName());
@@ -237,7 +234,7 @@ public class DataContextQueryCachingIT extends ServerCase {
 
         createUpdateDataSet1();
 
-        List<?> objects2 = context.performQuery(select);
+        List<?> objects2 = query.select(context);
         assertEquals(1, objects2.size());
         Artist a2 = (Artist) objects2.get(0);
         assertSame(a1, a2);

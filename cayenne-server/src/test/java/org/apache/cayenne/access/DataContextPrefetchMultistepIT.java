@@ -25,10 +25,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -42,7 +39,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +107,6 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
     @Test
     public void testToManyToManyFirstStepUnresolved() throws Exception {
-
         createTwoArtistsWithExhibitsDataSet();
 
         // since objects for the phantom prefetches are not retained explicitly, they may
@@ -135,11 +130,10 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         assertNull(context.getGraphManager().getNode(oid1));
         assertNull(context.getGraphManager().getNode(oid2));
 
-        Expression e = ExpressionFactory.exp("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections.singletonMap("name", "gallery2")));
-        q.addPrefetch("exhibitArray.artistExhibitArray");
-
-        List<Gallery> galleries = context.select(q);
+        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+                .where(Gallery.GALLERY_NAME.eq("gallery2"))
+                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).disjoint())
+                .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -160,16 +154,13 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
     @Test
     public void testToManyToManyFirstStepResolved() throws Exception {
-
         createTwoArtistsWithExhibitsDataSet();
 
-        Expression e = ExpressionFactory.exp("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections
-                .singletonMap("name", "gallery2")));
-        q.addPrefetch("exhibitArray");
-        q.addPrefetch("exhibitArray.artistExhibitArray");
-
-        List<Gallery> galleries = context.select(q);
+        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+                .where(Gallery.GALLERY_NAME.eq("gallery2"))
+                .prefetch(Gallery.EXHIBIT_ARRAY.disjoint())
+                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).disjoint())
+                .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -185,8 +176,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
         // this to-many must also be resolved
         assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
-        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1
-                .readPropertyDirectly("artistExhibitArray");
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
         assertFalse(((ValueHolder) aexhibits).isFault());
         assertEquals(1, exhibits.size());
 
@@ -196,17 +186,13 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
     @Test
     public void testMixedPrefetch1() throws Exception {
-
         createTwoArtistsWithExhibitsDataSet();
 
-        Expression e = ExpressionFactory.exp("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections
-                .singletonMap("name", "gallery2")));
-        q.addPrefetch("exhibitArray").setSemantics(
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-        q.addPrefetch("exhibitArray.artistExhibitArray");
-
-        List<Gallery> galleries = context.select(q);
+        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+                .where(Gallery.GALLERY_NAME.eq("gallery2"))
+                .prefetch(Gallery.EXHIBIT_ARRAY.joint())
+                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).disjoint())
+                .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -222,8 +208,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
         // this to-many must also be resolved
         assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
-        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1
-                .readPropertyDirectly("artistExhibitArray");
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
         assertFalse(((ValueHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
@@ -233,18 +218,13 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
     @Test
     public void testMixedPrefetch2() throws Exception {
-
         createTwoArtistsWithExhibitsDataSet();
 
-        Expression e = ExpressionFactory.exp("galleryName = $name");
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, e.params(Collections
-                .singletonMap("name", "gallery2")));
-
-        // reverse the order of prefetches compared to the previous test
-        q.addPrefetch("exhibitArray");
-        q.addPrefetch("exhibitArray.artistExhibitArray").setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-
-        List<Gallery> galleries = context.select(q);
+        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+                .where(Gallery.GALLERY_NAME.eq("gallery2"))
+                .prefetch(Gallery.EXHIBIT_ARRAY.disjoint())
+                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).joint())
+                .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -260,8 +240,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
         // this to-many must also be resolved
         assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ValueHolder);
-        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1
-                .readPropertyDirectly("artistExhibitArray");
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
         assertFalse(((ValueHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
@@ -271,14 +250,13 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
     @Test
     public void testToManyToOne_EmptyToMany() throws Exception {
-
         createGalleriesAndArtists();
 
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class, Gallery.GALLERY_NAME.eq("gallery2"));
-        q.addPrefetch(Gallery.PAINTING_ARRAY.disjoint());
-        q.addPrefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint());
-
-        List<Gallery> galleries = context.select(q);
+        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+                .where(Gallery.GALLERY_NAME.eq("gallery2"))
+                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
@@ -292,14 +270,12 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
 
     @Test
     public void testToManyToOne_EmptyToMany_NoRootQualifier() throws Exception {
-
         createGalleriesAndArtists();
 
-        SelectQuery<Gallery> q = SelectQuery.query(Gallery.class);
-        q.addPrefetch(Gallery.PAINTING_ARRAY.disjoint());
-        q.addPrefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint());
-
-        List<Gallery> galleries = context.select(q);
+        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
+                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .select(context);
         assertEquals(3, galleries.size());
 
         Gallery g = galleries.get(0);

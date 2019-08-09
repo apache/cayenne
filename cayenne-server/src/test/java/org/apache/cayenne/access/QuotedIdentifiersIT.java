@@ -26,8 +26,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectIdQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.RelationshipQuery;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
@@ -82,12 +82,10 @@ public class QuotedIdentifiersIT extends ServerCase {
 
     @Test
     public void testDataSetup() {
-        SelectQuery<QuoteAdress> q = SelectQuery.query(QuoteAdress.class);
-        List<QuoteAdress> objects = q.select(context);
+        List<QuoteAdress> objects = ObjectSelect.query(QuoteAdress.class).select(context);
         assertEquals(2, objects.size());
 
-        SelectQuery<Quote_Person> qQuote_Person = SelectQuery.query(Quote_Person.class);
-        List<Quote_Person> objects2 = qQuote_Person.select(context);
+        List<Quote_Person> objects2 = ObjectSelect.query(Quote_Person.class).select(context);
         assertEquals(2, objects2.size());
     }
 
@@ -117,12 +115,10 @@ public class QuotedIdentifiersIT extends ServerCase {
 
         context.commitChanges();
 
-        SelectQuery<QuoteAdress> q = SelectQuery.query(QuoteAdress.class);
-        List<QuoteAdress> objects = q.select(context);
+        List<QuoteAdress> objects = ObjectSelect.query(QuoteAdress.class).select(context);
         assertEquals(4, objects.size());
 
-        SelectQuery<Quote_Person> qQuote_Person = SelectQuery.query(Quote_Person.class);
-        List<Quote_Person> objects2 = qQuote_Person.select(context);
+        List<Quote_Person> objects2 = ObjectSelect.query(Quote_Person.class).select(context);
         assertEquals(4, objects2.size());
     }
 
@@ -137,20 +133,16 @@ public class QuotedIdentifiersIT extends ServerCase {
         List objects3 = context.performQuery(updateQuery);
         assertEquals(0, objects3.size());
 
-        SelectQuery<Quote_Person> qQuote_Person2 = SelectQuery.query(Quote_Person.class);
-        List<Quote_Person> objects4 = qQuote_Person2.select(context);
+        List<Quote_Person> objects4 = ObjectSelect.query(Quote_Person.class).select(context);
         assertEquals(2, objects4.size());
 
-        SelectQuery<Quote_Person> qQuote_Person3 = SelectQuery.query(Quote_Person.class, ExpressionFactory.matchExp("salary", 100));
-        List<Quote_Person> objects5 = qQuote_Person3.select(context);
+        List<Quote_Person> objects5 = ObjectSelect.query(Quote_Person.class, Quote_Person.SALARY.eq(100)).select(context);
         assertEquals(1, objects5.size());
 
-        SelectQuery<Quote_Person> qQuote_Person4 = SelectQuery.query(Quote_Person.class, ExpressionFactory.matchExp("group", "107324"));
-        List<Quote_Person> objects6 = qQuote_Person4.select(context);
+        List<Quote_Person> objects6 =ObjectSelect.query(Quote_Person.class, Quote_Person.GROUP.eq("107324")).select(context);
         assertEquals(1, objects6.size());
 
-        SelectQuery<QuoteAdress> quoteAdress1 = SelectQuery.query(QuoteAdress.class, ExpressionFactory.matchExp("group", "324"));
-        List<QuoteAdress> objects7 = quoteAdress1.select(context);
+        List<QuoteAdress> objects7 = ObjectSelect.query(QuoteAdress.class, QuoteAdress.GROUP.eq("324")).select(context);
         assertEquals(1, objects7.size());
 
         ObjectIdQuery queryObjectId = new ObjectIdQuery(ObjectId.of("QuoteAdress", QuoteAdress.GROUP.getName(), "324"));
@@ -162,8 +154,7 @@ public class QuotedIdentifiersIT extends ServerCase {
         List objects9 = context.performQuery(queryObjectId2);
         assertEquals(1, objects9.size());
 
-        SelectQuery<Quote_Person> person2Query = SelectQuery.query(Quote_Person.class, ExpressionFactory.matchExp("name", "Name"));
-        Quote_Person quote_Person2 = person2Query.select(context).get(0);
+        Quote_Person quote_Person2 = ObjectSelect.query(Quote_Person.class, Quote_Person.NAME.eq("Name")).selectOne(context);
 
         RelationshipQuery relationshipQuery = new RelationshipQuery(quote_Person2.getObjectId(), "address_Rel");
         List objects10 = context.performQuery(relationshipQuery);

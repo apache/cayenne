@@ -24,7 +24,6 @@ import org.apache.cayenne.crypto.db.Table8;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -154,8 +153,8 @@ public class Runtime_AES128_GZIP_IT extends Runtime_AES128_Base {
 
         context.commitChanges();
 
-        SelectQuery<Table2> select = SelectQuery.query(Table2.class);
-        select.addOrdering(Table2.PLAIN_BYTES.asc());
+        ObjectSelect<Table2> select = ObjectSelect.query(Table2.class)
+                .orderBy(Table2.PLAIN_BYTES.asc());
 
         List<Table2> result = runtime.newContext().select(select);
 

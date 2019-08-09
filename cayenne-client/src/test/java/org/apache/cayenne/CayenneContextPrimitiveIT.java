@@ -20,7 +20,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -74,10 +73,9 @@ public class CayenneContextPrimitiveIT extends ClientCase {
     public void testSelectPrimitives() throws Exception {
         createTwoPrimitivesDataSet();
 
-        SelectQuery query = new SelectQuery(ClientTablePrimitives.class);
-        query.addOrdering("db:" + TablePrimitives.ID_PK_COLUMN, SortOrder.ASCENDING);
-
-        List<ClientTablePrimitives> results = context.performQuery(query);
+        List<ClientTablePrimitives> results = ObjectSelect.query(ClientTablePrimitives.class)
+                .orderBy("db:" + TablePrimitives.ID_PK_COLUMN, SortOrder.ASCENDING)
+                .select(context);
         assertTrue(results.get(0).isBooleanColumn());
         assertFalse(results.get(1).isBooleanColumn());
 

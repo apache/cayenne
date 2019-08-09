@@ -28,7 +28,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -160,7 +160,7 @@ public class NestedDataContextReadIT extends ServerCase {
         assertEquals(PersistenceState.DELETED, deleted.getPersistenceState());
         assertEquals(PersistenceState.NEW, _new.getPersistenceState());
 
-        List<Artist> objects = new SelectQuery<>(Artist.class).select(child);
+        List<Artist> objects = ObjectSelect.query(Artist.class).select(child);
         assertEquals("All but NEW object must have been included", 4, objects.size());
 
         for (Artist next : objects) {
@@ -179,12 +179,11 @@ public class NestedDataContextReadIT extends ServerCase {
         createArtistsDataSet();
         ObjectContext child = runtime.newContext(context);
 
-        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME.desc());
-        query.setPageSize(1);
-
         @SuppressWarnings("unchecked")
-        IncrementalFaultList<Artist> records = (IncrementalFaultList) child.performQuery(query);
+        IncrementalFaultList<Artist> records = (IncrementalFaultList) ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.desc())
+                .pageSize(1)
+                .select(child);
 
         assertEquals(4, records.size());
         assertEquals(1, records.getPageSize());
@@ -235,9 +234,9 @@ public class NestedDataContextReadIT extends ServerCase {
         assertEquals(PersistenceState.NEW, newTarget.getPersistenceState());
 
         // run an ordered query, so we can address specific objects directly by index
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.addOrdering(Painting.PAINTING_TITLE.asc());
-        final List<Painting> childSources = q.select(child);
+        final List<Painting> childSources = ObjectSelect.query(Painting.class)
+                .orderBy(Painting.PAINTING_TITLE.asc())
+                .select(child);
         assertEquals(5, childSources.size());
 
         queryInterceptor.runWithQueriesBlocked(() -> {
@@ -288,11 +287,10 @@ public class NestedDataContextReadIT extends ServerCase {
                 Artist.ARTIST_ID_PK_COLUMN,
                 33001);
 
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.addOrdering(Painting.PAINTING_TITLE.asc());
-        q.addPrefetch(Painting.TO_ARTIST.disjoint());
-
-        final List<Painting> results = q.select(child);
+        final List<Painting> results = ObjectSelect.query(Painting.class)
+                .orderBy(Painting.PAINTING_TITLE.asc())
+                .prefetch(Painting.TO_ARTIST.disjoint())
+                .select(child);
 
         // blockQueries();
 
@@ -317,11 +315,10 @@ public class NestedDataContextReadIT extends ServerCase {
 
         final ObjectContext child = runtime.newContext(context);
 
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addOrdering(Artist.ARTIST_NAME.asc());
-        q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
-
-        final List<Artist> results = q.select(child);
+        final List<Artist> results = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.asc())
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .select(child);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             Artist o1 = results.get(0);

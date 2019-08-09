@@ -19,8 +19,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
@@ -84,8 +83,7 @@ public class CayenneContextInheritanceIT extends ClientCase {
         tMtTable1.insert(2, "sub1", "zzz", "sa1");
         tMtTable1.insert(3, "1111", "aaa", null);
 
-        SelectQuery<ClientMtTable1Subclass1> query = new SelectQuery<>(ClientMtTable1Subclass1.class);
-        List<ClientMtTable1Subclass1> objects = query.select(context);
+        List<ClientMtTable1Subclass1> objects = ObjectSelect.query(ClientMtTable1Subclass1.class).select(context);
 
         assertEquals(1, objects.size());
         assertEquals("sa1", objects.get(0).getSubclass1Attribute1());
@@ -98,8 +96,7 @@ public class CayenneContextInheritanceIT extends ClientCase {
         tMtTable1.insert(2, "sub1", "zzz", "sa1");
         tMtTable1.insert(3, "z", "aaa", null);
 
-        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-        List<ClientMtTable1> objects = query.select(context);
+        List<ClientMtTable1> objects = ObjectSelect.query(ClientMtTable1.class).select(context);
 
         assertEquals(3, objects.size());
 
@@ -125,9 +122,9 @@ public class CayenneContextInheritanceIT extends ClientCase {
         tMtTable1.insert(2, "sub1", "XXA", "sa1");
         tMtTable1.insert(3, "z", "MM", null);
 
-        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-        query.andQualifier(ClientMtTable1.SERVER_ATTRIBUTE1.like("X%"));
-        List<ClientMtTable1> objects = query.select(context);
+        List<ClientMtTable1> objects = ObjectSelect.query(ClientMtTable1.class)
+                .where(ClientMtTable1.SERVER_ATTRIBUTE1.like("X%"))
+                .select(context);
 
         assertEquals(2, objects.size());
 

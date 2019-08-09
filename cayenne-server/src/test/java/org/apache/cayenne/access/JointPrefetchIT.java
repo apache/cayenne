@@ -26,12 +26,11 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -93,7 +92,7 @@ public class JointPrefetchIT extends ServerCase {
                 "GALLERY_ID");
     }
 
-    protected void createJointPrefetchDataSet() throws Exception {
+    private void createJointPrefetchDataSet() throws Exception {
         tGallery.insert(33001, "G1");
         tGallery.insert(33002, "G2");
         tArtist.insert(33001, "artist1");
@@ -108,13 +107,11 @@ public class JointPrefetchIT extends ServerCase {
     public void testJointPrefetch_ToOne_FetchLimit() throws Exception {
         createJointPrefetchDataSet();
 
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.setFetchLimit(2);
-        q.setFetchOffset(0);
-        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.addPrefetch(Painting.TO_ARTIST.joint());
-
-        final List<Painting> objects = q.select(context);
+        final List<Painting> objects = ObjectSelect.query(Painting.class)
+                .limit(2).offset(0)
+                .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
+                .prefetch(Painting.TO_ARTIST.joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertEquals(2, objects.size());
@@ -131,13 +128,11 @@ public class JointPrefetchIT extends ServerCase {
     public void testJointPrefetch_ToMany_FetchLimit() throws Exception {
         createJointPrefetchDataSet();
 
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.setFetchLimit(2);
-        q.setFetchOffset(0);
-        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
-
-        final List<Artist> objects = q.select(context);
+        final List<Artist> objects = ObjectSelect.query(Artist.class)
+                .limit(2).offset(0)
+                .orderBy("db:ARTIST_ID", SortOrder.ASCENDING)
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             // herein lies the limitation of prefetching combined with fetch limit -
@@ -159,11 +154,10 @@ public class JointPrefetchIT extends ServerCase {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches
-        SelectQuery<DataRow> q = SelectQuery.dataRowQuery(Painting.class);
-        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.addPrefetch(Painting.TO_ARTIST.joint());
-
-        final List<DataRow> rows = q.select(context);
+        final List<DataRow> rows = ObjectSelect.dataRowQuery(Painting.class)
+                .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
+                .prefetch(Painting.TO_ARTIST.joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertEquals(3, rows.size());
@@ -235,11 +229,10 @@ public class JointPrefetchIT extends ServerCase {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.addPrefetch(Painting.TO_ARTIST.joint());
-
-        final List<Painting> objects = q.select(context);
+        final List<Painting> objects = ObjectSelect.query(Painting.class)
+                .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
+                .prefetch(Painting.TO_ARTIST.joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
@@ -273,15 +266,14 @@ public class JointPrefetchIT extends ServerCase {
         context.performNonSelectingQuery(paintingSQL);
 
         // test
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.addPrefetch(Painting.TO_ARTIST.joint());
-
         ObjEntity artistE = context.getEntityResolver().getObjEntity("Artist");
         ObjAttribute dateOfBirth = artistE.getAttribute("dateOfBirth");
         assertEquals("java.util.Date", dateOfBirth.getType());
         dateOfBirth.setType("java.sql.Date");
         try {
-            final List<Painting> objects = q.select(context);
+            final List<Painting> objects = ObjectSelect.query(Painting.class)
+                    .prefetch(Painting.TO_ARTIST.joint())
+                    .select(context);
 
             queryInterceptor.runWithQueriesBlocked(() -> {
                 assertEquals(1, objects.size());
@@ -302,10 +294,9 @@ public class JointPrefetchIT extends ServerCase {
         createJointPrefetchDataSet();
 
         // query with to-many joint prefetches
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
-
-        final List<Artist> objects = q.select(context);
+        final List<Artist> objects = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
@@ -329,13 +320,11 @@ public class JointPrefetchIT extends ServerCase {
     public void testJointPrefetchToManyNonConflictingQualifier() throws Exception {
         createJointPrefetchDataSet();
 
-        // query with to-many joint prefetches and qualifier that doesn't match
-        // prefetch....
-        Expression qualifier = Artist.ARTIST_NAME.eq("artist1");
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class, qualifier);
-        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
-
-        final List<Artist> objects = q.select(context);
+        // query with to-many joint prefetches and qualifier that doesn't match prefetch....
+        final List<Artist> objects = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist1"))
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertEquals(1, objects.size());
@@ -363,10 +352,6 @@ public class JointPrefetchIT extends ServerCase {
     public void testJointPrefetchMultiStep() throws Exception {
         createJointPrefetchDataSet();
 
-        // query with to-many joint prefetches
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addPrefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint());
-
         final DataContext context = this.context;
 
         // make sure phantomly prefetched objects are not deallocated
@@ -377,7 +362,10 @@ public class JointPrefetchIT extends ServerCase {
                 ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
         assertNull(g1);
 
-        final List<Artist> objects = q.select(context);
+        // query with to-many joint prefetches
+        final List<Artist> objects = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
