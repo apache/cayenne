@@ -33,7 +33,7 @@ import org.apache.cayenne.lifecycle.id.EntityIdCoder;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 
 /**
  * Provides lazy faulting functionality for a map of objects identified by
@@ -93,7 +93,7 @@ class ObjectIdBatchFault {
 			}
 		}
 
-		Map<String, SelectQuery<DataObject>> queriesByEntity = new HashMap<>();
+		Map<String, ObjectSelect<DataObject>> queriesByEntity = new HashMap<>();
 		Map<String, EntityIdCoder> codersByEntity = new HashMap<>();
 
 		for (ObjectIdBatchSourceItem source : sources) {
@@ -101,13 +101,13 @@ class ObjectIdBatchFault {
 			String uuid = source.getId();
 			String entityName = EntityIdCoder.getEntityName(uuid);
 			EntityIdCoder coder = codersByEntity.get(entityName);
-			SelectQuery<DataObject> query;
+			ObjectSelect<DataObject> query;
 
 			if (coder == null) {
 				coder = new EntityIdCoder(resolver.getObjEntity(entityName));
 				codersByEntity.put(entityName, coder);
 
-				query = new SelectQuery<>(entityName);
+				query = ObjectSelect.query(DataObject.class, entityName);
 				queriesByEntity.put(entityName, query);
 			} else {
 				query = queriesByEntity.get(entityName);
@@ -115,14 +115,13 @@ class ObjectIdBatchFault {
 
 			ObjectId id = coder.toObjectId(uuid);
 			Expression idExp = ExpressionFactory.matchAllDbExp(id.getIdSnapshot(), Expression.EQUAL_TO);
-			query.orQualifier(idExp);
+			query.or(idExp);
 		}
 
 		int capacity = (int) Math.ceil(sources.size() / 0.75d);
 		Map<String, Object> results = new HashMap<>(capacity);
 
-		for (SelectQuery<DataObject> query : queriesByEntity.values()) {
-
+		for (ObjectSelect<DataObject> query : queriesByEntity.values()) {
 			EntityIdCoder coder = codersByEntity.get(query.getRoot());
 			@SuppressWarnings("unchecked")
 			List<DataObject> objects = context.performQuery(query);
