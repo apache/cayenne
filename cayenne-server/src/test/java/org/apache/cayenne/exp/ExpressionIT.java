@@ -25,7 +25,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -71,39 +70,27 @@ public class ExpressionIT extends ServerCase {
 
 		context.commitChanges();
 
-		SelectQuery<Painting> query = new SelectQuery<Painting>(Painting.class);
-		Expression e = Painting.TO_ARTIST.eq(a1);
-		query.setQualifier(e);
-
 		assertNotSame(context2, context);
 
-		List<Painting> objects = context2.select(query);
+		List<Painting> objects = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.eq(a1)).select(context2);
 		assertEquals(1, objects.size());
 
 		// 2 same objects in different contexts
-		assertTrue(e.match(objects.get(0)));
+		assertTrue(Painting.TO_ARTIST.eq(a1).match(objects.get(0)));
 
 		// we change one object - so the objects are different now
 		// (PersistenceState different)
 		a1.setArtistName("newName");
 
-		SelectQuery<Painting> q2 = new SelectQuery<Painting>(Painting.class);
-		Expression ex2 = Painting.TO_ARTIST.eq(a1);
-		q2.setQualifier(ex2);
-
-		assertTrue(ex2.match(objects.get(0)));
+		assertTrue(Painting.TO_ARTIST.eq(a1).match(objects.get(0)));
 
 		Artist a2 = context.newObject(Artist.class);
 		a2.setArtistName("Equals");
 
 		context.commitChanges();
 
-		SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
-		Expression ex = Painting.TO_ARTIST.eq(a2);
-		q.setQualifier(ex);
-
 		// 2 different objects in different contexts
-		assertFalse(ex.match(objects.get(0)));
+		assertFalse(Painting.TO_ARTIST.eq(a2).match(objects.get(0)));
 	}
 
     @Test

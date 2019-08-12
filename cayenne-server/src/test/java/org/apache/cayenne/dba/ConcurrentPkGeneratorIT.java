@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -84,7 +84,7 @@ public class ConcurrentPkGeneratorIT extends ServerCase {
 		
 		// clear out the table
 		ObjectContext context = runtime.newContext();
-		List<Qualified1> qualified1s = context.select(SelectQuery.query(Qualified1.class, null));
+		List<Qualified1> qualified1s = context.select(ObjectSelect.query(Qualified1.class));
 		context.deleteObjects(qualified1s);
 		context.commitChanges();
 		
@@ -124,7 +124,7 @@ public class ConcurrentPkGeneratorIT extends ServerCase {
 		}
 		
 		// check for gaps in the generated sequence numbers
-		qualified1s = context.select(SelectQuery.query(Qualified1.class, null));
+		qualified1s = context.select(ObjectSelect.query(Qualified1.class));
 		assertEquals(insertsPerThread * numThreads, qualified1s.size());
 
 		// PKs will be used in order most of the time, but the implementation doesn't guarantee it.

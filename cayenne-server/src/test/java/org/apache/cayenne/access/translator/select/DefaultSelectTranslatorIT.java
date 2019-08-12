@@ -28,13 +28,16 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
+import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -74,8 +77,8 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString1() throws Exception {
 		// query with qualifier and ordering
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class, ExpressionFactory.likeExp("artistName", "a%"));
-		q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.like("a%"))
+				.orderBy(Artist.DATE_OF_BIRTH.asc());
 
 		SelectTranslator defaultSelectTranslator = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 		String generatedSql = defaultSelectTranslator.getSql();
@@ -95,12 +98,11 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testDbEntityQualifier() throws Exception {
 
-		SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
-				dataNode.getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -129,14 +131,13 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testDbEntityQualifier_OuterJoin() throws Exception {
 
-		SelectQuery<Painting> q = SelectQuery.query(Painting.class);
-		q.addOrdering("toArtist+.artistName", SortOrder.ASCENDING);
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.orderBy(Painting.TO_ARTIST.outer().dot(Artist.ARTIST_NAME).asc());
 
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
-				dataNode.getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -166,14 +167,12 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testDbEntityQualifier_FlattenedRel() throws Exception {
 
-		SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, ExpressionFactory.matchExp("groupArray.name",
-				"bar"));
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, Artist.GROUP_ARRAY.dot(ArtGroup.NAME).eq("bar"));
 
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
-				dataNode.getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -203,14 +202,12 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testDbEntityQualifier_RelatedMatch() throws Exception {
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class,
-				ExpressionFactory.matchExp("toArtist.artistName", "foo"));
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
 
 		final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = context.getEntityResolver().getDbEntity("ARTIST_GROUP");
 
-		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
-				dataNode.getEntityResolver());
+		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
@@ -240,13 +237,13 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 * Tests query creation with "distinct" specified.
 	 */
 	@Test
+	@Deprecated
 	public void testCreateSqlString2() throws Exception {
 		// query with "distinct" set
 		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
 		q.setDistinct(true);
 
-		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver())
-				.getSql();
+		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(generatedSql);
@@ -260,13 +257,16 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testCreateSqlString5() throws Exception {
-		// query with qualifier and ordering
-		SelectQuery<ArtistExhibit> q = new SelectQuery<>(ArtistExhibit.class);
-		q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
-		q.andQualifier(ExpressionFactory.likeExp("toExhibit.toGallery.paintingArray.toArtist.artistName", "a%"));
+		ObjectSelect<ArtistExhibit> q = ObjectSelect.query(ArtistExhibit.class)
+				.where(ArtistExhibit.TO_ARTIST
+						.dot(Artist.ARTIST_NAME).like( "a%"))
+				.and(ArtistExhibit.TO_EXHIBIT
+						.dot(Exhibit.TO_GALLERY)
+						.dot(Gallery.PAINTING_ARRAY)
+						.dot(Painting.TO_ARTIST)
+						.dot(Artist.ARTIST_NAME).like("a%"));
 
-		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver())
-				.getSql();
+		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 		// logObj.warn("Query: " + generatedSql);
 
 		// do some simple assertions to make sure all parts are in
@@ -292,10 +292,9 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testCreateSqlString6() throws Exception {
-		// query with qualifier and ordering
-		SelectQuery<ArtistExhibit> q = new SelectQuery<>(ArtistExhibit.class);
-		q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
-		q.andQualifier(ExpressionFactory.likeExp("toArtist.paintingArray.paintingTitle", "p%"));
+		ObjectSelect<ArtistExhibit> q = ObjectSelect.query(ArtistExhibit.class)
+				.where(ArtistExhibit.TO_ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
+				.and(ArtistExhibit.TO_ARTIST.dot(Artist.PAINTING_ARRAY).dot(Painting.PAINTING_TITLE).like("p%"));
 
 		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver())
 				.getSql();
@@ -321,9 +320,9 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testCreateSqlString7() throws Exception {
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-		q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
-		q.andQualifier(ExpressionFactory.lessExp("dateOfBirth", new Date()));
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.where(Artist.DATE_OF_BIRTH.gt(new Date()))
+				.and(Artist.DATE_OF_BIRTH.lt(new Date()));
 
 		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver())
 				.getSql();
@@ -354,13 +353,11 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testCreateSqlString8() throws Exception {
-		SelectQuery<?> q = new SelectQuery<>();
-		q.setRoot(Painting.class);
-		q.setQualifier(ExpressionFactory.greaterExp("toArtist.dateOfBirth", new Date()));
-		q.andQualifier(ExpressionFactory.lessExp("toArtist.dateOfBirth", new Date()));
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).gt(new Date()))
+				.and(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).lt(new Date()));
 
-		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver())
-				.getSql();
+		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(generatedSql);
@@ -382,7 +379,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString9() throws Exception {
 		// query for a compound ObjEntity with qualifier
-		SelectQuery<CompoundPainting> q = new SelectQuery<>(CompoundPainting.class, ExpressionFactory.likeExp("artistName", "a%"));
+		ObjectSelect<CompoundPainting> q = ObjectSelect.query(CompoundPainting.class, CompoundPainting.ARTIST_NAME.like("a%"));
 
 		String sql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 
@@ -434,8 +431,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString10() throws Exception {
 		// query with to-many joint prefetches
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-		q.addPrefetch(Artist.PAINTING_ARRAY.joint());
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.joint());
 
 		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
@@ -458,8 +454,9 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString11() throws Exception {
 		// query with joint prefetches and other joins
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class, ExpressionFactory.exp("paintingArray.paintingTitle = 'a'"));
-		q.addPrefetch(Artist.PAINTING_ARRAY.joint());
+		ObjectSelect q = ObjectSelect.query(Artist.class)
+				.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
+				.prefetch(Artist.PAINTING_ARRAY.joint());
 
 		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
@@ -473,8 +470,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString12() throws Exception {
 		// query with to-one joint prefetches
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.joint());
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 
 		SelectTranslator transl = new DefaultSelectTranslator(q, dataNode.getAdapter(),
 				dataNode.getEntityResolver());
@@ -498,9 +494,8 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	@Test
 	public void testCreateSqlString13() throws Exception {
 		// query with invalid joint prefetches
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch("invalid.invalid").setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch("invalid.invalid", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 		try {
 			new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 			fail("Invalid jointPrefetch must have thrown...");
@@ -513,10 +508,10 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	public void testCreateSqlStringWithQuoteSqlIdentifiers() throws Exception {
 
 		try {
-			SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
+			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+					.orderBy(Artist.DATE_OF_BIRTH.asc());
 			DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
-			q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
 
 			String charStart = unitAdapter.getIdentifiersStartQuote();
 			String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -550,11 +545,12 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	public void testCreateSqlStringWithQuoteSqlIdentifiers2() throws Exception {
 
 		try {
-			SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
+			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+					.where(Artist.DATE_OF_BIRTH.gt(new Date()))
+					.and(Artist.DATE_OF_BIRTH.lt(new Date()));
+
 			DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
-			q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
-			q.andQualifier(ExpressionFactory.lessExp("dateOfBirth", new Date()));
 
 			String charStart = unitAdapter.getIdentifiersStartQuote();
 			String charEnd = unitAdapter.getIdentifiersEndQuote();
@@ -595,8 +591,9 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		// query with joint prefetches and other joins
 		// and with QuoteSqlIdentifiers = true
 		try {
-			SelectQuery<Artist> q = new SelectQuery<>(Artist.class, ExpressionFactory.exp("paintingArray.paintingTitle = 'a'"));
-			q.addPrefetch(Artist.PAINTING_ARRAY.joint());
+			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+					.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
+					.prefetch(Artist.PAINTING_ARRAY.joint());
 
 			DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
@@ -673,8 +670,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		// query with to-one joint prefetches
 		// and with QuoteSqlIdentifiers = true
 		try {
-			SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-			q.addPrefetch(Painting.TO_ARTIST.joint());
+			ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 
 			DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
@@ -735,7 +731,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testBuildResultColumns1() throws Exception {
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class);
 		SelectTranslator tr = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
 		tr.getSql();
@@ -765,8 +761,7 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 */
 	@Test
 	public void testBuildResultColumns2() throws Exception {
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.joint());
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 		SelectTranslator tr = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver());
 
 		tr.getSql();

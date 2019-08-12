@@ -22,7 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -46,7 +46,7 @@ public class DefaultObjectSelectTranslatorIT extends ServerCase {
 
     @Test
     public void simpleSql() {
-        SelectQuery<Artist> select = SelectQuery.query(Artist.class);
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
         DefaultSelectTranslator translator = new DefaultSelectTranslator(select, adapter, context.getEntityResolver());
 
         String sql = translator.getSql();
@@ -67,7 +67,7 @@ public class DefaultObjectSelectTranslatorIT extends ServerCase {
 
     @Test
     public void selectWithComplexWhere() {
-        SelectQuery<Artist> select = SelectQuery.query(Artist.class, Artist.ARTIST_NAME.eq("artist")
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist")
                 .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("painting")));
 
         DefaultSelectTranslator translator = new DefaultSelectTranslator(select, adapter, context.getEntityResolver());
@@ -96,8 +96,7 @@ public class DefaultObjectSelectTranslatorIT extends ServerCase {
 
     @Test
     public void selectWithJointPrefetch() {
-        SelectQuery<Painting> select = SelectQuery.query(Painting.class);
-        select.addPrefetch(Painting.TO_ARTIST.joint());
+        ObjectSelect<Painting> select = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
 
         DefaultSelectTranslator translator = new DefaultSelectTranslator(select, adapter, context.getEntityResolver());
 

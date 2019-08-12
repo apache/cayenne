@@ -25,12 +25,13 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.soft_delete.SoftDelete;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -75,12 +76,12 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
     }
 
     @Test
-    public void testCreateSqlString() throws Exception {
+    public void testCreateSqlString() {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("ID"));
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
+        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
         DeleteBatchTranslator builder = createTranslator(deleteQuery);
         String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
@@ -88,7 +89,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
     }
 
     @Test
-    public void testCreateSqlStringWithNulls() throws Exception {
+    public void testCreateSqlStringWithNulls() {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
         List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("ID"), entity.getAttribute("NAME"));
@@ -103,7 +104,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
     }
 
     @Test
-    public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
+    public void testCreateSqlStringWithIdentifiersQuote() {
         DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
         try {
 
@@ -111,8 +112,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
 
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("ID"));
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(),
-                    1);
+            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
             DeleteBatchTranslator builder = createTranslator(deleteQuery, adapter);
             String generatedSql = builder.getSql();
@@ -134,7 +134,6 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
 
         final DbEntity entity = context.getEntityResolver().getObjEntity(SoftDelete.class).getDbEntity();
 
-        JdbcAdapter adapter = (JdbcAdapter) this.adapter;
         BatchTranslatorFactory oldFactory = dataNode.getBatchTranslatorFactory();
         try {
             dataNode.setBatchTranslatorFactory(new SoftDeleteTranslatorFactory());
@@ -143,17 +142,15 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
             test.setName("SoftDeleteBatchQueryBuilderTest");
             context.commitChanges();
 
-            final SelectQuery query = new SelectQuery(SoftDelete.class);
-
             new ParallelTestContainer() {
 
                 @Override
-                protected void assertResult() throws Exception {
-                    query.setQualifier(ExpressionFactory.matchExp("name", test.getName()));
-                    assertEquals(1, context.performQuery(query).size());
+                protected void assertResult() {
+                    Expression exp = ExpressionFactory.matchExp("name", test.getName());
+                    assertEquals(1, ObjectSelect.query(SoftDelete.class, exp).selectCount(context));
 
-                    query.andQualifier(ExpressionFactory.matchDbExp("DELETED", true));
-                    assertEquals(0, context.performQuery(query).size());
+                    exp = ExpressionFactory.matchDbExp("DELETED", true);
+                    assertEquals(0, ObjectSelect.query(SoftDelete.class, exp).selectCount(context));
                 }
             }.runTest(200);
 
@@ -164,9 +161,9 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
             new ParallelTestContainer() {
 
                 @Override
-                protected void assertResult() throws Exception {
-                    query.setQualifier(ExpressionFactory.matchExp("name", test.getName()));
-                    assertEquals(0, context.performQuery(query).size());
+                protected void assertResult() {
+                    Expression exp = ExpressionFactory.matchExp("name", test.getName());
+                    assertEquals(0, ObjectSelect.query(SoftDelete.class, exp).selectCount(context));
 
                     SQLTemplate template = new SQLTemplate(entity, "SELECT * FROM SOFT_DELETE");
                     template.setFetchingDataRows(true);

@@ -20,13 +20,9 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.List;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -48,15 +44,15 @@ public class SelectActionIT extends ServerCaseContextsSync {
     private UnitDbAdapter accessStackAdapter;
 
     @Test
-    public void testFetchLimit_DistinctResultIterator() throws Exception {
+    public void testFetchLimit_DistinctResultIterator() {
         if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();
 
-            Expression qual = ExpressionFactory.exp("clobValue.value = 100");
-            SelectQuery select = new SelectQuery(ClobTestEntity.class, qual);
-            select.setFetchLimit(25);
-            List<DataRow> resultRows = context.performQuery(select);
+            List<ClobTestEntity> resultRows = ObjectSelect.query(ClobTestEntity.class)
+                    .where(ClobTestEntity.CLOB_VALUE.dot(ClobTestRelation.VALUE).eq(100))
+                    .limit(25)
+                    .select(context);
 
             assertNotNull(resultRows);
             assertEquals(25, resultRows.size());
@@ -64,7 +60,7 @@ public class SelectActionIT extends ServerCaseContextsSync {
     }
 
     @Test
-    public void testColumnSelect_DistinctResultIterator() throws Exception {
+    public void testColumnSelect_DistinctResultIterator() {
         if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();
@@ -86,19 +82,19 @@ public class SelectActionIT extends ServerCaseContextsSync {
             if (i < 20) {
                 obj = (ClobTestEntity) context.newObject("ClobTestEntity");
                 obj.setClobCol("a1" + i);
-                insetrClobRel(obj);
+                insertClobRel(obj);
             }
             else {
                 obj = (ClobTestEntity) context.newObject("ClobTestEntity");
                 obj.setClobCol("a2");
-                insetrClobRel(obj);
+                insertClobRel(obj);
             }
         }
 
         context.commitChanges();
     }
 
-    protected void insetrClobRel(ClobTestEntity clobId) {
+    protected void insertClobRel(ClobTestEntity clobId) {
         ClobTestRelation obj;
 
         for (int i = 0; i < 20; i++) {

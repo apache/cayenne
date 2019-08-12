@@ -41,8 +41,8 @@ public class QueryChainIT extends ServerCase {
     public void testSelectQuery() {
 
         QueryChain chain = new QueryChain();
-        chain.addQuery(new SelectQuery<>(Artist.class));
-        chain.addQuery(new SelectQuery<>(Artist.class));
+        chain.addQuery(ObjectSelect.query(Artist.class));
+        chain.addQuery(ObjectSelect.query(Artist.class));
 
         QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());
 
@@ -55,10 +55,10 @@ public class QueryChainIT extends ServerCase {
     public void testSelectQueryDataRows() {
 
         QueryChain chain = new QueryChain();
-        SelectQuery<DataRow> q1 = SelectQuery.dataRowQuery(Artist.class);
+        ObjectSelect<DataRow> q1 = ObjectSelect.dataRowQuery(Artist.class);
         chain.addQuery(q1);
 
-        SelectQuery<DataRow> q2 = SelectQuery.dataRowQuery(Artist.class);
+        ObjectSelect<DataRow> q2 = ObjectSelect.dataRowQuery(Artist.class);
         chain.addQuery(q2);
 
         QueryMetadata md = chain.getMetaData(runtime.getDataDomain().getEntityResolver());

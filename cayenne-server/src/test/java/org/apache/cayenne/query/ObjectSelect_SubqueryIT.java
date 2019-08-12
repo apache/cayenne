@@ -20,7 +20,6 @@
 package org.apache.cayenne.query;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
@@ -76,6 +75,15 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
     @Test
     public void selectQuery_simpleExists() {
         long count = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class, Painting.PAINTING_TITLE.like("painting%"))))
+                .selectCount(context);
+        assertEquals(20L, count);
+    }
+
+    @Test
+    @Deprecated
+    public void selectQuery_simpleExistsSelectQuery() {
+        long count = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.exists(SelectQuery.query(Painting.class, Painting.PAINTING_TITLE.like("painting%"))))
                 .selectCount(context);
         assertEquals(20L, count);
@@ -87,9 +95,7 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
                 .andExp(Painting.PAINTING_TITLE.like("painting%"))
                 .andExp(Artist.ARTIST_NAME.enclosing().like("art%"));
 
-        SelectQuery<Painting> subQuery = SelectQuery.query(Painting.class, exp);
-        subQuery.setColumns(Painting.PAINTING_TITLE);
-
+        ColumnSelect<String> subQuery = ObjectSelect.columnQuery(Painting.class, Painting.PAINTING_TITLE).where(exp);
         long count = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.exists(subQuery))
                 .selectCount(context);
@@ -99,9 +105,9 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
     @Test
     public void selectQuery_twoLevelExists() {
         Expression exp = Painting.PAINTING_TITLE.like("painting%")
-                .andExp(ExpressionFactory.exists(SelectQuery.query(Gallery.class)));
+                .andExp(ExpressionFactory.exists(ObjectSelect.query(Gallery.class)));
         long count = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exists(SelectQuery.query(Painting.class, exp)))
+                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class, exp)))
                 .selectCount(context);
         assertEquals(20L, count);
     }
@@ -112,11 +118,11 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
                 .andExp(Painting.TO_GALLERY.enclosing().eq(PropertyFactory.createSelf(Gallery.class)));
 
         Expression exp = Painting.PAINTING_TITLE.like("painting%")
-                .andExp(ExpressionFactory.exists(SelectQuery.query(Gallery.class, deepNestedExp)))
+                .andExp(ExpressionFactory.exists(ObjectSelect.query(Gallery.class, deepNestedExp)))
                 .andExp(Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing()));
 
         long count = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exists(SelectQuery.query(Painting.class, exp)))
+                .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class, exp)))
                 .selectCount(context);
         assertEquals(5L, count);
     }

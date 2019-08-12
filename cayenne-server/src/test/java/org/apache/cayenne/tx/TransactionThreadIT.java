@@ -22,7 +22,7 @@ package org.apache.cayenne.tx;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -47,14 +47,11 @@ public class TransactionThreadIT extends ServerCase {
         BaseTransaction.bindThreadTransaction(t);
 
         try {
-
-            SelectQuery q1 = new SelectQuery(Artist.class);
-            context.performQuery(q1);
+            ObjectSelect.query(Artist.class).select(context);
             assertEquals(1, t.getConnections().size());
 
             // delegate will fail if the second query opens a new connection
-            SelectQuery q2 = new SelectQuery(Artist.class);
-            context.performQuery(q2);
+            ObjectSelect.query(Artist.class).select(context);
 
             assertEquals(1, t.getConnections().size());
 

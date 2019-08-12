@@ -20,8 +20,7 @@ package org.apache.cayenne.cache;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -48,10 +47,9 @@ public class QueryCacheIT extends ServerCase {
         a.setArtistName("artist");
         context1.commitChanges();
         
-        SelectQuery q = new SelectQuery(Artist.class);
-        q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        List<Artist> result1 = context1.performQuery(q);
-        List<Artist> result2 = context2.performQuery(q);
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).localCache();
+        List<Artist> result1 = q.select(context1);
+        List<Artist> result2 = q.select(context2);
         
         assertNotSame(
                 result1.get(0).getObjectContext(), 

@@ -20,8 +20,8 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMany;
@@ -93,11 +93,10 @@ public class CDOCollectionRelationshipIT extends ServerCase {
 
     @Test
     public void testReadToManyPrefetching() throws Exception {
-
-        SelectQuery query = new SelectQuery(CollectionToMany.class, ExpressionFactory
-                .matchDbExp(CollectionToMany.ID_PK_COLUMN, 1));
-        query.addPrefetch(CollectionToMany.TARGETS.disjoint());
-        CollectionToMany o1 = (CollectionToMany) Cayenne.objectForQuery(context, query);
+        CollectionToMany o1 = ObjectSelect.query(CollectionToMany.class)
+                .where(ExpressionFactory.matchDbExp(CollectionToMany.ID_PK_COLUMN, 1))
+                .prefetch(CollectionToMany.TARGETS.disjoint())
+                .selectOne(context);
 
         Collection<?> targets = o1.getTargets();
 

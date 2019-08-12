@@ -20,8 +20,7 @@ package org.apache.cayenne;
  ****************************************************************/
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
@@ -63,20 +62,14 @@ public abstract class CayenneDOTestBase extends ServerCase {
     }
 
     protected Painting fetchPainting() {
-        SelectQuery q = new SelectQuery("Painting", ExpressionFactory.matchExp(
-                "paintingTitle",
-                paintingName));
-        List<?> pts = context.performQuery(q);
-        return (pts.size() > 0) ? (Painting) pts.get(0) : null;
+        List<Painting> pts = ObjectSelect.query(Painting.class, Painting.PAINTING_TITLE.eq(paintingName)).select(context);
+        return (pts.size() > 0) ? pts.get(0) : null;
     }
 
     protected PaintingInfo fetchPaintingInfo() {
         // we are using "LIKE" comparison, since Sybase does not allow
         // "=" comparisons on "text" columns
-        SelectQuery q = new SelectQuery(PaintingInfo.class, ExpressionFactory.likeExp(
-                "textReview",
-                textReview));
-        List<?> pts = context.performQuery(q);
-        return (pts.size() > 0) ? (PaintingInfo) pts.get(0) : null;
+        List<PaintingInfo> pts = ObjectSelect.query(PaintingInfo.class, PaintingInfo.TEXT_REVIEW.like(textReview)).select(context);
+        return (pts.size() > 0) ? pts.get(0) : null;
     }
 }

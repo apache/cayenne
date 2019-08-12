@@ -22,7 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -98,7 +98,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
 
         context.commitChanges();
 
-        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
+        List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
         assertEquals(3, artists.size());
     }
 
@@ -206,9 +206,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
 
         tArtist.insert(7, "m6");
 
-        SelectQuery q = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("m6"));
-
-        List<Artist> artists = context.performQuery(q);
+        List<Artist> artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("m6")).select(context);
         assertEquals(1, artists.size());
         Artist o1 = artists.get(0);
         assertNotNull(o1);
@@ -220,10 +218,8 @@ public class CayenneDataObjectInContextIT extends ServerCase {
 
         tArtist.insert(7, "m6");
 
-        SelectQuery q = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("m6"));
-
-        Artist a1 = (Artist) Cayenne.objectForQuery(context, q);
-        Artist a2 = (Artist) Cayenne.objectForQuery(context, q);
+        Artist a1 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("m6")));
+        Artist a2 = (Artist) Cayenne.objectForQuery(context, ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("m6")));
 
         assertNotNull(a1);
         assertNotNull(a2);
@@ -255,11 +251,9 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         tArtist.insert(7, "m6");
 
         // test versions assigned on fetch... clean up domain cache
+        Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
 
-        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
-        Artist artist = artists.get(0);
-
-        assertFalse(DataObject.DEFAULT_VERSION == artist.getSnapshotVersion());
+        assertNotEquals(DataObject.DEFAULT_VERSION, artist.getSnapshotVersion());
         assertEquals(context
                 .getObjectStore()
                 .getCachedSnapshot(artist.getObjectId())
@@ -279,7 +273,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
         artist.setArtistName(artist.getArtistName() + "---");
         context.commitChanges();
 
-        assertFalse(oldVersion == artist.getSnapshotVersion());
+        assertNotEquals(oldVersion, artist.getSnapshotVersion());
         assertEquals(context
                 .getObjectStore()
                 .getCachedSnapshot(artist.getObjectId())

@@ -21,9 +21,7 @@ package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
@@ -77,13 +75,11 @@ public class CAY_194IT extends ServerCase {
 
         context.commitChanges();
 
-        Expression qualifier = ExpressionFactory.matchExp("children", o2);
-        List<?> parents = SelectQuery.query(ReflexiveAndToOne.class, qualifier).select(context);
+        List<?> parents = ObjectSelect.query(ReflexiveAndToOne.class, ReflexiveAndToOne.CHILDREN.contains(o2)).select(context);
         assertEquals(1, parents.size());
         assertSame(o1, parents.get(0));
 
-        qualifier = ExpressionFactory.matchExp("children", o1);
-        parents = SelectQuery.query(ReflexiveAndToOne.class, qualifier).select(context);
+        parents = ObjectSelect.query(ReflexiveAndToOne.class, ReflexiveAndToOne.CHILDREN.contains(o1)).select(context);
         assertEquals(0, parents.size());
     }
 
@@ -101,8 +97,7 @@ public class CAY_194IT extends ServerCase {
 
         context.commitChanges();
 
-        Expression qualifier = ExpressionFactory.matchExp("toParent", o1);
-        List<ReflexiveAndToOne> children = SelectQuery.query(ReflexiveAndToOne.class, qualifier).select(context);
+        List<ReflexiveAndToOne> children = ObjectSelect.query(ReflexiveAndToOne.class, ReflexiveAndToOne.TO_PARENT.eq(o1)).select(context);
         assertEquals(1, children.size());
         assertSame(o2, children.get(0));
 

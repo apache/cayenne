@@ -22,14 +22,12 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.MockDataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -130,14 +128,11 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
 
-        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
-                "name",
-                "g1"));
-        List<?> results = context.performQuery(q);
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(context);
         assertEquals(1, results.size());
 
         assertFalse(context.hasChanges());
-        ArtGroup group = (ArtGroup) results.get(0);
+        ArtGroup group = results.get(0);
         a1.addToGroupArray(group);
         assertTrue(context.hasChanges());
 
@@ -166,13 +161,10 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
-                "name",
-                "g1"));
-        List<?> results = context.performQuery(q);
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(context);
         assertEquals(1, results.size());
 
-        ArtGroup group = (ArtGroup) results.get(0);
+        ArtGroup group = results.get(0);
         a1.addToGroupArray(group);
 
         List<?> groupList = a1.getGroupArray();
@@ -242,22 +234,14 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
-                "name",
-                "g1"));
-        List<?> results = context.performQuery(q);
+        List<ArtGroup> results = ObjectSelect.query(ArtGroup.class, ArtGroup.NAME.eq("g1")).select(context);;
         assertEquals(1, results.size());
 
-        ArtGroup group = (ArtGroup) results.get(0);
+        ArtGroup group = results.get(0);
         a1.addToGroupArray(group);
         group.removeFromArtistArray(a1);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                context.commitChanges();
-            }
-        });
+        queryInterceptor.runWithQueriesBlocked(() -> context.commitChanges());
     }
 
     @Test
@@ -266,8 +250,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery q = new SelectQuery(ArtGroup.class);
-        List<?> results = context.performQuery(q);
+        List<?> results = ObjectSelect.query(ArtGroup.class).select(context);
         assertEquals(2, results.size());
 
         ArtGroup g1 = (ArtGroup) results.get(0);
@@ -284,9 +267,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
                 runtime.getDataDomain().getDataNodes().iterator().next());
         try {
             context.commitChanges();
-
-        }
-        finally {
+        } finally {
             nodeWrapper.stopInterceptNode();
         }
 

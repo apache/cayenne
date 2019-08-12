@@ -33,7 +33,6 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -109,13 +108,11 @@ public class ExpressionFactoryIT extends ServerCase {
 		context.commitChanges();
 
 		Expression ex1 = ExpressionFactory.likeIgnoreCaseDbExp("ARTIST_NAME", "A*_1", '*');
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class, ex1);
-		List<Artist> artists = context.select(q1);
+		List<Artist> artists = ObjectSelect.query(Artist.class, ex1).select(context);
 		assertEquals(1, artists.size());
 
 		Expression ex2 = ExpressionFactory.likeExp("artistName", "A*_2", '*');
-		SelectQuery<Artist> q2 = new SelectQuery<Artist>(Artist.class, ex2);
-		artists = context.select(q2);
+		artists = ObjectSelect.query(Artist.class, ex2).select(context);
 		assertEquals(1, artists.size());
 	}
 	
@@ -133,18 +130,16 @@ public class ExpressionFactoryIT extends ServerCase {
 		context.commitChanges();
 
 		Expression ex1 = ExpressionFactory.containsExp(Artist.ARTIST_NAME.getName(), "A_1");
-		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class, ex1);
-		List<Artist> artists = context.select(q1);
+		List<Artist> artists = ObjectSelect.query(Artist.class, ex1).select(context);
 		assertEquals(1, artists.size());
 
 		Expression ex2 = ExpressionFactory.containsExp(Artist.ARTIST_NAME.getName(), "A%2");
-		SelectQuery<Artist> q2 = new SelectQuery<Artist>(Artist.class, ex2);
-		artists = context.select(q2);
+		artists = ObjectSelect.query(Artist.class, ex2).select(context);
 		assertEquals(1, artists.size());
 	}
 
 	@Test
-	public void testDifferentExpressionAPI() throws Exception {
+	public void testDifferentExpressionAPI() {
 		List<Artist> res;
 
 		// First version via expression string

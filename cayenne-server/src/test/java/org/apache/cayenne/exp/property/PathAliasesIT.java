@@ -32,7 +32,6 @@ import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -126,10 +125,9 @@ public class PathAliasesIT extends ServerCase {
     public void testEntityPropertyAliases() {
         Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
 
-        SelectQuery<Painting> query = SelectQuery.query(Painting.class);
-        Expression expression = Painting.TO_ARTIST.alias("p1").eq(artist);
-        query.setQualifier(expression);
-        List<Painting> paintings = query.select(context);
+        List<Painting> paintings = ObjectSelect.query(Painting.class)
+                .where(Painting.TO_ARTIST.alias("p1").eq(artist))
+                .select(context);
         assertEquals(2, paintings.size());
         assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
         assertEquals("artist1", paintings.get(1).getToArtist().getArtistName());
@@ -137,13 +135,10 @@ public class PathAliasesIT extends ServerCase {
 
     @Test
     public void testAliases() {
-        SelectQuery<Artist> query1 = new SelectQuery<>(Artist.class);
-        Expression expression = ExpressionFactory.and(
-                Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"),
-                Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4")
-        );
-        query1.setQualifier(expression);
-        List<Artist> artists = query1.select(context);
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
+                .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
+                .select(context);
         assertEquals(1, artists.size());
         assertNotNull(artists.get(0));
         assertEquals("artist4", artists.get(0).getArtistName());
@@ -237,12 +232,10 @@ public class PathAliasesIT extends ServerCase {
         Painting painting2 = Cayenne.objectForPK(context, Painting.class, 2);
         Painting painting4 = Cayenne.objectForPK(context, Painting.class, 4);
 
-        SelectQuery<Artist> query = SelectQuery.query(Artist.class);
-        Expression e1 = ExpressionFactory.and(
-                ExpressionFactory.exp("paintingArray#p1 = $painting1", painting2),
-                ExpressionFactory.exp("paintingArray#p2 = $painting2", painting4));
-        query.setQualifier(e1);
-        List<Artist> artists = query.select(context);
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exp("paintingArray#p1 = $painting1", painting2))
+                .and(ExpressionFactory.exp("paintingArray#p2 = $painting2", painting4))
+                .select(context);
         assertEquals(1, artists.size());
         assertEquals("artist4", artists.get(0).getArtistName());
     }

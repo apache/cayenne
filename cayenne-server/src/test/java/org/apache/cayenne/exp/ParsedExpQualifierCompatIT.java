@@ -21,6 +21,8 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -80,12 +82,12 @@ public class ParsedExpQualifierCompatIT extends ServerCase {
         return execute(root, qualifier, null);
     }
 
-    private <T> List<T> execute(Class<T> root, Expression qualifier, String prefecth) {
-        SelectQuery query = new SelectQuery(root, qualifier);
-        if (prefecth != null) {
-            query.addPrefetch(prefecth);
+    private <T> List<T> execute(Class<T> root, Expression qualifier, String prefetch) {
+        ObjectSelect<T> query = ObjectSelect.query(root, qualifier);
+        if (prefetch != null) {
+            query.prefetch(prefetch, PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
         }
-        return context.performQuery(query);
+        return query.select(context);
     }
 
     @Test

@@ -57,6 +57,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+@Deprecated
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SelectQueryIT extends ServerCase {
 
