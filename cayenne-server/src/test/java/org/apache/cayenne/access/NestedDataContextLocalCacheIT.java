@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -40,15 +40,15 @@ public class NestedDataContextLocalCacheIT extends ServerCase {
 
     @Inject
     protected ServerRuntime runtime;
-    
+
     @Inject
     private DataContext context;
 
     @Test
     public void testLocalCacheStaysLocal() {
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         ObjectContext child1 = runtime.newContext(context);
 

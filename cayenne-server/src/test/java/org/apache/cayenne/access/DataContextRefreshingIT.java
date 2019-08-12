@@ -19,25 +19,23 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Types;
-import java.util.Date;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -109,9 +107,8 @@ public class DataContextRefreshingIT extends ServerCase {
         String nameBefore = "artist2";
         String nameAfter = "not an artist";
 
-        SelectQuery queryBefore = new SelectQuery(
-                Artist.class,
-                ExpressionFactory.matchExp("artistName", nameBefore));
+        ObjectSelect<Artist> queryBefore = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(nameBefore));
 
         Artist artist = (Artist) context.performQuery(queryBefore).get(0);
         assertEquals(nameBefore, artist.getArtistName());
@@ -119,12 +116,11 @@ public class DataContextRefreshingIT extends ServerCase {
         assertEquals(1, tArtist.update().set("ARTIST_NAME", nameAfter).execute());
 
         // fetch into the same context
-        List<Artist> artists = context.performQuery(queryBefore);
+        List<Artist> artists = queryBefore.select(context);
         assertEquals(0, artists.size());
 
-        SelectQuery queryAfter = new SelectQuery(
-                Artist.class,
-                ExpressionFactory.matchExp("artistName", nameAfter));
+        ObjectSelect<Artist> queryAfter = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(nameAfter));
 
         artist = (Artist) context.performQuery(queryAfter).get(0);
         assertNotNull(artist);
@@ -136,7 +132,7 @@ public class DataContextRefreshingIT extends ServerCase {
         createSingleArtistAndPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
-                new SelectQuery(Painting.class)).get(0);
+                ObjectSelect.query(Painting.class)).get(0);
 
         assertNotNull(painting.getToArtist());
         assertEquals("artist2", painting.getToArtist().getArtistName());
@@ -145,7 +141,7 @@ public class DataContextRefreshingIT extends ServerCase {
 
         // select without prefetch
         painting = (Painting) context
-                .performQuery(new SelectQuery(Painting.class))
+                .performQuery(ObjectSelect.query(Painting.class))
                 .get(0);
         assertNotNull(painting);
         assertNull(painting.getToArtist());
@@ -156,7 +152,7 @@ public class DataContextRefreshingIT extends ServerCase {
         createTwoArtistsAndPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
-                new SelectQuery(Painting.class)).get(0);
+                ObjectSelect.query(Painting.class)).get(0);
 
         Artist artistBefore = painting.getToArtist();
         assertNotNull(artistBefore);
@@ -166,7 +162,7 @@ public class DataContextRefreshingIT extends ServerCase {
 
         // select without prefetch
         painting = (Painting) context
-                .performQuery(new SelectQuery(Painting.class))
+                .performQuery(ObjectSelect.query(Painting.class))
                 .get(0);
         assertNotNull(painting);
         assertEquals("artist3", painting.getToArtist().getArtistName());
@@ -177,7 +173,7 @@ public class DataContextRefreshingIT extends ServerCase {
         createSingleArtistAndUnrelatedPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
-                new SelectQuery(Painting.class)).get(0);
+                ObjectSelect.query(Painting.class)).get(0);
 
         assertNull(painting.getToArtist());
 
@@ -185,7 +181,7 @@ public class DataContextRefreshingIT extends ServerCase {
 
         // select without prefetch
         painting = (Painting) context
-                .performQuery(new SelectQuery(Painting.class))
+                .performQuery(ObjectSelect.query(Painting.class))
                 .get(0);
         assertNotNull(painting);
         assertEquals("artist2", painting.getToArtist().getArtistName());
@@ -195,7 +191,7 @@ public class DataContextRefreshingIT extends ServerCase {
     public void testRefetchRootWithDeletedToMany() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
-        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
+        Artist artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(
                 0);
         assertEquals(artist.getPaintingArray().size(), 1);
 
@@ -205,12 +201,12 @@ public class DataContextRefreshingIT extends ServerCase {
                 .execute());
 
         // select without prefetch
-        artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(0);
+        artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(0);
         assertEquals(artist.getPaintingArray().size(), 1);
 
         // select using relationship prefetching
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint());
         artist = (Artist) context.performQuery(query).get(0);
         assertEquals(0, artist.getPaintingArray().size());
     }
@@ -220,19 +216,19 @@ public class DataContextRefreshingIT extends ServerCase {
 
         createSingleArtistDataSet();
 
-        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
+        Artist artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(
                 0);
         assertEquals(artist.getPaintingArray().size(), 0);
 
         tPainting.insert(5, "p", 5, 1000);
 
         // select without prefetch
-        SelectQuery query = new SelectQuery(Artist.class);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
         artist = (Artist) context.performQuery(query).get(0);
         assertEquals(artist.getPaintingArray().size(), 0);
 
         // select using relationship prefetching
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+        query.prefetch(Artist.PAINTING_ARRAY.disjoint());
         artist = (Artist) context.performQuery(query).get(0);
         assertEquals(artist.getPaintingArray().size(), 1);
     }
@@ -244,8 +240,7 @@ public class DataContextRefreshingIT extends ServerCase {
         String nameBefore = "artist2";
         String nameAfter = "not an artist";
 
-        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
-                0);
+        Artist artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(0);
         assertNotNull(artist);
         assertEquals(nameBefore, artist.getArtistName());
 
@@ -261,8 +256,7 @@ public class DataContextRefreshingIT extends ServerCase {
 
         createSingleArtistAndPaintingDataSet();
 
-        Painting painting = (Painting) context.performQuery(
-                new SelectQuery(Painting.class)).get(0);
+        Painting painting = (Painting) context.performQuery(ObjectSelect.query(Painting.class)).get(0);
 
         assertNotNull(painting.getToArtist());
         assertEquals("artist2", painting.getToArtist().getArtistName());
@@ -278,7 +272,7 @@ public class DataContextRefreshingIT extends ServerCase {
         createTwoArtistsAndPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
-                new SelectQuery(Painting.class)).get(0);
+                ObjectSelect.query(Painting.class)).get(0);
         Artist artistBefore = painting.getToArtist();
         assertNotNull(artistBefore);
         assertEquals("artist2", artistBefore.getArtistName());
@@ -295,7 +289,7 @@ public class DataContextRefreshingIT extends ServerCase {
         createSingleArtistAndUnrelatedPaintingDataSet();
 
         Painting painting = (Painting) context.performQuery(
-                new SelectQuery(Painting.class)).get(0);
+                ObjectSelect.query(Painting.class)).get(0);
         assertNull(painting.getToArtist());
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", 5).execute());
@@ -309,8 +303,7 @@ public class DataContextRefreshingIT extends ServerCase {
     public void testInvalidateRootWithDeletedToMany() throws Exception {
         createSingleArtistAndPaintingDataSet();
 
-        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
-                0);
+        Artist artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(0);
         assertEquals(artist.getPaintingArray().size(), 1);
 
         assertEquals(1, tPainting.delete().execute());
@@ -324,8 +317,7 @@ public class DataContextRefreshingIT extends ServerCase {
 
         createSingleArtistDataSet();
 
-        Artist artist = (Artist) context.performQuery(new SelectQuery(Artist.class)).get(
-                0);
+        Artist artist = (Artist) context.performQuery(ObjectSelect.query(Artist.class)).get(0);
         assertEquals(artist.getPaintingArray().size(), 0);
 
         tPainting.insert(4, "p", 5, 1000);
@@ -341,19 +333,16 @@ public class DataContextRefreshingIT extends ServerCase {
         createSingleArtistDataSet();
 
         final Artist artist = (Artist) context
-                .performQuery(new SelectQuery(Artist.class))
+                .performQuery(ObjectSelect.query(Artist.class))
                 .get(0);
         assertNotNull(artist);
 
         context.invalidateObjects(artist);
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
 
-        int queries = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                // this must trigger a fetch
-                artist.setArtistName("new name");
-            }
+        int queries = queryInterceptor.runWithQueryCounter(() -> {
+            // this must trigger a fetch
+            artist.setArtistName("new name");
         });
 
         assertEquals(1, queries);
@@ -365,18 +354,15 @@ public class DataContextRefreshingIT extends ServerCase {
 
         createSingleArtistAndPaintingDataSet();
 
-        Painting painting = (Painting) context.performQuery(
-                new SelectQuery(Painting.class)).get(0);
+        Painting painting = (Painting) context
+                .performQuery(ObjectSelect.query(Painting.class)).get(0);
         final Artist artist = painting.getToArtist();
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
         assertNull(artist.readPropertyDirectly("artistName"));
 
-        int queries = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                // this must trigger a fetch
-                artist.setDateOfBirth(new Date());
-            }
+        int queries = queryInterceptor.runWithQueryCounter(() -> {
+            // this must trigger a fetch
+            artist.setDateOfBirth(new Date());
         });
 
         assertEquals(1, queries);

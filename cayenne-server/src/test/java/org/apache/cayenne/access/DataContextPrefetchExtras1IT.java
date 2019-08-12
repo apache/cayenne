@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -31,10 +33,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * A test case for CAY-788.
@@ -66,11 +66,11 @@ public class DataContextPrefetchExtras1IT extends ServerCase {
     public void testPrefetchToOne() throws Exception {
         createDataSet();
 
-        SelectQuery query = new SelectQuery(Painting.class);
-        query.addPrefetch(Painting.TO_PAINTING_INFO.disjoint());
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+                .prefetch(Painting.TO_PAINTING_INFO.disjoint());
 
-        List<Painting> objects = context.performQuery(query);
-        assertTrue(!objects.isEmpty());
+        List<Painting> objects = query.select(context);
+        assertFalse(objects.isEmpty());
         for (Painting p : objects) {
             PaintingInfo pi = p.getToPaintingInfo();
             assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());

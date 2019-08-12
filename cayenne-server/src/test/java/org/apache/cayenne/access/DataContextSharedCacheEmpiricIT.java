@@ -28,7 +28,7 @@ import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
@@ -41,8 +41,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
@@ -51,7 +51,7 @@ public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
 
     @Inject
     private ServerRuntime runtime;
-    
+
     @Inject
     private ObjectStoreFactory objectStoreFactory;
 
@@ -71,9 +71,9 @@ public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
                 new DefaultRuntimeProperties(Collections.<String, String>emptyMap()),
                 eventManager);
 
-        c1 = new DataContext(runtime.getDataDomain(), 
+        c1 = new DataContext(runtime.getDataDomain(),
                 objectStoreFactory.createObjectStore(cache));
-        c2 = new DataContext(runtime.getDataDomain(), 
+        c2 = new DataContext(runtime.getDataDomain(),
                 objectStoreFactory.createObjectStore(cache));
 
         // prepare a single artist record
@@ -92,16 +92,16 @@ public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
     @Test
     public void testSelectSelectCommitRefresh() throws Exception {
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
         // select both, a2 should go second...
-        List<?> artists = c1.performQuery(query);
-        Artist a1 = (Artist) artists.get(0);
+        List<Artist> artists = query.select(c1);
+        Artist a1 = artists.get(0);
 
-        List<?> altArtists = c2.performQuery(query);
-        final Artist a2 = (Artist) altArtists.get(0);
+        List<Artist> altArtists = query.select(c2);
+        final Artist a2 = altArtists.get(0);
         assertNotNull(a2);
-        assertFalse(a2 == a1);
+        assertNotSame(a2, a1);
 
         // Update Artist
         a1.setArtistName(NEW_NAME);
@@ -113,15 +113,15 @@ public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
     @Test
     public void testSelectSelectCommitRefreshReverse() throws Exception {
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
-        List<?> altArtists = c2.performQuery(query);
-        final Artist a2 = (Artist) altArtists.get(0);
+        List<Artist> altArtists = query.select(c2);
+        final Artist a2 = altArtists.get(0);
 
         List<?> artists = c1.performQuery(query);
         Artist a1 = (Artist) artists.get(0);
 
-        assertFalse(a2 == a1);
+        assertNotSame(a2, a1);
 
         // Update Artist
         a1.setArtistName(NEW_NAME);
@@ -133,18 +133,18 @@ public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
     @Test
     public void testSelectUpdateSelectCommitRefresh() throws Exception {
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
-        List<?> artists = c1.performQuery(query);
-        Artist a1 = (Artist) artists.get(0);
+        List<Artist> artists = query.select(c1);
+        Artist a1 = artists.get(0);
 
         // Update Artist
         a1.setArtistName(NEW_NAME);
 
-        List<?> altArtists = c2.performQuery(query);
-        final Artist a2 = (Artist) altArtists.get(0);
+        List<Artist> altArtists = query.select(c2);
+        final Artist a2 = altArtists.get(0);
         assertNotNull(a2);
-        assertFalse(a2 == a1);
+        assertNotSame(a2, a1);
 
         c1.commitChanges();
         assertOnCommit(a2);

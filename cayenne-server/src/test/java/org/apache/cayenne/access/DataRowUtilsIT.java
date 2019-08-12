@@ -19,9 +19,11 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -35,9 +37,10 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataRowUtilsIT extends ServerCase {
@@ -80,8 +83,9 @@ public class DataRowUtilsIT extends ServerCase {
         String n1 = "changed";
         String n2 = "changed again";
 
-        SelectQuery artistQ = new SelectQuery(Artist.class);
-        Artist a1 = (Artist) context.performQuery(artistQ).get(0);
+        Artist a1 = ObjectSelect.query(Artist.class)
+                .select(context)
+                .get(0);
         a1.setArtistName(n1);
 
         DataRow s2 = new DataRow(2);
@@ -105,9 +109,7 @@ public class DataRowUtilsIT extends ServerCase {
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
         ArcProperty toArtist = (ArcProperty) d.getProperty("toArtist");
 
-        Artist artist2 = (Artist) context
-                .performQuery(new SelectQuery(Artist.class))
-                .get(0);
+        Artist artist2 = ObjectSelect.query(Artist.class).selectFirst(context);
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("PX");
         painting.setToArtist(artist2);
@@ -115,8 +117,9 @@ public class DataRowUtilsIT extends ServerCase {
         context.commitChanges();
 
         tArtist.insert(119, "artist3");
-        SelectQuery query = new SelectQuery(Artist.class, Artist.ARTIST_NAME.eq("artist3"));
-        Artist artist3 = (Artist) context.performQuery(query).get(0);
+        Artist artist3 = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist3"))
+                .selectFirst(context);
         assertNotSame(artist3, painting.getToArtist());
 
         ObjectDiff diff = context.getObjectStore().registerDiff(
@@ -134,7 +137,7 @@ public class DataRowUtilsIT extends ServerCase {
         createOneArtistAndOnePainting();
 
         // add NEW gallery to painting
-        List<Painting> paintings = context.performQuery(new SelectQuery(Painting.class));
+        List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
         assertEquals(1, paintings.size());
         Painting p1 = paintings.get(0);
 

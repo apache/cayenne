@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
@@ -34,16 +38,14 @@ import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class SingleTableInheritanceIT extends PeopleProjectCase {
 
@@ -129,10 +131,9 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
-        SelectQuery select = new SelectQuery(Manager.class);
-        select.andQualifier(AbstractPerson.NAME.eq("E2"));
-
-        List<Manager> results = context.performQuery(select);
+        List<Manager> results = ObjectSelect.query(Manager.class)
+                .and(AbstractPerson.NAME.eq("E2"))
+                .select(context);
         assertEquals(1, results.size());
         assertEquals("E2", results.get(0).getName());
     }
@@ -142,27 +143,22 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
-        SelectQuery select = new SelectQuery(Employee.class);
-        select.addPrefetch(Employee.TO_DEPARTMENT.disjoint());
-        select.andQualifier(AbstractPerson.NAME.eq("E2"));
-
-        List<Manager> results = context.performQuery(select);
+        List<Employee> results = ObjectSelect.query(Employee.class)
+                .prefetch(Employee.TO_DEPARTMENT.disjoint())
+                .and(AbstractPerson.NAME.eq("E2"))
+                .select(context);
         assertEquals(1, results.size());
         assertEquals("E2", results.get(0).getName());
     }
 
     @Test
     public void testPaginatedQueries() throws Exception {
-
         create5PersonDataSet();
 
-        SelectQuery select = new SelectQuery(AbstractPerson.class);
-        select.addOrdering(
-                "db:" + AbstractPerson.PERSON_ID_PK_COLUMN,
-                SortOrder.ASCENDING);
-        select.setPageSize(3);
-
-        List<AbstractPerson> results = context.performQuery(select);
+        List<AbstractPerson> results = ObjectSelect.query(AbstractPerson.class)
+                .orderBy("db:" + AbstractPerson.PERSON_ID_PK_COLUMN, SortOrder.ASCENDING)
+                .pageSize(3)
+                .select(context);
         assertEquals(5, results.size());
 
         assertTrue(results.get(0) instanceof Employee);
@@ -205,8 +201,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
-        SelectQuery query = new SelectQuery(AbstractPerson.class);
-        query.addPrefetch(AbstractPerson.NOTES.joint());
+        ObjectSelect<AbstractPerson> query = ObjectSelect.query(AbstractPerson.class)
+                .prefetch(AbstractPerson.NOTES.joint());
 
         final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
                 context,
@@ -214,19 +210,16 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
 
         assertTrue(person instanceof Employee);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
+        queryBlocker.runWithQueriesBlocked(() -> {
+            assertEquals(2, person.getNotes().size());
 
-            public void execute() {
-                assertEquals(2, person.getNotes().size());
+            String[] names = new String[2];
+            names[0] = person.getNotes().get(0).getNotes();
+            names[1] = person.getNotes().get(1).getNotes();
+            List<String> nameSet = Arrays.asList(names);
 
-                String[] names = new String[2];
-                names[0] = person.getNotes().get(0).getNotes();
-                names[1] = person.getNotes().get(1).getNotes();
-                List<String> nameSet = Arrays.asList(names);
-
-                assertTrue(nameSet.contains("AA"));
-                assertTrue(nameSet.contains("BB"));
-            }
+            assertTrue(nameSet.contains("AA"));
+            assertTrue(nameSet.contains("BB"));
         });
     }
 
@@ -244,27 +237,24 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
-        SelectQuery query = new SelectQuery(AbstractPerson.class);
-        query.addPrefetch(AbstractPerson.NOTES.disjoint());
+        ObjectSelect<AbstractPerson> query = ObjectSelect.query(AbstractPerson.class)
+                .prefetch(AbstractPerson.NOTES.disjoint());
 
         final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
                 context,
                 query);
         assertTrue(person instanceof Employee);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
+        queryBlocker.runWithQueriesBlocked(() -> {
+            assertEquals(2, person.getNotes().size());
 
-            public void execute() {
-                assertEquals(2, person.getNotes().size());
+            String[] names = new String[2];
+            names[0] = person.getNotes().get(0).getNotes();
+            names[1] = person.getNotes().get(1).getNotes();
+            List<String> nameSet = Arrays.asList(names);
 
-                String[] names = new String[2];
-                names[0] = person.getNotes().get(0).getNotes();
-                names[1] = person.getNotes().get(1).getNotes();
-                List<String> nameSet = Arrays.asList(names);
-
-                assertTrue(nameSet.contains("AA"));
-                assertTrue(nameSet.contains("BB"));
-            }
+            assertTrue(nameSet.contains("AA"));
+            assertTrue(nameSet.contains("BB"));
         });
     }
 
@@ -283,20 +273,14 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'BB', 2)"));
 
-        SelectQuery query = new SelectQuery(PersonNotes.class);
-        query.addPrefetch(PersonNotes.PERSON.disjoint());
-        query.addOrdering(PersonNotes.NOTES.asc());
-
-        List<PersonNotes> notes = context.performQuery(query);
+        List<PersonNotes> notes = ObjectSelect.query(PersonNotes.class)
+                .prefetch(PersonNotes.PERSON.disjoint())
+                .orderBy(PersonNotes.NOTES.asc())
+                .select(context);
         assertEquals(2, notes.size());
         final PersonNotes note = notes.get(0);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertEquals("AA", note.getPerson().getName());
-            }
-        });
+        queryBlocker.runWithQueriesBlocked(() -> assertEquals("AA", note.getPerson().getName()));
     }
 
     @Test
@@ -310,17 +294,12 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
 
-        SelectQuery query = new SelectQuery(PersonNotes.class);
-        query.addPrefetch(PersonNotes.PERSON.joint());
+        ObjectSelect<PersonNotes> query = ObjectSelect.query(PersonNotes.class)
+                .prefetch(PersonNotes.PERSON.joint());
 
         final PersonNotes note = (PersonNotes) Cayenne.objectForQuery(context, query);
 
-        queryBlocker.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                assertEquals("AA", note.getPerson().getName());
-            }
-        });
+        queryBlocker.runWithQueriesBlocked(() -> assertEquals("AA", note.getPerson().getName()));
 
     }
 
@@ -341,8 +320,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
         context.commitChanges();
         context.invalidateObjects(company, rep, employee);
 
-        SelectQuery query = new SelectQuery(CustomerRepresentative.class);
-        List<?> reps = context2.performQuery(query);
+        List<?> reps = ObjectSelect.query(CustomerRepresentative.class)
+                .select(context2);
 
         assertEquals(1, reps.size());
         assertEquals(1, countObjectOfClass(reps, CustomerRepresentative.class));
@@ -355,7 +334,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     public void testEmployeeAddress() throws Exception {
         createEmployeeAddressDataSet();
 
-        List<?> addresses = context.performQuery(new SelectQuery(Address.class));
+        List<?> addresses = ObjectSelect.query(Address.class)
+                .select(context);
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
@@ -369,7 +349,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     public void testManagerAddress() throws Exception {
         createManagerAddressDataSet();
 
-        List<?> addresses = context.performQuery(new SelectQuery(Address.class));
+        List<Address> addresses = ObjectSelect.query(Address.class)
+                .select(context);
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
@@ -382,10 +363,11 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     public void testCAY592() throws Exception {
         createManagerAddressDataSet();
 
-        List<?> addresses = context.performQuery(new SelectQuery(Address.class));
+        List<Address> addresses = ObjectSelect.query(Address.class)
+                .select(context);
 
         assertEquals(1, addresses.size());
-        Address address = (Address) addresses.get(0);
+        Address address = addresses.get(0);
         Employee e = address.getToEmployee();
 
         // CAY-592 - make sure modification of the address in a parallel context
@@ -406,10 +388,11 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     public void testRepCompany() throws Exception {
         createRepCompanyDataSet();
 
-        List<?> companies = context.performQuery(new SelectQuery(ClientCompany.class));
+        List<ClientCompany> companies = ObjectSelect.query(ClientCompany.class)
+                .select(context);
 
         assertEquals(1, companies.size());
-        ClientCompany company = (ClientCompany) companies.get(0);
+        ClientCompany company = companies.get(0);
         List<?> reps = company.getRepresentatives();
         assertEquals(1, reps.size());
         assertSame(CustomerRepresentative.class, reps.get(0).getClass());
@@ -422,10 +405,11 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     public void testDepartmentEmployees() throws Exception {
         createDepartmentEmployeesDataSet();
 
-        List<?> departments = context.performQuery(new SelectQuery(Department.class));
+        List<Department> departments = ObjectSelect.query(Department.class)
+                .select(context);
 
         assertEquals(1, departments.size());
-        Department dept = (Department) departments.get(0);
+        Department dept = departments.get(0);
         List<?> employees = dept.getEmployees();
         assertEquals(3, employees.size());
         assertEquals(3, countObjectOfClass(employees, Employee.class));
@@ -436,8 +420,8 @@ public class SingleTableInheritanceIT extends PeopleProjectCase {
     public void testSelectInheritanceResolving() throws Exception {
         createSelectDataSet();
 
-        SelectQuery query = new SelectQuery(AbstractPerson.class);
-        List<?> abstractPpl = context.performQuery(query);
+        List<AbstractPerson> abstractPpl = ObjectSelect.query(AbstractPerson.class)
+                .select(context);
         assertEquals(6, abstractPpl.size());
 
         assertEquals(1, countObjectOfClass(abstractPpl, CustomerRepresentative.class));

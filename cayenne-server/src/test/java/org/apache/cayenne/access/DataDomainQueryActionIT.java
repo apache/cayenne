@@ -18,23 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.apache.cayenne.cache.MockQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
 import org.junit.Test;
-
-import java.io.Serializable;
-import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -60,13 +60,12 @@ public class DataDomainQueryActionIT extends ServerCase {
         Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("sample");
 
-        SelectQuery query = new SelectQuery(Painting.class);
-
-        query.addPrefetch(Painting.TO_GALLERY.disjoint());
-        query.addPrefetch(Painting.TO_ARTIST.disjoint());
-        query.addOrdering(Painting.PAINTING_TITLE.asc());
-        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        query.setPageSize(5);
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+                .prefetch(Painting.TO_GALLERY.disjoint())
+                .prefetch(Painting.TO_ARTIST.disjoint())
+                .orderBy(Painting.PAINTING_TITLE.asc())
+                .cacheStrategy(QueryCacheStrategy.SHARED_CACHE)
+                .pageSize(5);
 
         QueryCache cache = domain.queryCache;
 

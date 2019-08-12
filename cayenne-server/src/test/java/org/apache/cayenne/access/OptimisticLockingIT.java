@@ -19,10 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -33,10 +36,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.Types;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -114,8 +113,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -132,8 +132,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnDeleteFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -152,8 +153,9 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -171,8 +173,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnDeletePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -191,8 +194,9 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -210,8 +214,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -238,8 +243,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnUpdate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -278,8 +284,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnUpdateFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -298,8 +305,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessSimpleLockingOnUpdatePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -319,8 +327,9 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -340,8 +349,9 @@ public class OptimisticLockingIT extends ServerCase {
             throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -360,8 +370,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailSimpleLocking() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -389,8 +400,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailLockingOnNull() throws Exception {
         createLockingOnNullDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -419,15 +431,14 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessLockingOnMixed() throws Exception {
         createLockingOnMixedDataSet();
 
-        SelectQuery<SimpleLockingTestEntity> query = new SelectQuery<>(SimpleLockingTestEntity.class);
-        query.addOrdering(new Ordering("db:LOCKING_TEST_ID", SortOrder.ASCENDING));
-
-        List<?> allObjects = context.performQuery(query);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect.query(SimpleLockingTestEntity.class)
+                .orderBy(new Ordering("db:LOCKING_TEST_ID", SortOrder.ASCENDING))
+                .select(context);
         assertEquals(3, allObjects.size());
 
-        SimpleLockingTestEntity object1 = (SimpleLockingTestEntity) allObjects.get(0);
-        SimpleLockingTestEntity object2 = (SimpleLockingTestEntity) allObjects.get(1);
-        SimpleLockingTestEntity object3 = (SimpleLockingTestEntity) allObjects.get(2);
+        SimpleLockingTestEntity object1 = allObjects.get(0);
+        SimpleLockingTestEntity object2 = allObjects.get(1);
+        SimpleLockingTestEntity object3 = allObjects.get(2);
 
         // change description and save... no optimistic lock failure expected...
         object1.setDescription("first update for object1");
@@ -444,8 +455,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testSuccessLockingOnToOneNull() throws Exception {
         createLockingOnToOneDataSet();
 
-        List<RelLockingTestEntity> allObjects = new SelectQuery<>(
-                RelLockingTestEntity.class).select(context);
+        List<RelLockingTestEntity> allObjects = ObjectSelect
+                .query(RelLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         RelLockingTestEntity object = allObjects.get(0);
@@ -459,13 +471,14 @@ public class OptimisticLockingIT extends ServerCase {
         object.setToSimpleLockingTest(object1);
         context.commitChanges();
     }
-    
+
     @Test
     public void testFailLockingOnToOne() throws Exception {
         createLockingOnToOneDataSet();
 
-        List<RelLockingTestEntity> allObjects = new SelectQuery<>(
-                RelLockingTestEntity.class).select(context);
+        List<RelLockingTestEntity> allObjects = ObjectSelect
+                .query(RelLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         RelLockingTestEntity object = allObjects.get(0);
@@ -499,8 +512,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailRetrieveRow() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);
@@ -525,8 +539,9 @@ public class OptimisticLockingIT extends ServerCase {
     public void testFailRetrieveDeletedRow() throws Exception {
         createSimpleLockingDataSet();
 
-        List<SimpleLockingTestEntity> allObjects = new SelectQuery<>(
-                SimpleLockingTestEntity.class).select(context);
+        List<SimpleLockingTestEntity> allObjects = ObjectSelect
+                .query(SimpleLockingTestEntity.class)
+                .select(context);
         assertEquals(1, allObjects.size());
 
         SimpleLockingTestEntity object = allObjects.get(0);

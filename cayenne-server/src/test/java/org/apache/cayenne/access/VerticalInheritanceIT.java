@@ -18,6 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -27,24 +34,25 @@ import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.inheritance_vertical.*;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv1Root;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv1Sub1;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
+import org.apache.cayenne.testdo.inheritance_vertical.IvConcrete;
+import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
+import org.apache.cayenne.testdo.inheritance_vertical.IvImplWithLock;
+import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
+import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub1Sub1;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub2;
+import org.apache.cayenne.testdo.inheritance_vertical.IvSub3;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 public class VerticalInheritanceIT extends ServerCase {
@@ -300,6 +308,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
+	@Deprecated
 	public void testSelectQuery_SuperSub() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -342,6 +351,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
+	@Deprecated
 	public void testSelectQuery_DeepAndWide() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -412,6 +422,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
+	@Deprecated
 	public void testSelectQuery_MiddleLeaf() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -530,6 +541,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
+	@Deprecated
 	public void testSelectQuery_AttributeOverrides() throws Exception {
 
 		TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");

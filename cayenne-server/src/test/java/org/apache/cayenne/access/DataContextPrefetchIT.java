@@ -19,6 +19,14 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
@@ -30,8 +38,8 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -46,14 +54,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -154,10 +154,10 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToMany_ViaPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-		q.addPrefetch("paintingArray");
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-		final List<Artist> artists = context.select(q);
+		final List<Artist> artists = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 
@@ -184,10 +184,11 @@ public class DataContextPrefetchIT extends ServerCase {
 		params.put("name1", "artist2");
 		params.put("name2", "artist3");
 		Expression e = ExpressionFactory.exp("artistName = $name1 or artistName = $name2");
-		SelectQuery<Artist> q = new SelectQuery<>("Artist", e.params(params));
-		q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.where(e.params(params))
+				.prefetch(Artist.PAINTING_ARRAY.disjoint());
 
-		final List<Artist> artists = context.select(q);
+		final List<Artist> artists = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 
@@ -217,10 +218,10 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToManyNoQualifier() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-		q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.prefetch(Artist.PAINTING_ARRAY.disjoint());
 
-		final List<Artist> artists = context.select(q);
+		final List<Artist> artists = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 
@@ -248,11 +249,11 @@ public class DataContextPrefetchIT extends ServerCase {
 
 		createTwoArtistsWithExhibitsDataSet();
 
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-		q.addPrefetch(Artist.ARTIST_EXHIBIT_ARRAY.disjoint());
-		q.addOrdering(Artist.ARTIST_NAME.asc());
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.prefetch(Artist.ARTIST_EXHIBIT_ARRAY.disjoint())
+				.orderBy(Artist.ARTIST_NAME.asc());
 
-		final List<Artist> artists = context.select(q);
+		final List<Artist> artists = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertEquals(2, artists.size());
@@ -285,11 +286,11 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToMany_OnJoinTableJoinedPrefetch() throws Exception {
 		createTwoArtistsWithExhibitsDataSet();
 
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-		q.addPrefetch(Artist.ARTIST_EXHIBIT_ARRAY.joint());
-		q.addOrdering(Artist.ARTIST_NAME.asc());
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.prefetch(Artist.ARTIST_EXHIBIT_ARRAY.joint())
+				.orderBy(Artist.ARTIST_NAME.asc());
 
-		final List<Artist> artists = context.select(q);
+		final List<Artist> artists = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 
@@ -332,9 +333,10 @@ public class DataContextPrefetchIT extends ServerCase {
 		paintingEntity.removeRelationship("toArtist");
 
 		try {
-			SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-			q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
-			final List<Artist> result = context.select(q);
+
+			final List<Artist> result = ObjectSelect.query(Artist.class)
+					.prefetch(Artist.PAINTING_ARRAY.disjoint())
+					.select(context);
 
 			queryInterceptor.runWithQueriesBlocked(() -> {
 				assertFalse(result.isEmpty());
@@ -358,11 +360,10 @@ public class DataContextPrefetchIT extends ServerCase {
 
 		try {
 
-			SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-			q.setQualifier(ExpressionFactory.matchExp("artistName", "artist2"));
-			q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
-
-			final List<Artist> result = context.select(q);
+			final List<Artist> result = ObjectSelect.query(Artist.class)
+					.where(Artist.ARTIST_NAME.eq("artist2"))
+					.prefetch(Artist.PAINTING_ARRAY.disjoint())
+					.select(context);
 
 			queryInterceptor.runWithQueriesBlocked(() -> {
 				assertFalse(result.isEmpty());
@@ -381,10 +382,10 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetch_ToOne() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.disjoint());
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint());
 
-		final List<Painting> result = context.select(q);
+		final List<Painting> result = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertFalse(result.isEmpty());
@@ -404,11 +405,11 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetch_ToOne_DbPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.disjoint());
-		q.andQualifier(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist2"));
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint())
+				.and(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"));
 
-		List<Painting> results = context.select(q);
+		List<Painting> results = q.select(context);
 
 		assertEquals(1, results.size());
 	}
@@ -417,11 +418,11 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetch_ToOne_ObjPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.disjoint());
-		q.andQualifier(ExpressionFactory.matchExp("toArtist.artistName", "artist2"));
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint())
+				.and(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"));
 
-		List<Painting> results = context.select(q);
+		List<Painting> results = q.select(context);
 		assertEquals(1, results.size());
 	}
 
@@ -434,11 +435,11 @@ public class DataContextPrefetchIT extends ServerCase {
 		child.setToParentGroup(parent);
 		context.commitChanges();
 
-		SelectQuery<ArtGroup> q = new SelectQuery<>("ArtGroup");
-		q.setQualifier(ExpressionFactory.matchExp("name", "child"));
-		q.addPrefetch("toParentGroup");
+		ObjectSelect<ArtGroup> q = ObjectSelect.query(ArtGroup.class)
+				.where(ArtGroup.NAME.eq("child"))
+				.prefetch("toParentGroup", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-		final List<ArtGroup> results = context.select(q);
+		final List<ArtGroup> results = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertEquals(1, results.size());
@@ -456,12 +457,11 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetch_ToOneWithQualifierOverlappingPrefetchPath() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		Expression exp = ExpressionFactory.matchExp("toArtist.artistName", "artist3");
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist3"))
+				.prefetch(Painting.TO_ARTIST.disjoint());
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class, exp);
-		q.addPrefetch(Painting.TO_ARTIST.disjoint());
-
-		final List<Painting> results = context.select(q);
+		final List<Painting> results = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertEquals(1, results.size());
@@ -491,10 +491,11 @@ public class DataContextPrefetchIT extends ServerCase {
 		Expression exp = PropertyFactory.createBase("groupArray+.name", String.class)
 				.eq("XX").orExp(Artist.ARTIST_NAME.eq("artist2"));
 
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class, exp);
-		q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.where(exp)
+				.prefetch(Artist.PAINTING_ARRAY.disjoint());
 
-		final List<Artist> results = context.select(q);
+		final List<Artist> results = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertEquals(1, results.size());
@@ -509,19 +510,22 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetch9() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		Expression artistExp = ExpressionFactory.matchExp("artistName", "artist3");
-		SelectQuery<Artist> artistQuery = new SelectQuery<>(Artist.class, artistExp);
-		Artist artist1 = (Artist) context.performQuery(artistQuery).get(0);
+		Artist artist1 = ObjectSelect
+				.query(Artist.class)
+				.where(Artist.ARTIST_NAME.eq("artist3"))
+				.select(context)
+				.get(0);
 
 		// find the painting not matching the artist (this is the case where
 		// such prefetch
 		// at least makes sense)
 		Expression exp = ExpressionFactory.noMatchExp("toArtist", artist1);
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class, exp);
-		q.addPrefetch("toArtist");
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where(Painting.TO_ARTIST.eq(artist1))
+				.prefetch("toArtist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-		final List<Painting> results = context.select(q);
+		final List<Painting> results = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertEquals(1, results.size());
@@ -538,12 +542,12 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetch_OneToOneWithQualifier() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
-		Expression e = ExpressionFactory.likeExp("toArtist.artistName", "a%");
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class, e);
-		q.addPrefetch(Painting.TO_PAINTING_INFO.disjoint());
-		q.addOrdering(Painting.PAINTING_TITLE.asc());
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
+				.prefetch(Painting.TO_PAINTING_INFO.disjoint())
+				.orderBy(Painting.PAINTING_TITLE.asc());
 
-		final List<Painting> results = context.select(q);
+		final List<Painting> results = q.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 			assertEquals(2, results.size());
@@ -570,9 +574,9 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToMany_DateInQualifier() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		Expression e = ExpressionFactory.matchExp("dateOfBirth", new Date());
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class, e);
-		q.addPrefetch("paintingArray");
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+				.where(Artist.DATE_OF_BIRTH.eq(new Date()))
+				.prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
 		// prefetch with query using date in qualifier used to fail on SQL Server
 		// see CAY-119 for details
@@ -584,8 +588,8 @@ public class DataContextPrefetchIT extends ServerCase {
 
 		tPainting.insert(6, "p_Xty", null, 1000, null);
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.disjoint());
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint());
 
 		final List<Painting> paintings = context.select(q);
 
@@ -601,9 +605,9 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToOneSharedCache() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.disjoint());
-		q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint())
+				.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
 		context.select(q);
 
@@ -634,9 +638,9 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToOneLocalCache() throws Exception {
 		createTwoArtistsAndTwoPaintingsDataSet();
 
-		final SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-		q.addPrefetch(Painting.TO_ARTIST.disjoint());
-		q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+				.prefetch(Painting.TO_ARTIST.disjoint())
+				.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
 		context.select(q);
 
@@ -667,10 +671,10 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToOneWithBackRelationship() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
-		SelectQuery<Painting> query = new SelectQuery<>(Painting.class);
-		query.andQualifier(Painting.PAINTING_TITLE.eq("p_artist2"));
-		query.addPrefetch(Painting.TO_PAINTING_INFO.disjoint());
-		query.addPrefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).disjoint());
+		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+				.and(Painting.PAINTING_TITLE.eq("p_artist2"))
+				.prefetch(Painting.TO_PAINTING_INFO.disjoint())
+				.prefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).disjoint());
 		final List<Painting> results = context.select(query);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
@@ -687,10 +691,10 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchPaintingOverToOneAndToMany() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
-		SelectQuery<Painting> query = new SelectQuery<Painting>(Painting.class);
-		query.andQualifier(Painting.PAINTING_TITLE.eq("p_artist2"));
-		query.addPrefetch(Painting.TO_ARTIST.disjoint());
-		query.addPrefetch(Painting.TO_ARTIST.dot(Artist.PAINTING_ARRAY).disjoint());
+		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+				.and(Painting.PAINTING_TITLE.eq("p_artist2"))
+				.prefetch(Painting.TO_ARTIST.disjoint())
+				.prefetch(Painting.TO_ARTIST.dot(Artist.PAINTING_ARRAY).disjoint());
 		final List<Painting> results = context.select(query);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
@@ -708,10 +712,10 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchToOneWithBackRelationship_Joint() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
-		SelectQuery<Painting> query = new SelectQuery<>(Painting.class);
-		query.andQualifier(Painting.PAINTING_TITLE.eq("p_artist2"));
-		query.addPrefetch(Painting.TO_PAINTING_INFO.joint());
-		query.addPrefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).joint());
+		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+				.and(Painting.PAINTING_TITLE.eq("p_artist2"))
+				.prefetch(Painting.TO_PAINTING_INFO.joint())
+				.prefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).joint());
 		final List<Painting> results = context.select(query);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
@@ -728,10 +732,10 @@ public class DataContextPrefetchIT extends ServerCase {
 	public void testPrefetchJointAndDisjointByIdTogether() throws Exception {
 		createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
-		SelectQuery<Painting> query = new SelectQuery<>(Painting.class);
-		query.andQualifier(Painting.PAINTING_TITLE.eq("p_artist2"));
-		query.addPrefetch(Painting.TO_ARTIST.joint());
-		query.addPrefetch(Painting.TO_PAINTING_INFO.disjointById());
+		ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
+				.and(Painting.PAINTING_TITLE.eq("p_artist2"))
+				.prefetch(Painting.TO_ARTIST.joint())
+				.prefetch(Painting.TO_PAINTING_INFO.disjointById());
 		final List<Painting> results = context.select(query);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {

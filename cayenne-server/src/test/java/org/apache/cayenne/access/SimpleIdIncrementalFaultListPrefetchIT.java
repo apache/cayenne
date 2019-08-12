@@ -19,27 +19,25 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -98,14 +96,12 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
 
     @Test
     public void testListType() throws Exception {
-
         createArtistsDataSet();
 
-        Expression e = Artist.ARTIST_NAME.like("artist1%");
-        SelectQuery q = new SelectQuery("Artist", e);
-        q.setPageSize(4);
-
-        List<?> result = context.performQuery(q);
+        List<?> result = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.like("artist1%"))
+                .pageSize(4)
+                .select(context);
         assertTrue(result instanceof SimpleIdIncrementalFaultList);
     }
 
@@ -115,13 +111,12 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
      */
     @Test
     public void testPrefetch1() throws Exception {
-
         createArtistsAndPaintingsDataSet();
 
-        Expression e = ExpressionFactory.likeExp("artistName", "artist1%");
-        SelectQuery q = new SelectQuery("Artist", e);
-        q.addPrefetch("paintingArray");
-        q.setPageSize(3);
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.like("artist1%"))
+                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS)
+                .pageSize(3);
 
         final IncrementalFaultList<?> result = (IncrementalFaultList) context
                 .performQuery(q);
@@ -131,13 +126,10 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
         // currently queries with prefetch do not resolve their first page
         assertEquals(result.size(), result.getUnfetchedObjects());
 
-        int count = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                // go through the second page objects and count queries
-                for (int i = 3; i < 6; i++) {
-                    result.get(i);
-                }
+        int count = queryInterceptor.runWithQueryCounter(() -> {
+            // go through the second page objects and count queries
+            for (int i = 3; i < 6; i++) {
+                result.get(i);
             }
         });
 
@@ -150,13 +142,12 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
      */
     @Test
     public void testPrefetch3() throws Exception {
-
         createArtistsAndPaintingsDataSet();
 
-        Expression e = ExpressionFactory.likeExp("artistName", "artist1%");
-        SelectQuery q = new SelectQuery("Artist", e);
-        q.addPrefetch("paintingArray");
-        q.setPageSize(3);
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.like("artist1%"))
+                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS)
+                .pageSize(3);
 
         IncrementalFaultList result = (IncrementalFaultList) context.performQuery(q);
 
@@ -180,30 +171,26 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
      */
     @Test
     public void testPrefetch4() throws Exception {
-
         createArtistsAndPaintingsDataSet();
 
-        SelectQuery q = new SelectQuery(Painting.class);
-        q.setPageSize(3);
-        q.addPrefetch("toArtist");
+        ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+                .pageSize(3)
+                .prefetch("toArtist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         IncrementalFaultList<?> result = (IncrementalFaultList) context.performQuery(q);
 
         // get an objects from the second page
         final DataObject p1 = (DataObject) result.get(q.getPageSize());
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Object toOnePrefetch = p1.readNestedProperty("toArtist");
+            assertNotNull(toOnePrefetch);
+            assertTrue(
+                    "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
+                    toOnePrefetch instanceof DataObject);
 
-            public void execute() {
-                Object toOnePrefetch = p1.readNestedProperty("toArtist");
-                assertNotNull(toOnePrefetch);
-                assertTrue(
-                        "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
-                        toOnePrefetch instanceof DataObject);
-
-                DataObject a1 = (DataObject) toOnePrefetch;
-                assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
-            }
+            DataObject a1 = (DataObject) toOnePrefetch;
+            assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
         });
     }
 

@@ -19,7 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -38,12 +38,12 @@ public class IncrementalFaultListIT extends ServerCase {
 
     @Test
 	public void testSerialization() throws Exception {
-		SelectQuery query = new SelectQuery(Artist.class);
-		query.setPageSize(10);
-		
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.pageSize(10);
+
 		IncrementalFaultList<Artist> i1 = new IncrementalFaultList<Artist>(context, query, 10);
 		IncrementalFaultList<Artist> i2 = Util.cloneViaSerialization(i1);
-		
+
 		assertNotNull(i2);
 		assertEquals(i1.getMaxFetchSize(), i2.getMaxFetchSize());
 		assertEquals(i1.getClass(), i2.getClass());

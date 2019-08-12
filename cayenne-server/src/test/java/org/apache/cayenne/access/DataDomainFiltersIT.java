@@ -18,6 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;
@@ -28,17 +31,14 @@ import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.ListResponse;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -84,7 +84,7 @@ public class DataDomainFiltersIT extends ServerCase {
         domain.queryFilters.add(f1);
         domain.queryFilters.add(f2);
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
         QueryResponse response = domain.onQuery(context, query);
         assertNotNull(response);
         assertEquals(4, results.size());
@@ -144,7 +144,7 @@ public class DataDomainFiltersIT extends ServerCase {
         domain.queryFilters.add(f1);
         domain.queryFilters.add(f2);
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
         QueryResponse response = domain.onQuery(context, query);
 
         assertSame(r2, response);

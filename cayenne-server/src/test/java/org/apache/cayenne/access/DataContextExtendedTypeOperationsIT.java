@@ -18,20 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.Arrays;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.extended_type.StringET1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
@@ -68,8 +67,8 @@ public class DataContextExtendedTypeOperationsIT extends ServerCase {
 
         e1.getObjectContext().commitChanges();
 
-        Expression in = ExtendedTypeEntity.NAME.in(new StringET1("X"), new StringET1("Y"));
-        SelectQuery query = new SelectQuery(ExtendedTypeEntity.class, in);
+        ObjectSelect<ExtendedTypeEntity> query = ObjectSelect.query(ExtendedTypeEntity.class)
+                .where(ExtendedTypeEntity.NAME.in(new StringET1("X"), new StringET1("Y")));
         assertEquals(2, e1.getObjectContext().performQuery(query).size());
     }
 
@@ -86,8 +85,8 @@ public class DataContextExtendedTypeOperationsIT extends ServerCase {
 
         e1.getObjectContext().commitChanges();
 
-        Expression in = ExtendedTypeEntity.NAME.in(Arrays.asList(new StringET1("X"), new StringET1("Y")));
-        SelectQuery query = new SelectQuery(ExtendedTypeEntity.class, in);
+        ObjectSelect<ExtendedTypeEntity> query = ObjectSelect.query(ExtendedTypeEntity.class)
+                .where(ExtendedTypeEntity.NAME.in(Arrays.asList(new StringET1("X"), new StringET1("Y"))));
         assertEquals(2, e1.getObjectContext().performQuery(query).size());
     }
 }

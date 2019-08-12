@@ -18,18 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,12 +62,11 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
     public void testToManyDisjointOverlappingQualifierWithInnerJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.andQualifier(ExpressionFactory
-                .likeExp("paintingArray.paintingTitle", "AB%"));
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
+                .prefetch(Artist.PAINTING_ARRAY.disjoint());
 
-        List<Artist> result = context.performQuery(query);
+        List<Artist> result = query.select(context);
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
@@ -77,12 +77,11 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
     public void testToManyJointOverlappingQualifierWithInnerJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.andQualifier(ExpressionFactory
-                .likeExp("paintingArray.paintingTitle", "AB%"));
-        query.addPrefetch(Artist.PAINTING_ARRAY.joint());
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
+                .prefetch(Artist.PAINTING_ARRAY.joint());
 
-        List<Artist> result = context.performQuery(query);
+        List<Artist> result = query.select(context);
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
@@ -93,16 +92,13 @@ public class DataContextPrefetchQualifierOverlapIT extends ServerCase {
     public void testToManyJointOverlappingQualifierWithOuterJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.andQualifier(ExpressionFactory.likeExp(
-                "paintingArray+.paintingTitle",
-                "AB%"));
-        query.addPrefetch(Artist.PAINTING_ARRAY.joint());
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .and(ExpressionFactory.likeExp("paintingArray+.paintingTitle", "AB%"))
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .or(Artist.ARTIST_NAME.like("A%"))
+                .orderBy(Artist.ARTIST_NAME.asc());
 
-        query.orQualifier(ExpressionFactory.likeExp("artistName", "A%"));
-        query.addOrdering(Artist.ARTIST_NAME.asc());
-
-        List<Artist> result = context.performQuery(query);
+        List<Artist> result = query.select(context);
         assertEquals(2, result.size());
 
         Artist a = result.get(0);

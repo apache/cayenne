@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.lang.reflect.Array;
+
 import org.apache.cayenne.MockSerializable;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.misc_types.ArraysEntity;
 import org.apache.cayenne.testdo.misc_types.CharacterEntity;
 import org.apache.cayenne.testdo.misc_types.SerializableEntity;
@@ -30,8 +32,6 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.lang.reflect.Array;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -42,13 +42,13 @@ public class MiscTypesIT extends ServerCase {
 
     @Inject
     private ObjectContext context;
-    
+
     @Inject
     private UnitDbAdapter accessStackAdapter;
-    
+
     @Test
     public void testSerializable() throws Exception {
-        
+
         // this test requires BLOB support
         if(!accessStackAdapter.supportsLobs()) {
             return;
@@ -61,8 +61,9 @@ public class MiscTypesIT extends ServerCase {
         test.setSerializableField(i);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(SerializableEntity.class);
-        SerializableEntity testRead = (SerializableEntity) context.performQuery(q).get(0);
+        SerializableEntity testRead = ObjectSelect
+                .query(SerializableEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getSerializableField());
         assertEquals(i.getName(), testRead.getSerializableField().getName());
 
@@ -80,8 +81,9 @@ public class MiscTypesIT extends ServerCase {
         test.setByteArray(a);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(ArraysEntity.class);
-        ArraysEntity testRead = (ArraysEntity) context.performQuery(q).get(0);
+        ArraysEntity testRead = ObjectSelect
+                .query(ArraysEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getByteArray());
         assertArraysEqual(a, testRead.getByteArray());
 
@@ -99,8 +101,8 @@ public class MiscTypesIT extends ServerCase {
         test.setCharArray(a);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(ArraysEntity.class);
-        ArraysEntity testRead = (ArraysEntity) context.performQuery(q).get(0);
+        ArraysEntity testRead = ObjectSelect.query(ArraysEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getCharArray());
         assertArraysEqual(a, testRead.getCharArray());
 
@@ -113,13 +115,13 @@ public class MiscTypesIT extends ServerCase {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Character[] a = new Character[] {
-                new Character('x'), new Character('y'), new Character('z')
+                'x', 'y', 'z'
         };
         test.setCharWrapperArray(a);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(ArraysEntity.class);
-        ArraysEntity testRead = (ArraysEntity) context.performQuery(q).get(0);
+        ArraysEntity testRead = ObjectSelect.query(ArraysEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getCharWrapperArray());
         assertArraysEqual(a, testRead.getCharWrapperArray());
 
@@ -131,13 +133,14 @@ public class MiscTypesIT extends ServerCase {
     public void testCharacter() {
         CharacterEntity test = context.newObject(CharacterEntity.class);
 
-        test.setCharacterField(new Character('c'));
+        test.setCharacterField('c');
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(CharacterEntity.class);
-        CharacterEntity testRead = (CharacterEntity) context.performQuery(q).get(0);
+        CharacterEntity testRead = ObjectSelect
+                .query(CharacterEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getCharacterField());
-        assertEquals(new Character('c'), testRead.getCharacterField());
+        assertEquals((Character) 'c', testRead.getCharacterField());
 
         test.setCharacterField(null);
         context.commitChanges();
@@ -148,13 +151,14 @@ public class MiscTypesIT extends ServerCase {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
         Byte[] a = new Byte[] {
-                new Byte((byte) 1), new Byte((byte) 2), new Byte((byte) 3)
+                (byte) 1, (byte) 2, (byte) 3
         };
         test.setByteWrapperArray(a);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(ArraysEntity.class);
-        ArraysEntity testRead = (ArraysEntity) context.performQuery(q).get(0);
+        ArraysEntity testRead = ObjectSelect
+                .query(ArraysEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getByteWrapperArray());
         assertArraysEqual(a, testRead.getByteWrapperArray());
 

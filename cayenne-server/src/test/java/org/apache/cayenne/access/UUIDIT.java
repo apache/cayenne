@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.UUID;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.uuid.UuidPkEntity;
@@ -34,8 +35,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -65,8 +64,8 @@ public class UUIDIT extends ServerCase {
         test.setUuid(id);
         context.commitChanges();
 
-        SelectQuery<UuidTestEntity> q = new SelectQuery<>(UuidTestEntity.class);
-        UuidTestEntity testRead = (UuidTestEntity) context.performQuery(q).get(0);
+        UuidTestEntity testRead = ObjectSelect.query(UuidTestEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getUuid());
         assertEquals(id, testRead.getUuid());
 

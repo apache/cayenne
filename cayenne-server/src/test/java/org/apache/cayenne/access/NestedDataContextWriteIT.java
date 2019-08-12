@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Types;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -26,7 +31,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -40,11 +45,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -52,7 +52,7 @@ public class NestedDataContextWriteIT extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
-    
+
     @Inject
     private DataContext context;
 
@@ -182,21 +182,21 @@ public class NestedDataContextWriteIT extends ServerCase {
         final ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME.asc());
-        List<?> objects = childContext.performQuery(query);
+        List<Artist> objects = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.asc())
+                .select(childContext);
 
         assertEquals(4, objects.size());
 
         final Artist childNew = childContext.newObject(Artist.class);
         childNew.setArtistName("NNN");
 
-        final Artist childModified = (Artist) objects.get(0);
+        final Artist childModified = objects.get(0);
         childModified.setArtistName("MMM");
 
-        final Artist childCommitted = (Artist) objects.get(1);
+        final Artist childCommitted = objects.get(1);
 
-        final Artist childHollow = (Artist) objects.get(3);
+        final Artist childHollow = objects.get(3);
         childContext.invalidateObjects(childHollow);
 
         queryInterceptor.runWithQueriesBlocked(() -> {
@@ -254,14 +254,14 @@ public class NestedDataContextWriteIT extends ServerCase {
         ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME.asc());
-        List<?> objects = childContext.performQuery(query);
+        List<Artist> objects = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.asc())
+                .select(childContext);
 
         assertEquals(4, objects.size());
 
         // delete AND modify
-        Artist childDeleted = (Artist) objects.get(2);
+        Artist childDeleted = objects.get(2);
         childContext.deleteObjects(childDeleted);
         childDeleted.setArtistName("DDD");
 
@@ -291,26 +291,26 @@ public class NestedDataContextWriteIT extends ServerCase {
         ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME.asc());
-        List<?> objects = childContext.performQuery(query);
+        List<Artist> objects = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.asc())
+                .select(childContext);
 
         assertEquals(4, objects.size());
 
         Artist childNew = childContext.newObject(Artist.class);
         childNew.setArtistName("NNN");
 
-        Artist childModified = (Artist) objects.get(0);
+        Artist childModified = objects.get(0);
         childModified.setArtistName("MMM");
 
-        Artist childCommitted = (Artist) objects.get(1);
+        Artist childCommitted = objects.get(1);
 
         // delete AND modify
-        Artist childDeleted = (Artist) objects.get(2);
+        Artist childDeleted = objects.get(2);
         childContext.deleteObjects(childDeleted);
         childDeleted.setArtistName("DDD");
 
-        Artist childHollow = (Artist) objects.get(3);
+        Artist childHollow = objects.get(3);
         childContext.invalidateObjects(childHollow);
 
         childContext.commitChanges();
@@ -358,23 +358,23 @@ public class NestedDataContextWriteIT extends ServerCase {
         final ObjectContext childContext = runtime.newContext(context);
 
         // make sure we fetch in predictable order
-        SelectQuery<Painting> query = new SelectQuery<>(Painting.class);
-        query.addOrdering(Painting.PAINTING_TITLE.asc());
-        List<?> objects = childContext.performQuery(query);
+        List<Painting> objects = ObjectSelect.query(Painting.class)
+                .orderBy(Painting.PAINTING_TITLE.asc())
+                .select(childContext);
 
         assertEquals(6, objects.size());
 
-        final Painting childModifiedSimple = (Painting) objects.get(0);
+        final Painting childModifiedSimple = objects.get(0);
         childModifiedSimple.setPaintingTitle("C_PT");
 
-        final Painting childModifiedToOne = (Painting) objects.get(1);
+        final Painting childModifiedToOne = objects.get(1);
         childModifiedToOne.setToArtist(childModifiedSimple.getToArtist());
 
-        final Artist childModifiedToMany = ((Painting) objects.get(2)).getToArtist();
+        final Artist childModifiedToMany = objects.get(2).getToArtist();
 
         // ensure painting array is fully resolved...
         childModifiedToMany.getPaintingArray().size();
-        childModifiedToMany.addToPaintingArray((Painting) objects.get(3));
+        childModifiedToMany.addToPaintingArray(objects.get(3));
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             Painting parentModifiedSimple;

@@ -19,15 +19,17 @@
 
 package org.apache.cayenne.access;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.List;
+
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
@@ -44,10 +46,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -102,8 +100,8 @@ public class NumericTypesIT extends ServerCase {
         test.setLongField(i);
         context.commitChanges();
 
-        SelectQuery<LongEntity> q = new SelectQuery<>(LongEntity.class);
-        LongEntity testRead = (LongEntity) context.performQuery(q).get(0);
+        LongEntity testRead = ObjectSelect.query(LongEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getLongField());
         assertEquals(i, testRead.getLongField());
 
@@ -120,8 +118,8 @@ public class NumericTypesIT extends ServerCase {
         test.setBigIntegerField(i);
         context.commitChanges();
 
-        SelectQuery<BigIntegerEntity> q = new SelectQuery<>(BigIntegerEntity.class);
-        BigIntegerEntity testRead = (BigIntegerEntity) context.performQuery(q).get(0);
+        BigIntegerEntity testRead = ObjectSelect.query(BigIntegerEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getBigIntegerField());
         assertEquals(i, testRead.getBigIntegerField());
 
@@ -138,8 +136,8 @@ public class NumericTypesIT extends ServerCase {
         test.setBigDecimalField(i);
         context.commitChanges();
 
-        SelectQuery<BigDecimalEntity> q = new SelectQuery<>(BigDecimalEntity.class);
-        BigDecimalEntity testRead = (BigDecimalEntity) context.performQuery(q).get(0);
+        BigDecimalEntity testRead = ObjectSelect.query(BigDecimalEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getBigDecimalField());
         assertEquals(i, testRead.getBigDecimalField());
 
@@ -152,21 +150,20 @@ public class NumericTypesIT extends ServerCase {
         createShortDataSet();
 
         // test
-        Expression qual = ExpressionFactory.matchExp("smallintCol", new Short("9999"));
-        List<?> objects = context.performQuery(new SelectQuery<>(
-                SmallintTestEntity.class,
-                qual));
+        List<SmallintTestEntity> objects = ObjectSelect.query(SmallintTestEntity.class)
+                .where(SmallintTestEntity.SMALLINT_COL.eq(Short.valueOf("9999")))
+                .select(context);
         assertEquals(1, objects.size());
 
-        SmallintTestEntity object = (SmallintTestEntity) objects.get(0);
-        assertEquals(new Short("9999"), object.getSmallintCol());
+        SmallintTestEntity object = objects.get(0);
+        assertEquals(Short.valueOf("9999"), object.getSmallintCol());
     }
 
     @Test
     public void testShortInInsert() throws Exception {
         SmallintTestEntity object = (SmallintTestEntity) (context)
                 .newObject("SmallintTestEntity");
-        object.setSmallintCol(new Short("1"));
+        object.setSmallintCol(Short.valueOf("1"));
         context.commitChanges();
     }
 
@@ -175,14 +172,13 @@ public class NumericTypesIT extends ServerCase {
         createTinyintDataSet();
 
         // test
-        Expression qual = ExpressionFactory.matchExp("tinyintCol", (byte) 81);
-        List<?> objects = context.performQuery(new SelectQuery<>(
-                TinyintTestEntity.class,
-                qual));
+        List<?> objects = ObjectSelect.query(TinyintTestEntity.class)
+                .where(TinyintTestEntity.TINYINT_COL.eq((byte) 81))
+                .select(context);
         assertEquals(1, objects.size());
 
         TinyintTestEntity object = (TinyintTestEntity) objects.get(0);
-        assertEquals(new Byte((byte) 81), object.getTinyintCol());
+        assertEquals(Byte.valueOf((byte) 81), object.getTinyintCol());
     }
 
     @Test
@@ -204,10 +200,9 @@ public class NumericTypesIT extends ServerCase {
         context.invalidateObjects(trueObject, falseObject);
 
         // fetch true...
-        Expression trueQ = ExpressionFactory.matchExp("bitColumn", Boolean.TRUE);
-        List<?> trueResult = context1.performQuery(new SelectQuery<>(
-                BitTestEntity.class,
-                trueQ));
+        List<?> trueResult = ObjectSelect.query(BitTestEntity.class)
+                .where(BitTestEntity.BIT_COLUMN.eq(Boolean.TRUE))
+                .select(context1);
         assertEquals(1, trueResult.size());
 
         BitTestEntity trueRefetched = (BitTestEntity) trueResult.get(0);
@@ -218,10 +213,9 @@ public class NumericTypesIT extends ServerCase {
         assertSame(Boolean.TRUE, trueRefetched.getBitColumn());
 
         // fetch false
-        Expression falseQ = ExpressionFactory.matchExp("bitColumn", Boolean.FALSE);
-        List<?> falseResult = context1.performQuery(new SelectQuery<>(
-                BitTestEntity.class,
-                falseQ));
+        List<?> falseResult = ObjectSelect.query(BitTestEntity.class)
+                .where(BitTestEntity.BIT_COLUMN.eq(Boolean.FALSE))
+                .select(context1);
         assertEquals(1, falseResult.size());
 
         BitTestEntity falseRefetched = (BitTestEntity) falseResult.get(0);
@@ -247,10 +241,9 @@ public class NumericTypesIT extends ServerCase {
         context.invalidateObjects(trueObject, falseObject);
 
         // fetch true...
-        Expression trueQ = ExpressionFactory.matchExp("booleanColumn", Boolean.TRUE);
-        List<?> trueResult = context1.performQuery(new SelectQuery<>(
-                BooleanTestEntity.class,
-                trueQ));
+        List<?> trueResult = ObjectSelect.query(BooleanTestEntity.class)
+                .where(BooleanTestEntity.BOOLEAN_COLUMN.eq(Boolean.TRUE))
+                .select(context1);
         assertEquals(1, trueResult.size());
 
         BooleanTestEntity trueRefetched = (BooleanTestEntity) trueResult.get(0);
@@ -261,10 +254,9 @@ public class NumericTypesIT extends ServerCase {
         assertSame(Boolean.TRUE, trueRefetched.getBooleanColumn());
 
         // fetch false
-        Expression falseQ = ExpressionFactory.matchExp("booleanColumn", Boolean.FALSE);
-        List<?> falseResult = context1.performQuery(new SelectQuery<>(
-                BooleanTestEntity.class,
-                falseQ));
+        List<?> falseResult = ObjectSelect.query(BooleanTestEntity.class)
+                .where(BooleanTestEntity.BOOLEAN_COLUMN.eq(Boolean.FALSE))
+                .select(context1);
         assertEquals(1, falseResult.size());
 
         BooleanTestEntity falseRefetched = (BooleanTestEntity) falseResult.get(0);

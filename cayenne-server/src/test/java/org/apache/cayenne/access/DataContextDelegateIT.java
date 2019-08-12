@@ -19,10 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MockQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -30,9 +33,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -123,9 +123,9 @@ public class DataContextDelegateIT extends ServerCase {
         };
         context.setDelegate(delegate);
 
-        // test that delegate is consulted before select
-        SelectQuery query = new SelectQuery(Gallery.class);
-        List<?> results = context.performQuery(query);
+        // test that delegate is consulted before select;
+        ObjectSelect<Gallery> query = ObjectSelect.query(Gallery.class);
+        List<Gallery> results = query.select(context);
 
         assertTrue("Delegate is not notified of a query being run.", queriesPerformed
                 .contains(query));
@@ -147,8 +147,8 @@ public class DataContextDelegateIT extends ServerCase {
         };
 
         context.setDelegate(delegate);
-        SelectQuery query = new SelectQuery(Gallery.class);
-        List<?> results = context.performQuery(query);
+        ObjectSelect<Gallery> query = ObjectSelect.query(Gallery.class);
+        List<Gallery> results = query.select(context);
 
         assertTrue("Delegate is not notified of a query being run.", queriesPerformed
                 .contains(query));

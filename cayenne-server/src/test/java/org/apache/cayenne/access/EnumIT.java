@@ -67,6 +67,7 @@ public class EnumIT extends ServerCase {
     }
 
     @Test
+    @Deprecated
     public void testSelectQuery() throws Exception {
         createDataSet();
 

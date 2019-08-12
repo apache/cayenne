@@ -29,10 +29,8 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -43,13 +41,7 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
@@ -101,10 +93,11 @@ public class DataContextSharedCacheIT extends ServerCaseContextsSync {
 
         // fetch updated artist into the new context, and see if the original
         // one gets updated
-        Expression qual = ExpressionFactory.matchExp("artistName", newName);
-        List artists = context1.performQuery(new SelectQuery<>(Artist.class, qual));
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(newName))
+                .select(context);
         assertEquals(1, artists.size());
-        Artist altArtist = (Artist) artists.get(0);
+        Artist altArtist = artists.get(0);
 
         // check underlying cache
         DataRow freshSnapshot = context
@@ -539,9 +532,9 @@ public class DataContextSharedCacheIT extends ServerCaseContextsSync {
         context.performNonSelectingQuery(update);
 
         // fetch updated artist without refreshing
-        Expression qual = ExpressionFactory.matchExp("artistName", newName);
-        SelectQuery query = new SelectQuery<>(Artist.class, qual);
-        List artists = context.performQuery(query);
+        List artists = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(newName))
+                .select(context);
         assertEquals(1, artists.size());
         artist = (Artist) artists.get(0);
 

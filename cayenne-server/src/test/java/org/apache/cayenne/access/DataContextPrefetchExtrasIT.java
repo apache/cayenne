@@ -19,15 +19,16 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharFkTestEntity;
@@ -39,8 +40,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -101,14 +100,14 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     public void testPrefetchToManyOnCharKey() throws Exception {
         createPrefetchToManyOnCharKeyDataSet();
 
-        SelectQuery q = new SelectQuery(CharPkTestEntity.class);
-        q.addPrefetch("charFKs");
-        q.addOrdering(CharPkTestEntity.OTHER_COL.asc());
+        ObjectSelect<CharPkTestEntity> q = ObjectSelect.query(CharPkTestEntity.class)
+                .prefetch("charFKs", PrefetchTreeNode.UNDEFINED_SEMANTICS)
+                .orderBy(CharPkTestEntity.OTHER_COL.asc());
 
-        List<?> pks = context.performQuery(q);
+        List<CharPkTestEntity> pks = q.select(context);
         assertEquals(2, pks.size());
 
-        CharPkTestEntity pk1 = (CharPkTestEntity) pks.get(0);
+        CharPkTestEntity pk1 = pks.get(0);
         assertEquals("n1", pk1.getOtherCol());
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("charFKs");
         assertNotNull(toMany);
@@ -127,13 +126,13 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     public void testPrefetch10() throws Exception {
         createCompoundDataSet();
 
-        Expression e = ExpressionFactory.matchExp("name", "CFK2");
-        SelectQuery q = new SelectQuery(CompoundFkTestEntity.class, e);
-        q.addPrefetch("toCompoundPk");
+        ObjectSelect<CompoundFkTestEntity> q = ObjectSelect.query(CompoundFkTestEntity.class)
+                .where(CompoundFkTestEntity.NAME.eq("CFK2"))
+                .prefetch("toCompoundPk", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<?> objects = context.performQuery(q);
+        List<CompoundFkTestEntity> objects = q.select(context);
         assertEquals(1, objects.size());
-        BaseDataObject fk1 = (BaseDataObject) objects.get(0);
+        BaseDataObject fk1 = objects.get(0);
 
         Object toOnePrefetch = fk1.readNestedProperty("toCompoundPk");
         assertNotNull(toOnePrefetch);
@@ -153,13 +152,13 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     public void testPrefetch11() throws Exception {
         createCompoundDataSet();
 
-        Expression e = ExpressionFactory.matchExp("name", "CPK2");
-        SelectQuery q = new SelectQuery(CompoundPkTestEntity.class, e);
-        q.addPrefetch("compoundFkArray");
+        ObjectSelect<CompoundPkTestEntity> q = ObjectSelect.query(CompoundPkTestEntity.class)
+                .where(CompoundPkTestEntity.NAME.eq("CPK2"))
+                .prefetch("compoundFkArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<?> pks = context.performQuery(q);
+        List<CompoundPkTestEntity> pks = q.select(context);
         assertEquals(1, pks.size());
-        BaseDataObject pk1 = (BaseDataObject) pks.get(0);
+        BaseDataObject pk1 = pks.get(0);
 
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("compoundFkArray");
         assertNotNull(toMany);

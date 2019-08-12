@@ -18,9 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -29,8 +31,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -70,25 +70,25 @@ public class DataContextPaginatedQueryIT extends ServerCase {
 
         createArtistsDataSet();
 
-        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME.asc());
-        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        query.setPageSize(5);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.asc())
+                .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE)
+                .pageSize(5);
 
-        List<?> results1 = context.performQuery(query);
+        List<Artist> results1 = query.select(context);
         assertNotNull(results1);
 
-        List<?> results2 = context.performQuery(query);
+        List<Artist> results2 = query.select(context);
         assertNotNull(results2);
         assertSame(results1, results2);
 
         results1.get(1);
-        List<?> results3 = context.performQuery(query);
+        List<Artist> results3 = query.select(context);
         assertNotNull(results3);
         assertSame(results1, results3);
 
         results1.get(7);
-        List<?> results4 = context.performQuery(query);
+        List<Artist> results4 = query.select(context);
         assertNotNull(results4);
         assertSame(results1, results4);
     }

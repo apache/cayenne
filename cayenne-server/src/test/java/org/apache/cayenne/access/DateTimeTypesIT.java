@@ -19,20 +19,20 @@
 
 package org.apache.cayenne.access;
 
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.MappedSelect;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.date_time.CalendarEntity;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.sql.Time;
-import java.util.Calendar;
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -59,8 +59,8 @@ public class DateTimeTypesIT extends ServerCase {
         test.setCalendarField(cal);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(CalendarEntity.class);
-        CalendarEntity testRead = (CalendarEntity) context.performQuery(q).get(0);
+        CalendarEntity testRead = ObjectSelect.query(CalendarEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getCalendarField());
         assertEquals(cal, testRead.getCalendarField());
 
@@ -79,8 +79,8 @@ public class DateTimeTypesIT extends ServerCase {
         test.setDateColumn(nowDate);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(DateTestEntity.class);
-        DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
+        DateTestEntity testRead = ObjectSelect.query(DateTestEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getDateColumn());
         assertEquals(nowDate, testRead.getDateColumn());
         assertEquals(Date.class, testRead.getDateColumn().getClass());
@@ -97,8 +97,8 @@ public class DateTimeTypesIT extends ServerCase {
         test.setTimeColumn(nowTime);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(DateTestEntity.class);
-        DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
+        DateTestEntity testRead = ObjectSelect.query(DateTestEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getTimeColumn());
         assertEquals(Date.class, testRead.getTimeColumn().getClass());
 
@@ -126,8 +126,8 @@ public class DateTimeTypesIT extends ServerCase {
         test.setTimestampColumn(now);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(DateTestEntity.class);
-        DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
+        DateTestEntity testRead = ObjectSelect.query(DateTestEntity.class)
+                .selectFirst(context);
         assertNotNull(testRead.getTimestampColumn());
         assertEquals(now, testRead.getTimestampColumn());
     }
@@ -146,7 +146,7 @@ public class DateTimeTypesIT extends ServerCase {
         Date now = cal.getTime();
         test.setTimestampColumn(now);
         context.commitChanges();
-		
+
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIMESTAMP_COLUMN");
         assertNotNull(columnValue);
@@ -167,7 +167,7 @@ public class DateTimeTypesIT extends ServerCase {
         java.sql.Date now = new java.sql.Date(cal.getTime().getTime());
         test.setDateColumn(now);
         context.commitChanges();
-		
+
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("DATE_COLUMN");
         assertNotNull(columnValue);
@@ -188,7 +188,7 @@ public class DateTimeTypesIT extends ServerCase {
         Time now = new Time(cal.getTime().getTime());
         test.setTimeColumn(now);
         context.commitChanges();
-		
+
         DataRow testRead = (DataRow) context.performQuery(MappedSelect.query("SelectDateTest")).get(0);
         Date columnValue = (Date) testRead.get("TIME_COLUMN");
         assertNotNull(testRead.toString(), columnValue);

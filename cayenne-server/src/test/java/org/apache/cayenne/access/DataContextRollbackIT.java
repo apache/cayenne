@@ -19,20 +19,19 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -90,9 +89,9 @@ public class DataContextRollbackIT extends ServerCase {
         DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List<?> queryResults = freshContext.performQuery(query);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(artistName));
+        List<Artist> queryResults = query.select(freshContext);
 
         assertEquals(0, queryResults.size());
     }
@@ -122,9 +121,9 @@ public class DataContextRollbackIT extends ServerCase {
         DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List<?> queryResults = freshContext.performQuery(query);
+        List<?> queryResults = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(artistName))
+                .select(freshContext);
 
         assertEquals(0, queryResults.size());
     }
@@ -155,9 +154,9 @@ public class DataContextRollbackIT extends ServerCase {
         DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
-        SelectQuery query = new SelectQuery(Painting.class);
-        query.setQualifier(ExpressionFactory.matchExp("paintingTitle", paintingTitle));
-        List<?> queryResults = freshContext.performQuery(query);
+        List<?> queryResults = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.eq(paintingTitle))
+                .select(freshContext);
 
         assertEquals(1, queryResults.size());
         Painting queriedPainting = (Painting) queryResults.get(0);
@@ -172,7 +171,7 @@ public class DataContextRollbackIT extends ServerCase {
         Artist artist = (Artist) context.newObject("Artist");
         artist.setArtistName(artistName);
         context.commitChanges();
-       
+
         context.deleteObjects(artist);
         context.rollbackChanges();
 
@@ -186,9 +185,9 @@ public class DataContextRollbackIT extends ServerCase {
         DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List<?> queryResults = freshContext.performQuery(query);
+        List<?> queryResults = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(artistName))
+                .select(context);
 
         assertEquals(1, queryResults.size());
     }
@@ -214,9 +213,9 @@ public class DataContextRollbackIT extends ServerCase {
         DataContext freshContext = (DataContext) serverRuntime.newContext();
         assertNotSame(this.context, freshContext);
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setQualifier(ExpressionFactory.matchExp("artistName", artistName));
-        List<?> queryResults = freshContext.performQuery(query);
+        List<?> queryResults = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq(artistName))
+                .select(freshContext);
 
         assertEquals(1, queryResults.size());
     }

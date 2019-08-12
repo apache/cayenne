@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -27,7 +29,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.generated.GeneratedColumnCompKey;
@@ -42,8 +44,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -88,10 +88,10 @@ public class IdentityColumnsIT extends ServerCase {
 
         ObjectId id = idObject.getObjectId();
         context.invalidateObjects(idObject);
-
-        SelectQuery q = new SelectQuery(GeneratedColumnTestEntity.class);
-        q.setPageSize(10);
-        List<?> results = context.performQuery(q);
+        
+        List<?> results = ObjectSelect.query(GeneratedColumnTestEntity.class)
+                .pageSize(10)
+                .select(context);
         assertEquals(1, results.size());
 
         // per CAY-823 an attempt to resolve an object results in an exception

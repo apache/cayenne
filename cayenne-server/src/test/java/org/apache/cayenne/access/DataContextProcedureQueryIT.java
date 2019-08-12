@@ -19,14 +19,21 @@
 
 package org.apache.cayenne.access;
 
+import java.math.BigDecimal;
+import java.sql.Types;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
@@ -36,12 +43,6 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.sql.Types;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -91,13 +92,13 @@ public class DataContextProcedureQueryIT extends ServerCase {
         }
 
         // check that price have doubled
-        SelectQuery select = new SelectQuery(Artist.class);
-        select.addPrefetch("paintingArray");
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
+                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<?> artists = context.performQuery(select);
+        List<Artist> artists = select.select(context);
         assertEquals(1, artists.size());
 
-        Artist a = (Artist) artists.get(0);
+        Artist a = artists.get(0);
         Painting p = a.getPaintingArray().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
@@ -127,13 +128,13 @@ public class DataContextProcedureQueryIT extends ServerCase {
         }
 
         // check that price have doubled
-        SelectQuery select = new SelectQuery(Artist.class);
-        select.addPrefetch("paintingArray");
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
+                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        List<?> artists = context.performQuery(select);
+        List<Artist> artists = select.select(context);
         assertEquals(1, artists.size());
 
-        Artist a = (Artist) artists.get(0);
+        Artist a = artists.get(0);
         Painting p = a.getPaintingArray().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }

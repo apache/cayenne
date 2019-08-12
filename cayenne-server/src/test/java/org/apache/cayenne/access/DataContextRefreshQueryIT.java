@@ -18,14 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -36,8 +37,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -91,12 +90,12 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshCollection() throws Exception {
         createRefreshCollectionDataSet();
 
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        List<?> artists = context.performQuery(q);
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .orderBy("db:ARTIST_ID", SortOrder.ASCENDING)
+                .select(context);
 
-        Artist a1 = (Artist) artists.get(0);
-        Artist a2 = (Artist) artists.get(1);
+        Artist a1 = artists.get(0);
+        Artist a2 = artists.get(1);
 
         assertEquals(2, a1.getPaintingArray().size());
         assertEquals(0, a2.getPaintingArray().size());
@@ -135,12 +134,12 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshCollectionToOne() throws Exception {
         createRefreshCollectionDataSet();
 
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        List<?> paints = context.performQuery(q);
+        List<Painting> paints = ObjectSelect.query(Painting.class)
+                .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
+                .select(context);
 
-        Painting p1 = (Painting) paints.get(0);
-        Painting p2 = (Painting) paints.get(1);
+        Painting p1 = paints.get(0);
+        Painting p2 = paints.get(1);
 
         Artist a1 = p1.getToArtist();
         assertSame(a1, p2.getToArtist());
@@ -180,11 +179,11 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshSingleObject() throws Exception {
         createRefreshCollectionDataSet();
 
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        List<?> artists = context.performQuery(q);
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .orderBy("db:ARTIST_ID", SortOrder.ASCENDING)
+                .select(context);
 
-        Artist a1 = (Artist) artists.get(0);
+        Artist a1 = artists.get(0);
 
         assertEquals(2, a1.getPaintingArray().size());
 
@@ -226,17 +225,18 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshQueryResultsLocalCache() throws Exception {
         createRefreshCollectionDataSet();
 
-        Expression qual = Painting.PAINTING_TITLE.eq("P2");
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class, qual);
-        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q.setCacheGroup("X");
-        List<?> paints = context.performQuery(q);
+        ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.eq("P2"))
+                .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
+                .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE)
+                .cacheGroup("X");
+
+        List<Painting> paints = q.select(context);
 
         // fetch P1 separately from cached query
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
 
-        Painting p2 = (Painting) paints.get(0);
+        Painting p2 = paints.get(0);
         Artist a1 = p2.getToArtist();
         assertSame(a1, p1.getToArtist());
 
@@ -279,12 +279,12 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshQueryResultsSharedCache() throws Exception {
         createRefreshCollectionDataSet();
 
-        Expression qual = Painting.PAINTING_TITLE.eq("P2");
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class, qual);
-        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        q.setCacheGroup("X");
-        List<?> paints = context.performQuery(q);
+        ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.eq("P2"))
+                .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
+                .cacheStrategy(QueryCacheStrategy.SHARED_CACHE)
+                .cacheGroup("X");
+        List<?> paints = q.select(context);
 
         // fetch P1 separately from cached query
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
@@ -332,17 +332,17 @@ public class DataContextRefreshQueryIT extends ServerCase {
     public void testRefreshQueryResultGroupLocal() throws Exception {
         createRefreshCollectionDataSet();
 
-        Expression qual = Painting.PAINTING_TITLE.eq("P2");
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class, qual);
-        q.addOrdering("db:PAINTING_ID", SortOrder.ASCENDING);
-        q.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q.setCacheGroup("X");
-        List<?> paints = context.performQuery(q);
+        ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.eq("P2"))
+                .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
+                .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE)
+                .cacheGroup("X");
+        List<Painting> paints = q.select(context);
 
         // fetch P1 separately from cached query
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
 
-        Painting p2 = (Painting) paints.get(0);
+        Painting p2 = paints.get(0);
         Artist a1 = p2.getToArtist();
         assertSame(a1, p1.getToArtist());
 
@@ -385,13 +385,12 @@ public class DataContextRefreshQueryIT extends ServerCase {
     @Test
     public void testRefreshAll() throws Exception {
         createRefreshCollectionDataSet();
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+                .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
+        List<Artist> artists = q.select(context);
 
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        List<?> artists = context.performQuery(q);
-
-        Artist a1 = (Artist) artists.get(0);
-        Artist a2 = (Artist) artists.get(1);
+        Artist a1 = artists.get(0);
+        Artist a2 = artists.get(1);
         Painting p1 = a1.getPaintingArray().get(0);
         Painting p2 = a1.getPaintingArray().get(0);
 

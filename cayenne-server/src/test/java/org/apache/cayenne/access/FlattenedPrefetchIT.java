@@ -19,11 +19,15 @@
 
 package org.apache.cayenne.access;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -36,11 +40,10 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class FlattenedPrefetchIT extends ServerCase {
@@ -97,10 +100,10 @@ public class FlattenedPrefetchIT extends ServerCase {
         tArtist.insert(33001, "artist1");
         tArtist.insert(33002, "artist2");
         tArtist.insert(33003, "artist3");
-        
+
         tArtgroup.insert(33001, "group1");
         tArtgroup.insert(33002, "group2");
-      
+
         tArtistGroup.insert(33001, 33001);
         tArtistGroup.insert(33001, 33002);
         tArtistGroup.insert(33002, 33002);
@@ -114,10 +117,9 @@ public class FlattenedPrefetchIT extends ServerCase {
     public void testManyToMany() throws Exception {
         createPrefetchDataSet1();
 
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addPrefetch(Artist.GROUP_ARRAY.disjoint());
-
-        List<Artist> objects = context.select(q);
+        List<Artist> objects = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.GROUP_ARRAY.disjoint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
     }
@@ -126,11 +128,10 @@ public class FlattenedPrefetchIT extends ServerCase {
     public void testMultiPrefetch() throws Exception {
         createPrefetchDataSet2();
 
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.addPrefetch(Painting.TO_ARTIST.disjoint());
-        q.addPrefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).disjoint());
-
-        List<Painting> objects = context.select(q);
+        List<Painting> objects = ObjectSelect.query(Painting.class)
+                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).disjoint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
     }
@@ -139,10 +140,9 @@ public class FlattenedPrefetchIT extends ServerCase {
     public void testJointManyToMany() throws Exception {
         createPrefetchDataSet1();
 
-        SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-        q.addPrefetch(Artist.GROUP_ARRAY.joint());
-
-        List<Artist> objects = context.select(q);
+        List<Artist> objects = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.GROUP_ARRAY.joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> assertArtistResult(objects));
 
@@ -152,11 +152,10 @@ public class FlattenedPrefetchIT extends ServerCase {
     public void testJointMultiPrefetch() throws Exception {
         createPrefetchDataSet2();
 
-        SelectQuery<Painting> q = new SelectQuery<>(Painting.class);
-        q.addPrefetch(Painting.TO_ARTIST.joint());
-        q.addPrefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).joint());
-
-        List<Painting> objects = context.select(q);
+        List<Painting> objects = ObjectSelect.query(Painting.class)
+                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).joint())
+                .select(context);
 
         queryInterceptor.runWithQueriesBlocked(() -> assertPaintingResult(objects));
     }

@@ -18,10 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -29,19 +30,17 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
 public class DataContextCharTypeIT extends ServerCase {
-    
+
     @Inject
     protected ObjectContext context;
-    
+
     @Inject
     private UnitDbAdapter unitDbAdapter;
-    
+
     @Test
     public void testCharTrimming() {
         if (unitDbAdapter.supportsLobs()) {
@@ -51,20 +50,20 @@ public class DataContextCharTypeIT extends ServerCase {
             map2.setCharColumn("  text");
             ReturnTypesMap1 map3 = context.newObject(ReturnTypesMap1.class);
             map3.setCharColumn("text     ");
-            
+
             context.commitChanges();
-            
-            Expression qual = ReturnTypesMap1.CHAR_COLUMN.eq("  text");
-            SelectQuery query = new SelectQuery(ReturnTypesMap1.class, qual);
-            List<ReturnTypesMap1> result =  context.performQuery(query);
-            
+
+            List<ReturnTypesMap1> result =  ObjectSelect.query(ReturnTypesMap1.class)
+                    .where(ReturnTypesMap1.CHAR_COLUMN.eq("  text"))
+                    .select(context);
+
             assertTrue("CHAR type trimming is not valid.", result.get(0).getCharColumn().startsWith("  text"));
             assertTrue("CHAR type trimming is not valid.", result.get(1).getCharColumn().startsWith("  text"));
-            
-            qual = ReturnTypesMap1.CHAR_COLUMN.eq("text");
-            query = new SelectQuery(ReturnTypesMap1.class, qual);
-            result =  context.performQuery(query);
-            
+
+            result =  ObjectSelect.query(ReturnTypesMap1.class)
+                    .where(ReturnTypesMap1.CHAR_COLUMN.eq("text"))
+                    .select(context);
+
             assertTrue("CHAR type trimming is not valid.", result.get(0).getCharColumn().startsWith("text"));
         }
     }

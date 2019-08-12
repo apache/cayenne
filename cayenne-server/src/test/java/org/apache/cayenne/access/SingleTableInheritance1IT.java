@@ -20,9 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
@@ -61,8 +59,8 @@ public class SingleTableInheritance1IT extends ServerCase {
 
         // Per CAY-1379 removing user and then refetching resulted in a FFE downstream
         group1.removeFromGroupMembers(user);
-        Expression exp = ExpressionFactory.matchExp(Role.ROLE_GROUPS.getName(), group2);
-        SelectQuery query = new SelectQuery(Group.class, exp);
+        ObjectSelect<Group> query = ObjectSelect.query(Group.class)
+                .where(Role.ROLE_GROUPS.contains(group2));
         context.performQuery(query);
         context.commitChanges();
 

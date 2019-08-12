@@ -19,11 +19,13 @@
 
 package org.apache.cayenne.access;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -33,10 +35,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 import static org.junit.Assert.*;
 
@@ -91,8 +89,8 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
 
         // DataContext context = createDataContext();
 
-        SelectQuery query = new SelectQuery(Artist.class);
-        query.setPageSize(10);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .pageSize(10);
         SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<Artist>(
                 context,
                 query, 10000);
@@ -110,13 +108,12 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
     private SimpleIdIncrementalFaultList<?> prepareList(int pageSize) throws Exception {
         createArtistsDataSet();
 
-        SelectQuery query = new SelectQuery(Artist.class);
-
-        // make sure total number of objects is not divisable
-        // by the page size, to test the last smaller page
-        query.setPageSize(pageSize);
-        query.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-        return new SimpleIdIncrementalFaultList<Object>(context, query, 10000);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                // make sure total number of objects is not divisable
+                // by the page size, to test the last smaller page
+                .pageSize(pageSize)
+                .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
+        return new SimpleIdIncrementalFaultList<>(context, query, 10000);
     }
 
     @Test
@@ -170,11 +167,11 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
         newArtist.setArtistName("x");
         context.commitChanges();
 
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
-        q.setPageSize(6);
-        q.addOrdering(Artist.ARTIST_NAME.asc());
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
+                .pageSize(6)
+                .orderBy(Artist.ARTIST_NAME.asc());
 
-        SimpleIdIncrementalFaultList<?> list = new SimpleIdIncrementalFaultList<Object>(
+        SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<>(
                 context,
                 q, 10000);
 
@@ -277,9 +274,9 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
     @Test
     public void testIndexOf() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
-        Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
-        SelectQuery query = new SelectQuery(Artist.class, qual);
-        List<?> artists = list.dataContext.performQuery(query);
+        List<?> artists = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist20"))
+                .select(list.dataContext);
 
         assertEquals(1, artists.size());
 
@@ -291,9 +288,9 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
     @Test
     public void testLastIndexOf() throws Exception {
         SimpleIdIncrementalFaultList<?> list = prepareList(6);
-        Expression qual = ExpressionFactory.matchExp("artistName", "artist20");
-        SelectQuery query = new SelectQuery(Artist.class, qual);
-        List<?> artists = list.dataContext.performQuery(query);
+        List<?> artists = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist20"))
+                .select(list.dataContext);
 
         assertEquals(1, artists.size());
 

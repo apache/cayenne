@@ -18,18 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.List;
+
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -61,9 +61,8 @@ public class DataContextOrderingIT extends ServerCase {
 
         context.commitChanges();
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME.desc());
-        query.addOrdering(Artist.DATE_OF_BIRTH.desc());
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.desc(), Artist.DATE_OF_BIRTH.desc());
 
         List<Artist> list = query.select(context);
         assertEquals(3, list.size());
@@ -103,12 +102,10 @@ public class DataContextOrderingIT extends ServerCase {
 
         context.commitChanges();
 
-        SelectQuery<Artist> query1 = new SelectQuery<>(Artist.class);
-
-        // per CAY-1074, adding a to-many join to expression messes up the ordering
-        query1.andQualifier(Artist.PAINTING_ARRAY.ne((List<Painting>) null));
-        query1.addOrdering(Artist.ARTIST_NAME.desc());
-        query1.addOrdering(Artist.DATE_OF_BIRTH.desc());
+        ObjectSelect<Artist> query1 = ObjectSelect.query(Artist.class)
+                // per CAY-1074, adding a to-many join to expression messes up the ordering
+                .and(Artist.PAINTING_ARRAY.ne((List<Painting>) null))
+                .orderBy(Artist.ARTIST_NAME.desc(), (Artist.DATE_OF_BIRTH.desc()));
 
         List<Artist> list1 = query1.select(context);
         assertEquals(2, list1.size());
@@ -134,8 +131,8 @@ public class DataContextOrderingIT extends ServerCase {
 
         context.commitChanges();
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-        query.addOrdering(Artist.ARTIST_NAME.substring(2, 1).desc());
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.substring(2, 1).desc());
 
         List<Artist> list = query.select(context);
         assertEquals(3, list.size());
