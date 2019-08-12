@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.exp;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -33,10 +36,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 

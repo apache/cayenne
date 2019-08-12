@@ -19,19 +19,18 @@
 
 package org.apache.cayenne;
 
+import java.util.List;
+
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

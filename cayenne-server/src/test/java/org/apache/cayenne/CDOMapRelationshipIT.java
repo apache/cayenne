@@ -18,12 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import java.util.Map;
+
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectById;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
@@ -34,8 +33,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
