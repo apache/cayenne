@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import java.util.List;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -31,19 +33,17 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertNotNull;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class SelectQueryAbstractEntityIT extends ServerCase {
-    
+
     @Inject
     private ObjectContext context;
 
     @Inject
     private DBHelper dbHelper;
-    
+
     private TableHelper mtTable;
 
     @Before
@@ -51,31 +51,29 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
         mtTable = new TableHelper(dbHelper, "MT_TABLE1");
         mtTable.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1", "SUBCLASS_ATTRIBUTE1");
     }
-    
-    protected void createDataSet() throws Exception{     
+
+    protected void createDataSet() throws Exception{
 
         for (int i = 1; i <= 10; i++){
             mtTable.insert(i, "sub2", "sub2_" + i, "sub2attr");
         }
-        
+
         for (int i = 11; i <= 20; i++){
             mtTable.insert(i, "sub1", "sub1_" + i, "sub1attr");
         }
-       
+
     }
 
     @Test
     public void testSublclassEntitySelect() throws Exception{
         createDataSet();
-        
-        SelectQuery<MtTable1Subclass1> query = 
-                new SelectQuery<MtTable1Subclass1>(MtTable1Subclass1.class);
+
+        ObjectSelect<MtTable1Subclass1> query = ObjectSelect.query(MtTable1Subclass1.class);
         final List<MtTable1Subclass1> sub1List = context.select(query);
-        
-        SelectQuery<MtTable1Subclass2> query2 = 
-                new SelectQuery<MtTable1Subclass2>(MtTable1Subclass2.class);
+
+        ObjectSelect<MtTable1Subclass2> query2 = ObjectSelect.query(MtTable1Subclass2.class);
         final List<MtTable1Subclass2> sub2List = context.select(query2);
-        
+
         assertNotNull(sub1List);
         assertNotNull(sub2List);
     }
@@ -84,7 +82,7 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
     public void test1AbstractEntitySelect() throws Exception{
         createDataSet();
 
-        SelectQuery<MtTable1> query = new SelectQuery<MtTable1>(MtTable1.class);
+        ObjectSelect<MtTable1> query = ObjectSelect.query(MtTable1.class);
         final List<MtTable1> list = context.select(query);
 
         assertNotNull(list);
@@ -99,17 +97,17 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
     @Test
     public void test2AbstractEntitySelect() throws Exception{
         createDataSet();
-        
-        SelectQuery<MtTable1> query = new SelectQuery<MtTable1>(MtTable1.class);
+
+        ObjectSelect<MtTable1> query = ObjectSelect.query(MtTable1.class);
         final List<MtTable1> list = context.select(query);
-        
+
         assertNotNull(list);
-        
+
         for (MtTable1 sub : list){
             if(sub instanceof MtTable1Subclass2){
                 assertNotNull(((MtTable1Subclass2) sub).getSubclass2Attribute1());
             }
         }
     }
-    
+
 }

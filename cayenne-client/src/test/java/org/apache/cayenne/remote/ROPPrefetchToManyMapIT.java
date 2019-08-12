@@ -18,16 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.map_to_many.ClientIdMapToMany;
 import org.apache.cayenne.testdo.map_to_many.ClientIdMapToManyTarget;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -35,15 +38,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
 @RunWith(value=Parameterized.class)
 public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
-    
+
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
@@ -61,26 +61,21 @@ public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         ObjectContext context = createROPContext();
-        
+
         ClientIdMapToMany map = context.newObject(ClientIdMapToMany.class);
         ClientIdMapToManyTarget target = context.newObject(ClientIdMapToManyTarget.class);
         target.setMapToMany(map);
         context.commitChanges();
-        
+
         context.performQuery(new RefreshQuery());
-        
-        SelectQuery<ClientIdMapToMany> query = new SelectQuery<ClientIdMapToMany>(ClientIdMapToMany.class);
-        query.addPrefetch("targets");
-        
+
+        ObjectSelect<ClientIdMapToMany> query = ObjectSelect.query(ClientIdMapToMany.class)
+                .prefetch("targets", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+
         final ClientIdMapToMany mapToMany = (ClientIdMapToMany) Cayenne.objectForQuery(context, query);
-        
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
-            public void execute() {
-                assertEquals(mapToMany.getTargets().size(), 1);
-            }
-        });
+
+        queryInterceptor.runWithQueriesBlocked(() -> assertEquals(mapToMany.getTargets().size(), 1));
     }
 }

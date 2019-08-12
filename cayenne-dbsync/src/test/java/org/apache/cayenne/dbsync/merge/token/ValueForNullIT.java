@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.dbsync.merge.token;
 
+import java.sql.Types;
+import java.util.List;
+
 import junit.framework.AssertionFailedError;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.Persistent;
@@ -33,11 +36,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.Test;
-
-import java.sql.Types;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -94,7 +95,8 @@ public class ValueForNullIT extends MergeCase {
 
         // check values for null
         Expression qual = ExpressionFactory.matchExp(objAttr.getName(), DEFAULT_VALUE_STRING);
-        SelectQuery query = new SelectQuery("Painting", qual);
+        ObjectSelect query = ObjectSelect.query(Painting.class)
+                .where(qual);
         @SuppressWarnings("unchecked")
         List<Persistent> rows = context.performQuery(query);
         assertEquals(nrows, rows.size());

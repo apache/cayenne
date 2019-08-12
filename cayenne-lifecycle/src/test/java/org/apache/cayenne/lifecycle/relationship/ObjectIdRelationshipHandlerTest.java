@@ -24,7 +24,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.db.UuidRoot1;
 import org.apache.cayenne.lifecycle.id.IdCoder;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.After;
@@ -71,7 +71,7 @@ public class ObjectIdRelationshipHandlerTest {
         e1Table.insert(1);
 
         ObjectContext context = runtime.newContext();
-        E1 e1 = (E1) Cayenne.objectForQuery(context, new SelectQuery<>(E1.class));
+        E1 e1 = (E1) Cayenne.objectForQuery(context, ObjectSelect.query(E1.class));
 
         UuidRoot1 r1 = context.newObject(UuidRoot1.class);
 

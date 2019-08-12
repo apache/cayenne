@@ -19,13 +19,15 @@
 
 package org.apache.cayenne;
 
+import java.sql.Types;
+import java.util.List;
+
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.remote.RemoteIncrementalFaultList;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -41,16 +43,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class CayenneContextWithDataContextIT extends ClientCase {
@@ -339,9 +332,9 @@ public class CayenneContextWithDataContextIT extends ClientCase {
                 MtTable1.TABLE1_ID_PK_COLUMN,
                 1);
 
-        SelectQuery<ClientMtTable2> q = new SelectQuery<>(ClientMtTable2.class);
-        q.addOrdering(ClientMtTable2.GLOBAL_ATTRIBUTE.asc());
-        q.addPrefetch(ClientMtTable2.TABLE1.disjoint());
+        ObjectSelect<ClientMtTable2> q = ObjectSelect.query(ClientMtTable2.class)
+                .orderBy(ClientMtTable2.GLOBAL_ATTRIBUTE.asc())
+                .prefetch(ClientMtTable2.TABLE1.disjoint());
 
         final List<ClientMtTable2> results = q.select(clientContext);
 
@@ -365,8 +358,8 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     public void testPrefetchingToOneNull() throws Exception {
         tMtTable2.insert(15, null, "g3");
 
-        SelectQuery<ClientMtTable2> q = new SelectQuery<>(ClientMtTable2.class);
-        q.addPrefetch(ClientMtTable2.TABLE1.disjoint());
+        ObjectSelect<ClientMtTable2> q = ObjectSelect.query(ClientMtTable2.class)
+                .prefetch(ClientMtTable2.TABLE1.disjoint());
 
         final List<ClientMtTable2> results = q.select(clientContext);
 
@@ -385,9 +378,9 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     public void testPrefetchingToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
-        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
-        q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
+        ObjectSelect<ClientMtTable1> q = ObjectSelect.query(ClientMtTable1.class)
+                .orderBy(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc())
+                .prefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
         final List<ClientMtTable1> results = q.select(clientContext);
 
@@ -415,8 +408,8 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     public void testPerformPaginatedQuery() throws Exception {
         createEightMtTable1s();
 
-        SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-        query.setPageSize(5);
+        ObjectSelect<ClientMtTable1> query = ObjectSelect.query(ClientMtTable1.class)
+                .pageSize(5);
         List<ClientMtTable1> objects = query.select(clientContext);
         assertNotNull(objects);
         assertTrue(objects instanceof RemoteIncrementalFaultList);
@@ -425,10 +418,10 @@ public class CayenneContextWithDataContextIT extends ClientCase {
     @Test
     public void testPrefetchingToManyEmpty() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
-
-        SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class);
-        q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
-        q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
+        
+        ObjectSelect<ClientMtTable1> q = ObjectSelect.query(ClientMtTable1.class)
+                .orderBy(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc())
+                .prefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
         final List<ClientMtTable1> results = q.select(clientContext);
 

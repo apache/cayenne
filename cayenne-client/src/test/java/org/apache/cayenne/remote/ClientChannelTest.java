@@ -19,6 +19,12 @@
 
 package org.apache.cayenne.remote;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.MockPersistentObject;
@@ -33,24 +39,12 @@ import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.util.GenericResponse;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -78,18 +72,15 @@ public class ClientChannelTest {
         o1.setObjectId(oid1);
 
         ClientConnection connection = mock(ClientConnection.class);
-        when(connection.sendMessage((ClientMessage) any())).thenAnswer(
-                new Answer<Object>() {
+        when(connection.sendMessage(any())).thenAnswer(
+                invocation -> {
+                    ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
 
-                    public Object answer(InvocationOnMock invocation) {
-                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
-
-                        if (arg instanceof BootstrapMessage) {
-                            return new EntityResolver();
-                        }
-                        else {
-                            return new GenericResponse(Arrays.asList(o1));
-                        }
+                    if (arg instanceof BootstrapMessage) {
+                        return new EntityResolver();
+                    }
+                    else {
+                        return new GenericResponse(Arrays.asList(o1));
                     }
                 });
 
@@ -108,7 +99,7 @@ public class ClientChannelTest {
         Collection<DataMap> entities = Collections.singleton(dataMap);
         context.setEntityResolver(new EntityResolver(entities));
 
-        QueryResponse response = channel.onQuery(context, new SelectQuery("test_entity"));
+        QueryResponse response = channel.onQuery(context, ObjectSelect.query(MockPersistentObject.class));
         assertNotNull(response);
         List<?> list = response.firstList();
         assertNotNull(list);
@@ -155,7 +146,7 @@ public class ClientChannelTest {
                 false);
 
         context.setChannel(channel);
-        QueryResponse response = channel.onQuery(context, new SelectQuery("test_entity"));
+        QueryResponse response = channel.onQuery(context, ObjectSelect.query(MockPersistentObject.class));
         assertNotNull(response);
 
         List<?> list = response.firstList();
@@ -196,7 +187,7 @@ public class ClientChannelTest {
                 false);
 
         context.setChannel(channel);
-        QueryResponse response = channel.onQuery(context, new SelectQuery("test_entity"));
+        QueryResponse response = channel.onQuery(context, ObjectSelect.query(MockPersistentObject.class));
         assertNotNull(response);
         assertEquals(1, response.size());
         List<?> list = response.firstList();
@@ -212,7 +203,7 @@ public class ClientChannelTest {
 
             @Override
             public EventBridge getServerEventBridge() throws CayenneRuntimeException {
-                return new EventBridge(Collections.EMPTY_LIST, "ext") {
+                return new EventBridge(Collections.emptyList(), "ext") {
 
                     @Override
                     protected void sendExternalEvent(CayenneEvent localEvent)

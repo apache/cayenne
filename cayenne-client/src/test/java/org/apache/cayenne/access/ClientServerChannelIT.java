@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
 import java.util.List;
 
 import org.apache.cayenne.DataChannel;
@@ -41,8 +34,8 @@ import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.MockQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.QueryMessage;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -51,6 +44,7 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTable3;
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.testdo.mt.MtTable3;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -58,6 +52,9 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class ClientServerChannelIT extends ClientCase {
@@ -116,7 +113,7 @@ public class ClientServerChannelIT extends ClientCase {
 	@Test
 	public void testSynchronizeCommit() {
 
-		SelectQuery<MtTable1> query = new SelectQuery<>(MtTable1.class);
+		ObjectSelect<MtTable1> query = ObjectSelect.query(MtTable1.class);
 
 		// no changes...
 		clientServerChannel.onSync(serverContext, mock(GraphDiff.class), DataChannel.FLUSH_CASCADE_SYNC);
@@ -135,7 +132,7 @@ public class ClientServerChannelIT extends ClientCase {
 	public void testPerformQueryObjectIDInjection() throws Exception {
 		tMtTable1.insert(55, "g1", "s1");
 
-		Query query = new SelectQuery("MtTable1");
+		Query query = ObjectSelect.query(MtTable1.class);
 		QueryResponse response = clientServerChannel.onQuery(null, query);
 
 		assertNotNull(response);
@@ -160,7 +157,7 @@ public class ClientServerChannelIT extends ClientCase {
 
 		tMtTable3.insert(1, bytes, "abc", 4);
 
-		Query query = new SelectQuery("MtTable3");
+		Query query = ObjectSelect.query(MtTable3.class);
 		QueryResponse response = clientServerChannel.onQuery(null, query);
 
 		assertNotNull(response);
@@ -184,7 +181,7 @@ public class ClientServerChannelIT extends ClientCase {
 
 		tMtTable1.insert(65, "sub1", "xyz");
 
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
+		ObjectSelect<ClientMtTable1> query = ObjectSelect.query(ClientMtTable1.class);
 		QueryResponse response = clientServerChannel.onQuery(null, query);
 
 		assertNotNull(response);
@@ -224,9 +221,9 @@ public class ClientServerChannelIT extends ClientCase {
 	public void testOnQueryPrefetchingToMany() throws Exception {
 		createTwoMtTable1sAnd2sDataSet();
 
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-		query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
-		query.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
+		ObjectSelect<ClientMtTable1> query = ObjectSelect.query(ClientMtTable1.class)
+				.orderBy(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc())
+				.prefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
 		final List<?> results = clientServerChannel.onQuery(null, query).firstList();
 
@@ -247,9 +244,9 @@ public class ClientServerChannelIT extends ClientCase {
 	public void testOnQueryPrefetchingToManyEmpty() throws Exception {
 		createTwoMtTable1sAnd2sDataSet();
 
-		SelectQuery<ClientMtTable1> q = new SelectQuery<>(ClientMtTable1.class);
-		q.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc());
-		q.addPrefetch(ClientMtTable1.TABLE2ARRAY.joint());
+		ObjectSelect<ClientMtTable1> q = ObjectSelect.query(ClientMtTable1.class)
+				.orderBy(ClientMtTable1.GLOBAL_ATTRIBUTE1.asc())
+				.prefetch(ClientMtTable1.TABLE2ARRAY.joint());
 
 		final List<?> results = clientServerChannel.onQuery(null, q).firstList();
 

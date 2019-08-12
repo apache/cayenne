@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.remote;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -35,15 +38,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class RemoteIncrementalFaultListIT extends ClientCase {
@@ -99,12 +94,12 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 
 		createObjectsDataSet();
 
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class);
-
-		// make sure total number of objects is not divisable
-		// by the page size, to test the last smaller page
-		query.setPageSize(pageSize);
-		query.addOrdering("db:" + MtTable1.TABLE1_ID_PK_COLUMN, SortOrder.ASCENDING);
+		ObjectSelect<ClientMtTable1> query = ObjectSelect
+				.query(ClientMtTable1.class)
+				// make sure total number of objects is not divisable
+				// by the page size, to test the last smaller page
+				.pageSize(pageSize)
+				.orderBy("db:" + MtTable1.TABLE1_ID_PK_COLUMN, SortOrder.ASCENDING);
 
 		list = new RemoteIncrementalFaultList(clientContext, query);
 	}
@@ -224,8 +219,9 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 	public void testIndexOf() throws Exception {
 		prepareList(6);
 
-		Expression qual = ClientMtTable1.GLOBAL_ATTRIBUTE1.eq("g20");
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class, qual);
+		ObjectSelect<ClientMtTable1> query = ObjectSelect
+				.query(ClientMtTable1.class)
+				.where(ClientMtTable1.GLOBAL_ATTRIBUTE1.eq("g20"));
 		List<?> artists = list.context.performQuery(query);
 
 		assertEquals(1, artists.size());
@@ -238,8 +234,8 @@ public class RemoteIncrementalFaultListIT extends ClientCase {
 	@Test
 	public void testLastIndexOf() throws Exception {
 		prepareList(6);
-		Expression qual = ClientMtTable1.GLOBAL_ATTRIBUTE1.eq("g20");
-		SelectQuery<ClientMtTable1> query = new SelectQuery<>(ClientMtTable1.class, qual);
+		ObjectSelect<ClientMtTable1> query = ObjectSelect.query(ClientMtTable1.class)
+				.where(ClientMtTable1.GLOBAL_ATTRIBUTE1.eq("g20"));
 		List<?> objects = list.context.performQuery(query);
 
 		assertEquals(1, objects.size());

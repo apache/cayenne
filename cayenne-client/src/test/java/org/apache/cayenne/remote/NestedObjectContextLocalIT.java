@@ -18,11 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -31,10 +35,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -62,8 +62,9 @@ public class NestedObjectContextLocalIT extends RemoteCayenneCase {
     @Test
     public void testLocalCacheStaysLocal() {
 
-        SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
-        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<ClientMtTable1> query = ObjectSelect
+                .query(ClientMtTable1.class)
+                .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         BaseContext child1 = (BaseContext) runtime.newContext(clientContext);
 

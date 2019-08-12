@@ -19,12 +19,16 @@
 
 package org.apache.cayenne;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.remote.RemoteCayenneCase;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.testdo.toone.ClientTooneDep;
@@ -35,10 +39,6 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -82,59 +82,7 @@ public class NestedCayenneContextTooneIT extends RemoteCayenneCase {
 
         ObjectContext child = runtime.newContext(clientContext);
 
-        SelectQuery<ClientTooneMaster> query = new SelectQuery<ClientTooneMaster>(
-                ClientTooneMaster.class);
-        List<ClientTooneMaster> objects = child.select(query);
-
-        assertEquals(1, objects.size());
-
-        ClientTooneMaster childDeleted = (ClientTooneMaster) objects.get(0);
-
-        child.deleteObjects(childDeleted);
-
-        child.commitChangesToParent();
-
-        ClientTooneMaster parentDeleted = (ClientTooneMaster) clientContext
-                .getGraphManager().getNode(childDeleted.getObjectId());
-
-        assertNotNull(parentDeleted);
-        assertEquals(PersistenceState.DELETED,
-                parentDeleted.getPersistenceState());
-
-        clientContext.commitChanges();
-
-        SelectQuery<ClientTooneMaster> query2 = new SelectQuery<ClientTooneMaster>(
-                ClientTooneMaster.class);
-        List<ClientTooneMaster> objects2 = child.select(query2);
-
-        assertEquals(0, objects2.size());
-
-    }
-
-    @Test
-    public void testCAY1636_2() throws Exception {
-
-        ClientTooneMaster A = clientContext
-                .newObject(ClientTooneMaster.class);
-        clientContext.commitChanges();
-
-        ClientTooneDep B = clientContext.newObject(ClientTooneDep.class);
-        A.setToDependent(B);
-        clientContext.commitChanges();
-
-        ObjectContext child = runtime.newContext(clientContext);
-
-        SelectQuery<ClientTooneDep> queryB = new SelectQuery<ClientTooneDep>(
-                ClientTooneDep.class);
-        List<?> objectsB = child.performQuery(queryB);
-
-        assertEquals(1, objectsB.size());
-
-        ClientTooneDep childBDeleted = (ClientTooneDep) objectsB.get(0);
-        child.deleteObjects(childBDeleted);
-
-        SelectQuery<ClientTooneMaster> query = new SelectQuery<ClientTooneMaster>(
-                ClientTooneMaster.class);
+        ObjectSelect<ClientTooneMaster> query = ObjectSelect.query(ClientTooneMaster.class);
         List<ClientTooneMaster> objects = child.select(query);
 
         assertEquals(1, objects.size());
@@ -154,8 +102,55 @@ public class NestedCayenneContextTooneIT extends RemoteCayenneCase {
 
         clientContext.commitChanges();
 
-        SelectQuery<ClientTooneMaster> query2 = new SelectQuery<ClientTooneMaster>(
-                ClientTooneMaster.class);
+        ObjectSelect<ClientTooneMaster> query2 = ObjectSelect.query(ClientTooneMaster.class);
+        List<ClientTooneMaster> objects2 = child.select(query2);
+
+        assertEquals(0, objects2.size());
+
+    }
+
+    @Test
+    public void testCAY1636_2() throws Exception {
+
+        ClientTooneMaster A = clientContext
+                .newObject(ClientTooneMaster.class);
+        clientContext.commitChanges();
+
+        ClientTooneDep B = clientContext.newObject(ClientTooneDep.class);
+        A.setToDependent(B);
+        clientContext.commitChanges();
+
+        ObjectContext child = runtime.newContext(clientContext);
+
+        ObjectSelect<ClientTooneDep> queryB = ObjectSelect.query(ClientTooneDep.class);
+        List<?> objectsB = child.performQuery(queryB);
+
+        assertEquals(1, objectsB.size());
+
+        ClientTooneDep childBDeleted = (ClientTooneDep) objectsB.get(0);
+        child.deleteObjects(childBDeleted);
+
+        ObjectSelect<ClientTooneMaster> query = ObjectSelect.query(ClientTooneMaster.class);
+        List<ClientTooneMaster> objects = child.select(query);
+
+        assertEquals(1, objects.size());
+
+        ClientTooneMaster childDeleted = objects.get(0);
+
+        child.deleteObjects(childDeleted);
+
+        child.commitChangesToParent();
+
+        ClientTooneMaster parentDeleted = (ClientTooneMaster) clientContext
+                .getGraphManager().getNode(childDeleted.getObjectId());
+
+        assertNotNull(parentDeleted);
+        assertEquals(PersistenceState.DELETED,
+                parentDeleted.getPersistenceState());
+
+        clientContext.commitChanges();
+
+        ObjectSelect<ClientTooneMaster> query2 = ObjectSelect.query(ClientTooneMaster.class);
         List<ClientTooneMaster> objects2 = child.select(query2);
 
         assertEquals(0, objects2.size());
