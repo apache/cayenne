@@ -19,7 +19,8 @@
 
 package org.apache.cayenne.access.util;
 
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class DefaultOperationObserverIT extends ServerCase {
 
     @Test
-    public void testHasExceptions1() throws Exception {
+    public void testHasExceptions1() {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
         observer.nextGlobalException(new Exception());
@@ -40,10 +41,10 @@ public class DefaultOperationObserverIT extends ServerCase {
     }
 
     @Test
-    public void testHasExceptions2() throws Exception {
+    public void testHasExceptions2() {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
-        observer.nextQueryException(new SelectQuery(), new Exception());
+        observer.nextQueryException(ObjectSelect.query(Artist.class), new Exception());
         assertTrue(observer.hasExceptions());
     }
 }

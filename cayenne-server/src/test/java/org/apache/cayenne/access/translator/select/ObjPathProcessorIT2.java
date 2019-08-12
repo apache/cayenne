@@ -23,7 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -47,7 +47,7 @@ public class ObjPathProcessorIT2 extends ServerCase {
     @Before
     public void prepareTranslationContext() {
         TranslatorContext translatorContext = new TranslatorContext(
-                new SelectQueryWrapper(new SelectQuery<>()),
+                new FluentSelectWrapper(ObjectSelect.query(Object.class)),
                 Mockito.mock(DbAdapter.class),
                 context.getEntityResolver(),
                 null

@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Customer;
@@ -33,7 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -106,11 +105,10 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
     public void testCompositionSelectManyToManyQuery() throws SQLException {
         createCompositionManyToManyDataSet();
 
-        SelectQuery query = new SelectQuery(Product.class);
-        query.addPrefetch("contained");
-        query.addPrefetch("base");
-
-        List<Product> result = context.performQuery(query);
+        List<Product> result = ObjectSelect.query(Product.class)
+                .prefetch(Product.CONTAINED.disjoint())
+                .prefetch(Product.BASE.disjoint())
+                .select(context);
         assertNotNull(result);
 
         for (Product product : result) {
@@ -127,16 +125,14 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
     @Test
     public void testOrdersSelectManyToManyQuery() throws SQLException {
         createOrdersManyToManyDataSet();
-        List assertSizes = new ArrayList(3);
-        assertSizes.addAll(Arrays.asList(1, 2, 3));
+        List<Integer> assertSizes = Arrays.asList(1, 2, 3);
 
-        SelectQuery productQuery = new SelectQuery(Product.class);
-        productQuery.addPrefetch("orderBy");
-
-        List<Product> productResult = context.performQuery(productQuery);
+        List<Product> productResult = ObjectSelect.query(Product.class)
+                .prefetch(Product.ORDER_BY.disjoint())
+                .select(context);
         assertNotNull(productResult);
 
-        List orderBySizes = new ArrayList(3);
+        List<Integer> orderBySizes = new ArrayList<>(3);
         for (Product product : productResult) {
             List<Customer> orderBy = product.getOrderBy();
             assertNotNull(orderBy);
@@ -144,14 +140,12 @@ public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
         }
         assertTrue(assertSizes.containsAll(orderBySizes));
 
-
-        SelectQuery customerQuery = new SelectQuery(Customer.class);
-        customerQuery.addPrefetch("order");
-
-        List<Customer> customerResult = context.performQuery(customerQuery);
+        List<Customer> customerResult = ObjectSelect.query(Customer.class)
+                .prefetch(Customer.ORDER.disjoint())
+                .select(context);
         assertNotNull(customerResult);
 
-        List orderSizes = new ArrayList(3);
+        List<Integer> orderSizes = new ArrayList<>(3);
         for (Customer customer : customerResult) {
             List<Product> orders = customer.getOrder();
             assertNotNull(orders);

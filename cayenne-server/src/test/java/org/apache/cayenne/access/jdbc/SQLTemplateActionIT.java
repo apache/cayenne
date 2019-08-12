@@ -38,10 +38,9 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -99,7 +98,7 @@ public class SQLTemplateActionIT extends ServerCase {
 	}
 
 	@Test
-	public void testProperties() throws Exception {
+	public void testProperties() {
 		SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");
 
 		SQLTemplateAction action = new SQLTemplateAction(template, node);
@@ -116,7 +115,7 @@ public class SQLTemplateActionIT extends ServerCase {
 		sqlTemplateCustomizer.updateSQLTemplate(template);
 
 		Map<String, Object> bindings = new HashMap<>();
-		bindings.put("id", 201l);
+		bindings.put("id", 201L);
 		template.setParameters(bindings);
 
 		// must ensure the right SQLTemplateAction is created
@@ -264,7 +263,7 @@ public class SQLTemplateActionIT extends ServerCase {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 
 		Map<String, Object> bindings = new HashMap<>();
-		bindings.put("id", new Long(1));
+		bindings.put("id", 1L);
 		bindings.put("name", "a1");
 		bindings.put("dob", new Date(System.currentTimeMillis()));
 		template.setParameters(bindings);
@@ -281,7 +280,7 @@ public class SQLTemplateActionIT extends ServerCase {
 			assertEquals(1, batches[0]);
 		}
 		assertEquals(1, tArtist.getRowCount());
-		assertEquals(1l, tArtist.getLong("ARTIST_ID"));
+		assertEquals(1L, tArtist.getLong("ARTIST_ID"));
 		assertEquals("a1", tArtist.getString("ARTIST_NAME").trim());
 	}
 
@@ -311,12 +310,12 @@ public class SQLTemplateActionIT extends ServerCase {
 		SQLTemplate template = new SQLTemplate(Object.class, templateString);
 
 		Map<String, Object> bindings1 = new HashMap<>();
-		bindings1.put("id", new Long(1));
+		bindings1.put("id", 1L);
 		bindings1.put("name", "a1");
 		bindings1.put("dob", new Date(System.currentTimeMillis()));
 
 		Map<String, Object> bindings2 = new HashMap<>();
-		bindings2.put("id", new Long(33));
+		bindings2.put("id", 33L);
 		bindings2.put("name", "a$$$$$");
 		bindings2.put("dob", new Date(System.currentTimeMillis()));
 		template.setParameters(new Map[] { bindings1, bindings2 });
@@ -340,10 +339,11 @@ public class SQLTemplateActionIT extends ServerCase {
 		}
 
 		MockOperationObserver observer = new MockOperationObserver();
-		SelectQuery query = new SelectQuery(Artist.class);
-		query.addOrdering("db:ARTIST_ID", SortOrder.ASCENDING);
-		node.performQueries(Collections.singletonList((Query) query), observer);
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
+		node.performQueries(Collections.singletonList(query), observer);
 
+		@SuppressWarnings("unchecked")
 		List<DataRow> data = observer.rowsForQuery(query);
 		assertEquals(2, data.size());
 		DataRow row1 = data.get(0);
@@ -360,7 +360,7 @@ public class SQLTemplateActionIT extends ServerCase {
 	}
 
 	@Test
-	public void testExtractTemplateString() throws Exception {
+	public void testExtractTemplateString() {
 		SQLTemplate template = new SQLTemplate(Artist.class, "A\nBC");
 		SQLTemplateAction action = new SQLTemplateAction(template, node);
 
