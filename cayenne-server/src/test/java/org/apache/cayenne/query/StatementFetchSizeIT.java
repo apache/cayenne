@@ -35,16 +35,30 @@ public class StatementFetchSizeIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Deprecated
     @Test
-    public void test() {
-        SelectQuery query = new SelectQuery(Artist.class);
+    public void testSelectQuery() {
+        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
         query.setStatementFetchSize(10);
 
         assertEquals(10, query
                 .getMetaData(context.getEntityResolver())
                 .getStatementFetchSize());
         context.performQuery(query);
+    }
 
+    @Test
+    public void testObjectSelect() {
+        ObjectSelect query = ObjectSelect.query(Artist.class).statementFetchSize(10);
+
+        assertEquals(10, query
+                .getMetaData(context.getEntityResolver())
+                .getStatementFetchSize());
+        context.performQuery(query);
+    }
+
+    @Test
+    public void testSQLTemplate() {
         SQLTemplate template = new SQLTemplate(
                 Artist.class,
                 "SELECT ARTIST_ID FROM ARTIST");
@@ -54,7 +68,10 @@ public class StatementFetchSizeIT extends ServerCase {
                 .getMetaData(context.getEntityResolver())
                 .getStatementFetchSize());
         context.performQuery(template);
+    }
 
+    @Test
+    public void testEJBQLQuery() {
         EJBQLQuery ejbql = new EJBQLQuery("select a from Artist a");
         ejbql.setStatementFetchSize(10);
 
@@ -62,7 +79,10 @@ public class StatementFetchSizeIT extends ServerCase {
                 .getMetaData(context.getEntityResolver())
                 .getStatementFetchSize());
         context.performQuery(ejbql);
+    }
 
+    @Test
+    public void testRelationshipQuery() {
         ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         RelationshipQuery relationshipQuery = new RelationshipQuery(
                 id,

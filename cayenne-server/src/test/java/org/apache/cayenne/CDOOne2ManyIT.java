@@ -23,7 +23,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -69,7 +69,7 @@ public class CDOOne2ManyIT extends ServerCase {
     }
 
     @Test
-    public void testSelectWithToManyDBQualifier() throws Exception {
+    public void testSelectWithToManyDBQualifier() {
 
         // intentionally add more than 1 painting to artist
         // since this reduces a chance that painting and artist primary keys
@@ -94,16 +94,15 @@ public class CDOOne2ManyIT extends ServerCase {
 
         // do select
         Expression e = ExpressionFactory.matchDbExp("paintingArray", p2);
-        SelectQuery q = new SelectQuery(Artist.class, e);
 
         // *** TESTING THIS ***
-        List<Artist> artists = context.performQuery(q);
+        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(context);
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
 
     @Test
-    public void testSelectWithToManyQualifier() throws Exception {
+    public void testSelectWithToManyQualifier() {
 
         // intentionally add more than 1 painting to artist
         // since this reduces a chance that painting and artist primary keys
@@ -128,10 +127,9 @@ public class CDOOne2ManyIT extends ServerCase {
 
         // do select
         Expression e = ExpressionFactory.matchExp("paintingArray", p2);
-        SelectQuery q = new SelectQuery(Artist.class, e);
 
         // *** TESTING THIS ***
-        List<Artist> artists = context.performQuery(q);
+        List<Artist> artists = ObjectSelect.query(Artist.class, e).select(context);
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
@@ -167,7 +165,7 @@ public class CDOOne2ManyIT extends ServerCase {
     }
 
     @Test
-    public void testNewAddMultiples() throws Exception {
+    public void testNewAddMultiples() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzV");
 
@@ -189,13 +187,12 @@ public class CDOOne2ManyIT extends ServerCase {
         ObjectContext context2 = runtime.newContext();
 
         // test database data
-        Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
-                Artist.class));
+        Artist a2 = ObjectSelect.query(Artist.class).selectOne(context2);
         assertEquals(2, a2.getPaintingArray().size());
     }
 
     @Test
-    public void testRemove1() throws Exception {
+    public void testRemove1() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzE");
 
@@ -208,8 +205,7 @@ public class CDOOne2ManyIT extends ServerCase {
         ObjectContext context2 = runtime.newContext();
 
         // test database data
-        Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
-                Artist.class));
+        Artist a2 = ObjectSelect.query(Artist.class).selectOne(context2);
         Painting p2 = a2.getPaintingArray().get(0);
 
         // *** TESTING THIS ***
@@ -224,17 +220,15 @@ public class CDOOne2ManyIT extends ServerCase {
 
         ObjectContext context3 = runtime.newContext();
 
-        Painting p3 = (Painting) Cayenne.objectForQuery(context3, new SelectQuery(
-                Painting.class));
+        Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
         assertNull(p3.getToArtist());
 
-        Artist a3 = (Artist) Cayenne.objectForQuery(context3, new SelectQuery(
-                Artist.class));
+        Artist a3 = ObjectSelect.query(Artist.class).selectOne(context3);
         assertEquals(0, a3.getPaintingArray().size());
     }
 
     @Test
-    public void testRemove2() throws Exception {
+    public void testRemove2() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzQ");
 
@@ -251,8 +245,7 @@ public class CDOOne2ManyIT extends ServerCase {
         ObjectContext context2 = runtime.newContext();
 
         // test database data
-        Artist a2 = (Artist) Cayenne.objectForQuery(context2, new SelectQuery(
-                Artist.class));
+        Artist a2 = ObjectSelect.query(Artist.class).selectOne(context2);
         assertEquals(2, a2.getPaintingArray().size());
         Painting p2 = a2.getPaintingArray().get(0);
 
@@ -268,13 +261,12 @@ public class CDOOne2ManyIT extends ServerCase {
 
         ObjectContext context3 = runtime.newContext();
 
-        Artist a3 = (Artist) Cayenne.objectForQuery(context3, new SelectQuery(
-                Artist.class));
+        Artist a3 = ObjectSelect.query(Artist.class).selectOne(context3);
         assertEquals(1, a3.getPaintingArray().size());
     }
 
     @Test
-    public void testPropagatePK() throws Exception {
+    public void testPropagatePK() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyBn");
 

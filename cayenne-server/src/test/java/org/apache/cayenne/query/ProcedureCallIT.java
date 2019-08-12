@@ -70,13 +70,10 @@ public class ProcedureCallIT extends ServerCase {
         runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE).param("paintingPrice", 3000));
 
         // check that price have doubled
-        SelectQuery select = new SelectQuery<>(Artist.class);
-        select.addPrefetch("paintingArray");
-
-        List artists = context.performQuery(select);
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(context);
         assertEquals(1, artists.size());
 
-        Artist a = (Artist) artists.get(0);
+        Artist a = artists.get(0);
         Painting p = a.getPaintingArray().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
@@ -93,13 +90,10 @@ public class ProcedureCallIT extends ServerCase {
         runProcedureSelect(ProcedureCall.query(UPDATE_STORED_PROCEDURE_NOPARAM));
 
         // check that price have doubled
-        SelectQuery select = new SelectQuery<>(Artist.class);
-        select.addPrefetch("paintingArray");
-
-        List<?> artists = context.performQuery(select);
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(context);
         assertEquals(1, artists.size());
 
-        Artist a = (Artist) artists.get(0);
+        Artist a = artists.get(0);
         Painting p = a.getPaintingArray().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
@@ -282,7 +276,7 @@ public class ProcedureCallIT extends ServerCase {
         assertTrue("Expected Long, got: " + id.getClass().getName(), id instanceof Long);
     }
 
-    protected <T> ProcedureResult<T> runProcedureSelect(ProcedureCall<T> q) throws Exception {
+    private <T> ProcedureResult<T> runProcedureSelect(ProcedureCall<T> q) {
         // Sybase blows whenever a transaction wraps a SP, so turn off
         // transactions
 
@@ -303,7 +297,7 @@ public class ProcedureCallIT extends ServerCase {
         }
     }
 
-    protected void createArtist(double paintingPrice) {
+    private void createArtist(double paintingPrice) {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("An Artist");
 
@@ -319,11 +313,11 @@ public class ProcedureCallIT extends ServerCase {
     /**
      * An ugly hack - converting row keys to uppercase ... Tracked via CAY-148.
      */
-    protected DataRow uppercaseConverter(DataRow row) {
+    private DataRow uppercaseConverter(DataRow row) {
         DataRow converted = new DataRow(row.size());
 
         for (Map.Entry<String, Object> entry : row.entrySet()) {
-            converted.put(entry.getKey().toString().toUpperCase(), entry.getValue());
+            converted.put(entry.getKey().toUpperCase(), entry.getValue());
         }
 
         return converted;

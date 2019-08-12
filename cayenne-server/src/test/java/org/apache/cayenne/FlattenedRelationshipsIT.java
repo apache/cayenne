@@ -23,11 +23,8 @@ import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.Entity1;
@@ -90,14 +87,14 @@ public class FlattenedRelationshipsIT extends ServerCase {
         tFlattenedCircularJoin.setColumns("SIDE1_ID", "SIDE2_ID");
     }
 
-    protected void createFlattenedTestDataSet() throws Exception {
+    private void createFlattenedTestDataSet() throws Exception {
         tFlattenedTest1.insert(1, "ft1");
         tFlattenedTest1.insert(2, "ft12");
         tFlattenedTest2.insert(1, 1, "ft2");
         tFlattenedTest3.insert(1, 1, "ft3");
     }
 
-    protected void createFlattenedCircularDataSet() throws Exception {
+    private void createFlattenedCircularDataSet() throws Exception {
         tFlattenedCircular.insert(1);
         tFlattenedCircular.insert(2);
         tFlattenedCircular.insert(3);
@@ -105,7 +102,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
         tFlattenedCircularJoin.insert(1, 3);
     }
 
-    protected void createCircularJoinDataSet() throws Exception {
+    private void createCircularJoinDataSet() throws Exception {
         tFlattenedTest1.insert(2, "ft12");
         tFlattenedTest3.insert(2, null, "ft3-a");
         tFlattenedTest3.insert(3, null, "ft3-b");
@@ -115,7 +112,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
     }
 
     @Test
-    public void testInsertJoinWithPK() throws Exception {
+    public void testInsertJoinWithPK() {
         FlattenedTest1 obj01 = context.newObject(FlattenedTest1.class);
         FlattenedTest3 obj11 = context.newObject(FlattenedTest3.class);
         FlattenedTest3 obj12 = context.newObject(FlattenedTest3.class);
@@ -174,7 +171,7 @@ public class FlattenedRelationshipsIT extends ServerCase {
     }
 
     @Test
-    public void testQualifyOnToManyFlattened() throws Exception {
+    public void testQualifyOnToManyFlattened() {
         FlattenedTest1 obj01 = context.newObject(FlattenedTest1.class);
         FlattenedTest2 obj02 = context.newObject(FlattenedTest2.class);
         FlattenedTest3 obj031 = context.newObject(FlattenedTest3.class);
@@ -201,17 +198,17 @@ public class FlattenedRelationshipsIT extends ServerCase {
         context.commitChanges();
 
         // test 1: qualify on flattened attribute
-        Expression qual1 = ExpressionFactory.matchExp("ft3Array.name", "t031");
-        SelectQuery query1 = new SelectQuery<>(FlattenedTest1.class, qual1);
-        List<?> objects1 = context.performQuery(query1);
+        List<FlattenedTest1> objects1 = ObjectSelect.query(FlattenedTest1.class)
+                .where(FlattenedTest1.FT3ARRAY.dot(FlattenedTest3.NAME).eq("t031"))
+                .select(context);
 
         assertEquals(1, objects1.size());
         assertSame(obj01, objects1.get(0));
 
         // test 2: qualify on flattened relationship
-        Expression qual2 = ExpressionFactory.matchExp("ft3Array", obj131);
-        SelectQuery query2 = new SelectQuery<>(FlattenedTest1.class, qual2);
-        List<?> objects2 = context.performQuery(query2);
+        List<FlattenedTest1> objects2 = ObjectSelect.query(FlattenedTest1.class)
+                .where(FlattenedTest1.FT3ARRAY.contains(obj131))
+                .select(context);
 
         assertEquals(1, objects2.size());
         assertSame(obj11, objects2.get(0));
@@ -233,13 +230,11 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
         context.invalidateObjects(ft1, ft2, ft3);
 
-        SelectQuery q = new SelectQuery<>(FlattenedTest3.class);
-        q.setQualifier(ExpressionFactory.matchExp("name", "FT3Name"));
-        List<?> results = context1.performQuery(q);
+        List<FlattenedTest3> results = ObjectSelect.query(FlattenedTest3.class, FlattenedTest3.NAME.eq("FT3Name")).select(context);
 
         assertEquals(1, results.size());
 
-        FlattenedTest3 fetchedFT3 = (FlattenedTest3) results.get(0);
+        FlattenedTest3 fetchedFT3 = results.get(0);
         FlattenedTest1 fetchedFT1 = fetchedFT3.getToFT1();
         assertEquals("FT1Name", fetchedFT1.getName());
     }
@@ -249,9 +244,9 @@ public class FlattenedRelationshipsIT extends ServerCase {
         createFlattenedTestDataSet();
 
         // fetch
-        List<?> ft3s = context.performQuery(new SelectQuery<>(FlattenedTest3.class));
+        List<FlattenedTest3> ft3s = ObjectSelect.query(FlattenedTest3.class).select(context);
         assertEquals(1, ft3s.size());
-        FlattenedTest3 ft3 = (FlattenedTest3) ft3s.get(0);
+        FlattenedTest3 ft3 = ft3s.get(0);
 
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
 
@@ -268,14 +263,14 @@ public class FlattenedRelationshipsIT extends ServerCase {
         createFlattenedTestDataSet();
 
         // fetch
-        List<?> ft3s = context.performQuery(new SelectQuery<>(FlattenedTest3.class));
+        List<FlattenedTest3> ft3s = ObjectSelect.query(FlattenedTest3.class).select(context);
         assertEquals(1, ft3s.size());
-        FlattenedTest3 ft3 = (FlattenedTest3) ft3s.get(0);
+        FlattenedTest3 ft3 = ft3s.get(0);
 
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
 
         // refetch
-        context.performQuery(new SelectQuery<>(FlattenedTest3.class));
+        ObjectSelect.query(FlattenedTest3.class).select(context);
         assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
     }
 
@@ -294,10 +289,9 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
     /**
      * Should be able to save/insert an object with flattened (complex) toOne relationship
-     * @throws Exception
      */
     @Test
-    public void testFlattenedComplexToOneRelationship() throws Exception {
+    public void testFlattenedComplexToOneRelationship() {
         FlattenedTest1 ft1 = context.newObject(FlattenedTest1.class);
         ft1.setName("FT1");
 
@@ -313,10 +307,9 @@ public class FlattenedRelationshipsIT extends ServerCase {
 
     /**
      * Should be able to save/insert an object with null flattened (complex) toOne relationship
-     * @throws Exception
      */
     @Test
-    public void testNullFlattenedComplexToOneRelationship() throws Exception {
+    public void testNullFlattenedComplexToOneRelationship() {
         FlattenedTest5 ft5 = context.newObject(FlattenedTest5.class);
         ft5.setName("FT5");
 

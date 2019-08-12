@@ -21,11 +21,9 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.CapsStrategy;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -40,7 +38,6 @@ import org.junit.Test;
 
 import java.sql.Types;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -92,7 +89,7 @@ public class CDOMany2OneIT extends ServerCase {
     }
 
     @Test
-    public void testMultipleToOneDeletion() throws Exception {
+    public void testMultipleToOneDeletion() {
 
         // was a problem per CAY-901
 
@@ -118,10 +115,11 @@ public class CDOMany2OneIT extends ServerCase {
         q.setColumnNamesCapitalization(CapsStrategy.UPPER);
         q.setFetchingDataRows(true);
 
-        Map<String, ?> row = (Map<String, ?>) Cayenne.objectForQuery(context, q);
+        DataRow row = (DataRow) Cayenne.objectForQuery(context, q);
+        assertNotNull(row);
         assertEquals("P1", row.get("PAINTING_TITLE"));
-        assertEquals(null, row.get("ARTIST_ID"));
-        assertEquals(null, row.get("GALLERY_ID"));
+        assertNull(row.get("ARTIST_ID"));
+        assertNull(row.get("GALLERY_ID"));
     }
 
     @Test
@@ -131,10 +129,7 @@ public class CDOMany2OneIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
 
-        Expression e = ROPainting.TO_ARTIST.eq(a1);
-        SelectQuery q = new SelectQuery(ROPainting.class, e);
-
-        List<ROPainting> paints = context.performQuery(q);
+        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(context);
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
@@ -148,10 +143,7 @@ public class CDOMany2OneIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
 
-        Expression e = ROPainting.TO_ARTIST.eq(a1);
-        SelectQuery q = new SelectQuery(ROPainting.class, e);
-
-        List<ROPainting> paints = context.performQuery(q);
+        List<ROPainting> paints = ObjectSelect.query(ROPainting.class, ROPainting.TO_ARTIST.eq(a1)).select(context);
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
@@ -169,10 +161,7 @@ public class CDOMany2OneIT extends ServerCase {
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
         Painting p1 = Cayenne.objectForPK(context, Painting.class, 6);
 
-        Expression e = Painting.TO_ARTIST.eq(a1);
-        SelectQuery q = new SelectQuery(Painting.class, e);
-
-        List<Painting> paints = context.performQuery(q);
+        List<Painting> paints = ObjectSelect.query(Painting.class, Painting.TO_ARTIST.eq(a1)).select(context);
         assertEquals(1, paints.size());
         assertSame(p1, paints.get(0));
     }
@@ -185,10 +174,9 @@ public class CDOMany2OneIT extends ServerCase {
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 8);
         Gallery g1 = Cayenne.objectForPK(context, Gallery.class, 11);
 
-        Expression e = ExpressionFactory.matchExp("paintingArray.toGallery", g1);
-        SelectQuery q = new SelectQuery("Artist", e);
-
-        List<Artist> artists = context.performQuery(q);
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .where(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).eq(g1))
+                .select(context);
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
     }
@@ -214,7 +202,7 @@ public class CDOMany2OneIT extends ServerCase {
     }
 
     @Test
-    public void testRemove() throws Exception {
+    public void testRemove() {
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
@@ -229,8 +217,7 @@ public class CDOMany2OneIT extends ServerCase {
         ObjectContext context2 = runtime.newContext();
 
         // test database data
-        Painting p2 = (Painting) Cayenne.objectForQuery(context2, new SelectQuery(
-                Painting.class));
+        Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
         Gallery g2 = p2.getToGallery();
 
         p2.setToGallery(null);
@@ -244,13 +231,12 @@ public class CDOMany2OneIT extends ServerCase {
 
         ObjectContext context3 = runtime.newContext();
 
-        Painting p3 = (Painting) Cayenne.objectForQuery(context3, new SelectQuery(
-                Painting.class));
+        Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
         assertNull(p3.getToGallery());
     }
 
     @Test
-    public void testReplace() throws Exception {
+    public void testReplace() {
 
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
@@ -264,8 +250,7 @@ public class CDOMany2OneIT extends ServerCase {
         ObjectContext context2 = runtime.newContext();
 
         // test database data
-        Painting p2 = (Painting) Cayenne.objectForQuery(context2, new SelectQuery(
-                Painting.class));
+        Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
         Gallery g21 = p2.getToGallery();
         assertNotNull(g21);
         assertEquals("yTW", g21.getGalleryName());
@@ -286,8 +271,7 @@ public class CDOMany2OneIT extends ServerCase {
 
         ObjectContext context3 = runtime.newContext();
 
-        Painting p3 = (Painting) Cayenne.objectForQuery(context3, new SelectQuery(
-                Painting.class));
+        Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
         Gallery g3 = p3.getToGallery();
         assertNotNull(g3);
         assertEquals("rE", g3.getGalleryName());
@@ -296,7 +280,7 @@ public class CDOMany2OneIT extends ServerCase {
     }
 
     @Test
-    public void testSavedAdd() throws Exception {
+    public void testSavedAdd() {
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
@@ -307,8 +291,7 @@ public class CDOMany2OneIT extends ServerCase {
         ObjectContext context2 = runtime.newContext();
 
         // test database data
-        Painting p2 = (Painting) Cayenne.objectForQuery(context2, new SelectQuery(
-                Painting.class));
+        Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
         assertNull(p2.getToGallery());
 
         Gallery g2 = context2.newObject(Gallery.class);
@@ -324,8 +307,7 @@ public class CDOMany2OneIT extends ServerCase {
         context2.commitChanges();
         ObjectContext context3 = runtime.newContext();
 
-        Painting p3 = (Painting) Cayenne.objectForQuery(context3, new SelectQuery(
-                Painting.class));
+        Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
         Gallery g3 = p3.getToGallery();
         assertNotNull(g3);
         assertEquals("rE", g3.getGalleryName());

@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    https://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -18,6 +18,8 @@
  ****************************************************************/
 
 package org.apache.cayenne.query;
+
+import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
@@ -30,13 +32,10 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 
-@Deprecated
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SelectQueryFetchLimitOrderingIT extends ServerCase {
+public class ObjectSelect_FetchLimitOrderingIT extends ServerCase {
 
     @Inject
     protected ObjectContext context;
@@ -66,17 +65,12 @@ public class SelectQueryFetchLimitOrderingIT extends ServerCase {
 
         creatArtistsDataSet();
 
-        SelectQuery query = new SelectQuery("Artist");
-        query.addOrdering(Artist.ARTIST_NAME.asc());
-
-        query.setFetchLimit(4);
-
-        List<?> results = context.performQuery(query);
+        List<Artist> results = ObjectSelect.query(Artist.class).orderBy(Artist.ARTIST_NAME.asc()).limit(4).select(context);
         assertEquals(4, results.size());
 
-        assertEquals("a", ((Artist) results.get(0)).getArtistName());
-        assertEquals("b", ((Artist) results.get(1)).getArtistName());
-        assertEquals("c", ((Artist) results.get(2)).getArtistName());
-        assertEquals("d", ((Artist) results.get(3)).getArtistName());
+        assertEquals("a", results.get(0).getArtistName());
+        assertEquals("b", results.get(1).getArtistName());
+        assertEquals("c", results.get(2).getArtistName());
+        assertEquals("d", results.get(3).getArtistName());
     }
 }

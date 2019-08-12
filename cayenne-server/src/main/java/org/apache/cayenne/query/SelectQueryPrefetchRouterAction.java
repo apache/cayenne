@@ -32,7 +32,9 @@ import org.apache.cayenne.util.CayenneMapEntry;
  * Preprocessor and router of SelectQuery prefetches.
  * 
  * @since 1.2
+ * @deprecated since 4.2 as part of deprecation of SelectQuery
  */
+@Deprecated
 class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
 
     SelectQuery<?> query;

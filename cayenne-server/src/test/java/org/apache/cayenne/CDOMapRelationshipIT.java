@@ -20,7 +20,9 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.RefreshQuery;
+import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -122,24 +124,20 @@ public class CDOMapRelationshipIT extends ServerCase {
 
         assertNotNull(targets);
         assertEquals(3, targets.size());
-        assertNotNull(targets.get(new Integer(1)));
-        assertNotNull(targets.get(new Integer(2)));
-        assertNotNull(targets.get(new Integer(3)));
+        assertNotNull(targets.get(1));
+        assertNotNull(targets.get(2));
+        assertNotNull(targets.get(3));
 
-        assertEquals(1, Cayenne.intPKForObject((Persistent) targets.get(new Integer(1))));
-        assertEquals(2, Cayenne.intPKForObject((Persistent) targets.get(new Integer(2))));
-        assertEquals(3, Cayenne.intPKForObject((Persistent) targets.get(new Integer(3))));
+        assertEquals(1, Cayenne.intPKForObject((Persistent) targets.get(1)));
+        assertEquals(2, Cayenne.intPKForObject((Persistent) targets.get(2)));
+        assertEquals(3, Cayenne.intPKForObject((Persistent) targets.get(3)));
     }
 
     @Test
     public void testReadToManyPrefetching() throws Exception {
         createTestDataSet();
 
-        SelectQuery query = new SelectQuery(MapToMany.class, ExpressionFactory
-                .matchDbExp(MapToMany.ID_PK_COLUMN, new Integer(1)));
-        query.addPrefetch(MapToMany.TARGETS.disjoint());
-        MapToMany o1 = (MapToMany) Cayenne.objectForQuery(context, query);
-
+        MapToMany o1 = SelectById.query(MapToMany.class, 1).prefetch(MapToMany.TARGETS.disjoint()).selectOne(context);
         Map targets = o1.getTargets();
 
         assertFalse(((ValueHolder) targets).isFault());

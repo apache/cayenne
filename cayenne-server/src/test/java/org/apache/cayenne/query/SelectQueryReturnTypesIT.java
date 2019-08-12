@@ -82,10 +82,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         greater.setOperand(0, left);
         greater.setOperand(1, right);
 
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(greater);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, greater).select(context);
         assertEquals(2, objects.size());
     }
 
@@ -106,10 +103,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(equal);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(context);
         assertEquals(2, objects.size());
     }
 
@@ -130,10 +124,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(equal);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(context);
         assertEquals(3, objects.size());
     }
 
@@ -154,10 +145,7 @@ public class SelectQueryReturnTypesIT extends ServerCase {
         equal.setOperand(0, left);
         equal.setOperand(1, right);
 
-        SelectQuery query = new SelectQuery(ReturnTypesMap1.class);
-        query.setQualifier(equal);
-
-        List<ReturnTypesMap1> objects = context.performQuery(query);
+        List<ReturnTypesMap1> objects = ObjectSelect.query(ReturnTypesMap1.class, equal).select(context);
         assertEquals(1, objects.size());
         assertEquals(4, objects.get(0).getIntegerColumn().intValue());
     }

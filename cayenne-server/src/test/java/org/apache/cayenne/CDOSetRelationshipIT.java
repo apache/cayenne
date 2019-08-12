@@ -19,9 +19,8 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.RefreshQuery;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
@@ -102,10 +101,7 @@ public class CDOSetRelationshipIT extends ServerCase {
     public void testReadToManyPrefetching() throws Exception {
         createTestDataSet();
 
-        SelectQuery query = new SelectQuery(SetToMany.class, ExpressionFactory
-                .matchDbExp(SetToMany.ID_PK_COLUMN, new Integer(1)));
-        query.addPrefetch(SetToMany.TARGETS.disjoint());
-        SetToMany o1 = (SetToMany) Cayenne.objectForQuery(context, query);
+        SetToMany o1 = SelectById.query(SetToMany.class, 1).prefetch(SetToMany.TARGETS.disjoint()).selectOne(context);
 
         Set targets = o1.getTargets();
 

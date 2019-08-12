@@ -23,7 +23,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.qualified.Qualified1;
@@ -113,8 +112,7 @@ public class CDOQualifiedEntitiesIT extends ServerCase {
 
             createReadToManyDataSet();
 
-            SelectQuery rootSelect = new SelectQuery(Qualified1.class);
-            List<Qualified1> roots = context.performQuery(rootSelect);
+            List<Qualified1> roots = ObjectSelect.query(Qualified1.class).select(context);
 
             assertEquals(1, roots.size());
 
@@ -136,8 +134,7 @@ public class CDOQualifiedEntitiesIT extends ServerCase {
 
             createReadToOneDataSet();
 
-            SelectQuery rootSelect = new SelectQuery(Qualified2.class);
-            List<Qualified2> roots = context.performQuery(rootSelect);
+            List<Qualified2> roots = ObjectSelect.query(Qualified2.class).select(context);
             assertEquals(1, roots.size());
 
             Qualified2 root = roots.get(0);

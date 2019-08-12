@@ -28,15 +28,10 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
-@Deprecated
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SelectQueryCacheKeyIT extends ServerCase {
+public class ObjectSelect_CacheKeyIT extends ServerCase {
 
     @Inject
     private EntityResolver resolver;
@@ -44,7 +39,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testNoCache() {
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
         QueryMetadata md1 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
@@ -58,9 +53,8 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testLocalCache() {
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-
-        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .localCache();
 
         QueryMetadata md1 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
@@ -70,15 +64,15 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testUseLocalCache() {
 
-        SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
-        q1.useLocalCache();
+        ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
+                .localCache();
 
         QueryMetadata md1 = q1.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
         assertNull(md1.getCacheGroup());
-        
-        SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
+
+        ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class);
         q2.useLocalCache("g1");
 
         QueryMetadata md2 = q2.getMetaData(resolver);
@@ -90,9 +84,8 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testSharedCache() {
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-
-        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .sharedCache();
 
         QueryMetadata md1 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
@@ -102,16 +95,16 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testUseSharedCache() {
 
-        SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
-        q1.useSharedCache();
+        ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
+                .sharedCache();
 
         QueryMetadata md1 = q1.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
         assertNull(md1.getCacheGroup());
-        
-        SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
-        q2.useSharedCache("g1");
+
+        ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class)
+                .sharedCache("g1");
 
         QueryMetadata md2 = q2.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md2.getCacheStrategy());
@@ -122,26 +115,25 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testNamedQuery() {
 
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-
-        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+                .sharedCache();
 
         QueryMetadata md1 = query.getMetaData(resolver);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
-        assertFalse("XYZ".equals(md1.getCacheKey()));
+        assertNotEquals("XYZ", md1.getCacheKey());
     }
 
     @Test
     public void testUniqueKeyEntity() {
 
-        SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
-        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
+                .localCache();
 
-        SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
-        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class)
+                .localCache();
 
-        SelectQuery<Painting> q3 = new SelectQuery<>(Painting.class);
-        q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<Painting> q3 = ObjectSelect.query(Painting.class)
+                .localCache();
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
@@ -152,17 +144,17 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testUniqueKeyEntityQualifier() {
 
-        SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
-        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q1.setQualifier(ExpressionFactory.matchExp("a", "b"));
+        ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .where(ExpressionFactory.matchExp("a", "b"));
 
-        SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
-        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q2.setQualifier(ExpressionFactory.matchExp("a", "b"));
+        ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .where(ExpressionFactory.matchExp("a", "b"));
 
-        SelectQuery<Artist> q3 = new SelectQuery<>(Artist.class);
-        q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q3.setQualifier(ExpressionFactory.matchExp("a", "c"));
+        ObjectSelect<Artist> q3 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .where(ExpressionFactory.matchExp("a", "c"));
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
@@ -173,20 +165,20 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     @Test
     public void testUniqueKeyEntityFetchLimit() {
 
-        SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
-        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q1.setFetchLimit(5);
+        ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .limit(5);
 
-        SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
-        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q2.setFetchLimit(5);
+        ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .limit(5);
 
-        SelectQuery<Artist> q3 = new SelectQuery<>(Artist.class);
-        q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        q3.setFetchLimit(6);
+        ObjectSelect<Artist> q3 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .limit(6);
 
-        SelectQuery<Artist> q4 = new SelectQuery<>(Artist.class);
-        q4.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        ObjectSelect<Artist> q4 = ObjectSelect.query(Artist.class)
+                .localCache();
 
         assertNotNull(q1.getMetaData(resolver).getCacheKey());
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());

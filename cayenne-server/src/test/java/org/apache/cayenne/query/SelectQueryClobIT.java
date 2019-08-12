@@ -22,8 +22,6 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
@@ -49,7 +47,7 @@ public class SelectQueryClobIT extends ServerCase {
     @Inject
     private UnitDbAdapter accessStackAdapter;
 
-    protected void createClobDataSet() throws Exception {
+    private void createClobDataSet() throws Exception {
         TableHelper tClobTest = new TableHelper(dbHelper, "CLOB_TEST");
         tClobTest.setColumns("CLOB_TEST_ID", "CLOB_COL");
 
@@ -66,10 +64,9 @@ public class SelectQueryClobIT extends ServerCase {
     public void testSelectLikeIgnoreCaseClob() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             createClobDataSet();
-            SelectQuery<ClobTestEntity> query = new SelectQuery<ClobTestEntity>(ClobTestEntity.class);
-            Expression qual = ExpressionFactory.likeIgnoreCaseExp("clobCol", "clob%");
-            query.setQualifier(qual);
-            List<?> objects = context.performQuery(query);
+            List<?> objects = ObjectSelect.query(ClobTestEntity.class)
+                    .where(ClobTestEntity.CLOB_COL.likeIgnoreCase("clob%"))
+                    .select(context);
             assertEquals(2, objects.size());
         }
     }
@@ -81,13 +78,11 @@ public class SelectQueryClobIT extends ServerCase {
 
             // see CAY-1539... CLOB column causes suppression of DISTINCT in
             // SQL, and hence the offset processing is done in memory
-            SelectQuery<ClobTestEntity> query = new SelectQuery<>(ClobTestEntity.class);
-            query.addOrdering("db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN, SortOrder.ASCENDING);
-            query.setFetchLimit(1);
-            query.setFetchOffset(1);
-            query.setDistinct(true);
-
-            List<ClobTestEntity> objects = query.select(context);
+            List<ClobTestEntity> objects = ObjectSelect.query(ClobTestEntity.class)
+                    .orderBy("db:" + ClobTestEntity.CLOB_TEST_ID_PK_COLUMN, SortOrder.ASCENDING)
+                    .limit(1)
+                    .offset(1)
+                    .select(context);
             assertEquals(1, objects.size());
             assertEquals(2, Cayenne.intPKForObject(objects.get(0)));
         }
@@ -97,10 +92,9 @@ public class SelectQueryClobIT extends ServerCase {
     public void testSelectEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
-            SelectQuery<ClobTestEntity> query = new SelectQuery<>(ClobTestEntity.class);
-            Expression qual = ExpressionFactory.matchExp("clobCol", "clob1");
-            query.setQualifier(qual);
-            List<?> objects = context.performQuery(query);
+            List<?> objects = ObjectSelect.query(ClobTestEntity.class)
+                    .where(ClobTestEntity.CLOB_COL.eq("clob1"))
+                    .select(context);
             assertEquals(1, objects.size());
         }
     }
@@ -109,10 +103,9 @@ public class SelectQueryClobIT extends ServerCase {
     public void testSelectNotEqualsClob() throws Exception {
         if (accessStackAdapter.supportsLobComparisons()) {
             createClobDataSet();
-            SelectQuery query = new SelectQuery<>(ClobTestEntity.class);
-            Expression qual = ExpressionFactory.noMatchExp("clobCol", "clob1");
-            query.setQualifier(qual);
-            List<?> objects = context.performQuery(query);
+            List<?> objects = ObjectSelect.query(ClobTestEntity.class)
+                    .where(ClobTestEntity.CLOB_COL.ne("clob1"))
+                    .select(context);
             assertEquals(1, objects.size());
         }
     }

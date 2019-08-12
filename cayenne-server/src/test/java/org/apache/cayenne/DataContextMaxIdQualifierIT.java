@@ -21,13 +21,12 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -89,16 +88,11 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
     public void testDisjointByIdPrefetch() throws Exception {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(10);
-        
-        final SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
 
-        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                context.performQuery(query);
-            }
-        });
+        int queriesCount = queryInterceptor.runWithQueryCounter(() ->
+                ObjectSelect.query(Artist.class)
+                        .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                        .select(context));
 
         assertEquals(11, queriesCount);
     }
@@ -108,15 +102,10 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(0);
 
-        final SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
-
-        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                context.performQuery(query);
-            }
-        });
+        int queriesCount = queryInterceptor.runWithQueryCounter(() ->
+                ObjectSelect.query(Artist.class)
+                        .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                        .select(context));
 
         assertEquals(2, queriesCount);
     }
@@ -126,15 +115,10 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
         insertData();
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
-        final SelectQuery query = new SelectQuery(Artist.class);
-        query.addPrefetch(Artist.PAINTING_ARRAY.disjointById());
-
-        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                context.performQuery(query);
-            }
-        });
+        int queriesCount = queryInterceptor.runWithQueryCounter(() ->
+                ObjectSelect.query(Artist.class)
+                        .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                        .select(context));
 
         assertEquals(2, queriesCount);
     }
@@ -145,27 +129,20 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
 
         runtime.getDataDomain().setMaxIdQualifierSize(5);
 
-        final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(10);
-        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-            public void execute() {
-                final List<Painting> boxes = context.performQuery(query);
-                for (Painting box : boxes) {
-                    box.getToArtist();
-                }
+        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+            List<Painting> boxes = query.select(context);
+            for (Painting box : boxes) {
+                box.getToArtist();
             }
         });
 
         assertEquals(21, queriesCount);
 
-        queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                final List<Painting> boxes = context.performQuery(query);
-                List<Painting> tempList = new ArrayList<Painting>();
-                tempList.addAll(boxes);
-            }
+        queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+            List<Painting> boxes = query.select(context);
+            List<Painting> tempList = new ArrayList<>(boxes);
         });
 
         assertEquals(21, queriesCount);
@@ -177,27 +154,20 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
 
         runtime.getDataDomain().setMaxIdQualifierSize(101);
 
-        final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(10);
-        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-            public void execute() {
-                final List<Painting> boxes = context.performQuery(query);
-                for (Painting box : boxes) {
-                    box.getToArtist();
-                }
+        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+            final List<Painting> boxes = query.select(context);
+            for (Painting box : boxes) {
+                box.getToArtist();
             }
         });
 
         assertEquals(11, queriesCount);
 
-        queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
-
-            public void execute() {
-                final List<Painting> boxes = context.performQuery(query);
-                List<Painting> tempList = new ArrayList<Painting>();
-                tempList.addAll(boxes);
-            }
+        queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+            final List<Painting> boxes = query.select(context);
+            List<Painting> tempList = new ArrayList<>(boxes);
         });
 
         assertEquals(2, queriesCount);
@@ -209,15 +179,11 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
 
         runtime.getDataDomain().setMaxIdQualifierSize(0);
 
-        final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(10);
-        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-            public void execute() {
-                final List<Painting> boxes = context.performQuery(query);
-                List<Painting> tempList = new ArrayList<Painting>();
-                tempList.addAll(boxes);
-            }
+        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+            final List<Painting> boxes = query.select(context);
+            List<Painting> tempList = new ArrayList<>(boxes);
         });
 
         assertEquals(2, queriesCount);
@@ -229,15 +195,11 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
 
         runtime.getDataDomain().setMaxIdQualifierSize(-1);
 
-        final SelectQuery query = new SelectQuery(Painting.class);
-        query.setPageSize(10);
-        int queriesCount = queryInterceptor.runWithQueryCounter(new UnitTestClosure() {
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).pageSize(10);
 
-            public void execute() {
-                final List<Painting> boxes = context.performQuery(query);
-                List<Painting> tempList = new ArrayList<Painting>();
-                tempList.addAll(boxes);
-            }
+        int queriesCount = queryInterceptor.runWithQueryCounter(() -> {
+            final List<Painting> boxes = query.select(context);
+            List<Painting> tempList = new ArrayList<>(boxes);
         });
 
         assertEquals(2, queriesCount);

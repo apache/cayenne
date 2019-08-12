@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -75,9 +76,7 @@ public class GenericMappingIT extends ServerCase {
                 "INSERT INTO GENERIC2 (GENERIC1_ID, ID, NAME) VALUES (1, 1, 'CCCCC')"));
 
         Expression qual = ExpressionFactory.matchExp("name", "AAAA");
-        SelectQuery q = new SelectQuery("Generic1", qual);
-
-        List<?> result = context.performQuery(q);
+        List<?> result = ObjectSelect.query(Object.class, "Generic1").where(qual).select(context);
         assertEquals(1, result.size());
     }
 
