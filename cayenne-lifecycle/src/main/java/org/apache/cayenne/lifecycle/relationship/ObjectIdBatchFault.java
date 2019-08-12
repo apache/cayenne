@@ -122,9 +122,8 @@ class ObjectIdBatchFault {
 		Map<String, Object> results = new HashMap<>(capacity);
 
 		for (ObjectSelect<DataObject> query : queriesByEntity.values()) {
-			EntityIdCoder coder = codersByEntity.get(query.getRoot());
-			@SuppressWarnings("unchecked")
-			List<DataObject> objects = context.performQuery(query);
+			EntityIdCoder coder = codersByEntity.get(query.getEntityName());
+			List<DataObject> objects = query.select(context);
 			for (DataObject object : objects) {
 				String uuid = coder.toStringId(object.getObjectId());
 				results.put(uuid, object);
