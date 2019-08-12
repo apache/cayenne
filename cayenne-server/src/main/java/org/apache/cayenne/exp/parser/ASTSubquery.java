@@ -24,11 +24,9 @@ import java.io.IOException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.translator.select.FluentSelectWrapper;
-import org.apache.cayenne.access.translator.select.SelectQueryWrapper;
 import org.apache.cayenne.access.translator.select.TranslatableQueryWrapper;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 4.2
@@ -36,10 +34,6 @@ import org.apache.cayenne.query.SelectQuery;
 public class ASTSubquery extends SimpleNode {
 
     private final TranslatableQueryWrapper query;
-
-    public ASTSubquery(SelectQuery<?> query) {
-        this(new SelectQueryWrapper(query));
-    }
 
     public ASTSubquery(FluentSelect<?> query) {
         this(new FluentSelectWrapper(query));

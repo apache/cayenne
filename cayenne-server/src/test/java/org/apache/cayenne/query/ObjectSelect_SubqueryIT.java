@@ -81,15 +81,6 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
     }
 
     @Test
-    @Deprecated
-    public void selectQuery_simpleExistsSelectQuery() {
-        long count = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exists(SelectQuery.query(Painting.class, Painting.PAINTING_TITLE.like("painting%"))))
-                .selectCount(context);
-        assertEquals(20L, count);
-    }
-
-    @Test
     public void selectQuery_existsWithExpressionFromParentQuery() {
         Expression exp = Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing())
                 .andExp(Painting.PAINTING_TITLE.like("painting%"))

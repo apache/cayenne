@@ -66,7 +66,6 @@ import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.SelectQuery;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -1358,13 +1357,7 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * @since 4.2
-	 */
-	public static Expression exists(SelectQuery<?> subQuery) {
-		return new ASTExists(new ASTSubquery(subQuery));
-	}
-
-	/**
+	 * @param subQuery {@link org.apache.cayenne.query.ObjectSelect} or {@link ColumnSelect}
 	 * @since 4.2
 	 */
 	public static Expression exists(FluentSelect<?> subQuery) {

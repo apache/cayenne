@@ -34,6 +34,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -42,7 +43,6 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -70,7 +70,7 @@ public class StringIdQuery implements Query {
 
     protected Collection<String> stringIds;
 
-    protected transient Map<String, SelectQuery> idQueriesByEntity;
+    protected transient Map<String, ObjectSelect> idQueriesByEntity;
 
     public StringIdQuery(String... stringIds) {
         this(toCollection(stringIds));
@@ -103,21 +103,21 @@ public class StringIdQuery implements Query {
         }
     }
 
-    protected Map<String, SelectQuery> getIdQueriesByEntity(EntityResolver resolver) {
+    protected Map<String, ObjectSelect> getIdQueriesByEntity(EntityResolver resolver) {
         if (this.idQueriesByEntity == null) {
 
-            Map<String, SelectQuery> idQueriesByEntity = new HashMap<>();
+            Map<String, ObjectSelect> idQueriesByEntity = new HashMap<>();
             Map<String, EntityIdCoder> codersByEntity = new HashMap<>();
 
             for (String id : stringIds) {
                 String entityName = EntityIdCoder.getEntityName(id);
                 EntityIdCoder coder = codersByEntity.get(entityName);
-                SelectQuery query;
+                ObjectSelect query;
 
                 if (coder == null) {
                     coder = new EntityIdCoder(resolver.getObjEntity(entityName));
 
-                    query = new SelectQuery(entityName);
+                    query = ObjectSelect.query(Object.class, entityName);
 
                     codersByEntity.put(entityName, coder);
                     idQueriesByEntity.put(entityName, query);
@@ -129,7 +129,7 @@ public class StringIdQuery implements Query {
                 Expression idExp = ExpressionFactory.matchAllDbExp(coder
                         .toObjectId(id)
                         .getIdSnapshot(), Expression.EQUAL_TO);
-                query.orQualifier(idExp);
+                query.or(idExp);
             }
 
             this.idQueriesByEntity = idQueriesByEntity;
@@ -239,8 +239,8 @@ public class StringIdQuery implements Query {
 
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
 
-        Map<String, SelectQuery> queries = getIdQueriesByEntity(resolver);
-        for (SelectQuery query : queries.values()) {
+        Map<String, ObjectSelect> queries = getIdQueriesByEntity(resolver);
+        for (ObjectSelect query : queries.values()) {
             query.route(router, resolver, this);
         }
     }
