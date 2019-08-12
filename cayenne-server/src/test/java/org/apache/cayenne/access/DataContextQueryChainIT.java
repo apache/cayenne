@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.di.Inject;
@@ -29,8 +31,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -41,6 +41,7 @@ public class DataContextQueryChainIT extends ServerCase {
     private DataContext context;
 
     @Test
+    @Deprecated
     public void testSelectQuery() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("X");

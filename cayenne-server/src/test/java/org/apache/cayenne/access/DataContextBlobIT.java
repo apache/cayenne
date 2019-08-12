@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.access.types.ByteArrayTypeTest;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.BlobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -48,7 +48,7 @@ public class DataContextBlobIT extends ServerCase {
 
     @Inject
     private UnitDbAdapter accessStackAdapter;
-    
+
     protected boolean skipTests() {
         return !accessStackAdapter.supportsLobs();
     }
@@ -76,7 +76,7 @@ public class DataContextBlobIT extends ServerCase {
         }
 
         // read the CLOB in the new context
-        List<BlobTestEntity> objects2 = context2.select(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
+        List<BlobTestEntity> objects2 = ObjectSelect.query(BlobTestEntity.class).select(context2);
         assertEquals(3, objects2.size());
     }
 
@@ -129,7 +129,7 @@ public class DataContextBlobIT extends ServerCase {
 
         // read the BLOB in the new context
 
-        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects2 = ObjectSelect.query(BlobTestEntity.class).select(context2);
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -140,13 +140,13 @@ public class DataContextBlobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects3 = ObjectSelect.query(BlobTestEntity.class).select(context3);
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
         ByteArrayTypeTest.assertByteArraysEqual(blobObj2.getBlobCol(), blobObj3
                 .getBlobCol());
-      
+
     }
 
     protected void runWithBlobSize(int sizeBytes) throws Exception {
@@ -163,10 +163,10 @@ public class DataContextBlobIT extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<BlobTestEntity> objects2 = ObjectSelect.query(BlobTestEntity.class).select(context2);
         assertEquals(1, objects2.size());
 
-        BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
+        BlobTestEntity blobObj2 = objects2.get(0);
         ByteArrayTypeTest.assertByteArraysEqual(blobObj1.getBlobCol(), blobObj2
                 .getBlobCol());
 
@@ -177,10 +177,10 @@ public class DataContextBlobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<BlobTestEntity> objects3 = ObjectSelect.query(BlobTestEntity.class).select(context3);
         assertEquals(1, objects3.size());
 
-        BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
+        BlobTestEntity blobObj3 = objects3.get(0);
         ByteArrayTypeTest.assertByteArraysEqual(blobObj2.getBlobCol(), blobObj3
                 .getBlobCol());
     }

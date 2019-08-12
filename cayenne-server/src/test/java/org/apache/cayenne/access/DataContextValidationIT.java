@@ -20,14 +20,13 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ValidationDelegate;
-import org.apache.cayenne.validation.ValidationResult;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -71,15 +70,12 @@ public class DataContextValidationIT extends ServerCase {
     @Test
     public void testValidationModifyingContext() throws Exception {
 
-        ValidationDelegate delegate = new ValidationDelegate() {
+        ValidationDelegate delegate = (object, validationResult) -> {
 
-            public void validateForSave(Object object, ValidationResult validationResult) {
-
-                Artist a = (Artist) object;
-                Painting p = a.getObjectContext().newObject(Painting.class);
-                p.setPaintingTitle("XXX");
-                p.setToArtist(a);
-            }
+            Artist a = (Artist) object;
+            Painting p = a.getObjectContext().newObject(Painting.class);
+            p.setPaintingTitle("XXX");
+            p.setToArtist(a);
         };
 
         context.setValidatingObjectsOnCommit(true);
@@ -94,6 +90,6 @@ public class DataContextValidationIT extends ServerCase {
         a2.setArtistName("a2");
         context.commitChanges();
 
-        assertEquals(2, context.performQuery(new SelectQuery(Painting.class)).size());
+        assertEquals(2, ObjectSelect.query(Painting.class).select(context).size());
     }
 }

@@ -20,13 +20,13 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.WeakReferenceStrategyServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.WeakReferenceStrategyServerCase;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -44,7 +44,7 @@ public class ObjectStoreGCIT extends WeakReferenceStrategyServerCase {
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
-        context.performQuery(new SelectQuery(Artist.class));
+        ObjectSelect.query(Artist.class).select(context);
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // allow for slow GC

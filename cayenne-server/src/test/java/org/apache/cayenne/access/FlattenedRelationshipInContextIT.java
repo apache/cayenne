@@ -19,10 +19,12 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -33,8 +35,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -78,9 +78,9 @@ public class FlattenedRelationshipInContextIT extends ServerCase {
         createFlattenedTestDataSet();
 
         // fetch
-        List<?> ft3s = context.performQuery(new SelectQuery(FlattenedTest3.class));
+        List<FlattenedTest3> ft3s = ObjectSelect.query(FlattenedTest3.class).select(context);
         assertEquals(1, ft3s.size());
-        FlattenedTest3 ft3 = (FlattenedTest3) ft3s.get(0);
+        FlattenedTest3 ft3 = ft3s.get(0);
 
         // mark as dirty for the purpose of the test...
         ft3.setPersistenceState(PersistenceState.MODIFIED);

@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -76,7 +76,7 @@ public class DataContextBinaryPKIT extends ServerCase {
             context.commitChanges();
             context.invalidateObjects(master, detail);
 
-            BinaryPKTest2 fetchedDetail = new SelectQuery<>(BinaryPKTest2.class).select(context1).get(0);
+            BinaryPKTest2 fetchedDetail = ObjectSelect.query(BinaryPKTest2.class).selectFirst(context);
             assertNotNull(fetchedDetail.readPropertyDirectly("toBinaryPKMaster"));
 
             BinaryPKTest1 fetchedMaster = fetchedDetail.getToBinaryPKMaster();

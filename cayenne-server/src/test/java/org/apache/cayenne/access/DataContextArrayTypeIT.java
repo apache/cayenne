@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.array_type.ArrayTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,7 +47,8 @@ public class DataContextArrayTypeIT extends ServerCase {
         arrayTest.setDoubleArray(doubleArray);
         context.commitChanges();
 
-        List<ArrayTestEntity> res = context.performQuery(new SelectQuery(ArrayTestEntity.class));
+        List<ArrayTestEntity> res = ObjectSelect.query(ArrayTestEntity.class)
+                .select(context);
         ArrayTestEntity arrayRes = res.get(0);
 
         assertNotNull(arrayRes);

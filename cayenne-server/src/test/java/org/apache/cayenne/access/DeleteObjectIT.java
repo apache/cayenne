@@ -19,13 +19,16 @@
 
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -35,10 +38,6 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -102,7 +101,7 @@ public class DeleteObjectIT extends ServerCase {
     public void testDeleteObjects1() throws Exception {
         createObjectsDataSet();
 
-        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
+        List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
         assertEquals(2, artists.size());
 
         for (Artist object : artists) {
@@ -122,7 +121,7 @@ public class DeleteObjectIT extends ServerCase {
     public void testDeleteObjects2() throws Exception {
         createObjectsDataSet();
 
-        List<Artist> artists = context.performQuery(new SelectQuery(Artist.class));
+        List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
         assertEquals(2, artists.size());
 
         for (Artist object : artists) {

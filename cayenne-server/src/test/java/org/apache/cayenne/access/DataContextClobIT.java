@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.access;
 
+import java.util.List;
+
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -99,10 +99,10 @@ public class DataContextClobIT extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<ClobTestEntity> objects2 = ObjectSelect.query(ClobTestEntity.class).select(context2);
         assertEquals(1, objects2.size());
 
-        ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
+        ClobTestEntity clobObj2 = objects2.get(0);
         assertNull("Expected null, got: '" + clobObj2.getClobCol() + "'", clobObj2
                 .getClobCol());
 
@@ -111,10 +111,10 @@ public class DataContextClobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<ClobTestEntity> objects3 = ObjectSelect.query(ClobTestEntity.class).select(context3);
         assertEquals(1, objects3.size());
 
-        ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);
+        ClobTestEntity clobObj3 = objects3.get(0);
         assertEquals(clobObj2.getClobCol(), clobObj3.getClobCol());
     }
 
@@ -137,10 +137,10 @@ public class DataContextClobIT extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<ClobTestEntity> objects2 = ObjectSelect.query(ClobTestEntity.class).select(context2);
         assertEquals(1, objects2.size());
 
-        ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
+        ClobTestEntity clobObj2 = objects2.get(0);
         assertEquals(clobObj1.getClobCol(), clobObj2.getClobCol());
 
         // update and save Clob
@@ -148,10 +148,10 @@ public class DataContextClobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<ClobTestEntity> objects3 = ObjectSelect.query(ClobTestEntity.class).select(context3);
         assertEquals(1, objects3.size());
 
-        ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);
+        ClobTestEntity clobObj3 = objects3.get(0);
         assertEquals(clobObj2.getClobCol(), clobObj3.getClobCol());
     }
 }

@@ -19,14 +19,12 @@
 
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertEquals;
-
 import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.CustomerRepresentative;
@@ -35,6 +33,8 @@ import org.apache.cayenne.testdo.inheritance_people.Manager;
 import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class DataContextQualifiedEntityIT extends PeopleProjectCase {
 
@@ -83,20 +83,19 @@ public class DataContextQualifiedEntityIT extends PeopleProjectCase {
         // no inheritance checks in this case...
 
         // select Abstract Ppl
-        List<?> abstractPpl = context.performQuery(new SelectQuery(AbstractPerson.class));
+        List<AbstractPerson> abstractPpl = ObjectSelect.query(AbstractPerson.class).select(context);
         assertEquals(6, abstractPpl.size());
 
         // select Customer Reps
-        List<?> customerReps = context.performQuery(new SelectQuery(
-                CustomerRepresentative.class));
+        List<CustomerRepresentative> customerReps = ObjectSelect.query(CustomerRepresentative.class).select(context);
         assertEquals(1, customerReps.size());
 
         // select Employees
-        List<?> employees = context.performQuery(new SelectQuery(Employee.class));
+        List<Employee> employees = ObjectSelect.query(Employee.class).select(context);
         assertEquals(5, employees.size());
 
         // select Managers
-        List<?> managers = context.performQuery(new SelectQuery(Manager.class));
+        List<Manager> managers = ObjectSelect.query(Manager.class).select(context);
         assertEquals(2, managers.size());
     }
 
@@ -105,7 +104,7 @@ public class DataContextQualifiedEntityIT extends PeopleProjectCase {
         createPersonsDataSet();
 
         // select Managers.. make sure prefetch query works as expected
-        List<?> managers = context.performQuery(new SelectQuery(Manager.class));
+        List<Manager> managers = ObjectSelect.query(Manager.class).select(context);
         assertEquals(2, managers.size());
     }
 }

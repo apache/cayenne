@@ -510,9 +510,9 @@ public class VerticalInheritanceIT extends ServerCase {
 		ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
 		ivSub2Table.insert(4, "xSUB2");
 
-		SelectQuery<IvRoot> query = new SelectQuery<>(IvRoot.class);
+		ObjectSelect<IvRoot> query = ObjectSelect.query(IvRoot.class);
 
-		List<IvRoot> results = context.select(query);
+		List<IvRoot> results = query.select(context);
 
 		assertEquals(4, results.size());
 		Map<String, IvRoot> resultTypes = new HashMap<>();

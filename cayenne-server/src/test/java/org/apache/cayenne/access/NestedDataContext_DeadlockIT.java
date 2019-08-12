@@ -18,15 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import static org.junit.Assert.assertFalse;
-
 import java.util.List;
 import java.util.Random;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
@@ -36,6 +34,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContext_DeadlockIT extends ServerCase {
@@ -109,7 +109,7 @@ public class NestedDataContext_DeadlockIT extends ServerCase {
 		@Override
 		public void run() {
 
-			List<Artist> artists = nestedContext.select(new SelectQuery<Artist>(Artist.class));
+			List<Artist> artists = nestedContext.select(ObjectSelect.query(Artist.class));
 
 			for (int i = 0; i < 100; i++) {
 
