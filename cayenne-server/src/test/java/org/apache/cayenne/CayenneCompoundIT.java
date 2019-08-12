@@ -23,7 +23,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
@@ -41,7 +40,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
@@ -53,9 +51,9 @@ public class CayenneCompoundIT extends ServerCase {
 	@Inject
 	protected DBHelper dbHelper;
 
-	protected TableHelper tCompoundPKTest;
-	protected TableHelper tCharPKTest;
-	protected TableHelper tCompoundIntPKTest;
+	private TableHelper tCompoundPKTest;
+	private TableHelper tCharPKTest;
+	private TableHelper tCompoundIntPKTest;
 
 	@Before
 	public void setUp() throws Exception {
@@ -90,20 +88,19 @@ public class CayenneCompoundIT extends ServerCase {
 		Map<String, Object> pk = new HashMap<>();
 		pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
 		pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
-		Object object = Cayenne.objectForPK(context, CompoundPkTestEntity.class, pk);
+		CompoundPkTestEntity object = Cayenne.objectForPK(context, CompoundPkTestEntity.class, pk);
 
 		assertNotNull(object);
-		assertTrue(object instanceof CompoundPkTestEntity);
-		assertEquals("BBB", ((CompoundPkTestEntity) object).getName());
+		assertEquals("BBB", object.getName());
 	}
 
 	@Test
 	public void testCompoundPKForObject() throws Exception {
 		createOneCompoundPK();
 
-		List<?> objects = context.performQuery(new SelectQuery<>(CompoundPkTestEntity.class));
+		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
-		DataObject object = (DataObject) objects.get(0);
+		CompoundPkTestEntity object = objects.get(0);
 
 		Map<String, Object> pk = Cayenne.compoundPKForObject(object);
 		assertNotNull(pk);
@@ -116,9 +113,9 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testIntPKForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
-		List<?> objects = context.performQuery(new SelectQuery<>(CompoundPkTestEntity.class));
+		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
-		DataObject object = (DataObject) objects.get(0);
+		CompoundPkTestEntity object = objects.get(0);
 
 		try {
 			Cayenne.intPKForObject(object);
@@ -132,9 +129,9 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testIntPKForObjectFailureForNonNumeric() throws Exception {
 		createOneCharPK();
 
-		List<?> objects = context.performQuery(new SelectQuery<>(CharPkTestEntity.class));
+		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
-		DataObject object = (DataObject) objects.get(0);
+		CharPkTestEntity object = objects.get(0);
 
 		try {
 			Cayenne.intPKForObject(object);
@@ -148,9 +145,9 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testPKForObjectFailureForCompound() throws Exception {
 		createOneCompoundPK();
 
-		List<?> objects = context.performQuery(new SelectQuery<>(CompoundPkTestEntity.class));
+		List<CompoundPkTestEntity> objects = ObjectSelect.query(CompoundPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
-		DataObject object = (DataObject) objects.get(0);
+		CompoundPkTestEntity object = objects.get(0);
 
 		try {
 			Cayenne.pkForObject(object);
@@ -164,13 +161,12 @@ public class CayenneCompoundIT extends ServerCase {
 	public void testIntPKForObjectNonNumeric() throws Exception {
 		createOneCharPK();
 
-		List<?> objects = context.performQuery(new SelectQuery<>(CharPkTestEntity.class));
+		List<CharPkTestEntity> objects = ObjectSelect.query(CharPkTestEntity.class).select(context);
 		assertEquals(1, objects.size());
-		DataObject object = (DataObject) objects.get(0);
+		CharPkTestEntity object = objects.get(0);
 
 		assertEquals("CPK", Cayenne.pkForObject(object));
 	}
-
 
 	@Test
 	public void testPaginatedColumnSelect() throws Exception {

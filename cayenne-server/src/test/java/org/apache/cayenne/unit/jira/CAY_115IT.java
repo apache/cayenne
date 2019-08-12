@@ -90,10 +90,10 @@ public class CAY_115IT extends ServerCase {
 
         createDistinctClobFetchDataSet();
 
-        SelectQuery noDistinct = new SelectQuery(ClobMaster.class);
+        SelectQuery<ClobMaster> noDistinct = SelectQuery.query(ClobMaster.class);
         noDistinct.addOrdering(ClobMaster.NAME.asc());
 
-        SelectQuery distinct = new SelectQuery(ClobMaster.class);
+        SelectQuery<ClobMaster> distinct = SelectQuery.query(ClobMaster.class);
         distinct.setDistinct(true);
         distinct.addOrdering(ClobMaster.NAME.asc());
 

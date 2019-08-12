@@ -28,7 +28,7 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
@@ -75,15 +75,15 @@ public class AshwoodEntitySorter_RelationshipsIT extends ServerCase {
 
 		ObjEntity entity = context.getEntityResolver().getObjEntity(ReflexiveAndToOne.class);
 
-		List<?> objects = context.performQuery(new SelectQuery<>(ReflexiveAndToOne.class));
+		List<ReflexiveAndToOne> objects = ObjectSelect.query(ReflexiveAndToOne.class).select(context);
 		Collections.shuffle(objects);
 		assertEquals(3, objects.size());
 
 		sorter.sortObjectsForEntity(entity, objects, true);
 
-		assertEquals("r3", ((ReflexiveAndToOne) objects.get(0)).getName());
-		assertEquals("r2", ((ReflexiveAndToOne) objects.get(1)).getName());
-		assertEquals("r1", ((ReflexiveAndToOne) objects.get(2)).getName());
+		assertEquals("r3", objects.get(0).getName());
+		assertEquals("r2", objects.get(1).getName());
+		assertEquals("r1", objects.get(2).getName());
 
 		tReflexiveAndToOne.delete().where("PARENT_ID", 2).execute();
 		tReflexiveAndToOne.delete().where("PARENT_ID", 1).execute();

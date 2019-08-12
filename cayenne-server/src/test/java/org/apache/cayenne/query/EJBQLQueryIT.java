@@ -338,7 +338,7 @@ public class EJBQLQueryIT extends ServerCase {
     public void testInWithSingleCollectionNamedParameter_withoutBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in :artists");
-        query.setParameter("artists", context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        query.setParameter("artists", ObjectSelect.query(Artist.class).select(context));
         List<Painting> paintings = context.performQuery(query);
         assertEquals(3, paintings.size());
     }
@@ -347,7 +347,7 @@ public class EJBQLQueryIT extends ServerCase {
     public void testInWithSingleCollectionPositionalParameter_withoutBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in ?1");
-        query.setParameter(1,context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        query.setParameter(1, ObjectSelect.query(Artist.class).select(context));
         List<Painting> paintings = context.performQuery(query);
         assertEquals(3, paintings.size());
     }
@@ -356,7 +356,7 @@ public class EJBQLQueryIT extends ServerCase {
     public void testInWithSingleCollectionNamedParameter_withBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (:artists)");
-        query.setParameter("artists", context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        query.setParameter("artists", ObjectSelect.query(Artist.class).select(context));
         List<Painting> paintings = context.performQuery(query);
         assertEquals(3, paintings.size());
     }
@@ -365,7 +365,7 @@ public class EJBQLQueryIT extends ServerCase {
     public void testInWithSingleCollectionPositionalParameter_withBrackets() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("select p from Painting p where p.toArtist in (?1)");
-        query.setParameter(1,context.performQuery(new SelectQuery<Artist>(Artist.class)));
+        query.setParameter(1, ObjectSelect.query(Artist.class).select(context));
         List<Painting> paintings = context.performQuery(query);
         assertEquals(3, paintings.size());
     }

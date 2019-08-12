@@ -22,7 +22,7 @@ package org.apache.cayenne.util;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.Manager;
@@ -69,7 +69,7 @@ public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
         d1.getEmployees().size();
 
         // resolve Employees
-        context1.performQuery(new SelectQuery<>(Employee.class));
+        ObjectSelect.query(Employee.class).select(context1);
 
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
