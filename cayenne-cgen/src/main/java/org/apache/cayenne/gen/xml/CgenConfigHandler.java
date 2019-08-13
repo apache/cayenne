@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.gen.xml;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -259,7 +261,12 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
 
     private Path buildRootPath(DataMap dataMap) {
         URL url = dataMap.getConfigurationSource().getURL();
-        Path resourcePath = Paths.get(url.getPath());
+        Path resourcePath;
+        try {
+            resourcePath = Paths.get(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new CayenneRuntimeException("Unable to read cgen path", e);
+        }
         if(Files.isRegularFile(resourcePath)) {
             resourcePath = resourcePath.getParent();
         }

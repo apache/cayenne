@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.gen.xml;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,7 +58,12 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
         Path prevPath = cgenConfiguration.buildPath();
         URL url = getBaseDirectory().getURL();
         if(url != null) {
-            Path resourcePath = Paths.get(url.getPath());
+            Path resourcePath;
+            try {
+                resourcePath = Paths.get(url.toURI());
+            } catch (URISyntaxException e) {
+                throw new CayenneRuntimeException("Unable to resolve output path", e);
+            }
             if(Files.isRegularFile(resourcePath)) {
                 resourcePath = resourcePath.getParent();
             }
