@@ -75,6 +75,7 @@ CAY-2591 Modeler: project becomes dirty after click on dbImport or cgen tab
 CAY-2594 DbImport: AutoAdapter resolving inside an import operation hangs up the op on Hana DB
 CAY-2595 ObjAttributes are not sorted in alphabetical ordering on save
 CAY-2596 DbImport xml config changes after dbImport plugin task execution
+CAY-2600 Modeler DbImport: Can't retrieve schema for databases with no catalog support
 CAY-2601 Modeler DbImport: result dialog issues
 CAY-2603 NPE reloading project in the model
 CAY-2605 Modeler: Unable to save - java.nio.file.InvalidPathException
