@@ -26,18 +26,19 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ClassLoadingService;
+import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 
 public class DatabaseSchemaLoader {
 
     private static final String INCLUDE_ALL_PATTERN = "%";
-    private static final String EMPTY_DEFAULT_CATALOG = "";
     private static final int TABLE_INDEX = 3;
     private static final int SCHEMA_INDEX = 2;
     private static final int CATALOG_INDEX = 1;
@@ -56,36 +57,82 @@ public class DatabaseSchemaLoader {
                     tableTypesFromConfig :
                     new String[]{"TABLE", "VIEW", "SYSTEM TABLE",
                             "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
-            try (ResultSet rs = connection.getMetaData().getCatalogs()) {
-                String defaultCatalog = connection.getCatalog();
-                while (rs.next()) {
-                    ResultSet resultSet;
-                    if (defaultCatalog.equals(EMPTY_DEFAULT_CATALOG)) {
-                        resultSet = connection.getMetaData()
-                                .getTables(rs.getString(1), null, INCLUDE_ALL_PATTERN, types);
-                    } else {
-                        resultSet = connection.getMetaData()
-                                .getTables(defaultCatalog, null, INCLUDE_ALL_PATTERN, types);
-                    }
-                    String tableName = "";
-                    String schemaName = "";
-                    String catalogName = "";
-                    while (resultSet.next()) {
-                        tableName = resultSet.getString(TABLE_INDEX);
-                        schemaName = resultSet.getString(SCHEMA_INDEX);
-                        catalogName = resultSet.getString(CATALOG_INDEX);
-                        packTable(tableName, catalogName, schemaName, null);
-                    }
-                    packFunctions(connection);
-                }
-            }
+            processCatalogs(connection, types);
         }
         return databaseReverseEngineering;
     }
 
-    public ReverseEngineering loadColumns(DBConnectionInfo connectionInfo, ClassLoadingService loadingService, TreePath path) throws SQLException {
-        String catalogName = path.getPathComponent(1).toString();
-        String schemaName = null;
+    private void processCatalogs(Connection connection, String[] types) throws SQLException {
+        String defaultCatalog = connection.getCatalog();
+        try (ResultSet rsCatalog = connection.getMetaData().getCatalogs()) {
+            boolean hasCatalogs = false;
+            while (rsCatalog.next()) {
+                hasCatalogs = true;
+                ResultSet resultSet = connection.getMetaData()
+                        .getTables(processFilter(rsCatalog, defaultCatalog, CATALOG_INDEX),
+                                null,
+                                INCLUDE_ALL_PATTERN,
+                                types);
+                packTable(resultSet);
+                packFunctions(connection);
+            }
+            if(!hasCatalogs) {
+                processSchemas(connection, types);
+            }
+        }
+    }
+
+    private void processSchemas(Connection connection, String[] types) throws SQLException {
+        String defaultSchema = connection.getSchema();
+        try(ResultSet rsSchema = connection.getMetaData().getSchemas()) {
+            boolean hasSchemas = false;
+            while (rsSchema.next()) {
+                hasSchemas = true;
+                ResultSet resultSet = connection.getMetaData()
+                        .getTables(null,
+                                processFilter(rsSchema, defaultSchema, SCHEMA_INDEX),
+                                INCLUDE_ALL_PATTERN,
+                                types);
+                packTable(resultSet);
+                packFunctions(connection);
+            }
+            if(!hasSchemas) {
+                ResultSet resultSet = connection.getMetaData()
+                        .getTables(null,
+                                null,
+                                INCLUDE_ALL_PATTERN,
+                                types);
+                packTable(resultSet);
+                packTable(resultSet);
+            }
+        }
+    }
+
+    private void packTable(ResultSet resultSet) throws SQLException {
+        while (resultSet.next()) {
+            String tableName = resultSet.getString(TABLE_INDEX);
+            String schemaName = resultSet.getString(SCHEMA_INDEX);
+            String catalogName = resultSet.getString(CATALOG_INDEX);
+            packTable(tableName, catalogName, schemaName, null);
+        }
+    }
+
+    private String processFilter(ResultSet resultSet, String defaultFilter, int filterIndex) throws SQLException {
+        return defaultFilter.isEmpty() ?
+                resultSet.getString(filterIndex) :
+                defaultFilter;
+    }
+
+    public ReverseEngineering loadColumns(DBConnectionInfo connectionInfo,
+                                          ClassLoadingService loadingService,
+                                          TreePath path) throws SQLException {
+        Object userObject = ((DbImportTreeNode)path.getPathComponent(1)).getUserObject();
+        String catalogName = null, schemaName = null;
+        if(userObject instanceof Catalog) {
+            catalogName = ((Catalog) userObject).getName();
+        } else if(userObject instanceof Schema) {
+            schemaName = ((Schema) userObject).getName();
+        }
         String tableName = path.getPathComponent(2).toString();
 
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
@@ -94,7 +141,6 @@ public class DatabaseSchemaLoader {
                     String column = rs.getString(4);
                     packTable(tableName, catalogName, schemaName, column);
                 }
-
             }
         }
         return databaseReverseEngineering;
@@ -143,71 +189,40 @@ public class DatabaseSchemaLoader {
         IncludeTable table = new IncludeTable();
         table.setPattern(tableName);
 
-        if ((catalogName == null) && (schemaName == null)) {
+        if (catalogName == null && schemaName == null) {
             if (!databaseReverseEngineering.getIncludeTables().contains(table)) {
                 databaseReverseEngineering.addIncludeTable(table);
             }
+            return;
         }
 
-        if ((catalogName != null) && (schemaName == null)) {
+        FilterContainer filterContainer;
+        if (catalogName != null && schemaName == null) {
             Catalog parentCatalog = getCatalogByName(databaseReverseEngineering.getCatalogs(), catalogName);
 
-            if (parentCatalog != null) {
-
-
-                if (!parentCatalog.getIncludeTables().contains(table)) {
-                    parentCatalog.addIncludeTable(table);
-                }
-            } else {
+            if(parentCatalog == null) {
                 parentCatalog = new Catalog();
                 parentCatalog.setName(catalogName);
-                if (!parentCatalog.getIncludeTables().contains(table)) {
-                    parentCatalog.addIncludeTable(table);
-                }
                 databaseReverseEngineering.addCatalog(parentCatalog);
             }
-
-            IncludeTable foundTable = getTableByName(parentCatalog.getIncludeTables(), tableName);
-            table = foundTable != null ? foundTable : table;
-            if (columnName != null ) {
-                IncludeColumn includeColumn = new IncludeColumn(columnName);
-                table.addIncludeColumn(includeColumn);
-            }
-        }
-        if ((catalogName == null) && (schemaName != null)) {
+            filterContainer = parentCatalog;
+        } else if (catalogName == null) {
             Schema parentSchema = getSchemaByName(databaseReverseEngineering.getSchemas(), schemaName);
-            if (parentSchema != null) {
-                if (!parentSchema.getIncludeTables().contains(table)) {
-                    parentSchema.addIncludeTable(table);
-                }
-            } else {
+
+            if(parentSchema == null) {
                 parentSchema = new Schema();
                 parentSchema.setName(schemaName);
-                if (!parentSchema.getIncludeTables().contains(table)) {
-                    parentSchema.addIncludeTable(table);
-                }
                 databaseReverseEngineering.addSchema(parentSchema);
             }
-        }
-        if ((catalogName != null) && (schemaName != null)) {
+            filterContainer = parentSchema;
+        } else {
             Catalog parentCatalog = getCatalogByName(databaseReverseEngineering.getCatalogs(), catalogName);
-
-
-
             Schema parentSchema;
             if (parentCatalog != null) {
-
                 parentSchema = getSchemaByName(parentCatalog.getSchemas(), schemaName);
-                if (parentSchema != null) {
-                    if (!parentSchema.getIncludeTables().contains(table)) {
-                        parentSchema.addIncludeTable(table);
-                    }
-                } else {
+                if(parentSchema == null) {
                     parentSchema = new Schema();
                     parentSchema.setName(schemaName);
-                    if (!parentSchema.getIncludeTables().contains(table)) {
-                        parentSchema.addIncludeTable(table);
-                    }
                     parentCatalog.addSchema(parentSchema);
                 }
             } else {
@@ -215,11 +230,27 @@ public class DatabaseSchemaLoader {
                 parentCatalog.setName(catalogName);
                 parentSchema = new Schema();
                 parentSchema.setName(schemaName);
-                if (!parentSchema.getIncludeTables().contains(table)) {
-                    parentSchema.addIncludeTable(table);
-                }
                 databaseReverseEngineering.addCatalog(parentCatalog);
             }
+            filterContainer = parentSchema;
+        }
+
+        addTable(filterContainer, table);
+        addColumn(filterContainer, table, columnName);
+    }
+
+    private void addTable(FilterContainer parentFilter, IncludeTable table) {
+        if (!parentFilter.getIncludeTables().contains(table)) {
+            parentFilter.addIncludeTable(table);
+        }
+    }
+
+    private void addColumn(FilterContainer filterContainer, IncludeTable table, String columnName) {
+        IncludeTable foundTable = getTableByName(filterContainer.getIncludeTables(), table.getPattern());
+        table = foundTable != null ? foundTable : table;
+        if (columnName != null ) {
+            IncludeColumn includeColumn = new IncludeColumn(columnName);
+            table.addIncludeColumn(includeColumn);
         }
     }
 

@@ -19,6 +19,15 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
+import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
@@ -31,15 +40,6 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.LoadDbSchemaAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.dialog.db.load.TransferableNode;
-
-import javax.swing.JTree;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 
 /**
@@ -77,15 +77,19 @@ public class DbImportTree extends JTree {
         DbImportModel model = (DbImportModel) this.getModel();
 
         DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
-        reverseEngineering.getCatalogs().forEach(newCatalog -> {
-            DbImportTreeNode catalog = findNodeInParent(root, newCatalog);
+        Collection<Catalog> catalogs = reverseEngineering.getCatalogs();
+        Collection<? extends FilterContainer> filterContainers = !catalogs.isEmpty() ?
+                catalogs :
+                reverseEngineering.getSchemas();
+        filterContainers.forEach(filterContainer -> {
+            DbImportTreeNode container = findNodeInParent(root, filterContainer);
 
-            if (catalog == null) {
+            if (container == null) {
                 return;
             }
 
-            newCatalog.getIncludeTables().forEach(newTable -> {
-                DbImportTreeNode table = findNodeInParent(catalog, newTable);
+            filterContainer.getIncludeTables().forEach(newTable -> {
+                DbImportTreeNode table = findNodeInParent(container, newTable);
                 if (table == null) {
                     return;
                 }
@@ -101,7 +105,7 @@ public class DbImportTree extends JTree {
     }
 
     private DbImportTreeNode findNodeInParent(DbImportTreeNode parent, Object object) {
-        for (int i = 0; i <= parent.getChildCount(); i++) {
+        for (int i = 0; i < parent.getChildCount(); i++) {
             DbImportTreeNode node = (DbImportTreeNode) parent.getChildAt(i);
             Object userObject = node.getUserObject();
 
@@ -113,6 +117,18 @@ public class DbImportTree extends JTree {
 
                 Catalog currentCatalog = (Catalog) userObject;
                 if (currentCatalog.getName().equals(catalog.getName())) {
+                    return node;
+                }
+            }
+
+            if(object instanceof Schema) {
+                Schema schema = (Schema) object;
+                if(!(userObject instanceof Schema)) {
+                    continue;
+                }
+
+                Schema currentSchema = (Schema) userObject;
+                if(currentSchema.getName().equals(schema.getName())) {
                     return node;
                 }
             }
