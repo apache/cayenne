@@ -24,9 +24,11 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
+import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -49,21 +51,29 @@ public class EmbeddingIT extends ServerCase {
     protected DBHelper dbHelper;
     
     protected TableHelper tEmbedEntity1;
+    protected TableHelper tEmbedEntity2;
 
     @Before
     public void setUp() throws Exception {
         tEmbedEntity1 = new TableHelper(dbHelper, "EMBED_ENTITY1");
         tEmbedEntity1.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "EMBEDDED30", "EMBEDDED40");
+
+        tEmbedEntity2 = new TableHelper(dbHelper, "EMBED_ENTITY2");
+        tEmbedEntity2.setColumns("ID", "NAME", "ENTITY1_ID", "EMBEDDED10", "EMBEDDED20");
     }
     
     protected void createSelectDataSet() throws Exception {
-        tEmbedEntity1.delete().execute();
         tEmbedEntity1.insert(1, "n1", "e1", "e2", "e3", "e4");
         tEmbedEntity1.insert(2, "n2", "ex1", "ex2", "ex3", "ex4");
     }
+
+    protected void createSelectDataSet2() throws Exception {
+        createSelectDataSet();
+        tEmbedEntity2.insert(1, "n2-1", 1, "e1", "e2");
+        tEmbedEntity2.insert(2, "n2-1", 2, "e1", "e2");
+    }
     
     protected void createUpdateDataSet() throws Exception {
-        tEmbedEntity1.delete().execute();
         tEmbedEntity1.insert(1, "n1", "e1", "e2", "e3", "e4");
     }
 
@@ -179,5 +189,54 @@ public class EmbeddingIT extends ServerCase {
         DataRow row = query1.selectOne(context);
         assertNotNull(row);
         assertEquals("x1", row.get("EMBEDDED10"));
+    }
+
+    @Test
+    public void testPropertyExpression() throws Exception {
+        createSelectDataSet();
+
+        List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class)
+                .where(EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10).eq("e1"))
+                .orderBy(EmbedEntity1.EMBEDDED2.dot(Embeddable1.EMBEDDED20).desc())
+                .select(context);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testRelatedEmbedded() throws Exception {
+        createSelectDataSet2();
+
+        List<EmbedEntity2> result = ObjectSelect.query(EmbedEntity2.class)
+                .where(EmbedEntity2.ENTITY1.dot(EmbedEntity1.EMBEDDED1).dot(Embeddable1.EMBEDDED10).eq("e1"))
+                .orderBy(EmbedEntity2.ENTITY1.dot(EmbedEntity1.EMBEDDED2).dot(Embeddable1.EMBEDDED20).desc())
+                .select(context);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testPrefetchWithEmbedded() throws Exception {
+        createSelectDataSet2();
+
+        List<EmbedEntity2> result = ObjectSelect.query(EmbedEntity2.class)
+                .prefetch(EmbedEntity2.ENTITY1.joint())
+                .select(context);
+
+        assertEquals(2, result.size());
+        assertNotNull(result.get(0).getEntity1().getEmbedded1());
+        assertNotNull(result.get(1).getEntity1().getEmbedded1());
+    }
+
+    @Test
+    public void testInMemoryFilteringByEmbeddable() throws Exception {
+        createSelectDataSet();
+
+        List<EmbedEntity1> result = ObjectSelect.query(EmbedEntity1.class).select(context);
+        assertEquals(2, result.size());
+
+        List<EmbedEntity1> filtered = EmbedEntity1.EMBEDDED1.dot(Embeddable1.EMBEDDED10).eq("e1").filterObjects(result);
+        assertEquals(1, filtered.size());
+        assertEquals("n1", filtered.get(0).getName());
     }
 }

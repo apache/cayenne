@@ -3,9 +3,11 @@ package org.apache.cayenne.testdo.embeddable.auto;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 
 /**
@@ -23,11 +25,13 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
     public static final Property<Embeddable1> EMBEDDED1 = Property.create("embedded1", Embeddable1.class);
     public static final Property<Embeddable1> EMBEDDED2 = Property.create("embedded2", Embeddable1.class);
     public static final Property<String> NAME = Property.create("name", String.class);
+    public static final Property<List<EmbedEntity2>> EMBED_ENTITY2S = Property.create("embedEntity2s", List.class);
 
     protected Embeddable1 embedded1;
     protected Embeddable1 embedded2;
     protected String name;
 
+    protected Object embedEntity2s;
 
     public void setEmbedded1(Embeddable1 embedded1) {
         beforePropertyWrite("embedded1", this.embedded1, embedded1);
@@ -59,6 +63,19 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
         return this.name;
     }
 
+    public void addToEmbedEntity2s(EmbedEntity2 obj) {
+        addToManyTarget("embedEntity2s", obj, true);
+    }
+
+    public void removeFromEmbedEntity2s(EmbedEntity2 obj) {
+        removeToManyTarget("embedEntity2s", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<EmbedEntity2> getEmbedEntity2s() {
+        return (List<EmbedEntity2>)readProperty("embedEntity2s");
+    }
+
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {
@@ -72,6 +89,8 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
                 return this.embedded2;
             case "name":
                 return this.name;
+            case "embedEntity2s":
+                return this.embedEntity2s;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -93,6 +112,9 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
             case "name":
                 this.name = (String)val;
                 break;
+            case "embedEntity2s":
+                this.embedEntity2s = val;
+                break;
             default:
                 super.writePropertyDirectly(propName, val);
         }
@@ -112,6 +134,7 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
         out.writeObject(this.embedded1);
         out.writeObject(this.embedded2);
         out.writeObject(this.name);
+        out.writeObject(this.embedEntity2s);
     }
 
     @Override
@@ -120,6 +143,7 @@ public abstract class _EmbedEntity1 extends BaseDataObject {
         this.embedded1 = (Embeddable1)in.readObject();
         this.embedded2 = (Embeddable1)in.readObject();
         this.name = (String)in.readObject();
+        this.embedEntity2s = in.readObject();
     }
 
 }
