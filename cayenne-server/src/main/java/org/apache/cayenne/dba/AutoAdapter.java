@@ -19,6 +19,13 @@
 
 package org.apache.cayenne.dba;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
@@ -37,16 +44,11 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.function.Function;
-
 /**
  * A DbAdapter that automatically detects the kind of database it is running on
  * and instantiates an appropriate DB-specific adapter, delegating all
  * subsequent method calls to this adapter.
- * 
+ *
  * @since 1.2
  */
 public class AutoAdapter implements DbAdapter {
@@ -63,7 +65,7 @@ public class AutoAdapter implements DbAdapter {
 	/**
 	 * Creates an {@link AutoAdapter} based on a delegate adapter obtained via
 	 * "adapterProvider".
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public AutoAdapter(Provider<DbAdapter> adapterProvider, JdbcEventLogger logger) {
@@ -97,7 +99,7 @@ public class AutoAdapter implements DbAdapter {
 	protected DbAdapter loadAdapter() {
 		return adapterProvider.get();
 	}
-	
+
 	/**
 	 * @since 4.0
 	 */
@@ -250,5 +252,15 @@ public class AutoAdapter implements DbAdapter {
 	@Override
 	public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
 		return getAdapter().getEjbqlTranslatorFactory();
+	}
+
+	@Override
+	public List<String> getSystemCatalogs() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<String> getSystemSchemas() {
+		return Collections.emptyList();
 	}
 }

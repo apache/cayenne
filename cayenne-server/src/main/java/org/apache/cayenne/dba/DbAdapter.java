@@ -18,6 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -32,11 +38,6 @@ import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.function.Function;
 
 /**
  * A Cayenne extension point that abstracts the differences between specifics of
@@ -231,4 +232,16 @@ public interface DbAdapter {
 	 * @since 4.0
 	 */
 	EJBQLTranslatorFactory getEjbqlTranslatorFactory();
+
+	/**
+	 * @since 4.1
+	 * @return list of system catalogs
+	 */
+	List<String> getSystemCatalogs();
+
+	/**
+	 * @since 4.1
+	 * @return list of system schemas
+	 */
+	List<String> getSystemSchemas();
 }

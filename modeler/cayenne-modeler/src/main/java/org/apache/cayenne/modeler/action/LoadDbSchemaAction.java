@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.action;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
-import java.sql.SQLException;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
@@ -104,7 +103,7 @@ public class LoadDbSchemaAction extends CayenneAction {
                 }
 
 
-            } catch (SQLException exception) {
+            } catch (Exception exception) {
                 JOptionPane.showMessageDialog(
                         Application.getFrame(),
                         exception.getMessage(),

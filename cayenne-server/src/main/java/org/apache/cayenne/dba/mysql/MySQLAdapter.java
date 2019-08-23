@@ -19,6 +19,18 @@
 
 package org.apache.cayenne.dba.mysql;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
@@ -44,18 +56,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>.
@@ -84,6 +84,8 @@ public class MySQLAdapter extends JdbcAdapter {
 	static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
 	protected String storageEngine;
+
+	private String[] SYSTEM_CATALOGS = new String[]{"sys"};
 
 	public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
 						@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -116,7 +118,7 @@ public class MySQLAdapter extends JdbcAdapter {
 
 	/**
 	 * Uses special action builder to create the right action.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -264,7 +266,7 @@ public class MySQLAdapter extends JdbcAdapter {
 	 * Customizes PK clause semantics to ensure that generated columns are in
 	 * the beginning of the PK definition, as this seems to be a requirement for
 	 * InnoDB tables.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	// See CAY-358 for details of the InnoDB problem
@@ -354,6 +356,11 @@ public class MySQLAdapter extends JdbcAdapter {
 		default:
 			return super.typeSupportsLength(type);
 		}
+	}
+
+	@Override
+	public List<String> getSystemCatalogs() {
+		return Arrays.asList(SYSTEM_CATALOGS);
 	}
 
 	final class PKComparator implements Comparator<DbAttribute> {
