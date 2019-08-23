@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -88,6 +88,8 @@ public class MySQLAdapter extends JdbcAdapter {
 
 	protected String storageEngine;
 
+	private String[] SYSTEM_CATALOGS = new String[]{"sys"};
+
 	public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
 						@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
 						@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
@@ -123,7 +125,7 @@ public class MySQLAdapter extends JdbcAdapter {
 
 	/**
 	 * Uses special action builder to create the right action.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -271,7 +273,7 @@ public class MySQLAdapter extends JdbcAdapter {
 	 * Customizes PK clause semantics to ensure that generated columns are in
 	 * the beginning of the PK definition, as this seems to be a requirement for
 	 * InnoDB tables.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	// See CAY-358 for details of the InnoDB problem
@@ -361,6 +363,11 @@ public class MySQLAdapter extends JdbcAdapter {
 		default:
 			return super.typeSupportsLength(type);
 		}
+	}
+
+	@Override
+	public List<String> getSystemCatalogs() {
+		return Arrays.asList(SYSTEM_CATALOGS);
 	}
 
 	final class PKComparator implements Comparator<DbAttribute> {

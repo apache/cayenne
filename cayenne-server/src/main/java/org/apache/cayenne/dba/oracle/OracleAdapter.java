@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -18,6 +18,17 @@
  ****************************************************************/
 
 package org.apache.cayenne.dba.oracle;
+
+import java.lang.reflect.Field;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -48,16 +59,6 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.lang.reflect.Field;
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
  * </a>. Sample connection settings to use with Oracle are shown below:
@@ -84,6 +85,14 @@ public class OracleAdapter extends JdbcAdapter {
 	protected static int oracleCursorType = Integer.MAX_VALUE;
 
 	protected static boolean supportsOracleLOB;
+
+	private String[] SYSTEM_SCHEMAS = new String[]{
+			"ANONYMOUS", "APPQOSSYS", "AUDSYS", "CTXSYS", "DBSFWUSER",
+			"DBSNMP", "DIP", "DVF", "GGSYS", "DVSYS", "GSMADMIN_INTERNAL",
+			"GSMCATUSER", "GSMUSER", "LBACSYS", "MDDATA", "MDSYS", "OJVMSYS",
+			"OLAPSYS", "ORACLE_OCM", "ORDDATA", "ORDPLUGINS", "ORDSYS", "OUTLN",
+			"REMOTE_SCHEDULER_AGENT", "SYSTEM", "WMSYS", "SI_INFORMTN_SCHEMA",
+			"SYS", "SYSBACKUP", "SYSDG", "SYSKM", "SYSRAC", "SYS$UMF", "XDB", "XS$NULL"};
 
 	static {
 		// TODO: as CAY-234 shows, having such initialization done in a static
@@ -298,6 +307,11 @@ public class OracleAdapter extends JdbcAdapter {
 	@Override
 	public SQLAction getAction(Query query, DataNode node) {
 		return query.createSQLAction(new OracleActionBuilder(node));
+	}
+
+	@Override
+	public List<String> getSystemSchemas() {
+		return Arrays.asList(SYSTEM_SCHEMAS);
 	}
 
 	/**

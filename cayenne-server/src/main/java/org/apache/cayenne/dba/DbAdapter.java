@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  * <p/>
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  * <p/>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,6 +17,11 @@
  * under the License.
  ****************************************************************/
 package org.apache.cayenne.dba;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -32,10 +37,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * A Cayenne extension point that abstracts the differences between specifics of
@@ -221,4 +222,16 @@ public interface DbAdapter {
 	 * @since 4.0
 	 */
 	EJBQLTranslatorFactory getEjbqlTranslatorFactory();
+
+	/**
+	 * @since 4.1
+	 * @return list of system catalogs
+	 */
+	List<String> getSystemCatalogs();
+
+	/**
+	 * @since 4.1
+	 * @return list of system schemas
+	 */
+	List<String> getSystemSchemas();
 }

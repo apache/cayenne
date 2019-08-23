@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
@@ -46,7 +47,7 @@ import org.apache.cayenne.resource.ResourceLocator;
  * <h3>Microsoft Driver Settings</h3>
  * <p>
  * Sample connection settings to use with MS SQL Server are shown below:
- * 
+ *
  * <pre>
  *       sqlserver.jdbc.username = test
  *       sqlserver.jdbc.password = secret
@@ -65,19 +66,21 @@ import org.apache.cayenne.resource.ResourceLocator;
  * "http://jtds.sourceforge.net">http://jtds.sourceforge.net </a>. It supports
  * both SQLServer and Sybase. Sample SQLServer settings are the following:
  * </p>
- * 
+ *
  * <pre>
  *       sqlserver.jdbc.username = test
  *       sqlserver.jdbc.password = secret
  *       sqlserver.jdbc.url = jdbc:jtds:sqlserver://192.168.0.65/cayenne
  *       sqlserver.jdbc.driver = net.sourceforge.jtds.jdbc.Driver
  * </pre>
- * 
+ *
  * @since 1.1
  */
 public class SQLServerAdapter extends SybaseAdapter {
 
 	public static final String TRIM_FUNCTION = "RTRIM";
+
+	private String[] SYSTEM_SCHEMAS = new String[]{"dbo", "sys", "INFORMATION_SCHEMA"};
 
 	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
 							@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -100,7 +103,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 
 	/**
 	 * Uses SQLServerActionBuilder to create the right action.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -118,4 +121,9 @@ public class SQLServerAdapter extends SybaseAdapter {
 		translator.setCaseInsensitive(caseInsensitiveCollations);
 		return translator;
 	}
+	@Override
+	public List<String> getSystemSchemas() {
+		return Arrays.asList(SYSTEM_SCHEMAS);
+	}
+
 }

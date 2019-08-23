@@ -75,33 +75,59 @@ public class DbImportTree extends JTree {
 
     public void updateTableColumns(ReverseEngineering reverseEngineering) {
         DbImportModel model = (DbImportModel) this.getModel();
-
         DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
         Collection<Catalog> catalogs = reverseEngineering.getCatalogs();
-        Collection<? extends FilterContainer> filterContainers = !catalogs.isEmpty() ?
-                catalogs :
-                reverseEngineering.getSchemas();
-        filterContainers.forEach(filterContainer -> {
-            DbImportTreeNode container = findNodeInParent(root, filterContainer);
+        if(!catalogs.isEmpty()) {
+            catalogs.forEach(catalog -> {
+                Collection<Schema> schemas = catalog.getSchemas();
+                if(!schemas.isEmpty()) {
+                    DbImportTreeNode currentRoot = findNodeInParent(root, catalog);
+                    schemas.forEach(schema -> packNextFilter(schema, currentRoot, model));
+                } else {
+                    packNextFilter(catalog, root, model);
+                }
+            });
+        } else {
+            reverseEngineering.getSchemas().forEach(schema -> {
+                packNextFilter(schema, root, model);
+            });
+        }
+    }
 
+    private void packNextFilter(FilterContainer filterContainer,
+                                DbImportTreeNode root,
+                                DbImportModel model) {
+        DbImportTreeNode container = findNodeInParent(root, filterContainer);
+
+        if (container == null) {
+            return;
+        }
+
+        packTables(filterContainer, container, model);
+    }
+
+    private void packTables(FilterContainer filterContainer,
+                            DbImportTreeNode root,
+                            DbImportModel model) {
+        filterContainer.getIncludeTables().forEach(tableFilter -> {
+            DbImportTreeNode container = findNodeInParent(root, tableFilter );
             if (container == null) {
                 return;
             }
+            if (container.getChildCount() != 0) {
+                container.removeAllChildren();
+            }
 
-            filterContainer.getIncludeTables().forEach(newTable -> {
-                DbImportTreeNode table = findNodeInParent(container, newTable);
-                if (table == null) {
-                    return;
-                }
-                if (table.getChildCount() != 0) {
-                    table.removeAllChildren();
-                }
-                newTable.getIncludeColumns().forEach(column ->
-                        table.add(new DbImportTreeNode(column)));
-                table.setLoaded(true);
-                model.reload(table);
-            });
+            packColumns(tableFilter , container);
+
+            container.setLoaded(true);
+            model.reload(container);
         });
+    }
+
+    private void packColumns(IncludeTable includeTable, DbImportTreeNode tableNode) {
+        includeTable.getIncludeColumns().forEach(column ->
+                tableNode.add(new DbImportTreeNode(column)));
     }
 
     private DbImportTreeNode findNodeInParent(DbImportTreeNode parent, Object object) {

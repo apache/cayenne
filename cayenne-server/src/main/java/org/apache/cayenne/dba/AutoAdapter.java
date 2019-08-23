@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -18,6 +18,12 @@
  ****************************************************************/
 
 package org.apache.cayenne.dba;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -37,15 +43,11 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SelectQuery;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collection;
-
 /**
  * A DbAdapter that automatically detects the kind of database it is running on
  * and instantiates an appropriate DB-specific adapter, delegating all
  * subsequent method calls to this adapter.
- * 
+ *
  * @since 1.2
  */
 public class AutoAdapter implements DbAdapter {
@@ -62,7 +64,7 @@ public class AutoAdapter implements DbAdapter {
 	/**
 	 * Creates an {@link AutoAdapter} based on a delegate adapter obtained via
 	 * "adapterProvider".
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public AutoAdapter(Provider<DbAdapter> adapterProvider, JdbcEventLogger logger) {
@@ -96,7 +98,7 @@ public class AutoAdapter implements DbAdapter {
 	protected DbAdapter loadAdapter() {
 		return adapterProvider.get();
 	}
-	
+
 	/**
 	 * @since 4.0
 	 */
@@ -241,5 +243,15 @@ public class AutoAdapter implements DbAdapter {
 	@Override
 	public EJBQLTranslatorFactory getEjbqlTranslatorFactory() {
 		return getAdapter().getEjbqlTranslatorFactory();
+	}
+
+	@Override
+	public List<String> getSystemCatalogs() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<String> getSystemSchemas() {
+		return Collections.emptyList();
 	}
 }
