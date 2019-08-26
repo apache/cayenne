@@ -123,7 +123,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
                 if(dataMapCount.decrementAndGet() <= 0 && !context.isInterrupted()) {
                     DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
                     DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
-                    if (!dbLoadResultDialog.isVisible()) {
+                    if (!dbLoadResultDialog.isVisible() && !dbLoadResultDialog.getTableForMap().isEmpty()) {
                         dbImportController.showDialog();
                     }
                 }
