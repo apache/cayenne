@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * @since 3.0
@@ -34,6 +35,7 @@ import java.util.Map;
 public class SQLTemplateMetadata extends BaseQueryMetadata {
 
 	private boolean isSingleResultSetMapping;
+	private Function<?, ?> resultMapper;
 
 	@Override
 	public boolean isSingleResultSetMapping() {
@@ -124,5 +126,18 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 			result.addColumnResult(String.valueOf(i));
 		}
 		query.setResult(result);
+	}
+
+	void setResultMapper(Function<?,?> resultMapper) {
+		if(this.resultMapper != null) {
+			this.resultMapper = this.resultMapper.andThen((Function)resultMapper);
+		} else {
+			this.resultMapper = resultMapper;
+		}
+    }
+
+	@Override
+	public Function<?, ?> getResultMapper() {
+		return resultMapper;
 	}
 }

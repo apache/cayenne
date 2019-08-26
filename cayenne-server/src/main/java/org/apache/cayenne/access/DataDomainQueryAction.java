@@ -59,6 +59,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Performs query routing and execution. During execution phase intercepts
@@ -466,29 +467,38 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     @SuppressWarnings("unchecked")
     private void interceptObjectConversion() {
 
-        if (context != null && !metadata.isFetchingDataRows()) {
-
+        if (context != null) {
             List mainRows = response.firstList(); // List<DataRow> or List<Object[]>
             if (mainRows != null && !mainRows.isEmpty()) {
 
                 ObjectConversionStrategy<?> converter;
 
-                List<Object> rsMapping = metadata.getResultSetMapping();
-                if (rsMapping == null) {
-                    converter = new SingleObjectConversionStrategy();
+                if(metadata.isFetchingDataRows()) {
+                    converter = new IdentityConversionStrategy();
                 } else {
-                    if (metadata.isSingleResultSetMapping()) {
-                        if (rsMapping.get(0) instanceof EntityResultSegment) {
-                            converter = new SingleObjectConversionStrategy();
-                        } else {
-                            converter = new SingleScalarConversionStrategy();
-                        }
+                    List<Object> rsMapping = metadata.getResultSetMapping();
+                    if (rsMapping == null) {
+                        converter = new SingleObjectConversionStrategy();
                     } else {
-                        converter = new MixedConversionStrategy();
+                        if (metadata.isSingleResultSetMapping()) {
+                            if (rsMapping.get(0) instanceof EntityResultSegment) {
+                                converter = new SingleObjectConversionStrategy();
+                            } else {
+                                converter = new SingleScalarConversionStrategy();
+                            }
+                        } else {
+                            converter = new MixedConversionStrategy();
+                        }
                     }
                 }
 
+                if(metadata.getResultMapper() != null) {
+                    converter = new MapperConversionStrategy(converter);
+                }
+
                 converter.convert(mainRows);
+                // rewind response after firstList() call
+                response.reset();
             }
         }
     }
@@ -775,4 +785,32 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             }
         }
     }
+
+    private class IdentityConversionStrategy extends ObjectConversionStrategy<Object> {
+        @Override
+        void convert(List<Object> mainRows) {
+        }
+    }
+
+    /**
+     * Conversion strategy that uses mapper function to map raw result
+     */
+    private class MapperConversionStrategy extends ObjectConversionStrategy<Object> {
+
+        private final Function<Object, ?> mapper;
+        private final ObjectConversionStrategy<Object> parentStrategy;
+
+        @SuppressWarnings("unchecked")
+        MapperConversionStrategy(ObjectConversionStrategy<?> parentStrategy) {
+            this.mapper = (Function)metadata.getResultMapper();
+            this.parentStrategy = (ObjectConversionStrategy)parentStrategy;
+        }
+
+        @Override
+        void convert(List<Object> mainRows) {
+            parentStrategy.convert(mainRows);
+            mainRows.replaceAll(mapper::apply);
+        }
+    }
+
 }

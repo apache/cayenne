@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.property.BaseProperty;
@@ -630,5 +631,18 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     @Override
     protected BaseQueryMetadata getBaseMetaData() {
         return metaData;
+    }
+
+    /**
+     * Wrap result to given class.  Wrapper class should be public and have public constructor with no args.
+     * Columns order in the query should corespond to fields defined in that class.
+     *
+     * @param mapper function that maps result to required form.
+     * @since 4.2
+     */
+    @SuppressWarnings("unchecked")
+    public <E> ColumnSelect<E> map(Function<T, E> mapper) {
+        this.metaData.setResultMapper(mapper);
+        return (ColumnSelect<E>)this;
     }
 }

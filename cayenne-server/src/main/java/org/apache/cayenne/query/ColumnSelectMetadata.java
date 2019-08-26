@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.BaseProperty;
@@ -44,6 +45,7 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 
 	private boolean isSingleResultSetMapping;
 	private boolean suppressingDistinct;
+	private Function<?, ?> resultMapper;
 
 	boolean resolve(Object root, EntityResolver resolver, ColumnSelect<?> query) {
 
@@ -132,5 +134,19 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 
 	public void setSuppressingDistinct(boolean suppressingDistinct) {
 		this.suppressingDistinct = suppressingDistinct;
+	}
+
+	@SuppressWarnings("unchecked")
+	void setResultMapper(Function<?, ?> resultMapper) {
+		if(this.resultMapper != null) {
+			this.resultMapper = this.resultMapper.andThen((Function)resultMapper);
+		} else {
+			this.resultMapper = resultMapper;
+		}
+	}
+
+	@Override
+	public Function<?, ?> getResultMapper() {
+		return resultMapper;
 	}
 }

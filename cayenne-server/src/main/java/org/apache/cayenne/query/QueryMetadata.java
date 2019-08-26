@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -256,4 +257,11 @@ public interface QueryMetadata {
      * @since 4.0
      */
     boolean isSuppressingDistinct();
+
+    /**
+     * @since 4.2
+     */
+    default Function<?, ?> getResultMapper() {
+        return null;
+    }
 }

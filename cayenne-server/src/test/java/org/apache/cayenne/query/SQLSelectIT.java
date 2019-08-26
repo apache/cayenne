@@ -128,6 +128,18 @@ public class SQLSelectIT extends ServerCase {
 	}
 
 	@Test
+	public void test_DataRowWithTypesMapped() throws Exception {
+		createArtistDataSet();
+
+		List<Object> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
+				.columnNameCaps(CapsStrategy.UPPER)
+				.map(dataRow -> dataRow.get("ARTIST_ID"))
+				.select(context);
+		assertEquals(2, result.size());
+		assertTrue(result.get(0) instanceof Integer);
+	}
+
+	@Test
 	public void test_DataRowWithDirectives() throws Exception {
 		createArtistDataSet();
 
@@ -158,6 +170,20 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(2, result.get(0).length);
 		assertTrue(result.get(0)[0] instanceof Long);
 		assertTrue(result.get(0)[1] instanceof String);
+	}
+
+	@Test
+	public void testObjectArrayWithDefaultTypesReturnAndDirectivesMappedToPojo() throws Exception {
+		createArtistDataSet();
+
+		List<ArtistDataWrapper> result = SQLSelect
+				.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
+				.map(ArtistDataWrapper::new)
+				.select(context);
+
+		assertEquals(2, result.size());
+		assertTrue(result.get(0).id > 0);
+		assertNotNull(result.get(0).name);
 	}
 
 	@Test(expected = CayenneRuntimeException.class)
@@ -235,6 +261,21 @@ public class SQLSelectIT extends ServerCase {
 	}
 
 	@Test
+	public void testObjectArrayWithCustomTypeMappedToPojo() throws SQLException {
+		createArtistDataSet();
+
+		List<ArtistDataWrapper> result = SQLSelect.scalarQuery("SELECT * FROM ARTIST_CT",
+				Integer.class, String.class, LocalDateTime.class)
+				.map(ArtistDataWrapper::new)
+				.select(context);
+
+		assertEquals(2, result.size());
+		assertTrue(result.get(0).id > 0);
+		assertNotNull(result.get(0).name);
+		assertNotNull(result.get(0).date);
+	}
+
+	@Test
 	public void test_DataRows_ClassRoot_Parameters() throws Exception {
 		createPaintingsDataSet();
 
@@ -261,7 +302,7 @@ public class SQLSelectIT extends ServerCase {
 	}
 
 	@Test
-	public void test_DataRows_ColumnNameCaps() throws Exception {
+	public void test_DataRows_ColumnNameCaps() {
 		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM PAINTING WHERE PAINTING_TITLE = 'painting2'");
 		q1.upperColumnNames();
 
@@ -311,7 +352,9 @@ public class SQLSelectIT extends ServerCase {
 
 		List<Painting> result = SQLSelect
 				.query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
-				.param("a", "painting3").columnNameCaps(CapsStrategy.UPPER).select(context);
+				.param("a", "painting3")
+				.columnNameCaps(CapsStrategy.UPPER)
+				.select(context);
 
 		assertEquals(1, result.size());
 	}
@@ -367,7 +410,7 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		try (ResultIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
-				.columnNameCaps(CapsStrategy.UPPER).iterator(context);) {
+				.columnNameCaps(CapsStrategy.UPPER).iterator(context)) {
 			int count = 0;
 
 			for (Painting p : it) {
@@ -383,7 +426,7 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		try (ResultBatchIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
-				.columnNameCaps(CapsStrategy.UPPER).batchIterator(context, 5);) {
+				.columnNameCaps(CapsStrategy.UPPER).batchIterator(context, 5)) {
 			int count = 0;
 
 			for (List<Painting> paintingList : it) {
@@ -404,7 +447,7 @@ public class SQLSelectIT extends ServerCase {
 						Integer.class)
 				.param("a", "painting3").selectOne(context);
 
-		assertEquals(3l, id);
+		assertEquals(3L, id);
 	}
 
 	@Test
@@ -415,7 +458,7 @@ public class SQLSelectIT extends ServerCase {
 				Integer.class).select(context);
 
 		assertEquals(20, ids.size());
-		assertEquals(2l, ids.get(1).intValue());
+		assertEquals(2L, ids.get(1).intValue());
 	}
 
 	@Test
@@ -436,7 +479,7 @@ public class SQLSelectIT extends ServerCase {
 						Integer.class)
 				.paramsArray("painting3").selectOne(context);
 
-		assertEquals(3l, id.intValue());
+		assertEquals(3L, id.intValue());
 	}
 
 	@Test
@@ -449,8 +492,8 @@ public class SQLSelectIT extends ServerCase {
 						Integer.class)
 				.paramsArray("painting3", "painting2").select(context);
 
-		assertEquals(2l, ids.get(0).intValue());
-		assertEquals(3l, ids.get(1).intValue());
+		assertEquals(2L, ids.get(0).intValue());
+		assertEquals(3L, ids.get(1).intValue());
 	}
 
 	@Test
@@ -469,7 +512,7 @@ public class SQLSelectIT extends ServerCase {
 				.paramsArray(null, "painting1").select(context);
 
 		assertEquals(1, ids.size());
-		assertEquals(1l, ids.get(0).longValue());
+		assertEquals(1L, ids.get(0).longValue());
 	}
 
 	@Test
@@ -492,6 +535,19 @@ public class SQLSelectIT extends ServerCase {
 				.params(params).select(context);
 
 		assertEquals(1, ids.size());
-		assertEquals(1l, ids.get(0).longValue());
+		assertEquals(1L, ids.get(0).longValue());
+	}
+
+	static class ArtistDataWrapper {
+		long id;
+		String name;
+		LocalDateTime date;
+		ArtistDataWrapper(Object[] data) {
+			id = ((Number)data[0]).longValue();
+			name = (String)data[1];
+			if(data.length > 2) {
+				date = (LocalDateTime)data[2];
+			}
+		}
 	}
 }
