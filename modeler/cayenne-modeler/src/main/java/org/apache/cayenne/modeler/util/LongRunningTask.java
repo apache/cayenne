@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.modeler.util;
 
+import javax.swing.*;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * A base class for monitoring progress of long running tasks. It can runshowing the exact
@@ -36,7 +34,7 @@ import java.awt.event.ActionListener;
  * EvenDispatchThread will be blocked, preventing LongRunningTask from showing progress
  * dialog. </i>
  * </p>
- * 
+ *
  */
 public abstract class LongRunningTask<T> {
 
@@ -95,21 +93,11 @@ public abstract class LongRunningTask<T> {
         setCanceled(false);
         this.finished = false;
 
-        Thread task = new Thread(new Runnable() {
-
-            public void run() {
-                internalExecute();
-            }
-        });
+        Thread task = new Thread(this::internalExecute);
 
         Timer progressDisplayTimer = new Timer(
                 DEFAULT_MS_TO_DECIDE_TO_POPUP,
-                new ActionListener() {
-
-                    public void actionPerformed(ActionEvent e) {
-                        showProgress();
-                    }
-                });
+                e -> showProgress());
 
         progressDisplayTimer.setRepeats(false);
 
@@ -134,23 +122,13 @@ public abstract class LongRunningTask<T> {
 
             LOGGER.debug("task still in progress, will show progress dialog...");
             this.dialog = new ProgressDialog(frame, "Progress...", title);
-            this.dialog.getCancelButton().addActionListener(new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    setCanceled(true);
-                }
-            });
+            this.dialog.getCancelButton().addActionListener(e -> setCanceled(true));
 
             dialog.getProgressBar().setMinimum(getMinValue());
             dialog.getProgressBar().setMaximum(getMaxValue());
             updateProgress();
 
-            this.taskPollingTimer = new Timer(500, new ActionListener() {
-
-                public void actionPerformed(ActionEvent e) {
-                    updateProgress();
-                }
-            });
+            this.taskPollingTimer = new Timer(500, e -> updateProgress());
 
             this.taskPollingTimer.start();
             this.dialog.setVisible(true);
