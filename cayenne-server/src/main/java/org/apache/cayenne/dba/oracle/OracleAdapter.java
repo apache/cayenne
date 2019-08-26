@@ -262,7 +262,11 @@ public class OracleAdapter extends JdbcAdapter {
 		DbAttribute attr = super.buildAttribute(name, typeName, type, size, scale, allowNulls);
 
 		if (type == Types.DECIMAL && scale <= 0) {
-			attr.setType(Types.INTEGER);
+			if (size <= 9) {
+				attr.setType(Types.INTEGER);
+			} else if(size <= 19) {
+				attr.setType(Types.BIGINT);
+			}
 			attr.setScale(-1);
 		} else if (type == Types.OTHER) {
 			// in this case we need to guess the attribute type
