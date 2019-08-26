@@ -150,7 +150,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayWithDefaultTypesReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
-		List<Object[]> result = SQLSelect.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
+		List<Object[]> result = SQLSelect.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
 				.select(context);
 
 		assertEquals(2, result.size());
@@ -164,7 +164,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
-		SQLSelect.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT",
+		SQLSelect.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT",
 				Integer.class, String.class).select(context);
 	}
 
@@ -172,7 +172,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayWithOneObjectDefaultTypesReturnAndDirectives() throws Exception {
 		createArtistDataSet();
 
-		List<Object[]> result = SQLSelect.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST_CT")
+		List<Object[]> result = SQLSelect.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST_CT")
 				.select(context);
 
 		assertEquals(2, result.size());
@@ -185,7 +185,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_ObjectArrayQueryWithDefaultTypes() throws Exception {
 		createPaintingsDataSet();
 
-		List<Object[]> result = SQLSelect.arrayQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
+		List<Object[]> result = SQLSelect.columnQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
 				.select(context);
 
 		assertEquals(20, result.size());
@@ -196,7 +196,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_ObjectQueryWithDefaultType() throws Exception {
 		createPaintingsDataSet();
 
-		List<Object[]> result = SQLSelect.arrayQuery("SELECT PAINTING_ID FROM PAINTING")
+		List<Object[]> result = SQLSelect.columnQuery("SELECT PAINTING_ID FROM PAINTING")
 				.select(context);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof Object[]);
@@ -207,7 +207,7 @@ public class SQLSelectIT extends ServerCase {
 	public void test_ObjectArrayQueryException() throws Exception {
 		createPaintingsDataSet();
 
-		SQLSelect<Object[]> query = SQLSelect.arrayQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
+		SQLSelect<Object[]> query = SQLSelect.columnQuery("SELECT PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING", Integer.class, String.class);
 		context.performQuery(query);
 	}
 
@@ -225,7 +225,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayWithCustomType() throws SQLException {
 		createArtistDataSet();
 
-		List<Object[]> results = SQLSelect.arrayQuery("SELECT * FROM ARTIST_CT",
+		List<Object[]> results = SQLSelect.columnQuery("SELECT * FROM ARTIST_CT",
 				Integer.class, String.class, LocalDateTime.class).select(context);
 
 		assertEquals(2, results.size());

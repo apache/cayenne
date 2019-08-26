@@ -137,7 +137,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates query that selects scalar value and uses default routing
 	 *
 	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #arrayQuery(String)}
+	 * @deprecated since 4.2. Use {@link #columnQuery(String)}
 	 */
 	@Deprecated
 	public static SQLSelect<Object[]> scalarQuery(String sql) {
@@ -146,11 +146,11 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 *  Creates query that selects scalar value and uses default routing
+	 *  Creates query that selects scalar values (as Object[]) and uses default routing
 	 *
 	 *  @since 4.2
 	 */
-	public static SQLSelect<Object[]> arrayQuery(String sql) {
+	public static SQLSelect<Object[]> columnQuery(String sql) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		return query.useScalar();
 	}
@@ -159,7 +159,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates query that selects scalar values (as Object[]) and uses routing based on the
 	 * provided DataMap name.
 	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #arrayQuery(String, String)}
+	 * @deprecated since 4.2. Use {@link #columnQuery(String, String)}
 	 */
 	@Deprecated
 	public static SQLSelect<Object[]> scalarQuery(String sql, String dataMapName) {
@@ -174,7 +174,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 *
 	 * @since 4.2
 	 */
-	public static SQLSelect<Object[]> arrayQuery(String sql, String dataMapName) {
+	public static SQLSelect<Object[]> columnQuery(String sql, String dataMapName) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
 		return query.useScalar();
@@ -184,12 +184,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * Creates query that selects scalar values (as Object[]) and uses default routing
 	 *
 	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #arrayQuery(String, Class, Class...)}
+	 * @deprecated since 4.2. Use {@link #columnQuery(String, Class...)}
 	 */
 	@Deprecated
-	public static SQLSelect<Object[]> scalarQuery(String sql, Class<?> firstType, Class<?>... types) {
+	public static SQLSelect<Object[]> scalarQuery(String sql, Class<?>... types) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
+		return query.resultColumnsTypes(types).useScalar();
 	}
 
 	/**
@@ -197,9 +197,9 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 *
 	 * @since 4.2
 	 */
-	public static SQLSelect<Object[]> arrayQuery(String sql, Class<?> firstType, Class<?>... types) {
+	public static SQLSelect<Object[]> columnQuery(String sql, Class<?>... types) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
+		return query.resultColumnsTypes(types).useScalar();
 	}
 
 	/**
@@ -207,16 +207,15 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * provided DataMap name.
 	 *
 	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #arrayQuery(String, String, Class, Class...)}
+	 * @deprecated since 4.2. Use {@link #columnQuery(String, String, Class...)}
 	 */
 	@Deprecated
 	public static SQLSelect<Object[]> scalarQuery(String sql,
 												  String dataMapName,
-												  Class<?> firstType,
 												  Class<?>... types) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
-		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
+		return query.resultColumnsTypes(types).useScalar();
 	}
 
 	/**
@@ -225,17 +224,19 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 *
 	 * @since 4.2
 	 */
-	public static SQLSelect<Object[]> arrayQuery(String sql,
-												 String dataMapName,
-												 Class<?> firstType,
-												 Class<?>... types) {
+	public static SQLSelect<Object[]> columnQuery(String sql,
+												  String dataMapName,
+												  Class<?>... types) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
 		query.dataMapName = dataMapName;
-		return query.resultColumnsTypes(firstType).resultColumnsTypes(types).useScalar();
+		return query.resultColumnsTypes(types).useScalar();
 	}
 
 	@SuppressWarnings("unchecked")
 	private <E> SQLSelect<E> resultColumnsTypes(Class<?>... types) {
+		if(types.length == 0) {
+			throw new IllegalArgumentException("Empty types");
+		}
 		if(resultColumnsTypes == null) {
 			resultColumnsTypes = new ArrayList<>(types.length);
 		}

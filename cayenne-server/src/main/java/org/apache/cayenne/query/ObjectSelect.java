@@ -143,11 +143,10 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * Creates a ColumnSelect that will fetch multiple columns of a given {@link ObjEntity}
      *
      * @param entityType base persistent class that will be used as a root for this query
-     * @param firstColumn column to select
-     * @param otherColumns columns to select
+     * @param columns columns to select
      */
-    public static ColumnSelect<Object[]> columnQuery(Class<?> entityType, BaseProperty<?> firstColumn, BaseProperty<?>... otherColumns) {
-        return new ColumnSelect<Object[]>().entityType(entityType).columns(firstColumn, otherColumns);
+    public static ColumnSelect<Object[]> columnQuery(Class<?> entityType, BaseProperty<?>... columns) {
+        return new ColumnSelect<Object[]>().entityType(entityType).columns(columns);
     }
 
     protected ObjectSelect() {
@@ -543,15 +542,15 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * @param properties array of properties to select
      * @see ObjectSelect#column(BaseProperty)
      */
-    public ColumnSelect<Object[]> columns(BaseProperty<?> firstProperty, BaseProperty<?>... properties) {
-        return new ColumnSelect<>(this).columns(firstProperty, properties);
+    public ColumnSelect<Object[]> columns(BaseProperty<?>... properties) {
+        return new ColumnSelect<>(this).columns(properties);
     }
 
     /**
      * <p>Select one specific property.</p>
      * <p>Can be any property that can be resolved against root entity type
      * (root entity's property, function call expression, property of relationships, etc)</p>
-     * <p>If you need several columns use {@link ObjectSelect#columns(BaseProperty, BaseProperty[])} method.</p>
+     * <p>If you need several columns use {@link ObjectSelect#columns(BaseProperty[])} method.</p>
      * <p>
      * <pre>
      * {@code
@@ -562,7 +561,7 @@ public class ObjectSelect<T> extends FluentSelect<T> {
      * </pre>
      * </p>
      * @param property single property to select
-     * @see ObjectSelect#columns(BaseProperty, BaseProperty[])
+     * @see ObjectSelect#columns(BaseProperty[])
      */
     public <E> ColumnSelect<E> column(BaseProperty<E> property) {
         return new ColumnSelect<>(this).column(property);

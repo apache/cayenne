@@ -384,18 +384,19 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * }
      * </pre>
      *
-     * @param firstProperty first property
-     * @param otherProperties array of properties to select
+     * @param properties array of properties to select
      * @see ColumnSelect#column(BaseProperty)
      * @see ColumnSelect#columns(Collection)
      */
     @SuppressWarnings("unchecked")
-    public ColumnSelect<Object[]> columns(BaseProperty<?> firstProperty, BaseProperty<?>... otherProperties) {
-        if (columns == null) {
-            columns = new ArrayList<>(otherProperties.length + 1);
+    public ColumnSelect<Object[]> columns(BaseProperty<?>... properties) {
+        if (properties.length == 0) {
+            throw new IllegalArgumentException("properties must contain at least one element");
         }
-        columns.add(firstProperty);
-        Collections.addAll(columns, otherProperties);
+        if (columns == null) {
+            columns = new ArrayList<>(properties.length);
+        }
+        Collections.addAll(columns, properties);
         singleColumn = false;
         return (ColumnSelect<Object[]>)this;
     }
@@ -406,7 +407,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * (root entity properties, function call expressions, properties of relationships, etc).</p>
      * <p>
      * @param properties collection of properties, <b>must</b> contain at least one element
-     * @see ColumnSelect#columns(BaseProperty, BaseProperty[])
+     * @see ColumnSelect#columns(BaseProperty[])
      */
     @SuppressWarnings("unchecked")
     public ColumnSelect<Object[]> columns(Collection<BaseProperty<?>> properties) {
@@ -438,7 +439,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     /**
-     * <p>Shortcut for {@link #columns(BaseProperty, BaseProperty[])} columns}(Property.COUNT)</p>
+     * <p>Shortcut for {@link #columns(BaseProperty[])} columns}(Property.COUNT)</p>
      */
     public ColumnSelect<Object[]> count() {
         return columns(PropertyFactory.COUNT);
@@ -455,7 +456,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select minimum value of property</p>
-     * @see ColumnSelect#columns(BaseProperty, BaseProperty[])
+     * @see ColumnSelect#columns(BaseProperty[])
      */
     public ColumnSelect<Object[]> min(ComparableProperty<?> property) {
         return columns(property.min());
@@ -463,7 +464,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select maximum value of property</p>
-     * @see ColumnSelect#columns(BaseProperty, BaseProperty[])
+     * @see ColumnSelect#columns(BaseProperty[])
      */
     public ColumnSelect<Object[]> max(ComparableProperty<?> property) {
         return columns(property.max());
@@ -471,7 +472,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select average value of property</p>
-     * @see ColumnSelect#columns(BaseProperty, BaseProperty[])
+     * @see ColumnSelect#columns(BaseProperty[])
      * @deprecated since 4.2 use {@link #avg(NumericProperty)}
      */
     @Deprecated
@@ -481,7 +482,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select average value of property</p>
-     * @see ColumnSelect#columns(BaseProperty, BaseProperty[])
+     * @see ColumnSelect#columns(BaseProperty[])
      */
     public ColumnSelect<Object[]> avg(NumericProperty<?> property) {
         return columns(property.avg());
@@ -489,7 +490,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select sum of values</p>
-     * @see ColumnSelect#columns(BaseProperty, BaseProperty[])
+     * @see ColumnSelect#columns(BaseProperty[])
      * @deprecated since 4.2 use {@link #sum(NumericProperty)}
      */
     @Deprecated
@@ -499,7 +500,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select sum of values</p>
-     * @see ColumnSelect#columns(BaseProperty, BaseProperty[])
+     * @see ColumnSelect#columns(BaseProperty[])
      */
     public <E extends Number> ColumnSelect<Object[]> sum(NumericProperty<E> property) {
         return columns(property.sum());
