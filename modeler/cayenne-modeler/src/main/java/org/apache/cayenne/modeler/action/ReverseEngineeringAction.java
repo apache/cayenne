@@ -178,10 +178,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
         Preferences dataMapPreference = getProjectController().
                 getDataMapPreferences(getProjectController().getCurrentDataMap())
                 .getCurrentPreference();
-        return dataMapPreference == null || dataMapPreference.get(URL_PROPERTY, null) == null ||
-                dataMapPreference.get(USER_NAME_PROPERTY, null) == null ||
-                dataMapPreference.get(PASSWORD_PROPERTY, null) == null ||
-                dataMapPreference.get(JDBC_DRIVER_PROPERTY, null) == null;
+        return dataMapPreference == null || dataMapPreference.get(URL_PROPERTY, null) == null;
     }
 
     private void runLoaderInThread(final DbLoaderContext context, final Runnable callback) {
