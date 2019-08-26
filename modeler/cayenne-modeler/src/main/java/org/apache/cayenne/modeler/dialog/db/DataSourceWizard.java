@@ -19,6 +19,17 @@
 
 package org.apache.cayenne.modeler.dialog.db;
 
+import javax.sql.DataSource;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
+import java.awt.Component;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.prefs.Preferences;
+
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
@@ -33,17 +44,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
-import javax.sql.DataSource;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
-import java.awt.Component;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.prefs.Preferences;
-
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
@@ -53,7 +53,7 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERT
 /**
  * A subclass of ConnectionWizard that tests configured DataSource, but does not
  * keep an open connection.
- * 
+ *
  */
 public class DataSourceWizard extends CayenneController {
 

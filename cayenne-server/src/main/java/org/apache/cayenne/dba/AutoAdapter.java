@@ -22,7 +22,6 @@ package org.apache.cayenne.dba;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -247,11 +246,11 @@ public class AutoAdapter implements DbAdapter {
 
 	@Override
 	public List<String> getSystemCatalogs() {
-		return Collections.emptyList();
+		return getAdapter().getSystemCatalogs();
 	}
 
 	@Override
 	public List<String> getSystemSchemas() {
-		return Collections.emptyList();
+		return getAdapter().getSystemSchemas();
 	}
 }

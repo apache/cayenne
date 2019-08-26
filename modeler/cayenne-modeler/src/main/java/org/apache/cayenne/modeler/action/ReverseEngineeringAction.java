@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.modeler.action;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import java.awt.event.ActionEvent;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.prefs.Preferences;
+
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
@@ -32,16 +42,11 @@ import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.awt.event.ActionEvent;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.URL_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERTY;
 
 /**
  * Action that imports database structure into a DataMap.
@@ -82,7 +87,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
     private void startImport(){
         final DbLoaderContext context = new DbLoaderContext(application.getMetaData());
         DBConnectionInfo connectionInfo;
-        if (!datamapPreferencesExist()) {
+        if (datamapPrefNotExist()) {
             final DataSourceWizard connectWizard = dataSourceWizardDialog(DIALOG_TITLE);
             if (connectWizard == null) {
                 return;
@@ -157,17 +162,26 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
     private void saveConnectionInfo(DataSourceWizard connectWizard) {
         DataMapDefaults dataMapDefaults = getProjectController().
                 getDataMapPreferences(getProjectController().getCurrentDataMap());
-        dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, connectWizard.getConnectionInfo().getDbAdapter());
+        String dbAdapter = connectWizard.getConnectionInfo().getDbAdapter();
+        if(dbAdapter != null) {
+            dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, dbAdapter);
+        } else {
+            dataMapDefaults.getCurrentPreference().remove(DB_ADAPTER_PROPERTY);
+        }
         dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, connectWizard.getConnectionInfo().getUrl());
         dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, connectWizard.getConnectionInfo().getUserName());
         dataMapDefaults.getCurrentPreference().put(PASSWORD_PROPERTY, connectWizard.getConnectionInfo().getPassword());
         dataMapDefaults.getCurrentPreference().put(JDBC_DRIVER_PROPERTY, connectWizard.getConnectionInfo().getJdbcDriver());
     }
 
-    private boolean datamapPreferencesExist() {
-        DataMapDefaults dataMapDefaults = getProjectController().
-                getDataMapPreferences(getProjectController().getCurrentDataMap());
-        return dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null) != null;
+    private boolean datamapPrefNotExist() {
+        Preferences dataMapPreference = getProjectController().
+                getDataMapPreferences(getProjectController().getCurrentDataMap())
+                .getCurrentPreference();
+        return dataMapPreference == null || dataMapPreference.get(URL_PROPERTY, null) == null ||
+                dataMapPreference.get(USER_NAME_PROPERTY, null) == null ||
+                dataMapPreference.get(PASSWORD_PROPERTY, null) == null ||
+                dataMapPreference.get(JDBC_DRIVER_PROPERTY, null) == null;
     }
 
     private void runLoaderInThread(final DbLoaderContext context, final Runnable callback) {
