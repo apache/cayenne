@@ -79,6 +79,7 @@ CAY-2600 Modeler DbImport: Can't retrieve schema for databases with no catalog s
 CAY-2601 Modeler DbImport: result dialog issues
 CAY-2603 NPE reloading project in the model
 CAY-2605 Modeler: Unable to save - java.nio.file.InvalidPathException
+CAY-2608 CayenneModeler: NPE when reverse engineering with an auto-adapter DataSource
 
 ----------------------------------
 Release: 4.1.B1

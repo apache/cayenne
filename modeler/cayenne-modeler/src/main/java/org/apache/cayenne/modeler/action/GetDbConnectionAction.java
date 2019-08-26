@@ -19,19 +19,19 @@
 
 package org.apache.cayenne.modeler.action;
 
+import java.awt.event.ActionEvent;
+import java.util.Collection;
+
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 
-import java.awt.event.ActionEvent;
-import java.util.Collection;
-
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.URL_PROPERTY;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
 
 /**
  * @since 4.1
@@ -69,6 +69,8 @@ public class GetDbConnectionAction extends DBWizardAction<DbActionOptionsDialog>
 
         if (connectWizard.getConnectionInfo().getDbAdapter() != null) {
             dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, connectWizard.getConnectionInfo().getDbAdapter());
+        } else {
+            dataMapDefaults.getCurrentPreference().remove(DB_ADAPTER_PROPERTY);
         }
         dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, connectWizard.getConnectionInfo().getUrl());
         dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, connectWizard.getConnectionInfo().getUserName());

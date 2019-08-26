@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.action;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
+import java.util.prefs.Preferences;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
@@ -73,7 +74,7 @@ public class LoadDbSchemaAction extends CayenneAction {
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
             try {
                 DBConnectionInfo connectionInfo;
-                if (!datamapPreferencesExist()) {
+                if (datamapPrefNotExist()) {
                     final DataSourceWizard connectWizard = new DataSourceWizard(getProjectController(), "Load Db Schema");
                     if (!connectWizard.startupAction()) {
                         return;
@@ -118,10 +119,14 @@ public class LoadDbSchemaAction extends CayenneAction {
         thread.start();
     }
 
-    private boolean datamapPreferencesExist() {
-        DataMapDefaults dataMapDefaults = getProjectController().
-                getDataMapPreferences(getProjectController().getCurrentDataMap());
-        return dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null) != null;
+    private boolean datamapPrefNotExist() {
+        Preferences dataMapPreference = getProjectController().
+                getDataMapPreferences(getProjectController().getCurrentDataMap())
+                .getCurrentPreference();
+        return dataMapPreference == null || dataMapPreference.get(URL_PROPERTY, null) == null ||
+                dataMapPreference.get(USER_NAME_PROPERTY, null) == null ||
+                dataMapPreference.get(PASSWORD_PROPERTY, null) == null ||
+                dataMapPreference.get(JDBC_DRIVER_PROPERTY, null) == null;
     }
 
     private DBConnectionInfo getConnectionInfoFromPreferences() {
@@ -139,7 +144,12 @@ public class LoadDbSchemaAction extends CayenneAction {
     private void saveConnectionInfo(DataSourceWizard connectWizard) {
         DataMapDefaults dataMapDefaults = getProjectController().
                 getDataMapPreferences(getProjectController().getCurrentDataMap());
-        dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, connectWizard.getConnectionInfo().getDbAdapter());
+        String dbAdapter = connectWizard.getConnectionInfo().getDbAdapter();
+        if(dbAdapter != null) {
+            dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, connectWizard.getConnectionInfo().getDbAdapter());
+        } else {
+            dataMapDefaults.getCurrentPreference().remove(DB_ADAPTER_PROPERTY);
+        }
         dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, connectWizard.getConnectionInfo().getUrl());
         dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, connectWizard.getConnectionInfo().getUserName());
         dataMapDefaults.getCurrentPreference().put(PASSWORD_PROPERTY, connectWizard.getConnectionInfo().getPassword());
