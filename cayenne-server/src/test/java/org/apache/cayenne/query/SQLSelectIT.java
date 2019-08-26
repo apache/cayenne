@@ -177,7 +177,7 @@ public class SQLSelectIT extends ServerCase {
 		createArtistDataSet();
 
 		List<ArtistDataWrapper> result = SQLSelect
-				.arrayQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
+				.columnQuery("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
 				.map(ArtistDataWrapper::new)
 				.select(context);
 
