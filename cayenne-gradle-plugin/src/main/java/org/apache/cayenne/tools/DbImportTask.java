@@ -19,9 +19,14 @@
 
 package org.apache.cayenne.tools;
 
+import javax.sql.DataSource;
 import java.io.File;
 
 import groovy.lang.Closure;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
@@ -29,6 +34,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfigurationValidator;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
@@ -73,10 +79,24 @@ public class DbImportTask extends BaseCayenneTask {
     public void runImport() {
         dataSource.validate();
 
-        final DbImportConfiguration config = createConfig();
-
         final Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()), new DbImportModule(),
                 binder -> binder.bind(ClassLoaderManager.class).toInstance(new GradlePluginClassLoaderManager(getProject())));
+
+        final DbImportConfiguration config = createConfig();
+
+        DataSourceFactory dataSourceFactory = injector.getInstance(DataSourceFactory.class);
+        DbAdapterFactory dbAdapterFactory = injector.getInstance(DbAdapterFactory.class);
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        try {
+            DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
+            DbAdapter dbAdapter = dbAdapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+            config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
+                    .dataSource(dataSource)
+                    .dbAdapter(dbAdapter)
+                    .build());
+        } catch (Exception e) {
+            throw new TaskExecutionException(this, e);
+        }
 
         final DbImportConfigurationValidator validator = new DbImportConfigurationValidator(reverseEngineering, config, injector);
         try {
@@ -122,7 +142,6 @@ public class DbImportTask extends BaseCayenneTask {
         config.setTableTypes(reverseEngineering.getTableTypes());
         config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
         config.setNamingStrategy(reverseEngineering.getNamingStrategy());
-        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
         config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());

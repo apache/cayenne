@@ -43,6 +43,7 @@ CAY-2592 Modeler: make all datamaps selected in global cgen tab
 CAY-2593 Add tableTypes field to dbImport config in dataMap
 CAY-2602 Remove RTRIM of char columns in Sybase
 CAY-2610 Align methods in ObjectSelect and SQLSelect
+CAY-2611 Exclude system catalogs and schemas when run dbImport without config
 
 Bug Fixes:
 
