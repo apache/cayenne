@@ -18,21 +18,22 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
-import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
-import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
-import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
-import org.slf4j.Logger;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
+import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
+import org.apache.cayenne.dbsync.reverse.filters.IncludeTableFilter;
+import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
+import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.junit.Test;
+import org.slf4j.Logger;
 
 import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
 import static org.mockito.Mockito.mock;
@@ -67,8 +68,12 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
 
     @Test
     public void testLoadSchema2() throws Exception {
-        FiltersConfig filters = getCdbImport("pom-schema-2.xml").createConfig(mock(Logger.class))
-                .getDbLoaderConfig().getFiltersConfig();
+        DbImporterMojo dbImporterMojo = getCdbImport("pom-schema-2.xml");
+        DbImportConfiguration dbImportConfiguration = dbImporterMojo.createConfig(mock(Logger.class));
+        dbImportConfiguration.setFiltersConfig(new FiltersConfigBuilder(
+                dbImporterMojo.getReverseEngineering()).build());
+
+        FiltersConfig filters = dbImportConfiguration.getDbLoaderConfig().getFiltersConfig();
 
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
         includes.add(new IncludeTableFilter(null, new PatternFilter().exclude("^ETL_.*")));
