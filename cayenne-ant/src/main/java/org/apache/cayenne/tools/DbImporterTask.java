@@ -18,7 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import javax.sql.DataSource;
+import java.io.File;
+
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
@@ -42,10 +49,8 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.util.Util;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.slf4j.Logger;
 import org.apache.tools.ant.Task;
-
-import java.io.File;
+import org.slf4j.Logger;
 
 public class DbImporterTask extends Task {
 
@@ -115,19 +120,34 @@ public class DbImporterTask extends Task {
 
     @Override
     public void execute() {
+        Logger logger = new AntLogger(this);
+        final Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger), new DbImportModule());
+
         if (reverseEngineering.getCatalogs().size() == 0 && reverseEngineering.isEmptyContainer()) {
             config.setUseDataMapReverseEngineering(true);
         }
-        config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering).build());
+
+        DataSourceFactory dataSourceFactory = injector.getInstance(DataSourceFactory.class);
+        DbAdapterFactory dbAdapterFactory = injector.getInstance(DbAdapterFactory.class);
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        try {
+            DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
+            DbAdapter dbAdapter = dbAdapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+            config.setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
+                    .dataSource(dataSource)
+                    .dbAdapter(dbAdapter)
+                    .build());
+        } catch (Exception e) {
+            throw new BuildException("Error getting dataSource", e);
+        }
+
         validateAttributes();
 
-        Logger logger = new AntLogger(this);
         config.setLogger(logger);
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setTableTypes(reverseEngineering.getTableTypes());
 
-        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger), new DbImportModule());
         DbImportConfigurationValidator validator = new DbImportConfigurationValidator(reverseEngineering, config, injector);
         try {
             validator.validate();

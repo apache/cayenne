@@ -65,7 +65,9 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
             return;
         }
 
-        if (!(catalog.name == null || catalog.name.equals(catalogName))
+        // check catalogName for null was added because postgres
+        // for some reasons returns null for table's catalog
+        if (!(catalog.name == null || catalogName == null || catalog.name.equals(catalogName))
                 || !(schema.name == null || schema.name.equals(schemaName))) {
             LOGGER.error(catalogName + "." + schema + "." + schemaName + " wrongly loaded for catalog/schema : "
                     + catalog.name + "." + schema.name);

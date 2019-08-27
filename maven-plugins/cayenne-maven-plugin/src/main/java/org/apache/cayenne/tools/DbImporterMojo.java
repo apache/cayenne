@@ -18,8 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import javax.sql.DataSource;
 import java.io.File;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportAction;
@@ -100,10 +105,25 @@ public class DbImporterMojo extends AbstractMojo {
 
         // check missing data source parameters
         dataSource.validate();
-        final DbImportConfiguration config = createConfig(logger);
         final Injector injector = DIBootstrap.createInjector(
                 new DbSyncModule(), new ToolsModule(logger), new DbImportModule(),
                 binder -> binder.bind(ClassLoaderManager.class).toInstance(new MavenPluginClassLoaderManager(project)));
+
+        final DbImportConfiguration config = createConfig(logger);
+
+        DataSourceFactory dataSourceFactory = injector.getInstance(DataSourceFactory.class);
+        DbAdapterFactory dbAdapterFactory = injector.getInstance(DbAdapterFactory.class);
+        DataNodeDescriptor dataNodeDescriptor = config.createDataNodeDescriptor();
+        try {
+            DataSource dataSource = dataSourceFactory.getDataSource(dataNodeDescriptor);
+            DbAdapter dbAdapter = dbAdapterFactory.createAdapter(dataNodeDescriptor, dataSource);
+            config.setFiltersConfig(new FiltersConfigBuilder(dbImportConfig)
+                    .dataSource(dataSource)
+                    .dbAdapter(dbAdapter)
+                    .build());
+        } catch (Exception e) {
+            throw new MojoExecutionException("Error getting dataSource", e);
+        }
 
         final DbImportConfigurationValidator validator = new DbImportConfigurationValidator(
                 dbImportConfig, config, injector);
@@ -142,7 +162,6 @@ public class DbImporterMojo extends AbstractMojo {
         config.setAdapter(adapter);
         config.setDefaultPackage(dbImportConfig.getDefaultPackage());
         config.setDriver(dataSource.getDriver());
-        config.setFiltersConfig(new FiltersConfigBuilder(dbImportConfig).build());
         config.setForceDataMapCatalog(dbImportConfig.isForceDataMapCatalog());
         config.setForceDataMapSchema(dbImportConfig.isForceDataMapSchema());
         config.setLogger(logger);

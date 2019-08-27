@@ -18,12 +18,20 @@
  */
 package org.apache.cayenne.dbsync.reverse.filters;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
@@ -42,15 +50,80 @@ import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 public final class FiltersConfigBuilder {
 
     private final ReverseEngineering engineering;
+    private DataSource dataSource;
+    private DbAdapter dbAdapter;
 
     public FiltersConfigBuilder(ReverseEngineering engineering) {
         this.engineering = engineering;
     }
 
-    public FiltersConfig build() {
+    public FiltersConfigBuilder dataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+        return this;
+    }
+
+    public FiltersConfigBuilder dbAdapter(DbAdapter dbAdapter) {
+        this.dbAdapter = dbAdapter;
+        return this;
+    }
+
+    public FiltersConfig build() throws SQLException {
+        if(dataSource != null && dbAdapter != null && isEmptyConfig()) {
+            preBuildFilters(dataSource, dbAdapter);
+        }
+
         compact();
 
         return new FiltersConfig(transformCatalogs(engineering.getCatalogs()));
+    }
+
+    private boolean isEmptyConfig() {
+        return engineering.getCatalogs().isEmpty() && engineering.getSchemas().isEmpty();
+    }
+
+    private void preBuildFilters(DataSource dataSource, DbAdapter dbAdapter) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            processCatalogs(databaseMetaData, dbAdapter);
+        }
+    }
+
+    private void processCatalogs(DatabaseMetaData databaseMetaData, DbAdapter dbAdapter) throws SQLException {
+        try (ResultSet catalogRs = databaseMetaData.getCatalogs()) {
+            List<String> systemCatalogs = dbAdapter.getSystemCatalogs();
+            List<String> systemSchemas = dbAdapter.getSystemSchemas();
+            boolean hasCatalogs = false;
+            while(catalogRs.next()) {
+                hasCatalogs = true;
+                String catalogName = catalogRs.getString("TABLE_CAT");
+                if(!systemCatalogs.contains(catalogName)) {
+                    Catalog catalog = new Catalog(catalogName);
+                    List<Schema> schemas = processSchemas(databaseMetaData, catalogName, systemSchemas);
+                    catalog.getSchemas().addAll(schemas);
+                    engineering.addCatalog(catalog);
+                }
+            }
+            if(!hasCatalogs) {
+                List<Schema> schemas = processSchemas(databaseMetaData, null, systemSchemas);
+                engineering.getSchemas().addAll(schemas);
+            }
+        }
+    }
+
+    private List<Schema> processSchemas(DatabaseMetaData databaseMetaData,
+                                        String catalogName,
+                                        List<String> systemSchemas) throws SQLException {
+        List<Schema> schemas = new ArrayList<>();
+        try(ResultSet schemaRs = databaseMetaData.getSchemas(catalogName, null)) {
+            while(schemaRs.next()) {
+                String schemaName = schemaRs.getString("TABLE_SCHEM");
+                if(!systemSchemas.contains(schemaName)) {
+                    Schema schema = new Schema(schemaName);
+                    schemas.add(schema);
+                }
+            }
+        }
+        return schemas;
     }
 
     private CatalogFilter[] transformCatalogs(Collection<Catalog> catalogs) {

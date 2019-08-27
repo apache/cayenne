@@ -24,8 +24,10 @@ import java.sql.SQLException;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -36,22 +38,27 @@ import static org.junit.Assert.assertTrue;
 
 public class EntityLoaderIT extends BaseLoaderIT {
 
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
+
     @Test
     public void testGetTablesWithWrongCatalog() throws Exception {
-        DbLoaderConfiguration config = new DbLoaderConfiguration();
-        config.setFiltersConfig(
-                FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING)
-        );
+        if(unitDbAdapter.supportsCatalogs()) {
+            DbLoaderConfiguration config = new DbLoaderConfiguration();
+            config.setFiltersConfig(
+                    FiltersConfig.create("WRONG", null, TableFilter.everything(), PatternFilter.INCLUDE_NOTHING)
+            );
 
-        EntityLoader loader = new EntityLoader(adapter, config, new DefaultDbLoaderDelegate());
-        try {
-            loader.load(connection.getMetaData(), store);
-        } catch (SQLException ex) {
-            // SQL Server will throw exception here.
-            assertTrue(ex.getMessage().contains("WRONG")); // just check that message is about "WRONG" catalog
+            EntityLoader loader = new EntityLoader(adapter, config, new DefaultDbLoaderDelegate());
+            try {
+                loader.load(connection.getMetaData(), store);
+            } catch (SQLException ex) {
+                // SQL Server will throw exception here.
+                assertTrue(ex.getMessage().contains("WRONG")); // just check that message is about "WRONG" catalog
+            }
+
+            assertTrue("Store is not empty", store.getDbEntities().isEmpty());
         }
-
-        assertTrue("Store is not empty", store.getDbEntities().isEmpty());
     }
 
     @Test

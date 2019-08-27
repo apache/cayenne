@@ -19,7 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.io.File;
 import java.sql.Connection;
 
@@ -32,6 +33,7 @@ import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -152,13 +154,21 @@ public class DbLoaderContext {
     // Fill config from metadata reverseEngineering
     private void fillConfig(DbImportConfiguration config, DBConnectionInfo connectionInfo,
                             ReverseEngineering reverseEngineering) {
-        FiltersConfigBuilder filtersConfigBuilder = new FiltersConfigBuilder(reverseEngineering);
         config.setAdapter(connectionInfo.getDbAdapter());
         config.setUsername(connectionInfo.getUserName());
         config.setPassword(connectionInfo.getPassword());
         config.setDriver(connectionInfo.getJdbcDriver());
         config.setUrl(connectionInfo.getUrl());
-        config.getDbLoaderConfig().setFiltersConfig(filtersConfigBuilder.build());
+
+        try {
+            ClassLoadingService classLoadingService = Application.getInstance().getClassLoadingService();
+            config.getDbLoaderConfig().setFiltersConfig(new FiltersConfigBuilder(reverseEngineering)
+                    .dataSource(connectionInfo.makeDataSource(classLoadingService))
+                    .dbAdapter(connectionInfo.makeAdapter(classLoadingService))
+                    .build());
+        } catch (Exception e) {
+            processException(e, "Fail while building configs.");
+        }
         config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
         config.setNamingStrategy(reverseEngineering.getNamingStrategy());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());

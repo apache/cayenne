@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -55,6 +56,7 @@ import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
+import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -188,7 +190,7 @@ public class DefaultDbImportAction implements DbImportAction {
 
         ReverseEngineering dataMapReverseEngineering = metaData.get(targetDataMap, ReverseEngineering.class);
         if ((config.isUseDataMapReverseEngineering()) && (dataMapReverseEngineering != null)) {
-            putReverseEngineeringToConfig(dataMapReverseEngineering, config);
+            putReverseEngineeringToConfig(dataMapReverseEngineering, config, dataSource, adapter);
         }
         if ((dataMapReverseEngineering != null) && (!config.isUseDataMapReverseEngineering())) {
             logger.warn("Found several dbimport configs. DataMap dbimport config was skipped. " +
@@ -236,7 +238,10 @@ public class DefaultDbImportAction implements DbImportAction {
         return sourceDataMap;
     }
 
-    private void putReverseEngineeringToConfig(ReverseEngineering reverseEngineering, DbImportConfiguration config) {
+    private void putReverseEngineeringToConfig(ReverseEngineering reverseEngineering,
+                                               DbImportConfiguration config,
+                                               DataSource dataSource,
+                                               DbAdapter dbAdapter) throws SQLException {
         config.setSkipRelationshipsLoading(reverseEngineering.getSkipRelationshipsLoading());
         config.setSkipPrimaryKeyLoading(reverseEngineering.getSkipPrimaryKeyLoading());
         config.setStripFromTableNames(reverseEngineering.getStripFromTableNames());
@@ -244,7 +249,10 @@ public class DefaultDbImportAction implements DbImportAction {
         config.setMeaningfulPkTables(reverseEngineering.getMeaningfulPkTables());
         config.setNamingStrategy(reverseEngineering.getNamingStrategy());
         config.setFiltersConfig(new FiltersConfigBuilder(
-                new ReverseEngineering(reverseEngineering)).build());
+                new ReverseEngineering(reverseEngineering))
+                .dataSource(dataSource)
+                .dbAdapter(dbAdapter)
+                .build());
         config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());
@@ -377,7 +385,7 @@ public class DefaultDbImportAction implements DbImportAction {
         }
 
         CatalogFilter[] catalogs = config.getDbLoaderConfig().getFiltersConfig().getCatalogs();
-        if (catalogs.length > 0) {
+        if (catalogs.length == 1) {
             // do not override default catalog of existing DataMap unless it is
             // explicitly requested by the plugin caller, and the provided catalog is
             // not a pattern
@@ -389,9 +397,12 @@ public class DefaultDbImportAction implements DbImportAction {
             // do not override default schema of existing DataMap unless it is
             // explicitly requested by the plugin caller, and the provided schema is
             // not a pattern
-            String schema = catalogs[0].schemas[0].name;
-            if (schema != null && schema.length() > 0 && schema.indexOf('%') < 0) {
-                dataMap.setDefaultSchema(schema);
+            SchemaFilter[] schemas = catalogs[0].schemas;
+            if(schemas.length == 1) {
+                String schema = schemas[0].name;
+                if (schema != null && schema.length() > 0 && schema.indexOf('%') < 0) {
+                    dataMap.setDefaultSchema(schema);
+                }
             }
         }
 

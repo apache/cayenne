@@ -91,4 +91,9 @@ public class SQLServerUnitDbAdapter extends SybaseUnitDbAdapter {
     public boolean supportsSelectBooleanExpression() {
         return false;
     }
+
+    @Override
+    public boolean supportsCatalogs() {
+        return true;
+    }
 }
