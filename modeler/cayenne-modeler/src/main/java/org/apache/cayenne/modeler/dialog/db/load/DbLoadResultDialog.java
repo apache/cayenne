@@ -134,10 +134,6 @@ public class DbLoadResultDialog extends JDialog {
         prepareTable(dataMap).addRow(new Object[]{output});
     }
 
-    public synchronized void addMsg(DataMap dataMap) {
-        prepareTable(dataMap).addRow(new Object[]{String.format("    %-20s", "No changes to import")});
-    }
-
     public JButton getOkButton() {
         return okButton;
     }
