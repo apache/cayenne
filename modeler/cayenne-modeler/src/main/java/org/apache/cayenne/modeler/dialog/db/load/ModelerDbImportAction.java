@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import javax.swing.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
@@ -140,20 +139,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             resetDialog();
             dbImportController.setGlobalImport(false);
             dbImportController.fireDataMapChangeEvent(targetMap);
-        }
-    }
-
-    @Override
-    protected void logMessages(List<String> messages) {
-        super.logMessages(messages);
-        if (!hasTokenToMerge) {
-            JOptionPane optionPane = new JOptionPane("Detected changes: No changes to import.", JOptionPane.PLAIN_MESSAGE);
-            JDialog dialog = optionPane.createDialog(DIALOG_TITLE);
-            dialog.setModal(false);
-            dialog.setAlwaysOnTop(true);
-            dialog.setVisible(true);
-        } else if (!resultDialog.isVisible()) {
-            resultDialog.setVisible(true);
         }
     }
 
