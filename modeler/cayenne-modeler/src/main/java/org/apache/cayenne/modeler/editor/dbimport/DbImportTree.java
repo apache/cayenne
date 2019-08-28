@@ -27,6 +27,7 @@ import javax.swing.tree.TreePath;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.BiFunction;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
@@ -73,7 +74,8 @@ public class DbImportTree extends JTree {
         model.reload();
     }
 
-    public void updateTableColumns(ReverseEngineering reverseEngineering) {
+    public void update(ReverseEngineering reverseEngineering,
+                       BiFunction<FilterContainer, DbImportTreeNode, Void> processor) {
         DbImportModel model = (DbImportModel) this.getModel();
         DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
         Collection<Catalog> catalogs = reverseEngineering.getCatalogs();
@@ -82,55 +84,34 @@ public class DbImportTree extends JTree {
                 Collection<Schema> schemas = catalog.getSchemas();
                 if(!schemas.isEmpty()) {
                     DbImportTreeNode currentRoot = findNodeInParent(root, catalog);
-                    schemas.forEach(schema -> packNextFilter(schema, currentRoot, model));
+                    schemas.forEach(schema -> packNextFilter(schema, currentRoot, processor));
                 } else {
-                    packNextFilter(catalog, root, model);
+                    packNextFilter(catalog, root, processor);
                 }
             });
         } else {
-            reverseEngineering.getSchemas().forEach(schema -> {
-                packNextFilter(schema, root, model);
-            });
+            reverseEngineering.getSchemas().forEach(schema -> packNextFilter(schema, root, processor));
         }
     }
 
-    private void packNextFilter(FilterContainer filterContainer,
-                                DbImportTreeNode root,
-                                DbImportModel model) {
+    private void packNextFilter(FilterContainer filterContainer, DbImportTreeNode root,
+                                BiFunction<FilterContainer, DbImportTreeNode, Void> processor) {
         DbImportTreeNode container = findNodeInParent(root, filterContainer);
 
         if (container == null) {
             return;
         }
 
-        packTables(filterContainer, container, model);
+        container.setLoaded(true);
+        processor.apply(filterContainer, container);
     }
 
-    private void packTables(FilterContainer filterContainer,
-                            DbImportTreeNode root,
-                            DbImportModel model) {
-        filterContainer.getIncludeTables().forEach(tableFilter -> {
-            DbImportTreeNode container = findNodeInParent(root, tableFilter );
-            if (container == null) {
-                return;
-            }
-            if (container.getChildCount() != 0) {
-                container.removeAllChildren();
-            }
-
-            packColumns(tableFilter , container);
-
-            container.setLoaded(true);
-            model.reload(container);
-        });
-    }
-
-    private void packColumns(IncludeTable includeTable, DbImportTreeNode tableNode) {
+    void packColumns(IncludeTable includeTable, DbImportTreeNode tableNode) {
         includeTable.getIncludeColumns().forEach(column ->
                 tableNode.add(new DbImportTreeNode(column)));
     }
 
-    private DbImportTreeNode findNodeInParent(DbImportTreeNode parent, Object object) {
+    DbImportTreeNode findNodeInParent(DbImportTreeNode parent, Object object) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             DbImportTreeNode node = (DbImportTreeNode) parent.getChildAt(i);
             Object userObject = node.getUserObject();
@@ -258,7 +239,7 @@ public class DbImportTree extends JTree {
         expandBeginningWithNode(getRootNode(), expandIndexesList);
     }
 
-    private <T extends PatternParam> void printParams(Collection<T> collection, DbImportTreeNode parent) {
+    public  <T extends PatternParam> void printParams(Collection<T> collection, DbImportTreeNode parent) {
         for (T element : collection) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(element) : new TransferableNode(element);
             if (!node.getSimpleNodeName().equals("")) {
@@ -296,6 +277,11 @@ public class DbImportTree extends JTree {
         for (Schema schema : schemas) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(schema) : new TransferableNode(schema);
             if (!node.getSimpleNodeName().equals("")) {
+
+                if (isTransferable && schema.getIncludeTables().isEmpty() && schema.getExcludeTables().isEmpty()) {
+                    printParams(Collections.singletonList(new IncludeTable("Loading...")), node);
+                }
+
                 printChildren(schema, node);
                 parent.add(node);
             }
@@ -306,6 +292,12 @@ public class DbImportTree extends JTree {
         for (Catalog catalog : catalogs) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(catalog) : new TransferableNode(catalog);
             if (!node.getSimpleNodeName().equals("")) {
+
+                if (isTransferable && catalog.getSchemas().isEmpty() &&
+                        catalog.getIncludeTables().isEmpty() && catalog.getExcludeTables().isEmpty()) {
+                    printParams(Collections.singletonList(new IncludeTable("Loading...")), node);
+                }
+
                 printSchemas(catalog.getSchemas(), node);
                 printChildren(catalog, node);
                 parent.add(node);
@@ -325,8 +317,8 @@ public class DbImportTree extends JTree {
                 }
 
                 DbImportTreeNode node = (DbImportTreeNode) lastPathComponent;
-                if (node.isIncludeTable() && !node.isLoaded()) {
-                    //reload columns action.
+                if ((node.isIncludeTable() || node.isSchema() || node.isCatalog()) && !node.isLoaded()) {
+                    //reload tables and columns action.
 
                     LoadDbSchemaAction action = Application.getInstance().getActionManager().getAction(LoadDbSchemaAction.class);
                     action.performAction(null, path);

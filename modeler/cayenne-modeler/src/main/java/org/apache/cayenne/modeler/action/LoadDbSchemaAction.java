@@ -22,15 +22,22 @@ package org.apache.cayenne.modeler.action;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 import java.util.prefs.Preferences;
 
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
+import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.editor.dbimport.DatabaseSchemaLoader;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
+import org.apache.cayenne.modeler.editor.dbimport.PrintColumnsBiFunction;
+import org.apache.cayenne.modeler.editor.dbimport.PrintTablesBiFunction;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CayenneAction;
@@ -86,24 +93,20 @@ public class LoadDbSchemaAction extends CayenneAction {
                 }
 
                 if (tablePath != null) {
-                    ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
-                            .loadColumns(connectionInfo, getApplication().getClassLoadingService(), tablePath);
-                    draggableTreePanel.getSourceTree().updateTableColumns(databaseReverseEngineering);
+                    Object userObject = ((DbImportTreeNode) tablePath.getLastPathComponent()).getUserObject();
+                    if(userObject instanceof Catalog) {
+                        Catalog catalog = (Catalog) userObject;
+                        if(catalog.getSchemas().isEmpty()) {
+                            loadTables(connectionInfo, tablePath, rootParent);
+                        }
+                    } else if(userObject instanceof Schema) {
+                        loadTables(connectionInfo, tablePath, rootParent);
+                    } else if(userObject instanceof IncludeTable) {
+                        loadColumns(connectionInfo, tablePath);
+                    }
                 } else {
-                    ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
-                            .load(connectionInfo,
-                                    getApplication().getClassLoadingService(),
-                                    rootParent.getTableTypes());
-                    draggableTreePanel.getSourceTree()
-                            .setEnabled(true);
-                    draggableTreePanel.getSourceTree()
-                            .translateReverseEngineeringToTree(databaseReverseEngineering, true);
-                    draggableTreePanel
-                            .bindReverseEngineeringToDatamap(getProjectController().getCurrentDataMap(), databaseReverseEngineering);
-                    ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
+                    loadDataBase(connectionInfo);
                 }
-
-
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(
                         Application.getFrame(),
@@ -117,6 +120,40 @@ public class LoadDbSchemaAction extends CayenneAction {
             }
         });
         thread.start();
+    }
+
+    private void loadDataBase(DBConnectionInfo connectionInfo) throws Exception {
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+                .load(connectionInfo,
+                        getApplication().getClassLoadingService());
+        draggableTreePanel.getSourceTree()
+                .setEnabled(true);
+        draggableTreePanel.getSourceTree()
+                .translateReverseEngineeringToTree(databaseReverseEngineering, true);
+        draggableTreePanel
+                .bindReverseEngineeringToDatamap(getProjectController().getCurrentDataMap(), databaseReverseEngineering);
+        ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
+    }
+
+    private void loadTables(DBConnectionInfo connectionInfo,
+                            TreePath tablePath,
+                            DbImportView rootParent) throws SQLException {
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+                .loadTables(connectionInfo,
+                        getApplication().getClassLoadingService(),
+                        tablePath,
+                        rootParent.getTableTypes());
+        draggableTreePanel.getSourceTree()
+                .update(databaseReverseEngineering,
+                        new PrintTablesBiFunction(draggableTreePanel.getSourceTree()));
+    }
+
+    private void loadColumns(DBConnectionInfo connectionInfo, TreePath tablePath) throws SQLException {
+        ReverseEngineering databaseReverseEngineering = new DatabaseSchemaLoader()
+                .loadColumns(connectionInfo, getApplication().getClassLoadingService(), tablePath);
+        draggableTreePanel.getSourceTree()
+                .update(databaseReverseEngineering,
+                        new PrintColumnsBiFunction(draggableTreePanel.getSourceTree()));
     }
 
     private boolean datamapPrefNotExist() {

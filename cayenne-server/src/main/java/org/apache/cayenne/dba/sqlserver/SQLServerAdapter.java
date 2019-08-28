@@ -81,7 +81,10 @@ public class SQLServerAdapter extends SybaseAdapter {
 	@Deprecated
 	public static final String TRIM_FUNCTION = "RTRIM";
 
-	private String[] SYSTEM_SCHEMAS = new String[]{"dbo", "sys", "INFORMATION_SCHEMA"};
+	private String[] SYSTEM_SCHEMAS = new String[]{"db_accessadmin", "db_backupoperator",
+			"db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",
+			"db_denydatawriter","dbo", "sys", "db_owner", "db_securityadmin", "guest",
+			"INFORMATION_SCHEMA"};
 
 	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
 							@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
