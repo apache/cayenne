@@ -114,6 +114,8 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         if (tokens.isEmpty()) {
             logger.info("Detected changes: No changes to import.");
             hasTokenToMerge = false;
+            String logString = String.format("    %-20s", "Nothing to import");
+            resultDialog.addRowToOutput(logString, targetMap);
             return tokens;
         }
 
