@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.dialog.db.load;
 
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
@@ -112,10 +110,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         logger.info("");
 
         if (tokens.isEmpty()) {
-            logger.info("Detected changes: No changes to import.");
             hasTokenToMerge = false;
-            String logString = String.format("    %-20s", "Nothing to import");
-            resultDialog.addRowToOutput(logString, targetMap);
             return tokens;
         }
 
@@ -147,28 +142,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     }
 
     @Override
-    protected void addMessageToLogs(String message, List<String> messages) {
-        String formattedMessage = String.format("    %-20s", message);
-        messages.add(formattedMessage);
-        resultDialog.addRowToOutput(formattedMessage, targetMap);
-        hasTokenToMerge = true;
-    }
-
-    @Override
-    protected void logMessages(List<String> messages) {
-        super.logMessages(messages);
-        if (!hasTokenToMerge) {
-            JOptionPane optionPane = new JOptionPane("Detected changes: No changes to import.", JOptionPane.PLAIN_MESSAGE);
-            JDialog dialog = optionPane.createDialog(DIALOG_TITLE);
-            dialog.setModal(false);
-            dialog.setAlwaysOnTop(true);
-            dialog.setVisible(true);
-        } else if (!resultDialog.isVisible()) {
-            resultDialog.setVisible(true);
-        }
-    }
-
-    @Override
     protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
         return targetMap;
     }
@@ -194,7 +167,8 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             resultDialog.addRowToOutput(formattedMessage, targetMap);
         }
         if(!hasTokenToMerge && !hasProceduresToMerge) {
-            resultDialog.addMsg(targetMap);
+            String logString = String.format("    %-20s", "Nothing to import");
+            resultDialog.addRowToOutput(logString, targetMap);
         }
         return hasProceduresToMerge;
     }
