@@ -5,8 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 
@@ -20,7 +19,7 @@ public abstract class _NullTestEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "NullTestEntity", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

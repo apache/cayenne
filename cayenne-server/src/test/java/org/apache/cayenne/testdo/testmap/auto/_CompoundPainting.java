@@ -6,8 +6,8 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -25,7 +25,7 @@ public abstract class _CompoundPainting extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PAINTING_ID"), Integer.class);
+    public static final NumericIdProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumericId("PAINTING_ID", "CompoundPainting", Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
     public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);

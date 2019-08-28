@@ -7,10 +7,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -27,7 +26,7 @@ public abstract class _Artist extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ARTIST_ID"), Long.class);
+    public static final NumericIdProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumericId("ARTIST_ID", "Artist", Long.class);
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 
     public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);

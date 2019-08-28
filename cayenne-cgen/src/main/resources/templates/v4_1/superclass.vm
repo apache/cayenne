@@ -81,7 +81,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
     #foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
         #if( $createPKProperties && !${entityUtils.declaresDbAttribute($idAttr)})
             #set ( $type = "$importUtils.dbAttributeToJavaType($idAttr)")
-    $propertyUtils.propertyDefinition($idAttr)
+    $propertyUtils.propertyDefinition($object, $idAttr)
         #end
     public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";
     #end

@@ -598,6 +598,8 @@ void pathExpression() : {
      "db:"   t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #DbPath(0)
    |
      "enum:" t = <PROPERTY_PATH> { jjtThis.setEnumValue(t.image); } #Enum(0)
+   |
+     "dbid:" t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #DbIdPath(0)
    )
 }
 

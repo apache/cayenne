@@ -75,4 +75,12 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
         return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
     }
 
+    default <T> BaseIdProperty<T> dot(BaseIdProperty<T> property) {
+        return PropertyFactory.createBaseId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
+    }
+
+    default <T extends Number> NumericIdProperty<T> dot(NumericIdProperty<T> property) {
+        return PropertyFactory.createNumericId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
+    }
+
 }
