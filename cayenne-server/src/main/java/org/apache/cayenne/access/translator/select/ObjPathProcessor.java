@@ -19,7 +19,10 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import java.util.Optional;
+
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjAttribute;
@@ -86,6 +89,13 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
     protected void processAttribute(ObjAttribute attribute) {
         if(attribute instanceof EmbeddedAttribute) {
             embeddedAttribute = (EmbeddedAttribute)attribute;
+            if(lastComponent) {
+                embeddedAttribute.getAttributes().forEach(a -> {
+                    int len = currentDbPath.length();
+                    processAttribute(a);
+                    currentDbPath.delete(len, currentDbPath.length());
+                });
+            }
             return;
         }
 
@@ -132,4 +142,11 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
         currentDbPath.append(result.getFinalPath());
     }
 
+    @Override
+    public Optional<Embeddable> getEmbeddable() {
+        if(embeddedAttribute != null) {
+            return Optional.of(embeddedAttribute.getEmbeddable());
+        }
+        return Optional.empty();
+    }
 }

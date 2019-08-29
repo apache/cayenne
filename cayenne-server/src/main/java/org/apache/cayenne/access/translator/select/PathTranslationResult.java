@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
 
 /**
  * Interface that describes result of path translation
@@ -35,6 +36,8 @@ interface PathTranslationResult {
     String getFinalPath();
 
     Optional<DbRelationship> getDbRelationship();
+
+    Optional<Embeddable> getEmbeddable();
 
     List<DbAttribute> getDbAttributes();
 

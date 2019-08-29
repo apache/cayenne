@@ -37,10 +37,10 @@
 ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addType("java.io.Serializable")}##
 ${importUtils.addReservedType("${superPackageName}.${superClassName}")}##
-${importUtils.addType("${basePackageName}.${baseClassName}")}##
+${importUtils.addType("org.apache.cayenne.EmbeddableObject")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
 #foreach( $attr in ${object.Attributes} )
-$importUtils.addType(${attr.Type})##
+$propertyUtils.addImport($attr)##
 #end
 ${importUtils.generate()}
 
@@ -51,15 +51,22 @@ ${importUtils.generate()}
  * If you need to make any customizations, please use subclass. 
  */
 ## extends ${baseClassName} - always Object, so skip it
-public abstract class ${superClassName} implements Serializable {
-
+public abstract class ${superClassName} implements EmbeddableObject, Serializable {
 ## Create property names
 #if( $createPropertyNames )
+
 #foreach( $attr in ${object.Attributes} )
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
 #end
-
 #end
+#######################
+## Create Properties ##
+#######################
+
+#foreach( $attr in ${object.Attributes} )
+    $propertyUtils.propertyDefinition($attr)
+#end
+
     // special properties injected by Cayenne
     private Persistent owner;
     private String embeddedProperty;
@@ -102,4 +109,49 @@ public abstract class ${superClassName} implements Serializable {
 #end
 
 #end
+###########################################################
+## Create writePropertyDirect/readPropertyDirect methods ##
+###########################################################
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+#foreach( $attr in ${object.Attributes} )
+#set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
+            case "${attr.Name}":
+                return this.${name};
+#end
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+#foreach( $attr in ${object.Attributes} )
+#set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
+#set ( $flag = $importUtils.canUsePrimitive($attr) )
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
+            case "${attr.Name}":
+#if ( $importUtils.isBoolean($type) )
+                this.${name} = val == null ? false : ($type)val;
+#elseif ($importUtils.isPrimitive($type))
+                this.${name} = val == null ? 0 : ($type)val;
+#else
+                this.${name} = ($type)val;
+#end
+                break;
+#end
+            default:
+                throw new IllegalArgumentException("Unknown property: " + propName);
+        }
+    }
 }

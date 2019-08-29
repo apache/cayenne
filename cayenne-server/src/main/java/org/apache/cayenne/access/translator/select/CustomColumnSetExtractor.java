@@ -23,11 +23,15 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.EmbeddedResult;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -51,6 +55,8 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         for (BaseProperty<?> property : columns) {
             if (isFullObjectProp(property)) {
                 extractFullObject(prefix, property);
+            } else if(isEmbeddedProp(property)) {
+                extractEmbeddedObject(prefix, property);
             } else {
                 extractSimpleProperty(property);
             }
@@ -80,6 +86,25 @@ class CustomColumnSetExtractor implements ColumnExtractor {
                 || (property.getType() != null
                     && expressionType == Expression.OBJ_PATH
                     && Persistent.class.isAssignableFrom(property.getType()));
+    }
+
+    private boolean isEmbeddedProp(BaseProperty<?> property) {
+        return EmbeddableObject.class.isAssignableFrom(property.getType());
+    }
+
+    private void extractEmbeddedObject(String prefix, BaseProperty<?> property) {
+        Object o = property.getExpression().evaluate(context.getMetadata().getObjEntity());
+        if(!(o instanceof EmbeddedAttribute)) {
+            throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
+        }
+        EmbeddedAttribute attribute = (EmbeddedAttribute) o;
+        EmbeddedResult result = new EmbeddedResult(attribute.getEmbeddable(), attribute.getAttributes().size());
+        attribute.getAttributes().forEach(attr -> {
+            Node sqlNode = context.getQualifierTranslator().translate(ExpressionFactory.dbPathExp(attr.getDbAttributePath()));
+            context.addResultNode(sqlNode, true, null, null);
+            result.addAttribute(attr);
+        });
+        context.getSqlResult().addEmbeddedResult(result);
     }
 
     private void extractFullObject(String prefix, BaseProperty<?> property) {

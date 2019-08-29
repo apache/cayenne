@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    https://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -16,15 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.testdo.embeddable;
 
-import org.apache.cayenne.testdo.embeddable.auto._EmbedEntity1;
+package org.apache.cayenne.exp.property;
 
-public class EmbedEntity1 extends _EmbedEntity1 {
+/**
+ * Property that represents object attribute mapped on {@link org.apache.cayenne.map.Embeddable} object.
+ * @since 4.2
+ */
+public class EmbeddableProperty<E> extends BaseProperty<E> implements PathProperty<E> {
 
-    private static final long serialVersionUID = 1L; 
-
+    /**
+     * Constructs a new property with the given name and type
+     *
+     * @param name       of the property (will be used as alias for the expression)
+     * @param type       of the property
+     * @see PropertyFactory#createEmbeddable(String, Class)
+     */
+    protected EmbeddableProperty(String name, Class<? super E> type) {
+        super(name, null, type);
+    }
 }
-
-
-

@@ -35,6 +35,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ScalarResultSegment;
@@ -69,6 +70,8 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 			if (segment instanceof EntityResultSegment) {
 				return createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
 						postProcessorFactory);
+			} else if (segment instanceof EmbeddableResultSegment) {
+				return createEmbeddableRowReader(descriptor, queryMetadata, (EmbeddableResultSegment) segment);
 			} else {
 				return createScalarRowReader(descriptor, queryMetadata, (ScalarResultSegment) segment);
 			}
@@ -83,6 +86,8 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 							i,
 							createEntityRowReader(descriptor, queryMetadata, (EntityResultSegment) segment,
 									postProcessorFactory));
+				} else if(segment instanceof EmbeddableResultSegment) {
+					reader.addRowReader(i, createEmbeddableRowReader(descriptor, queryMetadata, (EmbeddableResultSegment) segment));
 				} else {
 					reader.addRowReader(i, createScalarRowReader(descriptor, queryMetadata, (ScalarResultSegment) segment));
 				}
@@ -92,8 +97,12 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		}
 	}
 
+	private RowReader<?> createEmbeddableRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, EmbeddableResultSegment segment) {
+		return new EmbeddableRowReader(descriptor, queryMetadata, segment);
+	}
+
 	protected RowReader<?> createScalarRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata, ScalarResultSegment segment) {
-		return new ScalarRowReader<Object>(descriptor, segment);
+		return new ScalarRowReader<>(descriptor, segment);
 	}
 
 	protected RowReader<?> createEntityRowReader(RowDescriptor descriptor, QueryMetadata queryMetadata,

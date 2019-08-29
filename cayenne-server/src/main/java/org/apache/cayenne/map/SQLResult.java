@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.query.DefaultEmbeddableResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -69,6 +70,11 @@ public class SQLResult {
                 ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
                 resolvedComponents.add(new DefaultEntityResultSegment(classDescriptor, fields, offset));
                 offset = offset + fields.size();
+            } else if (component instanceof EmbeddedResult) {
+                EmbeddedResult embeddedResult = (EmbeddedResult)component;
+                Map<String, String> fields = embeddedResult.getFields();
+                resolvedComponents.add(new DefaultEmbeddableResultSegment(embeddedResult.getEmbeddable(), fields, offset));
+                offset = offset + fields.size();
             } else {
                 throw new IllegalArgumentException("Unsupported result descriptor component: " + component);
             }
@@ -103,21 +109,25 @@ public class SQLResult {
     }
 
     public void addEntityResult(EntityResult entityResult) {
-        if (resultDescriptors == null) {
-            resultDescriptors = new ArrayList<>(3);
-        }
+        checkAndAdd(entityResult);
+    }
 
-        resultDescriptors.add(entityResult);
+    public void addEmbeddedResult(EmbeddedResult embeddedResult) {
+        checkAndAdd(embeddedResult);
     }
 
     /**
      * Adds a result set column name to the mapping.
      */
     public void addColumnResult(String column) {
+        checkAndAdd(column);
+    }
+
+    private void checkAndAdd(Object result) {
         if (resultDescriptors == null) {
             resultDescriptors = new ArrayList<>(3);
         }
 
-        resultDescriptors.add(column);
+        resultDescriptors.add(result);
     }
 }

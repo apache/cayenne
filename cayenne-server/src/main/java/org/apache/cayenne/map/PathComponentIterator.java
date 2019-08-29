@@ -37,6 +37,7 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
     private final String path;
     private final Map<String, String> aliasMap;
 
+    private EmbeddedAttribute embeddedAttribute;
     private Entity currentEntity;
 
     PathComponentIterator(Entity root, String path, Map<String, String> aliasMap) {
@@ -44,6 +45,7 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
         this.path = Objects.requireNonNull(path);
         this.aliasMap = Objects.requireNonNull(aliasMap);
         this.toks = new StringTokenizer(path, Entity.PATH_SEPARATOR);
+        this.embeddedAttribute = null;
     }
 
     public boolean hasNext() {
@@ -62,10 +64,19 @@ class PathComponentIterator implements Iterator<PathComponent<Attribute, Relatio
         }
 
         // see if this is an attribute
-        Attribute attr = currentEntity.getAttribute(pathComp);
+        Attribute attr;
+        if(embeddedAttribute != null) {
+            attr = embeddedAttribute.getAttribute(pathComp);
+            embeddedAttribute = null;
+        } else {
+            attr = currentEntity.getAttribute(pathComp);
+        }
+
         if (attr != null) {
             // do a sanity check...
-            if (toks.hasMoreTokens()) {
+            if(attr instanceof EmbeddedAttribute) {
+                embeddedAttribute = (EmbeddedAttribute)attr;
+            } else if (toks.hasMoreTokens()) {
                 throw new ExpressionException(
                         "Attribute must be the last component of the path: '" + pathComp + "'.", path, null);
             }

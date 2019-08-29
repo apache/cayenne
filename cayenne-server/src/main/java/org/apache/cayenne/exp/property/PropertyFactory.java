@@ -21,6 +21,7 @@ package org.apache.cayenne.exp.property;
 
 import java.time.LocalDateTime;
 
+import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -371,5 +372,9 @@ public class PropertyFactory {
      */
     public static <K, V extends Persistent> MapProperty<K, V> createMap(String name, Class<K> keyType, Class<V> entityType) {
         return createMap(name, null, keyType, entityType);
+    }
+
+    public static <T extends EmbeddableObject> EmbeddableProperty<T> createEmbeddable(String name, Class<T> embeddableType) {
+        return new EmbeddableProperty<>(name, embeddableType);
     }
 }

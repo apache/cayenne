@@ -5,7 +5,7 @@
 ##  to you under the Apache License, Version 2.0 (the
 ##  "License"); you may not use this file except in compliance
 ##  with the License.  You may obtain a copy of the License at
-##
+##x
 ##    https://www.apache.org/licenses/LICENSE-2.0
 ##
 ##  Unless required by applicable law or agreed to in writing,
@@ -37,23 +37,30 @@
 ${importUtils.setPackage($subPackageName)}##
 ${importUtils.addType("java.io.Serializable")}##
 ${importUtils.addReservedType("${subPackageName}.${subClassName}")}##
-${importUtils.addType("${basePackageName}.${baseClassName}")}##
+${importUtils.addType("org.apache.cayenne.EmbeddableObject")}##
 ${importUtils.addType("org.apache.cayenne.Persistent")}##
 #foreach( $attr in ${object.Attributes} )
-$importUtils.addType(${attr.Type})##
+$propertyUtils.addImport($attr)##
 #end
 ${importUtils.generate()}
 
-##  extends ${baseClassName} - always Object, so skip it
-public abstract class ${subClassName} implements Serializable {
-
+## extends ${baseClassName} - always Object, so skip it
+public class ${subClassName} implements EmbeddableObject, Serializable {
 ## Create property names
 #if( $createPropertyNames )
+
 #foreach( $attr in ${object.Attributes} )
     public static final String ${stringUtils.capitalizedAsConstant($attr.Name)}_PROPERTY = "${attr.Name}";
 #end
-
 #end
+#######################
+## Create Properties ##
+#######################
+
+#foreach( $attr in ${object.Attributes} )
+    $propertyUtils.propertyDefinition($attr)
+#end
+
     // special properties injected by Cayenne
     private Persistent owner;
     private String embeddedProperty;
@@ -96,4 +103,49 @@ public abstract class ${subClassName} implements Serializable {
 #end
 
 #end
+###########################################################
+## Create writePropertyDirect/readPropertyDirect methods ##
+###########################################################
+    @Override
+    public Object readPropertyDirectly(String propName) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch(propName) {
+#foreach( $attr in ${object.Attributes} )
+#set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
+            case "${attr.Name}":
+                return this.${name};
+#end
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void writePropertyDirectly(String propName, Object val) {
+        if(propName == null) {
+            throw new IllegalArgumentException();
+        }
+
+        switch (propName) {
+#foreach( $attr in ${object.Attributes} )
+#set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
+#set ( $flag = $importUtils.canUsePrimitive($attr) )
+#set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
+            case "${attr.Name}":
+#if ( $importUtils.isBoolean($type) )
+                this.${name} = val == null ? false : ($type)val;
+#elseif ($importUtils.isPrimitive($type))
+                this.${name} = val == null ? 0 : ($type)val;
+#else
+                this.${name} = ($type)val;
+#end
+                break;
+#end
+            default:
+                throw new IllegalArgumentException("Unknown property: " + propName);
+        }
+    }
 }

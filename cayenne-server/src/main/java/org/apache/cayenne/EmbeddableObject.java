@@ -7,7 +7,7 @@
  *  "License"); you may not use this file except in compliance
  *  with the License.  You may obtain a copy of the License at
  *
- *    https://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
  *  software distributed under the License is distributed on an
@@ -16,15 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.testdo.embeddable;
 
-import org.apache.cayenne.testdo.embeddable.auto._EmbedEntity1;
+package org.apache.cayenne;
 
-public class EmbedEntity1 extends _EmbedEntity1 {
+/**
+ *
+ * @since 4.2
+ */
+public interface EmbeddableObject {
 
-    private static final long serialVersionUID = 1L; 
+    /**
+     * Modifies a value of a named property without altering the object state in any way,
+     * and without triggering any database operations. This method is intended mostly for
+     * internal use by Cayenne framework, and shouldn't be called from the application
+     * code.
+     */
+    void writePropertyDirectly(String propertyName, Object val);
+
+    /**
+     * Returns mapped property value as currently stored in the DataObject. Returned value
+     * maybe a fault or a real value. This method will not attempt to resolve faults, or
+     * to read unmapped properties.
+     */
+    Object readPropertyDirectly(String propertyName);
 
 }
-
-
-
