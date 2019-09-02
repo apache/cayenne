@@ -37,11 +37,13 @@ interface PathTranslationResult {
 
     Optional<DbRelationship> getDbRelationship();
 
-    Optional<Embeddable> getEmbeddable();
-
     List<DbAttribute> getDbAttributes();
 
     List<String> getAttributePaths();
+
+    default Optional<Embeddable> getEmbeddable() {
+        return Optional.empty();
+    }
 
     default DbAttribute getLastAttribute() {
         return getDbAttributes().get(getDbAttributes().size() - 1);
