@@ -35,9 +35,13 @@ import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
@@ -83,6 +87,8 @@ public class DataContextFactoryTest {
             binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
             binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
             binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -122,6 +128,8 @@ public class DataContextFactoryTest {
             binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
             binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
             binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

@@ -27,9 +27,13 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
@@ -106,6 +110,8 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
             binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
             binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             ServerModule.contributeProperties(binder);
         };
 
