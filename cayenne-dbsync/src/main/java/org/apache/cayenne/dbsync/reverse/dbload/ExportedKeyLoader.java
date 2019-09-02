@@ -55,9 +55,7 @@ class ExportedKeyLoader extends PerEntityLoader {
 
     @Override
     void processResultSet(DbEntity dbEntity, DbLoadDataStore map, ResultSet rs) throws SQLException {
-        // dbEntity.getCatalog() is workaround for postrgres.
-        // Postgres metadata returns null for getCatalog method.
-        ExportedKey key = new ExportedKey(rs, dbEntity.getCatalog());
+        ExportedKey key = new ExportedKey(rs);
 
         DbEntity pkEntity = map.getDbEntity(key.getPk().getTable());
         if (!key.getPk().validateEntity(pkEntity)) {

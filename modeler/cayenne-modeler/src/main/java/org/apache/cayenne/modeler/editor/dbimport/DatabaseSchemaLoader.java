@@ -62,7 +62,7 @@ public class DatabaseSchemaLoader {
         try (ResultSet rsCatalog = connection.getMetaData().getCatalogs()) {
             boolean hasCatalogs = false;
             List<String> systemCatalogs = dbAdapter.getSystemCatalogs();
-            while (rsCatalog.next()) {
+            while (rsCatalog.next() && dbAdapter.supportsCatalogsOnReverseEngineering()) {
                 hasCatalogs = true;
                 String catalog = rsCatalog.getString("TABLE_CAT");
                 if(!systemCatalogs.contains(catalog)) {

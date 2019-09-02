@@ -62,7 +62,7 @@ public class ExportedKeyTest {
 
         when(rs1.getShort("KEY_SEQ")).thenReturn((short) 1);
 
-        ExportedKey keyData1 = new ExportedKey(rs1, "cat");
+        ExportedKey keyData1 = new ExportedKey(rs1);
 
         ResultSet rs2 = mock(ResultSet.class);
         when(rs2.getString("PKTABLE_CAT")).thenReturn("PKCatalog");
@@ -79,7 +79,7 @@ public class ExportedKeyTest {
 
         when(rs2.getShort("KEY_SEQ")).thenReturn((short)1);
 
-        ExportedKey keyData2 = new ExportedKey(rs2, "cat");
+        ExportedKey keyData2 = new ExportedKey(rs2);
 
         Assert.assertTrue(keyData1.equals(keyData2));
         Assert.assertTrue(keyData2.equals(keyData1));
