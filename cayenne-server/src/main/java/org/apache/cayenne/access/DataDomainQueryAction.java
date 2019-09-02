@@ -29,6 +29,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -75,12 +76,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     static final boolean DONE = true;
 
-    DataContext context;
-    DataDomain domain;
-    DataRowStore cache;
-    Query query;
-    QueryMetadata metadata;
+    final DataContext context;
+    final DataDomain domain;
+    final Query query;
+    final QueryMetadata metadata;
+    final AdhocObjectFactory objectFactory;
 
+    DataRowStore cache;
     QueryResponse response;
     GenericResponse fullResponse;
     Map<String, List<?>> prefetchResultsByPath;
@@ -102,6 +104,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         this.query = query;
         this.metadata = query.getMetaData(domain.getEntityResolver());
         this.context = (DataContext) context;
+        this.objectFactory = domain.getObjectFactory();
 
         // cache may be shared or unique for the ObjectContext
         if (context != null) {
@@ -716,19 +719,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         void convert(List<DataRow> mainRows) {
             EmbeddableResultSegment resultSegment = (EmbeddableResultSegment)metadata.getResultSetMapping().get(0);
             Embeddable embeddable = resultSegment.getEmbeddable();
-            Class<?> embeddableClass;
-            try {
-                embeddableClass = Class.forName(embeddable.getClassName());
-            } catch (Exception e) {
-                throw new CayenneRuntimeException("Unable create Embeddable class %s", e, embeddable.getClassName());
-            }
+            Class<?> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
             List<EmbeddableObject> result = new ArrayList<>(mainRows.size());
             mainRows.forEach(dataRow -> {
                 EmbeddableObject eo;
                 try {
                     eo = (EmbeddableObject)embeddableClass.newInstance();
                 } catch (InstantiationException | IllegalAccessException e) {
-                    throw new CayenneRuntimeException("Unable create instance of Embeddable %s", e, embeddable.getClassName());
+                    throw new CayenneRuntimeException("Unable to materialize embeddable '%s'", e, embeddable.getClassName());
                 }
                 dataRow.forEach(eo::writePropertyDirectly);
                 result.add(eo);
@@ -801,8 +799,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 } else if (mapping instanceof EmbeddableResultSegment) {
                     EmbeddableResultSegment resultSegment = (EmbeddableResultSegment)mapping;
                     Embeddable embeddable = resultSegment.getEmbeddable();
+                    Class<?> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
                     try {
-                        Class<?> embeddableClass = Class.forName(embeddable.getClassName());
                         for(Object[] row : mainRows) {
                             DataRow dataRow = (DataRow)row[i];
                             EmbeddableObject eo = (EmbeddableObject)embeddableClass.newInstance();
@@ -810,7 +808,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                             row[i] = eo;
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        throw new CayenneRuntimeException("Unable to materialize embeddable '%s'", e, embeddable.getClassName());
                     }
                 }
             }

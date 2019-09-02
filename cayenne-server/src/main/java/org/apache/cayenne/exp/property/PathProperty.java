@@ -155,6 +155,8 @@ public interface PathProperty<E> extends Property<E> {
      */
     default <T extends EmbeddableObject> EmbeddableProperty<T> dot(EmbeddableProperty<T> property) {
         String path = getName() + "." + property.getName();
-        return PropertyFactory.createEmbeddable(path, property.getType());
+        return PropertyFactory.createEmbeddable(path,
+                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
+                property.getType());
     }
 }

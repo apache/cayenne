@@ -32,6 +32,7 @@ import org.apache.cayenne.access.flush.DataDomainFlushAction;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
@@ -114,6 +115,12 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 */
 	@Inject
 	protected DataDomainFlushActionFactory flushActionFactory;
+
+	/**
+	 * @since 4.2
+	 */
+	@Inject
+	protected AdhocObjectFactory objectFactory;
 
 	protected Map<String, DataNode> nodes;
 	protected Map<String, DataNode> nodesByDataMapName;
@@ -872,5 +879,9 @@ public class DataDomain implements QueryEngine, DataChannel {
 
 	TransactionManager getTransactionManager() {
 		return transactionManager;
+	}
+
+	AdhocObjectFactory getObjectFactory() {
+		return objectFactory;
 	}
 }

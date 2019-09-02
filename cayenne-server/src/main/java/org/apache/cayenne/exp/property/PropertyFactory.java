@@ -374,7 +374,28 @@ public class PropertyFactory {
         return createMap(name, null, keyType, entityType);
     }
 
+    /**
+     * Create property that represents embeddable
+     *
+     * @param name of the property, will be used as value for path expression
+     * @param embeddableType type of represented embeddable entity
+     * @param <T> type of represented embeddable entity
+     * @return new path property
+     */
     public static <T extends EmbeddableObject> EmbeddableProperty<T> createEmbeddable(String name, Class<T> embeddableType) {
-        return new EmbeddableProperty<>(name, embeddableType);
+        return new EmbeddableProperty<>(name, null, embeddableType);
+    }
+
+    /**
+     * Create property that represents embeddable
+     *
+     * @param name of the property, will be used as value for path expression
+     * @param exp that property will use
+     * @param embeddableType type of represented embeddable entity
+     * @param <T> type of represented embeddable entity
+     * @return new path property
+     */
+    public static <T extends EmbeddableObject> EmbeddableProperty<T> createEmbeddable(String name, Expression exp, Class<T> embeddableType) {
+        return new EmbeddableProperty<>(name, exp, embeddableType);
     }
 }

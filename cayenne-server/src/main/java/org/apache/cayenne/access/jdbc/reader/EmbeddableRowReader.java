@@ -73,7 +73,7 @@ class EmbeddableRowReader implements RowReader<DataRow> {
             // rethrow unmodified
             throw cex;
         } catch (Exception otherex) {
-            throw new CayenneRuntimeException("Exception materializing id column.", Util.unwindException(otherex));
+            throw new CayenneRuntimeException("Exception materializing column.", Util.unwindException(otherex));
         }
     }
 }

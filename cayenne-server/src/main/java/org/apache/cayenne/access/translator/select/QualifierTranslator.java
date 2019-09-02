@@ -285,7 +285,7 @@ class QualifierTranslator implements TraversalHandler {
             }
         }
 
-        throw new CayenneRuntimeException("Embeddable attribute ObjPath isn't matched with valid value.");
+        throw new CayenneRuntimeException("Embeddable attribute ObjPath isn't matched with a valid value.");
     }
 
     private Node createMultiAttributeMatch(Expression node, Expression parentNode, PathTranslationResult result) {
