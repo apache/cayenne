@@ -75,7 +75,7 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
         }
 
         DetectedDbEntity table = new DetectedDbEntity(name);
-        table.setCatalog(catalogName);
+        table.setCatalog(catalogName != null ? catalogName : catalog.name);
         table.setSchema(schemaName);
         table.setType(type);
         addDbEntityToMap(table, map);

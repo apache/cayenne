@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.dbsync.merge;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 class DbEntityDictionary extends MergerDictionary<DbEntity> {
 
@@ -40,7 +40,6 @@ class DbEntityDictionary extends MergerDictionary<DbEntity> {
 
     @Override
     String getName(DbEntity entity) {
-//        return entity.getFullyQualifiedName();
         return entity.getName();
     }
 
