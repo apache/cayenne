@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.EqualsBuilder;
-import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.cayenne.util.CompareToBuilder;
-import org.apache.cayenne.util.Util;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.CompareToBuilder;
+import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
+import org.apache.cayenne.util.Util;
 
 /**
  * A representation of relationship between two tables in database. It can be used for creating names
@@ -46,21 +46,23 @@ public class ExportedKey implements Comparable {
      *
      * @param rs ResultSet pointing to a exported key, fetched using
      *           DataBaseMetaData.getExportedKeys(...)
+     * @param catalogName use only like workaround for postgres. Postgres metadata
+     *        returns null for getting catalogs.
      */
-    ExportedKey(ResultSet rs) throws SQLException {
+    ExportedKey(ResultSet rs, String catalogName) throws SQLException {
         String pkCatalog = rs.getString("PKTABLE_CAT");
         String pkSchema = rs.getString("PKTABLE_SCHEM");
         String pkTable = rs.getString("PKTABLE_NAME");
         String pkColumn = rs.getString("PKCOLUMN_NAME");
         String pkName = rs.getString("PK_NAME");
-        pk = new KeyData(pkCatalog, pkSchema, pkTable, pkColumn, pkName);
+        pk = new KeyData(pkCatalog != null ? pkCatalog : catalogName, pkSchema, pkTable, pkColumn, pkName);
 
         String fkCatalog = rs.getString("FKTABLE_CAT");
         String fkSchema = rs.getString("FKTABLE_SCHEM");
         String fkTable = rs.getString("FKTABLE_NAME");
         String fkColumn = rs.getString("FKCOLUMN_NAME");
         String fkName = rs.getString("FK_NAME");
-        fk = new KeyData(fkCatalog, fkSchema, fkTable, fkColumn, fkName);
+        fk = new KeyData(fkCatalog != null ? fkCatalog : catalogName, fkSchema, fkTable, fkColumn, fkName);
 
         this.keySeq = rs.getShort("KEY_SEQ");
     }

@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import org.apache.cayenne.map.DbEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.cayenne.map.DbEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ExportedKeyLoader extends PerEntityLoader {
 
@@ -55,7 +55,9 @@ class ExportedKeyLoader extends PerEntityLoader {
 
     @Override
     void processResultSet(DbEntity dbEntity, DbLoadDataStore map, ResultSet rs) throws SQLException {
-        ExportedKey key = new ExportedKey(rs);
+        // dbEntity.getCatalog() is workaround for postrgres.
+        // Postgres metadata returns null for getCatalog method.
+        ExportedKey key = new ExportedKey(rs, dbEntity.getCatalog());
 
         DbEntity pkEntity = map.getDbEntity(key.getPk().getTable());
         if (!key.getPk().validateEntity(pkEntity)) {
