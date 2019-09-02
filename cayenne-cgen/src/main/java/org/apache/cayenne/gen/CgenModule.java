@@ -26,6 +26,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.gen.property.DatePropertyDescriptorCreator;
+import org.apache.cayenne.gen.property.EmbeddablePropertyDescriptorCreator;
 import org.apache.cayenne.gen.property.NumericPropertyDescriptorCreator;
 import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
 import org.apache.cayenne.gen.property.StringPropertyDescriptorCreator;
@@ -49,7 +50,8 @@ public class CgenModule implements Module{
         contributeUserProperties(binder)
                 .add(NumericPropertyDescriptorCreator.class)
                 .add(DatePropertyDescriptorCreator.class)
-                .add(StringPropertyDescriptorCreator.class);
+                .add(StringPropertyDescriptorCreator.class)
+                .add(EmbeddablePropertyDescriptorCreator.class);
     }
 
     public static ListBuilder<PropertyDescriptorCreator> contributeUserProperties(Binder binder) {

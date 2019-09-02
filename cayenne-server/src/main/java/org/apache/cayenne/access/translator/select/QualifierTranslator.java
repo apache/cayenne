@@ -22,11 +22,13 @@ package org.apache.cayenne.access.translator.select;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
@@ -56,6 +58,7 @@ import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.aliased;
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.function;
@@ -238,7 +241,9 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     private Node processPathTranslationResult(Expression node, Expression parentNode, PathTranslationResult result) {
-        if(result.getDbRelationship().isPresent()
+        if(result.getEmbeddable().isPresent()) {
+            return createEmbeddableMatch(node, parentNode, result);
+        } else if(result.getDbRelationship().isPresent()
                 && result.getDbAttributes().size() > 1
                 && result.getDbRelationship().get().getTargetEntity().getPrimaryKeys().size() > 1) {
             return createMultiAttributeMatch(node, parentNode, result);
@@ -248,6 +253,39 @@ class QualifierTranslator implements TraversalHandler {
             String alias = context.getTableTree().aliasForPath(result.getLastAttributePath());
             return table(alias).column(result.getLastAttribute()).build();
         }
+    }
+
+    private Node createEmbeddableMatch(Expression node, Expression parentNode, PathTranslationResult result) {
+        Embeddable embeddable = result.getEmbeddable()
+                .orElseThrow(() -> new CayenneRuntimeException("Incorrect path '%s' translation, embeddable expected"
+                        , result.getFinalPath()));
+
+        Map<String, Object> valueSnapshot = getEmbeddableValueSnapshot(embeddable, node, parentNode);
+
+        expressionsToSkip.add(node);
+        expressionsToSkip.add(parentNode);
+
+        return buildMultiValueComparision(result, valueSnapshot);
+    }
+
+    private Map<String, Object> getEmbeddableValueSnapshot(Embeddable embeddable, Expression node, Expression parentNode) {
+        int siblings = parentNode.getOperandCount();
+        for(int i=0; i<siblings; i++) {
+            Object operand = parentNode.getOperand(i);
+            if(node == operand) {
+                continue;
+            }
+
+            if(operand instanceof EmbeddableObject) {
+                EmbeddableObject embeddableObject = (EmbeddableObject)operand;
+                Map<String, Object> snapshot = new HashMap<>(embeddable.getAttributes().size());
+                embeddable.getAttributeMap().forEach((name, attr) ->
+                        snapshot.put(attr.getDbAttributeName(), embeddableObject.readPropertyDirectly(name)));
+                return snapshot;
+            }
+        }
+
+        throw new CayenneRuntimeException("Embeddable attribute ObjPath isn't matched with valid value.");
     }
 
     private Node createMultiAttributeMatch(Expression node, Expression parentNode, PathTranslationResult result) {
@@ -262,37 +300,16 @@ class QualifierTranslator implements TraversalHandler {
                     , relationship.getSourceEntityName(), relationship.getName());
         }
 
-        expressionsToSkip.add(node);
-        expressionsToSkip.add(parentNode);
-
         Map<String, Object> valueSnapshot = getMultiAttributeValueSnapshot(node, parentNode);
-        if(valueSnapshot == null) {
-            throw new CayenneRuntimeException("Multi attribute ObjPath isn't matched with valid value. " +
-                    "List or Persistent object required.");
-        }
-
-        ExpressionNodeBuilder expressionNodeBuilder = null;
-        ExpressionNodeBuilder eq;
-
-        String path = result.getLastAttributePath();
-        String alias = context.getTableTree().aliasForPath(path);
-
         // convert snapshot if we have attributes from source, not target
         if(result.getLastAttribute().getEntity() == relationship.getSourceEntity()) {
             valueSnapshot = relationship.srcFkSnapshotWithTargetSnapshot(valueSnapshot);
         }
 
-        for(DbAttribute attribute : result.getDbAttributes()) {
-            Object nextValue = valueSnapshot.get(attribute.getName());
-            eq = table(alias).column(attribute).eq(value(nextValue));
-            if (expressionNodeBuilder == null) {
-                expressionNodeBuilder = eq;
-            } else {
-                expressionNodeBuilder = expressionNodeBuilder.and(eq);
-            }
-        }
+        expressionsToSkip.add(node);
+        expressionsToSkip.add(parentNode);
 
-        return expressionNodeBuilder.build();
+        return buildMultiValueComparision(result, valueSnapshot);
     }
 
     private Map<String, Object> getMultiAttributeValueSnapshot(Expression node, Expression parentNode) {
@@ -313,7 +330,28 @@ class QualifierTranslator implements TraversalHandler {
             }
         }
 
-        return null;
+        throw new CayenneRuntimeException("Multi attribute ObjPath isn't matched with valid value. " +
+                "List or Persistent object required.");
+    }
+
+    private Node buildMultiValueComparision(PathTranslationResult result, Map<String, Object> valueSnapshot) {
+        ExpressionNodeBuilder expressionNodeBuilder = null;
+        ExpressionNodeBuilder eq;
+
+        String path = result.getLastAttributePath();
+        String alias = context.getTableTree().aliasForPath(path);
+
+        for (DbAttribute attribute : result.getDbAttributes()) {
+            Object nextValue = valueSnapshot.get(attribute.getName());
+            eq = table(alias).column(attribute).eq(value(nextValue));
+            if (expressionNodeBuilder == null) {
+                expressionNodeBuilder = eq;
+            } else {
+                expressionNodeBuilder = expressionNodeBuilder.and(eq);
+            }
+        }
+
+        return expressionNodeBuilder.build();
     }
 
     private boolean nodeProcessed(Expression node) {

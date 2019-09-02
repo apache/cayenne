@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
@@ -31,124 +30,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
  * @see org.apache.cayenne.exp.property
  * @since 4.2
  */
-public interface RelationshipProperty<E> extends Property<E> {
-
-    /**
-     * Constructs a property path by appending the argument to the existing property separated by a dot.
-     *
-     * @return a newly created Property object.
-     */
-    default BaseProperty<Object> dot(String property) {
-        String path = getName() + "." + property;
-        return PropertyFactory.createBase(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                null);
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T> BaseProperty<T> dot(BaseProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createBase(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends Number> NumericProperty<T> dot(NumericProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createNumeric(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends CharSequence> StringProperty<T> dot(StringProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createString(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T> DateProperty<T> dot(DateProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createDate(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends Persistent> EntityProperty<T> dot(EntityProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createEntity(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends Persistent> ListProperty<T> dot(ListProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createList(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getEntityType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends Persistent> SetProperty<T> dot(SetProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createSet(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getEntityType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <K, V extends Persistent> MapProperty<K, V> dot(MapProperty<K, V> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createMap(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getKeyType(),
-                property.getEntityType());
-    }
+public interface RelationshipProperty<E> extends PathProperty<E> {
 
     /**
      * Returns a version of this property that represents an OUTER join. It is

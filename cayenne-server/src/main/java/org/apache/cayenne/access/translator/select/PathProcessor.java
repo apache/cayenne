@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 
 /**
@@ -107,6 +108,11 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
             return Optional.empty();
         }
         return Optional.of(relationship);
+    }
+
+    @Override
+    public Optional<Embeddable> getEmbeddable() {
+        return Optional.empty();
     }
 
     @Override

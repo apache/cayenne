@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -31,9 +32,11 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
@@ -483,6 +486,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         if (metadata.isSingleResultSetMapping()) {
                             if (rsMapping.get(0) instanceof EntityResultSegment) {
                                 converter = new SingleObjectConversionStrategy();
+                        } else if(rsMapping.get(0) instanceof EmbeddableResultSegment) {
+                            converter = new SingleEmbeddableConversionStrategy();
                             } else {
                                 converter = new SingleScalarConversionStrategy();
                             }
@@ -705,6 +710,33 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
+    class SingleEmbeddableConversionStrategy extends ObjectConversionStrategy<DataRow> {
+
+        @Override
+        void convert(List<DataRow> mainRows) {
+            EmbeddableResultSegment resultSegment = (EmbeddableResultSegment)metadata.getResultSetMapping().get(0);
+            Embeddable embeddable = resultSegment.getEmbeddable();
+            Class<?> embeddableClass;
+            try {
+                embeddableClass = Class.forName(embeddable.getClassName());
+            } catch (Exception e) {
+                throw new CayenneRuntimeException("Unable create Embeddable class %s", e, embeddable.getClassName());
+            }
+            List<EmbeddableObject> result = new ArrayList<>(mainRows.size());
+            mainRows.forEach(dataRow -> {
+                EmbeddableObject eo;
+                try {
+                    eo = (EmbeddableObject)embeddableClass.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new CayenneRuntimeException("Unable create instance of Embeddable %s", e, embeddable.getClassName());
+                }
+                dataRow.forEach(eo::writePropertyDirectly);
+                result.add(eo);
+            });
+            updateResponse(mainRows, result);
+        }
+    }
+
     class MixedConversionStrategy extends ObjectConversionStrategy<Object[]> {
 
         protected PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
@@ -748,9 +780,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<Object> rsMapping = metadata.getResultSetMapping();
             int width = rsMapping.size();
 
-            // no conversions needed for scalar positions; reuse Object[]'s to
-            // fill them
-            // with resolved objects
+            // no conversions needed for scalar positions;
+            // reuse Object[]'s to fill them with resolved objects
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
                 Object mapping = rsMapping.get(i);
@@ -766,6 +797,20 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     for (int j = 0; j < rowsLen; j++) {
                         Object[] row = mainRows.get(j);
                         row[i] = objects.get(j);
+                    }
+                } else if (mapping instanceof EmbeddableResultSegment) {
+                    EmbeddableResultSegment resultSegment = (EmbeddableResultSegment)mapping;
+                    Embeddable embeddable = resultSegment.getEmbeddable();
+                    try {
+                        Class<?> embeddableClass = Class.forName(embeddable.getClassName());
+                        for(Object[] row : mainRows) {
+                            DataRow dataRow = (DataRow)row[i];
+                            EmbeddableObject eo = (EmbeddableObject)embeddableClass.newInstance();
+                            dataRow.forEach(eo::writePropertyDirectly);
+                            row[i] = eo;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }

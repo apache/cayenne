@@ -27,6 +27,7 @@ import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.EmbeddableProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.MapProperty;
@@ -203,14 +204,14 @@ public class PropertyUtilsTest {
 
         dataMap.addEmbeddable(embeddable);
 
-        String definition = propertyUtils.propertyDefinition(embeddedAttribute);
-        assertEquals("public static final StringProperty<String> A_TEST_EMB_ATTR = PropertyFactory.createString(ExpressionFactory.dbPathExp(\"testPath\"), String.class);",
+        String definition = propertyUtils.propertyDefinition(attribute);
+        assertEquals("public static final StringProperty<String> TEST_EMB_ATTR = PropertyFactory.createString(\"testEmbAttr\", String.class);",
                 definition);
     }
 
     @Test
     public void simpleNumericPropertyEmbDefinition() throws ClassNotFoundException {
-        importUtils.addType(NumericProperty.class.getName());
+        importUtils.addType(EmbeddableProperty.class.getName());
 
         DataMap dataMap = new DataMap();
 
@@ -234,7 +235,7 @@ public class PropertyUtilsTest {
         dataMap.addEmbeddable(embeddable);
 
         String definition = propertyUtils.propertyDefinition(embeddedAttribute);
-        assertEquals("public static final NumericProperty<Integer> A_TEST_EMB_ATTR = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp(\"testPath\"), Integer.class);",
+        assertEquals("public static final EmbeddableProperty<test> A = PropertyFactory.createEmbeddable(\"a\", test.class);",
                 definition);
     }
 
@@ -264,8 +265,8 @@ public class PropertyUtilsTest {
 
         dataMap.addEmbeddable(embeddable);
 
-        String definition = propertyUtils.propertyDefinition(embeddedAttribute);
-        assertEquals("public static final CustomProperty<TimestampType> A_TEST_EMB_ATTR = new CustomProperty(ExpressionFactory.dbPathExp(\"testPath\"), TimestampType.class);",
+        String definition = propertyUtils.propertyDefinition(attribute);
+        assertEquals("public static final CustomProperty<TimestampType> TEST_EMB_ATTR = new CustomProperty(\"testEmbAttr\", TimestampType.class);",
                 definition);
     }
 

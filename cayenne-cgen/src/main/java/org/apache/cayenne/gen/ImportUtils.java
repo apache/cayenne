@@ -21,6 +21,7 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.util.Util;
 
@@ -221,6 +222,10 @@ public class ImportUtils {
 	public boolean canUsePrimitive(ObjAttribute attribute) {
         return attribute.isMandatory() && isPrimitive(attribute.getType());
     }
+
+	public boolean canUsePrimitive(EmbeddableAttribute attribute) {
+		return isPrimitive(attribute.getType());
+	}
 
 	/**
 	 * Generate package and list of import statements based on the registered

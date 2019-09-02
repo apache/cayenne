@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -34,6 +35,7 @@ import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.DateProperty;
+import org.apache.cayenne.exp.property.EmbeddableProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.MapProperty;
@@ -69,6 +71,7 @@ public class PropertyUtils {
         FACTORY_METHODS.put(ListProperty.class.getName(), "createList");
         FACTORY_METHODS.put(SetProperty.class.getName(), "createSet");
         FACTORY_METHODS.put(MapProperty.class.getName(), "createMap");
+        FACTORY_METHODS.put(EmbeddableProperty.class.getName(), "createEmbeddable");
     }
 
     private static final List<Class<?>> JAVA_DATE_TYPES = Arrays.asList(
@@ -124,23 +127,21 @@ public class PropertyUtils {
     }
 
     public void addImport(ObjAttribute attribute) throws ClassNotFoundException {
-        if(attribute instanceof EmbeddedAttribute) {
-            addImport((EmbeddedAttribute)attribute);
-            return;
-        }
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
     }
 
     public void addImport(EmbeddedAttribute attribute) throws ClassNotFoundException {
-        Embeddable embeddable = attribute.getEmbeddable();
-        importUtils.addType(embeddable.getClassName());
-        for(EmbeddableAttribute embeddableAttribute : embeddable.getAttributes()) {
-            importUtils.addType(embeddableAttribute.getType());
-            importUtils.addType(getPropertyDescriptor(embeddableAttribute.getType()).getPropertyType());
-            importUtils.addType(ExpressionFactory.class.getName());
-        }
+        importUtils.addType(PropertyFactory.class.getName());
+        importUtils.addType(attribute.getType());
+        importUtils.addType(getPropertyDescriptor(EmbeddableObject.class.getName()).getPropertyType());
+    }
+
+    public void addImport(EmbeddableAttribute attribute) throws ClassNotFoundException {
+        importUtils.addType(PropertyFactory.class.getName());
+        importUtils.addType(attribute.getType());
+        importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
     }
 
     public void addImport(ObjRelationship relationship) {
@@ -182,10 +183,6 @@ public class PropertyUtils {
     }
 
     public String propertyDefinition(ObjAttribute attribute, boolean client) throws ClassNotFoundException {
-        if(attribute instanceof EmbeddedAttribute) {
-            return propertyDefinition((EmbeddedAttribute)attribute);
-        }
-
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
@@ -216,31 +213,41 @@ public class PropertyUtils {
 
     public String propertyDefinition(EmbeddedAttribute attribute) throws ClassNotFoundException {
         StringUtils utils = StringUtils.getInstance();
+        String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(EmbeddableObject.class.getName());
+        return String.format("public static final %s<%s> %s = %s(\"%s\", %s.class);",
+                importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
+                attributeType,
+                generatePropertyName(attribute),
+                propertyDescriptor.getPropertyFactoryMethod(),
+                attribute.getName(),
+                attributeType
+        );
+    }
 
+    public String propertyDefinition(EmbeddableAttribute attribute) throws ClassNotFoundException {
+        StringUtils utils = StringUtils.getInstance();
+        String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
+        return String.format("public static final %s<%s> %s = %s(\"%s\", %s.class);",
+                importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
+                attributeType,
+                generatePropertyName(attribute),
+                propertyDescriptor.getPropertyFactoryMethod(),
+                attribute.getName(),
+                attributeType
+        );
+    }
+
+    protected String generatePropertyName(EmbeddableAttribute attribute) {
+        StringUtils utils = StringUtils.getInstance();
         Embeddable embeddable = attribute.getEmbeddable();
-        Collection<EmbeddableAttribute> attributes = embeddable.getAttributes();
-
-        String[] attributesDefinitions = new String[attributes.size()];
-        int i = 0;
-        for(EmbeddableAttribute embeddableAttribute : attributes) {
-            PropertyDescriptor propertyDescriptor = getPropertyDescriptor(embeddableAttribute.getType());
-            String attributeType = utils.stripGeneric(importUtils.formatJavaType(embeddableAttribute.getType(), false));
-            String path = attribute.getAttributeOverrides()
-                    .getOrDefault(embeddableAttribute.getName(), embeddableAttribute.getDbAttributeName());
-
-            String propertyName = utils.capitalizedAsConstant(attribute.getName()) + "_" + utils.capitalizedAsConstant(embeddableAttribute.getName());
-            attributesDefinitions[i++] =  String.format("public static final %s<%s> %s " +
-                            "= %s(ExpressionFactory.dbPathExp(\"%s\"), %s.class);",
-                    importUtils.formatJavaType(propertyDescriptor.getPropertyType()),
-                    attributeType,
-                    propertyName,
-                    propertyDescriptor.getPropertyFactoryMethod(),
-                    path,
-                    attributeType
-            );
+        String name = utils.capitalizedAsConstant(attribute.getName());
+        // ensure that final name is unique
+        while(embeddable.getAttribute(name) != null) {
+            name = name + DUPLICATE_NAME_SUFFIX;
         }
-
-        return String.join("\n    ", attributesDefinitions);
+        return name;
     }
 
     public String propertyDefinition(ObjRelationship relationship, boolean client) {
