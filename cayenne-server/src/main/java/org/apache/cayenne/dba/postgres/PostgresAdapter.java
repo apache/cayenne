@@ -19,6 +19,16 @@
 
 package org.apache.cayenne.dba.postgres;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
@@ -41,20 +51,11 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Function;
-
 /**
  * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL
  * RDBMS </a>. Sample connection settings to use with PostgreSQL are shown
  * below:
- * 
+ *
  * <pre>
  *      postgres.jdbc.username = test
  *      postgres.jdbc.password = secret
@@ -65,6 +66,8 @@ import java.util.function.Function;
 public class PostgresAdapter extends JdbcAdapter {
 
 	public static final String BYTEA = "bytea";
+
+	private String[] SYSTEM_SCHEMAS = new String[]{"information_schema", "pg_catalog"};
 
 	public PostgresAdapter(@Inject RuntimeProperties runtimeProperties,
 						   @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -87,7 +90,7 @@ public class PostgresAdapter extends JdbcAdapter {
 
 	/**
 	 * Uses PostgresActionBuilder to create the right action.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -156,7 +159,7 @@ public class PostgresAdapter extends JdbcAdapter {
 	 * Customizes table creating procedure for PostgreSQL. One difference with
 	 * generic implementation is that "bytea" type has no explicit length unlike
 	 * similar binary types in other databases.
-	 * 
+	 *
 	 * @since 1.0.2
 	 */
 	@Override
@@ -265,6 +268,11 @@ public class PostgresAdapter extends JdbcAdapter {
 	@Override
 	public boolean supportsCatalogsOnReverseEngineering() {
 		return false;
+	}
+
+	@Override
+	public List<String> getSystemSchemas() {
+		return Arrays.asList(SYSTEM_SCHEMAS);
 	}
 
 }

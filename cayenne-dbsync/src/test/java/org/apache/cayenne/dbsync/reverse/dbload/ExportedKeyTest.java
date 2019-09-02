@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

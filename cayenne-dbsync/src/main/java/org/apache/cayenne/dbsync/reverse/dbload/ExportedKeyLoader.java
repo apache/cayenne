@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import org.apache.cayenne.map.DbEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.cayenne.map.DbEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ExportedKeyLoader extends PerEntityLoader {
 

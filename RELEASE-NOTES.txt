@@ -45,6 +45,7 @@ CAY-2602 Remove RTRIM of char columns in Sybase
 CAY-2604 Specialization of property API for PK
 CAY-2610 Align methods in ObjectSelect and SQLSelect
 CAY-2611 Exclude system catalogs and schemas when run dbImport without config
+CAY-2612 Modeler: add lazy-loading to dbImport tab
 
 Bug Fixes:
 

@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.util.EqualsBuilder;
-import org.apache.cayenne.util.HashCodeBuilder;
-import org.apache.cayenne.util.CompareToBuilder;
-import org.apache.cayenne.util.Util;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.util.CompareToBuilder;
+import org.apache.cayenne.util.EqualsBuilder;
+import org.apache.cayenne.util.HashCodeBuilder;
+import org.apache.cayenne.util.Util;
 
 /**
  * A representation of relationship between two tables in database. It can be used for creating names

@@ -80,12 +80,10 @@ import org.apache.cayenne.resource.ResourceLocator;
 public class MySQLAdapter extends JdbcAdapter {
 
 	static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
-	static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_START = "`";
-	static final String MYSQL_QUOTE_SQL_IDENTIFIERS_CHAR_END = "`";
 
 	protected String storageEngine;
 
-	private String[] SYSTEM_CATALOGS = new String[]{"sys"};
+	private String[] SYSTEM_CATALOGS = new String[]{"sys", "information_schema", "mysql", "performance_schema"};
 
 	public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
 						@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
