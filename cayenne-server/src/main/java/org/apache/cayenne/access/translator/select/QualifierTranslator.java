@@ -47,6 +47,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.exp.parser.ASTDbIdPath;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
@@ -176,6 +177,11 @@ class QualifierTranslator implements TraversalHandler {
                 String dbPath = (String)node.getOperand(0);
                 PathTranslationResult dbResult = pathTranslator.translatePath(context.getMetadata().getDbEntity(), dbPath);
                 return processPathTranslationResult(node, parentNode, dbResult);
+
+            case DBID_PATH:
+                String dbIdPath = (String)node.getOperand(0);
+                PathTranslationResult dbIdResult = pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), dbIdPath);
+                return processPathTranslationResult(node, parentNode, dbIdResult);
 
             case FUNCTION_CALL:
                 ASTFunctionCall functionCall = (ASTFunctionCall)node;
@@ -359,7 +365,7 @@ class QualifierTranslator implements TraversalHandler {
         switch (node.getType()) {
             case NOT_IN: case IN: case NOT_BETWEEN: case BETWEEN: case NOT:
             case BITWISE_NOT: case EQUAL_TO: case NOT_EQUAL_TO: case LIKE: case NOT_LIKE:
-            case LIKE_IGNORE_CASE: case NOT_LIKE_IGNORE_CASE: case OBJ_PATH: case DB_PATH:
+            case LIKE_IGNORE_CASE: case NOT_LIKE_IGNORE_CASE: case OBJ_PATH: case DBID_PATH: case DB_PATH:
             case FUNCTION_CALL: case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case NEGATIVE:
             case BITWISE_AND: case BITWISE_LEFT_SHIFT: case BITWISE_OR: case BITWISE_RIGHT_SHIFT: case BITWISE_XOR:
             case OR: case AND: case LESS_THAN: case LESS_THAN_EQUAL_TO: case GREATER_THAN: case GREATER_THAN_EQUAL_TO:
@@ -387,7 +393,7 @@ class QualifierTranslator implements TraversalHandler {
         if(expressionsToSkip.contains(parentNode)) {
             return;
         }
-        if(parentNode.getType() == Expression.OBJ_PATH || parentNode.getType() == Expression.DB_PATH) {
+        if(parentNode.getType() == OBJ_PATH || parentNode.getType() == DB_PATH || parentNode.getType() == DBID_PATH) {
             return;
         }
 
@@ -420,6 +426,9 @@ class QualifierTranslator implements TraversalHandler {
             Object op = node.getOperand(i);
             if(op instanceof ASTObjPath) {
                 result = pathTranslator.translatePath(context.getMetadata().getObjEntity(), ((ASTObjPath) op).getPath());
+                break;
+            } else if(op instanceof ASTDbIdPath) {
+                result = pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), ((ASTDbIdPath)op).getPath());
                 break;
             } else if(op instanceof ASTDbPath) {
                 result = pathTranslator.translatePath(context.getMetadata().getDbEntity(), ((ASTDbPath) op).getPath());
@@ -484,5 +493,4 @@ class QualifierTranslator implements TraversalHandler {
                 return "{other}";
         }
     }
-
 }

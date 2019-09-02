@@ -33,12 +33,14 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.BaseIdProperty;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EmbeddableProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.MapProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SetProperty;
@@ -72,6 +74,8 @@ public class PropertyUtils {
         FACTORY_METHODS.put(SetProperty.class.getName(), "createSet");
         FACTORY_METHODS.put(MapProperty.class.getName(), "createMap");
         FACTORY_METHODS.put(EmbeddableProperty.class.getName(), "createEmbeddable");
+        FACTORY_METHODS.put(NumericIdProperty.class.getName(), "createNumericId");
+        FACTORY_METHODS.put(BaseIdProperty.class.getName(), "createBaseId");
     }
 
     private static final List<Class<?>> JAVA_DATE_TYPES = Arrays.asList(
@@ -115,14 +119,13 @@ public class PropertyUtils {
             if(!entityUtils.declaresDbAttribute(attribute)) {
                 String javaBySqlType = TypesMapping.getJavaBySqlType(attribute.getType());
                 importUtils.addType(javaBySqlType);
-                importUtils.addType(getPropertyTypeForType(javaBySqlType));
+                importUtils.addType(getPkPropertyTypeForType(javaBySqlType));
                 needToCreatePK = true;
             }
         }
 
         if(needToCreatePK) {
             importUtils.addType(PropertyFactory.class.getName());
-            importUtils.addType(ExpressionFactory.class.getName());
         }
     }
 
@@ -164,20 +167,21 @@ public class PropertyUtils {
         }
     }
 
-    public String propertyDefinition(DbAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(ObjEntity entity, DbAttribute attribute) throws ClassNotFoundException {
         StringUtils utils = StringUtils.getInstance();
 
         String attributeType = TypesMapping.getJavaBySqlType(attribute.getType());
-        String propertyType = getPropertyTypeForType(TypesMapping.getJavaBySqlType(attribute.getType()));
+        String propertyType = getPkPropertyTypeForType(TypesMapping.getJavaBySqlType(attribute.getType()));
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
         attributeType = importUtils.formatJavaType(attributeType, false);
 
-        return String.format("public static final %s<%s> %s = PropertyFactory.%s(ExpressionFactory.dbPathExp(\"%s\"), %s.class);",
+        return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", \"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),
                 attributeType,
                 utils.capitalizedAsConstant(attribute.getName()) + PK_PROPERTY_SUFFIX,
                 propertyFactoryMethod,
                 attribute.getName(),
+                entity.getName(),
                 attributeType
         );
     }
@@ -338,25 +342,12 @@ public class PropertyUtils {
         return FACTORY_METHODS.get(propertyType);
     }
 
-    private String getPropertyTypeForType(String attributeType) throws ClassNotFoundException {
-        if(TypesMapping.JAVA_BYTES.equals(attributeType)) {
-            return BaseProperty.class.getName();
-        }
-
+    private String getPkPropertyTypeForType(String attributeType) throws ClassNotFoundException {
         Class<?> javaClass = Class.forName(attributeType);
         if (Number.class.isAssignableFrom(javaClass)) {
-            return NumericProperty.class.getName();
+            return NumericIdProperty.class.getName();
         }
-
-        if (CharSequence.class.isAssignableFrom(javaClass)) {
-            return StringProperty.class.getName();
-        }
-
-        if (JAVA_DATE_TYPES.contains(javaClass)) {
-            return DateProperty.class.getName();
-        }
-
-        return BaseProperty.class.getName();
+        return BaseIdProperty.class.getName();
     }
 
     private String getPropertyTypeForJavaClass(ObjRelationship relationship) {

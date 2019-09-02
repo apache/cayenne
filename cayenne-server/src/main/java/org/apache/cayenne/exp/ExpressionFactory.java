@@ -29,6 +29,7 @@ import org.apache.cayenne.exp.parser.ASTBitwiseNot;
 import org.apache.cayenne.exp.parser.ASTBitwiseOr;
 import org.apache.cayenne.exp.parser.ASTBitwiseRightShift;
 import org.apache.cayenne.exp.parser.ASTBitwiseXor;
+import org.apache.cayenne.exp.parser.ASTDbIdPath;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTDivide;
 import org.apache.cayenne.exp.parser.ASTEnclosingObject;
@@ -415,6 +416,22 @@ public class ExpressionFactory {
 	}
 
 	/**
+	 * A convenience method to create an DBID_PATH "equal to" expression.
+	 * @since 4.2
+	 */
+	public static Expression matchDbIdExp(String pathSpec, Object value) {
+		return matchExp(new ASTDbIdPath(pathSpec), value);
+	}
+
+	/**
+	 * A convenience method to create an DBID_PATH "not equal to" expression.
+	 * @since 4.2
+	 */
+	public static Expression noMatchDbIdExp(String pathSpec, Object value) {
+		return noMatchExp(new ASTDbIdPath(pathSpec), value);
+	}
+
+	/**
 	 * A convenience method to create an OBJ_PATH "less than" expression.
 	 */
 	public static Expression lessExp(String pathSpec, Object value) {
@@ -568,6 +585,18 @@ public class ExpressionFactory {
 	}
 
 	/**
+	 * A convenience shortcut for building IN DBID expression. Return ASTFalse for
+	 * empty collection.
+	 * @since 4.2
+	 */
+	public static Expression inDbIdExp(String pathSpec, Object... values) {
+		if (values.length == 0) {
+			return new ASTFalse();
+		}
+		return new ASTIn(new ASTDbIdPath(pathSpec), new ASTList(values));
+	}
+
+	/**
 	 * @since 4.0
 	 * @see ExpressionFactory#inExp(String, Collection)
 	 */
@@ -590,6 +619,18 @@ public class ExpressionFactory {
 			return new ASTFalse();
 		}
 		return new ASTIn(new ASTDbPath(pathSpec), new ASTList(values));
+	}
+
+	/**
+	 * A convenience shortcut for building IN DBID expression. Return ASTFalse for
+	 * empty collection.
+	 * @since 4.2
+	 */
+	public static Expression inDbIdExp(String pathSpec, Collection<?> values) {
+		if (values.isEmpty()) {
+			return new ASTFalse();
+		}
+		return new ASTIn(new ASTDbIdPath(pathSpec), new ASTList(values));
 	}
 
 	/**
@@ -630,6 +671,19 @@ public class ExpressionFactory {
 	/**
 	 * A convenience shortcut for building NOT_IN expression. Return ASTTrue for
 	 * empty collection.
+	 *
+	 * @since 4.2
+	 */
+	public static Expression notInDbIdExp(String pathSpec, Collection<?> values) {
+		if (values.isEmpty()) {
+			return new ASTTrue();
+		}
+		return new ASTNotIn(new ASTDbIdPath(pathSpec), new ASTList(values));
+	}
+
+	/**
+	 * A convenience shortcut for building NOT_IN expression. Return ASTTrue for
+	 * empty collection.
 	 * 
 	 * @since 1.0.6
 	 */
@@ -662,6 +716,19 @@ public class ExpressionFactory {
 			return new ASTTrue();
 		}
 		return new ASTNotIn(new ASTDbPath(pathSpec), new ASTList(values));
+	}
+
+	/**
+	 * A convenience shortcut for building NOT_IN expression. Return ASTTrue for
+	 * empty collection.
+	 *
+	 * @since 4.2
+	 */
+	public static Expression notInDbIdExp(String pathSpec, Object... values) {
+		if (values.length == 0) {
+			return new ASTTrue();
+		}
+		return new ASTNotIn(new ASTDbIdPath(pathSpec), new ASTList(values));
 	}
 
 	/**
@@ -1145,6 +1212,15 @@ public class ExpressionFactory {
 	 */
 	public static Expression dbPathExp(String pathSpec) {
 		return new ASTDbPath(pathSpec);
+	}
+
+	/**
+	 * @param pathSpec a String "dbid:" path
+	 * @return a new "dbid:" path expressiob fofr the specified String path
+	 * @since 4.2
+	 */
+	public static Expression dbIdPathExp(String pathSpec) {
+		return new ASTDbIdPath(pathSpec);
 	}
 
 	/**

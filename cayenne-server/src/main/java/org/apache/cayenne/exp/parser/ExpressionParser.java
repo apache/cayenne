@@ -201,6 +201,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
     case SINGLE_QUOTED_STRING:
     case DOUBLE_QUOTED_STRING:
@@ -279,6 +280,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
     case SINGLE_QUOTED_STRING:
     case DOUBLE_QUOTED_STRING:
@@ -842,6 +844,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
     case INT_LITERAL:
     case FLOAT_LITERAL:
@@ -892,6 +895,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
       pathExpression();
       break;
@@ -1010,6 +1014,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
     case SINGLE_QUOTED_STRING:
     case DOUBLE_QUOTED_STRING:
@@ -1533,6 +1538,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
     case INT_LITERAL:
     case FLOAT_LITERAL:
@@ -1596,6 +1602,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
     case INT_LITERAL:
     case FLOAT_LITERAL:
@@ -1703,6 +1710,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
     case 67:
     case 68:
     case 69:
+    case 70:
     case PROPERTY_PATH:
       pathExpression();
       break;
@@ -1794,6 +1802,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         case 67:
         case 68:
         case 69:
+        case 70:
         case PROPERTY_PATH:
         case INT_LITERAL:
         case FLOAT_LITERAL:
@@ -2263,6 +2272,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       case 67:
       case 68:
       case 69:
+      case 70:
       case PROPERTY_PATH:
         pathExpression();
         break;
@@ -2669,6 +2679,22 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
                                    }
       }
       break;
+    case 70:
+      jj_consume_token(70);
+      t = jj_consume_token(PROPERTY_PATH);
+                                   ASTDbIdPath jjtn005 = new ASTDbIdPath(JJTDBIDPATH);
+                                   boolean jjtc005 = true;
+                                   jjtree.openNodeScope(jjtn005);
+      try {
+                                   jjtree.closeNodeScope(jjtn005,  0);
+                                   jjtc005 = false;
+                                   ExpressionUtils.parsePath(jjtn005, t.image);
+      } finally {
+                                   if (jjtc005) {
+                                     jjtree.closeNodeScope(jjtn005,  0);
+                                   }
+      }
+      break;
     default:
       jj_la1[44] = jj_gen;
       jj_consume_token(-1);
@@ -2701,7 +2727,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
       jj_la1_1 = new int[] {0x0,0x0,0x0,0xfffffdfe,0x0,0x0,0x0,0x0,0x0,0xfffffdfe,0x0,0x0,0x0,0x0,0xfffffdf2,0xf800,0x0,0xf800,0xfffffdfe,0xc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xff1f0400,0x0,0xff1f0400,0xff1f0400,0xf800,0x0,0xff1ffc00,0x0,0x0,0xff1f0000,0x0,0x1f0,0x200,0xe00000,0xff000000,0x0,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x0,0x1c80bf,0x0,0x0,0x4,0x0,0x0,0x1c80bf,0x0,0x4,0x0,0x0,0x1c80bf,0x480b8,0x48000,0x48000,0x1c80bf,0x1c8004,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40,0x40,0x1800bf,0x0,0x1800bf,0x1800bf,0x0,0x0,0x1c80bf,0x0,0x0,0x3,0x0,0x0,0xf8,0x0,0x3,0xb8,};
+      jj_la1_2 = new int[] {0x0,0x0,0x0,0x39017f,0x0,0x0,0x4,0x0,0x0,0x39017f,0x0,0x4,0x0,0x0,0x39017f,0x90178,0x90000,0x90000,0x39017f,0x390004,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80,0x80,0x30017f,0x0,0x30017f,0x30017f,0x0,0x0,0x39017f,0x0,0x0,0x3,0x0,0x0,0x1f8,0x0,0x3,0x178,};
    }
 
   /** Constructor with InputStream. */
@@ -2821,7 +2847,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[89];
+    boolean[] la1tokens = new boolean[90];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -2841,7 +2867,7 @@ public class ExpressionParser/*@bgen(jjtree)*/implements ExpressionParserTreeCon
         }
       }
     }
-    for (int i = 0; i < 89; i++) {
+    for (int i = 0; i < 90; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

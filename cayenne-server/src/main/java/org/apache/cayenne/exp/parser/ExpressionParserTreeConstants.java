@@ -62,6 +62,7 @@ public interface ExpressionParserTreeConstants
   public int JJTOBJPATH = 56;
   public int JJTDBPATH = 57;
   public int JJTENUM = 58;
+  public int JJTDBIDPATH = 59;
 
 
   public String[] jjtNodeName = {
@@ -124,6 +125,7 @@ public interface ExpressionParserTreeConstants
     "ObjPath",
     "DbPath",
     "Enum",
+    "DbIdPath",
   };
 }
-/* JavaCC - OriginalChecksum=a6d7ef3729cf32ee51d4115c98944e5e (do not edit this line) */
+/* JavaCC - OriginalChecksum=d21da7d665d0ef7c43630d13a09f2c1d (do not edit this line) */

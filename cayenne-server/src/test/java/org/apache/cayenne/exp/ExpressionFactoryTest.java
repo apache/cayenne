@@ -541,6 +541,46 @@ public class ExpressionFactoryTest {
         ExpressionFactory.exp("name like %32_65415'");
     }
 
+	@Test
+	public void testMatchDbIdExp() {
+		String v = "abc";
+		Expression exp = ExpressionFactory.matchDbIdExp("abc", v);
+		assertEquals(Expression.EQUAL_TO, exp.getType());
+
+		Expression path = (Expression) exp.getOperand(0);
+		assertEquals(Expression.DBID_PATH, path.getType());
+	}
+
+	@Test
+	public void testNoMatchDbIdExp() {
+		String v = "abc";
+		Expression exp = ExpressionFactory.noMatchDbIdExp("abc", v);
+		assertEquals(Expression.NOT_EQUAL_TO, exp.getType());
+
+		Expression path = (Expression) exp.getOperand(0);
+		assertEquals(Expression.DBID_PATH, path.getType());
+	}
+
+	@Test
+	public void testInDbIdExp() {
+		String v = "abc";
+		Expression exp = ExpressionFactory.inDbIdExp("abc", v);
+		assertEquals(Expression.IN, exp.getType());
+
+		Expression path = (Expression) exp.getOperand(0);
+		assertEquals(Expression.DBID_PATH, path.getType());
+	}
+
+	@Test
+	public void testNotInDbIdExp() {
+		String v = "abc";
+		Expression exp = ExpressionFactory.notInDbIdExp("abc", v);
+		assertEquals(Expression.NOT_IN, exp.getType());
+
+		Expression path = (Expression) exp.getOperand(0);
+		assertEquals(Expression.DBID_PATH, path.getType());
+	}
+
 	public static class Bean {
 		public ExpEnum1 a;
 

@@ -179,6 +179,11 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public static final int SUBQUERY = 50;
 
+	/**
+	 * @since 4.2
+	 */
+	public static final int DBID_PATH = 51;
+
 	protected int type;
 
 	/**
