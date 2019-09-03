@@ -13,22 +13,29 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2465 New SelectTranslator implementation
+CAY-2466 New internal API to build SQL
 CAY-2467 New type-aware Property API
+CAY-2468 Support subqueries in Expression API
 CAY-2507 Property API to use path aliases
 CAY-2508 Create api to add aliases in expressions
 CAY-2510 Create builder to load custom modules into plugins and modeler
 CAY-2511 Contribute custom properties for attributes
+CAY-2512 Support for custom functions in Expression API and Property API
+CAY-2514 Set SERVER_CONTEXTS_SYNC_PROPERTY default value to false
 CAY-2517 EventManager: optimization of adding listeners
 CAY-2518 Add method to append having qualifier expression to ObjectSelect
 CAY-2520 Split ObjectId into several specialized variants
 CAY-2522 Make ObjectSelect a direct query
 CAY-2523 Deprecate SelectQuery
 CAY-2525 Deprecate OpenBase adapter
+CAY-2527 API to map Object[] result to POJO
 CAY-2539 Import procedures with the help of MergerToken
 CAY-2540 Modeler: redesign dbRelationship editor dialog
 CAY-2542 Modeler: redesign ObjRelationship editor dialog
 CAY-2543 Move ResultSetMapping generation from metadata to translator
 CAY-2549 Modeler: Redesign ObjAttribute editor dialog
+CAY-2551 Create extended type for abstract Number class
 CAY-2555 Use explicit ArcId in GraphChangeHandler methods
 CAY-2557 Add java.time.Duration and java.time.Period to supported types
 CAY-2562 Make ROPServerModule autoloaded
@@ -36,6 +43,7 @@ CAY-2563 Deprecate old scalarQuery methods in SQLSelect
 CAY-2568 Class Generation: Superclass Package setting persistence
 CAY-2569 Custom 'Naming Strategy' in Cayenne Modeler
 CAY-2570 Use MySQL adapter for latest versions of MariaDB
+CAY-2571 DataDomainFlushAction redesign
 CAY-2579 Review and possibly relax usage of readonly flag of ObjRelationship
 CAY-2585 Rename scalarQuery and params methods in SQLSelect
 CAY-2590 Add method to set query timeout to queries
@@ -49,17 +57,18 @@ CAY-2612 Modeler: add lazy-loading to dbImport tab
 
 Bug Fixes:
 
+CAY-2019 Optimistic locking always fails on CRYPTO columns
 CAY-2332 Property API: unable to use eq() and in() methods for toMany relationships
 CAY-2417 Modeler: wrong title in attribute context menu
 CAY-2506 Java class generated for Embeddable object is not serializable
 CAY-2509 Result of resolving lazily faulted relationships can be out-of-date
-CAY-2019 Optimistic locking always fails on CRYPTO columns
 CAY-2530 Modeler: DB Import and Class Generation from Project is performed for removed datamaps
 CAY-2531 Modeler: Importing same schema after Import Revert clears all entities in datamap
 CAY-2533 Modeler: Exception on validating ObjRelationship without db path
 CAY-2535 Modeler: Impossible to import stored procedure apart from db tables
 CAY-2537 Modeler: Schema Generation Complete popup window is hidden
 CAY-2538 Modeler: dbImport configuration unclear behavior
+CAY-2541 Performing query with expression with ObjectId throws NPE in some cases
 CAY-2544 Possible name clash of ivar and property name in generated class
 CAY-2547 CayenneDataObject serialization issue
 CAY-2553 Wrong disjoint prefetch query qualifier
