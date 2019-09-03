@@ -82,7 +82,7 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
 
     @Test
     public void selectQuery_existsWithExpressionFromParentQuery() {
-        Expression exp = Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing())
+        Expression exp = Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing())
                 .andExp(Painting.PAINTING_TITLE.like("painting%"))
                 .andExp(Artist.ARTIST_NAME.enclosing().like("art%"));
 
@@ -91,6 +91,16 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
                 .where(ExpressionFactory.exists(subQuery))
                 .selectCount(context);
         assertEquals(5L, count);
+    }
+
+    @Test
+    public void selectQuery_notExistsWithExpressionFromParentQuery() {
+        ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
+                .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+        long count = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.notExists(subQuery))
+                .selectCount(context);
+        assertEquals(15L, count);
     }
 
     @Test

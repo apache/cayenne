@@ -212,6 +212,8 @@ class QualifierTranslator implements TraversalHandler {
 
             case EXISTS:
                 return new FunctionNode("EXISTS", null, false);
+            case NOT_EXISTS:
+                return new FunctionNode("NOT EXISTS", null, false);
 
             case SUBQUERY:
                 ASTSubquery subquery = (ASTSubquery)node;
@@ -369,7 +371,7 @@ class QualifierTranslator implements TraversalHandler {
             case FUNCTION_CALL: case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case NEGATIVE:
             case BITWISE_AND: case BITWISE_LEFT_SHIFT: case BITWISE_OR: case BITWISE_RIGHT_SHIFT: case BITWISE_XOR:
             case OR: case AND: case LESS_THAN: case LESS_THAN_EQUAL_TO: case GREATER_THAN: case GREATER_THAN_EQUAL_TO:
-            case TRUE: case FALSE: case ASTERISK: case EXISTS: case SUBQUERY: case ENCLOSING_OBJECT: case FULL_OBJECT:
+            case TRUE: case FALSE: case ASTERISK: case EXISTS: case NOT_EXISTS: case SUBQUERY: case ENCLOSING_OBJECT: case FULL_OBJECT:
                 return true;
         }
         return false;

@@ -50,6 +50,7 @@ import org.apache.cayenne.exp.parser.ASTNegate;
 import org.apache.cayenne.exp.parser.ASTNot;
 import org.apache.cayenne.exp.parser.ASTNotBetween;
 import org.apache.cayenne.exp.parser.ASTNotEqual;
+import org.apache.cayenne.exp.parser.ASTNotExists;
 import org.apache.cayenne.exp.parser.ASTNotIn;
 import org.apache.cayenne.exp.parser.ASTNotLike;
 import org.apache.cayenne.exp.parser.ASTNotLikeIgnoreCase;
@@ -1438,6 +1439,14 @@ public class ExpressionFactory {
 	 */
 	public static Expression exists(FluentSelect<?> subQuery) {
 		return new ASTExists(new ASTSubquery(subQuery));
+	}
+
+	/**
+	 * @param subQuery {@link org.apache.cayenne.query.ObjectSelect} or {@link ColumnSelect}
+	 * @since 4.2
+	 */
+	public static Expression notExists(FluentSelect<?> subQuery) {
+		return new ASTNotExists(new ASTSubquery(subQuery));
 	}
 
 	/**
