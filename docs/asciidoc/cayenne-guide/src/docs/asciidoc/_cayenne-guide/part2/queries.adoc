@@ -82,7 +82,7 @@ INFO: SELECT t0.DATE_OF_BIRTH, t0.NAME, t0.ID FROM ARTIST t0 WHERE t0.NAME LIKE 
 INFO: === returned 1 row. - took 6 ms.
 ----
 
-`ObjectSelect` allows to assemble qualifier from parts, using "and" and "or" method to chain then together:
+`ObjectSelect` allows to assemble qualifier from parts, using "and" and "or" method to chain them together:
 
 [source, java]
 ----
