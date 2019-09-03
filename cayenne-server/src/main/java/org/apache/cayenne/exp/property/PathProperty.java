@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.exp.property;
 
-import org.apache.cayenne.EmbeddableObject;
-import org.apache.cayenne.Persistent;
-
 /**
  * Property that represents path segment (relationship or embeddable).
  * Basically it provides {@code dot()} operator.
@@ -94,69 +91,4 @@ public interface PathProperty<E> extends Property<E> {
                 property.getType());
     }
 
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends Persistent > EntityProperty<T> dot(EntityProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createEntity(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends Persistent> ListProperty<T> dot(ListProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createList(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getEntityType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends Persistent> SetProperty<T> dot(SetProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createSet(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getEntityType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <K, V extends Persistent> MapProperty<K, V> dot(MapProperty<K, V> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createMap(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getKeyType(),
-                property.getEntityType());
-    }
-
-    /**
-     * Constructs a new property path by appending the argument to the existing property separated by a dot.
-     *
-     * @param property to append to path
-     * @return a newly created Property object.
-     */
-    default <T extends EmbeddableObject> EmbeddableProperty<T> dot(EmbeddableProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createEmbeddable(path,
-                PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
-    }
 }
