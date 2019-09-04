@@ -25,8 +25,6 @@ This is an overview of Cayenne jars that is agnostic of the build tool used. The
 
 - `cayenne-server-{version}.jar` - contains main Cayenne runtime (adapters, DB access classes, etc.). Most applications will require this file.
 
-- `cayenne-client-{version}.jar` - a client-side runtime for <<introduction-to-rop, ROP applications>>
-
 - Other cayenne-* jars - various Cayenne tools extensions.
 
 ==== Dependencies
@@ -405,6 +403,19 @@ a|Regex that matches the part of the table name that needs to be stripped off wh
 .^|boolean
 .^|Whether _DATE_, _TIME_ and _TIMESTAMP_ data types should be mapped as `java.util.Date` or `java.time.* classes`. Default is "false", i.e. `java.time.*` will be used.
 
+.^|tableTypes
+.^|Collection<String>
+a|Collection of table types to import. By default "TABLE" and "VIEW" types are used.
+Typical types are:
+
+* TABLE
+* VIEW
+* SYSTEM TABLE
+* GLOBAL TEMPORARY
+* LOCAL TEMPORARY
+* ALIAS
+* SYNONYM
+
 .^|filters configuration
 .^|XML
 a|Detailed reverse engineering rules about what DB objects should be processed. For full information about this parameter see <<DB-First Flow>> chapter. Here is some simple example:
@@ -660,6 +671,11 @@ Ant tasks are the same as Maven plugin goals described above, namely "cgen", "cd
 ----
 
 ===== cgen
+
+[source,xml]
+----
+<cgen map="${context.dir}/WEB-INF/my.map.xml"/>
+----
 
 ===== cdbgen
 

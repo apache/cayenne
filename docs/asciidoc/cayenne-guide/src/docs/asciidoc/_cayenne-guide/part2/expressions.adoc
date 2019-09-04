@@ -207,8 +207,7 @@ Expression qualifier1 = template.params(p1);
 Null handling. Handling of Java nulls as operands is no different from normal values. Instead of using special conditional operators,
 like SQL does (`IS NULL`, `IS NOT NULL`), "=" and "!=" expressions are used directly with null values. It is up to Cayenne to translate expressions with nulls to the valid SQL.
 
-
-NOTE: A formal definition of the expression grammar is provided in xref:appendixC[Appendix C]
+//NOTE: A formal definition of the expression grammar is provided in xref:appendixC[Appendix C]
 
 ==== Creating Expressions via API
 

@@ -187,14 +187,9 @@ It also provides the reverse operation - finding an object given a known PK:
 Artist artist = Cayenne.objectForPK(context, Artist.class, 34579);
 ----
 
-If a query is expected to return 0 or 1 object, Cayenne helper class can be used to find this object. It throws an exception if more than one object matched the query:
+For more flexibility, you could use <<SelectById>> query instead.
 
-[source, java]
-----
-Artist artist = (Artist) Cayenne.objectForQuery(context, new SelectQuery(Artist.class));
-----
-
-Feel free to explore Cayenne class API for other useful methods.
+Feel free to explore `Cayenne` class API for other useful methods.
 
 ==== ObjectContext Nesting
 In all the examples shown so far an ObjectContext would directly connect to a database to select data
@@ -263,21 +258,21 @@ When creating a new generic object, either cast your ObjectContext to DataContex
 
 [source, java]
 ----
-DataObject generic = ((DataContext) context).newObject("GenericEntity");
+DataObject generic = (DataObject)context.newObject("GenericEntity");
 ----
 
 [source, java]
 ----
 DataObject generic = new CayenneDataObject();
-generic.setObjectId(new ObjectId("GenericEntity"));
+generic.setObjectId(ObjectId.of("GenericEntity"));
 context.registerNewObject(generic);
 ----
 
-SelectQuery for generic object should be created passing entity name String in constructor, instead of a Java class:
+ObjectSelect for a generic object should be created passing entity name String, instead of just a Java class:
 
 [source, java]
 ----
-SelectQuery query = new SelectQuery("GenericEntity");
+ObjectSelect<DataObject> query = ObjectSelect.query(DataObject.class, "GenericEntity");
 ----
 
 Use DataObject API to access and modify properties of a generic object:
@@ -347,7 +342,7 @@ Transaction tx = BaseTransaction.getThreadTransaction();
 tx.addConnection("mydatanode", myConnection);
 ----
 
-You can control transaction isolation level and propagation logic using TransactionDescriptor.
+You can control transaction isolation level and propagation logic using `TransactionDescriptor`.
 
 [source, java]
 ----

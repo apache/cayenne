@@ -42,7 +42,7 @@ Native queries are also less (if at all) portable across databases than object q
 
 ===== Selecting objects
 
-`ObjectSelect` supersedes older `SelectQuery`. `SelectQuery` is still available and supported.
+`ObjectSelect` supersedes older `SelectQuery`. `SelectQuery` is deprecated since 4.2.
 
 `ObjectSelect` is the most commonly used query in Cayenne applications. This may be the only query you will ever need.
 It returns a list of persistent objects (or data rows) of a certain type specified in the query:
@@ -168,6 +168,161 @@ HAVING COUNT(t1.PAINTING_ID) < ?
 ORDER BY COUNT(t1.PAINTING_ID) DESC, t0.ARTIST_NAME
 ----
 
+===== Subqueries
+
+Since Cayenne 4.2 `ObjectSelect` supports subqueries.
+Here is a simple example of `NOT EXISTS` subquery:
+
+[source, java]
+----
+ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
+        .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+long count = ObjectSelect.query(Artist.class)
+        .where(ExpressionFactory.notExists(subQuery))
+        .selectCount(context);
+----
+
+==== SelectById
+
+This query allows to search objects by their ID.
+It's introduced in Cayenne 4.0 and uses new "fluent" API same as `ObjectSelect` query.
+
+Here is example of how to use it:
+
+[source, java]
+----
+Artist artistWithId1 = SelectById.query(Artist.class, 1)
+    .prefetch(Artist.PAINTING_ARRAY.joint())
+    .localCache()
+    .selectOne(context);
+----
+
+==== SQLSelect and SQLExec
+
+`SQLSelect` and `SQLExec` are essentially a "fluent" versions of older `SQLTemplate` query.
+`SQLSelect` can be used (as name suggests) to select custom data in form of entities,
+separate columns, collection of `DataRow` or Object[]. `SQLExec` is designed to just execute any raw SQL code
+(e.g. updates, deletes, DDLs, etc.) This queries support all directives described in <<SQLTemplate>> section. Also you can predefine
+result type of columns.
+
+Here is example of how to use SQLSelect:
+
+[source, java]
+----
+// Selecting objects
+List<Painting> paintings = SQLSelect
+    .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE LIKE #bind($title)")
+    .params("title", "painting%")
+    .upperColumnNames()
+    .localCache()
+    .limit(100)
+    .select(context);
+
+// Selecting scalar values
+List<String> paintingNames = SQLSelect
+    .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > #bind($price)")
+    .params("price", 100000)
+    .select(context);
+
+// Selecting DataRow with predefined types
+List<DataRow> result = SQLSelect
+    .dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
+    .select(context);
+
+// Selecting Object[] with predefined types
+List<Object[]> result = SQLSelect
+    .scalarQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
+    .select(context);
+----
+
+
+And here is example of how to use `SQLExec`:
+
+[source, java]
+----
+int inserted = SQLExec
+    .query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
+    .paramsArray(55, "Picasso")
+    .update(context);
+----
+
+==== MappedSelect and MappedExec
+
+`MappedSelect` and `MappedExec` is a queries that are just a reference to another queries stored in the DataMap.
+The actual stored query can be SelectQuery, SQLTemplate, EJBQLQuery, etc.
+Difference between `MappedSelect` and `MappedExec` is (as reflected in their names) whether underlying query
+intended to select data or just to perform some generic SQL code.
+
+NOTE: These queries are "fluent" versions of deprecated `NamedQuery` class.
+
+Here is example of how to use `MappedSelect`:
+
+[source, java]
+----
+List<Artist> results = MappedSelect.query("artistsByName", Artist.class) 
+    .param("name", "Picasso") 
+    .select(context);
+----
+
+And here is example of `MappedExec`:
+
+[source, java]
+----
+QueryResult result = MappedExec.query("updateQuery") 
+    .param("var", "value") 
+    .execute(context);
+System.out.println("Rows updated: " + result.firstUpdateCount());
+----
+
+==== ProcedureCall
+
+Stored procedures are mapped as separate objects in CayenneModeler.
+`ProcedureCall` provides a way to execute them with a certain set of parameters.
+This query is a "fluent" version of older `ProcedureQuery`. Just like with `SQLTemplate`,
+the outcome of a procedure can be anything - a single result set, multiple result sets,
+some data modification (returned as an update count), or a combination of these.
+So use root class to get a single result set, and use only procedure name for anything else:
+
+
+[source, java]
+----
+List<Artist> result = ProcedureCall.query("my_procedure", Artist.class)
+    .param("p1", "abc")
+    .param("p2", 3000)
+    .call(context)
+    .firstList();
+----
+
+[source, java]
+----
+// here we do not bother with root class.
+// Procedure name gives us needed routing information
+ProcedureResult result = ProcedureCall.query("my_procedure")
+    .param("p1", "abc")
+    .param("p2", 3000)
+    .call();
+----
+
+A stored procedure can return data back to the application as result sets or via OUT parameters.
+To simplify the processing of the query output, QueryResponse treats OUT parameters as if it was a separate result set.
+For stored procedures declaref any OUT or INOUT parameters, `ProcedureResult` have convenient utility method to get them:
+
+[source, java]
+----
+ProcedureResult result = ProcedureCall.query("my_procedure")
+    .call(context);
+
+// read OUT parameters
+Object out = result.getOutParam("out_param");
+----
+
+There maybe a situation when a stored procedure handles its own transactions,
+but an application is configured to use Cayenne-managed transactions.
+This is obviously conflicting and undesirable behavior.
+In this case ProcedureQueries should be executed explicitly wrapped in an "external" Transaction.
+This is one of the few cases when a user should worry about transactions at all.
+See Transactions section for more details.
+
 [[ejbql]]
 ==== EJBQLQuery
 
@@ -276,147 +431,6 @@ which will evaluate differently.
 - Expression Parameters: SelectQuery uses "$" to denote named parameters (e.g. "$myParam"),
 while EJBQL uses ":" (e.g. ":myParam").
 Also EJBQL supports positional parameters denoted by the question mark: "?3".
-
-===== SelectById
-
-This query allows to search objects by their ID.
-It's introduced in Cayenne 4.0 and uses new "fluent" API same as `ObjectSelect` query.
-
-Here is example of how to use it:
-
-[source, java]
-----
-Artist artistWithId1 = SelectById.query(Artist.class, 1)
-    .prefetch(Artist.PAINTING_ARRAY.joint())
-    .localCache()
-    .selectOne(context);
-----
-
-===== SQLSelect and SQLExec
-
-`SQLSelect` and `SQLExec` are essentially a "fluent" versions of older `SQLTemplate` query.
-`SQLSelect` can be used (as name suggests) to select custom data in form of entities,
-separate columns, collection of `DataRow` or Object[]. `SQLExec` is designed to just execute any raw SQL code
-(e.g. updates, deletes, DDLs, etc.) This queries support all directives described in <<SQLTemplate>> section. Also you can predefine
-result type of columns.
-
-Here is example of how to use SQLSelect:
-
-[source, java]
-----
-// Selecting objects
-List<Painting> paintings = SQLSelect
-    .query(Painting.class, "SELECT * FROM PAINTING WHERE PAINTING_TITLE LIKE #bind($title)")
-    .params("title", "painting%")
-    .upperColumnNames()
-    .localCache()
-    .limit(100)
-    .select(context);
-
-// Selecting scalar values
-List<String> paintingNames = SQLSelect
-    .scalarQuery(String.class, "SELECT PAINTING_TITLE FROM PAINTING WHERE ESTIMATED_PRICE > #bind($price)")
-    .params("price", 100000)
-    .select(context);
-
-// Selecting DataRow with predefined types
-List<DataRow> result = SQLSelect
-    .dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
-    .select(context);
-
-// Selecting Object[] with predefined types
-List<Object[]> result = SQLSelect
-    .scalarQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
-    .select(context);
-----
-
-
-And here is example of how to use `SQLExec`:
-
-[source, java]
-----
-int inserted = SQLExec
-    .query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
-    .paramsArray(55, "Picasso")
-    .update(context);
-----
-
-===== MappedSelect and MappedExec
-
-`MappedSelect` and `MappedExec` is a queries that are just a reference to another queries stored in the DataMap.
-The actual stored query can be SelectQuery, SQLTemplate, EJBQLQuery, etc.
-Difference between `MappedSelect` and `MappedExec` is (as reflected in their names) whether underlying query
-intended to select data or just to perform some generic SQL code.
-
-NOTE: These queries are "fluent" versions of deprecated `NamedQuery` class.
-
-Here is example of how to use `MappedSelect`:
-
-[source, java]
-----
-List<Artist> results = MappedSelect.query("artistsByName", Artist.class) 
-    .param("name", "Picasso") 
-    .select(context);
-----
-
-And here is example of `MappedExec`:
-
-[source, java]
-----
-QueryResult result = MappedExec.query("updateQuery") 
-    .param("var", "value") 
-    .execute(context);
-System.out.println("Rows updated: " + result.firstUpdateCount());
-----
-
-==== ProcedureCall
-
-Stored procedures are mapped as separate objects in CayenneModeler.
-`ProcedureCall` provides a way to execute them with a certain set of parameters.
-This query is a "fluent" version of older `ProcedureQuery`. Just like with `SQLTemplate`,
-the outcome of a procedure can be anything - a single result set, multiple result sets,
-some data modification (returned as an update count), or a combination of these.
-So use root class to get a single result set, and use only procedure name for anything else:
-
-
-[source, java]
-----
-List<Artist> result = ProcedureCall.query("my_procedure", Artist.class)
-    .param("p1", "abc")
-    .param("p2", 3000)
-    .call(context)
-    .firstList();
-----
-
-[source, java]
-----
-// here we do not bother with root class.
-// Procedure name gives us needed routing information
-ProcedureResult result = ProcedureCall.query("my_procedure")
-    .param("p1", "abc")
-    .param("p2", 3000)
-    .call();
-----
-
-A stored procedure can return data back to the application as result sets or via OUT parameters.
-To simplify the processing of the query output, QueryResponse treats OUT parameters as if it was a separate result set.
-For stored procedures declaref any OUT or INOUT parameters, `ProcedureResult` have convenient utility method to get them:
-
-[source, java]
-----
-ProcedureResult result = ProcedureCall.query("my_procedure")
-    .call(context);
-
-// read OUT parameters
-Object out = result.getOutParam("out_param");
-----
-
-There maybe a situation when a stored procedure handles its own transactions,
-but an application is configured to use Cayenne-managed transactions.
-This is obviously conflicting and undesirable behavior.
-In this case ProcedureQueries should be executed explicitly wrapped in an "external" Transaction.
-This is one of the few cases when a user should worry about transactions at all.
-See Transactions section for more details.
 
 ==== Custom Queries
 
