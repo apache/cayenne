@@ -27,6 +27,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
+ * Base class for properties mapped to PK
  * @since 4.2
  */
 public interface IdProperty<E> extends Property<E> {

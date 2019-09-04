@@ -24,6 +24,8 @@ import java.util.Objects;
 import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
+ * Property that represents non-numeric PK
+ *
  * @since 4.2
  */
 public class BaseIdProperty<E> extends BaseProperty<E> implements IdProperty<E> {

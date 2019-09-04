@@ -57,6 +57,12 @@
  *     In addition to to-one related methods these properties support collection comparision methods
  *     like {@link org.apache.cayenne.exp.property.ListProperty#contains(org.apache.cayenne.Persistent) contains()}.
  *     <br>
+ *     <li>{@link org.apache.cayenne.exp.property.EmbeddableProperty} for embeddable objects
+ *     <br>
+ *     <li>{@link org.apache.cayenne.exp.property.NumericIdProperty} for numeric PK properties
+ *     <br>
+ *     <li>{@link org.apache.cayenne.exp.property.BaseIdProperty} for non-numeric PK properties
+ *     <br>
  *     <li>{@link org.apache.cayenne.exp.property.BaseProperty} for all other data types, supports basic operations (equality, sorting).
  * </ul>
  *

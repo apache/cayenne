@@ -24,6 +24,8 @@ import java.util.Objects;
 import org.apache.cayenne.exp.ExpressionFactory;
 
 /**
+ * Property that represents numeric PK
+ *
  * @since 4.2
  */
 public class NumericIdProperty<E extends Number> extends NumericProperty<E> implements IdProperty<E> {
