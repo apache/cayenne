@@ -87,7 +87,7 @@ public class SaveAsAction extends CayenneAction {
 
         if (projectDir.exists() && !projectDir.canWrite()) {
             JOptionPane.showMessageDialog(Application.getFrame(), "Can't save project - unable to write to file \""
-                    + projectDir.getPath() + "\"", "Can't Save Project", JOptionPane.OK_OPTION);
+                    + projectDir.getPath() + "\"", "Can't Save Project", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 

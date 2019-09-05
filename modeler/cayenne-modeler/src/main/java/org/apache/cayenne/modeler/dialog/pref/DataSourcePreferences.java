@@ -211,12 +211,12 @@ public class DataSourcePreferences extends CayenneController {
 		}
 
 		if (currentDataSource.getJdbcDriver() == null) {
-			JOptionPane.showMessageDialog(null, "No JDBC Driver specified", "Warning", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(view, "No JDBC Driver specified", "Warning", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		if (currentDataSource.getUrl() == null) {
-			JOptionPane.showMessageDialog(null, "No Database URL specified", "Warning", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(view, "No Database URL specified", "Warning", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -273,7 +273,7 @@ public class DataSourcePreferences extends CayenneController {
 				// i guess we can ignore this...
 			}
 
-			JOptionPane.showMessageDialog(null, "Connected Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(view, "Connected Successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
 		} catch (Throwable th) {
 			th = Util.unwindException(th);
 			String message = "Error connecting to DB: " + th.getLocalizedMessage();
@@ -294,7 +294,7 @@ public class DataSourcePreferences extends CayenneController {
 				sbMessage.append(tempString).append(" ");
 			}
 
-			JOptionPane.showMessageDialog(null, sbMessage.toString(), "Warning", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(view, sbMessage.toString(), "Warning", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 }

@@ -110,7 +110,7 @@ public class ProcedureParameterTableModel extends CayenneTableModel<ProcedurePar
                 parameter.setPrecision(Integer.parseInt(newVal));
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
-                    null,
+                    mediator.getView(),
                     "Invalid precision (" + newVal + "), only numbers are allowed.",
                     "Invalid Precision Value",
                     JOptionPane.ERROR_MESSAGE);
@@ -126,7 +126,7 @@ public class ProcedureParameterTableModel extends CayenneTableModel<ProcedurePar
                 parameter.setMaxLength(Integer.parseInt(newVal));
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
-                        null,
+                        mediator.getView(),
                         "Invalid Max Length (" + newVal + "), only numbers are allowed",
                         "Invalid Maximum Length",
                         JOptionPane.ERROR_MESSAGE);

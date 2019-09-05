@@ -240,7 +240,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                 attr.setMaxLength(Integer.parseInt(newVal));
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
-                        null,
+                        mediator.getView(),
                         "Invalid Max Length (" + newVal + "), only numbers are allowed",
                         "Invalid Maximum Length",
                         JOptionPane.ERROR_MESSAGE);
@@ -260,7 +260,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                 attr.setScale(Integer.parseInt(newVal));
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(
-                        null,
+                        mediator.getView(),
                         "Invalid precision (" + newVal + "), only numbers are allowed.",
                         "Invalid Precision Value",
                         JOptionPane.ERROR_MESSAGE);
