@@ -24,50 +24,75 @@ import java.util.Map;
 
 /**
  * <p>
- * A portable global identifier for persistent objects. ObjectId can be
- * temporary (used for transient or new uncommitted objects) or permanent (used
- * for objects that have been already stored in DB).
+ * A portable global identifier for persistent objects. ObjectId can be temporary (used for transient or new
+ * uncommitted objects) or permanent (used for objects that have been already stored in DB).
  * <p>
- * A temporary ObjectId stores object entity name and a pseudo-unique binary key;
- * permanent id stores a map of values from an external persistent store (aka "primary key").
+ * A temporary ObjectId stores object entity name and a pseudo-unique binary key; permanent id stores a map of values
+ * from an external persistent store (aka "primary key").
  */
 public interface ObjectId extends Serializable {
 
+    /**
+     * Creates a temporary ObjectId for a given entity.
+     *
+     * @since 4.2
+     */
     static ObjectId of(String entityName) {
         return new ObjectIdTmp(entityName);
     }
 
+    /**
+     * Creates a temporary ObjectId for a given entity, using provided unique id key.
+     *
+     * @since 4.2
+     */
     static ObjectId of(String entityName, byte[] tmpKey) {
         return new ObjectIdTmp(entityName, tmpKey);
     }
 
+    /**
+     * Creates a single key/value permanent ObjectId.
+     *
+     * @since 4.2
+     */
     static ObjectId of(String entityName, String keyName, Object value) {
-        if(value instanceof Number) {
-            return new ObjectIdNumber(entityName, keyName, (Number)value);
+        if (value instanceof Number) {
+            return new ObjectIdNumber(entityName, keyName, (Number) value);
         }
         return new ObjectIdSingle(entityName, keyName, value);
     }
 
+    /**
+     * Creates an ObjectId using another id as a template, but for a different entity. Useful inside the Cayenne stack
+     * when resolving inheritance hierarchies.
+     *
+     * @since 4.2
+     */
     static ObjectId of(String entityName, ObjectId objectId) {
-        if(objectId instanceof ObjectIdNumber) {
+        if (objectId instanceof ObjectIdNumber) {
             ObjectIdNumber id = (ObjectIdNumber) objectId;
             return new ObjectIdNumber(entityName, id.getKeyName(), id.getValue());
         }
 
-        if(objectId instanceof ObjectIdSingle) {
+        if (objectId instanceof ObjectIdSingle) {
             ObjectIdSingle id = (ObjectIdSingle) objectId;
             return new ObjectIdSingle(entityName, id.getKeyName(), id.getValue());
         }
 
-        if(objectId instanceof ObjectIdTmp) {
+        if (objectId instanceof ObjectIdTmp) {
             return of(entityName, objectId.getKey());
         }
 
         return of(entityName, objectId.getIdSnapshot());
     }
 
+    /**
+     * Creates an ObjectId, potentially mapped to multiple columns.
+     *
+     * @since 4.2
+     */
     static ObjectId of(String entityName, Map<String, ?> values) {
-        if(values.size() == 1) {
+        if (values.size() == 1) {
             Map.Entry<String, ?> entry = values.entrySet().iterator().next();
             return of(entityName, entry.getKey(), entry.getValue());
         }
