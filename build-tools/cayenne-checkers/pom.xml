@@ -53,6 +53,43 @@
         <url>https://cayenne.apache.org/</url>
     </organization>
 
+    <repositories>
+        <repository>
+            <id>objectstyle</id>
+            <name>ObjectStyle Repository</name>
+            <url>https://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>https://repository.apache.org/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>objectstyle</id>
+            <name>ObjectStyle repository</name>
+            <url>https://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <plugins>
             <plugin>
@@ -70,7 +107,17 @@
             <plugin>
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
-                <version>0.11</version>
+                <version>0.13</version>
+                <configuration>
+                    <licenses>
+                        <license implementation="org.apache.rat.analysis.license.ApacheSoftwareLicense20">
+                            <notes>Also allow the license url to be https.</notes>
+                            <patterns>
+                                <pattern>https://www.apache.org/licenses/LICENSE-2.0</pattern>
+                            </patterns>
+                        </license>
+                    </licenses>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>

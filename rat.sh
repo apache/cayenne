@@ -49,25 +49,26 @@ echo "Running rat, this may take a while..." 1>&2
 
 # TODO: read excludes from buildbot config at 'build-tools/rat-excludes'
 java -jar $RAT -d $DIR \
-	-e '.classpath' \
-	-e '.project' \
-	-e '.gitignore' \
-	-e '_*.java' \
-	-e '*.plist' \
-	-e 'index.eomodeld' \
-	-e '*.fspec' \
+	-e '\.classpath' \
+	-e '\.project' \
+	-e '\.gitignore' \
+	-e '\_.+\.java' \
+	-e '.+\.plist' \
+	-e 'index\.eomodeld' \
+	-e '.+\.fspec' \
 	-e 'DiagramLayout' \
-	-e 'excludes.txt' \
-	-e '*.map.xml' \
+	-e 'excludes\.txt' \
+	-e '.+\.map\.xml' \
 	-e 'cayenne-*.xml' \
-	-e 'cayenne.xml' \
-	-e '*.driver.xml' \
-	-e 'CLOVER.txt' \
-	-e '*.html' \
-	-e '*.css' \
-	-e '*.jceks' \
-	-e 'plain.txt' \
-	-e 'derby.log' \
-	-e '*.iml'
+	-e 'cayenne\.xml' \
+	-e '.+\.driver\.xml' \
+	-e 'CLOVER\.txt' \
+	-e '.+\.html' \
+	-e '.+\.css' \
+	-e '.+\.jceks' \
+	-e 'plain\.txt' \
+	-e 'derby\.log' \
+	-e '.+\.iml' \
+	-e 'report.txt'
 
 

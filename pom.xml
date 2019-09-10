@@ -831,7 +831,17 @@
 				<plugin>
 					<groupId>org.apache.rat</groupId>
 					<artifactId>apache-rat-plugin</artifactId>
-					<version>0.11</version>
+					<version>0.13</version>
+					<configuration>
+						<licenses>
+							<license implementation="org.apache.rat.analysis.license.ApacheSoftwareLicense20">
+								<notes>Also allow the license url to be https.</notes>
+								<patterns>
+									<pattern>https://www.apache.org/licenses/LICENSE-2.0</pattern>
+								</patterns>
+							</license>
+						</licenses>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.objectstyle.japp</groupId>
