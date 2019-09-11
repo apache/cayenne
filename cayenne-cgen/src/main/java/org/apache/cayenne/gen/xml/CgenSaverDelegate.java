@@ -55,7 +55,6 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
         if(cgenConfiguration.getRootPath() == null) {
             return;
         }
-        Path prevPath = cgenConfiguration.buildPath();
         URL url = getBaseDirectory().getURL();
         if(url != null) {
             Path resourcePath;
@@ -68,9 +67,12 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
                 resourcePath = resourcePath.getParent();
             }
             cgenConfiguration.setRootPath(resourcePath);
+            Path prevPath = cgenConfiguration.buildPath();
             if(prevPath != null) {
-                Path relPath = resourcePath.relativize(prevPath).normalize();
-                cgenConfiguration.setRelPath(relPath);
+                if(prevPath.isAbsolute()) {
+                    Path relPath = resourcePath.relativize(prevPath).normalize();
+                    cgenConfiguration.setRelPath(relPath);
+                }
                 Path templatePath = Paths.get(cgenConfiguration.getTemplate());
                 if(templatePath.isAbsolute()) {
                     cgenConfiguration.setTemplate(resourcePath.relativize(templatePath).normalize().toString());

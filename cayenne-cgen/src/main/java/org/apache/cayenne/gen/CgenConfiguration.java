@@ -166,8 +166,13 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.relPath = relPath;
     }
 
-    public void setRelPath(String path) {
-		this.relPath = rootPath != null ? rootPath.relativize(Paths.get(path)) : Paths.get(path);
+    public void setRelPath(String pathStr) {
+        Path path = Paths.get(pathStr);
+        if(path.isAbsolute() && rootPath != null) {
+            this.relPath = rootPath.relativize(path);
+        } else {
+            this.relPath = path;
+        }
 	}
 
     public boolean isOverwrite() {
