@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.dbimport.domain;
 
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.GeneratorsTab;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
@@ -27,7 +28,7 @@ import org.apache.cayenne.modeler.editor.GeneratorsTabController;
  */
 public class DbImportTab extends GeneratorsTab {
 
-    public DbImportTab(ProjectController projectController, GeneratorsTabController additionalTabController) {
+    public DbImportTab(ProjectController projectController, GeneratorsTabController<ReverseEngineering> additionalTabController) {
         super(projectController, additionalTabController, "icon-dbi-runImport.png", "Run reverse engineering on selected datamaps.");
     }
 

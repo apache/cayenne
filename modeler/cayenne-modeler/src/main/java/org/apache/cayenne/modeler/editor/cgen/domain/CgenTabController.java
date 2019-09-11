@@ -45,10 +45,10 @@ import org.apache.cayenne.tools.CayenneToolsModuleProvider;
 /**
  * @since 4.1
  */
-public class CgenTabController extends GeneratorsTabController {
+public class CgenTabController extends GeneratorsTabController<CgenConfiguration> {
 
     public CgenTabController(ProjectController projectController) {
-        super(CgenConfiguration.class, projectController);
+        super(projectController, CgenConfiguration.class, true);
         this.view = new CgenTab(projectController, this);
     }
 
@@ -73,7 +73,7 @@ public class CgenTabController extends GeneratorsTabController {
                 classGenerationAction.prepareArtifacts();
                 classGenerationAction.execute();
             } catch (Exception e) {
-                logObj.error("Error generating classes", e);
+                LOGGER.error("Error generating classes", e);
                 generationFail = true;
                 ((CgenTab)view).showErrorMessage(e.getMessage());
             }
@@ -89,26 +89,19 @@ public class CgenTabController extends GeneratorsTabController {
         cgenConfiguration.setDataMap(dataMap);
         Path basePath = Paths.get(ModelerUtil.initOutputFolder());
 
-        // no destination folder
-        if (basePath == null) {
-            JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
-            return null;
-        }
-
         // no such folder
         if (!Files.exists(basePath)) {
             try {
                 Files.createDirectories(basePath);
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(this.getView(), "Can't create directory. " +
-                        ". Select a different one.");
+                JOptionPane.showMessageDialog(getView(), "Can't create directory. Select a different one.");
                 return null;
             }
         }
 
         // not a directory
         if (!Files.isDirectory(basePath)) {
-            JOptionPane.showMessageDialog(this.getView(), basePath + " is not a valid directory.");
+            JOptionPane.showMessageDialog(getView(), basePath + " is not a valid directory.");
             return null;
         }
 
@@ -124,7 +117,8 @@ public class CgenTabController extends GeneratorsTabController {
 
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
-            projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(this.getView(), dataMap, dataMap.getDataChannelDescriptor()));
+            DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
+            getProjectController().fireDataMapDisplayEvent(event);
         }
     }
 }

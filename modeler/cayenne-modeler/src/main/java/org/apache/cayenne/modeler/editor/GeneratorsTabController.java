@@ -27,10 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.configuration.event.DataMapEvent;
+import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,28 +38,34 @@ import org.slf4j.LoggerFactory;
 /**
  * @since 4.1
  */
-public abstract class GeneratorsTabController {
+public abstract class GeneratorsTabController<T> implements DataMapListener {
 
-    public static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
-    public ProjectController projectController;
-    public GeneratorsTab view;
-    private Class type;
+    protected final static Logger LOGGER = LoggerFactory.getLogger(GeneratorsTabController.class);
 
-    public ConcurrentMap<DataMap, GeneratorsPanel> generatorsPanels;
-    public Set<DataMap> selectedDataMaps;
+    private final ProjectController projectController;
+    private final ConcurrentMap<DataMap, GeneratorsPanel> generatorsPanels;
+    private final Set<DataMap> selectedDataMaps;
+    private final Class<T> type;
+    private final boolean selectAllByDefault;
 
-    public GeneratorsTabController(Class type, ProjectController projectController) {
-        this.type = type;
+    protected GeneratorsTab view;
+
+    public GeneratorsTabController(ProjectController projectController, Class<T> type, boolean selectAllByDefault) {
         this.generatorsPanels = new ConcurrentHashMap<>();
         this.selectedDataMaps = new HashSet<>();
+        this.type = type;
+        this.selectAllByDefault = selectAllByDefault;
         this.projectController = projectController;
+        this.projectController.addDataMapListener(this);
     }
 
-    public String icon;
+    private boolean isSelectAllChecked() {
+        return view.getGenerationPanel().getSelectAll().isSelected();
+    }
 
     public abstract void runGenerators(Set<DataMap> dataMaps);
 
-    public void createPanels(){
+    void createPanels(){
         Collection<DataMap> dataMaps = getDataMaps();
         refreshSelectedMaps(dataMaps);
         generatorsPanels.clear();
@@ -74,7 +80,7 @@ public abstract class GeneratorsTabController {
                 currPanel.getCheckConfig().setSelected(true);
             }
         });
-        if(selectedDataMaps.isEmpty() && type == CgenConfiguration.class) {
+        if(selectedDataMaps.isEmpty() && selectAllByDefault) {
             GeneratorsTab.TopGeneratorPanel topGeneratorPanel = view.getGenerationPanel();
             topGeneratorPanel.getSelectAll().setSelected(true);
             topGeneratorPanel.getGenerateAll().setEnabled(true);
@@ -122,7 +128,7 @@ public abstract class GeneratorsTabController {
     public abstract void showConfig(DataMap dataMap);
 
     private void setGenerateButtonDisabled() {
-        if(selectedDataMaps.size() == 0) {
+        if(selectedDataMaps.isEmpty()) {
             view.getGenerationPanel().getGenerateAll().setEnabled(false);
         } else {
             view.getGenerationPanel().getGenerateAll().setEnabled(true);
@@ -152,5 +158,26 @@ public abstract class GeneratorsTabController {
 
     private void refreshSelectedMaps(Collection<DataMap> dataMaps) {
         selectedDataMaps.removeIf(dataMap -> !dataMaps.contains(dataMap));
+    }
+
+    @Override
+    public void dataMapAdded(DataMapEvent e) {
+        GeneratorsPanel generatorPanel = new GeneratorsPanel(e.getDataMap(), "icon-datamap.png", type);
+        initListenersForPanel(generatorPanel);
+        generatorsPanels.put(e.getDataMap(), generatorPanel);
+        if(isSelectAllChecked()) {
+            generatorPanel.getCheckConfig().setSelected(true);
+            selectedDataMaps.add(e.getDataMap());
+        }
+    }
+
+    @Override
+    public void dataMapRemoved(DataMapEvent e) {
+        selectedDataMaps.remove(e.getDataMap());
+        generatorsPanels.remove(e.getDataMap());
+    }
+
+    @Override
+    public void dataMapChanged(DataMapEvent e) {
     }
 }
