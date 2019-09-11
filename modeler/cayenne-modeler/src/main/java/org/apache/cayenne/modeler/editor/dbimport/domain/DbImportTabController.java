@@ -31,10 +31,10 @@ import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 /**
  * @since 4.1
  */
-public class DbImportTabController extends GeneratorsTabController {
+public class DbImportTabController extends GeneratorsTabController<ReverseEngineering> {
 
     public DbImportTabController(ProjectController projectController) {
-        super(ReverseEngineering.class, projectController);
+        super(projectController, ReverseEngineering.class, false);
         this.view = new DbImportTab(projectController, this);
     }
 
@@ -52,7 +52,8 @@ public class DbImportTabController extends GeneratorsTabController {
     @Override
     public void showConfig(DataMap dataMap) {
         if (dataMap != null) {
-            projectController.fireDataMapDisplayEvent(new DataMapDisplayEvent(this.getView(), dataMap, dataMap.getDataChannelDescriptor()));
+            DataMapDisplayEvent event = new DataMapDisplayEvent(getView(), dataMap, dataMap.getDataChannelDescriptor());
+            getProjectController().fireDataMapDisplayEvent(event);
         }
     }
 }

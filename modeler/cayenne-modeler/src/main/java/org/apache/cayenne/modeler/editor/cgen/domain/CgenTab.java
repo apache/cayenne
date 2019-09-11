@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.editor.GeneratorsTab;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
@@ -30,7 +31,7 @@ import javax.swing.JOptionPane;
  */
 public class CgenTab extends GeneratorsTab {
 
-    public CgenTab(ProjectController projectController, GeneratorsTabController additionalTabController) {
+    public CgenTab(ProjectController projectController, GeneratorsTabController<CgenConfiguration> additionalTabController) {
         super(projectController, additionalTabController, "icon-gen_java.png", "Run class generation on selected datamaps.");
     }
 

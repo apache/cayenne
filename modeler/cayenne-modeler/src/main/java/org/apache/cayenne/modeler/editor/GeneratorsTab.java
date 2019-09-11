@@ -40,11 +40,11 @@ import java.util.concurrent.ConcurrentMap;
 public class GeneratorsTab extends JPanel {
 
     protected ProjectController projectController;
-    private GeneratorsTabController additionalTabController;
+    private GeneratorsTabController<?> additionalTabController;
 
     private TopGeneratorPanel generationPanel;
 
-    public GeneratorsTab(ProjectController projectController, GeneratorsTabController additionalTabController, String icon, String text) {
+    public GeneratorsTab(ProjectController projectController, GeneratorsTabController<?> additionalTabController, String icon, String text) {
         this.projectController = projectController;
         this.additionalTabController = additionalTabController;
         this.generationPanel = new TopGeneratorPanel(icon);

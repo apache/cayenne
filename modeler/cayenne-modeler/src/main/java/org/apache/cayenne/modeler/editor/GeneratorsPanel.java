@@ -35,30 +35,30 @@ import java.awt.BorderLayout;
 /**
  * @since 4.1
  */
-public class GeneratorsPanel extends JPanel {
+class GeneratorsPanel extends JPanel {
+
+    private final DataMap dataMap;
+    private final Class<?> type;
+    private final String icon;
 
     private JCheckBox checkConfig;
-    private JLabel dataMapLabel;
     private JButton toConfigButton;
-    private DataMap dataMap;
-    private Class type;
-    private String icon;
 
-    public GeneratorsPanel(DataMap dataMap, String icon, Class type) {
+    GeneratorsPanel(DataMap dataMap, String icon, Class<?> type) {
         this.type = type;
         this.icon = icon;
         this.dataMap = dataMap;
         initView();
     }
 
-    public void initView(){
+    private void initView(){
         setLayout(new BorderLayout());
         FormLayout layout = new FormLayout(
                 "left:pref, 4dlu, fill:70dlu, 3dlu, fill:120, 3dlu, fill:120", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         this.checkConfig = new JCheckBox();
-        this.dataMapLabel = new JLabel(dataMap.getName());
-        this.dataMapLabel.setToolTipText(dataMap.getName());
+        JLabel dataMapLabel = new JLabel(dataMap.getName());
+        dataMapLabel.setToolTipText(dataMap.getName());
         DataChannelMetaData metaData = Application.getInstance().getMetaData();
         this.toConfigButton = new JButton("Edit Config");
         if(metaData.get(dataMap, type) == null) {
@@ -71,15 +71,15 @@ public class GeneratorsPanel extends JPanel {
         this.add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    public JCheckBox getCheckConfig() {
+    JCheckBox getCheckConfig() {
         return checkConfig;
     }
 
-    public JButton getToConfigButton() {
+    JButton getToConfigButton() {
         return toConfigButton;
     }
 
-    public DataMap getDataMap() {
+    DataMap getDataMap() {
         return dataMap;
     }
 }
