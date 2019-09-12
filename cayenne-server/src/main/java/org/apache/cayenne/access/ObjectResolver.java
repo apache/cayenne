@@ -290,12 +290,11 @@ class ObjectResolver {
 
 			// null either means a bug in Cayenne (e.g. CAY-2101) or the inheritance qualifiers are messed up
 			if(entityName == null) {
-
 				if(LOGGER.isWarnEnabled()) {
-					LOGGER.warn("** Null entity name for DataRow, can't resolve sub descriptor for "
-							+ descriptor.getEntity().getName());
-					return descriptor;
+					LOGGER.warn("** Null entity name for DataRow, can't resolve sub descriptor for {}",
+							descriptor.getEntity().getName());
 				}
+				return descriptor;
 			}
 
 			return context.getEntityResolver().getClassDescriptor(entityName);
