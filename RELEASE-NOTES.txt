@@ -39,6 +39,7 @@ CAY-2606 Can't resolve obj path with embeddable component
 CAY-2608 Modeler: NPE when reverse engineering with an auto-adapter DataSource
 CAY-2609 Modeler: can't close dbImport result dialog window
 CAY-2614 Modeler: Connection test result window shown under other windows
+CAY-2616 Modeler: Wrong handling of path with spaces
 
 ----------------------------------
 Release: 4.1.B2

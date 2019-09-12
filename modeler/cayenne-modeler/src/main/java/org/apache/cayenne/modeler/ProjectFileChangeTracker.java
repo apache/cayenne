@@ -19,6 +19,8 @@
 package org.apache.cayenne.modeler;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
@@ -42,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ProjectFileChangeTracker extends Thread {
 
-    private static final Logger log = LoggerFactory.getLogger(ProjectFileChangeTracker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectFileChangeTracker.class);
 
     /**
      * The default delay between every file modification check
@@ -52,16 +55,16 @@ public class ProjectFileChangeTracker extends Thread {
     /**
      * The names of the files to observe for changes.
      */
-    protected Map<String, FileInfo> files;
+    protected final Map<URI, FileInfo> files;
+    protected final ProjectController mediator;
+
     protected boolean paused;
     protected boolean isShownChangeDialog;
     protected boolean isShownRemoveDialog;
-    protected ProjectController mediator;
-    public ProjectFileChangeTracker(ProjectController mediator) {
 
+    public ProjectFileChangeTracker(ProjectController mediator) {
         this.files = new ConcurrentHashMap<>();
         this.mediator = mediator;
-
         setName("cayenne-modeler-file-change-tracker");
     }
 
@@ -78,18 +81,18 @@ public class ProjectFileChangeTracker extends Thread {
 
         // check if project exists and has been saved at least once.
         if (project != null && project.getConfigurationResource() != null) {
-            String projectPath = project.getConfigurationResource().getURL().getPath() + File.separator;
-            addFile(projectPath);
+            try {
+                addFile(project.getConfigurationResource().getURL().toURI());
 
-            Iterator<DataMap> it = ((DataChannelDescriptor) project.getRootNode()).getDataMaps().iterator();
-            while (it.hasNext()) {
-                DataMap dm = it.next();
-                if(dm.getConfigurationSource() != null) {
-                    // if DataMap is in separate file, monitor it
-                    addFile(dm.getConfigurationSource().getURL().getPath());
+                for (DataMap dm : ((DataChannelDescriptor) project.getRootNode()).getDataMaps()) {
+                    if (dm.getConfigurationSource() != null) {
+                        // if DataMap is in separate file, monitor it
+                        addFile(dm.getConfigurationSource().getURL().toURI());
+                    }
                 }
+            } catch (URISyntaxException ex) {
+                throw new CayenneRuntimeException("Unable to start change tracker", ex);
             }
-
         }
 
         resumeWatching();
@@ -97,48 +100,47 @@ public class ProjectFileChangeTracker extends Thread {
 
     protected void doOnChange() {
 
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(() -> {
+            isShownChangeDialog = true;
+            if (showConfirmation("One or more project files were changed by external program. "
+                    + "Do you want to load the changes?")) {
 
-            public void run() {
-                isShownChangeDialog = true;
-                if (showConfirmation("One or more project files were changed by external program. "
-                        + "Do you want to load the changes?")) {
-
-                    // Currently we are reloading all project
-                    if (mediator.getProject() != null) {
-
-                        File fileDirectory = new File(mediator.getProject().getConfigurationResource().getURL()
-                                .getPath());
-                        Application.getInstance().getActionManager().getAction(OpenProjectAction.class)
-                                .openProject(fileDirectory);
+                // Currently we are reloading all project
+                if (mediator.getProject() != null) {
+                    File fileDirectory;
+                    try {
+                        fileDirectory = new File(mediator.getProject().getConfigurationResource().getURL().toURI());
+                    } catch (URISyntaxException e) {
+                        throw new CayenneRuntimeException("Unable to open project %s",
+                                e, mediator.getProject().getConfigurationResource().getURL());
                     }
-                } else {
-                    mediator.setDirty(true);
+                    Application.getInstance().getActionManager()
+                            .getAction(OpenProjectAction.class)
+                            .openProject(fileDirectory);
                 }
-                isShownChangeDialog = false;
+            } else {
+                mediator.setDirty(true);
             }
+            isShownChangeDialog = false;
         });
     }
 
     protected void doOnRemove() {
         if (mediator.getProject() != null) {
 
-            SwingUtilities.invokeLater(new Runnable() {
+            SwingUtilities.invokeLater(() -> {
+                isShownRemoveDialog = true;
+                FileDeletedDialog dialog = new FileDeletedDialog(Application.getFrame());
+                dialog.show();
 
-                public void run() {
-                    isShownRemoveDialog = true;
-                    FileDeletedDialog dialog = new FileDeletedDialog(Application.getFrame());
-                    dialog.show();
-
-                    if (dialog.shouldSave()) {
-                        Application.getInstance().getActionManager().getAction(SaveAction.class).performAction(null);
-                    } else if (dialog.shouldClose()) {
-                        Application.getInstance().getFrameController().projectClosedAction();
-                    } else {
-                        mediator.setDirty(true);
-                    }
-                    isShownRemoveDialog = false;
+                if (dialog.shouldSave()) {
+                    Application.getInstance().getActionManager().getAction(SaveAction.class).performAction(null);
+                } else if (dialog.shouldClose()) {
+                    Application.getInstance().getFrameController().projectClosedAction();
+                } else {
+                    mediator.setDirty(true);
                 }
+                isShownRemoveDialog = false;
             });
         }
     }
@@ -157,11 +159,11 @@ public class ProjectFileChangeTracker extends Thread {
      * @param location
      *            path of file
      */
-    public void addFile(String location) {
+    public void addFile(URI location) {
         try {
             files.put(location, new FileInfo(location));
         } catch (SecurityException e) {
-            log.error("SecurityException adding file " + location, e);
+            LOGGER.error("SecurityException adding file " + location, e);
         }
     }
 
@@ -172,7 +174,7 @@ public class ProjectFileChangeTracker extends Thread {
      *            path of file
      */
     public void removeFile(String location) {
-        files.remove(location);
+        files.remove(URI.create(location));
     }
 
     /**
@@ -197,7 +199,7 @@ public class ProjectFileChangeTracker extends Thread {
             try {
                 fileExists = fi.getFile().exists();
             } catch (SecurityException e) {
-                log.error("SecurityException checking file " + fi.getFile().getPath(), e);
+                LOGGER.error("SecurityException checking file " + fi.getFile().getPath(), e);
 
                 // we still process with other files
                 continue;
@@ -211,9 +213,8 @@ public class ProjectFileChangeTracker extends Thread {
                     fi.setLastModified(l);
                     hasChanges = true;
                 }
-            }
-            // the file has been removed
-            else if (fi.getLastModified() != -1) {
+            } else if (fi.getLastModified() != -1) {
+                // the file has been removed
                 hasDeletions = true;
                 it.remove(); // no point to watch the file now
             }
@@ -257,17 +258,17 @@ public class ProjectFileChangeTracker extends Thread {
      * Class to store information about files (last modification time & File
      * pointer)
      */
-    protected class FileInfo {
+    protected static class FileInfo {
 
         /**
          * Exact java.io.File object, may not be null
          */
-        File file;
+        private final File file;
 
         /**
          * Time the file was modified
          */
-        long lastModified;
+        private long lastModified;
 
         /**
          * Creates new object
@@ -275,20 +276,20 @@ public class ProjectFileChangeTracker extends Thread {
          * @param location
          *            the file path
          */
-        public FileInfo(String location) {
+        protected FileInfo(URI location) {
             file = new File(location);
             lastModified = file.exists() ? file.lastModified() : -1;
         }
 
-        public File getFile() {
+        protected File getFile() {
             return file;
         }
 
-        public long getLastModified() {
+        protected long getLastModified() {
             return lastModified;
         }
 
-        public void setLastModified(long l) {
+        protected void setLastModified(long l) {
             lastModified = l;
         }
     }

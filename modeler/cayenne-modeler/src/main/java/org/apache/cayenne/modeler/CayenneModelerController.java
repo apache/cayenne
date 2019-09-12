@@ -47,6 +47,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,7 +68,8 @@ public class CayenneModelerController extends CayenneController {
 
 	private DbImportController dbImportController;
 
-    public CayenneModelerController(){}
+    public CayenneModelerController(){
+    }
 
     public CayenneModelerController(Application application) {
         super(application);
@@ -115,12 +117,7 @@ public class CayenneModelerController extends CayenneController {
         // Register a hook to save the window position when quit via the app menu.
         // This is in Mac OSX only.
         if (System.getProperty("os.name").startsWith("Mac OS")) {
-            Runnable runner = new Runnable() {
-                @Override
-                public void run() {
-                    PROJECT_STATE_UTIL.saveLastState(projectController);
-                }
-            };
+            Runnable runner = () -> PROJECT_STATE_UTIL.saveLastState(projectController);
             Runtime.getRuntime().addShutdownHook(new Thread(runner, "Window Prefs Hook"));
         }
 
@@ -148,8 +145,7 @@ public class CayenneModelerController extends CayenneController {
         }
 
         if (fileList != null) {
-
-        File transferFile = fileList.get(0);
+            File transferFile = fileList.get(0);
             if (transferFile.isFile()) {
                 FileFilter filter = FileFilters.getApplicationFilter();
                 if (filter.accept(transferFile)) {
@@ -224,13 +220,14 @@ public class CayenneModelerController extends CayenneController {
             frame.setTitle("[New Project]");
         } else {
             updateStatus("Project opened...");
-            frame.setTitle(project.getConfigurationResource().getURL().getPath());
-        }
-
-        // update preferences
-        if (project.getConfigurationResource() != null) {
-            getLastDirectory().setDirectory(new File(project.getConfigurationResource().getURL().getPath()));
-            frame.fireRecentFileListChanged();
+            try {
+                File file = new File(project.getConfigurationResource().getURL().toURI());
+                frame.setTitle(file.toString());
+                // update preferences
+                getLastDirectory().setDirectory(file);
+                frame.fireRecentFileListChanged();
+            } catch (URISyntaxException ignore) {
+            }
         }
 
         PROJECT_STATE_UTIL.fireLastState(projectController);
@@ -262,15 +259,11 @@ public class CayenneModelerController extends CayenneController {
 
 	/** Adds path to the list of last opened projects in preferences. */
     public void addToLastProjListAction(File file) {
-
         Preferences prefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
         List<File> arr = ModelerPreferences.getLastProjFiles();
-        // Add proj path to the preferences
-        // Prevent duplicate entries.
-        if (arr.contains(file)) {
-            arr.remove(file);
-        }
 
+        // Add proj path to the preferences
+        arr.remove(file);
         arr.add(0, file);
         while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
             arr.remove(arr.size() - 1);
@@ -288,16 +281,32 @@ public class CayenneModelerController extends CayenneController {
         }
     }
 
+    public void changePathInLastProjListAction(File oldFile, File newFile) {
+        ModelerPreferences.getLastProjFiles().remove(oldFile);
+
+        addToLastProjListAction(newFile);
+
+        getLastDirectory().setDirectory(newFile);
+        frame.fireRecentFileListChanged();
+    }
+
     /**
-     * Performs status bar update with a message. Message will dissappear in 6 seconds.
+     * Performs status bar update with a message. Message will disappear in 6 seconds.
      */
     public void updateStatus(String message) {
         frame.getStatus().setText(message);
 
         // start message cleanup thread that would remove the message after X seconds
         if (message != null && message.trim().length() > 0) {
-            Thread cleanup = new ExpireThread(message, 6);
-            cleanup.start();
+            new Thread(() -> {
+                try {
+                    Thread.sleep(6 * 10000);
+                } catch (InterruptedException ignore){
+                }
+                if (message.equals(frame.getStatus().getText())) {
+                    updateStatus(null);
+                }
+            }).start();
         }
     }
 
@@ -305,55 +314,4 @@ public class CayenneModelerController extends CayenneController {
         return dbImportController;
     }
 
-    class ExpireThread extends Thread {
-
-        int seconds;
-        protected String message;
-
-        ExpireThread(String message, int seconds) {
-            this.seconds = seconds;
-            this.message = message;
-        }
-
-        @Override
-        public void run() {
-            try {
-                sleep(seconds * 1000);
-            } catch (InterruptedException e) {
-                // ignore exception
-            }
-
-            if (message.equals(frame.getStatus().getText())) {
-                updateStatus(null);
-            }
-        }
-    }
-
-    public void changePathInLastProjListAction(File oldFile, File newFile) {
-        Preferences frefLastProjFiles = ModelerPreferences.getLastProjFilesPref();
-        List<File> arr = ModelerPreferences.getLastProjFiles();
-
-        // Add proj path to the preferences
-        arr.remove(oldFile);
-        arr.remove(newFile);
-        arr.add(0, newFile);
-        while (arr.size() > ModelerPreferences.LAST_PROJ_FILES_SIZE) {
-            arr.remove(arr.size() - 1);
-        }
-
-        try {
-            frefLastProjFiles.clear();
-        } catch (BackingStoreException e) {
-            // ignore exception
-        }
-
-        int size = arr.size();
-        for (int i = 0; i < size; i++) {
-            frefLastProjFiles.put(String.valueOf(i), arr.get(i).getAbsolutePath());
-        }
-
-        getLastDirectory().setDirectory(newFile);
-        frame.fireRecentFileListChanged();
-    }
-	
 }
