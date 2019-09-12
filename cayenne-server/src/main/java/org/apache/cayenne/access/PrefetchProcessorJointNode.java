@@ -139,12 +139,10 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             row.put(column.getName(), flatRow.get(column.getDataRowKey()));
         }
 
-        // since JDBC row reader won't inject JOINED entity name, we have to
-        // detect it here...
-
+        // since JDBC row reader won't inject JOINED entity name, we have to detect it here...
         ClassDescriptor descriptor = resolver.getDescriptor();
         ObjEntity entity = descriptor.getEntityInheritanceTree().entityMatchingRow(row);
-        row.setEntityName(entity.getName());
+        row.setEntityName(entity == null ? null : entity.getName());
         return row;
     }
 
