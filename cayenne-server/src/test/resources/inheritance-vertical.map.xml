@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.inheritance_vertical"/>
 	<db-entity name="IV1_ROOT">
@@ -201,10 +201,10 @@
 		<db-attribute-pair source="OTHER1_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="impls" source="IV_OTHER" target="IV_IMPL" toMany="true">
-		<db-attribute-pair source="ID" target="OTHER_ID"/>
+		<db-attribute-pair source="ID" target="OTHER1_ID"/>
 	</db-relationship>
 	<db-relationship name="implsWithLock" source="IV_OTHER" target="IV_IMPL_WITH_LOCK" toMany="true">
-		<db-attribute-pair source="ID" target="OTHER_ID"/>
+		<db-attribute-pair source="ID" target="OTHER1_ID"/>
 	</db-relationship>
 	<db-relationship name="ivSub3s" source="IV_ROOT" target="IV_SUB3" toMany="true">
 		<db-attribute-pair source="ID" target="IV_ROOT_ID"/>

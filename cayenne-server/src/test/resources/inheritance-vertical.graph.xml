@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<graphs xmlns="http://cayenne.apache.org/schema/10/graph">
+	<graph type="ER" scale="0.21970000000000015">
+		<entity name="IV1_SUB1" x="2026.71" y="707.58" width="77.0" height="66.0"/>
+		<entity name="IV_BASE" x="914.9" y="322.39" width="55.0" height="82.0"/>
+		<entity name="IV_BASE_WITH_LOCK" x="1219.19" y="545.81" width="141.0" height="82.0"/>
+		<entity name="IV_CONCRETE" x="263.39" y="531.42" width="95.0" height="66.0"/>
+		<entity name="IV_SUB1_SUB1" x="1350.73" y="826.24" width="115.0" height="66.0"/>
+		<entity name="IV2_SUB1" x="1713.4" y="996.68" width="65.0" height="66.0"/>
+		<entity name="IV_SUB1" x="662.25" y="1066.22" width="77.0" height="66.0"/>
+		<entity name="IV_ABSTRACT" x="0.0" y="328.65" width="93.0" height="82.0"/>
+		<entity name="IV_SUB3" x="1315.12" y="1109.12" width="78.0" height="66.0"/>
+		<entity name="IV_SUB2" x="625.08" y="739.23" width="77.0" height="82.0"/>
+		<entity name="IV1_ROOT" x="1793.48" y="1270.67" width="104.0" height="82.0"/>
+		<entity name="IV2_X" x="1534.75" y="1396.77" width="40.0" height="50.0"/>
+		<entity name="IV_OTHER" x="1030.6" y="1054.24" width="69.0" height="66.0"/>
+		<entity name="IV_IMPL" x="1070.57" y="774.13" width="74.0" height="114.0"/>
+		<entity name="IV_IMPL_WITH_LOCK" x="860.67" y="846.99" width="140.0" height="82.0"/>
+		<entity name="IV_ROOT" x="908.9" y="1271.25" width="104.0" height="82.0"/>
+		<entity name="IV2_ROOT" x="1655.12" y="0.0" width="104.0" height="66.0"/>
+	</graph>
+	<graph type="CLASS" scale="0.8157307210000007">
+		<entity name="IvSub1Sub1" x="261.0" y="557.35" width="100.0" height="98.0"/>
+		<entity name="IvSub1" x="277.0" y="423.75" width="86.0" height="82.0"/>
+		<entity name="IvSub2" x="410.97" y="417.06" width="86.0" height="98.0"/>
+		<entity name="Iv1Sub1" x="96.86" y="395.9" width="86.0" height="66.0"/>
+		<entity name="Iv2Root" x="244.0" y="41.09" width="86.0" height="50.0"/>
+		<entity name="IvBase" x="885.89" y="29.29" width="45.0" height="66.0"/>
+		<entity name="IvConcrete" x="74.0" y="150.01" width="74.0" height="66.0"/>
+		<entity name="IvImplWithLock" x="495.0" y="185.9" width="105.0" height="82.0"/>
+		<entity name="IvAbstract" x="102.49" y="29.28" width="71.0" height="50.0"/>
+		<entity name="Iv2X" x="400.91" y="151.01" width="32.0" height="18.0"/>
+		<entity name="IvOther" x="698.93" y="201.74" width="53.0" height="50.0"/>
+		<entity name="IvBaseWithLock" x="492.0" y="36.54" width="106.0" height="66.0"/>
+		<entity name="IvRoot" x="406.0" y="313.33" width="86.0" height="66.0"/>
+		<entity name="IvSub3" x="574.88" y="432.63" width="86.0" height="66.0"/>
+		<entity name="Iv1Root" x="95.11" y="264.1" width="86.0" height="66.0"/>
+		<entity name="Iv2Sub1" x="245.0" y="143.08" width="86.0" height="50.0"/>
+		<entity name="IvImpl" x="875.23" y="176.14" width="44.0" height="98.0"/>
+	</graph>
+</graphs>
