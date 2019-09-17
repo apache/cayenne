@@ -473,6 +473,14 @@ public class DbEntity extends Entity implements ConfigurationNode, DbEntityListe
                         }
                     }
             }
+
+            // check toDep PK for reverse relationships
+            for (DbRelationship rel : getRelationships()) {
+                DbRelationship reverse = rel.getReverseRelationship();
+                if(reverse != null && reverse.isToDependentPK() && !reverse.isValidForDepPk()) {
+                    reverse.setToDependentPK(false);
+                }
+            }
         }
 
         // handle generated key refresh

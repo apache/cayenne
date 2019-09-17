@@ -35,7 +35,7 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
     private Collection<DbAttribute> primaryKeyOriginal;
     private Collection<DbAttribute> primaryKeyNew;
     private String detectedPrimaryKeyName;
-    private Set<String> primaryKeyNewAttributeNames = new HashSet<String>();
+    private Set<String> primaryKeyNewAttributeNames = new HashSet<>();
 
     public SetPrimaryKeyToModel(DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
