@@ -96,6 +96,7 @@ CAY-2606 Can't resolve obj path with embeddable component
 CAY-2608 CayenneModeler: NPE when reverse engineering with an auto-adapter DataSource
 CAY-2609 Modeler: can't close dbImport result dialog window
 CAY-2616 Modeler: Wrong handling of path with spaces
+CAY-2618 Unstable property ordering in generated classes
 CAY-2619 "to-dep PK" related dbimport delta confuses the Modeler
 
 ----------------------------------

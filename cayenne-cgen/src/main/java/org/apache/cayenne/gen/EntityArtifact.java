@@ -18,8 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.velocity.context.Context;
 
 /**
@@ -35,6 +40,9 @@ public class EntityArtifact implements Artifact {
 
     public EntityArtifact(ObjEntity entity) {
         this.entity = entity;
+        // make sure we have attributes and relationships in order
+        sortAttributes();
+        sortRelationships();
     }
 
     /**
@@ -93,5 +101,21 @@ public class EntityArtifact implements Artifact {
                 (String) context.get(SUB_PACKAGE_KEY));
 
         context.put(ENTITY_UTILS_KEY, metadata);
+    }
+
+    private void sortAttributes() {
+        Map<String, ObjAttribute> attributeMap = new TreeMap<>(entity.getAttributeMap());
+        for(Map.Entry<String, ObjAttribute> entry : attributeMap.entrySet()) {
+            entity.removeAttribute(entry.getKey());
+            entity.addAttribute(entry.getValue());
+        }
+    }
+
+    private void sortRelationships() {
+        Map<String, ObjRelationship> relationshipMap = new TreeMap<>(entity.getRelationshipMap());
+        for(Map.Entry<String, ObjRelationship> entry : relationshipMap.entrySet()) {
+            entity.removeRelationship(entry.getKey());
+            entity.addRelationship(entry.getValue());
+        }
     }
 }
