@@ -130,7 +130,7 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
     }
 
     private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attributes) {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (Attribute attr : attributes) {
             names.add(attr.getName().toUpperCase());
         }
