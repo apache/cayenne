@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.action.OpenProjectAction;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
@@ -165,17 +166,14 @@ public class CayenneModelerController extends CayenneController {
     }
 
     public void projectModifiedAction() {
-        String title = (projectController.getProject().getConfigurationResource() == null)
-                ? "[New Project]"
-                : projectController.getProject().getConfigurationResource().getURL().getPath();
-        frame.setTitle("* - " + title);
+        frame.setTitle("* - " + getProjectLocationString());
     }
 
     public void projectSavedAction() {
         projectController.setDirty(false);
         projectController.updateProjectControllerPreferences();
         updateStatus("Project saved...");
-        frame.setTitle(projectController.getProject().getConfigurationResource().getURL().getPath());
+        frame.setTitle(getProjectLocationString());
     }
 
     /**
@@ -217,18 +215,18 @@ public class CayenneModelerController extends CayenneController {
         // do status update AFTER the project is actually opened...
         if (project.getConfigurationResource() == null) {
             updateStatus("New project created...");
-            frame.setTitle("[New Project]");
         } else {
             updateStatus("Project opened...");
             try {
-                File file = new File(project.getConfigurationResource().getURL().toURI());
-                frame.setTitle(file.toString());
                 // update preferences
+                File file = new File(project.getConfigurationResource().getURL().toURI());
                 getLastDirectory().setDirectory(file);
                 frame.fireRecentFileListChanged();
             } catch (URISyntaxException ignore) {
             }
         }
+
+        frame.setTitle(getProjectLocationString());
 
         PROJECT_STATE_UTIL.fireLastState(projectController);
 
@@ -312,6 +310,18 @@ public class CayenneModelerController extends CayenneController {
 
     public DbImportController getDbImportController() {
         return dbImportController;
+    }
+
+    protected String getProjectLocationString() {
+        if(projectController.getProject().getConfigurationResource() == null) {
+            return "[New Project]";
+        }
+        try {
+            File projectFile = new File(projectController.getProject().getConfigurationResource().getURL().toURI());
+            return projectFile.toString();
+        } catch (URISyntaxException e) {
+            throw new CayenneRuntimeException("Invalid project source URL", e);
+        }
     }
 
 }
