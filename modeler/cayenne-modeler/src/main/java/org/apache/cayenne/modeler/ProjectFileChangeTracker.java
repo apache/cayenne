@@ -109,11 +109,14 @@ public class ProjectFileChangeTracker extends Thread {
 
                     // Currently we are reloading all project
                     if (mediator.getProject() != null) {
-
-                        File fileDirectory = new File(mediator.getProject().getConfigurationResource().getURL()
-                                .getPath());
-                        Application.getInstance().getActionManager().getAction(OpenProjectAction.class)
-                                .openProject(fileDirectory);
+                        try {
+                            File fileDirectory = new File(mediator.getProject().getConfigurationResource().getURL().toURI());
+                            Application.getInstance().getActionManager().getAction(OpenProjectAction.class)
+                                    .openProject(fileDirectory);
+                        } catch (URISyntaxException ex) {
+                            throw new CayenneRuntimeException("Unable to open file %s", ex,
+                                    mediator.getProject().getConfigurationResource().getURL());
+                        }
                     }
                 } else {
                     mediator.setDirty(true);
