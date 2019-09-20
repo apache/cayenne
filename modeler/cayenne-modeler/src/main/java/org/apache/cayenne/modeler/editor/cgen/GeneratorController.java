@@ -99,33 +99,29 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     private ValidationFailure validateEmbeddableAttribute(EmbeddableAttribute attribute) {
-        String name = attribute.getEmbeddable().getClassName();
+        return validateAttribute(attribute.getEmbeddable().getClassName(), attribute.getName(), attribute.getType());
+    }
 
-        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(name, "attribute.name",
-                attribute.getName());
+    private ValidationFailure validateAttribute(String objectName, String attributeName, String attributeType) {
+        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(objectName, "attribute.name",
+                attributeName);
         if (emptyName != null) {
             return emptyName;
         }
 
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name",
-                attribute.getName());
+        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(objectName, "attribute.name",
+                attributeName);
         if (badName != null) {
             return badName;
         }
 
-        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(name, "attribute.type",
-                attribute.getType());
+        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(objectName, "attribute.type",
+                attributeType);
         if (emptyType != null) {
             return emptyType;
         }
 
-        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(name, "attribute.type",
-                attribute.getType());
-        if (badType != null) {
-            return badType;
-        }
-
-        return null;
+        return BeanValidationFailure.validateJavaClassName(objectName, "attribute.type", attributeType);
     }
 
     private ValidationFailure validateEmbeddable(Embeddable embeddable) {
@@ -138,13 +134,7 @@ public abstract class GeneratorController extends CayenneController {
             return emptyClass;
         }
 
-        ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(name, "className",
-                embeddable.getClassName());
-        if (badClass != null) {
-            return badClass;
-        }
-
-        return null;
+        return BeanValidationFailure.validateJavaClassName(name, "className", embeddable.getClassName());
     }
 
     public void validateEntity(ValidationResult validationBuffer, ObjEntity entity, boolean clientValidation) {
@@ -204,45 +194,14 @@ public abstract class GeneratorController extends CayenneController {
         }
 
         if (entity.getSuperClassName() != null) {
-            ValidationFailure badSuperClass = BeanValidationFailure.validateJavaClassName(name, "superClassName",
-                    entity.getSuperClassName());
-            if (badSuperClass != null) {
-                return badSuperClass;
-            }
+            return BeanValidationFailure.validateJavaClassName(name, "superClassName", entity.getSuperClassName());
         }
 
         return null;
     }
 
     private ValidationFailure validateAttribute(ObjAttribute attribute) {
-
-        String name = attribute.getEntity().getName();
-
-        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(name, "attribute.name",
-                attribute.getName());
-        if (emptyName != null) {
-            return emptyName;
-        }
-
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name",
-                attribute.getName());
-        if (badName != null) {
-            return badName;
-        }
-
-        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(name, "attribute.type",
-                attribute.getType());
-        if (emptyType != null) {
-            return emptyType;
-        }
-
-        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(name, "attribute.type",
-                attribute.getType());
-        if (badType != null) {
-            return badType;
-        }
-
-        return null;
+        return validateAttribute(attribute.getEntity().getName(), attribute.getName(), attribute.getType());
     }
 
     private ValidationFailure validateEmbeddedAttribute(ObjAttribute attribute) {
@@ -269,29 +228,7 @@ public abstract class GeneratorController extends CayenneController {
             return badEmbeddedName;
         }
 
-        ValidationFailure emptyName = BeanValidationFailure.validateNotEmpty(name, "attribute.name", attr);
-        if (emptyName != null) {
-            return emptyName;
-        }
-
-        ValidationFailure badName = CodeValidationUtil.validateJavaIdentifier(name, "attribute.name", attr);
-        if (badName != null) {
-            return badName;
-        }
-
-        ValidationFailure emptyType = BeanValidationFailure.validateNotEmpty(name, "attribute.type",
-                attribute.getType());
-        if (emptyType != null) {
-            return emptyType;
-        }
-
-        ValidationFailure badType = BeanValidationFailure.validateJavaClassName(name, "attribute.type",
-                attribute.getType());
-        if (badType != null) {
-            return badType;
-        }
-
-        return null;
+        return validateAttribute(name, attr, attribute.getType());
     }
 
     private ValidationFailure validateRelationship(ObjRelationship relationship, boolean clientValidation) {
@@ -328,11 +265,8 @@ public abstract class GeneratorController extends CayenneController {
                     return emptyClass;
                 }
 
-                ValidationFailure badClass = BeanValidationFailure.validateJavaClassName(name,
-                        "relationship.targetEntity.className", targetEntity.getClassName());
-                if (badClass != null) {
-                    return badClass;
-                }
+                return BeanValidationFailure.validateJavaClassName(name, "relationship.targetEntity.className",
+                        targetEntity.getClassName());
             }
         }
 
@@ -342,7 +276,7 @@ public abstract class GeneratorController extends CayenneController {
     /**
      * Returns a predicate for default entity selection in a given mode.
      */
-    public Predicate getDefaultClassFilter() {
+    public Predicate<Object> getDefaultClassFilter() {
         return object -> {
             if (object instanceof ObjEntity) {
                 return getParentController().getProblem(((ObjEntity) object).getName()) == null;
