@@ -199,27 +199,29 @@ public class DbImportView extends JPanel {
             treeToolbar.unlockButtons();
             ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication()
                     .getMetaData().get(map, ReverseEngineering.class);
-            if (reverseEngineering == null) {
-                reverseEngineering = new ReverseEngineering();
-                DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
-                projectController.setDirty(true);
+            if (reverseEngineering != null) {
+                configPanel.fillCheckboxes(reverseEngineering);
+                configPanel.initializeTextFields(reverseEngineering);
+                configPanel.initStrategy(reverseEngineering);
+                String[] tableTypes = reverseEngineering.getTableTypes();
+                if(tableTypes.length != 0) {
+                    configPanel.getTableTypes().setText(String.join(",", tableTypes));
+                } else {
+                    configPanel.getTableTypes().setText("TABLE, VIEW");
+                    configPanel.getTableTypes().updateModel();
+                }
+            } else {
+                // default values
+                configPanel.getUsePrimitives().setSelected(true);
+                configPanel.getTableTypes().setText("TABLE, VIEW");
+                configPanel.getTableTypes().updateModel();
             }
-            configPanel.fillCheckboxes(reverseEngineering);
-            configPanel.initializeTextFields(reverseEngineering);
-            configPanel.initStrategy(reverseEngineering);
             treePanel.updateTree();
             DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
             root.removeAllChildren();
             draggableTreePanel.updateTree(projectController.getCurrentDataMap());
             draggableTreePanel.getMoveButton().setEnabled(false);
             draggableTreePanel.getMoveInvertButton().setEnabled(false);
-            String[] tableTypes = reverseEngineering.getTableTypes();
-            if(tableTypes.length != 0) {
-                configPanel.getTableTypes().setText(String.join(",", tableTypes));
-            } else {
-                configPanel.getTableTypes().setText("TABLE, VIEW");
-                configPanel.getTableTypes().updateModel();
-            }
         }
         initFromModel = false;
     }
