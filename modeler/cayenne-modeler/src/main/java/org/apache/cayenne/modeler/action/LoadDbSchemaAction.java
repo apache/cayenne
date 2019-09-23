@@ -34,6 +34,8 @@ import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
 import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
@@ -45,6 +47,8 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERT
  * @since 4.1
  */
 public class LoadDbSchemaAction extends CayenneAction {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoadDbSchemaAction.class);
 
     private static final String ICON_NAME = "icon-dbi-refresh.png";
     private static final String ACTION_NAME = "Refresh Db Schema";
@@ -102,14 +106,13 @@ public class LoadDbSchemaAction extends CayenneAction {
                             .bindReverseEngineeringToDatamap(getProjectController().getCurrentDataMap(), databaseReverseEngineering);
                     ((DbImportModel) draggableTreePanel.getSourceTree().getModel()).reload();
                 }
-
-
-            } catch (Exception exception) {
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                         Application.getFrame(),
-                        exception.getMessage(),
-                        "Error db schema loading",
+                        ex.getMessage(),
+                        "Error loading db schema",
                         JOptionPane.ERROR_MESSAGE);
+                LOGGER.warn("Error loading db schema", ex);
             } finally {
                 rootParent.getLoadDbSchemaButton().setEnabled(true);
                 rootParent.getLoadDbSchemaProgress().setVisible(false);
