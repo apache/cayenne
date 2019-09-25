@@ -21,9 +21,8 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.util.Util;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 4.0.
@@ -32,19 +31,19 @@ public abstract class FilterContainer {
 
     private String name;
 
-    private final Collection<IncludeTable> includeTableCollection = new LinkedList<>();
+    private final List<IncludeTable> includeTableCollection = new ArrayList<>();
 
-    private final Collection<ExcludeTable> excludeTableCollection = new LinkedList<>();
+    private final List<ExcludeTable> excludeTableCollection = new ArrayList<>();
 
-    private final Collection<IncludeColumn> includeColumnCollection = new LinkedList<>();
+    private final List<IncludeColumn> includeColumnCollection = new ArrayList<>();
 
-    private final Collection<ExcludeColumn> excludeColumnCollection = new LinkedList<>();
+    private final List<ExcludeColumn> excludeColumnCollection = new ArrayList<>();
 
-    private final Collection<IncludeProcedure> includeProcedureCollection = new LinkedList<>();
+    private final List<IncludeProcedure> includeProcedureCollection = new ArrayList<>();
 
-    private final Collection<ExcludeProcedure> excludeProcedureCollection = new LinkedList<>();
+    private final List<ExcludeProcedure> excludeProcedureCollection = new ArrayList<>();
 
-    private final Collection<ExcludeRelationship> excludeRelationshipCollection = new LinkedList<>();
+    private final List<ExcludeRelationship> excludeRelationshipCollection = new ArrayList<>();
 
     public FilterContainer() {
     }
@@ -71,34 +70,34 @@ public abstract class FilterContainer {
         }
     }
 
-    public Collection<IncludeTable> getIncludeTables() {
+    public List<IncludeTable> getIncludeTables() {
         return includeTableCollection;
     }
 
-    public Collection<ExcludeTable> getExcludeTables() {
+    public List<ExcludeTable> getExcludeTables() {
         return excludeTableCollection;
     }
 
-    public Collection<IncludeColumn> getIncludeColumns() {
+    public List<IncludeColumn> getIncludeColumns() {
         return includeColumnCollection;
     }
 
-    public Collection<ExcludeColumn> getExcludeColumns() {
+    public List<ExcludeColumn> getExcludeColumns() {
         return excludeColumnCollection;
     }
 
-    public Collection<IncludeProcedure> getIncludeProcedures() {
+    public List<IncludeProcedure> getIncludeProcedures() {
         return includeProcedureCollection;
     }
 
-    public Collection<ExcludeProcedure> getExcludeProcedures() {
+    public List<ExcludeProcedure> getExcludeProcedures() {
         return excludeProcedureCollection;
     }
 
     /**
      * @since 4.1
      */
-    public Collection<ExcludeRelationship> getExcludeRelationship() {
+    public List<ExcludeRelationship> getExcludeRelationship() {
         return excludeRelationshipCollection;
     }
 
@@ -193,7 +192,7 @@ public abstract class FilterContainer {
             && includeProcedureCollection.isEmpty() && excludeProcedureCollection.isEmpty() && excludeRelationshipCollection.isEmpty();
     }
 
-    static boolean isBlank(Collection<?> collection) {
+    static boolean isBlank(List<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
@@ -214,7 +213,7 @@ public abstract class FilterContainer {
         return res;
     }
 
-    protected void appendCollection(StringBuilder res, String prefix, Collection<? extends PatternParam> collection) {
+    protected void appendCollection(StringBuilder res, String prefix, List<? extends PatternParam> collection) {
         if (!isBlank(collection)) {
             for (PatternParam item : collection) {
                 item.toString(res, prefix);

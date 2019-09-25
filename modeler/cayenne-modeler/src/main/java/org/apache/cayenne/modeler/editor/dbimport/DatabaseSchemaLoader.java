@@ -25,6 +25,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -33,6 +34,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.ClassLoadingService;
@@ -60,7 +62,24 @@ public class DatabaseSchemaLoader {
                             "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"};
             processCatalogs(connection, types, dbAdapter);
         }
+
+        sort();
         return databaseReverseEngineering;
+    }
+
+    private void sort() {
+        databaseReverseEngineering.getCatalogs().forEach(catalog -> {
+            catalog.getSchemas().forEach(this::sort);
+            sort(catalog);
+        });
+        sort(databaseReverseEngineering);
+    }
+
+    private void sort(FilterContainer filterContainer) {
+        Comparator<PatternParam> comparator = Comparator.comparing(PatternParam::getPattern);
+        filterContainer.getIncludeTables().sort(comparator);
+        filterContainer.getIncludeTables().forEach(table -> table.getIncludeColumns().sort(comparator));
+        filterContainer.getIncludeProcedures().sort(comparator);
     }
 
     private void processCatalogs(Connection connection, String[] types, DbAdapter dbAdapter) throws SQLException {
@@ -133,6 +152,7 @@ public class DatabaseSchemaLoader {
                 }
             }
         }
+        sort();
         return databaseReverseEngineering;
     }
 

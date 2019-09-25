@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @since 4.0
  */
 public abstract class SchemaContainer extends FilterContainer {
 
-    private final Collection<Schema> schemaCollection = new LinkedList<>();
+    private final List<Schema> schemaCollection = new ArrayList<>();
 
-    public Collection<Schema> getSchemas() {
+    public List<Schema> getSchemas() {
         return schemaCollection;
     }
 

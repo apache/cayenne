@@ -23,19 +23,20 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @since 4.0.
  */
 public class IncludeTable extends PatternParam implements XMLSerializable {
 
-    private final Collection<IncludeColumn> includeColumns = new LinkedList<>();
+    private final List<IncludeColumn> includeColumns = new ArrayList<>();
 
-    private final Collection<ExcludeColumn> excludeColumns = new LinkedList<>();
+    private final List<ExcludeColumn> excludeColumns = new ArrayList<>();
 
-    private final Collection<ExcludeRelationship> excludeRelationship = new LinkedList<>();
+    private final List<ExcludeRelationship> excludeRelationship = new ArrayList<>();
 
     public IncludeTable() {
     }
@@ -54,7 +55,7 @@ public class IncludeTable extends PatternParam implements XMLSerializable {
         }
     }
 
-    public Collection<IncludeColumn> getIncludeColumns() {
+    public List<IncludeColumn> getIncludeColumns() {
         return includeColumns;
     }
 
@@ -62,7 +63,7 @@ public class IncludeTable extends PatternParam implements XMLSerializable {
         this.includeColumns.addAll(includeColumns);
     }
 
-    public Collection<ExcludeColumn> getExcludeColumns() {
+    public List<ExcludeColumn> getExcludeColumns() {
         return excludeColumns;
     }
 
@@ -73,7 +74,7 @@ public class IncludeTable extends PatternParam implements XMLSerializable {
     /**
      * @since 4.1
      */
-    public Collection<ExcludeRelationship> getExcludeRelationship() {
+    public List<ExcludeRelationship> getExcludeRelationship() {
         return excludeRelationship;
     }
 
