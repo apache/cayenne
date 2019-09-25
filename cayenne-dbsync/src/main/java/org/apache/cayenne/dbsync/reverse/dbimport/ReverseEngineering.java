@@ -20,9 +20,10 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dbsync.xml.DbImportExtension;
@@ -118,9 +119,9 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
      * <li> "SYNONYM"
      * </ul>
      */
-    private final Collection<String> tableTypes = new LinkedList<>();
+    private final List<String> tableTypes = new ArrayList<>();
 
-    private final Collection<Catalog> catalogCollection = new LinkedList<>();
+    private final List<Catalog> catalogCollection = new ArrayList<>();
 
     public ReverseEngineering() {
     }
@@ -160,7 +161,7 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         this.skipPrimaryKeyLoading = skipPrimaryKeyLoading;
     }
 
-    public Collection<Catalog> getCatalogs() {
+    public List<Catalog> getCatalogs() {
         return catalogCollection;
     }
 
