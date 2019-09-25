@@ -931,6 +931,7 @@
                         <exclude>**/cayenne-*.xml</exclude>
                         <exclude>**/cayenne.xml</exclude>
                         <exclude>**/*.map.xml</exclude>
+						<exclude>**/*.graph.xml</exclude>
                         <exclude>**/_*.java</exclude>
                         <exclude>**/*.html</exclude>
                         <exclude>**/*.css</exclude>

@@ -59,6 +59,7 @@ java -jar $RAT -d $DIR \
 	-e 'DiagramLayout' \
 	-e 'excludes.txt' \
 	-e '*.map.xml' \
+	-e '*.graph.xml' \
 	-e 'cayenne-*.xml' \
 	-e 'cayenne.xml' \
 	-e '*.driver.xml' \
@@ -69,5 +70,3 @@ java -jar $RAT -d $DIR \
 	-e 'plain.txt' \
 	-e 'derby.log' \
 	-e '*.iml'
-
-
