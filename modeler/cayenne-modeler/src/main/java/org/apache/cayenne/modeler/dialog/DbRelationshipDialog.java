@@ -19,7 +19,8 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableColumn;
@@ -29,8 +30,10 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -56,6 +59,10 @@ import org.apache.cayenne.util.Util;
  * @since 4.2
  */
 public class DbRelationshipDialog extends CayenneController {
+
+    private static final Comparator<DbEntity> DB_ENTITY_COMPARATOR =
+            Comparator.comparing((Function<DbEntity, String>) ent -> ent.getDataMap().getName())
+                    .thenComparing(DbEntity::getName);
 
     private DbRelationship relationship;
     private DbRelationship reverseRelationship;
@@ -113,8 +120,8 @@ public class DbRelationshipDialog extends CayenneController {
     }
 
     private void initFromModel() {
-        TargetComboBoxModel targetComboBoxModel = new TargetComboBoxModel(relationship
-                .getSourceEntity().getDataMap().getDbEntities());
+        TargetComboBoxModel targetComboBoxModel =
+                new TargetComboBoxModel(projectController.getEntityResolver().getDbEntities());
         view.getTargetEntities().setModel(targetComboBoxModel);
 
         view.getSourceName().setText(relationship.getSourceEntityName());
@@ -140,14 +147,14 @@ public class DbRelationshipDialog extends CayenneController {
 
     private void initController() {
         view.getTargetEntities().addActionListener(action -> {
-            String selectedItem = (String)view.getTargetEntities().getSelectedItem();
+            DbEntity selectedItem = ((TargetComboBoxModel)view.getTargetEntities().getModel()).selected;
             if(relationship.getTargetEntityName() == null) {
-                relationship.setTargetEntityName(selectedItem);
-            } else if(!relationship.getTargetEntityName().equals(selectedItem)){
+                relationship.setTargetEntityName(selectedItem.getName());
+            } else if(!relationship.getTargetEntityName().equals(selectedItem.getName())){
                 if (WarningDialogByDbTargetChange.showWarningDialog(projectController, relationship)) {
                     // clear joins...
                     relationship.removeAllJoins();
-                    relationship.setTargetEntityName(selectedItem);
+                    relationship.setTargetEntityName(selectedItem.getName());
                 } else {
                     view.getTargetEntities().setSelectedItem(relationship.getTargetEntityName());
                 }
@@ -401,17 +408,52 @@ public class DbRelationshipDialog extends CayenneController {
         return view.isCancelPressed() ? Optional.empty() : Optional.of(relationship);
     }
 
-    final class TargetComboBoxModel extends DefaultComboBoxModel<String> {
+    final class TargetComboBoxModel extends AbstractListModel<String> implements ComboBoxModel<String> {
+
+        private List<DbEntity> entities;
+        private DbEntity selected;
 
         TargetComboBoxModel(Collection<DbEntity> dbEntities) {
             super();
-            dbEntities.forEach(dbEntity -> this.addElement(dbEntity.getName()));
-            if(relationship.getTargetEntity() == null) {
-                this.setSelectedItem(null);
-            } else {
-                this.setSelectedItem(relationship.getTargetEntity().getName());
-            }
+            this.entities = new ArrayList<>(dbEntities);
+            this.entities.sort(DB_ENTITY_COMPARATOR);
+            selected = relationship.getTargetEntity();
         }
 
+        private String getTitle(DbEntity entity) {
+            if(entity == null) {
+                return "";
+            }
+            return relationship.getSourceEntity().getDataMap() == entity.getDataMap()
+                    ? entity.getName()
+                    : entity.getName() + " (" + entity.getDataMap().getName() + ')';
+        }
+
+        @Override
+        public int getSize() {
+            return entities.size();
+        }
+
+        @Override
+        public String getElementAt(int index) {
+            return getTitle(entities.get(index));
+        }
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            String title = (String)anItem;
+            if(title != null) {
+                int spacer = title.indexOf(' ');
+                if (spacer != -1) {
+                    title = title.substring(0, spacer);
+                }
+            }
+            selected = projectController.getEntityResolver().getDbEntity(title);
+        }
+
+        @Override
+        public Object getSelectedItem() {
+            return getTitle(selected);
+        }
     }
 }
