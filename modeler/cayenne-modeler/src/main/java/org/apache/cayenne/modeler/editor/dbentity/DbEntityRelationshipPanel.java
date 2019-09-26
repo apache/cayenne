@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.editor.dbentity;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.event.DbEntityListener;
 import org.apache.cayenne.map.event.DbRelationshipListener;
@@ -65,10 +64,11 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Component;
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -310,6 +310,9 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
     private ComboBoxModel<DbEntity> createComboModel() {
         EntityResolver resolver = mediator.getEntityResolver();
         DbEntity[] objects = resolver.getDbEntities().toArray(new DbEntity[0]);
+        Comparator<DbEntity> comparator = Comparator.comparing(ent -> ent.getDataMap().getName());
+        comparator = comparator.thenComparing(DbEntity::getName);
+        Arrays.sort(objects, comparator);
         return new DefaultComboBoxModel<>(objects);
     }
 
@@ -359,11 +362,11 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         }
     }
 
-    private class CheckBoxCellRenderer implements TableCellRenderer {
+    private static class CheckBoxCellRenderer implements TableCellRenderer {
 
         private final JCheckBox renderer;
 
-        public CheckBoxCellRenderer() {
+        private CheckBoxCellRenderer() {
             renderer = new JCheckBox();
             renderer.setHorizontalAlignment(SwingConstants.CENTER);
         }
