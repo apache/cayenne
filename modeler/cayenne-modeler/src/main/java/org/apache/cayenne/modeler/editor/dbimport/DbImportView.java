@@ -199,20 +199,18 @@ public class DbImportView extends JPanel {
             treeToolbar.unlockButtons();
             ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication()
                     .getMetaData().get(map, ReverseEngineering.class);
-            if (reverseEngineering != null) {
-                configPanel.fillCheckboxes(reverseEngineering);
-                configPanel.initializeTextFields(reverseEngineering);
-                configPanel.initStrategy(reverseEngineering);
-                String[] tableTypes = reverseEngineering.getTableTypes();
-                if(tableTypes.length != 0) {
-                    configPanel.getTableTypes().setText(String.join(",", tableTypes));
-                } else {
-                    configPanel.getTableTypes().setText("TABLE, VIEW");
-                    configPanel.getTableTypes().updateModel();
-                }
+            if(reverseEngineering == null) {
+                // create config with default values, but not store it into metadata
+                // config will be stored on change only, this is for not making project dirty on just selecting dbimport tab
+                reverseEngineering = new ReverseEngineering();
+            }
+            configPanel.fillCheckboxes(reverseEngineering);
+            configPanel.initializeTextFields(reverseEngineering);
+            configPanel.initStrategy(reverseEngineering);
+            String[] tableTypes = reverseEngineering.getTableTypes();
+            if(tableTypes.length != 0) {
+                configPanel.getTableTypes().setText(String.join(",", tableTypes));
             } else {
-                // default values
-                configPanel.getUsePrimitives().setSelected(true);
                 configPanel.getTableTypes().setText("TABLE, VIEW");
                 configPanel.getTableTypes().updateModel();
             }
