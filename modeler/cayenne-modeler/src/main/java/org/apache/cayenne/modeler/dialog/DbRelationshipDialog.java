@@ -85,7 +85,7 @@ public class DbRelationshipDialog extends CayenneController {
         return view;
     }
 
-    public DbRelationshipDialog createNewRaltionship(DbEntity dbEntity) {
+    public DbRelationshipDialog createNewRelationship(DbEntity dbEntity) {
         isCreate = true;
 
         DbRelationship rel = new DbRelationship();

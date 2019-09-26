@@ -101,7 +101,7 @@ public class CreateRelationshipAction extends CayenneAction {
             if (dbEnt != null) {
 
                 new DbRelationshipDialog(getProjectController())
-                        .createNewRaltionship(dbEnt)
+                        .createNewRelationship(dbEnt)
                         .startUp();
             }
         }

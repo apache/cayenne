@@ -323,7 +323,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         DbEntity dbEntity = relationship.getSourceEntity().getDbEntity();
 
         DbRelationshipDialog dbRelationshipDialog = new DbRelationshipDialog(mediator)
-                .createNewRaltionship(dbEntity);
+                .createNewRelationship(dbEntity);
 
         dbRelationshipDialog.startUp();
 
