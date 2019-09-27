@@ -150,7 +150,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     }
 
     @Test
-    public void testUniqueKeyEntityQualifier() {
+    public void testUniqueKeyQualifier() {
 
         SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
         q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -171,7 +171,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
     }
 
     @Test
-    public void testUniqueKeyEntityFetchLimit() {
+    public void testUniqueKeyFetchLimit() {
 
         SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
         q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
@@ -184,6 +184,31 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         SelectQuery<Artist> q3 = new SelectQuery<>(Artist.class);
         q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         q3.setFetchLimit(6);
+
+        SelectQuery<Artist> q4 = new SelectQuery<>(Artist.class);
+        q4.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+
+        assertNotNull(q1.getMetaData(resolver).getCacheKey());
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
+
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q3.getMetaData(resolver).getCacheKey());
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q4.getMetaData(resolver).getCacheKey());
+    }
+
+    @Test
+    public void testUniqueKeyHaving() {
+
+        SelectQuery<Artist> q1 = new SelectQuery<>(Artist.class);
+        q1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        q1.setHavingQualifier(ExpressionFactory.expFalse());
+
+        SelectQuery<Artist> q2 = new SelectQuery<>(Artist.class);
+        q2.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        q2.setHavingQualifier(ExpressionFactory.expFalse());
+
+        SelectQuery<Artist> q3 = new SelectQuery<>(Artist.class);
+        q3.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        q3.setHavingQualifier(ExpressionFactory.expTrue());
 
         SelectQuery<Artist> q4 = new SelectQuery<>(Artist.class);
         q4.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
