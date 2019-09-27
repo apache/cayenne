@@ -142,7 +142,7 @@ public class ObjectSelect_CacheKeyIT extends ServerCase {
     }
 
     @Test
-    public void testUniqueKeyEntityQualifier() {
+    public void testUniqueKeyQualifier() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache()
@@ -163,7 +163,7 @@ public class ObjectSelect_CacheKeyIT extends ServerCase {
     }
 
     @Test
-    public void testUniqueKeyEntityFetchLimit() {
+    public void testUniqueKeyFetchLimit() {
 
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache()
@@ -176,6 +176,31 @@ public class ObjectSelect_CacheKeyIT extends ServerCase {
         ObjectSelect<Artist> q3 = ObjectSelect.query(Artist.class)
                 .localCache()
                 .limit(6);
+
+        ObjectSelect<Artist> q4 = ObjectSelect.query(Artist.class)
+                .localCache();
+
+        assertNotNull(q1.getMetaData(resolver).getCacheKey());
+        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2.getMetaData(resolver).getCacheKey());
+
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q3.getMetaData(resolver).getCacheKey());
+        assertNotEquals(q1.getMetaData(resolver).getCacheKey(), q4.getMetaData(resolver).getCacheKey());
+    }
+
+    @Test
+    public void testUniqueKeyHaving() {
+
+        ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .having(ExpressionFactory.expFalse());
+
+        ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .having(ExpressionFactory.expFalse());
+
+        ObjectSelect<Artist> q3 = ObjectSelect.query(Artist.class)
+                .localCache()
+                .having(ExpressionFactory.expTrue());
 
         ObjectSelect<Artist> q4 = ObjectSelect.query(Artist.class)
                 .localCache();

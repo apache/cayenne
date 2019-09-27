@@ -18,17 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 4.2
@@ -100,6 +100,14 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 					key.append(":i");
 				}
 			}
+		}
+
+		if (query.getHaving() != null) {
+			key.append('/');
+			if(traversalHandler == null) {
+				traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
+			}
+			query.getHaving().traverse(traversalHandler);
 		}
 
 		if (fetchLimit > 0 || fetchOffset > 0) {
