@@ -18,14 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -55,6 +47,14 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.CayenneMapEntry;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @since 3.0
@@ -133,6 +133,14 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 					key.append(":i");
 				}
 			}
+		}
+
+		if (query.getHavingQualifier() != null) {
+			key.append('/');
+			if(traversalHandler == null) {
+				traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
+			}
+			query.getHavingQualifier().traverse(traversalHandler);
 		}
 
 		if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
