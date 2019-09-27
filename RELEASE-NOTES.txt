@@ -16,6 +16,7 @@ Changes/New Features:
 CAY-2592 Modeler: make all datamaps selected in global cgen tab
 CAY-2593 Add tableTypes field to dbImport config in dataMap
 CAY-2611 Exclude system catalogs and schemas when run dbImport without config
+CAY-2624 SelectQuery "having" qualifier is not considered when calculating cache key
 
 Bug Fixes:
 
