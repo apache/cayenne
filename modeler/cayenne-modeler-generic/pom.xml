@@ -109,7 +109,7 @@
 		<pluginRepository>
 			<id>objectstyle</id>
 			<name>ObjectStyle repository</name>
-			<url>http://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
+			<url>https://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
 			<layout>default</layout>
 			<snapshots>
 				<enabled>false</enabled>
