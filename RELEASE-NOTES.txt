@@ -29,6 +29,7 @@ CAY-2584 Crypto: can't use ColumnSelect with encrypted columns
 CAY-2586 Char can't be materialized to EnumType in some cases
 CAY-2616 Modeler: Wrong handling of path with spaces
 CAY-2624 SelectQuery "having" qualifier is not considered when calculating cache key
+CAY-2627 Modeler: ObjRelationship creation dialog ignores delete rule
 
 ----------------------------------
 Release: 4.0.1
