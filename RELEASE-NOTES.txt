@@ -99,6 +99,7 @@ CAY-2616 Modeler: Wrong handling of path with spaces
 CAY-2618 Unstable property ordering in generated classes
 CAY-2619 "to-dep PK" related dbimport delta confuses the Modeler
 CAY-2624 SelectQuery "having" qualifier is not considered when calculating cache key
+CAY-2627 Modeler: ObjRelationship creation dialog ignores delete rule
 
 ----------------------------------
 Release: 4.1.B1

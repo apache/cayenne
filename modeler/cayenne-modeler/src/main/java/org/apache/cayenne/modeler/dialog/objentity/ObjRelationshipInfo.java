@@ -545,6 +545,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         boolean hasChanges = false;
 
         boolean oldToMany = relationship.isToMany();
+        boolean oldPathNotEmpty = !relationship.getDbRelationships().isEmpty();
 
         String relationshipName = getRelationshipName();
         if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
@@ -611,7 +612,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
          * As of CAY-436 here we check if to-many property has changed during
          * the editing, and if so, delete rule must be reset to default value
          */
-        if (hasChanges && relationship.isToMany() != oldToMany) {
+        if (oldPathNotEmpty && hasChanges && relationship.isToMany() != oldToMany) {
             DeleteRuleUpdater.updateObjRelationship(relationship);
         }
 
