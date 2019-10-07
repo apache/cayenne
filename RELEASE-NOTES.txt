@@ -100,6 +100,7 @@ CAY-2618 Unstable property ordering in generated classes
 CAY-2619 "to-dep PK" related dbimport delta confuses the Modeler
 CAY-2624 SelectQuery "having" qualifier is not considered when calculating cache key
 CAY-2627 Modeler: ObjRelationship creation dialog ignores delete rule
+CAY-2628 dbimport: unable to add several relationships to existing entity
 
 ----------------------------------
 Release: 4.1.B1
