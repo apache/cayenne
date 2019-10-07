@@ -18,31 +18,47 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
-	 project-version="10">
-	 <property name="defaultSchema" value="SCHEMA_01"/>
-	 <db-entity name="TABLE1" schema="SCHEMA_01">
-    		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
-    		<db-attribute name="T1_NAME" type="VARCHAR" length="45"/>
-     </db-entity>
-     <db-entity name="TABLE2" schema="SCHEMA_01">
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+          project-version="10">
+    <property name="defaultSchema" value="SCHEMA_01"/>
+    <db-entity name="TABLE1" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="T1_NAME" type="VARCHAR" length="45"/>
+    </db-entity>
+    <db-entity name="TABLE2" schema="SCHEMA_01">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
         <db-attribute name="T2_NAME" type="VARCHAR" length="45"/>
         <db-attribute name="TABLE1_ID" type="INTEGER" isMandatory="true" length="10"/>
-     </db-entity>
-     <obj-entity name="Table1" className="Table1" dbEntityName="TABLE1">
-         <obj-attribute name="t1Name" type="java.lang.String" db-attribute-path="T1_NAME"/>
-     </obj-entity>
-     <obj-entity name="Table2" className="Table2" dbEntityName="TABLE2">
+    </db-entity>
+    <db-entity name="TABLE3" schema="SCHEMA_01">
+        <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
+        <db-attribute name="T3_NAME" type="VARCHAR" length="45"/>
+        <db-attribute name="TABLE1_ID" type="INTEGER" isMandatory="true" length="10"/>
+    </db-entity>
+    <obj-entity name="Table1" className="Table1" dbEntityName="TABLE1">
+        <obj-attribute name="t1Name" type="java.lang.String" db-attribute-path="T1_NAME"/>
+    </obj-entity>
+    <obj-entity name="Table2" className="Table2" dbEntityName="TABLE2">
         <obj-attribute name="t2Name" type="java.lang.String" db-attribute-path="T2_NAME"/>
-     </obj-entity>
-     <db-relationship name="table2s" source="TABLE1" target="TABLE2" toMany="true">
+    </obj-entity>
+    <obj-entity name="Table3" className="Table3" dbEntityName="TABLE3">
+        <obj-attribute name="t3Name" type="java.lang.String" db-attribute-path="T3_NAME"/>
+    </obj-entity>
+    <db-relationship name="table3s" source="TABLE1" target="TABLE3" toMany="true">
         <db-attribute-pair source="ID" target="TABLE1_ID"/>
-     </db-relationship>
-     <db-relationship name="table1" source="TABLE2" target="TABLE1">
+    </db-relationship>
+    <db-relationship name="table2s" source="TABLE1" target="TABLE2" toMany="true">
+        <db-attribute-pair source="ID" target="TABLE1_ID"/>
+    </db-relationship>
+    <db-relationship name="table1" source="TABLE2" target="TABLE1">
         <db-attribute-pair source="TABLE1_ID" target="ID"/>
-     </db-relationship>
-     <obj-relationship name="table2s" source="Table1" target="Table2" deleteRule="Deny" db-relationship-path="table2s"/>
-     <obj-relationship name="table1" source="Table2" target="Table1" deleteRule="Nullify" db-relationship-path="table1"/>
+    </db-relationship>
+    <db-relationship name="table1" source="TABLE3" target="TABLE1">
+        <db-attribute-pair source="TABLE1_ID" target="ID"/>
+    </db-relationship>
+    <obj-relationship name="table3s" source="Table1" target="Table3" deleteRule="Deny" db-relationship-path="table3s"/>
+    <obj-relationship name="table2s" source="Table1" target="Table2" deleteRule="Deny" db-relationship-path="table2s"/>
+    <obj-relationship name="table1" source="Table2" target="Table1" deleteRule="Nullify" db-relationship-path="table1"/>
+    <obj-relationship name="table1" source="Table3" target="Table1" deleteRule="Nullify" db-relationship-path="table1"/>
 </data-map>
