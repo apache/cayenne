@@ -30,6 +30,7 @@ CAY-2586 Char can't be materialized to EnumType in some cases
 CAY-2616 Modeler: Wrong handling of path with spaces
 CAY-2624 SelectQuery "having" qualifier is not considered when calculating cache key
 CAY-2627 Modeler: ObjRelationship creation dialog ignores delete rule
+CAY-2628 dbimport: unable to add several relationships to existing entity
 
 ----------------------------------
 Release: 4.0.1

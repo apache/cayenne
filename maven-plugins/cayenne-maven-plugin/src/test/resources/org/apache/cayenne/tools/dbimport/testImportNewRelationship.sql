@@ -29,5 +29,13 @@ CREATE TABLE schema_01.table2 (
     t2_name VARCHAR (45),
     table1_id INTEGER  NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_address FOREIGN KEY (table1_id) REFERENCES schema_01.table1 (id)
+    CONSTRAINT fk_table2_table1_id FOREIGN KEY (table1_id) REFERENCES schema_01.table1 (id)
+);
+
+CREATE TABLE schema_01.table3 (
+    id INTEGER  NOT NULL,
+    t3_name VARCHAR (45),
+    table1_id INTEGER  NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT fk_table3_table1_id FOREIGN KEY (table1_id) REFERENCES schema_01.table1 (id)
 );

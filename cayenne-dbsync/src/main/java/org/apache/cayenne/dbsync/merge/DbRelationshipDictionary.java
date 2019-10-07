@@ -72,9 +72,9 @@ class DbRelationshipDictionary extends MergerDictionary<DbRelationship> {
             TreeSet<String> joins = new TreeSet<>();
             for(DbJoin join : relationship.getJoins()) {
                 joins.add(
-                        (join.getSource() == null ? "~" : join.getSource().getName()) + "." + join.getSourceName()
+                        relationship.getSourceEntityName() + "." + join.getSourceName()
                         + ">" +
-                        (join.getTarget() == null ? "~" : join.getTarget().getName()) + "." + join.getTargetName()
+                        relationship.getTargetEntityName() + "." + join.getTargetName()
                 );
             }
             joinSignature = joins.toArray(new String[0]);
