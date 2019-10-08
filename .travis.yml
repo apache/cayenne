@@ -39,7 +39,7 @@ env:
     - secure: "cysyR/fEtBHC26lYHGhfXYIPMaol1c1wP+r59idByE4iq71QiOffA4j1CQCAnN5Zo7QsNavz/GZoIxNif4SUcY7sW5M92a78VFVK3aYGTOBtN9jpqWDJoFc8jm5C75j3CoBe7dVFkxw3pCdMlZQ7HJj7L+GiyZ5USu6E2vD5X7A="
 
 jdk:
-  - oraclejdk8
+  - openjdk8
   - openjdk11
   - openjdk-ea
 
