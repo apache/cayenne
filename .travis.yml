@@ -54,7 +54,7 @@ jobs:
   include:
   - stage: deploy
     script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
-    jdk: oraclejdk8
+    jdk: openjdk8
     if: type = push AND branch = master AND repo = apache/cayenne
 
 # prevent Travis from unneeded "mvn install" run
