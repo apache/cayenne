@@ -85,6 +85,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.cayenne.plugins</groupId>
 				<artifactId>cayenne-maven-plugin</artifactId>
 				<version>${project.version}</version>
