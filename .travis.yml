@@ -34,7 +34,7 @@ env:
   - DB_PROFILE=sqlserver-docker
 
 jdk:
-  - openjdk7
+#  - openjdk7 # disable for now as travis seems dropped support for it
   - openjdk8
   - openjdk11
 
