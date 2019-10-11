@@ -72,7 +72,7 @@ Note that the property names below are defined as constants in `org.apache.cayen
    ** Default value: 10000
 
 * `cayenne.server.contexts_sync_strategy`
-   defines whether peer ObjectContexts should receive snapshot events after commits from other contexts. If true (_default_),
+   defines whether peer ObjectContexts should receive snapshot events after commits from other contexts. If true,
    the contexts would automatically synchronize their state with peers.
     ** Possible values: true, false
     ** Default value: false (since 4.1)
