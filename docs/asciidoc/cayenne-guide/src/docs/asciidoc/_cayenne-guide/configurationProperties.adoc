@@ -75,7 +75,7 @@ Note that the property names below are defined as constants in `org.apache.cayen
    defines whether peer ObjectContexts should receive snapshot events after commits from other contexts. If true (_default_),
    the contexts would automatically synchronize their state with peers.
     ** Possible values: true, false
-    ** Default value: true
+    ** Default value: false (since 4.1)
 
 * `cayenne.server.object_retain_strategy`
    defines fetched objects retain strategy for ObjectContexts. When weak or soft strategy is used, objects retained by ObjectContext
