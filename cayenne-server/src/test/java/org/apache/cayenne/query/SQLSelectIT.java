@@ -22,7 +22,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -59,14 +58,20 @@ public class SQLSelectIT extends ServerCase {
 
 	private TableHelper tArtistCt;
 
+	private TableHelper tPaintingInfo;
+
 	@Before
 	public void before() {
 		tPainting = new TableHelper(dbHelper, "PAINTING")
-				.setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(Types.INTEGER,
-						Types.VARCHAR, Types.DECIMAL);
+				.setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DECIMAL);
 
-		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT");
-		tArtistCt.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT")
+				.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+
+		tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO")
+				.setColumns("PAINTING_ID", "IMAGE_BLOB")
+				.setColumnTypes(Types.INTEGER, Types.LONGVARBINARY);
 	}
 
 	private void createPaintingsDataSet() throws Exception {
@@ -355,12 +360,9 @@ public class SQLSelectIT extends ServerCase {
 
 		final int[] count = new int[1];
 		SQLSelect.query(Painting.class, "SELECT * FROM PAINTING").columnNameCaps(CapsStrategy.UPPER)
-				.iterate(context, new ResultIteratorCallback<Painting>() {
-					@Override
-					public void next(Painting object) {
-						assertNotNull(object.getPaintingTitle());
-						count[0]++;
-					}
+				.iterate(context, object -> {
+					assertNotNull(object.getPaintingTitle());
+					count[0]++;
 				});
 
 		assertEquals(20, count[0]);
@@ -371,7 +373,7 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		try (ResultIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
-				.columnNameCaps(CapsStrategy.UPPER).iterator(context);) {
+				.columnNameCaps(CapsStrategy.UPPER).iterator(context)) {
 			int count = 0;
 
 			for (Painting p : it) {
@@ -387,7 +389,7 @@ public class SQLSelectIT extends ServerCase {
 		createPaintingsDataSet();
 
 		try (ResultBatchIterator<Painting> it = SQLSelect.query(Painting.class, "SELECT * FROM PAINTING")
-				.columnNameCaps(CapsStrategy.UPPER).batchIterator(context, 5);) {
+				.columnNameCaps(CapsStrategy.UPPER).batchIterator(context, 5)) {
 			int count = 0;
 
 			for (List<Painting> paintingList : it) {
@@ -407,7 +409,7 @@ public class SQLSelectIT extends ServerCase {
 				.scalarQuery(Integer.class, "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
 				.params("a", "painting3").selectOne(context);
 
-		assertEquals(3l, id);
+		assertEquals(3L, id);
 	}
 
 	@Test
@@ -418,7 +420,7 @@ public class SQLSelectIT extends ServerCase {
 				"SELECT PAINTING_ID FROM PAINTING ORDER BY PAINTING_ID").select(context);
 
 		assertEquals(20, ids.size());
-		assertEquals(2l, ids.get(1).intValue());
+		assertEquals(2L, ids.get(1).intValue());
 	}
 
 	@Test
@@ -438,7 +440,7 @@ public class SQLSelectIT extends ServerCase {
 				.scalarQuery(Integer.class, "SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a)")
 				.paramsArray("painting3").selectOne(context);
 
-		assertEquals(3l, id.intValue());
+		assertEquals(3L, id.intValue());
 	}
 
 	@Test
@@ -450,8 +452,8 @@ public class SQLSelectIT extends ServerCase {
 						"SELECT PAINTING_ID FROM PAINTING WHERE PAINTING_TITLE = #bind($a) OR PAINTING_TITLE = #bind($b) ORDER BY PAINTING_ID")
 				.paramsArray("painting3", "painting2").select(context);
 
-		assertEquals(2l, ids.get(0).intValue());
-		assertEquals(3l, ids.get(1).intValue());
+		assertEquals(2L, ids.get(0).intValue());
+		assertEquals(3L, ids.get(1).intValue());
 	}
 
 	@Test
@@ -470,7 +472,7 @@ public class SQLSelectIT extends ServerCase {
 				.paramsArray(null, "painting1").select(context);
 
 		assertEquals(1, ids.size());
-		assertEquals(1l, ids.get(0).longValue());
+		assertEquals(1L, ids.get(0).longValue());
 	}
 
 	@Test
@@ -493,6 +495,18 @@ public class SQLSelectIT extends ServerCase {
 				.params(params).select(context);
 
 		assertEquals(1, ids.size());
-		assertEquals(1l, ids.get(0).longValue());
+		assertEquals(1L, ids.get(0).longValue());
 	}
+
+    @Test
+    public void testByteArray() throws Exception {
+        byte[] data = {1, 2, 3};
+        tPainting.insert(1, "test", 0);
+        tPaintingInfo.insert(1, data);
+
+        byte[] bytes = SQLSelect
+                .scalarQuery("SELECT IMAGE_BLOB FROM PAINTING_INFO", byte[].class)
+                .selectOne(context);
+        assertArrayEquals(data, bytes);
+    }
 }

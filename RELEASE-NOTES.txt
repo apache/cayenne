@@ -16,6 +16,7 @@ Bug Fixes:
 
 CAY-2627 Modeler: ObjRelationship creation dialog ignores delete rule
 CAY-2628 dbimport: unable to add several relationships to existing entity
+CAY-2631 Can no longer use "byte[]" as root of scalar SQLSelect
 
 ----------------------------------
 Release: 4.1.RC1
