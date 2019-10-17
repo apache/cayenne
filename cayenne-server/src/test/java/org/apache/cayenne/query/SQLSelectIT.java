@@ -58,14 +58,20 @@ public class SQLSelectIT extends ServerCase {
 
 	private TableHelper tArtistCt;
 
+	private TableHelper tPaintingInfo;
+
 	@Before
 	public void before() {
 		tPainting = new TableHelper(dbHelper, "PAINTING")
-				.setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE").setColumnTypes(Types.INTEGER,
-						Types.VARCHAR, Types.DECIMAL);
+				.setColumns("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.DECIMAL);
 
-		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT");
-		tArtistCt.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+		tArtistCt = new TableHelper(dbHelper, "ARTIST_CT")
+				.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+
+		tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO")
+				.setColumns("PAINTING_ID", "IMAGE_BLOB")
+				.setColumnTypes(Types.INTEGER, Types.LONGVARBINARY);
 	}
 
 	private void createPaintingsDataSet() throws Exception {
@@ -536,6 +542,18 @@ public class SQLSelectIT extends ServerCase {
 
 		assertEquals(1, ids.size());
 		assertEquals(1L, ids.get(0).longValue());
+	}
+
+	@Test
+	public void testByteArray() throws Exception {
+		byte[] data = {1, 2, 3};
+		tPainting.insert(1, "test", 0);
+		tPaintingInfo.insert(1, data);
+
+		byte[] bytes = SQLSelect
+				.scalarQuery("SELECT IMAGE_BLOB FROM PAINTING_INFO", byte[].class)
+				.selectOne(context);
+		assertArrayEquals(data, bytes);
 	}
 
 	static class ArtistDataWrapper {
