@@ -121,50 +121,44 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
             return cgenConfiguration;
         }
 
-        try {
-            cgenConfiguration = new CgenConfiguration(false);
-            cgenConfiguration.setForce(true);
-            cgenConfiguration.setDataMap(map);
+        cgenConfiguration = new CgenConfiguration(false);
+        cgenConfiguration.setForce(true);
+        cgenConfiguration.setDataMap(map);
 
-            Path basePath = Paths.get(ModelerUtil.initOutputFolder());
+        Path basePath = Paths.get(ModelerUtil.initOutputFolder());
 
-            // no destination folder
-            if (basePath == null) {
-                JOptionPane.showMessageDialog(this.getView(), "Select directory for source files.");
-                return null;
-            }
-
-            // no such folder
-            if (!Files.exists(basePath)) {
+        // no such folder
+        if (!Files.exists(basePath)) {
+            try {
                 Files.createDirectories(basePath);
-            }
-
-            // not a directory
-            if (!Files.isDirectory(basePath)) {
-                JOptionPane.showMessageDialog(this.getView(), basePath + " is not a valid directory.");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(getView(), "Can't create directory. Select a different one.");
                 return null;
             }
+        }
 
-            cgenConfiguration.setRootPath(basePath);
-            Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
-            if (preferences != null) {
-                cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
-            }
-            addToSelectedEntities(map.getObjEntities()
-                    .stream()
-                    .map(Entity::getName)
-                    .collect(Collectors.toList()));
-            addToSelectedEmbeddables(map.getEmbeddables()
-                    .stream()
-                    .map(Embeddable::getClassName)
-                    .collect(Collectors.toList()));
-           getApplication().getMetaData().add(map, cgenConfiguration);
-           projectController.setDirty(true);
-        } catch (IOException exception) {
-            JOptionPane.showMessageDialog(this.getView(), "Can't create directory. " +
-                    ". Select a different one.");
+        // not a directory
+        if (!Files.isDirectory(basePath)) {
+            JOptionPane.showMessageDialog(this.getView(), basePath + " is not a valid directory.");
             return null;
         }
+
+        cgenConfiguration.setRootPath(basePath);
+        Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
+        if (preferences != null) {
+            cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
+        }
+
+        addToSelectedEntities(map.getObjEntities()
+                .stream()
+                .map(Entity::getName)
+                .collect(Collectors.toList()));
+        addToSelectedEmbeddables(map.getEmbeddables()
+                .stream()
+                .map(Embeddable::getClassName)
+                .collect(Collectors.toList()));
+       getApplication().getMetaData().add(map, cgenConfiguration);
+       projectController.setDirty(true);
 
         return cgenConfiguration;
     }

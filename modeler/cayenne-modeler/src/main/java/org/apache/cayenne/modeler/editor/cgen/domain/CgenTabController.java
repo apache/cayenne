@@ -80,7 +80,6 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
 
     public CgenConfiguration createConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration(false);
-        Application.getInstance().getInjector().injectMembers(cgenConfiguration);
         cgenConfiguration.setDataMap(dataMap);
         Path basePath = Paths.get(ModelerUtil.initOutputFolder());
 
@@ -105,6 +104,7 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
         if (preferences != null) {
             cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
         }
+
         cgenConfiguration.resolveExcludeEntities();
         cgenConfiguration.resolveExcludeEmbeddables();
         return cgenConfiguration;

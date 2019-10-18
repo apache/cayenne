@@ -33,7 +33,7 @@ import java.nio.file.Paths;
 /**
  * @since 4.1
  */
-public class CgenSaverDelegate extends BaseSaverDelegate{
+public class CgenSaverDelegate extends BaseSaverDelegate {
 
     private DataChannelMetaData metaData;
 
@@ -45,42 +45,43 @@ public class CgenSaverDelegate extends BaseSaverDelegate{
     public Void visitDataMap(DataMap dataMap) {
         CgenConfiguration cgen = metaData.get(dataMap, CgenConfiguration.class);
         if(cgen != null){
-            resolveOutputDir(cgen);
+            resolveOutputDir(getBaseDirectory().getURL(), cgen);
             encoder.nested(cgen, getParentDelegate());
         }
         return null;
     }
 
-    private void resolveOutputDir(CgenConfiguration cgenConfiguration) {
-        if(cgenConfiguration.getRootPath() == null) {
+    static void resolveOutputDir(URL baseURL, CgenConfiguration cgenConfiguration) {
+        if(baseURL == null) {
             return;
         }
-        URL url = getBaseDirectory().getURL();
-        if(url != null) {
-            Path resourcePath;
-            try {
-                resourcePath = Paths.get(url.toURI());
-            } catch (URISyntaxException e) {
-                throw new CayenneRuntimeException("Unable to resolve output path", e);
-            }
-            if(Files.isRegularFile(resourcePath)) {
-                resourcePath = resourcePath.getParent();
-            }
+
+        Path resourcePath;
+        try {
+            resourcePath = Paths.get(baseURL.toURI());
+        } catch (URISyntaxException e) {
+            throw new CayenneRuntimeException("Unable to resolve output path", e);
+        }
+        if(Files.isRegularFile(resourcePath)) {
+            resourcePath = resourcePath.getParent();
+        }
+        Path oldRoot = cgenConfiguration.getRootPath();
+        if(oldRoot == null) {
             cgenConfiguration.setRootPath(resourcePath);
-            Path prevPath = cgenConfiguration.buildPath();
-            if(prevPath != null) {
-                if(prevPath.isAbsolute()) {
-                    Path relPath = resourcePath.relativize(prevPath).normalize();
-                    cgenConfiguration.setRelPath(relPath);
-                }
-                Path templatePath = Paths.get(cgenConfiguration.getTemplate());
-                if(templatePath.isAbsolute()) {
-                    cgenConfiguration.setTemplate(resourcePath.relativize(templatePath).normalize().toString());
-                }
-                Path superTemplatePath = Paths.get(cgenConfiguration.getSuperTemplate());
-                if(superTemplatePath.isAbsolute()) {
-                    cgenConfiguration.setSuperTemplate(resourcePath.relativize(superTemplatePath).normalize().toString());
-                }
+        }
+        Path prevPath = cgenConfiguration.buildPath();
+        if(prevPath != null) {
+            if(prevPath.isAbsolute()) {
+                Path relPath = resourcePath.relativize(prevPath).normalize();
+                cgenConfiguration.setRelPath(relPath);
+            }
+            Path templatePath = Paths.get(cgenConfiguration.getTemplate());
+            if(templatePath.isAbsolute()) {
+                cgenConfiguration.setTemplate(resourcePath.relativize(templatePath).normalize().toString());
+            }
+            Path superTemplatePath = Paths.get(cgenConfiguration.getSuperTemplate());
+            if(superTemplatePath.isAbsolute()) {
+                cgenConfiguration.setSuperTemplate(resourcePath.relativize(superTemplatePath).normalize().toString());
             }
         }
     }
