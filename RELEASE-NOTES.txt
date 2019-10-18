@@ -102,6 +102,7 @@ CAY-2624 SelectQuery "having" qualifier is not considered when calculating cache
 CAY-2627 Modeler: ObjRelationship creation dialog ignores delete rule
 CAY-2628 dbimport: unable to add several relationships to existing entity
 CAY-2631 Can no longer use "byte[]" as root of scalar SQLSelect
+CAY-2632 Modeler: issue saving cgen path for maven project
 
 ----------------------------------
 Release: 4.1.B1
