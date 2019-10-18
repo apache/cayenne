@@ -18,8 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.map.ObjAttribute;
@@ -104,18 +105,20 @@ public class EntityArtifact implements Artifact {
     }
 
     private void sortAttributes() {
-        Map<String, ObjAttribute> attributeMap = new TreeMap<>(entity.getAttributeMap());
-        for(Map.Entry<String, ObjAttribute> entry : attributeMap.entrySet()) {
-            entity.removeAttribute(entry.getKey());
-            entity.addAttribute(entry.getValue());
+        List<ObjAttribute> objAttributes = new ArrayList<>(entity.getDeclaredAttributes());
+        objAttributes.sort(Comparator.comparing(ObjAttribute::getName));
+        for(ObjAttribute attribute : objAttributes) {
+            entity.removeAttribute(attribute.getName());
+            entity.addAttribute(attribute);
         }
     }
 
     private void sortRelationships() {
-        Map<String, ObjRelationship> relationshipMap = new TreeMap<>(entity.getRelationshipMap());
-        for(Map.Entry<String, ObjRelationship> entry : relationshipMap.entrySet()) {
-            entity.removeRelationship(entry.getKey());
-            entity.addRelationship(entry.getValue());
+        List<ObjRelationship> relationships = new ArrayList<>(entity.getDeclaredRelationships());
+        relationships.sort(Comparator.comparing(ObjRelationship::getName));
+        for(ObjRelationship relationship : relationships) {
+            entity.removeRelationship(relationship.getName());
+            entity.addRelationship(relationship);
         }
     }
 }
