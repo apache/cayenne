@@ -64,9 +64,9 @@
 
     <xs:complexType name="includeTable" mixed="true">
         <xs:sequence>
-            <xs:element name="name" minOccurs="0" type="dbi:db-type"/>
-            <xs:element name="includeColumn" type="dbi:db-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeColumn" type="dbi:db-type" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="name" minOccurs="0" type="xs:string"/>
+            <xs:element name="includeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 
             <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
         </xs:sequence>
@@ -75,11 +75,11 @@
     <xs:complexType name="container" abstract="true">
         <xs:sequence>
             <xs:element name="includeTable" type="dbi:includeTable" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeTable" type="dbi:db-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="includeColumn" type="dbi:db-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeColumn" type="dbi:db-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="includeProcedure" type="dbi:db-type" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeProcedure" type="dbi:db-type" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeTable" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="includeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="includeProcedure" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeProcedure" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
 
             <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
         </xs:sequence>
