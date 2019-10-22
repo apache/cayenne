@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.rop.protostuff;
 
+import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable1;
 import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable2;
@@ -108,6 +109,17 @@ public class ProtostuffROPSerializationTest extends ProtostuffProperties {
         ClientMtTable2 clientTable2 = clientService.deserialize(in, ClientMtTable2.class);
 
         assertCorrectness(clientTable2);
+    }
+
+    @Test
+    public void testPropertySerialization() throws Exception {
+        Property<Integer> property = Property.create("test", Integer.class);
+
+        byte[] data = serverService.serialize(property);
+        @SuppressWarnings("unchecked")
+        Property<Integer> clone = (Property<Integer>) serverService.deserialize(data, Property.class);
+
+        assertEquals(property.getExpression(), clone.getExpression());
     }
 
     private void assertCorrectness(ClientMtTable2 table2) {

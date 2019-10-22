@@ -94,7 +94,13 @@ public class Property<E> {
      */
     protected Property(final String name, final Class<? super E> type) {
         this.name = name;
-        expressionProvider = () -> ExpressionFactory.pathExp(name);
+        // can't use lambda here as it will break ROP serialization
+        expressionProvider = new ExpressionProvider() {
+            @Override
+            public Expression get() {
+                return ExpressionFactory.pathExp(name);
+            }
+        };
         this.type = type;
     }
 
@@ -109,7 +115,13 @@ public class Property<E> {
      */
     protected Property(final String name, final Expression expression, final Class<? super E> type) {
         this.name = name;
-        expressionProvider = () -> expression.deepCopy();
+        // can't use lambda here as it will break ROP serialization
+        expressionProvider = new ExpressionProvider() {
+            @Override
+            public Expression get() {
+                return expression.deepCopy();
+            }
+        };
         this.type = type;
     }
 
