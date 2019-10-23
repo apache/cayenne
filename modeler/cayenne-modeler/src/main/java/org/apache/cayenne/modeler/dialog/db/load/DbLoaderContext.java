@@ -127,13 +127,19 @@ public class DbLoaderContext {
         reverseEngineering.setStripFromTableNames(view.getStripFromTableNames());
     }
 
-    public boolean buildConfig(DBConnectionInfo connectionInfo, DbImportView view) {
+    public boolean buildConfig(DBConnectionInfo connectionInfo, DbImportView view, boolean headless) {
         if (connectionInfo == null) {
             return false;
         }
         // Build reverse engineering from metadata and dialog values
         ReverseEngineering metaReverseEngineering = metaData.get(getProjectController().getCurrentDataMap(), ReverseEngineering.class);
-        fillReverseEngineeringFromView(metaReverseEngineering, view);
+        if(metaReverseEngineering == null) {
+            return false;
+        }
+        // skip this step for batch run from domain tab
+        if(!headless){
+            fillReverseEngineeringFromView(metaReverseEngineering, view);
+        }
         // Create copy of metaReverseEngineering
         ReverseEngineering reverseEngineering = new ReverseEngineering(metaReverseEngineering);
 

@@ -109,7 +109,7 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             return;
         }
 
-        if(!context.buildConfig(connectionInfo, view)) {
+        if(!context.buildConfig(connectionInfo, view, true)) {
             try {
                 context.getConnection().close();
             } catch (SQLException ignored) {}

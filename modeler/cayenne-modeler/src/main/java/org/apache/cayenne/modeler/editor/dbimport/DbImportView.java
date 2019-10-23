@@ -199,20 +199,14 @@ public class DbImportView extends JPanel {
             treeToolbar.unlockButtons();
             ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication()
                     .getMetaData().get(map, ReverseEngineering.class);
-            if (reverseEngineering == null) {
+            if(reverseEngineering == null) {
+                // create config with default values, but not store it into metadata
+                // config will be stored on change only, this is for not making project dirty on just selecting dbimport tab
                 reverseEngineering = new ReverseEngineering();
-                DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
-                projectController.setDirty(true);
             }
             configPanel.fillCheckboxes(reverseEngineering);
             configPanel.initializeTextFields(reverseEngineering);
             configPanel.initStrategy(reverseEngineering);
-            treePanel.updateTree();
-            DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
-            root.removeAllChildren();
-            draggableTreePanel.updateTree(projectController.getCurrentDataMap());
-            draggableTreePanel.getMoveButton().setEnabled(false);
-            draggableTreePanel.getMoveInvertButton().setEnabled(false);
             String[] tableTypes = reverseEngineering.getTableTypes();
             if(tableTypes.length != 0) {
                 configPanel.getTableTypes().setText(String.join(",", tableTypes));
@@ -220,6 +214,12 @@ public class DbImportView extends JPanel {
                 configPanel.getTableTypes().setText("TABLE, VIEW");
                 configPanel.getTableTypes().updateModel();
             }
+            treePanel.updateTree();
+            DbImportTreeNode root = draggableTreePanel.getSourceTree().getRootNode();
+            root.removeAllChildren();
+            draggableTreePanel.updateTree(projectController.getCurrentDataMap());
+            draggableTreePanel.getMoveButton().setEnabled(false);
+            draggableTreePanel.getMoveInvertButton().setEnabled(false);
         }
         initFromModel = false;
     }
