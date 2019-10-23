@@ -60,10 +60,6 @@ public class DbImportController {
         return globalImport;
     }
 
-    public void checkImport(DataMap dataMap) {
-        dbLoadResultDialog.getTableForMap().remove(dataMap);
-    }
-
     public void resetDialog() {
         ConcurrentMap<DataMap, JTable> tableMap = dbLoadResultDialog.getTableForMap();
         for(DataMap dataMap : tableMap.keySet()) {

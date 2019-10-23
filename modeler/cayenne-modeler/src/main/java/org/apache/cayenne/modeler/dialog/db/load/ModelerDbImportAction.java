@@ -134,16 +134,12 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     }
 
     private void checkForUnusedImports() {
-        dbImportController.checkImport(targetMap);
-        if(dbImportController.createDialog().getTableForMap().isEmpty()) {
-            resetDialog();
-            dbImportController.setGlobalImport(false);
-            dbImportController.fireDataMapChangeEvent(targetMap);
-        }
+        resetDialog();
+        dbImportController.setGlobalImport(false);
     }
 
     @Override
-    protected DataMap existingTargetMap(DbImportConfiguration configuration) throws IOException {
+    protected DataMap existingTargetMap(DbImportConfiguration configuration) {
         return targetMap;
     }
 }
