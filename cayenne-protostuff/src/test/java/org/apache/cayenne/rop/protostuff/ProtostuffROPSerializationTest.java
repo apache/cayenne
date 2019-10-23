@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.rop.protostuff;
 
+import org.apache.cayenne.query.ColumnSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable1;
 import org.apache.cayenne.rop.protostuff.persistent.ClientMtTable2;
@@ -108,6 +110,17 @@ public class ProtostuffROPSerializationTest extends ProtostuffProperties {
         ClientMtTable2 clientTable2 = clientService.deserialize(in, ClientMtTable2.class);
 
         assertCorrectness(clientTable2);
+    }
+
+    @Test
+    public void testColumnQuerySerialization() throws Exception {
+        ColumnSelect<String> select = ObjectSelect.columnQuery(ClientMtTable1.class, ClientMtTable1.GLOBAL_ATTRIBUTE);
+
+        byte[] data = serverService.serialize(select);
+        @SuppressWarnings("unchecked")
+        ColumnSelect<Integer> clone = (ColumnSelect<Integer>) serverService.deserialize(data, ColumnSelect.class);
+
+        assertEquals(ClientMtTable1.GLOBAL_ATTRIBUTE.getExpression(), clone.getColumns().iterator().next().getExpression());
     }
 
     private void assertCorrectness(ClientMtTable2 table2) {

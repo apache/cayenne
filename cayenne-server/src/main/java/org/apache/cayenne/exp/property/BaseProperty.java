@@ -68,13 +68,24 @@ public class BaseProperty<E> implements Property<E> {
      *
      * @see PropertyFactory#createBase(String, Expression, Class)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "Convert2Lambda", "Anonymous2MethodRef"})
     protected BaseProperty(String name, Expression expression, Class<? super E> type) {
         this.name = name;
+        // can't use lambda here, see CAY-2635
         if(expression == null) {
-            this.expressionSupplier = () -> ExpressionFactory.pathExp(name);
+            this.expressionSupplier = new Supplier<Expression>() {
+                @Override
+                public Expression get() {
+                    return ExpressionFactory.pathExp(name);
+                }
+            };
         } else {
-            this.expressionSupplier = expression::deepCopy;
+            this.expressionSupplier = new Supplier<Expression>() {
+                @Override
+                public Expression get() {
+                    return expression.deepCopy();
+                }
+            };
         }
         this.type = (Class<E>)type;
     }
