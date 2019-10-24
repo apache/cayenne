@@ -104,6 +104,7 @@ CAY-2628 dbimport: unable to add several relationships to existing entity
 CAY-2631 Can no longer use "byte[]" as root of scalar SQLSelect
 CAY-2632 Modeler: issue saving cgen path for maven project
 CAY-2633 Modeler: attribute sorting logic in cgen can corrupt model
+CAY-2634 Minor inconsistencies in Modeler "DB Import"
 CAY-2635 Lambda expressions break ROP serialization
 
 ----------------------------------
