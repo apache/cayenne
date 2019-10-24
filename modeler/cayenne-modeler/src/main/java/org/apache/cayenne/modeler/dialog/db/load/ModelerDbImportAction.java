@@ -46,13 +46,11 @@ import org.slf4j.Logger;
 
 public class ModelerDbImportAction extends DefaultDbImportAction {
 
-    private static final String DIALOG_TITLE = "Db Import Result";
-
     @Inject
     private DataMap targetMap;
 
-    DataMap sourceDataMap;
-    DbImportConfiguration config;
+    private DataMap sourceDataMap;
+    private DbImportConfiguration config;
 
     private DbLoadResultDialog resultDialog;
     private boolean hasTokenToMerge;
@@ -77,7 +75,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         this.sourceDataMap = loadDataMap(config);
     }
 
-
     public void commit() throws Exception {
         commit(config, sourceDataMap);
     }
@@ -96,9 +93,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             }
         });
 
-        resultDialog.getRevertButton().addActionListener(e -> {
-            resetDialog();
-        });
+        resultDialog.getRevertButton().addActionListener(e -> resetDialog());
 
         resultDialog.addComponentListener(new ComponentAdapter() {
             @Override
@@ -153,7 +148,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             hasProceduresToMerge = true;
             Procedure oldProcedure = targetMap.getProcedure(procedure.getName());
 
-            String msg = "";
+            String msg;
             if (oldProcedure != null) {
                 msg = "Replace procedure " + procedure.getName();
             } else {
