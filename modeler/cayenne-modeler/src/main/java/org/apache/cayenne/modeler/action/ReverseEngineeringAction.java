@@ -116,13 +116,14 @@ public class ReverseEngineeringAction extends DBWizardAction<DbActionOptionsDial
             return;
         }
 
+        DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
+        DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
+
         runLoaderInThread(context, () -> {
             application.getUndoManager().discardAllEdits();
             try {
                 context.getConnection().close();
                 if(dataMapCount.decrementAndGet() <= 0 && !context.isInterrupted()) {
-                    DbImportController dbImportController = Application.getInstance().getFrameController().getDbImportController();
-                    DbLoadResultDialog dbLoadResultDialog = dbImportController.createDialog();
                     if (!dbLoadResultDialog.isVisible() && !dbLoadResultDialog.getTableForMap().isEmpty()) {
                         dbImportController.showDialog();
                     }
