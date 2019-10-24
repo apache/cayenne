@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.dialog.db.load;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,8 +43,6 @@ import org.slf4j.Logger;
 
 public class ModelerDbImportAction extends DefaultDbImportAction {
 
-    private static final String DIALOG_TITLE = "Db Import Result";
-
     @Inject
     private DataMap targetMap;
 
@@ -53,7 +50,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     private DbImportConfiguration config;
 
     private DbLoadResultDialog resultDialog;
-    private boolean hasTokenToMerge;
 
     private DbImportController dbImportController;
 
@@ -94,9 +90,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             }
         });
 
-        resultDialog.getRevertButton().addActionListener(e -> {
-            resetDialog();
-        });
+        resultDialog.getRevertButton().addActionListener(e -> resetDialog());
 
         resultDialog.addComponentListener(new ComponentAdapter() {
             @Override
@@ -109,7 +103,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
 
         if (tokens.isEmpty()) {
             logger.info("Detected changes: No changes to import.");
-            hasTokenToMerge = false;
             String logString = String.format("    %-20s", "Nothing to import");
             resultDialog.addRowToOutput(logString, targetMap);
             return tokens;
@@ -120,7 +113,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             String logString = String.format("    %-20s %s", token.getTokenName(), token.getTokenValue());
             logger.info(logString);
             resultDialog.addRowToOutput(logString, targetMap);
-            hasTokenToMerge = true;
         }
 
         logger.info("");
