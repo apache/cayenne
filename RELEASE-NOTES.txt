@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.1.RC2
-Date:
+Date: October 25, 2019
 ----------------------------------
 
 Bug Fixes:
