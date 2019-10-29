@@ -302,10 +302,10 @@ Sure enough all database operations are transactional, so when an application do
 all SQL execution is wrapped in a database transaction. But this is done behind the scenes
 and is rarely a concern to the application code.
 
-Two cases where transactions need to be taken into consideration are container-managed and
+Two cases where transactions need to be taken into consideration are container- and
 application-managed transactions.
 
-If you are using an EJB container (or some other JTA environment),
+If you are using Spring, EJB or another environment that manages transactions,
 you'll likely need to switch Cayenne runtime into "external transactions mode".
 This is done by setting DI configuration property defined in `Constants.SERVER_EXTERNAL_TX_PROPERTY` (see Appendix A).
 If this property is set to "true", Cayenne assumes that JDBC Connections obtained by runtime
@@ -333,13 +333,10 @@ Integer result = runtime.performInTransaction(() -> {
 });
 ----
 
-When inside the transaction, current thread Transaction object can be accessed via a static method.
-E.g. here is an example that initializes transaction JDBC connection with a custom connection object :
-
+When inside a transaction, current thread Transaction object can be accessed via a static method:
 [source, java]
 ----
 Transaction tx = BaseTransaction.getThreadTransaction();
-tx.addConnection("mydatanode", myConnection);
 ----
 
 You can control transaction isolation level and propagation logic using `TransactionDescriptor`.
