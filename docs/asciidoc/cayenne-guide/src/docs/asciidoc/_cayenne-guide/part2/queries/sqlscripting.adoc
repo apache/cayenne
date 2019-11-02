@@ -14,8 +14,8 @@
 [#sqlscripting]
 ==== Scripting SQL Queries
 
-A powerful feature of `SQLSelect` and `SQLExec` is that a SQL string is treated by Cayenne as a dynamic template. Before
-sending it to DB as a PreparedStatement, the String is evaluated, resolving the dynamic parts. The two main scripting
+A powerful feature of `SQLSelect` and `SQLExec` is that SQL string is treated by Cayenne as a dynamic template. Before
+creating a PreparedStatement, the String is evaluated, resolving its dynamic parts. The two main scripting
 elements are "variables" (that look like `$var`) and "directives" (that look like `#directive(p1 p2 p3)`). In the discussion
 below we'll use both selecting and updating examples, as scripting works the same way for both `SQLSelect` and `SQLExec`.
 
