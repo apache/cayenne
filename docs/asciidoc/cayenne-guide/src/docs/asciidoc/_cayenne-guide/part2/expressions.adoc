@@ -14,8 +14,6 @@
 
 === Expressions
 
-==== Expressions Overview
-
 Cayenne provides a simple yet powerful object-based expression language. The most common use of expressions are to build
 qualifiers and orderings of queries that are later converted to SQL by Cayenne and to evaluate in-memory against specific
 objects (to access certain values in the object graph or to perform in-memory object filtering and sorting).
@@ -257,7 +255,7 @@ Expression e2 = Painting.ARTIST.dot(Artist.NAME).eq("Pablo");
 Property objects provide the API mostly analogius to ExpressionFactory, though it is significantly shorter and is aware of the value types.
 It provides compile-time checks of both property names and types of arguments in conditions. We will use Property-based API in further examples.
 
-[[evaluete]]
+[[evaluate]]
 ==== Evaluating Expressions in Memory
 
 When used in a query, an expression is converted to SQL WHERE clause (or ORDER BY clause) by Cayenne during query execution.
@@ -298,7 +296,7 @@ NOTE: Current limitation of in-memory expressions is that no collections are per
 
 ==== Translating Expressions to EJBQL
 
-xref:ejbql[EJBQL] is a textual query language that can be used with Cayenne. In some situations,
+<<ejbql,EJBQL>> is a textual query language that can be used with Cayenne. In some situations,
 it is convenient to be able to convert Expression instances into EJBQL. Expressions support this conversion. An example is shown below.
 
 [source, java]

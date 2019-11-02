@@ -35,7 +35,7 @@ Here is simple maven configuration to start with:
 
 ==== Introduction to "cdbimport"
 
-Here is a simple Maven configuration of "cdbimport" (for details see xref:mavenCdbimort[cayenne-maven-plugin] documentation)
+Here is a simple Maven configuration of "cdbimport" (for details see <<mavenCdbimort,cayenne-maven-plugin>> documentation)
 
 [source, XML,subs="verbatim,attributes"]
 ----
