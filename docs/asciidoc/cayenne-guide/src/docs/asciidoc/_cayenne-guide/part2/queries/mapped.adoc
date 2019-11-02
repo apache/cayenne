@@ -1,0 +1,41 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+==== MappedSelect and MappedExec
+
+`MappedSelect` and `MappedExec` is a queries that are just a reference to another queries stored in the DataMap.
+The actual stored query can be SelectQuery, SQLTemplate, EJBQLQuery, etc.
+Difference between `MappedSelect` and `MappedExec` is (as reflected in their names) whether underlying query
+intended to select data or just to perform some generic SQL code.
+
+NOTE: These queries are "fluent" versions of deprecated `NamedQuery` class.
+
+Here is example of how to use `MappedSelect`:
+
+[source, java]
+----
+List<Artist> results = MappedSelect.query("artistsByName", Artist.class) 
+    .param("name", "Picasso") 
+    .select(context);
+----
+
+And here is example of `MappedExec`:
+
+[source, java]
+----
+QueryResult result = MappedExec.query("updateQuery") 
+    .param("var", "value") 
+    .execute(context);
+System.out.println("Rows updated: " + result.firstUpdateCount());
+----
