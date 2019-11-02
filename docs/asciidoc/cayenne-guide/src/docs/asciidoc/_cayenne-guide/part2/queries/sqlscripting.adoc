@@ -1,0 +1,282 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[#sqlscripting]
+==== Scripting SQL Queries
+
+A powerful feature of `SQLSelect` and `SQLExec` is that a SQL string is treated by Cayenne as a dynamic template. Before
+sending it to DB as a PreparedStatement, the String is evaluated, resolving the dynamic parts. The two main scripting
+elements are "variables" (that look like `$var`) and "directives" (that look like `#directive(p1 p2 p3)`). In the discussion
+below we'll use both selecting and updating examples, as scripting works the same way for both `SQLSelect` and `SQLExec`.
+
+===== Variable Substitution
+
+All variables in the template string are replaced from query parameters:
+
+[source, java]
+----
+// this will generate SQL like this: "delete from mydb.PAINTING"
+SQLExec query = SQLExec.query("delete from $tableName")
+    .params("mydb.PAINTING");
+----
+
+Variable substitution within the text uses `object.toString()` method to replace the variable value.
+This may not be appropriate in all situations. E.g. passing a date object in a `WHERE` clause expression may be
+converted to a String not understood by the target DB SQL parser. In such cases variable should be wrapped in
+`#bind` directive as described below.
+
+[#directives]
+===== Directives
+
+"Directives" look like `#directive(p1 p2 p3)` (notice the absence of comma between the arguments). The folliwng
+directives are supported in SQL templates:
+
+====== #bind
+
+Creates a `PreparedStatement` positional parameter in place of the directive, binding the value to it before statement
+execution. `#bind` is allowed in places where a "?" would be allowed in a PreparedStatement.
+And in such places it almost always makes sense to pass objects to the template via some flavor of `#bind` instead of
+inserting them inline.
+
+Semantics:
+
+[source]
+----
+#bind(value)
+#bind(value jdbcType)
+#bind(value jdbcType scale)
+----
+
+Arguments:
+
+- `value` - can either be a char constant or a variable that is resolved from the query parameters.
+Note that the variable can be a collection, that will be automatically expanded into a list of individual value bindings.
+This is useful for instance to build IN conditions.
+
+- `jdbcType` - is a JDBC data type of the parameter as defined in `java.sql.Types`.
+
+- `scale` - An optional scale of the numeric value. Same as "scale" in PreparedStatement.
+
+Usage:
+
+[source]
+----
+#bind($xyz)
+#bind('str')
+#bind($xyz 'VARCHAR')
+#bind($xyz 'DECIMAL' 2)
+----
+
+Full example:
+
+[source, SQL]
+----
+update ARTIST set NAME = #bind($name) where ID = #bind($id)
+----
+
+
+====== #bindEqual
+
+Same as `#bind`, but also includes the "=" sign in front of the value binding.
+Look at the example below - we took the #bind example and replaced `"ID = #bind(..)"` with `"ID #bindEqual(..)"`.
+Motivation for this directive is to handle NULL SQL syntax. If the value is not null, `= ?` is generated, but if it is,
+the resulting SQL would look like `IS NULL`, which is compliant with what the DB expects.
+
+Semantics:
+
+[source]
+----
+#bindEqual(value)
+#bindEqual(value jdbcType)
+#bindEqual(value jdbcType scale)
+----
+
+Arguments: (same as #bind)
+
+Usage:
+
+[source]
+----
+#bindEqual($xyz)
+#bindEqual('str')
+#bindEqual($xyz 'VARCHAR')
+#bindEqual($xyz 'DECIMAL' 2)
+----
+
+Full example:
+
+[source, SQL]
+----
+update ARTIST set NAME = #bind($name) where ID #bindEqual($id)
+----
+
+====== #bindNotEqual
+
+This directive deals with the same issue as `#bindEqual` above, only it generates "!=" in front of the value (or `IS NOT NULL`).
+
+Semantics:
+
+[source]
+----
+#bindNotEqual(value)
+#bindNotEqual(value jdbcType)
+#bindNotEqual(value jdbcType scale)
+----
+
+Arguments: (same as #bind)
+
+Usage:
+
+[source]
+----
+#bindNotEqual($xyz)
+#bindNotEqual('str')
+#bindNotEqual($xyz 'VARCHAR')
+#bindNotEqual($xyz 'DECIMAL' 2)
+----
+
+Full example:
+
+[source, SQL]
+----
+update ARTIST set NAME = #bind($name) where ID #bindNotEqual($id)
+----
+
+====== #bindObjectEqual
+
+It can be tricky to use a Persistent object or an ObjectId in a binding, especially for tables with compound primary
+keys. This directive helps to handle such binding. It maps columns in the query to the names of Persistent object ID
+columns, extracts ID values from the object, and generates SQL like "COL1 = ? AND COL2 = ? ..." , binding positional
+parameters to ID values. It can also correctly handle null object. Also notice how we are specifying an array for
+multi-column PK.
+
+Semantics:
+
+[source]
+----
+#bindObjectEqual(value columns idColumns)
+----
+
+Arguments:
+
+- `value` - must be a variable that is resolved from the query parameters to a Persistent or ObjectId.
+
+- `columns` - the names of the columns to generate in the SQL.
+
+- `idColumn` - the names of the ID columns for a given entity. Must match the order of "columns" to match against.
+
+Usage:
+
+[source]
+----
+#bindObjectEqual($a 't0.ID' 'ID')
+#bindObjectEqual($b ['t0.FK1', 't0.FK2'] ['PK1', 'PK2'])
+----
+
+Full example:
+
+[source, java]
+----
+String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' )";
+Artist artistParam = ...;
+
+SQLSelect select = SQLSelect.query(Painting.class, sql)
+    .params("a", artistParam);
+----
+
+====== #bindObjectNotEqual
+
+Same as `#bindObjectEqual` above, only generates `!=` operator for value comparison (or `IS NOT NULL`).
+
+Semantics:
+
+[source]
+----
+#bindObjectNotEqual(value columns idColumns)
+----
+
+Arguments: (same as #bindObjectEqual)
+
+Usage:
+
+[source]
+----
+#bindObjectNotEqual($a 't0.ID' 'ID')
+#bindObjectNotEqual($b ['t0.FK1', 't0.FK2'] ['PK1', 'PK2'])
+----
+
+Full example:
+
+[source, java]
+----
+String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectNotEqual($a 't0.ARTIST_ID' 'ARTIST_ID' )";
+Artist artistParam = ...;
+
+SQLSelect select = SQLSelect.query(Painting.class, sql)
+    .params("a", artistParam);
+----
+
+====== #result
+
+Used around a column in `SELECT` clause to define the type conversion of the column value (e.g. it may force a conversion
+from Integer to Long) and/or define column name in the result (useful when fetching objects or DataRows).
+
+NOTE: You don't have to use `#result` for any given query if the default data types and column names coming from the
+query suit your needs. But if you do, you have to provide `#result` for every single result column, otherwise such column
+will be ignored.
+
+Semantics:
+
+[source]
+----
+#result(column)
+#result(column javaType)
+#result(column javaType alias)
+#result(column javaType alias dataRowKey)
+----
+
+Arguments:
+
+- `column` - the name of the column to render in SQL SELECT clause.
+
+- `javaType` - a fully-qualified Java class name for a given result column.
+For simplicity most common Java types used in JDBC can be specified without a package.
+These include all numeric types, primitives, String, SQL dates, BigDecimal and BigInteger.
+So `"#result('A' 'String')"`, `"#result('B' 'java.lang.String')"` and `"#result('C' 'int')"` are all valid
+
+- `alias` - specifies both the SQL alias of the column and the value key in the DataRow. If omitted, "column" value is used.
+
+- `dataRowKey` - needed if SQL 'alias' is not appropriate as a DataRow key on the Cayenne side.
+One common case when this happens is when a DataRow retrieved from a query is mapped using joint prefetch keys (see below).
+In this case DataRow must use database path expressions for joint column keys, and their format is incompatible with most databases alias format.
+
+Usage:
+
+[source]
+----
+#result('NAME')
+#result('DATE_OF_BIRTH' 'java.util.Date')
+#result('DOB' 'java.util.Date' 'DATE_OF_BIRTH')
+#result('DOB' 'java.util.Date' '' 'artist.DATE_OF_BIRTH')
+#result('SALARY' 'float')
+----
+
+Full example:
+
+[source, SQL]
+----
+SELECT #result('ID' 'int'), #result('NAME' 'String'), #result('DATE_OF_BIRTH' 'java.util.Date') FROM ARTIST
+----
+
+NOTE: For advanced features you may look at the <<Apache Velocity extension>>
+
