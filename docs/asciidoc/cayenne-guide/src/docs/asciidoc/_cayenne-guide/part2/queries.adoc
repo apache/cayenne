@@ -39,8 +39,6 @@ than object queries.
 
 include::queries/objectselect.adoc[]
 
-include::queries/ejbql.adoc[]
-
 include::queries/selectbyid.adoc[]
 
 include::queries/sql.adoc[]
@@ -50,5 +48,7 @@ include::queries/sqlscripting.adoc[]
 include::queries/mapped.adoc[]
 
 include::queries/procedure.adoc[]
+
+include::queries/ejbql.adoc[]
 
 include::queries/custom.adoc[]
