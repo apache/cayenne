@@ -16,8 +16,8 @@
 SQL is very powerful and allows to manipulate data in ways that can not always be described as a graph of related entities.
 Cayenne acknowledges this fact and provides a facility to execute SQL, sometimes allowing to map results back to
 persistent objects. `SQLSelect` and `SQLExec` are a pair of queries that allow to run native SQL. `SQLSelect` can be
-used (as name suggests) to select custom data in form of entities, separate columns, collection of `DataRow` or Object[].
-`SQLExec` is designed to execute any raw SQL code (e.g. updates, deletes, DDLs, etc.).
+used (as the name suggests) to select custom data in form of entities, separate columns, collection of `DataRow` or
+`Object[]`. `SQLExec` is designed to execute any SQL (e.g. updates, deletes, DDLs, etc.).
 
 Both queries support advanced SQL templating, with variable substitution and special directives as described
 <<sqlscripting,in the next chapter>>. Here we'll just provide a few simple examples:
@@ -39,12 +39,12 @@ List<String> paintingNames = SQLSelect
 
 // Selecting DataRow with predefined types
 List<DataRow> result = SQLSelect
-    .dataRowQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDateTime.class)
+    .dataRowQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
     .select(context);
 
 // Selecting Object[] with predefined types
 List<Object[]> result = SQLSelect
-    .scalarQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDateTime.class)
+    .scalarQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
     .select(context);
 ----
 
