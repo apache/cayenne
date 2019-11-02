@@ -38,7 +38,7 @@ converted to a String not understood by the target DB SQL parser. In such cases 
 [#directives]
 ===== Directives
 
-"Directives" look like `#directive(p1 p2 p3)` (notice the absence of comma between the arguments). The folliwng
+"Directives" look like `#directive(p1 p2 p3)` (notice the absence of comma between the arguments). The following
 directives are supported in SQL templates:
 
 ====== #bind
