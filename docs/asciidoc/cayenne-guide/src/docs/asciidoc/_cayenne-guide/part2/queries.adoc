@@ -28,15 +28,14 @@ that for whatever reason can not be adequately described by the built-in set.
 Queries can be roughly categorized as "object" and "native".
 Object queries (most notably `ObjectSelect`, `SelectById`, and `EJBQLQuery`)
 are built with abstractions originating in the object model (the "object" side in the "object-relational" divide).
-E.g. ObjectSelect is assembled from a Java class of the objects to fetch,
-a qualifier expression, orderings, etc. - all of this expressed in terms of the object model.
+E.g. `ObjectSelect` consists of a Java class of objects to fetch, a qualifier expression, orderings, etc. - all of this
+expressed in terms of the object model.
 
-Native queries describe a desired DB operation as SQL code (`SQLSelect`, `SQLTemplate` query)
-or a reference to a stored procedure (`ProcedureQuery`), etc.
-The results of native queries are usually presented as Lists of Maps,
-with each map representing a row in the DB (a term "data row" is often used to describe such a map).
-They can potentially be converted to objects, however it may take a considerable effort to do so.
-Native queries are also less (if at all) portable across databases than object queries.
+Native queries describe a desired DB operation using SQL (`SQLSelect`, `SQLExec` query), a reference to a stored
+procedure (`ProcedureQuery`), etc. The results of native queries are lists of scalars, lists of `Object[]` or lists of
+maps (a term "data row" is often used to describe such a map). Some of them can potentially be converted to persistent
+objects (though usually with considerable effort). Native queries are less (if at all) portable across databases
+than object queries.
 
 
 include::queries/objectselect.adoc[]
@@ -45,6 +44,8 @@ include::queries/selectbyid.adoc[]
 
 include::queries/sql.adoc[]
 
+include::queries/sqlscripting.adoc[]
+
 include::queries/mapped.adoc[]
 
 include::queries/procedure.adoc[]
@@ -52,28 +53,4 @@ include::queries/procedure.adoc[]
 include::queries/ejbql.adoc[]
 
 include::queries/custom.adoc[]
-
-include::queries/sqltemplate.adoc[]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

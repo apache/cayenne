@@ -14,9 +14,9 @@
 [[select]]
 ==== ObjectSelect
 
-===== Selecting objects
-
 NOTE: `ObjectSelect` supersedes older `SelectQuery`. `SelectQuery` is deprecated since 4.2.
+
+===== Selecting objects
 
 `ObjectSelect` is the most commonly used query in Cayenne applications. This may be the only query you will ever need.
 It returns a list of persistent objects (or data rows) of a certain type specified in the query:
