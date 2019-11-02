@@ -1,0 +1,117 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+[[ejbql]]
+==== EJBQLQuery
+
+NOTE: As soon as all of the `EJBQLQuery` capabilities become available in `ObjectSelect`, we are planning to
+deprecate `EJBQLQuery`.
+
+EJBQLQuery was created as a part of an experiment in adopting some of Java Persistence API (JPA) approaches in Cayenne.
+It is a parameterized object query that is created from query String. A String used to build EJBQLQuery follows JPQL
+(JPA Query Language) syntax:
+
+[source, java]
+----
+EJBQLQuery query = new EJBQLQuery("select a FROM Artist a");
+----
+
+JPQL details can be found in any JPA manual. Here we'll focus on how this fits into Cayenne and what are the
+differences between EJBQL and other Cayenne queries.
+
+Although most frequently EJBQLQuery is used as an alternative to ObjectSelect, there are also DELETE and UPDATE
+varieties available.
+
+NOTE: DELETE and UPDATE do not change the state of objects in the ObjectContext. They are run directly against the
+database instead.
+
+[source, java]
+----
+EJBQLQuery select =
+    new EJBQLQuery("select a FROM Artist a WHERE a.name = 'Salvador Dali'");
+List<Artist> artists = context.performQuery(select);
+----
+
+[source, java]
+----
+EJBQLQuery delete = new EJBQLQuery("delete from Painting");
+context.performGenericQuery(delete);
+----
+
+[source, java]
+----
+EJBQLQuery update =
+    new EJBQLQuery("UPDATE Painting AS p SET p.name = 'P2' WHERE p.name = 'P1'");
+context.performGenericQuery(update);
+----
+
+In most cases `ObjectSelect` is preferred to `EJBQLQuery`, as it is API-based, and provides you with better compile-time
+checks. However sometimes you may want a completely scriptable object query. This is when you might prefer EJBQL.
+A more practical reason for picking EJBQL over `ObjectSelect` though is that the former offers a few extra capabilities,
+such as subqueries.
+
+Just like `ObjectSelect` `EJBQLQuery` can return a List of Object[] elements, where each entry in an array is either a
+DataObject or a scalar, depending on the query SELECT clause.
+[source, java]
+----
+EJBQLQuery query = new EJBQLQuery("select a, COUNT(p) FROM Artist a JOIN a.paintings p GROUP BY a");
+List<Object[]> result = context.performQuery(query);
+for(Object[] artistWithCount : result) {
+    Artist a = (Artist) artistWithCount[0];
+    int hasPaintings = (Integer) artistWithCount[1];
+}
+----
+
+A result can also be a list of scalars:
+[source, java]
+----
+EJBQLQuery query = new EJBQLQuery("select a.name FROM Artist a");
+List<String> names = context.performQuery(query);
+----
+
+EJBQLQuery supports an "IN" clause with three different usage-patterns. The following example would require three
+individual positional parameters (named parameters could also have been used) to be supplied.
+
+[source, java]
+----
+select p from Painting p where p.paintingTitle in (?1,?2,?3)
+----
+
+The following example requires a single positional parameter to be supplied.
+The parameter can be any concrete implementation of the `java.util.Collection` interface
+such as `java.util.List` or `java.util.Set`.
+
+[source, java]
+----
+select p from Painting p where p.paintingTitle in ?1
+----
+
+The following example is functionally identical to the one prior.
+
+[source, java]
+----
+select p from Painting p where p.paintingTitle in (?1)
+----
+
+It is possible to convert an xref:expressions[Expression] object used with a xref:select[ObjectSelect] to EJBQL. Use the
+Expression#appendAsEJBQL methods for this purpose.
+
+While Cayenne Expressions discussed previously can be thought of as identical to JPQL WHERE clause, and indeed they are
+very close, there are a few notable differences:
+
+- Null handling: SelectQuery would translate the expressions matching NULL values to the corresponding "X IS NULL" or
+"X IS NOT NULL" SQL syntax. EJBQLQuery on the other hand requires explicit "IS NULL" (or "IS NOT NULL") syntax to be
+used, otherwise the generated SQL will look like "X = NULL" (or "X <> NULL"), which will evaluate differently.
+
+- Expression Parameters: SelectQuery uses "$" to denote named parameters (e.g. "$myParam"), while EJBQL uses ":"
+(e.g. ":myParam"). Also EJBQL supports positional parameters denoted by the question mark: "?3".
