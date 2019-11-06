@@ -17,13 +17,9 @@ include::../var.adoc[]
 [[ext-crypto]]
 === Crypto extension
 
-==== Description
-
 Crypto module allows encrypt and decrypt values stored in DB transparently to your Java app.
 
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -34,7 +30,7 @@ Crypto module allows encrypt and decrypt values stored in DB transparently to yo
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

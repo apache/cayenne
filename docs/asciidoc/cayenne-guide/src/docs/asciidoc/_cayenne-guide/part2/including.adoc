@@ -30,9 +30,9 @@ To add Cayenne to your Maven project, include `cayenne-server` in your POM:
 </dependency>
 ----
 
-==== Gradle Projects
+==== Gradle
 
-To add Cayenne to your Maven project, include `cayenne-server` module:
+To add Cayenne to your Gradle project, include `cayenne-server` module:
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

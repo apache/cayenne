@@ -17,13 +17,9 @@ include::../var.adoc[]
 [[ext-commit-log]]
 === Commit log extension
 
-==== Description
-
 The goal of this module is to capture commit changes and present them to interested parties in an easy-to-process format.
 
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -34,7 +30,7 @@ The goal of this module is to capture commit changes and present them to interes
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

@@ -14,13 +14,10 @@
 
 include::../var.adoc[]
 
-=== Cayenne Rop Server extension
+[#ext-rop]
+=== Cayenne ROP Server Extension
 
-==== Description
-
-This module creates services for the server side of an xref:introduction-to-rop[ROP] application.
-
-==== Including in a project
+Creates services for the server side of an <<rop,ROP>> application.
 
 ===== Maven
 

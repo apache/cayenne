@@ -12,7 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-== Cayenne Additional Modules
+== Additional Modules
 
 include::part5/cacheInvalidation.adoc[]
 

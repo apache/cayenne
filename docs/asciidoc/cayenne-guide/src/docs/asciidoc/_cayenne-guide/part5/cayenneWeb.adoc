@@ -14,15 +14,12 @@
 
 include::../var.adoc[]
 
-=== Cayenne Web extension
+[#ext-web]
+=== Cayenne Web Extension
 
-==== Description
+Provides basic utilities to bootstrap Cayenne service inside web application.
 
-This module provides basic utilities to bootstrap Cayenne service inside web application.
-
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -33,7 +30,7 @@ This module provides basic utilities to bootstrap Cayenne service inside web app
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

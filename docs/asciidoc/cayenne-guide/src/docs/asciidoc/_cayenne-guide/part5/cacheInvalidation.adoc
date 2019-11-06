@@ -14,16 +14,12 @@
 
 include::../var.adoc[]
 
-[[ext-cache-invalidation]]
-=== Cache invalidation extension
-
-==== Description
+[#ext-cache-invalidation]
+=== Cache Invalidation Extension
 
 Cache invalidation module is an extension that allows to define cache invalidation policy programmatically.
 
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -34,7 +30,7 @@ Cache invalidation module is an extension that allows to define cache invalidati
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
