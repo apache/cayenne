@@ -31,14 +31,14 @@ To have a working DI container, we need three things: service interfaces and cla
 [source, Java]
 ----
 public interface Service1 {
-    public String getString();
+    String getString();
 }
 ----
 
 [source, Java]
 ----
 public interface Service2 {
-    public int getInt();
+    int getInt();
 }
 ----
 
