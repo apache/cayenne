@@ -1,0 +1,178 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+[#gradle_plugin]
+=== Gradle Plugin
+
+Cayenne Gradle plugin provides tasks similar to <<maven_plugin,Maven plugin>>. It also provides `cayenne` extension that
+has some useful utility methods. Here is example of how to include Cayenne plugin into your project:
+
+[source, Groovy, subs="verbatim,attributes"]
+----
+buildscript {
+    // add Maven Central repository
+    repositories {
+        mavenCentral()
+    }
+    // add Cayenne Gradle Plugin
+    dependencies {
+        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '{version}'
+    }
+}
+
+// apply plugin
+apply plugin: 'org.apache.cayenne'
+
+// set default DataMap
+cayenne.defaultDataMap 'datamap.map.xml'
+
+// add Cayenne dependencies to your project
+dependencies {
+    // this is a shortcut for 'org.apache.cayenne:cayenne-server:VERSION_OF_PLUGIN'
+    compile cayenne.dependency('server')
+}
+----
+
+NOTE: Cayenne Gradle plugin is experimental and it's API may still change.
+
+==== cgen
+
+Cgen task generates Java classes based on your DataMap, it has same configuration parameters as in Maven Plugin version, described in xref:tablecgen[Table, “cgen required parameters”.]. If you provided default DataMap via `cayenne.defaultDataMap`, you can skip `cgen` configuration as default settings will suffice in common case.
+
+Here is how you can change settings of the default `cgen` task:
+
+[source, Groovy]
+----
+cgen {
+    client = false
+    mode = 'all'
+    overwrite = true
+    createPropertiesNames = true
+}
+----
+
+And here is example of how to define additional cgen task (e.g. for client classes if you are using ROP):
+
+
+[source, Groovy]
+----
+task clientCgen(type: cayenne.cgen) {
+    client = true
+}
+----
+
+==== cdbimport
+
+This task is for creating and synchronizing your Cayenne model from database schema. Full list of parameters are same
+as in <<cdbimportTable,Maven Plugin>>, with the exception that Gradle version will use Groovy instead of XML. Here is
+example of configuration for cdbimport task:
+
+[source, Groovy]
+----
+cdbimport {
+    // map can be skipped if it is defined in cayenne.defaultDataMap
+    map 'datamap.map.xml'
+    // optional project file, will be created if missing
+    cayenneProject 'cayenne-project.xml'
+
+    dataSource {
+        driver 'com.mysql.cj.jdbc.Driver'
+        url 'jdbc:mysql://127.0.0.1:3306/test?useSSL=false'
+        username 'root'
+        password ''
+    }
+
+    dbImport
+        // additional settings
+        usePrimitives false
+        defaultPackage 'org.apache.cayenne.test'
+
+        // DB filter configuration
+        catalog 'catalog-1'
+        schema 'schema-1'
+
+        catalog {
+            name 'catalog-2'
+
+            includeTable 'table0', {
+                excludeColumns '_column_'
+            }
+
+            includeTables 'table1', 'table2', 'table3'
+
+            includeTable 'table4', {
+                includeColumns 'id', 'type', 'data'
+            }
+
+            excludeTable '^GENERATED_.*'
+        }
+
+        catalog {
+            name 'catalog-3'
+            schema {
+                name 'schema-2'
+                includeTable 'test_table'
+                includeTable 'test_table2', {
+                    excludeColumn '__excluded'
+                }
+            }
+        }
+
+        includeProcedure 'procedure_test_1'
+
+        includeColumns 'id', 'version'
+
+        tableTypes 'TABLE', 'VIEW'
+    }
+}
+----
+
+==== cdbgen
+
+Cdbgen task drops and/or generates tables in a database on Cayenne DataMap. Full list of parameters is same as in the
+<<cdbgenTable,Maven plugin>>. Here is example of how to configure default `cdbgen` task:
+
+[source, Groovy]
+----
+cdbgen {
+
+    adapter 'org.apache.cayenne.dba.derby.DerbyAdapter'
+
+    dataSource {
+        driver 'org.apache.derby.jdbc.EmbeddedDriver'
+        url 'jdbc:derby:build/testdb;create=true'
+        username 'sa'
+        password ''
+    }
+
+    dropTables true
+    dropPk true
+
+    createTables true
+    createPk true
+    createFk true
+}
+----
+
+==== Link tasks to Gradle build lifecycle
+
+You can connect Cayenne tasks to the default build lifecycle. Here is short example of how to connect
+defaut `cgen` and `cdbimport` tasks with `compileJava` task:
+
+[source, Groovy]
+----
+cgen.dependsOn cdbimport
+compileJava.dependsOn cgen
+----
+
