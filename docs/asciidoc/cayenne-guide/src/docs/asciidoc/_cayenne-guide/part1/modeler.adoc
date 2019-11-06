@@ -12,6 +12,7 @@
 // the specific language governing permissions and limitations under the
 // License.
 
+[#cayenne-modeler]
 === CayenneModeler Application
 
 ==== Reverse Engineering Database

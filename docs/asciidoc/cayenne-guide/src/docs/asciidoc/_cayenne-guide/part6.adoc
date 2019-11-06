@@ -12,19 +12,16 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-== List of tables
+[#build_tools]
+== Build Tools
 
-* xref:versionHistory[Cayenne Version History]
-* xref:pluginParameteres[modeler plugin parameters]
-* xref:tablecgen[cgen required parameters]
-* xref:cgenOptional[cgen optional parameters]
-* xref:cdbgenTable[cdbgen required parameters]
-* xref:dataSourceParameteres[<dataSource> parameters]
-* xref:cdbgenOptionl[cdbgen optional parameters]
-* xref:cdbimportTable[cdbimport parameters]
-* xref:cdbimportDataSource[<dataSource> parameters]
-* xref:dbimportParameters[<dbimport> parameters]
-* xref:persistenceStates[Persistence States]
-* xref:lifecycleEvent[Lifecycle Event Types]
-* xref:configProperties[Configuration Properties Recognized by ServerRuntime and/or ClientRuntime]
-* xref:serviceCollections[Service Collection Keys Present in ServerRuntime and/or ClientRuntime]
+While we encourage the use of <<cayenne-modeler,CayenneModeler>> for tasks such as DB reverse-engineering and
+code generation, Cayenne also provides an option to execute them from your preferred build tool.
+It may be occasionally useful to keep them as a part of the build. This chapter shows how to use them in
+<<maven_plugin,Maven>>, <<gradle_plugin,Gradle>> or <<ant_tasks,Ant>>.
+
+include::part6/maven-plugin.adoc[]
+
+include::part6/gradle-plugin.adoc[]
+
+include::part6/ant-tasks.adoc[]

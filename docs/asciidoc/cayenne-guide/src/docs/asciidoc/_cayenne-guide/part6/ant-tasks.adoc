@@ -1,0 +1,59 @@
+// Licensed to the Apache Software Foundation (ASF) under one or more
+// contributor license agreements. See the NOTICE file distributed with
+// this work for additional information regarding copyright ownership.
+// The ASF licenses this file to you under the Apache License, Version
+// 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+// applicable law or agreed to in writing, software distributed under the
+// License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for
+// the specific language governing permissions and limitations under the
+// License.
+
+[#ant_tasks]
+=== Ant Tasks
+
+Ant tasks are the same as <<maven_plugin,Maven plugin goals>> described previously, namely "cgen", "cdbgen", "cdbimport".
+Configuration parameters are also similar (except Maven can guess many defaults that Ant can't). To include Ant tasks
+in the project, use the following Antlib:
+
+[source, XML]
+----
+<typedef resource="org/apache/cayenne/tools/antlib.xml">
+   <classpath>
+   		<fileset dir="lib" >
+			<include name="cayenne-ant-*.jar" />
+			<include name="cayenne-cgen-*.jar" />
+			<include name="cayenne-dbsync-*.jar" />
+			<include name="cayenne-di-*.jar" />
+			<include name="cayenne-project-*.jar" />
+			<include name="cayenne-server-*.jar" />
+			<include name="commons-collections-*.jar" />
+			<include name="commons-lang-*.jar" />
+			<include name="slf4j-api-*.jar" />
+			<include name="velocity-*.jar" />
+			<include name="vpp-2.2.1.jar" />
+		</fileset>
+   </classpath>
+</typedef>
+----
+
+==== cgen
+
+==== cdbgen
+
+==== cdbimport
+
+This is an Ant counterpart of "cdbimport" goal of cayenne-maven-plugin described above. It has exactly the same
+properties. Here is a usage example:
+
+[source, XML]
+----
+ <cdbimport map="${context.dir}/WEB-INF/my.map.xml"
+    driver="com.mysql.jdbc.Driver"
+    url="jdbc:mysql://127.0.0.1/mydb"
+    username="sa"
+    defaultPackage="com.example.cayenne"/>
+----

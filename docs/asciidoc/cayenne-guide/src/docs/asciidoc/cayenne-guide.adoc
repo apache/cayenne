@@ -45,6 +45,8 @@ include::_cayenne-guide/part4.adoc[]
 
 include::_cayenne-guide/part5.adoc[]
 
+include::_cayenne-guide/part6.adoc[]
+
 // move ROP docs down
 include::_cayenne-guide/part3.adoc[]
 
@@ -53,6 +55,4 @@ include::_cayenne-guide/configurationProperties.adoc[]
 include::_cayenne-guide/serviceCollections.adoc[]
 
 //include::_cayenne-guide/expressionsBNF.adoc[]
-
-include::_cayenne-guide/listOfTables.adoc[]
 
