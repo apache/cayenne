@@ -14,15 +14,12 @@
 
 include::../var.adoc[]
 
+[#ext-osgi]
 === Cayenne OSGI extension
 
-==== Description
+Helps to bootstrap Cayenne in OSGi environment.
 
-This module helps to bootstrap Cayenne in OSGi environment.
-
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -33,7 +30,7 @@ This module helps to bootstrap Cayenne in OSGi environment.
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

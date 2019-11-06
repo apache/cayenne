@@ -17,13 +17,9 @@ include::../var.adoc[]
 [[ext-jcache]]
 === JCache integration
 
-==== Description
+Allows to integrate any JCache (JSR 107) compatible caching provider with Cayenne.
 
-This module allows to integrate any JCache (JSR 107) compatible caching provider with Cayenne.
-
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -34,7 +30,7 @@ This module allows to integrate any JCache (JSR 107) compatible caching provider
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

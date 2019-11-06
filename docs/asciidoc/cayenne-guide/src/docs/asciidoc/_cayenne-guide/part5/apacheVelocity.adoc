@@ -14,16 +14,12 @@
 
 include::../var.adoc[]
 
-[[ext-velocity]]
-=== Apache Velocity extension
+[#ext-velocity]
+=== Apache Velocity Extension
 
-==== Description
+Enables usage of full featured Apache Velocity templates in `SQLSelect` / `SQLExec` queries.
 
-This module enables usage of full featured Apache Velocity templates in `org.apache.cayenne.query.SQLTemplate` queries.
-
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -34,7 +30,7 @@ This module enables usage of full featured Apache Velocity templates in `org.apa
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy, subs="verbatim,attributes"]
 ----
@@ -43,11 +39,16 @@ compile 'org.apache.cayenne:cayenne-velocity:{version}'
 
 ==== Usage
 
-This module doesn't require any additional setup.
+This module doesn't require any additional setup. In addition of directives mentioned in <<directives,this chapter>>,
+this module also adds `#chain` and `#chunk` directives.
 
-In addition of directives mentioned in <<directives,this chapter>>, this module enables `#chain` and `#chunk` directives.
-
-`#chain` and `#chunk` directives are used for conditional inclusion of SQL code. They are used together with `#chain` wrapping multiple `#chunks`. A chunk evaluates its parameter expression and if it is NULL suppresses rendering of the enclosed SQL block. A chain renders its prefix and its chunks joined by the operator. If all the chunks are suppressed, the chain itself is suppressed. This allows to work with otherwise hard to script SQL semantics. E.g. a WHERE clause can contain multiple conditions joined with AND or OR. Application code would like to exclude a condition if its right-hand parameter is not present (similar to Expression pruning discussed above). If all conditions are excluded, the entire WHERE clause should be excluded. chain/chunk allows to do that.
+`#chain` and `#chunk` directives are used for conditional inclusion of SQL code. They are used together with `#chain`
+wrapping multiple `#chunks`. A chunk evaluates its parameter expression and if it is NULL suppresses rendering of the
+enclosed SQL block. A chain renders its prefix and its chunks joined by the operator. If all the chunks are suppressed,
+the chain itself is suppressed. This allows to work with otherwise hard to script SQL semantics. E.g. a WHERE clause
+can contain multiple conditions joined with AND or OR. Application code would like to exclude a condition if its
+right-hand parameter is not present (similar to Expression pruning discussed above). If all conditions are excluded,
+the entire WHERE clause should be excluded. chain/chunk allows to do that.
 
 Semantics:
 

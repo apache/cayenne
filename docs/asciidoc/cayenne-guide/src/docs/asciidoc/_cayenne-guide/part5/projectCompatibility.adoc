@@ -17,15 +17,13 @@ include::../var.adoc[]
 [[ext-project-compatibility]]
 === Project compatibility extension
 
-==== Description
-
-Since version 4.1 Cayenne doesn't allow to load project XML files from previous versions as this can lead to unexpected errors in runtime. This module allows to use project files from older versions performing their upgrade on the fly (without modifying files). This can be useful when using Cayenne models from third-party libraries in your app.
+Since version 4.1 Cayenne doesn't allow to load project XML files from previous versions as this can lead to unexpected
+errors in runtime. This module allows to use project files from older versions performing their upgrade on the fly
+(without modifying files). This can be useful when using Cayenne models from third-party libraries in your app.
 
 NOTE: You should prefer explicit project upgrade via Cayenne Modeler.
 
-==== Including in a project
-
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -36,7 +34,7 @@ NOTE: You should prefer explicit project upgrade via Cayenne Modeler.
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----
