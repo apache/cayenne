@@ -19,7 +19,9 @@
 
 package org.apache.cayenne.access.flush;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.cayenne.ObjectId;
 
@@ -38,7 +40,12 @@ public class EffectiveOpId {
     public EffectiveOpId(ObjectId id) {
         this.id = id;
         this.entityName = id.getEntityName();
-        this.snapshot = id.getIdSnapshot();
+        this.snapshot = new HashMap<>(id.getIdSnapshot());
+        this.snapshot.entrySet().forEach(entry -> {
+            if(entry.getValue() instanceof Supplier) {
+                entry.setValue(((Supplier) entry.getValue()).get());
+            }
+        });
     }
 
     @Override
