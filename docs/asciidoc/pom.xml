@@ -100,6 +100,7 @@
                         <imagesdir>images</imagesdir>
                         <icons>font</icons>
 
+                        <sectnumlevels>4</sectnumlevels>
                         <sectanchors>true</sectanchors>
                         <idprefix /> <!-- set the idprefix to blank -->
                         <idseparator>-</idseparator>
