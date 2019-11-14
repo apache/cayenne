@@ -19,7 +19,7 @@ include::../var.adoc[]
 
 Creates services for the server side of an <<rop,ROP>> application.
 
-===== Maven
+==== Maven
 
 [source, XML,subs="verbatim,attributes"]
 ----
@@ -30,7 +30,7 @@ Creates services for the server side of an <<rop,ROP>> application.
 </dependency>
 ----
 
-===== Gradle
+==== Gradle
 
 [source, Groovy,subs="verbatim,attributes"]
 ----

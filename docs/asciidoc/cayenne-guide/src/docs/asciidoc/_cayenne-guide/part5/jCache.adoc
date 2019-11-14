@@ -63,9 +63,9 @@ ServerRuntime.builder()
 
 NOTE: You can read about using cache in Cayenne in xref:caching[this] chapter.
 
-You may else be interested in <<Cache invalidation extension>>.
+You may else be interested in <<Cache Invalidation Extension>>.
 
-===== Ehcache setup example
+==== Ehcache setup example
 Here is an example of using `ehcache` as cache manager.
 
 First you need to include `ehcache` dependency:
