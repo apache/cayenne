@@ -32,7 +32,6 @@ import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
 import org.apache.cayenne.gen.property.StringPropertyDescriptorCreator;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.project.ProjectModule;
-import org.apache.cayenne.tools.ToolsConstants;
 
 /**
  * @since 4.1
@@ -55,6 +54,6 @@ public class CgenModule implements Module{
     }
 
     public static ListBuilder<PropertyDescriptorCreator> contributeUserProperties(Binder binder) {
-        return binder.bindList(PropertyDescriptorCreator.class, ToolsConstants.CUSTOM_PROPERTIES);
+        return binder.bindList(PropertyDescriptorCreator.class);
     }
 }

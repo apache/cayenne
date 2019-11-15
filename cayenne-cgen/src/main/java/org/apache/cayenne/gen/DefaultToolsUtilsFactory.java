@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
-import org.apache.cayenne.tools.ToolsConstants;
 import org.slf4j.Logger;
 
 /**
@@ -34,7 +33,7 @@ public class DefaultToolsUtilsFactory implements ToolsUtilsFactory {
     @Inject
     private AdhocObjectFactory objectFactory;
 
-    @Inject(ToolsConstants.CUSTOM_PROPERTIES)
+    @Inject
     List<PropertyDescriptorCreator> propertyList;
 
     @Override
