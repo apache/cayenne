@@ -33,7 +33,7 @@ public abstract class BaseDbRowOp implements DbRowOp {
     protected final Persistent object;
     protected final DbEntity entity;
     // Can be ObjEntity id or a DB row id for flattened rows
-    protected final ObjectId changeId;
+    protected ObjectId changeId;
 
     protected BaseDbRowOp(Persistent object, DbEntity entity, ObjectId id) {
         this.object = Objects.requireNonNull(object);

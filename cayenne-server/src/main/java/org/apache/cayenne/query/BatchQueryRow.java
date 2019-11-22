@@ -32,6 +32,8 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public abstract class BatchQueryRow {
 
+    private static final int MAX_NESTED_SUPPLIER_LEVEL = 1000;
+
     protected ObjectId objectId;
     protected Map<String, Object> qualifier;
 
@@ -57,11 +59,24 @@ public abstract class BatchQueryRow {
     protected Object getValue(Map<String, Object> valueMap, DbAttribute attribute) {
 
         Object value = valueMap.get(attribute.getName());
+        boolean isSupplier = false;
+        int safeguard = 0;
 
-        // if a value is a Factory, resolve it here...
-        // slight chance that a normal value will implement Factory interface???
-        if (value instanceof Supplier) {
+        // Supplier can be nested, resolve all the way down
+        while(value instanceof Supplier && safeguard < MAX_NESTED_SUPPLIER_LEVEL) {
             value = ((Supplier) value).get();
+            isSupplier = true;
+            safeguard++;
+        }
+
+        // simple guard from recursive Suppliers
+        if(safeguard == MAX_NESTED_SUPPLIER_LEVEL) {
+            throw new CayenneRuntimeException("Possible recursive supplier chain for batch row value, object %s, attribute %s"
+                    , objectId, attribute.getName());
+        }
+
+        // if a value is a Supplier, resolve it here...
+        if (isSupplier) {
             valueMap.put(attribute.getName(), value);
 
             // update replacement id
@@ -74,8 +89,7 @@ public abstract class BatchQueryRow {
 
                 ObjectId id = getObjectId();
                 if (id != null) {
-                    // always override with fresh value as this is what's in the
-                    // DB
+                    // always override with fresh value as this is what's in the DB
                     id.getReplacementIdMap().put(attribute.getName(), value);
                 }
             }

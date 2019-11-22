@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
 	<property name="clientSupported" value="true"/>
@@ -27,6 +27,7 @@
 	</db-entity>
 	<obj-entity name="MeaningfulPKDep" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep" dbEntityName="MEANINGFUL_PK_DEP">
 		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
+		<obj-attribute name="pk" type="int" db-attribute-path="PK_ATTRIBUTE"/>
 	</obj-entity>
 	<obj-entity name="MeaningfulPKTest1" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1" dbEntityName="MEANINGFUL_PK_TEST1">
 		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
@@ -49,5 +50,5 @@
 		<db-attribute-pair source="PK_ATTRIBUTE" target="MASTER_PK"/>
 	</db-relationship>
 	<obj-relationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" db-relationship-path="toMeaningfulPK"/>
-	<obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" db-relationship-path="meaningfulPKDepArray"/>
+	<obj-relationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" deleteRule="Cascade" db-relationship-path="meaningfulPKDepArray"/>
 </data-map>

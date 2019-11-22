@@ -23,27 +23,48 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 
 /**
  * Helper value-object class that used to compare operations by "effective" id (i.e. by id snapshot,
  * that will include replacement id if any).
- * This class is not used directly by Cayenne, it's designed to ease custom implementations.
+ *
  * @since 4.2
  */
-@SuppressWarnings("unused")
 public class EffectiveOpId {
+    private static final int MAX_NESTED_SUPPLIER_LEVEL = 1000;
+
     private final String entityName;
     private final Map<String, Object> snapshot;
     private final ObjectId id;
 
     public EffectiveOpId(ObjectId id) {
+        this(id.getEntityName(), id);
+    }
+
+    public EffectiveOpId(String entityName, ObjectId id) {
         this.id = id;
-        this.entityName = id.getEntityName();
-        this.snapshot = new HashMap<>(id.getIdSnapshot());
-        this.snapshot.entrySet().forEach(entry -> {
-            if(entry.getValue() instanceof Supplier) {
-                entry.setValue(((Supplier) entry.getValue()).get());
+        this.entityName = entityName;
+        Map<String, Object> idSnapshot = id.getIdSnapshot();
+        this.snapshot = new HashMap<>(idSnapshot.size());
+        idSnapshot.forEach((key, value) -> {
+            Object initial = value;
+            int safeguard = 0;
+            while(value instanceof Supplier && safeguard < MAX_NESTED_SUPPLIER_LEVEL) {
+                value = ((Supplier) value).get();
+                safeguard++;
+            }
+
+            // simple guard from recursive Suppliers
+            if(safeguard == MAX_NESTED_SUPPLIER_LEVEL) {
+                throw new CayenneRuntimeException("Possible recursive supplier chain for PK value: id %s, key '%s'", id, key);
+            }
+
+            if(value != null) {
+                this.snapshot.put(key, value);
+            } else {
+                this.snapshot.put(key, initial);
             }
         });
     }

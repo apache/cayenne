@@ -26,6 +26,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.exp.parser.ASTDbPath;
@@ -83,6 +84,15 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitDelete(DeleteDbRowOp dbRow) {
+        // flattened ids will be temporary for delete operation, replace it
+        if(dbRow.getChangeId().isTemporary() && dbRow.getChangeId().isReplacementIdAttached()) {
+            dbRow.setChangeId(dbRow.getChangeId().createReplacementId());
+        }
+        return null;
+    }
+
     private void createPermanentId(InsertDbRowOp dbRow) {
         ObjectId id = dbRow.getChangeId();
         boolean supportsGeneratedKeys = lastNode.getAdapter().supportsGeneratedKeys();
@@ -118,6 +128,8 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
 
             // skip db-generated
             if (supportsGeneratedKeys && dbAttr.isGenerated()) {
+                // mark that this attribute should be generated at insert time
+                idMap.put(dbAttrName, new IdGenerationMarker(id));
                 continue;
             }
 
@@ -136,4 +148,5 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
             }
         }
     }
+
 }
