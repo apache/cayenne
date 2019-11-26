@@ -32,7 +32,7 @@ public class DbRowOpMerger implements DbRowOpVisitor<DbRowOp>, BiFunction<DbRowO
 
     private DbRowOp dbRow;
 
-    public DbRowOpMerger() {
+    DbRowOpMerger() {
     }
 
     @Override

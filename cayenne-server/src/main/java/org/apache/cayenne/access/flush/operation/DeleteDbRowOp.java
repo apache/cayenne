@@ -42,6 +42,7 @@ public class DeleteDbRowOp extends BaseDbRowOp implements DbRowOpWithQualifier {
 
     public void setChangeId(ObjectId changeId) {
         this.changeId = changeId;
+        this.hashCode = changeId.hashCode();
     }
 
     @Override

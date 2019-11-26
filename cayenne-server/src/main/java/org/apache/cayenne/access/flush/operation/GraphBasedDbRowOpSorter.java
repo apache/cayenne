@@ -20,16 +20,12 @@
 package org.apache.cayenne.access.flush.operation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataDomain;
@@ -106,15 +102,18 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         // build index op by ID
         Map<EffectiveOpId, List<DbRowOp>> indexById = new HashMap<>(dbRows.size());
         dbRows.forEach(op -> indexById
-                .computeIfAbsent(effectiveIdFor(op), id -> new ArrayList<>(2))
+                .computeIfAbsent(effectiveIdFor(op), id -> new ArrayList<>(1))
                 .add(op)
         );
+        boolean hasMeaningfulIds = indexById.size() != dbRows.size();
 
         // build ops dependency graph
         DbRowOpGraph graph = new DbRowOpGraph();
         dbRows.forEach(op -> {
             processRelationships(indexById, graph, op);
-            processMeaningfulIds(indexById, graph, op);
+            if(hasMeaningfulIds) {
+                processMeaningfulIds(indexById, graph, op);
+            }
             graph.add(op);
         });
 
@@ -172,11 +171,25 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         });
     }
 
-    private Collection<EffectiveOpId> getParentsOpId(DbRowOp op, DbRelationship relationship) {
-        return op.accept(new DbRowOpSnapshotVisitor(relationship)).stream()
-                .map(snapshot -> this.effectiveIdFor(relationship, snapshot))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+    private List<EffectiveOpId> getParentsOpId(DbRowOp op, DbRelationship relationship) {
+        List<Map<String, Object>> parentIdSnapshots = op.accept(new DbRowOpSnapshotVisitor(relationship));
+        if(parentIdSnapshots.size() == 1) {
+            EffectiveOpId id = effectiveIdFor(relationship, parentIdSnapshots.get(0));
+            if(id != null) {
+                return Collections.singletonList(id);
+            } else {
+                return Collections.emptyList();
+            }
+        } else {
+            List<EffectiveOpId> effectiveOpIds = new ArrayList<>(parentIdSnapshots.size());
+            parentIdSnapshots.forEach(snapshot -> {
+                EffectiveOpId id = this.effectiveIdFor(relationship, snapshot);
+                if(id != null) {
+                    effectiveOpIds.add(id);
+                }
+            });
+            return effectiveOpIds;
+        }
     }
 
     private EffectiveOpId effectiveIdFor(DbRowOp op) {
@@ -198,10 +211,10 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         if(idMap.size() != len) {
             return null;
         }
-        return new EffectiveOpId(ObjectId.of(relationship.getTargetEntityName(), idMap));
+        return new EffectiveOpId(relationship.getTargetEntityName(), idMap);
     }
 
-    private static class DbRowOpSnapshotVisitor implements DbRowOpVisitor<Collection<Map<String, Object>>> {
+    private static class DbRowOpSnapshotVisitor implements DbRowOpVisitor<List<Map<String, Object>>> {
 
         private final DbRelationship relationship;
 
@@ -210,12 +223,12 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         }
 
         @Override
-        public Collection<Map<String, Object>> visitInsert(InsertDbRowOp dbRow) {
+        public List<Map<String, Object>> visitInsert(InsertDbRowOp dbRow) {
             return Collections.singletonList(dbRow.getValues().getSnapshot());
         }
 
         @Override
-        public Collection<Map<String, Object>> visitUpdate(UpdateDbRowOp dbRow) {
+        public List<Map<String, Object>> visitUpdate(UpdateDbRowOp dbRow) {
             List<Map<String, Object>> result;
             Map<String, Object> updatedSnapshot = dbRow.getValues().getSnapshot();
             if(dbRow.getChangeId().getEntityName().startsWith(ASTDbPath.DB_PREFIX)) {
@@ -236,25 +249,8 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         }
 
         @Override
-        public Collection<Map<String, Object>> visitDelete(DeleteDbRowOp dbRow) {
+        public List<Map<String, Object>> visitDelete(DeleteDbRowOp dbRow) {
             Map<String, Object> cachedSnapshot = getCachedSnapshot(dbRow.getObject());
-
-            // check and merge flattened IDs snapshots
-            GraphManager graphManager = dbRow.getObject().getObjectContext().getGraphManager();
-            if(graphManager instanceof ObjectStore) {
-                ObjectStore store = (ObjectStore)graphManager;
-                store.getFlattenedIds(dbRow.getObject().getObjectId()).forEach(flattenedId -> {
-                    // map values of flattened ids from target to source
-                    Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();
-                    relationship.getJoins().forEach(join -> {
-                        Object value = idSnapshot.get(join.getTargetName());
-                        if(value != null) {
-                            cachedSnapshot.put(join.getSourceName(), value);
-                        }
-                    });
-                });
-            }
-            cachedSnapshot.putAll(dbRow.getQualifier().getSnapshot());
             return Collections.singletonList(cachedSnapshot);
         }
 
@@ -266,8 +262,37 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             if (result == null || result.size() == 0) {
                 return Collections.emptyMap();
             }
+
             // copy snapshot as we can modify it later
-            return new HashMap<>(result.get(0));
+            DataRow dataRow = result.get(0);
+            int joinSize = relationship.getJoins().size();
+            Map<String, Object> snapshot = joinSize == 1
+                    ? new SingleEntryMap<>(relationship.getJoins().get(0).getSourceName())
+                    : new HashMap<>(joinSize);
+            relationship.getJoins().forEach(join -> {
+                Object value = dataRow.get(join.getSourceName());
+                if(value != null) {
+                    snapshot.put(join.getSourceName(), value);
+                }
+            });
+
+            // check and merge flattened IDs snapshots
+            GraphManager graphManager = object.getObjectContext().getGraphManager();
+            if(graphManager instanceof ObjectStore) {
+                ObjectStore store = (ObjectStore)graphManager;
+                store.getFlattenedIds(object.getObjectId()).forEach(flattenedId -> {
+                    // map values of flattened ids from target to source
+                    Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();
+                    relationship.getJoins().forEach(join -> {
+                        Object value = idSnapshot.get(join.getTargetName());
+                        if(value != null) {
+                            snapshot.put(join.getSourceName(), value);
+                        }
+                    });
+                });
+            }
+
+            return snapshot;
         }
     }
 

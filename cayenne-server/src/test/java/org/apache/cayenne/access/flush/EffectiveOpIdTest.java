@@ -35,10 +35,9 @@ public class EffectiveOpIdTest {
     public void testEqualsTempGeneratedId() {
         ObjectId id1 = ObjectId.of("test");
         id1.getReplacementIdMap().put("pk", new IdGenerationMarker(id1));
-        EffectiveOpId effectiveOpId1 = new EffectiveOpId(id1);
+        EffectiveOpId effectiveOpId1 = new EffectiveOpId("test", Collections.singletonMap("pk", new IdGenerationMarker(id1)));
 
-        ObjectId id2 = ObjectId.of("test", Collections.singletonMap("pk", ObjectIdValueSupplier.getFor(id1, "pk")));
-        EffectiveOpId effectiveOpId2 = new EffectiveOpId(id2);
+        EffectiveOpId effectiveOpId2 = new EffectiveOpId("test", Collections.singletonMap("pk", ObjectIdValueSupplier.getFor(id1, "pk")));
 
         assertEquals(effectiveOpId1, effectiveOpId2);
     }

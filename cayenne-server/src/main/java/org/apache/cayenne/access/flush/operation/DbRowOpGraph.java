@@ -21,10 +21,10 @@ package org.apache.cayenne.access.flush.operation;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +54,7 @@ class DbRowOpGraph {
 	 * This implementation allows the creation of multi-edges and self-loops.
 	 */
 	void add(DbRowOp from, DbRowOp to) {
-		neighbors.computeIfAbsent(from, k -> new ArrayList<>()).add(to);
+		neighbors.computeIfAbsent(from, k -> new ArrayList<>(4)).add(to);
 		this.add(to);
 	}
 
@@ -62,7 +62,7 @@ class DbRowOpGraph {
 	 * Return (as a Map) the in-degree of each vertex.
 	 */
 	private Map<DbRowOp, Integer> inDegree() {
-		Map<DbRowOp, Integer> result = new LinkedHashMap<>();
+		Map<DbRowOp, Integer> result = new LinkedHashMap<>(neighbors.size());
 
 		neighbors.forEach((from, neighbors) -> {
 			neighbors.forEach(to -> result.compute(to, (k, old) -> {
@@ -82,8 +82,8 @@ class DbRowOpGraph {
 	 */
 	List<DbRowOp> topSort() {
 		Map<DbRowOp, Integer> degree = inDegree();
-		Deque<DbRowOp> zeroDegree = new ArrayDeque<>();
-		LinkedList<DbRowOp> result = new LinkedList<>();
+		Deque<DbRowOp> zeroDegree = new ArrayDeque<>(neighbors.size() / 2);
+		ArrayList<DbRowOp> result = new ArrayList<>(neighbors.size());
 
 		degree.forEach((k, v) -> {
 			if(v == 0) {
@@ -93,7 +93,7 @@ class DbRowOpGraph {
 
 		while (!zeroDegree.isEmpty()) {
 			DbRowOp v = zeroDegree.removeFirst();
-			result.push(v);
+			result.add(v);
 
 			neighbors.get(v).forEach(neighbor ->
 					degree.computeIfPresent(neighbor, (k, oldValue) -> {
@@ -113,6 +113,7 @@ class DbRowOpGraph {
 			throw new IllegalStateException("Cycle detected in list for keys: " + remainingKeys);
 		}
 
+		Collections.reverse(result);
 		return result;
 	}
 }

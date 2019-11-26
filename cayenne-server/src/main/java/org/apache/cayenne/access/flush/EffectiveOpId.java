@@ -40,33 +40,44 @@ public class EffectiveOpId {
     private final ObjectId id;
 
     public EffectiveOpId(ObjectId id) {
-        this(id.getEntityName(), id);
+        this(id, id.getEntityName(), id.getIdSnapshot());
     }
 
     public EffectiveOpId(String entityName, ObjectId id) {
-        this.id = id;
+        this(id, entityName, id.getIdSnapshot());
+    }
+
+    public EffectiveOpId(String entityName, Map<String, Object> idSnapshot) {
+        this(null, entityName, idSnapshot);
+    }
+
+    private EffectiveOpId(ObjectId id, String entityName, Map<String, Object> idSnapshot) {
         this.entityName = entityName;
-        Map<String, Object> idSnapshot = id.getIdSnapshot();
-        this.snapshot = new HashMap<>(idSnapshot.size());
-        idSnapshot.forEach((key, value) -> {
-            Object initial = value;
-            int safeguard = 0;
-            while(value instanceof Supplier && safeguard < MAX_NESTED_SUPPLIER_LEVEL) {
-                value = ((Supplier) value).get();
-                safeguard++;
-            }
+        if(idSnapshot.size() == 1 && !(idSnapshot.values().iterator().next() instanceof Supplier)) {
+            this.snapshot = idSnapshot;
+        } else {
+            this.snapshot = new HashMap<>(idSnapshot.size());
+            idSnapshot.forEach((key, value) -> {
+                Object initial = value;
+                int safeguard = 0;
+                while (value instanceof Supplier && safeguard < MAX_NESTED_SUPPLIER_LEVEL) {
+                    value = ((Supplier) value).get();
+                    safeguard++;
+                }
 
-            // simple guard from recursive Suppliers
-            if(safeguard == MAX_NESTED_SUPPLIER_LEVEL) {
-                throw new CayenneRuntimeException("Possible recursive supplier chain for PK value: id %s, key '%s'", id, key);
-            }
+                // simple guard from recursive Suppliers
+                if (safeguard == MAX_NESTED_SUPPLIER_LEVEL) {
+                    throw new CayenneRuntimeException("Possible recursive supplier chain for PK value: key '%s'", key);
+                }
 
-            if(value != null) {
-                this.snapshot.put(key, value);
-            } else {
-                this.snapshot.put(key, initial);
-            }
-        });
+                if (value != null) {
+                    this.snapshot.put(key, value);
+                } else {
+                    this.snapshot.put(key, initial);
+                }
+            });
+        }
+        this.id = id;
     }
 
     @Override
