@@ -99,6 +99,11 @@ public class JCacheQueryCache implements QueryCache {
         }
     }
 
+    /**
+     * @deprecated since 4.0 . Note that this method should not be relied upon to clear caches consistently. It only
+     * operates on a subset of caches that were created by this object, and ignores any preconfigured caches.
+     */
+    @Deprecated
     @Override
     public void clear() {
         for (String name : seenCacheNames) {
