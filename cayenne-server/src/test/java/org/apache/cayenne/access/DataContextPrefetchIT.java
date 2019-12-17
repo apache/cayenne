@@ -240,6 +240,31 @@ public class DataContextPrefetchIT extends ServerCase {
 		});
 	}
 
+	@Test
+	public void testPrefetchByPathToManyNoQualifier() throws Exception {
+		createTwoArtistsAndTwoPaintingsDataSet();
+
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.prefetch("paintingArray", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS)
+				.select(context);
+
+		queryInterceptor.runWithQueriesBlocked(() -> {
+
+			assertEquals(2, artists.size());
+
+			for (int i = 0; i < 2; i++) {
+				Artist a = artists.get(i);
+				List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
+				assertNotNull(toMany);
+				assertFalse(((ValueHolder) toMany).isFault());
+				assertEquals(1, toMany.size());
+
+				Painting p = (Painting) toMany.get(0);
+				assertEquals("Invalid prefetched painting:" + p, "p_" + a.getArtistName(), p.getPaintingTitle());
+			}
+		});
+	}
+
 	/**
 	 * Test that a to-many relationship is initialized when a target entity has
 	 * a compound PK only partially involved in relationship.
