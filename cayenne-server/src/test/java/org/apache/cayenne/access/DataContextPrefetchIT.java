@@ -30,6 +30,7 @@ import org.apache.cayenne.exp.Property;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -221,6 +222,31 @@ public class DataContextPrefetchIT extends ServerCase {
 		q.addPrefetch(Artist.PAINTING_ARRAY.disjoint());
 
 		final List<Artist> artists = context.select(q);
+
+		queryInterceptor.runWithQueriesBlocked(() -> {
+
+			assertEquals(2, artists.size());
+
+			for (int i = 0; i < 2; i++) {
+				Artist a = artists.get(i);
+				List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
+				assertNotNull(toMany);
+				assertFalse(((ValueHolder) toMany).isFault());
+				assertEquals(1, toMany.size());
+
+				Painting p = (Painting) toMany.get(0);
+				assertEquals("Invalid prefetched painting:" + p, "p_" + a.getArtistName(), p.getPaintingTitle());
+			}
+		});
+	}
+
+	@Test
+	public void testPrefetchByPathToManyNoQualifier() throws Exception {
+		createTwoArtistsAndTwoPaintingsDataSet();
+
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.prefetch("paintingArray", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS)
+				.select(context);
 
 		queryInterceptor.runWithQueriesBlocked(() -> {
 

@@ -398,7 +398,9 @@ public class ObjectSelect<T> extends FluentSelect<T> {
             prefetches = new PrefetchTreeNode();
         }
 
-        prefetches.addPath(path).setSemantics(semantics);
+        PrefetchTreeNode prefetchTreeNode = prefetches.addPath(path);
+        prefetchTreeNode.setSemantics(semantics);
+        prefetchTreeNode.setPhantom(false);
         replacementQuery = null;
         return this;
     }
