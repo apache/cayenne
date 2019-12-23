@@ -28,7 +28,7 @@ import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -204,7 +204,7 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
     /**
      * @since 4.2
      */
-    public Collection<BaseProperty<?>> getColumns() {
+    public Collection<Property<?>> getColumns() {
         return null;
     }
 

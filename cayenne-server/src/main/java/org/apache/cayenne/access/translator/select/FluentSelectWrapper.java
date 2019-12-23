@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
@@ -61,7 +61,7 @@ public class FluentSelectWrapper implements TranslatableQueryWrapper {
     }
 
     @Override
-    public Collection<BaseProperty<?>> getColumns() {
+    public Collection<Property<?>> getColumns() {
         return select.getColumns();
     }
 

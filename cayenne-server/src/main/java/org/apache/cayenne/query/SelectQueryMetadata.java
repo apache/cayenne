@@ -21,7 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DefaultEntityResultSegment;
 import org.apache.cayenne.map.DefaultScalarResultSegment;
 import org.apache.cayenne.map.EntityResolver;
@@ -94,7 +94,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 
 		if(query.getColumns() != null && !query.getColumns().isEmpty()) {
 			traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
-			for(BaseProperty<?> property : query.getColumns()) {
+			for(Property<?> property : query.getColumns()) {
 				key.append("/c:");
 				property.getExpression().traverse(traversalHandler);
 			}
@@ -163,9 +163,9 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 	}
 
 	private void resolveColumnsAliases(SelectQuery<?> query) {
-        Collection<BaseProperty<?>> columns = query.getColumns();
+        Collection<Property<?>> columns = query.getColumns();
         if(columns != null) {
-            for(BaseProperty<?> property : columns) {
+            for(Property<?> property : columns) {
                 Expression propertyExpression = property.getExpression();
                 if(propertyExpression != null) {
                     resolveAutoAliases(propertyExpression);
@@ -259,7 +259,7 @@ class SelectQueryMetadata extends BaseQueryMetadata {
 		}
 
 		resultSetMapping = new ArrayList<>(query.getColumns().size());
-		for(BaseProperty<?> column : query.getColumns()) {
+		for(Property<?> column : query.getColumns()) {
 			// for each column we need only to know if it's entity or scalar
 			Expression exp = column.getExpression();
 			boolean fullObject = false;
