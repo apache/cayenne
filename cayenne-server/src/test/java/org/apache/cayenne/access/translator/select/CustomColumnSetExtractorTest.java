@@ -26,6 +26,7 @@ import java.util.Collections;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -73,7 +74,7 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
         resolver.addDataMap(dataMap);
 
         BaseProperty<?> property0 = PropertyFactory.createBase(ExpressionFactory.dbPathExp("name"), String.class);
-        Collection<BaseProperty<?>> properties = Collections.singleton(property0);
+        Collection<Property<?>> properties = Collections.singleton(property0);
 
         CustomColumnSetExtractor extractor = new CustomColumnSetExtractor(context, properties);
         extractor.extract();

@@ -22,7 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
@@ -44,7 +44,7 @@ public interface TranslatableQueryWrapper {
 
     Collection<Ordering> getOrderings();
 
-    Collection<BaseProperty<?>> getColumns();
+    Collection<Property<?>> getColumns();
 
     Expression getHavingQualifier();
 

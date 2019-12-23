@@ -21,7 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
@@ -77,7 +77,7 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 
 		if (query.getColumns() != null && !query.getColumns().isEmpty()) {
 			traversalHandler = new ToCacheKeyTraversalHandler(resolver.getValueObjectTypeRegistry(), key);
-			for (BaseProperty<?> property : query.getColumns()) {
+			for (Property<?> property : query.getColumns()) {
 				key.append("/c:");
 				property.getExpression().traverse(traversalHandler);
 			}

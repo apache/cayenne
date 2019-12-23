@@ -56,6 +56,7 @@ import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -86,7 +87,7 @@ class QualifierTranslator implements TraversalHandler {
         this.nodeStack = new ArrayDeque<>();
     }
 
-    Node translate(BaseProperty<?> property) {
+    Node translate(Property<?> property) {
         if(property == null) {
             return null;
         }

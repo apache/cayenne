@@ -266,8 +266,8 @@ public class Property<E> extends BaseProperty<E> implements ComparableProperty<E
         int i = 0;
         exp[i++] = path();
         for(Object arg : args) {
-            if(arg instanceof BaseProperty) {
-                exp[i++] = ((BaseProperty) arg).getExpression();
+            if(arg instanceof org.apache.cayenne.exp.property.Property) {
+                exp[i++] = ((org.apache.cayenne.exp.property.Property<?>) arg).getExpression();
             } else if(arg instanceof Expression) {
                 exp[i++] = (Expression) arg;
             } else if(arg != null) {

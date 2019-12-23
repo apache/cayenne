@@ -33,6 +33,11 @@ public interface Property<E> {
     String getName();
 
     /**
+     * @return alias of this property, can be null
+     */
+    String getAlias();
+
+    /**
      * @return expression that defines this property, not null
      */
     Expression getExpression();

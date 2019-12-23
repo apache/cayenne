@@ -32,7 +32,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.ComparableProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -61,13 +61,13 @@ import org.apache.cayenne.map.ObjEntity;
  * </pre>
  * </p>
  * <p><b>Note: this class can't be instantiated directly. Use {@link ObjectSelect}.</b></p>
- * @see ObjectSelect#columnQuery(Class, BaseProperty)
+ * @see ObjectSelect#columnQuery(Class, Property)
  *
  * @since 4.0
  */
 public class ColumnSelect<T> extends FluentSelect<T> {
 
-    private Collection<BaseProperty<?>> columns;
+    private Collection<Property<?>> columns;
     // package private for tests
     boolean singleColumn = true;
     boolean distinct;
@@ -386,11 +386,11 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * </pre>
      *
      * @param properties array of properties to select
-     * @see ColumnSelect#column(BaseProperty)
+     * @see ColumnSelect#column(Property)
      * @see ColumnSelect#columns(Collection)
      */
     @SuppressWarnings("unchecked")
-    public ColumnSelect<Object[]> columns(BaseProperty<?>... properties) {
+    public ColumnSelect<Object[]> columns(Property<?>... properties) {
         if (properties.length == 0) {
             throw new IllegalArgumentException("properties must contain at least one element");
         }
@@ -408,10 +408,10 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * (root entity properties, function call expressions, properties of relationships, etc).</p>
      * <p>
      * @param properties collection of properties, <b>must</b> contain at least one element
-     * @see ColumnSelect#columns(BaseProperty[])
+     * @see ColumnSelect#columns(Property[])
      */
     @SuppressWarnings("unchecked")
-    public ColumnSelect<Object[]> columns(Collection<BaseProperty<?>> properties) {
+    public ColumnSelect<Object[]> columns(Collection<Property<?>> properties) {
         if (properties == null){
             throw new NullPointerException("properties is null");
         }
@@ -429,7 +429,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     @SuppressWarnings("unchecked")
-    protected  <E> ColumnSelect<E> column(BaseProperty<E> property) {
+    protected  <E> ColumnSelect<E> column(Property<E> property) {
         if (this.columns == null) {
             this.columns = new ArrayList<>(1);
         } else {
@@ -440,7 +440,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     /**
-     * <p>Shortcut for {@link #columns(BaseProperty[])} columns}(Property.COUNT)</p>
+     * <p>Shortcut for {@link #columns(Property[])} columns}(Property.COUNT)</p>
      */
     public ColumnSelect<Object[]> count() {
         return columns(PropertyFactory.COUNT);
@@ -457,7 +457,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select minimum value of property</p>
-     * @see ColumnSelect#columns(BaseProperty[])
+     * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> min(ComparableProperty<?> property) {
         return columns(property.min());
@@ -465,7 +465,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select maximum value of property</p>
-     * @see ColumnSelect#columns(BaseProperty[])
+     * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> max(ComparableProperty<?> property) {
         return columns(property.max());
@@ -473,17 +473,17 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select average value of property</p>
-     * @see ColumnSelect#columns(BaseProperty[])
+     * @see ColumnSelect#columns(Property[])
      * @deprecated since 4.2 use {@link #avg(NumericProperty)}
      */
     @Deprecated
-    public ColumnSelect<Object[]> avg(Property<?> property) {
+    public ColumnSelect<Object[]> avg(org.apache.cayenne.exp.Property<?> property) {
         return columns(property.avg());
     }
 
     /**
      * <p>Select average value of property</p>
-     * @see ColumnSelect#columns(BaseProperty[])
+     * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> avg(NumericProperty<?> property) {
         return columns(property.avg());
@@ -491,17 +491,17 @@ public class ColumnSelect<T> extends FluentSelect<T> {
 
     /**
      * <p>Select sum of values</p>
-     * @see ColumnSelect#columns(BaseProperty[])
+     * @see ColumnSelect#columns(Property[])
      * @deprecated since 4.2 use {@link #sum(NumericProperty)}
      */
     @Deprecated
-    public <E extends Number> ColumnSelect<Object[]> sum(Property<E> property) {
+    public <E extends Number> ColumnSelect<Object[]> sum(org.apache.cayenne.exp.Property<E> property) {
         return columns(property.sum());
     }
 
     /**
      * <p>Select sum of values</p>
-     * @see ColumnSelect#columns(BaseProperty[])
+     * @see ColumnSelect#columns(Property[])
      */
     public <E extends Number> ColumnSelect<Object[]> sum(NumericProperty<E> property) {
         return columns(property.sum());
@@ -600,7 +600,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     @Override
-    public Collection<BaseProperty<?>> getColumns() {
+    public Collection<Property<?>> getColumns() {
         return columns;
     }
 

@@ -32,7 +32,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntityResult;
@@ -128,7 +128,7 @@ public class TranslatorContext implements SQLGenerationContext {
     /**
      * Mark start of a new class descriptor, to be able to process result columns properly.
      * @param type of a descriptor
-     * @see #addResultNode(Node, boolean, BaseProperty, String)
+     * @see #addResultNode(Node, boolean, Property, String)
      */
     void markDescriptorStart(DescriptorType type) {
         if(type == DescriptorType.PREFETCH) {
@@ -224,7 +224,7 @@ public class TranslatorContext implements SQLGenerationContext {
         return addResultNode(node, true, null, dataRowKey);
     }
 
-    ResultNodeDescriptor addResultNode(Node node, boolean inDataRow, BaseProperty<?> property, String dataRowKey) {
+    ResultNodeDescriptor addResultNode(Node node, boolean inDataRow, Property<?> property, String dataRowKey) {
         ResultNodeDescriptor resultNode = new ResultNodeDescriptor(node, inDataRow, property, dataRowKey);
         if(appendResultToRoot) {
             resultNodeList.add(rootSegmentEnd + 1, resultNode);

@@ -29,7 +29,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EmbeddedResult;
 import org.apache.cayenne.map.JoinType;
@@ -43,16 +43,16 @@ import org.apache.cayenne.util.Util;
 class CustomColumnSetExtractor implements ColumnExtractor {
 
     private final TranslatorContext context;
-    private final Collection<BaseProperty<?>> columns;
+    private final Collection<Property<?>> columns;
 
-    CustomColumnSetExtractor(TranslatorContext context, Collection<BaseProperty<?>> columns) {
+    CustomColumnSetExtractor(TranslatorContext context, Collection<Property<?>> columns) {
         this.context = context;
         this.columns = columns;
     }
 
     @Override
     public void extract(String prefix) {
-        for (BaseProperty<?> property : columns) {
+        for (Property<?> property : columns) {
             if (isFullObjectProp(property)) {
                 extractFullObject(prefix, property);
             } else if(isEmbeddedProp(property)) {
@@ -63,14 +63,14 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         }
     }
 
-    private void extractSimpleProperty(BaseProperty<?> property) {
+    private void extractSimpleProperty(Property<?> property) {
         Node sqlNode = context.getQualifierTranslator().translate(property);
         context.addResultNode(sqlNode, true, property, property.getAlias());
         String name = property.getName() == null ? property.getExpression().expName() : property.getName();
         context.getSqlResult().addColumnResult(name);
     }
 
-    private boolean isFullObjectProp(BaseProperty<?> property) {
+    private boolean isFullObjectProp(Property<?> property) {
         int expressionType = property.getExpression().getType();
 
         // forbid direct selection of toMany relationships columns
@@ -88,11 +88,11 @@ class CustomColumnSetExtractor implements ColumnExtractor {
                     && Persistent.class.isAssignableFrom(property.getType()));
     }
 
-    private boolean isEmbeddedProp(BaseProperty<?> property) {
+    private boolean isEmbeddedProp(Property<?> property) {
         return EmbeddableObject.class.isAssignableFrom(property.getType());
     }
 
-    private void extractEmbeddedObject(String prefix, BaseProperty<?> property) {
+    private void extractEmbeddedObject(String prefix, Property<?> property) {
         Object o = property.getExpression().evaluate(context.getMetadata().getObjEntity());
         if(!(o instanceof EmbeddedAttribute)) {
             throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
@@ -107,7 +107,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         context.getSqlResult().addEmbeddedResult(result);
     }
 
-    private void extractFullObject(String prefix, BaseProperty<?> property) {
+    private void extractFullObject(String prefix, Property<?> property) {
         prefix = calculatePrefix(prefix, property);
         ensureJoin(prefix);
 
@@ -137,7 +137,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
      * Extracts prefix for this extractor from property.
      * This will be just a db path for this property, if any exists.
      */
-    private String calculatePrefix(String prefix, BaseProperty<?> property) {
+    private String calculatePrefix(String prefix, Property<?> property) {
         Expression exp = property.getExpression();
         int expressionType = exp.getType();
         if(expressionType == Expression.FULL_OBJECT && exp.getOperandCount() > 0) {

@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.Ordering;
@@ -45,7 +46,7 @@ class MockQueryWrapperBuilder {
 
     private Collection<Ordering> orderings;
 
-    private Collection<BaseProperty<?>> columns;
+    private Collection<Property<?>> columns;
 
     private Expression havingQualifier;
 
@@ -77,7 +78,7 @@ class MockQueryWrapperBuilder {
         return this;
     }
 
-    MockQueryWrapperBuilder withColumns(Collection<BaseProperty<?>> columns) {
+    MockQueryWrapperBuilder withColumns(Collection<Property<?>> columns) {
         this.columns = columns;
         return this;
     }
@@ -120,7 +121,7 @@ class MockQueryWrapperBuilder {
             }
 
             @Override
-            public Collection<BaseProperty<?>> getColumns() {
+            public Collection<Property<?>> getColumns() {
                 return columns;
             }
 
