@@ -169,10 +169,10 @@ public class DbImportTree extends JTree {
     }
 
     public DbImportTreeNode findNodeByParentsChain(DbImportTreeNode rootNode, DbImportTreeNode movedNode, int depth) {
-        String parentName = ((DbImportTreeNode) movedNode.getParent()).getSimpleNodeName();
-        if ((rootNode.parentsIsEqual(((DbImportTreeNode) movedNode.getParent())))
-                && (rootNode.getSimpleNodeName().equals(parentName))
-                && ((rootNode.isCatalog()) || (rootNode.isSchema()) || (rootNode.isIncludeTable()))) {
+        String parentName = movedNode.getParent().getSimpleNodeName();
+        if (rootNode.parentsIsEqual(movedNode.getParent())
+                && rootNode.getSimpleNodeName().equals(parentName)
+                && (rootNode.isCatalog() || rootNode.isSchema() || rootNode.isIncludeTable())) {
             return rootNode;
         }
         for (int i = 0; i < rootNode.getChildCount(); i++) {
@@ -333,8 +333,10 @@ public class DbImportTree extends JTree {
         this.addTreeExpansionListener(treeExpansionListener);
     }
 
-
     public DbImportTreeNode getSelectedNode() {
+        if(this.getSelectionPath() == null) {
+            return null;
+        }
         return (DbImportTreeNode) this.getSelectionPath().getLastPathComponent();
     }
 
