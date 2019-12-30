@@ -24,6 +24,8 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.cache.Cache;
 import javax.cache.CacheException;
@@ -38,6 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 4.0
  */
 public class JCacheQueryCache implements QueryCache {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryCache.class);
 
     @Inject
     protected CacheManager cacheManager;
@@ -139,6 +143,9 @@ public class JCacheQueryCache implements QueryCache {
     }
 
     protected Cache createCache(String cacheName) {
+        // Cache creation here can lead to a memory leak, see CAY-2642 for details.
+        LOGGER.warn("Creating a new JCache entry '{}'. It will be unlimited by default, and that can lead to greater memory usage or even leak. " +
+                "This entry could be configured by JCache provider-specific configuration.", cacheName);
         return cacheManager.createCache(cacheName, configurationFactory.create(cacheName));
     }
 
