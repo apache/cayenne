@@ -33,7 +33,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -43,8 +43,8 @@ import org.apache.cayenne.map.ObjEntity;
  * DataRows). Supports expression qualifier, multiple orderings and a number of
  * other parameters that serve as runtime hints to Cayenne on how to optimize
  * the fetch and result processing.
- * @deprecated since 4.2
- * use {@link org.apache.cayenne.query.ObjectSelect}
+ *
+ * @deprecated since 4.2, use {@link org.apache.cayenne.query.ObjectSelect}
  */
 @Deprecated
 public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery, Select<T> {
@@ -61,7 +61,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * @since 4.0
 	 */
-	protected Collection<BaseProperty<?>> columns;
+	protected Collection<Property<?>> columns;
 
 	/**
 	 * @since 4.0
@@ -758,14 +758,14 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	 * @since 4.0
 	 * @see SelectQuery#setCanReturnScalarValue(boolean)
 	 */
-	public void setColumns(Collection<BaseProperty<?>> columns) {
+	public void setColumns(Collection<Property<?>> columns) {
 		this.columns = columns;
 	}
 
 	/**
 	 * @since 4.0
 	 */
-	public void setColumns(BaseProperty<?>... columns) {
+	public void setColumns(Property<?>... columns) {
 		if(columns == null || columns.length == 0) {
 			return;
 		}
@@ -795,7 +795,7 @@ public class SelectQuery<T> extends AbstractQuery implements ParameterizedQuery,
 	/**
 	 * @since 4.0
 	 */
-	public Collection<BaseProperty<?>> getColumns() {
+	public Collection<Property<?>> getColumns() {
 		return columns;
 	}
 

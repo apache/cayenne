@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DefaultEntityResultSegment;
 import org.apache.cayenne.map.DefaultScalarResultSegment;
 import org.apache.cayenne.map.EntityResolver;
@@ -71,9 +71,9 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 	}
 
 	protected void resolveColumnsAliases(FluentSelect<?> query) {
-        Collection<BaseProperty<?>> columns = query.getColumns();
+        Collection<Property<?>> columns = query.getColumns();
         if(columns != null) {
-            for(BaseProperty<?> property : columns) {
+            for(Property<?> property : columns) {
                 Expression propertyExpression = property.getExpression();
                 if(propertyExpression != null) {
                     resolveAutoAliases(propertyExpression);
@@ -101,7 +101,7 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 		}
 
 		resultSetMapping = new ArrayList<>(query.getColumns().size());
-		for(BaseProperty<?> column : query.getColumns()) {
+		for(Property<?> column : query.getColumns()) {
 			// for each column we need only to know if it's entity or scalar
 			Expression exp = column.getExpression();
 			boolean fullObject = false;

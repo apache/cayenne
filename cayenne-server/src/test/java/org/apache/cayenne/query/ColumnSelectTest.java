@@ -24,9 +24,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -205,7 +205,7 @@ public class ColumnSelectTest {
         q.columns(Artist.DATE_OF_BIRTH);
         q.columns(Artist.PAINTING_ARRAY);
 
-        Collection<BaseProperty<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
+        Collection<Property<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
         assertEquals(properties, q.getColumns());
     }
 
@@ -218,7 +218,7 @@ public class ColumnSelectTest {
         q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
         q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
 
-        Collection<BaseProperty<?>> properties = Arrays.asList(
+        Collection<Property<?>> properties = Arrays.asList(
                 Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY,
                 Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY); // should it be Set instead of List?
         assertEquals(properties, q.getColumns());
@@ -234,7 +234,7 @@ public class ColumnSelectTest {
         q.column(Artist.DATE_OF_BIRTH);
         q.column(Artist.PAINTING_ARRAY);
 
-        Collection<BaseProperty<?>> properties = Collections.singletonList(Artist.PAINTING_ARRAY);
+        Collection<Property<?>> properties = Collections.singletonList(Artist.PAINTING_ARRAY);
         assertEquals(properties, q.getColumns());
     }
 
