@@ -38,6 +38,8 @@ import org.apache.cayenne.modeler.util.CayenneAction;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +56,10 @@ public abstract class TreeManipulationAction extends CayenneAction {
     DbImportTreeNode parentElement;
     DbImportTreeNode foundNode;
     String insertableNodeName;
-    Class insertableNodeClass;
+    Class<?> insertableNodeClass;
     boolean isMultipleAction;
     private boolean movedFromDbSchema;
-    private Map<Class, List<Class>> levels;
+    private Map<Class<?>, List<Class<?>>> levels;
     protected String name;
     protected boolean updateSelected;
 
@@ -91,7 +93,7 @@ public abstract class TreeManipulationAction extends CayenneAction {
         } else {
             selectedElement = foundNode;
         }
-        parentElement = (DbImportTreeNode) selectedElement.getParent();
+        parentElement = selectedElement.getParent();
         if (parentElement == null) {
             parentElement = selectedElement;
         }
@@ -120,44 +122,23 @@ public abstract class TreeManipulationAction extends CayenneAction {
     private void initLevels() {
         levels = new HashMap<>();
 
-        List<Class> rootChilds = new ArrayList<>();
-        rootChilds.add(Schema.class);
-        rootChilds.add(IncludeTable.class);
-        rootChilds.add(ExcludeTable.class);
-        rootChilds.add(IncludeColumn.class);
-        rootChilds.add(ExcludeColumn.class);
-        rootChilds.add(IncludeProcedure.class);
-        rootChilds.add(ExcludeProcedure.class);
-        levels.put(ReverseEngineering.class, rootChilds);
+        List<Class<?>> schemaChildren = Arrays.asList(
+                IncludeTable.class, ExcludeTable.class,
+                IncludeColumn.class, ExcludeColumn.class,
+                IncludeProcedure.class, ExcludeProcedure.class
+        );
+        List<Class<?>> rootChildren = new ArrayList<>(schemaChildren);
+        rootChildren.add(Schema.class);
 
-        List<Class> catalogChilds = new ArrayList<>();
-        catalogChilds.add(Schema.class);
-        catalogChilds.add(IncludeTable.class);
-        catalogChilds.add(ExcludeTable.class);
-        catalogChilds.add(IncludeColumn.class);
-        catalogChilds.add(ExcludeColumn.class);
-        catalogChilds.add(IncludeProcedure.class);
-        catalogChilds.add(ExcludeProcedure.class);
-        levels.put(Catalog.class, catalogChilds);
-
-        List<Class> schemaChilds = new ArrayList<>();
-        schemaChilds.add(IncludeTable.class);
-        schemaChilds.add(ExcludeTable.class);
-        schemaChilds.add(IncludeColumn.class);
-        schemaChilds.add(ExcludeColumn.class);
-        schemaChilds.add(IncludeProcedure.class);
-        schemaChilds.add(ExcludeProcedure.class);
-        levels.put(Schema.class, schemaChilds);
-
-        List<Class> includeTableChilds = new ArrayList<>();
-        includeTableChilds.add(IncludeColumn.class);
-        includeTableChilds.add(ExcludeColumn.class);
-        levels.put(IncludeTable.class, includeTableChilds);
-        levels.put(ExcludeTable.class, null);
-        levels.put(IncludeColumn.class, null);
-        levels.put(ExcludeColumn.class, null);
-        levels.put(IncludeProcedure.class, null);
-        levels.put(ExcludeProcedure.class, null);
+        levels.put(ReverseEngineering.class, rootChildren);
+        levels.put(Catalog.class, rootChildren);
+        levels.put(Schema.class, schemaChildren);
+        levels.put(IncludeTable.class, Arrays.asList(IncludeColumn.class, ExcludeColumn.class));
+        levels.put(ExcludeTable.class, Collections.emptyList());
+        levels.put(IncludeColumn.class, Collections.emptyList());
+        levels.put(ExcludeColumn.class, Collections.emptyList());
+        levels.put(IncludeProcedure.class, Collections.emptyList());
+        levels.put(ExcludeProcedure.class, Collections.emptyList());
     }
 
     public void setTree(DbImportTree tree) {
@@ -172,9 +153,8 @@ public abstract class TreeManipulationAction extends CayenneAction {
         if (node == null) {
             return false;
         }
-        Class selectedObjectClass = node.getUserObject().getClass();
-        List<Class> childs = levels.get(selectedObjectClass);
-        return childs != null && childs.contains(insertableNodeClass);
+        Class<?> selectedObjectClass = node.getUserObject().getClass();
+        return levels.get(selectedObjectClass).contains(insertableNodeClass);
     }
 
     boolean canInsert() {

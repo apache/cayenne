@@ -201,9 +201,9 @@ public class DbImportView extends JPanel {
             ReverseEngineering reverseEngineering = DbImportView.this.projectController.getApplication()
                     .getMetaData().get(map, ReverseEngineering.class);
             if(reverseEngineering == null) {
-                // create config with default values, but not store it into metadata
-                // config will be stored on change only, this is for not making project dirty on just selecting dbimport tab
+                // create config with default values
                 reverseEngineering = new ReverseEngineering();
+                DbImportView.this.projectController.getApplication().getMetaData().add(map, reverseEngineering);
             }
             configPanel.fillCheckboxes(reverseEngineering);
             configPanel.initializeTextFields(reverseEngineering);

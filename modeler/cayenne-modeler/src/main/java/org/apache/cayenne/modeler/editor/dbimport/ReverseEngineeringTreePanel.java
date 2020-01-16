@@ -39,7 +39,6 @@ import org.apache.cayenne.modeler.dialog.db.load.SchemaPopUpMenu;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.ScrollPaneLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
@@ -58,7 +57,7 @@ class ReverseEngineeringTreePanel extends JScrollPane {
 
     private ProjectController projectController;
     private TreeToolbarPanel treeToolbar;
-    private Map<Class, DefaultPopUpMenu> popups;
+    private Map<Class<?>, DefaultPopUpMenu> popups;
 
     ReverseEngineeringTreePanel(ProjectController projectController, DbImportTree reverseEngineeringTree,
                                 DbImportTree dbSchemaTree) {
@@ -122,7 +121,7 @@ class ReverseEngineeringTreePanel extends JScrollPane {
                     if (popupMenu != null) {
                         popupMenu.setProjectController(projectController);
                         popupMenu.setSelectedElement(selectedElement);
-                        popupMenu.setParentElement((DbImportTreeNode) selectedElement.getParent());
+                        popupMenu.setParentElement(selectedElement.getParent());
                         popupMenu.setTree(reverseEngineeringTree);
                         popupMenu.show(e.getComponent(), e.getX(), e.getY());
                     }
@@ -130,7 +129,7 @@ class ReverseEngineeringTreePanel extends JScrollPane {
                     DbImportTreeNode selectedNode = reverseEngineeringTree.getSelectedNode();
 
                     if( selectedNode.isExcludeColumn() || selectedNode.isIncludeColumn()) {
-                        DbImportTreeNode expandNode = (DbImportTreeNode) selectedNode.getParent();
+                        DbImportTreeNode expandNode = selectedNode.getParent();
 
                         DbImportTreeNode parentPath = dbSchemaTree.findNode(
                                 dbSchemaTree.getRootNode(), expandNode, 0
@@ -149,7 +148,7 @@ class ReverseEngineeringTreePanel extends JScrollPane {
 
 
                         if (findNode != null) {
-                            dbSchemaTree.expandPath(new TreePath(((DbImportTreeNode) findNode.getParent()).getPath()));
+                            dbSchemaTree.expandPath(new TreePath(findNode.getParent().getPath()));
                             scrollToNode(dbSchemaTree, findNode);
                         }
                     }
