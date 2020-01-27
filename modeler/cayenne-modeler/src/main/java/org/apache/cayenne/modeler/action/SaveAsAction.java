@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.prefs.Preferences;
@@ -64,8 +65,8 @@ public class SaveAsAction extends CayenneAction {
 
     @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
-                | ActionEvent.SHIFT_MASK);
+        return KeyStroke.getKeyStroke(KeyEvent.VK_S,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMask() | InputEvent.SHIFT_MASK);
     }
 
     /**
@@ -87,7 +88,7 @@ public class SaveAsAction extends CayenneAction {
 
         if (projectDir.exists() && !projectDir.canWrite()) {
             JOptionPane.showMessageDialog(Application.getFrame(), "Can't save project - unable to write to file \""
-                    + projectDir.getPath() + "\"", "Can't Save Project", JOptionPane.OK_OPTION);
+                    + projectDir.getPath() + "\"", "Can't Save Project", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
