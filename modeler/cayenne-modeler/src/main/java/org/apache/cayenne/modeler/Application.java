@@ -231,7 +231,6 @@ public class Application {
     /**
      * Reinitializes ModelerClassLoader from preferences.
      */
-    @SuppressWarnings("unchecked")
     public void initClassLoader() {
         final FileClassLoadingService classLoader = new FileClassLoadingService();
 
@@ -240,9 +239,8 @@ public class Application {
                 ClasspathPreferences.class,
                 "");
 
-        Collection<String> details = new ArrayList<>();
         String[] keys;
-        ArrayList<String> values = new ArrayList<>();
+        Collection<String> values = new ArrayList<>();
 
         try {
             keys = classLoaderPreference.keys();
@@ -252,10 +250,8 @@ public class Application {
         } catch (BackingStoreException ignored) {
         }
 
-        details.addAll(values);
-
-        if (details.size() > 0) {
-            classLoader.setPathFiles(details.stream().map(File::new).collect(Collectors.toList()));
+        if (values.size() > 0) {
+            classLoader.setPathFiles(values.stream().map(File::new).collect(Collectors.toList()));
         }
 
         this.modelerClassLoader = classLoader;
@@ -264,12 +260,7 @@ public class Application {
         if (SwingUtilities.isEventDispatchThread()) {
             Thread.currentThread().setContextClassLoader(classLoader.getClassLoader());
         } else {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                public void run() {
-                    Thread.currentThread().setContextClassLoader(classLoader.getClassLoader());
-                }
-            });
+            SwingUtilities.invokeLater(() -> Thread.currentThread().setContextClassLoader(classLoader.getClassLoader()));
         }
     }
 
