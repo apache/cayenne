@@ -16,6 +16,7 @@ Bug Fixes:
 
 CAY-2642 EhCache memory leak due to misconfiguration
 CAY-2643 ObjectSelect.prefetch(name, semantics) method creates a phantom node
+CAY-2646 Wrong target path selection logic in cgen config
 
 ----------------------------------
 Release: 4.1.RC2
