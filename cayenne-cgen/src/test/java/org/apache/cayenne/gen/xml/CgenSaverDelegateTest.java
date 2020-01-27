@@ -41,7 +41,7 @@ public class CgenSaverDelegateTest {
 
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
-        assertEquals(Paths.get("/tmp/src/main/java"), config.getRootPath());
+        assertEquals(Paths.get("/tmp/src/main/resources"), config.getRootPath());
         assertEquals(Paths.get("../java"), config.getRelPath());
     }
 
@@ -56,7 +56,7 @@ public class CgenSaverDelegateTest {
 
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
-        assertEquals(Paths.get("/tmp/src/main/java"), config.getRootPath());
+        assertEquals(Paths.get("/tmp/src/main/resources"), config.getRootPath());
         assertEquals(Paths.get("../java"), config.getRelPath());
     }
 
