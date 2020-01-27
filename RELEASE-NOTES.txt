@@ -107,6 +107,7 @@ CAY-2632 Modeler: issue saving cgen path for maven project
 CAY-2633 Modeler: attribute sorting logic in cgen can corrupt model
 CAY-2634 Minor inconsistencies in Modeler "DB Import"
 CAY-2635 Lambda expressions break ROP serialization
+CAY-2646 Wrong target path selection logic in cgen config
 
 ----------------------------------
 Release: 4.1.B1

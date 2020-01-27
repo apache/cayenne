@@ -84,5 +84,6 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
                 cgenConfiguration.setSuperTemplate(resourcePath.relativize(superTemplatePath).normalize().toString());
             }
         }
+        cgenConfiguration.setRootPath(resourcePath);
     }
 }

@@ -129,6 +129,7 @@ public class SaveAsAction extends CayenneAction {
 
                     RenamedPreferences.copyPreferences(newPref, tempOldPref, false);
                     tempOldPref.removeNode();
+                    Application.getInstance().getFrameController().getLastDirectory().setDirectory(projectDir);
                 }
             }
         }
