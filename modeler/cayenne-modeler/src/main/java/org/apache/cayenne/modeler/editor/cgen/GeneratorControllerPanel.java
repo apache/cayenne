@@ -44,9 +44,12 @@ public class GeneratorControllerPanel extends JPanel {
         this.outputFolder = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) throws ValidationException {
-                getCgenByDataMap().setRelPath(text);
-                if(!codeGeneratorControllerBase.isInitFromModel()) {
-                    projectController.setDirty(true);
+                CgenConfiguration cgenByDataMap = getCgenByDataMap();
+                if(cgenByDataMap != null) {
+                    cgenByDataMap.setRelPath(text);
+                    if (!codeGeneratorControllerBase.isInitFromModel()) {
+                        projectController.setDirty(true);
+                    }
                 }
             }
         };
