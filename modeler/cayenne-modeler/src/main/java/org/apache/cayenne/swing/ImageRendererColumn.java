@@ -37,10 +37,11 @@ public class ImageRendererColumn extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        setText(((JLabel) value).getText());
+        JLabel label = (JLabel) value;
+        setText(label.getText());
+        setIcon(label.getIcon());
+        setToolTipText(label.getToolTipText());
         setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
-        Icon icon = ((JLabel) value).getIcon();
-        setIcon(icon);
         return this;
     }
 }

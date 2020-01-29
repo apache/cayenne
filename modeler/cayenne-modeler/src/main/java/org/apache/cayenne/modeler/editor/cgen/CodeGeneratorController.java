@@ -68,7 +68,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         super(parent, projectController);
         this.classesSelector = new ClassesTabController(this);
         this.generatorSelector = new GeneratorTabController(this);
-        view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
+        this.view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
         this.prevGeneratorController = new ConcurrentHashMap<>();
         initBindings();
         initListeners();
@@ -110,7 +110,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     @Override
-    public Component getView() {
+    public CodeGeneratorPane getView() {
         return view;
     }
 

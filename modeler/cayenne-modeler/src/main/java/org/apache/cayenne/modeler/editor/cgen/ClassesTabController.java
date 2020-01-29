@@ -26,6 +26,7 @@ import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 
 import javax.swing.JLabel;
+import javax.swing.table.TableColumnModel;
 import java.awt.Component;
 
 /**
@@ -38,11 +39,11 @@ public class ClassesTabController extends CayenneController {
 
     private BindingBuilder builder;
 
-    public ClassesTabController(CodeGeneratorControllerBase parent) {
+    public ClassesTabController(CodeGeneratorController parent) {
         super(parent);
 
         this.view = new ClassesTabPanel();
-        builder = new BindingBuilder(getApplication().getBindingFactory(), this);
+        this.builder = new BindingBuilder(getApplication().getBindingFactory(), this);
     }
 
     public void startup(){
@@ -50,8 +51,8 @@ public class ClassesTabController extends CayenneController {
         classSelectedAction();
     }
 
-    protected CodeGeneratorControllerBase getParentController() {
-        return (CodeGeneratorControllerBase) getParent();
+    protected CodeGeneratorController getParentController() {
+        return (CodeGeneratorController) getParent();
     }
 
     public Component getView() {
@@ -77,14 +78,16 @@ public class ClassesTabController extends CayenneController {
                 "XXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         tableBuilder.addColumn(
-                "Comments, Warnings",
+                "",
                 "parent.getProblem(#item)",
                 String.class,
                 false,
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                "XX");
 
         this.tableBinding = tableBuilder.bindToTable(view.getTable(), "parent.classes");
-        view.getTable().getColumnModel().getColumn(1).setCellRenderer(new ImageRendererColumn());
+        TableColumnModel columnModel = view.getTable().getColumnModel();
+        columnModel.getColumn(1).setCellRenderer(new ImageRendererColumn());
+        columnModel.getColumn(2).setCellRenderer(new ImageRendererColumn());
     }
 
     public boolean isSelected() {
@@ -103,17 +106,10 @@ public class ClassesTabController extends CayenneController {
         int selectedCount = getParentController().getSelectedEntitiesSize()
                 + getParentController().getSelectedEmbeddablesSize()
                 + (getParentController().isDataMapSelected() ? 1 : 0);
-        if(selectedCount == 0) {
-            getParentController().enableGenerateButton(false);
-        } else {
-            getParentController().enableGenerateButton(true);
-        }
-        if (selectedCount < getParentController().getClasses().size()) {
-            ((CodeGeneratorPane)parent.getView()).getCheckAll().setSelected(false);
-        }
-        else if (selectedCount == getParentController().getClasses().size()) {
-            ((CodeGeneratorPane)parent.getView()).getCheckAll().setSelected(true);
-        }
+        int totalClasses = getParentController().getClasses().size();
+
+        getParentController().enableGenerateButton(selectedCount != 0);
+        getParentController().getView().getCheckAll().setSelected(selectedCount >= totalClasses);
         getParentController().updateSelectedEntities();
     }
 
@@ -121,6 +117,7 @@ public class ClassesTabController extends CayenneController {
      * An action that updates entity check boxes in response to the Select All state
      * change.
      */
+    @SuppressWarnings("unused")
     public void checkAllAction() {
         if (getParentController().updateSelection(((CodeGeneratorPane)parent.getView()).getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();

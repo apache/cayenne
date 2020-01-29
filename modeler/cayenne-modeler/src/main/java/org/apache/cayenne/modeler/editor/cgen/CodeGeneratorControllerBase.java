@@ -59,6 +59,7 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public abstract class CodeGeneratorControllerBase extends CayenneController {
 
+    protected static Icon errorIcon = ModelerUtil.buildIcon("icon-error.png");
     public static final String SELECTED_PROPERTY = "selected";
 
     protected DataMap dataMap;
@@ -272,34 +273,21 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return selected;
     }
 
-    /**
-     * Returns the first encountered validation problem for an antity matching the name or
-     * null if the entity is valid or the entity is not present.
-     */
-    public String getProblem(Object obj) {
-
-        String name = null;
-
-        if (obj instanceof ObjEntity) {
-            name = ((ObjEntity) obj).getName();
+    private void updateArtifactGenerationMode(Object classObj, boolean selected) {
+        DataMap dataMap = (DataMap) classObj;
+        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(dataMap, CgenConfiguration.class);
+        if(selected) {
+            cgenConfiguration.setArtifactsGenerationMode("all");
+        } else {
+            cgenConfiguration.setArtifactsGenerationMode("entity");
         }
-        else if (obj instanceof Embeddable) {
-            name = ((Embeddable) obj).getClassName();
-        }
-
-        if (validation == null) {
-            return null;
-        }
-
-        List failures = validation.getFailures(name);
-        if (failures.isEmpty()) {
-            return null;
-        }
-
-        return ((ValidationFailure) failures.get(0)).getDescription();
     }
 
     public boolean isSelected() {
+        return isSelected(currentClass);
+    }
+
+    public boolean isSelected(Object currentClass) {
         if (currentClass instanceof ObjEntity) {
             return selectedEntities
                     .contains(((ObjEntity) currentClass).getName());
@@ -316,6 +304,10 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     }
 
     public void setSelected(boolean selectedFlag) {
+        setSelected(currentClass, selectedFlag);
+    }
+
+    public void setSelected(Object currentClass, boolean selectedFlag) {
         if (currentClass == null) {
             return;
         }
@@ -357,14 +349,33 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         }
     }
 
-    private void updateArtifactGenerationMode(Object classObj, boolean selected) {
-        DataMap dataMap = (DataMap) classObj;
-        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(dataMap, CgenConfiguration.class);
-        if(selected) {
-            cgenConfiguration.setArtifactsGenerationMode("all");
-        } else {
-            cgenConfiguration.setArtifactsGenerationMode("entity");
+    /**
+     * Returns the first encountered validation problem for an antity matching the name or
+     * null if the entity is valid or the entity is not present.
+     */
+    public JLabel getProblem(Object obj) {
+        String name = null;
+        if (obj instanceof ObjEntity) {
+            name = ((ObjEntity) obj).getName();
+        } else if (obj instanceof Embeddable) {
+            name = ((Embeddable) obj).getClassName();
         }
+
+        ValidationFailure validationFailure = null;
+        if (validation != null) {
+            List<ValidationFailure> failures = validation.getFailures(name);
+            if (!failures.isEmpty()) {
+                validationFailure = failures.get(0);
+            }
+        }
+
+        JLabel labelIcon = new JLabel();
+        labelIcon.setVisible(true);
+        if(validationFailure != null) {
+            labelIcon.setIcon(errorIcon);
+            labelIcon.setToolTipText(validationFailure.getDescription());
+        }
+        return labelIcon;
     }
 
     public JLabel getItemName(Object obj) {
@@ -385,6 +396,14 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         labelIcon.setVisible(true);
         labelIcon.setText(className);
         return labelIcon;
+    }
+
+    public Object getCurrentClass() {
+        return currentClass;
+    }
+
+    public void setCurrentClass(Object currentClass) {
+        this.currentClass = currentClass;
     }
 
     public void updateSelectedEntities(){
@@ -465,14 +484,6 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
         return projectController;
     }
 
-    public Object getCurrentClass() {
-        return currentClass;
-    }
-
-    public void setCurrentClass(Object currentClass) {
-        this.currentClass = currentClass;
-    }
-
     public boolean isInitFromModel() {
         return initFromModel;
     }
@@ -480,7 +491,6 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
     public void setInitFromModel(boolean initFromModel) {
         this.initFromModel = initFromModel;
     }
-
 
     public abstract void enableGenerateButton(boolean enabled);
 

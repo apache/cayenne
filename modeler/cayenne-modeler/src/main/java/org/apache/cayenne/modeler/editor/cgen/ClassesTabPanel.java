@@ -44,7 +44,7 @@ public class ClassesTabPanel extends JPanel {
 
         // set some minimal preferred size, so that it is smaller than other forms used in
         // the dialog... this way we get the right automated overall size
-        tablePanel.setPreferredSize(new Dimension(530, 200));
+        tablePanel.setPreferredSize(new Dimension(300, 200));
 
         setLayout(new BorderLayout());
         add(tablePanel, BorderLayout.CENTER);
