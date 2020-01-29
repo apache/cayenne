@@ -28,7 +28,6 @@ import org.apache.cayenne.validation.ValidationException;
 
 /**
  */
-// TODO: extend BindingExpression, unless we decide to make it a composition...
 public abstract class BindingBase implements ObjectBinding {
 
     private Object compiled;
@@ -46,8 +45,7 @@ public abstract class BindingBase implements ObjectBinding {
         if (th instanceof OgnlException) {
             Throwable reason = ((OgnlException) th).getReason();
             return (reason != null) ? unwind(reason) : th;
-        }
-        else {
+        } else {
             return Util.unwindException(th);
         }
     }
@@ -56,8 +54,7 @@ public abstract class BindingBase implements ObjectBinding {
 
         try {
             this.compiled = Ognl.parseExpression(propertyExpression);
-        }
-        catch (OgnlException ex) {
+        } catch (OgnlException ex) {
             throw new CayenneRuntimeException("Invalid expression - "
                     + propertyExpression, BindingBase.unwind(ex));
         }
@@ -142,16 +139,14 @@ public abstract class BindingBase implements ObjectBinding {
                 }
 
                 Ognl.setValue(compiled, context, value);
-            }
-            finally {
+            } finally {
                 modelUpdateDisabled = false;
             }
 
             if (delegate != null) {
                 delegate.modelUpdated(this, oldValue, value);
             }
-        }
-        catch (OgnlException ex) {
+        } catch (OgnlException ex) {
             processException(ex);
         }
     }
@@ -166,20 +161,17 @@ public abstract class BindingBase implements ObjectBinding {
 
         try {
             return Ognl.getValue(compiled, context);
-        }
-        catch (OgnlException ex) {
+        } catch (OgnlException ex) {
             processException(ex);
             return null;
         }
     }
 
-    protected void processException(Throwable th) throws ValidationException,
-            BindingException {
+    protected void processException(Throwable th) throws ValidationException, BindingException {
         Throwable root = BindingBase.unwind(th);
         if (root instanceof ValidationException) {
             throw (ValidationException) root;
-        }
-        else if (root instanceof NumberFormatException) {
+        } else if (root instanceof NumberFormatException) {
             throw new ValidationException("Invalid numeric string");
         }
 

@@ -20,46 +20,22 @@
 package org.apache.cayenne.swing;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractButton;
 
-/**
- */
 public class ActionBinding extends BindingBase {
 
     protected Component view;
 
     public ActionBinding(AbstractButton button, String propertyExpression) {
         super(propertyExpression);
-
-        button.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                fireAction();
-            }
-        });
-
+        button.addActionListener(e -> fireAction());
         this.view = button;
     }
 
-    public ActionBinding(BoundComponent component, String propertyExpression,
-            String boundExpression) {
+    public ActionBinding(BoundComponent component, String propertyExpression, String boundExpression) {
         super(propertyExpression);
-
-        component.addPropertyChangeListener(
-                boundExpression,
-                new PropertyChangeListener() {
-
-                    public void propertyChange(PropertyChangeEvent event) {
-                        fireAction();
-                    }
-
-                });
-
+        component.addPropertyChangeListener(boundExpression, event -> fireAction());
         this.view = component.getView();
     }
 
@@ -67,7 +43,6 @@ public class ActionBinding extends BindingBase {
         if (view == null) {
             throw new BindingException("headless action");
         }
-
         return view;
     }
 
@@ -76,7 +51,6 @@ public class ActionBinding extends BindingBase {
     }
 
     protected void fireAction() {
-        // TODO: catch exceptions...
         getValue();
     }
 }

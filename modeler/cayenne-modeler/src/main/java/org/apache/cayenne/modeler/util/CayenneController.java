@@ -74,7 +74,7 @@ public abstract class CayenneController implements BoundComponent {
     }
 
     /**
-     * Returns the vie wassociated with this Controller.
+     * Returns the view associated with this Controller.
      */
     public abstract Component getView();
 
