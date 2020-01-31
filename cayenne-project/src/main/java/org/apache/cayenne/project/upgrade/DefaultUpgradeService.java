@@ -43,6 +43,8 @@ import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.handlers.UpgradeHandler;
@@ -198,13 +200,26 @@ public class DefaultUpgradeService implements UpgradeService {
 
     protected ConfigurationTree<DataChannelDescriptor> upgradeModel(Resource resource, List<UpgradeHandler> handlerList) {
         // Load Model back from the update XML
-        ConfigurationTree<DataChannelDescriptor> configurationTree = loader.load(resource);
+        ConfigurationTree<DataChannelDescriptor> configurationTree = loadProject(resource);
 
         // Update model level if needed
         for(UpgradeHandler handler : handlerList) {
             handler.processModel(configurationTree.getRootNode());
         }
 
+        return configurationTree;
+    }
+
+    protected ConfigurationTree<DataChannelDescriptor> loadProject(Resource resource) {
+        // Load Model back from the update XML
+        ConfigurationTree<DataChannelDescriptor> configurationTree = loader.load(resource);
+
+        // link all datamaps, or else we will lose cross-datamaps relationships
+        EntityResolver resolver = new EntityResolver();
+        for(DataMap dataMap : configurationTree.getRootNode().getDataMaps()) {
+            resolver.addDataMap(dataMap);
+            dataMap.setNamespace(resolver);
+        }
         return configurationTree;
     }
 
