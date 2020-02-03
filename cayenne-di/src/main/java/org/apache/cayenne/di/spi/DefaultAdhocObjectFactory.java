@@ -125,11 +125,11 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
                     }
                 }
 
-                throw new DIRuntimeException("Invalid class: %s", e, className);
+                throw new DIRuntimeException("Invalid class: '%s'", e, className);
             }
 
             if (className.length() < 3) {
-                throw new IllegalArgumentException("Invalid class name: " + className);
+                throw new IllegalArgumentException("Invalid class name: '" + className + "'");
             }
 
             // TODO: support for multi-dim arrays
@@ -156,7 +156,7 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             try {
                 return Class.forName("[L" + className + ";", true, classLoader);
             } catch (ClassNotFoundException e1) {
-                throw new DIRuntimeException("Invalid class: %s", e1, className);
+                throw new DIRuntimeException("Invalid class: '%s'", e1, className);
             }
         }
     }
