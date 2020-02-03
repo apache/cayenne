@@ -160,8 +160,8 @@ public abstract class CodeGeneratorControllerBase extends CayenneController {
                 .stream()
                 .map(Embeddable::getClassName)
                 .collect(Collectors.toList()));
-       getApplication().getMetaData().add(map, cgenConfiguration);
-       projectController.setDirty(true);
+        getApplication().getMetaData().add(map, cgenConfiguration);
+        projectController.setDirty(true);
 
         return cgenConfiguration;
     }

@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import java.awt.*;
-
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
@@ -37,12 +35,11 @@ public class StandardModeController extends GeneratorController {
         super(parent);
     }
 
-    protected GeneratorControllerPanel createView() {
+    protected void createView() {
         this.view = new StandardModePanel(getParentController());
-        return view;
     }
 
-    public Component getView() {
+    public StandardModePanel getView() {
         return view;
     }
 

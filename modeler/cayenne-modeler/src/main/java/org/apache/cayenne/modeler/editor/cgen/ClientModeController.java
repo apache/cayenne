@@ -31,8 +31,12 @@ public class ClientModeController extends StandardModeController {
         super(parent);
     }
 
-    protected GeneratorControllerPanel createView() {
+    protected void createView() {
         this.view = new StandardModePanel(getParentController());
+    }
+
+    @Override
+    public StandardModePanel getView() {
         return view;
     }
 

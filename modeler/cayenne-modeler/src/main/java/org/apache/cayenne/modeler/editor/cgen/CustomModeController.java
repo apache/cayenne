@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.*;
-import java.awt.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -49,8 +49,11 @@ public class CustomModeController extends GeneratorController {
     }
 
     @Override
-    protected GeneratorControllerPanel createView() {
+    protected void createView() {
         this.view = new CustomModePanel(getApplication().getFrameController().getProjectController(), getParentController());
+    }
+
+    public CustomModePanel getView() {
         return view;
     }
 
@@ -81,10 +84,6 @@ public class CustomModeController extends GeneratorController {
 
         this.view.getSubclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
         this.view.getSuperclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));
-    }
-
-    public Component getView() {
-        return view;
     }
 
     public void missTemplateDialog(CgenConfiguration cgenConfiguration, String template, String superTemplate) {

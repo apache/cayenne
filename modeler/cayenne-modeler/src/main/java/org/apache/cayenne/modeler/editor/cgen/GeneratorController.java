@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -50,7 +49,6 @@ import java.util.function.Predicate;
  */
 public abstract class GeneratorController extends CayenneController {
 
-    protected String mode = ArtifactsGenerationMode.ENTITY.getLabel();
     protected CgenConfiguration cgenConfiguration;
 
     public GeneratorController(CodeGeneratorControllerBase parent) {
@@ -61,7 +59,7 @@ public abstract class GeneratorController extends CayenneController {
     }
 
     protected void initBindings(BindingBuilder bindingBuilder) {
-        JButton outputSelect = ((GeneratorControllerPanel) getView()).getSelectOutputFolder();
+        JButton outputSelect = getView().getSelectOutputFolder();
         bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
     }
 
@@ -69,11 +67,14 @@ public abstract class GeneratorController extends CayenneController {
         return (CodeGeneratorControllerBase) getParent();
     }
 
-    protected abstract GeneratorControllerPanel createView();
+    protected abstract void createView();
+
+    @Override
+    public abstract GeneratorControllerPanel getView();
 
     protected void initForm(CgenConfiguration cgenConfiguration) {
         this.cgenConfiguration = cgenConfiguration;
-        ((GeneratorControllerPanel)getView()).getOutputFolder().setText(cgenConfiguration.buildPath().toString());
+        getView().getOutputFolder().setText(cgenConfiguration.buildPath().toString());
         if(cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
             ((CodeGeneratorControllerBase) parent).setCurrentClass(cgenConfiguration.getDataMap());
             ((CodeGeneratorControllerBase) parent).setSelected(true);
@@ -296,8 +297,7 @@ public abstract class GeneratorController extends CayenneController {
      */
     public void selectOutputFolderAction() {
 
-        TextAdapter outputFolder = ((GeneratorControllerPanel) getView()).getOutputFolder();
-
+        TextAdapter outputFolder = getView().getOutputFolder();
         String currentDir = outputFolder.getComponent().getText();
 
         JFileChooser chooser = new JFileChooser();
@@ -318,8 +318,8 @@ public abstract class GeneratorController extends CayenneController {
 
             // update model
             String path = selected.getAbsolutePath();
-            ((GeneratorControllerPanel) getView()).getOutputFolder().setText(path);
-            ((GeneratorControllerPanel) getView()).getOutputFolder().updateModel();
+            getView().getOutputFolder().setText(path);
+            getView().getOutputFolder().updateModel();
         }
     }
 }

@@ -78,11 +78,13 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         super.startup(dataMap);
         classesSelectedAction();
         CgenConfiguration cgenConfiguration = createConfiguration();
-        GeneratorController modeController = prevGeneratorController.get(dataMap) != null ?
-                prevGeneratorController.get(dataMap) : isDefaultConfig(cgenConfiguration) ?
-                cgenConfiguration.isClient() ? generatorSelector.getClientGeneratorController() :
-                        generatorSelector.getStandartController() :
-                generatorSelector.getCustomModeController();
+        GeneratorController modeController = prevGeneratorController.get(dataMap) != null
+                        ? prevGeneratorController.get(dataMap)
+                        : isDefaultConfig(cgenConfiguration)
+                            ? cgenConfiguration.isClient()
+                                ? generatorSelector.getClientGeneratorController()
+                                : generatorSelector.getStandartController()
+                            : generatorSelector.getCustomModeController();
 
         prevGeneratorController.put(dataMap, modeController);
         generatorSelector.setSelectedController(modeController);
