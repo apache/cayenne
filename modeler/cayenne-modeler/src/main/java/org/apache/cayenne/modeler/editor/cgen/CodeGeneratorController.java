@@ -73,8 +73,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     /**
      * Logger to print stack traces
      */
-    private static Logger logObj = LoggerFactory.getLogger(ErrorDebugDialog.class);
-    protected static Icon errorIcon = ModelerUtil.buildIcon("icon-error.png");
+    private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
+    private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
     public static final String SELECTED_PROPERTY = "selected";
 
     protected ProjectController projectController;
@@ -193,7 +193,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
                     this.getView(),
                     "Class generation finished");
         } catch (Exception e) {
-            logObj.error("Error generating classes", e);
+            LOGGER.error("Error generating classes", e);
             JOptionPane.showMessageDialog(
                     this.getView(),
                     "Error generating classes - " + e.getMessage());
@@ -352,7 +352,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         JLabel labelIcon = new JLabel();
         labelIcon.setVisible(true);
         if(validationFailure != null) {
-            labelIcon.setIcon(errorIcon);
+            labelIcon.setIcon(ERROR_ICON);
             labelIcon.setToolTipText(validationFailure.getDescription());
         }
         return labelIcon;
