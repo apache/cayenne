@@ -368,7 +368,7 @@ public class ModelerLogger implements Logger {
 
     @Override
     public void trace(String message, Object object, Object secondObject) {
-        consoleLog(LOG_LEVEL_TRACE, message, secondObject);
+        consoleLog(LOG_LEVEL_TRACE, message, object, secondObject);
         log("TRACE", message, null, LogConsole.DEBUG_STYLE, object, secondObject);
     }
 
@@ -444,7 +444,7 @@ public class ModelerLogger implements Logger {
 
     @Override
     public void warn(String message, Object object, Object secondObject) {
-        consoleLog(LOG_LEVEL_WARNING, message, secondObject);
+        consoleLog(LOG_LEVEL_WARNING, message, object, secondObject);
         log("WARN", message, null, LogConsole.WARN_STYLE, object, secondObject);
     }
 
