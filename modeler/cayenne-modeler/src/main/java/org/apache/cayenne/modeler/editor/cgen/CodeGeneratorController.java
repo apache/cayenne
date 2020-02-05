@@ -92,8 +92,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     protected GeneratorTabController generatorSelector;
     private ConcurrentMap<DataMap, GeneratorController> prevGeneratorController;
 
-    public CodeGeneratorController(CayenneController parent, ProjectController projectController) {
-        super(parent);
+    public CodeGeneratorController(ProjectController projectController) {
+        super(projectController);
         this.classesSelector = new ClassesTabController(this);
         this.generatorSelector = new GeneratorTabController(this);
         this.view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
