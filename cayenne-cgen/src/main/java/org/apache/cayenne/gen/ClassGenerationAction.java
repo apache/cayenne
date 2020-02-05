@@ -299,12 +299,11 @@ public class ClassGenerationAction {
 		Template template = templateCache.get(templateName);
 
 		if (template == null) {
-
 			Properties props = new Properties();
 
-			props.put("resource.loader", "cayenne");
-			props.put("cayenne.resource.loader.class", ClassGeneratorResourceLoader.class.getName());
-			props.put("cayenne.resource.loader.cache", "false");
+			props.put("resource.loaders", "cayenne");
+			props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
+			props.put("resource.loader.cayenne.cache", "false");
 
 			VelocityEngine velocityEngine = new VelocityEngine();
 			velocityEngine.init(props);
