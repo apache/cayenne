@@ -71,7 +71,7 @@ public class DataMapTabbedView extends JTabbedPane{
 
         addChangeListener(tab -> {
             if(isCgenTabActive()) {
-                codeGeneratorController.startup(mediator.getCurrentDataMap());
+                codeGeneratorController.initFromModel();
             } else if(isDbImportTabActive()) {
                 dbImportView.initFromModel();
             }

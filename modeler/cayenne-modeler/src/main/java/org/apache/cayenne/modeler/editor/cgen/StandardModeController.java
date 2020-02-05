@@ -31,7 +31,7 @@ public class StandardModeController extends GeneratorController {
     protected StandardModePanel view;
     protected DataMapDefaults preferences;
 
-    public StandardModeController(CodeGeneratorControllerBase parent) {
+    public StandardModeController(CodeGeneratorController parent) {
         super(parent);
     }
 

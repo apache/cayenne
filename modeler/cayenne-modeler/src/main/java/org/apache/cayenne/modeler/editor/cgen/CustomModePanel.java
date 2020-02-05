@@ -55,7 +55,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     private JButton manageTemplatesLink;
 
-    CustomModePanel(ProjectController projectController, CodeGeneratorControllerBase codeGeneratorControllerBase) {
+    CustomModePanel(ProjectController projectController, CodeGeneratorController codeGeneratorControllerBase) {
         super(projectController, codeGeneratorControllerBase);
         JComboBox<String> superclassField = new JComboBox<>();
         this.superclassTemplate = new ComboBoxAdapter<String>(superclassField) {

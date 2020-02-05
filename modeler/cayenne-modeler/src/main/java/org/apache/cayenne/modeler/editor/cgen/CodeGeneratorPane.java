@@ -40,7 +40,6 @@ import java.awt.FlowLayout;
  */
 public class CodeGeneratorPane extends JPanel {
 
-    private JPanel toolBarPanel;
     private JButton generateButton;
     private JCheckBox checkAll;
     private JLabel checkAllLabel;
@@ -49,7 +48,7 @@ public class CodeGeneratorPane extends JPanel {
         super();
         this.setLayout(new BorderLayout());
 
-        this.toolBarPanel = new JPanel();
+        JPanel toolBarPanel = new JPanel();
         toolBarPanel.setLayout(new BorderLayout());
 
         FormLayout layout = new FormLayout(
@@ -66,8 +65,7 @@ public class CodeGeneratorPane extends JPanel {
         checkAll.addItemListener(event -> {
             if (checkAll.isSelected()) {
                 checkAllLabel.setText("Uncheck All Classess");
-            }
-            else {
+            } else {
                 checkAllLabel.setText("Check All Classes");
             }
         });
@@ -83,7 +81,7 @@ public class CodeGeneratorPane extends JPanel {
                 generatorPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(150,400));
+        scrollPane.setPreferredSize(new Dimension(150, 400));
 
         // assemble
         splitPane.setRightComponent(scrollPane);

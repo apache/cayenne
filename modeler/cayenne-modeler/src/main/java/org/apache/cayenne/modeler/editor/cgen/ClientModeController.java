@@ -27,7 +27,7 @@ import org.apache.cayenne.gen.ClientClassGenerationAction;
  */
 public class ClientModeController extends StandardModeController {
 
-    public ClientModeController(CodeGeneratorControllerBase parent) {
+    public ClientModeController(CodeGeneratorController parent) {
         super(parent);
     }
 

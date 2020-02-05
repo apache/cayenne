@@ -51,7 +51,7 @@ public abstract class GeneratorController extends CayenneController {
 
     protected CgenConfiguration cgenConfiguration;
 
-    public GeneratorController(CodeGeneratorControllerBase parent) {
+    public GeneratorController(CodeGeneratorController parent) {
         super(parent);
 
         createView();
@@ -63,8 +63,8 @@ public abstract class GeneratorController extends CayenneController {
         bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
     }
 
-    protected CodeGeneratorControllerBase getParentController() {
-        return (CodeGeneratorControllerBase) getParent();
+    protected CodeGeneratorController getParentController() {
+        return (CodeGeneratorController) getParent();
     }
 
     protected abstract void createView();
@@ -76,8 +76,8 @@ public abstract class GeneratorController extends CayenneController {
         this.cgenConfiguration = cgenConfiguration;
         getView().getOutputFolder().setText(cgenConfiguration.buildPath().toString());
         if(cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
-            ((CodeGeneratorControllerBase) parent).setCurrentClass(cgenConfiguration.getDataMap());
-            ((CodeGeneratorControllerBase) parent).setSelected(true);
+            getParentController().setCurrentClass(cgenConfiguration.getDataMap());
+            getParentController().setSelected(true);
         }
     }
 

@@ -42,7 +42,7 @@ public class CustomModeController extends GeneratorController {
 
     protected CustomModePanel view;
 
-    public CustomModeController(CodeGeneratorControllerBase parent) {
+    public CustomModeController(CodeGeneratorController parent) {
         super(parent);
         bind();
         initListeners();

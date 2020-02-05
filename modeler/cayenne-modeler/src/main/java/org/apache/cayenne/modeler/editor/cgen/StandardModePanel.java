@@ -30,8 +30,8 @@ import java.awt.BorderLayout;
  */
 public class StandardModePanel extends GeneratorControllerPanel {
 
-    public StandardModePanel(CodeGeneratorControllerBase codeGeneratorControllerBase) {
-        super(Application.getInstance().getFrameController().getProjectController(), codeGeneratorControllerBase);
+    public StandardModePanel(CodeGeneratorController codeGeneratorController) {
+        super(Application.getInstance().getFrameController().getProjectController(), codeGeneratorController);
         FormLayout layout = new FormLayout(
                 "right:83dlu, 1dlu, fill:240:grow, 1dlu, left:100dlu, 100dlu", "");
 

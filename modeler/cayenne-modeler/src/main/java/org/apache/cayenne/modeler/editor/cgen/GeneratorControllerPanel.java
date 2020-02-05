@@ -39,7 +39,7 @@ public class GeneratorControllerPanel extends JPanel {
     protected JButton selectOutputFolder;
     protected ProjectController projectController;
 
-    public GeneratorControllerPanel(ProjectController projectController, CodeGeneratorControllerBase codeGeneratorControllerBase) {
+    public GeneratorControllerPanel(ProjectController projectController, CodeGeneratorController codeGeneratorControllerBase) {
         this.projectController = projectController;
         this.outputFolder = new TextAdapter(new JTextField()) {
             @Override
