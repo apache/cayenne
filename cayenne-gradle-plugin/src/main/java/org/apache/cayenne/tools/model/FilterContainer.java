@@ -99,6 +99,7 @@ public class FilterContainer {
     }
 
     /**
+     * @param pattern RegExp pattern to use for relationship exclusion
      * @since 4.1
      */
     public void excludeRelationship(String pattern) {
@@ -106,6 +107,7 @@ public class FilterContainer {
     }
 
     /**
+     * @param patterns collection of RegExp patterns to use for relationship exclusion
      * @since 4.1
      */
     public void excludeRelationships(String... patterns) {

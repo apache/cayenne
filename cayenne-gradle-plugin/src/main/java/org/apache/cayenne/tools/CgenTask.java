@@ -423,8 +423,8 @@ public class CgenTask extends BaseCayenneTask {
     }
 
     /**
+     * @param excludeEmbeddables pattern to use for embeddable exclusion
      * @since 4.1
-     * @param excludeEmbeddables
      */
     public void excludeEmbeddables(String excludeEmbeddables) {
         setExcludeEmbeddables(excludeEmbeddables);
