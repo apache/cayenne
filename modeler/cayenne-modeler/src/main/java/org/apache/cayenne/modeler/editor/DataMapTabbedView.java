@@ -20,13 +20,16 @@ package org.apache.cayenne.modeler.editor;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
+import org.apache.cayenne.modeler.action.SaveAction;
 import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorController;
+import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorPane;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTab;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Data map editing tabs container
@@ -50,6 +53,11 @@ public class DataMapTabbedView extends JTabbedPane{
         initView();
     }
 
+    protected CodeGeneratorPane view;
+
+    public CodeGeneratorPane getView() {
+        return view;
+    }
     /**
      * create tabs
      */
@@ -71,7 +79,7 @@ public class DataMapTabbedView extends JTabbedPane{
 
         addChangeListener(tab -> {
             if(isCgenTabActive()) {
-                codeGeneratorController.initFromModel();
+                checkProjectSave(mediator);
             } else if(isDbImportTabActive()) {
                 dbImportView.initFromModel();
             }
@@ -85,6 +93,31 @@ public class DataMapTabbedView extends JTabbedPane{
                 fireStateChanged();
             }
         });
+    }
+
+    private void checkProjectSave(ProjectController mediator) {
+        if (mediator.getProject().getConfigurationResource() == null) {
+            int input = JOptionPane.showConfirmDialog(getView(), "You should save", null, JOptionPane.OK_CANCEL_OPTION);
+            if (input == 0) {
+                Application.getInstance().getActionManager().getAction(SaveAction.class).performAction();
+            }
+            if (mediator.isDirty()) {
+                enableComponents(cgenView, false);
+                return;
+            }
+        }
+        enableComponents(cgenView, true);
+        codeGeneratorController.initFromModel();
+    }
+
+    public void enableComponents(Container container, boolean enable) {
+        Component[] components = container.getComponents();
+        for (Component component : components) {
+            component.setEnabled(enable);
+            if (component instanceof Container) {
+                enableComponents((Container)component, enable);
+            }
+        }
     }
 
     private boolean isCgenTabActive() {
