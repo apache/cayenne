@@ -19,14 +19,15 @@ database schema step. Still be aware that you can do it if you need to via "Tool
 Create Database Schema".
 
 ==== Creating Java Classes
-- Select "Tools > Generate Classes" menu.
+- Select your datamap in a project tree and open "Class Generation" tab.
 - For "Type" select "Standard Persistent Objects", if it is not already selected.
 - For the "Output Directory" select "`src/main/java`" folder under your IDEA
 project folder (this is a "peer" location to the `cayenne-*.xml` location we
 selected before).
-- Click on "Classes" tab and check the "Check All Classes" checkbox
-(unless it is already checked and reads "Uncheck all Classes").
-- Click "Generate"
+- Select all object entities (unless they are already checked).
+- Finally, click "Generate"
+
+image::class-generation.png[align="center"]
 
 Now go back to IDEA - you
 should see pairs of classes generated for each mapped entity. You probably also see that
@@ -76,7 +77,7 @@ or commons-logging) through bridges.
         
 image::idea-generated-classes.png[align="center"]
 
-Now let's check the entity class pairs. Each one is made of a superclass (e.g. `\_Artist`)
+Now let's check the entity class pairs. Each one is made of a superclass (e.g. `auto/\_Artist`)
 and a subclass (e.g. `Artist`). You *should not* modify the
 superclasses whose names start with "_" (underscore), as they will be replaced on
 subsequent generator runs. Instead all custom logic should be placed in the subclasses
