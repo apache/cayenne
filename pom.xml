@@ -342,7 +342,7 @@
             <dependency>
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
-                <version>4.0.51</version>
+                <version>4.0.63</version>
                 <scope>provided</scope>
             </dependency>
 			<dependency>

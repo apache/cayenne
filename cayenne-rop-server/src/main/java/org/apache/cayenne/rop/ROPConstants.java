@@ -25,4 +25,9 @@ public class ROPConstants {
 
     public static final String ESTABLISH_SESSION_OPERATION = "establish_session";
     public static final String ESTABLISH_SHARED_SESSION_OPERATION = "establish_shared_session";
+
+    /**
+     * @since 4.2
+     */
+    public static final String SERIALIZATION_WHITELIST = "serialization_whitelist";
 }

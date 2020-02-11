@@ -33,7 +33,7 @@ public class HttpClientConnectionProvider implements Provider<ClientConnection> 
     protected RuntimeProperties runtimeProperties;
     
     @Inject
-    protected ROPSerializationService serializationService;
+    protected Provider<ROPSerializationService> serializationServiceProvider;
 
     @Override
     public ClientConnection get() throws DIRuntimeException {
@@ -41,7 +41,7 @@ public class HttpClientConnectionProvider implements Provider<ClientConnection> 
                 .get(ClientConstants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
 
         HttpROPConnector ropConnector = createHttpRopConnector();
-        ProxyRemoteService remoteService = new ProxyRemoteService(serializationService, ropConnector);
+        ProxyRemoteService remoteService = new ProxyRemoteService(serializationServiceProvider.get(), ropConnector);
 
         HttpClientConnection clientConnection = new HttpClientConnection(remoteService, sharedSession);
         ropConnector.setClientConnection(clientConnection);

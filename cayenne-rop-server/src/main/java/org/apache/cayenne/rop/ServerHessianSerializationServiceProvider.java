@@ -18,20 +18,42 @@
  ****************************************************************/
 package org.apache.cayenne.rop;
 
+import java.util.List;
+
+import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.hessian.HessianConfig;
 import org.apache.cayenne.remote.hessian.service.ServerSerializerFactory;
 
 public class ServerHessianSerializationServiceProvider implements Provider<ROPSerializationService> {
 
+    private final Provider<DataChannel> dataChannelProvider;
+
+    private final List<String> serializationWhitelist;
+
     public static final String[] SERVER_SERIALIZER_FACTORIES = new String[] {
             ServerSerializerFactory.class.getName()
     };
 
+    /**
+     * @since 4.2
+     */
+    public ServerHessianSerializationServiceProvider(@Inject Provider<DataChannel> dataChannelProvider,
+                                                     @Inject(ROPConstants.SERIALIZATION_WHITELIST) List<String> serializationWhitelist) {
+        this.dataChannelProvider = dataChannelProvider;
+        this.serializationWhitelist = serializationWhitelist;
+    }
+
     @Override
     public ROPSerializationService get() throws DIRuntimeException {
         return new HessianROPSerializationService(
-                HessianConfig.createFactory(SERVER_SERIALIZER_FACTORIES, null));
+                HessianConfig.createFactory(
+                        SERVER_SERIALIZER_FACTORIES,
+                        dataChannelProvider.get().getEntityResolver(),
+                        serializationWhitelist
+                )
+        );
     }
 }
