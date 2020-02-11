@@ -63,7 +63,7 @@ public interface OperationObserver extends OperationHints {
      * 
      * @since 4.0
      */
-    void nextGeneratedRows(Query query, ResultIterator<?> keys, ObjectId idToUpdate);
+    void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate);
 
     /**
      * Callback method invoked on exceptions that happen during an execution of a specific

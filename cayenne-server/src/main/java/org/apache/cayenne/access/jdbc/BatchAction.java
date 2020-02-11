@@ -38,10 +38,14 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * @since 1.2
@@ -84,8 +88,8 @@ public class BatchAction extends BaseSQLAction {
 		BatchTranslator translator = createTranslator();
 		boolean generatesKeys = hasGeneratedKeys();
 
-		if (runningAsBatch && !generatesKeys) {
-			runAsBatch(connection, translator, observer);
+		if (runningAsBatch) {
+			runAsBatch(connection, translator, observer, generatesKeys);
 		} else {
 			runAsIndividualQueries(connection, translator, observer, generatesKeys);
 		}
@@ -95,7 +99,7 @@ public class BatchAction extends BaseSQLAction {
 		return dataNode.batchTranslator(query, null);
 	}
 
-	protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate)
+	protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate, boolean generatesKeys)
 			throws SQLException, Exception {
 
 		String sql = translator.getSql();
@@ -109,7 +113,7 @@ public class BatchAction extends BaseSQLAction {
 
 		DbAdapter adapter = dataNode.getAdapter();
 
-		try (PreparedStatement statement = con.prepareStatement(sql)) {
+		try (PreparedStatement statement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 			for (BatchQueryRow row : query.getRows()) {
 
 				DbAttributeBinding[] bindings = translator.updateBindings(row);
@@ -123,6 +127,10 @@ public class BatchAction extends BaseSQLAction {
 			int[] results = statement.executeBatch();
 			delegate.nextBatchCount(query, results);
 
+			if (generatesKeys) {
+				processGeneratedKeys(statement, delegate, query.getRows());
+			}
+			
 			if (isLoggable) {
 				int totalUpdateCount = 0;
 				for (int result : results) {
@@ -263,6 +271,52 @@ public class BatchAction extends BaseSQLAction {
 				Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
 		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
-		observer.nextGeneratedRows(query, iterator, row.getObjectId());
+		observer.nextGeneratedRows(query, iterator, Collections.singletonList(row.getObjectId()));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void processGeneratedKeys(Statement statement, OperationObserver observer, List<BatchQueryRow> rows)
+			throws SQLException {
+
+		ResultSet keysRS = statement.getGeneratedKeys();
+
+		// TODO: andrus, 7/4/2007 - (1) get the type of meaningful PK's from
+		// their
+		// ObjAttributes; (2) use a different form of Statement.execute -
+		// "execute(String,String[])" to be able to map generated column names
+		// (this way
+		// we can support multiple columns.. although need to check how well
+		// this works
+		// with most common drivers)
+
+		RowDescriptorBuilder builder = new RowDescriptorBuilder();
+
+		if (this.keyRowDescriptor == null) {
+			// attempt to figure out the right descriptor from the mapping...
+			Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
+			if (generated.size() == 1 && keysRS.getMetaData().getColumnCount() == 1) {
+				DbAttribute key = generated.iterator().next();
+
+				ColumnDescriptor[] columns = new ColumnDescriptor[1];
+
+				// use column name from result set, but type and Java class from
+				// DB
+				// attribute
+				columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
+				columns[0].setJdbcType(key.getType());
+				columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
+				builder.setColumns(columns);
+			} else {
+				builder.setResultSet(keysRS);
+			}
+
+			this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
+		}
+
+		RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()),
+				Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
+
+		observer.nextGeneratedRows(query, iterator, rows.stream().map(r -> r.getObjectId()).collect(Collectors.toList()));
 	}
 }

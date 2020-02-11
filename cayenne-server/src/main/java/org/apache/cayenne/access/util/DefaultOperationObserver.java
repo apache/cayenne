@@ -126,7 +126,7 @@ public class DefaultOperationObserver implements OperationObserver {
      * 
      * @since 4.0
      */
-    public void nextGeneratedRows(Query query, ResultIterator keys, org.apache.cayenne.ObjectId idToUpdate) {
+    public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<org.apache.cayenne.ObjectId> idsToUpdate) {
         if (keys != null) {
             keys.close();
         }

@@ -364,7 +364,7 @@ public class JdbcPkGenerator implements PkGenerator {
         }
 
         @Override
-        public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
+        public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
         }
 
         public void nextRows(Query q, ResultIterator it) {

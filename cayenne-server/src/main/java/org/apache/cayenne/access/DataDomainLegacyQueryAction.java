@@ -170,8 +170,8 @@ class DataDomainLegacyQueryAction implements QueryRouter, OperationObserver {
     }
 
     @Override
-    public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
-        callback.nextGeneratedRows(queryForExecutedQuery(query), keys, idToUpdate);
+    public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+        callback.nextGeneratedRows(queryForExecutedQuery(query), keys, idsToUpdate);
     }
 
     @Override

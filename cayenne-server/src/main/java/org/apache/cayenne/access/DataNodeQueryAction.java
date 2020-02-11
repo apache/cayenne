@@ -73,8 +73,8 @@ class DataNodeQueryAction {
             }
             
             @Override
-            public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
-                observer.nextGeneratedRows(originalQuery, keys, idToUpdate);
+            public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+                observer.nextGeneratedRows(originalQuery, keys, idsToUpdate);
             }
 
             @Override
