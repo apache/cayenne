@@ -88,6 +88,14 @@ public class DerbyAdapter extends JdbcAdapter {
         setSupportsBatchUpdates(true);
     }
 
+    /**
+     * Not supported, see: <a href="https://issues.apache.org/jira/browse/DERBY-3609">DERBY-3609</a>
+     */
+	@Override
+	public boolean supportsGeneratedKeysForBatchInserts() {
+		return false;
+	}
+	
     @Override
     protected PkGenerator createPkGenerator() {
         return new DerbyPkGenerator(this);

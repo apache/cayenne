@@ -86,12 +86,16 @@ public class BatchAction extends BaseSQLAction {
 	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
 
 		BatchTranslator translator = createTranslator();
-		boolean generatesKeys = hasGeneratedKeys();
-
-		if (runningAsBatch) {
-			runAsBatch(connection, translator, observer, generatesKeys);
+		
+		boolean isBatch = runningAsBatch && query.getRows().size() > 1;
+		if (isBatch && hasGeneratedKeys() && !supportsGeneratedKeys(isBatch)) {
+			isBatch = false; // turn off batch mode if we generate keys but can't do so in a batch
+		}
+		
+		if (isBatch) {
+			runAsBatch(connection, translator, observer, hasGeneratedKeys() && supportsGeneratedKeys(isBatch));
 		} else {
-			runAsIndividualQueries(connection, translator, observer, generatesKeys);
+			runAsIndividualQueries(connection, translator, observer, hasGeneratedKeys() && supportsGeneratedKeys(isBatch));
 		}
 	}
 
@@ -200,15 +204,18 @@ public class BatchAction extends BaseSQLAction {
 				: connection.prepareStatement(queryStr);
 	}
 
+	protected boolean supportsGeneratedKeys(boolean isBatch) {
+		// see if we are configured to support generated keys
+		boolean isSupported = isBatch 
+				? dataNode.getAdapter().supportsGeneratedKeysForBatchInserts() 
+				: dataNode.getAdapter().supportsGeneratedKeys();
+		return isSupported;
+	}
+				
 	/**
 	 * Returns whether BatchQuery generates any keys.
 	 */
 	protected boolean hasGeneratedKeys() {
-		// see if we are configured to support generated keys
-		if (!dataNode.getAdapter().supportsGeneratedKeys()) {
-			return false;
-		}
-
 		// see if the query needs them
 		if (query instanceof InsertBatchQuery) {
 
