@@ -57,6 +57,7 @@ CAY-2612 Modeler: add lazy-loading to dbImport tab
 CAY-2645 Modeler: DbImport tree highlight improvement
 CAY-2650 Support using generated primary keys along with batch inserts
 
+
 Bug Fixes:
 
 CAY-2019 Optimistic locking always fails on CRYPTO columns
