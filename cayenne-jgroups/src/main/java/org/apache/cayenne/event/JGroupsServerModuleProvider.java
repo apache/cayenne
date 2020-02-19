@@ -41,10 +41,8 @@ public class JGroupsServerModuleProvider implements CayenneServerModuleProvider 
         return JGroupsModule.class;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        Collection modules = Collections.singletonList(ServerModule.class);
-        return modules;
+        return Collections.singletonList(ServerModule.class);
     }
 }

@@ -18,9 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.server;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.configuration.server.ServerModule;
@@ -44,9 +43,6 @@ public class ROPServerModuleProvider implements CayenneServerModuleProvider {
 
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        List<Class<? extends Module>> modules = new ArrayList<>();
-        modules.add(ServerModule.class);
-        modules.add(WebModule.class);
-        return modules;
+        return Arrays.asList(ServerModule.class, WebModule.class);
     }
 }
