@@ -869,7 +869,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.31.0</version>
+                    <version>0.33.0</version>
                 </plugin>
             </plugins>
 		</pluginManagement>
@@ -1549,8 +1549,11 @@
 							<images>
 								<image>
 									<alias>db</alias>
-									<name>postgres:9.5</name>
+									<name>postgres:12</name>
 									<run>
+										<env>
+											<POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
+										</env>
 										<ports>
 											<port>${db.host}:${db.port}:5432</port>
 										</ports>
