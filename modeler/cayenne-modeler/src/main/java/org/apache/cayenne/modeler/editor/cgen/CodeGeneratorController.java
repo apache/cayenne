@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,12 +54,9 @@ import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.tools.CayenneToolsModuleProvider;
-import org.apache.cayenne.validation.ValidationFailure;
-import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,15 +65,11 @@ import org.slf4j.LoggerFactory;
  * A controller for the class generator dialog.
  */
 public class CodeGeneratorController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
-    /**
-     * Logger to print stack traces
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
-    private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
+
     public static final String SELECTED_PROPERTY = "selected";
 
     protected ProjectController projectController;
-    protected ValidationResult lastValidationResult;
 
     protected List<Object> classes;
     protected SelectionModel selectionModel;
@@ -123,7 +114,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         generatorSelector.setSelectedController(modeController);
         classesSelector.startup();
         initFromModel = false;
-        validate(modeController);
+        classesSelector.validate(classes);
     }
 
     private boolean isDefaultConfig(CgenConfiguration cgenConfiguration) {
@@ -162,10 +153,21 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     public void generatorSelectedAction() {
         GeneratorController controller = generatorSelector.getGeneratorController();
-        validate(controller);
+        classesSelector.validate(classes);
+
+        Predicate<Object> defaultPredicate = object -> {
+            if (object instanceof ObjEntity) {
+                return classesSelector.getProblem(((ObjEntity) object).getName()) == null;
+            }
+
+            if (object instanceof Embeddable) {
+                return classesSelector.getProblem(((Embeddable) object).getClassName()) == null;
+            }
+            return false;
+        };
 
         Predicate<Object> predicate = controller != null
-                ? controller.getDefaultClassFilter()
+                ? defaultPredicate
                 : o -> false;
 
         updateSelection(predicate);
@@ -275,20 +277,6 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         return classes;
     }
 
-    public void validate(GeneratorController validator) {
-        ValidationResult validationResult = new ValidationResult();
-        if (validator != null) {
-            for (Object classObj : classes) {
-                if (classObj instanceof ObjEntity) {
-                    validator.validateEntity(validationResult, (ObjEntity) classObj, false);
-                } else if (classObj instanceof Embeddable) {
-                    validator.validateEmbeddable(validationResult, (Embeddable) classObj);
-                }
-            }
-        }
-        this.lastValidationResult = validationResult;
-    }
-
     public boolean updateSelection(Predicate<Object> predicate) {
         boolean modified = selectionModel.updateSelection(predicate, classes);
 
@@ -327,55 +315,6 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         if (selectionModel.setSelected(currentClass, selectedFlag)) {
             firePropertyChange(SELECTED_PROPERTY, null, null);
         }
-    }
-
-    /**
-     * Returns the first encountered validation problem for an antity matching the name or
-     * null if the entity is valid or the entity is not present.
-     */
-    public JLabel getProblem(Object obj) {
-        String name = null;
-        if (obj instanceof ObjEntity) {
-            name = ((ObjEntity) obj).getName();
-        } else if (obj instanceof Embeddable) {
-            name = ((Embeddable) obj).getClassName();
-        }
-
-        ValidationFailure validationFailure = null;
-        if (lastValidationResult != null) {
-            List<ValidationFailure> failures = lastValidationResult.getFailures(name);
-            if (!failures.isEmpty()) {
-                validationFailure = failures.get(0);
-            }
-        }
-
-        JLabel labelIcon = new JLabel();
-        labelIcon.setVisible(true);
-        if(validationFailure != null) {
-            labelIcon.setIcon(ERROR_ICON);
-            labelIcon.setToolTipText(validationFailure.getDescription());
-        }
-        return labelIcon;
-    }
-
-    public JLabel getItemName(Object obj) {
-        String className;
-        Icon icon;
-        if (obj instanceof Embeddable) {
-            className = ((Embeddable) obj).getClassName();
-            icon = CellRenderers.iconForObject(new Embeddable());
-        } else if(obj instanceof ObjEntity) {
-            className = ((ObjEntity) obj).getName();
-            icon = CellRenderers.iconForObject(new ObjEntity());
-        } else {
-            className = ((DataMap) obj).getName();
-            icon = CellRenderers.iconForObject(new DataMap());
-        }
-        JLabel labelIcon = new JLabel();
-        labelIcon.setIcon(icon);
-        labelIcon.setVisible(true);
-        labelIcon.setText(className);
-        return labelIcon;
     }
 
     public Object getCurrentClass() {
