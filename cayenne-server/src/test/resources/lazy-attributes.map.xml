@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.lazy"/>
+	<db-entity name="LAZYBLOB">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="LAZY_DATA" type="BLOB"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="255"/>
+	</db-entity>
+	<obj-entity name="Lazyblob" className="org.apache.cayenne.testdo.lazy.Lazyblob" dbEntityName="LAZYBLOB">
+		<obj-attribute name="lazyData" type="byte[]" lazy="true" db-attribute-path="LAZY_DATA"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+</data-map>

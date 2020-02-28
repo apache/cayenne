@@ -220,7 +220,7 @@ public class ImportUtils {
 	 * @since 4.1
 	 */
 	public boolean canUsePrimitive(ObjAttribute attribute) {
-        return attribute.isMandatory() && isPrimitive(attribute.getType());
+        return !attribute.isLazy() && attribute.isMandatory() && isPrimitive(attribute.getType());
     }
 
 	public boolean canUsePrimitive(EmbeddableAttribute attribute) {
