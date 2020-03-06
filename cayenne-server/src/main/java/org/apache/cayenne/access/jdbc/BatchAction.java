@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
@@ -30,7 +31,6 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
@@ -38,14 +38,12 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * @since 1.2
@@ -117,7 +115,7 @@ public class BatchAction extends BaseSQLAction {
 
 		DbAdapter adapter = dataNode.getAdapter();
 
-		try (PreparedStatement statement = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+		try (PreparedStatement statement = prepareStatement(con, sql, adapter, generatesKeys)) {
 			for (BatchQueryRow row : query.getRows()) {
 
 				DbAttributeBinding[] bindings = translator.updateBindings(row);
@@ -206,10 +204,9 @@ public class BatchAction extends BaseSQLAction {
 
 	protected boolean supportsGeneratedKeys(boolean isBatch) {
 		// see if we are configured to support generated keys
-		boolean isSupported = isBatch 
-				? dataNode.getAdapter().supportsGeneratedKeysForBatchInserts() 
+		return isBatch
+				? dataNode.getAdapter().supportsGeneratedKeysForBatchInserts()
 				: dataNode.getAdapter().supportsGeneratedKeys();
-		return isSupported;
 	}
 				
 	/**
@@ -274,8 +271,11 @@ public class BatchAction extends BaseSQLAction {
 			this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
 		}
 
-		RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()),
-				Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+		RowReader<?> rowReader = dataNode.rowReader(
+				keyRowDescriptor,
+				query.getMetaData(dataNode.getEntityResolver()),
+				Collections.emptyMap()
+		);
 		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
 		observer.nextGeneratedRows(query, iterator, Collections.singletonList(row.getObjectId()));
@@ -321,9 +321,13 @@ public class BatchAction extends BaseSQLAction {
 		}
 
 		RowReader<?> rowReader = dataNode.rowReader(keyRowDescriptor, query.getMetaData(dataNode.getEntityResolver()),
-				Collections.<ObjAttribute, ColumnDescriptor> emptyMap());
+				Collections.emptyMap());
 		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
 
-		observer.nextGeneratedRows(query, iterator, rows.stream().map(r -> r.getObjectId()).collect(Collectors.toList()));
+		List<ObjectId> objectIds = new ArrayList<>(rows.size());
+		for(BatchQueryRow row : rows) {
+			objectIds.add(row.getObjectId());
+		}
+		observer.nextGeneratedRows(query, iterator, objectIds);
 	}
 }
