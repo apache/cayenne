@@ -232,55 +232,14 @@ public class BatchAction extends BaseSQLAction {
 	 * 
 	 * @since 4.0
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
 			throws SQLException {
-
-		ResultSet keysRS = statement.getGeneratedKeys();
-
-		// TODO: andrus, 7/4/2007 - (1) get the type of meaningful PK's from
-		// their
-		// ObjAttributes; (2) use a different form of Statement.execute -
-		// "execute(String,String[])" to be able to map generated column names
-		// (this way
-		// we can support multiple columns.. although need to check how well
-		// this works
-		// with most common drivers)
-
-		RowDescriptorBuilder builder = new RowDescriptorBuilder();
-
-		if (this.keyRowDescriptor == null) {
-			// attempt to figure out the right descriptor from the mapping...
-			Collection<DbAttribute> generated = query.getDbEntity().getGeneratedAttributes();
-			if (generated.size() == 1) {
-				DbAttribute key = generated.iterator().next();
-
-				ColumnDescriptor[] columns = new ColumnDescriptor[1];
-
-				// use column name from result set, but type and Java class from
-				// DB
-				// attribute
-				columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
-				columns[0].setJdbcType(key.getType());
-				columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
-				builder.setColumns(columns);
-			} else {
-				builder.setResultSet(keysRS);
-			}
-
-			this.keyRowDescriptor = builder.getDescriptor(dataNode.getAdapter().getExtendedTypes());
-		}
-
-		RowReader<?> rowReader = dataNode.rowReader(
-				keyRowDescriptor,
-				query.getMetaData(dataNode.getEntityResolver()),
-				Collections.emptyMap()
-		);
-		ResultIterator iterator = new JDBCResultIterator(null, keysRS, rowReader);
-
-		observer.nextGeneratedRows(query, iterator, Collections.singletonList(row.getObjectId()));
+		processGeneratedKeys(statement, observer, Collections.singletonList(row));
 	}
-	
+
+	/**
+	 * @since 4.2
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void processGeneratedKeys(Statement statement, OperationObserver observer, List<BatchQueryRow> rows)
 			throws SQLException {
@@ -306,9 +265,7 @@ public class BatchAction extends BaseSQLAction {
 
 				ColumnDescriptor[] columns = new ColumnDescriptor[1];
 
-				// use column name from result set, but type and Java class from
-				// DB
-				// attribute
+				// use column name from result set, but type and Java class from DB attribute
 				columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
 				columns[0].setJdbcType(key.getType());
 				columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
