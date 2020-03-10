@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -107,7 +108,7 @@ public class HessianROPSerializationServiceIT extends ClientCase {
 	}
 
 	private ROPSerializationService createServerSerializationService() {
-		return new ServerHessianSerializationServiceProvider().get();
+		return new ServerHessianSerializationServiceProvider(() -> context.getChannel(), Collections.emptyList()).get();
 	}
 	
 }
