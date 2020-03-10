@@ -79,7 +79,9 @@ public class BatchActionGeneratedIT extends ServerCase {
         node.setEntityResolver(resolver);
         node.setRowReaderFactory(mock(RowReaderFactory.class));
 
-        assertFalse(new BatchAction(batch1, node, false).hasGeneratedKeys());
+        assertTrue(new BatchAction(batch1, node, false).hasGeneratedKeys());
+        assertFalse(new BatchAction(batch1, node, false).supportsGeneratedKeys(true));
+
     }
 
     JdbcAdapter buildAdapter(boolean supportGeneratedKeys) {

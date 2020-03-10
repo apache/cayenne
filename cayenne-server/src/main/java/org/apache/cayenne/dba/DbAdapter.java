@@ -103,6 +103,13 @@ public interface DbAdapter {
 	 */
 	boolean supportsGeneratedKeys();
 
+    /**
+     * @since 4.2
+     */
+    default boolean supportsGeneratedKeysForBatchInserts() {
+    	return supportsGeneratedKeys();
+    }
+    
 	/**
 	 * Returns <code>true</code> if the target database supports batch updates.
 	 */

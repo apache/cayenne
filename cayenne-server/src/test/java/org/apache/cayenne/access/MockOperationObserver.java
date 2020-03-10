@@ -74,7 +74,7 @@ public class MockOperationObserver implements OperationObserver {
     }
 
     @Override
-    public void nextGeneratedRows(Query query, ResultIterator<?> keys, ObjectId idToUpdate) {
+    public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
     }
 
     public boolean isIteratedResult() {

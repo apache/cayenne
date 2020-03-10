@@ -97,6 +97,14 @@ public class SQLServerAdapter extends SybaseAdapter {
 		this.setSupportsBatchUpdates(true);
 	}
 
+    /**
+     * Not supported, see: <a href="http://microsoft/mssql-jdbc#245">mssql-jdbc #245</a>
+     */
+	@Override
+	public boolean supportsGeneratedKeysForBatchInserts() {
+		return false;
+	}
+	
 	/**
 	 * @since 4.2
 	 */
