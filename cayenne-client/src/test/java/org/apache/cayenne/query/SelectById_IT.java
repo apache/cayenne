@@ -22,12 +22,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
-public class SelectByIdTest {
+@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+public class SelectById_IT extends ServerCase {
+
+	@Inject
+	private EntityResolver resolver;
 
 	@Test
 	public void testSerializabilityWithHessian() throws Exception {
@@ -38,7 +47,11 @@ public class SelectByIdTest {
 		SelectById<?> c1 = (SelectById<?>) clone;
 
 		assertNotSame(o, c1);
-		assertEquals(o.entityType, c1.entityType);
-		assertEquals(o.singleId, c1.singleId);
+
+		ObjEntity artistEntity = resolver.getObjEntity(Artist.class);
+
+		assertEquals(artistEntity, o.root.resolve(resolver));
+		assertEquals(o.root.resolve(resolver), c1.root.resolve(resolver));
+		assertEquals(o.idSpec.getQualifier(artistEntity), c1.idSpec.getQualifier(artistEntity));
 	}
 }

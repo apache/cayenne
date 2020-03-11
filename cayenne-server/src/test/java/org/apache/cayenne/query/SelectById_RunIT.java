@@ -18,13 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-
 import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
@@ -36,12 +34,15 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+
+import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class SelectById_RunIT extends ServerCase {
@@ -85,7 +86,27 @@ public class SelectById_RunIT extends ServerCase {
 		assertNotNull(a2);
 		assertEquals("artist2", a2.getArtistName());
 	}
-	
+
+	@Test
+	public void testIntPkMulti() throws Exception {
+		createTwoArtists();
+
+		List<Artist> artists = SelectById.query(Artist.class, 2, 3)
+				.select(context);
+		assertEquals(2, artists.size());
+		assertThat(artists.get(0), instanceOf(Artist.class));
+	}
+
+	@Test
+	public void testIntPkCollection() throws Exception {
+		createTwoArtists();
+
+		List<Artist> artists = SelectById.query(Artist.class, Arrays.asList(1, 2, 3, 4, 5))
+				.select(context);
+		assertEquals(2, artists.size());
+		assertThat(artists.get(0), instanceOf(Artist.class));
+	}
+
 	@Test
 	public void testIntPk_SelectFirst() throws Exception {
 		createTwoArtists();
@@ -113,6 +134,19 @@ public class SelectById_RunIT extends ServerCase {
 	}
 
 	@Test
+	public void testMapPkMulti() throws Exception {
+		createTwoArtists();
+
+		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
+		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
+
+		List<Artist> artists = SelectById.query(Artist.class, id2, id3)
+				.select(context);
+		assertEquals(2, artists.size());
+		assertThat(artists.get(0), instanceOf(Artist.class));
+	}
+
+	@Test
 	public void testObjectIdPk() throws Exception {
 		createTwoArtists();
 
@@ -128,6 +162,19 @@ public class SelectById_RunIT extends ServerCase {
 	}
 
 	@Test
+	public void testObjectIdPkMulti() throws Exception {
+		createTwoArtists();
+
+		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
+		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
+
+		List<Artist> artists = SelectById.query(Artist.class, oid2, oid3)
+				.select(context);
+		assertEquals(2, artists.size());
+		assertThat(artists.get(0), instanceOf(Artist.class));
+	}
+
+	@Test
 	public void testDataRowIntPk() throws Exception {
 		createTwoArtists();
 
@@ -139,6 +186,73 @@ public class SelectById_RunIT extends ServerCase {
 		assertNotNull(a2);
 		assertEquals("artist2", a2.get("ARTIST_NAME"));
 	}
+
+	@Test
+	public void testDataRowMapPk() throws Exception {
+		createTwoArtists();
+
+		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
+		DataRow a3 = SelectById.dataRowQuery(Artist.class, id3).selectOne(context);
+		assertNotNull(a3);
+		assertEquals("artist3", a3.get("ARTIST_NAME"));
+
+		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
+		DataRow a2 = SelectById.dataRowQuery(Artist.class, id2).selectOne(context);
+		assertNotNull(a2);
+		assertEquals("artist2", a2.get("ARTIST_NAME"));
+	}
+
+	@Test
+	public void testDataRowObjectIdPk() throws Exception {
+		createTwoArtists();
+
+		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
+		DataRow a3 = SelectById.dataRowQuery(oid3).selectOne(context);
+		assertNotNull(a3);
+		assertEquals("artist3", a3.get("ARTIST_NAME"));
+
+		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
+		DataRow a2 = SelectById.dataRowQuery(oid2).selectOne(context);
+		assertNotNull(a2);
+		assertEquals("artist2", a2.get("ARTIST_NAME"));
+	}
+
+	@Test
+	public void testDataRowIntPkMulti() throws Exception {
+		createTwoArtists();
+
+		List<DataRow> artists = SelectById.dataRowQuery(Artist.class, 2, 3)
+				.select(context);
+		assertEquals(2, artists.size());
+		assertThat(artists.get(0), instanceOf(DataRow.class));
+	}
+
+	@Test
+	public void testDataRowMapPkMulti() throws Exception {
+		createTwoArtists();
+
+		ObjectId oid2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
+		ObjectId oid3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
+
+		List<DataRow> artists = SelectById.dataRowQuery(oid2, oid3)
+				.select(context);
+		assertEquals(2, artists.size());
+		assertThat(artists.get(0), instanceOf(DataRow.class));
+	}
+
+	@Test
+	public void testDataRowObjectIdPkMulti() throws Exception {
+		createTwoArtists();
+
+		Map<String, ?> id2 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 2);
+		Map<String, ?> id3 = Collections.singletonMap(Artist.ARTIST_ID_PK_COLUMN, 3);
+
+		List<DataRow> artists = SelectById.dataRowQuery(Artist.class, id2, id3)
+				.select(context);
+		assertEquals(2, artists.size());
+		assertThat(artists.get(0), instanceOf(DataRow.class));
+	}
+
 
 	@Test
 	public void testMetadataCacheKey() throws Exception {
@@ -170,13 +284,13 @@ public class SelectById_RunIT extends ServerCase {
 		assertNotEquals(md1.getCacheKey(), md4.getCacheKey());
 
 		SelectById<Painting> q5 = SelectById
-				.query(Painting.class, ObjectId.of("Painting", Painting.PAINTING_ID_PK_COLUMN, 4)).localCache();
+				.query(Painting.class, ObjectId.of("Painting", Painting.PAINTING_ID_PK_COLUMN, 4))
+				.localCache();
 		QueryMetadata md5 = q5.getMetaData(resolver);
 		assertNotNull(md5);
 		assertNotNull(md5.getCacheKey());
 
-		// this query is just a different form of q1, so should hit the same
-		// cache entry
+		// this query is just a different form of q1, so should hit the same cache entry
 		assertEquals(md1.getCacheKey(), md5.getCacheKey());
 	}
 
@@ -186,34 +300,21 @@ public class SelectById_RunIT extends ServerCase {
 
 		final Artist[] a3 = new Artist[1];
 
-		assertEquals(1, interceptor.runWithQueryCounter(new UnitTestClosure() {
-
-			@Override
-			public void execute() {
-				a3[0] = SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
-				assertNotNull(a3[0]);
-				assertEquals("artist3", a3[0].getArtistName());
-			}
+		assertEquals(1, interceptor.runWithQueryCounter(() -> {
+			a3[0] = SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
+			assertNotNull(a3[0]);
+			assertEquals("artist3", a3[0].getArtistName());
 		}));
 
-		interceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-			@Override
-			public void execute() {
-				Artist a3cached = SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
-				assertSame(a3[0], a3cached);
-			}
+		interceptor.runWithQueriesBlocked(() -> {
+			Artist a3cached = SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
+			assertSame(a3[0], a3cached);
 		});
 
 		context.performGenericQuery(new RefreshQuery("g1"));
 
-		assertEquals(1, interceptor.runWithQueryCounter(new UnitTestClosure() {
-
-			@Override
-			public void execute() {
-				SelectById.query(Artist.class, 3).localCache("g1").selectOne(context);
-			}
-		}));
+		assertEquals(1, interceptor.runWithQueryCounter(() ->
+				SelectById.query(Artist.class, 3).localCache("g1").selectOne(context)));
 	}
 
 	@Test
@@ -222,19 +323,17 @@ public class SelectById_RunIT extends ServerCase {
 		tPainting.insert(45, 3, "One");
 		tPainting.insert(48, 3, "Two");
 
-		final Artist a3 = SelectById.query(Artist.class, 3).prefetch(Artist.PAINTING_ARRAY.joint()).selectOne(context);
+		final Artist a3 = SelectById.query(Artist.class, 3)
+				.prefetch(Artist.PAINTING_ARRAY.joint())
+				.selectOne(context);
 
-		interceptor.runWithQueriesBlocked(new UnitTestClosure() {
+		interceptor.runWithQueriesBlocked(() -> {
+			assertNotNull(a3);
+			assertEquals("artist3", a3.getArtistName());
+			assertEquals(2, a3.getPaintingArray().size());
 
-			@Override
-			public void execute() {
-				assertNotNull(a3);
-				assertEquals("artist3", a3.getArtistName());
-				assertEquals(2, a3.getPaintingArray().size());
-
-				a3.getPaintingArray().get(0).getPaintingTitle();
-				a3.getPaintingArray().get(1).getPaintingTitle();
-			}
+			a3.getPaintingArray().get(0).getPaintingTitle();
+			a3.getPaintingArray().get(1).getPaintingTitle();
 		});
 	}
 }

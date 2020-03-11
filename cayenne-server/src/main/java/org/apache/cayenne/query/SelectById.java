@@ -29,15 +29,17 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-import static java.util.Collections.singletonMap;
-import static org.apache.cayenne.exp.ExpressionFactory.matchAllDbExp;
+import static org.apache.cayenne.exp.ExpressionFactory.*;
 
 /**
- * A query to select single objects by id.
+ * A query to select objects by id.
  * 
  * @since 4.0
  */
@@ -45,88 +47,135 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	private static final long serialVersionUID = -6589464349051607583L;
 
-	// type is not same as T, as T maybe be DataRow or scalar
-	// either type or entity name is specified, but not both
-	Class<?> entityType;
-	String entityName;
+	final QueryRoot root;
+	final IdSpec idSpec;
+	final boolean fetchingDataRows;
 
-	// only one of the two id forms is provided, but not both
-	Object singleId;
-	Map<String, ?> mapId;
-
-	boolean fetchingDataRows;
 	QueryCacheStrategy cacheStrategy;
 	String cacheGroup;
 	PrefetchTreeNode prefetches;
 
 	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
-		SelectById<T> q = new SelectById<>();
-
-		q.entityType = entityType;
-		q.singleId = id;
-		q.fetchingDataRows = false;
-
-		return q;
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new SingleScalarIdSpec(id);
+		return new SelectById<>(root, idSpec);
 	}
 
 	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> id) {
-		SelectById<T> q = new SelectById<>();
-
-		q.entityType = entityType;
-		q.mapId = id;
-		q.fetchingDataRows = false;
-
-		return q;
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new SingleMapIdSpec(id);
+		return new SelectById<>(root, idSpec);
 	}
 
 	public static <T> SelectById<T> query(Class<T> entityType, ObjectId id) {
 		checkObjectId(id);
+		QueryRoot root = resolver -> resolver.getObjEntity(id.getEntityName());
+		IdSpec idSpec = new SingleMapIdSpec(id.getIdSnapshot());
+		return new SelectById<>(root, idSpec);
+	}
 
-		SelectById<T> q = new SelectById<>();
+	/**
+	 * @since 4.2
+	 */
+	public static <T> SelectById<T> query(Class<T> entityType, Object firstId, Object... otherIds) {
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new MultiScalarIdSpec(firstId, otherIds);
+		return new SelectById<>(root, idSpec);
+	}
 
-		q.entityName = id.getEntityName();
-		q.mapId = id.getIdSnapshot();
-		q.fetchingDataRows = false;
+	/**
+	 * @since 4.2
+	 */
+	public static <T> SelectById<T> query(Class<T> entityType, Collection<Object> ids) {
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new MultiScalarIdSpec(ids);
+		return new SelectById<>(root, idSpec);
+	}
 
-		return q;
+	/**
+	 * @since 4.2
+	 */
+	@SafeVarargs
+	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> firstId, Map<String, ?>... otherIds) {
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		return new SelectById<>(root, idSpec);
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public static <T> SelectById<T> query(Class<T> entityType, ObjectId firstId, ObjectId... otherIds) {
+		checkObjectId(firstId);
+		for(ObjectId id : otherIds) {
+			checkObjectId(id, firstId.getEntityName());
+		}
+
+		QueryRoot root = resolver -> resolver.getObjEntity(firstId.getEntityName());
+		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		return new SelectById<>(root, idSpec);
 	}
 
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object id) {
-		SelectById<DataRow> q = new SelectById<>();
-
-		q.entityType = entityType;
-		q.singleId = id;
-		q.fetchingDataRows = true;
-
-		return q;
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new SingleScalarIdSpec(id);
+		return new SelectById<>(root, idSpec, true);
 	}
 
-	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, Object> id) {
-		SelectById<DataRow> q = new SelectById<>();
-
-		q.entityType = entityType;
-		q.mapId = id;
-		q.fetchingDataRows = true;
-
-		return q;
+	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> id) {
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new SingleMapIdSpec(id);
+		return new SelectById<>(root, idSpec, true);
 	}
 
 	public static SelectById<DataRow> dataRowQuery(ObjectId id) {
 		checkObjectId(id);
-
-		SelectById<DataRow> q = new SelectById<>();
-
-		q.entityName = id.getEntityName();
-		q.mapId = id.getIdSnapshot();
-		q.fetchingDataRows = true;
-
-		return q;
+		QueryRoot root = resolver -> resolver.getObjEntity(id.getEntityName());
+		IdSpec idSpec = new SingleMapIdSpec(id.getIdSnapshot());
+		return new SelectById<>(root, idSpec, true);
 	}
 
-	private static void checkObjectId(ObjectId id) {
-		if (id.isTemporary() && !id.isReplacementIdAttached()) {
-			throw new CayenneRuntimeException("Can't build a query for temporary id: %s", id);
+	/**
+	 * @since 4.2
+	 */
+	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object firstId, Object... otherIds) {
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new MultiScalarIdSpec(firstId, otherIds);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	@SafeVarargs
+	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> firstId, Map<String, ?>... otherIds) {
+		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	public static SelectById<DataRow> dataRowQuery(ObjectId firstId, ObjectId... otherIds) {
+		checkObjectId(firstId);
+		for(ObjectId id : otherIds) {
+			checkObjectId(id, firstId.getEntityName());
 		}
+
+		QueryRoot root = resolver -> resolver.getObjEntity(firstId.getEntityName());
+		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
+		return new SelectById<>(root, idSpec, true);
+	}
+
+	protected SelectById(QueryRoot root, IdSpec idSpec, boolean fetchingDataRows) {
+		this.root = root;
+		this.idSpec = idSpec;
+		this.fetchingDataRows = fetchingDataRows;
+	}
+
+	protected SelectById(QueryRoot root, IdSpec idSpec) {
+		this(root, idSpec, false);
 	}
 
 	@Override
@@ -284,14 +333,12 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	@SuppressWarnings("deprecation")
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
-
-		ObjEntity entity = resolveEntity(resolver);
-		Map<String, ?> id = resolveId(entity);
+		ObjEntity entity = root.resolve(resolver);
 
 		SelectQuery<Object> query = new SelectQuery<>();
 		query.setRoot(entity);
 		query.setFetchingDataRows(fetchingDataRows);
-		query.setQualifier(matchAllDbExp(id, Expression.EQUAL_TO));
+		query.setQualifier(idSpec.getQualifier(entity));
 
 		// note on caching... this hits query cache instead of object cache...
 		// until we merge the two this may result in not using the cache
@@ -303,31 +350,112 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return query;
 	}
 
-	protected Map<String, ?> resolveId(ObjEntity entity) {
-
-		if (singleId == null && mapId == null) {
-			throw new CayenneRuntimeException("Misconfigured query. Either singleId or mapId must be set");
-		}
-
-		if (mapId != null) {
-			return mapId;
-		}
-
+	private static String resolveSinglePkName(ObjEntity entity) {
 		Collection<String> pkAttributes = entity.getPrimaryKeyNames();
-		if (pkAttributes.size() != 1) {
-			throw new CayenneRuntimeException("PK contains %d columns, expected 1.",  pkAttributes.size());
+		if(pkAttributes.size() == 1) {
+			return pkAttributes.iterator().next();
 		}
-
-		String pk = pkAttributes.iterator().next();
-		return singletonMap(pk, singleId);
+		throw new CayenneRuntimeException("PK contains %d columns, expected 1.",  pkAttributes.size());
 	}
 
-	protected ObjEntity resolveEntity(EntityResolver resolver) {
+	private static void checkObjectId(ObjectId id) {
+		if (id.isTemporary() && !id.isReplacementIdAttached()) {
+			throw new CayenneRuntimeException("Can't build a query for a temporary id: %s", id);
+		}
+	}
 
-		if (entityName == null && entityType == null) {
-			throw new CayenneRuntimeException("Misconfigured query. Either entityName or entityType must be set");
+	private static void checkObjectId(ObjectId id, String entityName) {
+		checkObjectId(id);
+		if(!entityName.equals(id.getEntityName())) {
+			throw new CayenneRuntimeException("Can't build a query with mixed object types for given ObjectIds");
+		}
+	}
+
+	@SafeVarargs
+	private static <E, R> Collection<R> foldArguments(Function<E, R> mapper, E first, E... other) {
+		List<R> result = new ArrayList<>();
+		result.add(mapper.apply(first));
+		for(E next : other) {
+			result.add(mapper.apply(next));
+		}
+		return result;
+	}
+
+	protected interface QueryRoot extends Serializable {
+		ObjEntity resolve(EntityResolver resolver);
+	}
+
+	protected interface IdSpec extends Serializable{
+		Expression getQualifier(ObjEntity entity);
+	}
+
+	protected static class SingleScalarIdSpec implements IdSpec {
+
+		private final Object id;
+
+		protected SingleScalarIdSpec(Object id) {
+			this.id = id;
 		}
 
-		return entityName != null ? resolver.getObjEntity(entityName) : resolver.getObjEntity(entityType, true);
+		@Override
+		public Expression getQualifier(ObjEntity entity) {
+			return matchDbExp(resolveSinglePkName(entity), id);
+		}
+	}
+
+	protected static class MultiScalarIdSpec implements IdSpec {
+
+		private final Collection<Object> ids;
+
+		protected MultiScalarIdSpec(Object firstId, Object... otherIds) {
+			this.ids = foldArguments(Function.identity(), firstId, otherIds);
+		}
+
+		protected MultiScalarIdSpec(Collection<Object> ids) {
+			this.ids = ids;
+		}
+
+		@Override
+		public Expression getQualifier(ObjEntity entity) {
+			return inDbExp(resolveSinglePkName(entity), ids);
+		}
+	}
+
+	protected static class SingleMapIdSpec implements IdSpec {
+
+		private final Map<String, ?> id;
+
+		protected SingleMapIdSpec(Map<String, ?> id) {
+			this.id = id;
+		}
+
+		@Override
+		public Expression getQualifier(ObjEntity entity) {
+			return matchAllDbExp(id, Expression.EQUAL_TO);
+		}
+	}
+
+	protected static class MultiMapIdSpec implements IdSpec {
+
+		private final Collection<Map<String, ?>> ids;
+
+		@SafeVarargs
+		protected MultiMapIdSpec(Map<String, ?> firstId, Map<String, ?>... otherIds) {
+			this.ids = foldArguments(Function.identity(), firstId, otherIds);
+		}
+
+		protected MultiMapIdSpec(ObjectId firstId, ObjectId... otherIds) {
+			this.ids = foldArguments(ObjectId::getIdSnapshot, firstId, otherIds);
+		}
+
+		@Override
+		public Expression getQualifier(ObjEntity entity) {
+			List<Expression> expressions = new ArrayList<>();
+			for(Map<String, ?> id : ids) {
+				expressions.add(matchAllDbExp(id, Expression.EQUAL_TO));
+			}
+
+			return or(expressions);
+		}
 	}
 }
