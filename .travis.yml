@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+language: java
+
+os: linux
+dist: bionic
+
 services:
   - docker
-
-language: java
 
 env:
   jobs:
@@ -37,11 +40,6 @@ jdk:
   - openjdk11
   - openjdk-ea
 
-os:
-  - linux
-
-dist: bionic
-
 script:
   - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
@@ -49,10 +47,10 @@ jobs:
   allow_failures:
     - jdk: openjdk-ea
   include:
-  - stage: deploy
-    script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
-    jdk: openjdk8
-    if: type = push AND branch = master AND repo = apache/cayenne
+    - stage: deploy
+      script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
+      jdk: openjdk8
+      if: type = push AND branch = master AND repo = apache/cayenne
 
 # prevent Travis from unneeded "mvn install" run
 install: true
