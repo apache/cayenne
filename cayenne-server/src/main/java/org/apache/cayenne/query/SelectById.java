@@ -330,23 +330,20 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 		return prefetches;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
 		ObjEntity entity = root.resolve(resolver);
 
-		SelectQuery<Object> query = new SelectQuery<>();
-		query.setRoot(entity);
-		query.setFetchingDataRows(fetchingDataRows);
-		query.setQualifier(idSpec.getQualifier(entity));
-
-		// note on caching... this hits query cache instead of object cache...
-		// until we merge the two this may result in not using the cache
-		// optimally - object cache may have an object, but query cache will not
-		query.setCacheGroup(cacheGroup);
-		query.setCacheStrategy(cacheStrategy);
-		query.setPrefetchTree(prefetches);
-
+		ObjectSelect<?> query = new ObjectSelect<>()
+				.entityName(entity.getName())
+				.where(idSpec.getQualifier(entity))
+				.cacheStrategy(cacheStrategy, cacheGroup);
+		if(prefetches != null) {
+			query.prefetch(prefetches);
+		}
+		if(fetchingDataRows) {
+			query.fetchDataRows();
+		}
 		return query;
 	}
 
@@ -373,7 +370,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 	@SafeVarargs
 	private static <E, R> Collection<R> foldArguments(Function<E, R> mapper, E first, E... other) {
-		List<R> result = new ArrayList<>();
+		List<R> result = new ArrayList<>(1 + other.length);
 		result.add(mapper.apply(first));
 		for(E next : other) {
 			result.add(mapper.apply(next));
