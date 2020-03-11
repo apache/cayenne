@@ -13,19 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Since 4GB is not enough for the build, we use 'sudo' environment with 7.5GB RAM
-# Downside: It's starts a little bit slower
-# How to fix: Change build setting or fix code.
-# https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
-sudo: required
-
 services:
   - docker
 
 language: java
 
 env:
-  matrix:
+  jobs:
     - DB_PROFILE=hsql
     - DB_PROFILE=h2
     - DB_PROFILE=derby
@@ -43,14 +37,17 @@ jdk:
   - openjdk11
   - openjdk-ea
 
-matrix:
-  allow_failures:
-    - jdk: openjdk-ea
+os:
+  - linux
+
+dist: bionic
 
 script:
   - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
 jobs:
+  allow_failures:
+    - jdk: openjdk-ea
   include:
   - stage: deploy
     script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
@@ -60,6 +57,6 @@ jobs:
 # prevent Travis from unneeded "mvn install" run
 install: true
 
-#cache:
-#  directories:
-#    - $HOME/.m2
+cache:
+  directories:
+    - $HOME/.m2
