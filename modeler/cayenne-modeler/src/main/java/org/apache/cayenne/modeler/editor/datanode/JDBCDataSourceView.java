@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.apache.cayenne.modeler.util.JTextFieldWhitespacesValidator;
+import org.apache.cayenne.modeler.util.JTextFieldValidator;
 import org.apache.cayenne.modeler.util.JTextFieldUndoable;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -55,8 +55,10 @@ public class JDBCDataSourceView extends JPanel {
         syncWithLocal = new JButton("Sync with Local");
         syncWithLocal.setToolTipText("Update from local DataSource");
 
-        driver.addFocusListener(new JTextFieldWhitespacesValidator(driver));
-        url.addFocusListener(new JTextFieldWhitespacesValidator(url));
+        JTextFieldValidator.addValidation(driver, text -> text.length() != text.trim().length(),
+                "There are some whitespaces in this field");
+        JTextFieldValidator.addValidation(url, text -> text.length() != text.trim().length(),
+                "There are some whitespaces in this field");
 
         // assemble
         CellConstraints cc = new CellConstraints();

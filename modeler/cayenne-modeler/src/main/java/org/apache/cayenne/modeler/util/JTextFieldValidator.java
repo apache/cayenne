@@ -20,34 +20,51 @@ package org.apache.cayenne.modeler.util;
 
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 
-
 import javax.swing.JTextField;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * @since 4.2
  */
-public class JTextFieldWhitespacesValidator implements FocusListener {
+public class JTextFieldValidator implements FocusListener {
 
-    private JTextField jTextField;
+    private final JTextField jTextField;
+    private final Predicate<String> validator;
+    private final Function<String, String> message;
 
-    public JTextFieldWhitespacesValidator(JTextField jTextField) {
+    static public void addValidation(JTextField field, Predicate<String> validator, Function<String, String> message) {
+        JTextFieldValidator validationListener
+                = new JTextFieldValidator(field, validator, message);
+        field.addFocusListener(validationListener);
+    }
+
+    static public void addValidation(JTextField field, Predicate<String> validator, String message) {
+        addValidation(field, validator, text -> message);
+    }
+
+    static public void addValidation(JTextField field, Predicate<String> validator) {
+        addValidation(field, validator, text -> "There are illegal chars in this field");
+    }
+
+    JTextFieldValidator(JTextField jTextField, Predicate<String> validator, Function<String, String> message) {
         this.jTextField = jTextField;
+        this.validator = validator;
+        this.message = message;
     }
 
     @Override
     public void focusGained(FocusEvent e) {
-
     }
 
     @Override
     public void focusLost(FocusEvent e) {
         String text = jTextField.getText();
-        int length = text.length() - text.trim().length();
-        if (length != 0) {
+        if(validator.test(text)) {
             jTextField.setBackground(ValidatorDialog.WARNING_COLOR);
-            jTextField.setToolTipText("There are some whitespaces in this line");
+            jTextField.setToolTipText(message.apply(text));
         }
     }
 }
