@@ -111,6 +111,7 @@ CAY-2634 Minor inconsistencies in Modeler "DB Import"
 CAY-2635 Lambda expressions break ROP serialization
 CAY-2646 Wrong target path selection logic in cgen config
 CAY-2647 Modeler: project upgrade from 4.0.B2 to 4.1.RC2 failure
+CAY-2648 Whitespace symbols in JDBC Driver and DB URL lines lead to incorrect driver loading
 
 ----------------------------------
 Release: 4.1.B1
