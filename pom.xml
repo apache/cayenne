@@ -1535,8 +1535,11 @@
 							<images>
 								<image>
 									<alias>db</alias>
-									<name>postgres:9.5</name>
+									<name>postgres:12</name>
 									<run>
+										<env>
+											<POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
+										</env>
 										<ports>
 											<port>${db.host}:${db.port}:5432</port>
 										</ports>
