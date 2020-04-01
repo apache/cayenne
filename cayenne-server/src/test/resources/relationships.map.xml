@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships"/>
 	<db-entity name="FK_OF_DIFFERENT_TYPE">
@@ -24,7 +24,7 @@
 	</db-entity>
 	<obj-entity name="FkOfDifferentType" className="org.apache.cayenne.testdo.relationships.FkOfDifferentType" dbEntityName="FK_OF_DIFFERENT_TYPE"/>
 	<obj-entity name="MeaningfulFK" className="org.apache.cayenne.testdo.relationships.MeaningfulFK" dbEntityName="MEANINGFUL_FK">
-		<obj-attribute name="relationshipHelperID" type="java.lang.Integer" db-attribute-path="RELATIONSHIP_HELPER_ID"/>
+		<obj-attribute name="relationshipHelperID" type="int" db-attribute-path="RELATIONSHIP_HELPER_ID"/>
 	</obj-entity>
 	<obj-entity name="ReflexiveAndToOne" className="org.apache.cayenne.testdo.relationships.ReflexiveAndToOne" dbEntityName="REFLEXIVE_AND_TO_ONE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
@@ -64,4 +64,17 @@
 	<obj-relationship name="fksOfDifferentType" source="RelationshipHelper" target="FkOfDifferentType" db-relationship-path="fksOfDifferentType"/>
 	<obj-relationship name="meanigfulFKs" source="RelationshipHelper" target="MeaningfulFK" db-relationship-path="meanigfulFKs"/>
 	<obj-relationship name="reflexiveAndToOneArray" source="RelationshipHelper" target="ReflexiveAndToOne" db-relationship-path="reflexiveAndToOneArray"/>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<destDir>..\java</destDir>
+		<mode>entity</mode>
+		<template>templates/v4_1/subclass.vm</template>
+		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>false</createPKProperties>
+		<client>false</client>
+	</cgen>
 </data-map>

@@ -20,6 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -28,9 +29,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class MeaningfulFKIT extends ServerCase {
@@ -57,12 +56,24 @@ public class MeaningfulFKIT extends ServerCase {
     public void testValidateForSave2() throws Exception {
         MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
 
-        RelationshipHelper related = testObject.getObjectContext().newObject(
-                RelationshipHelper.class);
+        RelationshipHelper related = context.newObject(RelationshipHelper.class);
         testObject.setToRelationshipHelper(related);
 
         ValidationResult validation = new ValidationResult();
         testObject.validateForSave(validation);
         assertFalse(validation.hasFailures());
+    }
+
+    @Test
+    public void testMeaningfulFKSet() {
+        MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
+
+        RelationshipHelper related = context.newObject(RelationshipHelper.class);
+        testObject.setToRelationshipHelper(related);
+
+        context.commitChanges();
+
+        MeaningfulFK testObject2 = SelectById.query(MeaningfulFK.class, testObject.getObjectId()).selectOne(context);
+        assertNotEquals(0, testObject2.getRelationshipHelperID());
     }
 }

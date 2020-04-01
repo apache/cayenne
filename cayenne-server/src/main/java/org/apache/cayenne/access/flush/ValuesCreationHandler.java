@@ -70,7 +70,7 @@ class ValuesCreationHandler extends ArcValuesCreationHandler {
 
         DbRowOpWithValues dbRow = factory.get(id);
         if(dbRow != null) {
-            dbRow.getValues().addValue(dbAttribute, newValue);
+            dbRow.getValues().addValue(dbAttribute, newValue, false);
         }
     }
 
