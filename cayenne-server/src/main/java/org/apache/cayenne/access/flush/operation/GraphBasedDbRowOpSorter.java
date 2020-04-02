@@ -40,6 +40,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.util.SingleEntryMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Db operation sorted that builds dependency graph and uses topological sort to get final order.
@@ -51,6 +53,8 @@ import org.apache.cayenne.util.SingleEntryMap;
  * @since 4.2
  */
 public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbRowOpSorter.class);
 
     private final DbRowOpTypeVisitor rowOpTypeVisitor = new DbRowOpTypeVisitor();
     private final Provider<DataDomain> dataDomainProvider;
@@ -176,6 +180,8 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         if(parentIdSnapshots.size() == 1) {
             EffectiveOpId id = effectiveIdFor(relationship, parentIdSnapshots.get(0));
             if(id != null) {
+                LOGGER.info("Found parent op for {} and relationship '{}': {}",
+                        op, relationship.getName(), id);
                 return Collections.singletonList(id);
             } else {
                 return Collections.emptyList();
@@ -185,6 +191,8 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             parentIdSnapshots.forEach(snapshot -> {
                 EffectiveOpId id = this.effectiveIdFor(relationship, snapshot);
                 if(id != null) {
+                    LOGGER.info("Found parent op for {} and relationship '{}': {}",
+                            op, relationship.getName(), id);
                     effectiveOpIds.add(id);
                 }
             });

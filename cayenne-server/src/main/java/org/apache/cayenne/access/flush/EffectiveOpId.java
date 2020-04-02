@@ -104,4 +104,9 @@ public class EffectiveOpId {
         result = 31 * result + snapshot.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "EffectiveOpId{" + entityName + ": " + snapshot + '}';
+    }
 }
