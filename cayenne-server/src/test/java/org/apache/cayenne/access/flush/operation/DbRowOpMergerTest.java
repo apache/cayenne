@@ -99,9 +99,9 @@ public class DbRowOpMergerTest {
         DbAttribute attr2 = new DbAttribute("attr2");
 
         InsertDbRowOp row1 = new InsertDbRowOp(mockObject(id), mockEntity(), id);
-        row1.getValues().addValue(attr1, 1);
+        row1.getValues().addValue(attr1, 1, false);
         InsertDbRowOp row2 = new InsertDbRowOp(mockObject(id), mockEntity(), id);
-        row2.getValues().addValue(attr2, 2);
+        row2.getValues().addValue(attr2, 2, false);
 
         {
             DbRowOpMerger merger = new DbRowOpMerger();
@@ -132,9 +132,9 @@ public class DbRowOpMergerTest {
         DbAttribute attr2 = new DbAttribute("attr2");
 
         UpdateDbRowOp row1 = new UpdateDbRowOp(mockObject(id), mockEntity(), id);
-        row1.getValues().addValue(attr1, 1);
+        row1.getValues().addValue(attr1, 1, false);
         UpdateDbRowOp row2 = new UpdateDbRowOp(mockObject(id), mockEntity(), id);
-        row2.getValues().addValue(attr2, 2);
+        row2.getValues().addValue(attr2, 2, false);
 
         {
             DbRowOpMerger merger = new DbRowOpMerger();

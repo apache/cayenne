@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -21,22 +20,21 @@ public abstract class _MeaningfulFK extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> MEANIGNFUL_FK_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("MEANIGNFUL_FK_ID"), Integer.class);
     public static final String MEANIGNFUL_FK_ID_PK_COLUMN = "MEANIGNFUL_FK_ID";
 
     public static final NumericProperty<Integer> RELATIONSHIP_HELPER_ID = PropertyFactory.createNumeric("relationshipHelperID", Integer.class);
     public static final EntityProperty<RelationshipHelper> TO_RELATIONSHIP_HELPER = PropertyFactory.createEntity("toRelationshipHelper", RelationshipHelper.class);
 
-    protected Integer relationshipHelperID;
+    protected int relationshipHelperID;
 
     protected Object toRelationshipHelper;
 
-    public void setRelationshipHelperID(Integer relationshipHelperID) {
+    public void setRelationshipHelperID(int relationshipHelperID) {
         beforePropertyWrite("relationshipHelperID", this.relationshipHelperID, relationshipHelperID);
         this.relationshipHelperID = relationshipHelperID;
     }
 
-    public Integer getRelationshipHelperID() {
+    public int getRelationshipHelperID() {
         beforePropertyRead("relationshipHelperID");
         return this.relationshipHelperID;
     }
@@ -73,7 +71,7 @@ public abstract class _MeaningfulFK extends BaseDataObject {
 
         switch (propName) {
             case "relationshipHelperID":
-                this.relationshipHelperID = (Integer)val;
+                this.relationshipHelperID = val == null ? 0 : (int)val;
                 break;
             case "toRelationshipHelper":
                 this.toRelationshipHelper = val;
@@ -94,14 +92,14 @@ public abstract class _MeaningfulFK extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(this.relationshipHelperID);
+        out.writeInt(this.relationshipHelperID);
         out.writeObject(this.toRelationshipHelper);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        this.relationshipHelperID = (Integer)in.readObject();
+        this.relationshipHelperID = in.readInt();
         this.toRelationshipHelper = in.readObject();
     }
 
