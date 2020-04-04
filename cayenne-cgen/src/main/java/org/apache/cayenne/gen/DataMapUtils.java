@@ -179,7 +179,7 @@ public class DataMapUtils {
 
 				if (operand instanceof ASTObjPath) {
 					PathComponent<ObjAttribute, ObjRelationship> component = ((Entity) root).lastPathComponent(
-							(ASTObjPath) operand, null);
+							(ASTObjPath) operand, Collections.emptyMap());
 					ObjAttribute attribute = component.getAttribute();
 					if (attribute != null) {
 						typeName = attribute.getType();
