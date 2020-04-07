@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.2.M1
-Date: March 24, 2020
+Date: April 7, 2020
 ----------------------------------
 Changes/New Features:
 
