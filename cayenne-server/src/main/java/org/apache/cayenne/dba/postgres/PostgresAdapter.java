@@ -67,7 +67,7 @@ public class PostgresAdapter extends JdbcAdapter {
 
 	public static final String BYTEA = "bytea";
 
-	private String[] SYSTEM_SCHEMAS = new String[]{"information_schema", "pg_catalog"};
+	private List<String> SYSTEM_SCHEMAS = Arrays.asList("information_schema", "pg_catalog");
 
 	public PostgresAdapter(@Inject RuntimeProperties runtimeProperties,
 						   @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -272,7 +272,7 @@ public class PostgresAdapter extends JdbcAdapter {
 
 	@Override
 	public List<String> getSystemSchemas() {
-		return Arrays.asList(SYSTEM_SCHEMAS);
+		return SYSTEM_SCHEMAS;
 	}
 
 }

@@ -83,7 +83,7 @@ public class MySQLAdapter extends JdbcAdapter {
 
 	protected String storageEngine;
 
-	private String[] SYSTEM_CATALOGS = new String[]{"sys", "information_schema", "mysql", "performance_schema"};
+	private List<String> SYSTEM_CATALOGS = Arrays.asList("sys", "information_schema", "mysql", "performance_schema");
 
 	public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
 						@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -358,7 +358,7 @@ public class MySQLAdapter extends JdbcAdapter {
 
 	@Override
 	public List<String> getSystemCatalogs() {
-		return Arrays.asList(SYSTEM_CATALOGS);
+		return SYSTEM_CATALOGS;
 	}
 
 	final class PKComparator implements Comparator<DbAttribute> {
