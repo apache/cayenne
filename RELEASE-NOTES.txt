@@ -114,6 +114,7 @@ CAY-2647 Modeler: project upgrade from 4.0.B2 to 4.1.RC2 failure
 CAY-2648 Whitespace symbols in JDBC Driver and DB URL lines lead to incorrect driver loading
 CAY-2653 No methods for queries with qualifier parameters generated
 CAY-2654 Exception in dbimport when relationships should be imported, but no explicit configuration exists
+CAY-2655 AutoAdapter missing supportsGeneratedKeysForBatchInserts() method
 
 ----------------------------------
 Release: 4.1.B1

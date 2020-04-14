@@ -104,6 +104,8 @@ public interface DbAdapter {
 	boolean supportsGeneratedKeys();
 
     /**
+	 * Returns true if a target database supports key autogeneration in a batch insert.
+	 * @see #supportsGeneratedKeys()
      * @since 4.2
      */
     default boolean supportsGeneratedKeysForBatchInserts() {
