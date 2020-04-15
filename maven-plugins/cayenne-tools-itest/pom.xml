@@ -21,7 +21,7 @@
     <parent>
         <artifactId>cayenne-maven-plugins-parent</artifactId>
         <groupId>org.apache.cayenne.plugins</groupId>
-        <version>4.2.M1</version>
+        <version>4.2.M1-SNAPSHOT</version>
     </parent>
 
 	<description>Integration Tests - Cayenne Tools</description>
