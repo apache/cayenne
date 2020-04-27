@@ -30,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.time.LocalDate;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -49,7 +50,6 @@ import org.apache.cayenne.util.Util;
 // triad, though it might be beneficial to use strings file
 public class AboutDialog extends JFrame implements FocusListener, KeyListener, MouseListener {
 
-    private JLabel license, info;
     private static String infoString;
     private static ImageIcon logoImage;
 
@@ -70,20 +70,18 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
             double totalMemory = (double) Runtime.getRuntime().totalMemory() / 1024 / 1024;
             double freeMemory = (double) Runtime.getRuntime().freeMemory() / 1024 / 1024;
 
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             buffer.append("<html>");
             buffer.append("<font size='-1' face='Arial,Helvetica'>");
-            buffer.append(ModelerUtil.getProperty("cayenne.modeler.about.info"));
+            buffer.append(String.format(ModelerUtil.getProperty("cayenne.modeler.about.info"), LocalDate.now().getYear()));
             buffer.append("</font>");
 
             buffer.append("<font size='-2' face='Arial,Helvetica'>");
-            buffer.append("<br>JVM: " + System.getProperty("java.vm.name") + " " + System.getProperty("java.version"));
+            buffer.append("<br>JVM: ").append(System.getProperty("java.vm.name")).append(" ").append(System.getProperty("java.version"));
             buffer.append(String.format("<br>Memory: used %.2f MB, max %.2f MB", totalMemory - freeMemory, maxMemory));
 
             String version = LocalizedStringsHandler.getString("cayenne.version");
-            if (version != null) {
-                buffer.append("<br>Version: ").append(version);
-            }
+            buffer.append("<br>Version: ").append(version);
 
             String buildDate = LocalizedStringsHandler.getString("cayenne.build.date");
             if (!Util.isEmptyString(buildDate)) {
@@ -119,7 +117,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         JLabel image = new JLabel(getLogoImage());
         panel.add(image, new GridBagConstraints());
 
-        license = new JLabel();
+        JLabel license = new JLabel();
         final GridBagConstraints gridBagConstraints_1 = new GridBagConstraints();
         gridBagConstraints_1.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints_1.anchor = GridBagConstraints.NORTHWEST;
@@ -129,7 +127,7 @@ public class AboutDialog extends JFrame implements FocusListener, KeyListener, M
         panel.add(license, gridBagConstraints_1);
         license.setText("<html><font size='-1' face='Arial,Helvetica'>Available under the Apache license.</font></html>");
 
-        info = new JLabel();
+        JLabel info = new JLabel();
         final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
         gridBagConstraints_2.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints_2.anchor = GridBagConstraints.NORTHWEST;
