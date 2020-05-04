@@ -20,6 +20,7 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -56,6 +57,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 */
     @Parameter
 	private File additionalMaps;
+
+    /**
+	 * Additional system properties that can be added before execution.
+	 */
+    @Parameter
+	private Map<String,String> systemProperties;
 
 	/**
 	 * Whether we are generating classes for the client tier in a Remote Object
@@ -238,6 +245,12 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		injector = new ToolsInjectorBuilder()
 				.addModule(new ToolsModule(LoggerFactory.getLogger(CayenneGeneratorMojo.class)))
 				.create();
+
+		// load additional system properties early for downstream access
+		if (systemProperties != null) {
+			logger.info("Setting system properties from pom.xml");
+			systemProperties.forEach((key,value) -> System.setProperty(key, value));
+		}
 
 		Logger logger = new MavenLogger(this);
 		CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
