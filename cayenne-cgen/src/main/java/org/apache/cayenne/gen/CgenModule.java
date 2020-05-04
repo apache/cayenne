@@ -36,7 +36,7 @@ import org.apache.cayenne.project.ProjectModule;
 /**
  * @since 4.1
  */
-public class CgenModule implements Module{
+public class CgenModule implements Module {
 
     @Override
     public void configure(Binder binder) {
@@ -44,6 +44,8 @@ public class CgenModule implements Module{
         binder.bind(ClassGenerationActionFactory.class).to(DefaultClassGenerationActionFactory.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ToolsUtilsFactory.class).to(DefaultToolsUtilsFactory.class);
+        binder.bind(MetadataUtils.class).to(MetadataUtils.class);
+
         ProjectModule.contributeExtensions(binder).add(CgenExtension.class);
 
         contributeUserProperties(binder)

@@ -36,11 +36,11 @@ import java.util.Map;
  */
 public class ImportUtils {
 
-	public static final String importOrdering[] = { "java.", "javax.", "org.", "com." };
+	public static final String[] importOrdering = { "java.", "javax.", "org.", "com." };
 
-	static final String primitives[] = { "long", "double", "byte", "boolean", "float", "short", "int", "char" };
+	static final String[] primitives = { "long", "double", "byte", "boolean", "float", "short", "int", "char" };
 
-	static final String primitiveClasses[] = new String[] { Long.class.getName(), Double.class.getName(),
+	static final String[] primitiveClasses = new String[] { Long.class.getName(), Double.class.getName(),
 			Byte.class.getName(), Boolean.class.getName(), Float.class.getName(), Short.class.getName(),
 			Integer.class.getName(), Character.class.getName() };
 

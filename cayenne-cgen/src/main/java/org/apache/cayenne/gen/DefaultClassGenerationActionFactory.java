@@ -29,6 +29,9 @@ public class DefaultClassGenerationActionFactory implements ClassGenerationActio
     @Inject
     private ToolsUtilsFactory utilsFactory;
 
+    @Inject
+    private MetadataUtils metadataUtils;
+
     @Override
     public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
         ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
@@ -36,6 +39,7 @@ public class DefaultClassGenerationActionFactory implements ClassGenerationActio
                 new ClassGenerationAction();
         classGenerationAction.setCgenConfiguration(cgenConfiguration);
         classGenerationAction.setUtilsFactory(utilsFactory);
+        classGenerationAction.setMetadataUtils(metadataUtils);
         return classGenerationAction;
     }
 
