@@ -50,6 +50,12 @@ $propertyUtils.addImport($rel)##
 #end
 ${importUtils.generate()}
 
+#set ( $comment = ${metadataUtils.getComment($object)} )
+#if ( $comment )
+/**
+ * $comment
+ */
+#end
 public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName} extends ${baseClassName} {
 
     private static final long serialVersionUID = 1L;
