@@ -75,6 +75,7 @@ public class ClassGenerationAction {
     protected Map<String, Template> templateCache;
 
     private ToolsUtilsFactory utilsFactory;
+	private MetadataUtils metadataUtils;
 
 	/**
 	Optionally allows user-defined tools besides {@link ImportUtils} for working with velocity templates.<br/>
@@ -191,6 +192,7 @@ public class ClassGenerationAction {
         ImportUtils importUtils = utilsFactory.createImportUtils();
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
 		context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory.createPropertyUtils(logger, importUtils));
+		context.put(Artifact.METADATA_UTILS_KEY, metadataUtils);
 		artifact.postInitContext(context);
 	}
 
@@ -501,5 +503,13 @@ public class ClassGenerationAction {
 
 	public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
 		this.utilsFactory = utilsFactory;
+	}
+
+	public void setMetadataUtils(MetadataUtils metadataUtils) {
+		this.metadataUtils = metadataUtils;
+	}
+
+	public MetadataUtils getMetadataUtils() {
+		return metadataUtils;
 	}
 }

@@ -35,7 +35,10 @@ import java.util.stream.Collectors;
 
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -182,9 +185,12 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     public void generateAction() {
         CgenConfiguration cgenConfiguration = createConfiguration();
+        List<Module> modules = new ModuleLoader()
+                .load(CayenneToolsModuleProvider.class);
+        modules.add(binder -> binder.bind(DataChannelMetaData.class)
+                .toInstance(projectController.getApplication().getMetaData()));
         ClassGenerationAction generator = DIBootstrap
-                .createInjector(new ModuleLoader()
-                        .load(CayenneToolsModuleProvider.class))
+                .createInjector(modules)
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(cgenConfiguration);
 
