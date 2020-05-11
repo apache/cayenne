@@ -94,7 +94,6 @@ public class ClassGenerationAction {
 		if (System.getProperty("org.apache.velocity.tools") != null || toolConfigFile != null) {
 			ToolManager manager = new ToolManager(true, true);
 			if (toolConfigFile != null) {
-				logger.info("Adding external tool configuration.");
 				FactoryConfiguration config = ConfigurationUtils.find(toolConfigFile);
 				manager.getToolboxFactory().configure(config);
 			}
