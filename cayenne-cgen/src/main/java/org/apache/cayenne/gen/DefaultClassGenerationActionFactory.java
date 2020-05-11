@@ -32,9 +32,8 @@ public class DefaultClassGenerationActionFactory implements ClassGenerationActio
     @Override
     public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
         ClassGenerationAction classGenerationAction = cgenConfiguration.isClient() ?
-                new ClientClassGenerationAction() :
-                new ClassGenerationAction();
-        classGenerationAction.setCgenConfiguration(cgenConfiguration);
+                new ClientClassGenerationAction(cgenConfiguration) :
+                new ClassGenerationAction(cgenConfiguration);
         classGenerationAction.setUtilsFactory(utilsFactory);
         return classGenerationAction;
     }

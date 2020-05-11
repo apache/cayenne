@@ -34,7 +34,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.gen.ImportUtils;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -43,6 +42,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.ToolManager;
+import org.apache.velocity.tools.config.ConfigurationUtils;
+import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.slf4j.Logger;
 
 public class ClassGenerationAction {
@@ -86,9 +87,17 @@ public class ClassGenerationAction {
 	tools.application.myTool = com.mycompany.MyTool</pre>
 	Then the methods in the MyTool class will be available for use in the template like ${myTool.myMethod(arg)}
 	 */
-	public ClassGenerationAction() {
-		if (System.getProperty("org.apache.velocity.tools") != null) {
+	public ClassGenerationAction(CgenConfiguration cgenConfig) {
+		this.cgenConfiguration = cgenConfig;
+		String toolConfigFile = cgenConfig.getExternalToolConfig();
+		
+		if (System.getProperty("org.apache.velocity.tools") != null || toolConfigFile != null) {
 			ToolManager manager = new ToolManager(true, true);
+			if (toolConfigFile != null) {
+				logger.info("Adding external tool configuration.");
+				FactoryConfiguration config = ConfigurationUtils.find(toolConfigFile);
+				manager.getToolboxFactory().configure(config);
+			}
 			this.context = manager.createContext();
 		} else {
 			this.context = new VelocityContext();
