@@ -142,6 +142,14 @@ public class CgenTask extends BaseCayenneTask {
     @Optional
     private Boolean createPKProperties;
 
+    /**
+     * Optional path (classpath or filesystem) to external velocity tool configuration file
+     * @since 4.2
+     */
+    @Input
+    @Optional
+    private String externalToolConfig;
+
     private String destDirName;
 
     private DataChannelMetaData metaData;
@@ -253,6 +261,7 @@ public class CgenTask extends BaseCayenneTask {
         cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
         cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
         cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
+        cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
                 cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
@@ -279,7 +288,7 @@ public class CgenTask extends BaseCayenneTask {
                 makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
                 superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
                 usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
-                querySuperTemplate != null || createPKProperties != null;
+                querySuperTemplate != null || createPKProperties != null || externalToolConfig != null;
     }
 
     @OutputDirectory
@@ -581,5 +590,12 @@ public class CgenTask extends BaseCayenneTask {
     public void createPKProperties(boolean createPKProperties) {
         setCreatePKProperties(createPKProperties);
     }
+    
+    public void setExternalToolConfig(String externalToolConfig) {
+    	this.externalToolConfig = externalToolConfig;
+    }
 
+    public void externalToolConfig(String externalToolConfig) {
+    	setExternalToolConfig(externalToolConfig);
+    }
 }
