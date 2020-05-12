@@ -81,6 +81,11 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     private boolean client;
 
+    /**
+     * @since 4.2
+     */
+    private String externalToolConfig;
+    
     public CgenConfiguration(boolean client) {
         this.outputPattern = "*.java";
         this.timestamp = 0L;
@@ -318,6 +323,14 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.client = client;
     }
 
+    public String getExternalToolConfig() {
+    	return externalToolConfig;
+    }
+    
+    public void setExternalToolConfig(String config) {
+    	this.externalToolConfig = config;
+    }
+    
     void addArtifact(Artifact artifact) {
         artifacts.add(artifact);
     }
@@ -404,6 +417,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("superPkg", this.superPkg)
                 .simpleTag("createPKProperties", Boolean.toString(this.createPKProperties))
                 .simpleTag("client", Boolean.toString(client))
+                .simpleTag("externalToolConfig", this.externalToolConfig)
                 .end();
     }
 

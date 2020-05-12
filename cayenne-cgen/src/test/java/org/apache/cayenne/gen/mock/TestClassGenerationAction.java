@@ -33,8 +33,7 @@ public class TestClassGenerationAction extends ClassGenerationAction {
     private Collection<StringWriter> writers;
 
     public TestClassGenerationAction(ClassGenerationAction classGenerationAction, Collection<StringWriter> writers){
-        super();
-        setCgenConfiguration(classGenerationAction.getCgenConfiguration());
+        super(classGenerationAction.getCgenConfiguration());
         setUtilsFactory(classGenerationAction.getUtilsFactory());
         this.writers = writers;
     }
