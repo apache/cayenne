@@ -34,6 +34,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -52,7 +53,7 @@ public class LazyAttributesIT extends ServerCase {
     public void setup() throws Exception {
         TableHelper th = new TableHelper(dbHelper, "LAZYBLOB")
                 .setColumns("ID", "NAME", "LAZY_DATA")
-                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.BLOB);
+                .setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.VARBINARY);
         th.insert(1, "test", new byte[]{1, 2, 3, 4, 5});
     }
 
@@ -91,4 +92,28 @@ public class LazyAttributesIT extends ServerCase {
         assertArrayEquals(expected, lazyblob2.getLazyData());
     }
 
+    @Test
+    public void testUpdateNoFetch() {
+        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        lazyblob.setName("updated_name");
+
+        context.commitChanges();
+
+        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        assertEquals("updated_name", lazyblob2.getName());
+        assertArrayEquals(new byte[]{1, 2, 3, 4, 5}, lazyblob2.getLazyData());
+    }
+
+    @Test
+    public void testUpdateFetch() {
+        Lazyblob lazyblob = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        lazyblob.setName("updated_name");
+        lazyblob.getLazyData();
+
+        context.commitChanges();
+
+        Lazyblob lazyblob2 = ObjectSelect.query(Lazyblob.class).selectOne(context);
+        assertEquals("updated_name", lazyblob2.getName());
+        assertArrayEquals(new byte[]{1, 2, 3, 4, 5}, lazyblob2.getLazyData());
+    }
 }

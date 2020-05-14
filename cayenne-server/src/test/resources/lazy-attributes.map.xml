@@ -6,7 +6,7 @@
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.lazy"/>
 	<db-entity name="LAZYBLOB">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="LAZY_DATA" type="BLOB"/>
+		<db-attribute name="LAZY_DATA" type="VARBINARY" length="10"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="255"/>
 	</db-entity>
 	<obj-entity name="Lazyblob" className="org.apache.cayenne.testdo.lazy.Lazyblob" dbEntityName="LAZYBLOB">
