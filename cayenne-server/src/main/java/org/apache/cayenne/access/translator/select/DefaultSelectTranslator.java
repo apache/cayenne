@@ -77,6 +77,10 @@ public class DefaultSelectTranslator implements SelectTranslator {
         this.context = new TranslatorContext(query, adapter, entityResolver, null);
     }
 
+    /**
+     * @deprecated since 4.2 as {@link SelectQuery} is deprecated.
+     */
+    @Deprecated
     public DefaultSelectTranslator(SelectQuery<?> query, DbAdapter adapter, EntityResolver entityResolver) {
         this(new SelectQueryWrapper(query), adapter, entityResolver);
     }
