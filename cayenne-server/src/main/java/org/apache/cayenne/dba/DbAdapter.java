@@ -55,12 +55,15 @@ public interface DbAdapter {
 	 */
 	String getBatchTerminator();
 
-	/**
-	 * Returns a SelectTranslator that works with the adapter target database.
-	 *
-	 * @since 4.0
-	 */
-	SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
+    /**
+     * Returns a SelectTranslator that works with the adapter target database.
+     *
+     * @since 4.0
+     * @deprecated since 4.2 as {@link SelectQuery} is deprecated.
+     * {@link #getSelectTranslator(FluentSelect, EntityResolver)} replaces this method.
+     */
+    @Deprecated
+    SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
 
 	/**
 	 * @since 4.2
@@ -111,7 +114,7 @@ public interface DbAdapter {
     default boolean supportsGeneratedKeysForBatchInserts() {
     	return supportsGeneratedKeys();
     }
-    
+
 	/**
 	 * Returns <code>true</code> if the target database supports batch updates.
 	 */
