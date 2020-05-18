@@ -130,7 +130,7 @@ public class JointPrefetchIT extends ServerCase {
 
         final List<Artist> objects = ObjectSelect.query(Artist.class)
                 .limit(2).offset(0)
-                .orderBy("db:ARTIST_ID", SortOrder.ASCENDING)
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
 
