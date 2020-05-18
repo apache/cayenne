@@ -87,6 +87,9 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private String externalToolConfig;
     
     public CgenConfiguration(boolean client) {
+        /**
+         * {@link #isDefault()} method should be in sync with the following values
+         */
         this.outputPattern = "*.java";
         this.timestamp = 0L;
         this.usePkgPath = true;
@@ -421,4 +424,24 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .end();
     }
 
+    /**
+     * @return is this configuration with all values set to the default
+     */
+    public boolean isDefault() {
+        // this must be is sync with actual default values
+        return isMakePairs()
+                && isUsePkgPath()
+                && !isOverwrite()
+                && !isCreatePKProperties()
+                && !isCreatePropertyNames()
+                && getOutputPattern().equals("*.java")
+                && (getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
+                    || getTemplate().equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE))
+                && (getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
+                    || getSuperTemplate().equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE))
+                && (getSuperPkg() == null
+                    || getSuperPkg().isEmpty())
+                && (getExternalToolConfig() == null
+                    || getExternalToolConfig().isEmpty());
+    }
 }

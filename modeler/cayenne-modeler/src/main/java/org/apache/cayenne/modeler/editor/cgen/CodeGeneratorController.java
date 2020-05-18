@@ -36,14 +36,12 @@ import java.util.stream.Collectors;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
@@ -108,7 +106,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         GeneratorController modeController = prevGeneratorController.get(dataMap) != null
                         ? prevGeneratorController.get(dataMap)
                         : isDefaultConfig(cgenConfiguration)
-                            ? cgenConfiguration.isClient()
+                            ? cgenConfiguration != null && cgenConfiguration.isClient()
                                 ? generatorSelector.getClientGeneratorController()
                                 : generatorSelector.getStandartController()
                             : generatorSelector.getCustomModeController();
@@ -121,15 +119,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     private boolean isDefaultConfig(CgenConfiguration cgenConfiguration) {
-        return cgenConfiguration.isMakePairs() && cgenConfiguration.isUsePkgPath() &&
-                !cgenConfiguration.isOverwrite() && !cgenConfiguration.isCreatePKProperties() &&
-                !cgenConfiguration.isCreatePropertyNames() && cgenConfiguration.getOutputPattern().equals("*.java") &&
-                (cgenConfiguration.getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE) ||
-                        cgenConfiguration.getTemplate().equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE)) &&
-                (cgenConfiguration.getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE) ||
-                        cgenConfiguration.getSuperTemplate().equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE)) &&
-                (cgenConfiguration.getSuperPkg() == null || cgenConfiguration.getSuperPkg().isEmpty());
-
+        return cgenConfiguration == null || cgenConfiguration.isDefault();
     }
 
     private void initListeners(){
@@ -228,8 +218,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
      * Creates a class generator for provided selections.
      */
     public CgenConfiguration createConfiguration() {
-        DataMap map = projectController.getCurrentDataMap();
-        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
+        CgenConfiguration cgenConfiguration = getCurrentConfiguration();
         if(cgenConfiguration != null){
             addToSelectedEntities(cgenConfiguration.getEntities());
             addToSelectedEmbeddables(cgenConfiguration.getEmbeddables());
@@ -237,6 +226,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
             return cgenConfiguration;
         }
 
+        DataMap map = projectController.getCurrentDataMap();
         cgenConfiguration = new CgenConfiguration(false);
         cgenConfiguration.setForce(true);
         cgenConfiguration.setDataMap(map);
@@ -273,6 +263,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
                 .stream()
                 .map(Embeddable::getClassName)
                 .collect(Collectors.toList()));
+
         getApplication().getMetaData().add(map, cgenConfiguration);
         projectController.setDirty(true);
 
@@ -288,8 +279,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
         for (Object classObj : classes) {
             if(classObj instanceof DataMap) {
-                boolean select = predicate.test(classObj);
-                updateArtifactGenerationMode(classObj, select);
+                boolean selected = predicate.test(classObj);
+                updateArtifactGenerationMode(selected);
             }
         }
 
@@ -300,9 +291,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         return modified;
     }
 
-    private void updateArtifactGenerationMode(Object classObj, boolean selected) {
-        DataMap dataMap = (DataMap) classObj;
-        CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(dataMap, CgenConfiguration.class);
+    private void updateArtifactGenerationMode(boolean selected) {
+        CgenConfiguration cgenConfiguration = getCurrentConfiguration();
         if(selected) {
             cgenConfiguration.setArtifactsGenerationMode("all");
         } else {
@@ -316,7 +306,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     public void setSelected(boolean selectedFlag) {
         if (currentClass instanceof DataMap) {
-            updateArtifactGenerationMode(currentClass, selectedFlag);
+            updateArtifactGenerationMode(selectedFlag);
         }
         if (selectionModel.setSelected(currentClass, selectedFlag)) {
             firePropertyChange(SELECTED_PROPERTY, null, null);
