@@ -139,37 +139,27 @@ public class CustomModeController extends GeneratorController {
                 cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
             }
             initForm(cgenConfiguration);
-            if(!getParentController().isInitFromModel()) {
-                getParentController().getProjectController().setDirty(true);
-            }
+            getParentController().checkCgenConfigDirty();
         });
 
         view.getOverwrite().addActionListener(val -> {
             cgenConfiguration.setOverwrite(view.getOverwrite().isSelected());
-            if(!getParentController().isInitFromModel()) {
-                getParentController().getProjectController().setDirty(true);
-            }
+            getParentController().checkCgenConfigDirty();
         });
 
         view.getCreatePropertyNames().addActionListener(val -> {
             cgenConfiguration.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
-            if(!getParentController().isInitFromModel()) {
-                getParentController().getProjectController().setDirty(true);
-            }
+            getParentController().checkCgenConfigDirty();
         });
 
         view.getUsePackagePath().addActionListener(val -> {
             cgenConfiguration.setUsePkgPath(view.getUsePackagePath().isSelected());
-            if(!getParentController().isInitFromModel()) {
-                getParentController().getProjectController().setDirty(true);
-            }
+            getParentController().checkCgenConfigDirty();
         });
 
         view.getPkProperties().addActionListener(val -> {
             cgenConfiguration.setCreatePKProperties(view.getPkProperties().isSelected());
-            if(!getParentController().isInitFromModel()) {
-                getParentController().getProjectController().setDirty(true);
-            }
+            getParentController().checkCgenConfigDirty();
         });
 
         view.getClientMode().addActionListener(val -> {
@@ -195,9 +185,7 @@ public class CustomModeController extends GeneratorController {
                     cgenConfiguration.getRootPath());
             view.getSubclassTemplate().setItem(templateName);
             view.getSuperclassTemplate().setItem(superTemplateName);
-            if(!getParentController().isInitFromModel()) {
-                getParentController().getProjectController().setDirty(true);
-            }
+            getParentController().checkCgenConfigDirty();
         });
     }
 
@@ -213,7 +201,6 @@ public class CustomModeController extends GeneratorController {
         view.getPkProperties().setSelected(cgenConfiguration.isCreatePKProperties());
         view.getSuperPkg().setText(cgenConfiguration.getSuperPkg());
         updateComboBoxes();
-        getParentController().setInitFromModel(false);
     }
 
     @Override

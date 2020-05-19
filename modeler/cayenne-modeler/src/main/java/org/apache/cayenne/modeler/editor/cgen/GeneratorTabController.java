@@ -78,7 +78,7 @@ public class GeneratorTabController extends CayenneController {
         view.getGenerationMode().addActionListener(action -> {
             String name = (String)view.getGenerationMode().getSelectedItem();
             GeneratorController modeController = getGeneratorController();
-            CgenConfiguration cgenConfiguration = getParentController().createConfiguration();
+            CgenConfiguration cgenConfiguration = getParentController().getCgenConfiguration();
             modeController.updateConfiguration(cgenConfiguration);
             controllers.get(name).initForm(cgenConfiguration);
             getParentController().getPrevGeneratorController().put(cgenConfiguration.getDataMap(), modeController);

@@ -44,12 +44,6 @@ public class StandardModeController extends GeneratorController {
     }
 
     @Override
-    protected void initForm(CgenConfiguration cgenConfiguration) {
-        super.initForm(cgenConfiguration);
-        getParentController().setInitFromModel(false);
-    }
-
-    @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
         cgenConfiguration.setClient(false);
         cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);

@@ -18,6 +18,7 @@ CAY-2656 Modeler: option to download required jars directly from maven central
 
 Bug Fixes:
 
+CAY-2591 Modeler: project becomes dirty after click on dbImport or cgen tab
 
 ----------------------------------
 Release: 4.2.M1

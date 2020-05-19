@@ -430,18 +430,18 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     public boolean isDefault() {
         // this must be is sync with actual default values
         return isMakePairs()
-                && isUsePkgPath()
-                && !isOverwrite()
-                && !isCreatePKProperties()
-                && !isCreatePropertyNames()
-                && getOutputPattern().equals("*.java")
-                && (getTemplate().equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
-                    || getTemplate().equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE))
-                && (getSuperTemplate().equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
-                    || getSuperTemplate().equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE))
-                && (getSuperPkg() == null
-                    || getSuperPkg().isEmpty())
-                && (getExternalToolConfig() == null
-                    || getExternalToolConfig().isEmpty());
+                && usePkgPath
+                && !overwrite
+                && !createPKProperties
+                && !createPropertyNames
+                && "*.java".equals(outputPattern)
+                && (template.equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
+                    || template.equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE))
+                && (superTemplate.equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
+                    || superTemplate.equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE))
+                && (superPkg == null
+                    || superPkg.isEmpty())
+                && (externalToolConfig == null
+                    || externalToolConfig.isEmpty());
     }
 }
