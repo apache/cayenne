@@ -36,7 +36,6 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.Comparators;
@@ -134,7 +133,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         distinct.addItemListener(e -> {
             QueryDescriptor query = getQuery();
             if (query != null) {
-                query.setProperty(SelectQuery.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
+                query.setProperty(SelectQueryDescriptor.DISTINCT_PROPERTY, Boolean.toString(distinct.isSelected()));
                 mediator.fireQueryEvent(new QueryEvent(this, query));
             }
         });
@@ -155,7 +154,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
         SelectQueryDescriptor query = (SelectQueryDescriptor) descriptor;
 
         name.setText(query.getName());
-        distinct.setSelected(Boolean.valueOf(query.getProperties().get(SelectQuery.DISTINCT_PROPERTY)));
+        distinct.setSelected(Boolean.parseBoolean(query.getProperties().get(SelectQueryDescriptor.DISTINCT_PROPERTY)));
         qualifier.setText(query.getQualifier() != null ? query
                 .getQualifier()
                 .toString() : null);

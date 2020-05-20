@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
@@ -213,5 +214,12 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
      */
     public boolean isDistinct() {
         return false;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void initWithProperties(Map<String, String> properties) {
+        getBaseMetaData().initWithProperties(properties);
     }
 }
