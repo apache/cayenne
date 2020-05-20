@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.gen;
 
-import java.io.File;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -172,7 +171,7 @@ public class ClassGenerationActionTest extends CgenCase {
 
 	private void runDataMapTest(boolean client) throws Exception {
 		QueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
-        descriptor.setName("TestQuery");
+		descriptor.setName("TestQuery");
 
 		DataMap map = new DataMap();
 		map.addQueryDescriptor(descriptor);
@@ -281,5 +280,56 @@ public class ClassGenerationActionTest extends CgenCase {
 		cgenConfiguration.setForce(true);
 
 		assertTrue(action.fileNeedUpdate(file, null));
+	}
+
+	@Test
+	public void testFileForSuperclass() throws Exception {
+
+		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
+
+		cgenConfiguration.setRelPath("./src/test/resources");
+		action = new ClassGenerationAction(cgenConfiguration);
+		ObjEntity testEntity1 = new ObjEntity("TEST");
+		testEntity1.setClassName("TestClass1");
+		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
+		action.context.put(Artifact.SUPER_CLASS_KEY, "TestClass1");
+
+		File outFile = new File("./src/test/resources/TestClass1.java");
+		assertFalse(outFile.exists());
+
+		action.openWriter(templateType);
+		assertTrue(outFile.exists());
+
+		assertEquals(null, action.openWriter(templateType));
+		outFile.delete();
+	}
+
+	@Test
+	public void testFileForClass() throws Exception {
+
+		TemplateType templateType = TemplateType.DATAMAP_SINGLE_CLASS;
+
+		cgenConfiguration.setRelPath("./src/test/resources");
+		action = new ClassGenerationAction(cgenConfiguration);
+		ObjEntity testEntity1 = new ObjEntity("TEST");
+		testEntity1.setClassName("TestClass1");
+		action.context.put(Artifact.SUB_PACKAGE_KEY, "");
+		action.context.put(Artifact.SUB_CLASS_KEY, "TestClass1");
+
+		File outFile = new File("./src/test/resources/TestClass1.java");
+		assertFalse(outFile.exists());
+
+		action.openWriter(templateType);
+		assertTrue(outFile.exists());
+
+		assertEquals(null, action.openWriter(templateType));
+
+		cgenConfiguration.setMakePairs(false);
+		assertEquals(null, action.openWriter(templateType));
+
+		cgenConfiguration.setOverwrite(true);
+		assertEquals(null, action.openWriter(templateType));
+
+		outFile.delete();
 	}
 }
