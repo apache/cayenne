@@ -79,13 +79,13 @@ public class BatchActionLockingIT extends ServerCase {
 		Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
 		Map<String, Object> qualifierSnapshot = new HashMap<>();
-		qualifierSnapshot.put("LOCKING_TEST_ID", new Integer(1));
+		qualifierSnapshot.put("LOCKING_TEST_ID", 1);
 
 		DeleteBatchQuery batchQuery = new DeleteBatchQuery(dbEntity, qualifierAttributes, nullAttributeNames, 5);
 		batchQuery.setUsingOptimisticLocking(true);
 		batchQuery.add(qualifierSnapshot);
 
-		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
+		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
 
 		MockConnection mockConnection = new MockConnection();
 		PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
@@ -127,7 +127,7 @@ public class BatchActionLockingIT extends ServerCase {
 		batchQuery.setUsingOptimisticLocking(true);
 		batchQuery.add(qualifierSnapshot);
 
-		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter, null);
+		DeleteBatchTranslator batchQueryBuilder = new DeleteBatchTranslator(batchQuery, adapter);
 
 		MockConnection mockConnection = new MockConnection();
 		PreparedStatementResultSetHandler preparedStatementResultSetHandler = mockConnection
@@ -145,7 +145,7 @@ public class BatchActionLockingIT extends ServerCase {
 		try {
 			action.runAsIndividualQueries(mockConnection, batchQueryBuilder, new MockOperationObserver(), generatesKeys);
 			fail("No OptimisticLockingFailureException thrown.");
-		} catch (OptimisticLockException e) {
+		} catch (OptimisticLockException ignore) {
 		}
 		assertEquals(0, mockConnection.getNumberCommits());
 		assertEquals(0, mockConnection.getNumberRollbacks());

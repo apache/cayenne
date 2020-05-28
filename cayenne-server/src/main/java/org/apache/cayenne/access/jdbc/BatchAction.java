@@ -158,6 +158,10 @@ public class BatchAction extends BaseSQLAction {
 	protected void runAsIndividualQueries(Connection connection, BatchTranslator translator,
 			OperationObserver delegate, boolean generatesKeys) throws SQLException, Exception {
 
+		if(query.getRows().isEmpty()) {
+			return;
+		}
+
 		JdbcEventLogger logger = dataNode.getJdbcEventLogger();
 		boolean useOptimisticLock = query.isUsingOptimisticLocking();
 

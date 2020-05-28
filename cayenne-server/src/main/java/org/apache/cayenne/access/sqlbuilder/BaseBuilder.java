@@ -17,32 +17,50 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
+package org.apache.cayenne.access.sqlbuilder;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
-import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
+import java.util.function.Supplier;
+
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
  * @since 4.2
  */
-public class DefaultQuotingAppendable extends StringBuilderAppendable {
+public abstract class BaseBuilder implements NodeBuilder {
+    /**
+     * Main root of this query
+     */
+    protected final Node root;
 
-    private final SQLGenerationContext context;
+    /*
+     * Following nodes are all children of root,
+     * but we keep them here for quick access.
+     */
+    protected final Node[] nodes;
 
-    public DefaultQuotingAppendable(SQLGenerationContext context) {
-        super();
-        this.context = context;
+    public BaseBuilder(Node root, int size) {
+        this.root = root;
+        this.nodes = new Node[size];
+    }
+
+    protected Node node(int idx, Supplier<Node> nodeSupplier) {
+        if(nodes[idx] == null) {
+            nodes[idx] = nodeSupplier.get();
+        }
+        return nodes[idx];
     }
 
     @Override
-    public QuotingAppendable appendQuoted(CharSequence content) {
-        context.getQuotingStrategy().quotedIdentifier(context.getRootDbEntity(), content, builder);
-        return this;
+    public Node build() {
+        for (Node next : nodes) {
+            if (next != null) {
+                root.addChild(next);
+            }
+        }
+        return root;
     }
 
-    @Override
-    public SQLGenerationContext getContext() {
-        return context;
+    public Node getRoot() {
+        return root;
     }
 }

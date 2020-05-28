@@ -36,6 +36,18 @@ public final class SQLBuilder {
         return new SelectBuilder(params);
     }
 
+    public static InsertBuilder insert(String table) {
+        return new InsertBuilder(table);
+    }
+
+    public static UpdateBuilder update(String table) {
+        return new UpdateBuilder(table);
+    }
+
+    public static DeleteBuilder delete(String table) {
+        return new DeleteBuilder(table);
+    }
+
     public static TableNodeBuilder table(String table) {
         return new TableNodeBuilder(table);
     }

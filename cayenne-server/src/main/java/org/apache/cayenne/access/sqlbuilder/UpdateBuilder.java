@@ -17,32 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
+package org.apache.cayenne.access.sqlbuilder;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
-import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SetNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.WhereNode;
 
 /**
  * @since 4.2
  */
-public class DefaultQuotingAppendable extends StringBuilderAppendable {
+public class UpdateBuilder extends BaseBuilder {
 
-    private final SQLGenerationContext context;
+    private static final int TABLE_NODE = 0;
+    private static final int SET_NODE   = 1;
+    private static final int WHERE_NODE = 2;
 
-    public DefaultQuotingAppendable(SQLGenerationContext context) {
-        super();
-        this.context = context;
+    public UpdateBuilder(String table) {
+        super(new UpdateNode(), WHERE_NODE + 1);
+        node(TABLE_NODE, () -> new TableNode(table, null));
     }
 
-    @Override
-    public QuotingAppendable appendQuoted(CharSequence content) {
-        context.getQuotingStrategy().quotedIdentifier(context.getRootDbEntity(), content, builder);
+    public UpdateBuilder set(NodeBuilder setExpression) {
+        node(SET_NODE, SetNode::new).addChild(setExpression.build());
         return this;
     }
 
-    @Override
-    public SQLGenerationContext getContext() {
-        return context;
+    public UpdateBuilder where(NodeBuilder expression) {
+        if(expression != null) {
+            node(WHERE_NODE, WhereNode::new).addChild(expression.build());
+        }
+        return this;
     }
+
 }

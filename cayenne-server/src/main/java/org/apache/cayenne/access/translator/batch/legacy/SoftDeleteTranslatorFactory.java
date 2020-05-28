@@ -16,10 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.translator.batch;
+package org.apache.cayenne.access.translator.batch.legacy;
 
 import java.sql.Types;
+import java.util.Objects;
 
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.DeleteBatchQuery;
@@ -28,8 +30,10 @@ import org.apache.cayenne.query.DeleteBatchQuery;
  * Implementation of {link #BatchTranslator}, which uses 'soft' delete
  * (runs UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
  * 
- * @since 4.2
+ * @since 4.0
+ * @deprecated since 4.2
  */
+@Deprecated
 public class SoftDeleteTranslatorFactory extends DefaultBatchTranslatorFactory {
     /**
      * Default name of 'deleted' field
@@ -46,18 +50,18 @@ public class SoftDeleteTranslatorFactory extends DefaultBatchTranslatorFactory {
     }
 
     public SoftDeleteTranslatorFactory(String deletedFieldName) {
-        this.deletedFieldName = deletedFieldName;
+        this.deletedFieldName = Objects.requireNonNull(deletedFieldName);
     }
 
     @Override
-    protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
+    protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter, String trimFunction) {
 
         DbAttribute attr = query.getDbEntity().getAttribute(deletedFieldName);
         boolean needsSoftDelete = attr != null && attr.getType() == Types.BOOLEAN;
 
         return needsSoftDelete
-                ? new SoftDeleteBatchTranslator(query, adapter, deletedFieldName)
-                : super.deleteTranslator(query, adapter);
+                ? new SoftDeleteBatchTranslator(query, adapter, trimFunction, deletedFieldName)
+                : super.deleteTranslator(query, adapter, trimFunction);
     }
 
     /**

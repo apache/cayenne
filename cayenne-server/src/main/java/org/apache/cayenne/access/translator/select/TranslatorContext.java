@@ -188,7 +188,7 @@ public class TranslatorContext implements SQLGenerationContext {
         return adapter;
     }
 
-    DbEntity getRootDbEntity() {
+    public DbEntity getRootDbEntity() {
         return metadata.getDbEntity();
     }
 

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.batch;
+package org.apache.cayenne.access.translator.batch.legacy;
 
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
@@ -39,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
+@Deprecated
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DefaultBatchTranslatorIT extends ServerCase {
 
