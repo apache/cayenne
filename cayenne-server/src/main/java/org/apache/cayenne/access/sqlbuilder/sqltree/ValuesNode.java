@@ -17,32 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
+package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
-import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
 
 /**
  * @since 4.2
  */
-public class DefaultQuotingAppendable extends StringBuilderAppendable {
+public class ValuesNode extends Node {
 
-    private final SQLGenerationContext context;
-
-    public DefaultQuotingAppendable(SQLGenerationContext context) {
-        super();
-        this.context = context;
+    @Override
+    public Node copy() {
+        return new ValuesNode();
     }
 
     @Override
-    public QuotingAppendable appendQuoted(CharSequence content) {
-        context.getQuotingStrategy().quotedIdentifier(context.getRootDbEntity(), content, builder);
-        return this;
+    public QuotingAppendable append(QuotingAppendable buffer) {
+        return buffer.append(" VALUES");
     }
 
     @Override
-    public SQLGenerationContext getContext() {
-        return context;
+    public void appendChildrenStart(QuotingAppendable buffer) {
+        buffer.append('(');
+    }
+
+    @Override
+    public void appendChildrenSeparator(QuotingAppendable buffer, int childInd) {
+        buffer.append(',');
+    }
+
+    @Override
+    public void appendChildrenEnd(QuotingAppendable buffer) {
+        buffer.append(')');
     }
 }

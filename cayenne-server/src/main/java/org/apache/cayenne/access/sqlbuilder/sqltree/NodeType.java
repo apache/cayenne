@@ -34,5 +34,8 @@ public enum NodeType {
     IN,
     RESULT,
     WHERE,
-    JOIN, FROM
+    JOIN,
+    FROM,
+    UPDATE_SET,
+    INSERT_COLUMNS
 }

@@ -16,16 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.translator.batch;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+package org.apache.cayenne.access.translator.batch.legacy;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -45,9 +41,15 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Deprecated
 @UseServerRuntime(CayenneProjects.SOFT_DELETE_PROJECT)
 public class SoftDeleteBatchTranslatorIT extends ServerCase {
 
@@ -100,7 +102,7 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
         DeleteBatchTranslator builder = createTranslator(deleteQuery);
         String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
-        assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE ( ID = ? ) AND ( NAME IS NULL )", generatedSql);
+        assertEquals("UPDATE " + entity.getName() + " SET DELETED = ? WHERE ID = ? AND NAME IS NULL", generatedSql);
     }
 
     @Test

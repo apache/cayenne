@@ -16,88 +16,58 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
+import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
+
 /**
- * Implementation of {@link DeleteBatchTranslator}, which uses 'soft' delete
- * (runs UPDATE and sets 'deleted' field to true instead-of running SQL DELETE)
+ * @since 4.2
  */
 public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
 
-    private String deletedFieldName;
+    private final String deletedFieldName;
 
-    public SoftDeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String trimFunction,
-            String deletedFieldName) {
-        super(query, adapter, trimFunction);
+    public SoftDeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String deletedFieldName) {
+        super(query, adapter);
         this.deletedFieldName = deletedFieldName;
     }
 
     @Override
-    protected String createSql() {
-
-        QuotingStrategy strategy = adapter.getQuotingStrategy();
-
-        StringBuilder buffer = new StringBuilder("UPDATE ");
-        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
-        buffer.append(" SET ").append(strategy.quotedIdentifier(query.getDbEntity(), deletedFieldName)).append(" = ?");
-
-        applyQualifier(buffer);
-
-        return buffer.toString();
-    }
-
-    @Override
-    protected DbAttributeBinding[] createBindings() {
-
-        DbAttributeBinding[] superBindings = super.createBindings();
-
-        int slen = superBindings.length;
-
-        DbAttributeBinding[] bindings = new DbAttributeBinding[slen + 1];
-
+    public String getSql() {
+        DeleteBatchQuery query = context.getQuery();
         DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
+
+        UpdateBuilder updateBuilder = update(context.getRootDbEntity().getFullyQualifiedName())
+                .set(column(deletedFieldName).attribute(deleteAttribute)
+                        .eq(SQLBuilder.value(true).attribute(deleteAttribute)))
+                .where(buildQualifier(query.getDbAttributes()));
+
+        String sql = doTranslate(updateBuilder);
+
         String typeName = TypesMapping.getJavaBySqlType(deleteAttribute.getType());
-        ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
-
-        bindings[0] = new DbAttributeBinding(deleteAttribute);
+        ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
         bindings[0].include(1, true, extendedType);
-        
-        System.arraycopy(superBindings, 0, bindings, 1, slen);
 
-        return bindings;
+        return sql;
     }
 
     @Override
-    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
-        int len = bindings.length;
+    public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
+        DeleteBatchQuery deleteBatch = context.getQuery();
 
-        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
-
-        // skip position 0... Otherwise follow super algorithm
-        for (int i = 1, j = 2; i < len; i++) {
-
-            DbAttributeBinding b = bindings[i];
-
-            // skip null attributes... they are translated as "IS NULL"
-            if (deleteBatch.isNull(b.getAttribute())) {
-                b.exclude();
-            } else {
-                Object value = row.getValue(i - 1);
-                ExtendedType extendedType = value != null
-                        ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
-                        : adapter.getExtendedTypes().getDefaultType();
-
-                b.include(j++, value, extendedType);
-            }
+        for(int i=0, position=1; i<deleteBatch.getDbAttributes().size(); i++) {
+            position = updateBinding(row.getValue(i), position);
         }
 
         return bindings;

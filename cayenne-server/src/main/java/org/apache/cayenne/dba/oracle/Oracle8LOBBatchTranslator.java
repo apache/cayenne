@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
-import org.apache.cayenne.access.translator.batch.DefaultBatchTranslator;
+import org.apache.cayenne.access.translator.batch.legacy.DefaultBatchTranslator;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
@@ -36,7 +36,7 @@ import org.apache.cayenne.query.BatchQueryRow;
 
 /**
  * Superclass of query builders for the DML operations involving LOBs.
- * 
+ * TODO: update to the new batch translation logic
  */
 abstract class Oracle8LOBBatchTranslator extends DefaultBatchTranslator {
 

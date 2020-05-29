@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
-import java.util.function.Supplier;
-
 import org.apache.cayenne.access.sqlbuilder.sqltree.DistinctNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FromNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.GroupByNode;
@@ -36,7 +34,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.WhereNode;
 /**
  * @since 4.2
  */
-public class SelectBuilder implements NodeBuilder {
+public class SelectBuilder extends BaseBuilder {
 
     private static final int SELECT_NODE    = 0;
     private static final int FROM_NODE      = 1;
@@ -47,19 +45,8 @@ public class SelectBuilder implements NodeBuilder {
     private static final int ORDERBY_NODE   = 6;
     private static final int LIMIT_NODE     = 7;
 
-    /**
-     * Main root of this query
-     */
-    private Node root;
-
-    /*
-     * Following nodes are all children of root,
-     * but we keep them here for quick access.
-     */
-    private Node[] nodes = new Node[LIMIT_NODE + 1];
-
     SelectBuilder(NodeBuilder... selectExpressions) {
-        root = new SelectNode();
+        super(new SelectNode(), LIMIT_NODE + 1);
         for(NodeBuilder exp : selectExpressions) {
             node(SELECT_NODE, SelectResultNode::new).addChild(exp.build());
         }
@@ -143,27 +130,6 @@ public class SelectBuilder implements NodeBuilder {
     public SelectBuilder limitOffset(int limit, int offset) {
         nodes[LIMIT_NODE] = new LimitOffsetNode(limit, offset);
         return this;
-    }
-
-    @Override
-    public Node build() {
-        for (Node next : nodes) {
-            if (next != null) {
-                root.addChild(next);
-            }
-        }
-        return root;
-    }
-
-    public Node getRoot() {
-        return root;
-    }
-
-    private Node node(int idx, Supplier<Node> nodeSupplier) {
-        if(nodes[idx] == null) {
-            nodes[idx] = nodeSupplier.get();
-        }
-        return nodes[idx];
     }
 
 }

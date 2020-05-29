@@ -17,25 +17,56 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.sqlbuilder;
+package org.apache.cayenne.access.translator.batch;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.BatchQuery;
 
 /**
  * @since 4.2
+ * @param <T> type of the {@link BatchQuery}
  */
-public interface SQLGenerationContext {
+class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationContext {
 
-    DbAdapter getAdapter();
+    private final T query;
+    private final DbAdapter adapter;
+    private final List<DbAttributeBinding> bindings;
 
-    Collection<DbAttributeBinding> getBindings();
+    BatchTranslatorContext(T query, DbAdapter adapter) {
+        this.query = query;
+        this.adapter = adapter;
+        this.bindings = new ArrayList<>();
+    }
 
-    QuotingStrategy getQuotingStrategy();
+    @Override
+    public DbAdapter getAdapter() {
+        return adapter;
+    }
 
-    DbEntity getRootDbEntity();
+    @Override
+    public Collection<DbAttributeBinding> getBindings() {
+        return bindings;
+    }
+
+    @Override
+    public QuotingStrategy getQuotingStrategy() {
+        return adapter.getQuotingStrategy();
+    }
+
+    @Override
+    public DbEntity getRootDbEntity() {
+        return query.getDbEntity();
+    }
+
+    public T getQuery() {
+        return query;
+    }
 }
