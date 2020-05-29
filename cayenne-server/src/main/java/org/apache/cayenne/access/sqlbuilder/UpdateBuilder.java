@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.SetNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateSetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.WhereNode;
@@ -39,7 +39,7 @@ public class UpdateBuilder extends BaseBuilder {
     }
 
     public UpdateBuilder set(NodeBuilder setExpression) {
-        node(SET_NODE, SetNode::new).addChild(setExpression.build());
+        node(SET_NODE, UpdateSetNode::new).addChild(setExpression.build());
         return this;
     }
 

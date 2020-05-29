@@ -24,24 +24,34 @@ import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 /**
  * @since 4.2
  */
-public class SetNode extends Node {
+public class InsertValuesNode extends Node {
 
-    public SetNode() {
-        super(NodeType.UPDATE_SET);
+    public InsertValuesNode() {
+        super(NodeType.INSERT_VALUES);
     }
 
     @Override
     public Node copy() {
-        return new SetNode();
+        return new InsertValuesNode();
     }
 
     @Override
     public QuotingAppendable append(QuotingAppendable buffer) {
-        return buffer.append(" SET");
+        return buffer.append(" VALUES");
     }
 
     @Override
-    public void appendChildrenSeparator(QuotingAppendable buffer, int childIdx) {
+    public void appendChildrenStart(QuotingAppendable buffer) {
+        buffer.append('(');
+    }
+
+    @Override
+    public void appendChildrenSeparator(QuotingAppendable buffer, int childInd) {
         buffer.append(',');
+    }
+
+    @Override
+    public void appendChildrenEnd(QuotingAppendable buffer) {
+        buffer.append(')');
     }
 }

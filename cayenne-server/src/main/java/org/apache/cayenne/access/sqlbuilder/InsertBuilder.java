@@ -22,7 +22,7 @@ package org.apache.cayenne.access.sqlbuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.InsertColumnsNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.InsertNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.ValuesNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.InsertValuesNode;
 
 /**
  * @since 4.2
@@ -48,7 +48,7 @@ public class InsertBuilder extends BaseBuilder {
     }
 
     public InsertBuilder value(ValueNodeBuilder valueNode) {
-        node(VALUES_NODE, ValuesNode::new).addChild(valueNode.build());
+        node(VALUES_NODE, InsertValuesNode::new).addChild(valueNode.build());
         return this;
     }
 }

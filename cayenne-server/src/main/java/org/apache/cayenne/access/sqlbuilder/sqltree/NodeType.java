@@ -37,5 +37,6 @@ public enum NodeType {
     JOIN,
     FROM,
     UPDATE_SET,
-    INSERT_COLUMNS
+    INSERT_COLUMNS,
+    INSERT_VALUES
 }
