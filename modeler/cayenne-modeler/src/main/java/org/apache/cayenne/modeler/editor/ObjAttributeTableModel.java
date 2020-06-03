@@ -64,8 +64,9 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     public static final int DB_ATTRIBUTE = 2;
     public static final int DB_ATTRIBUTE_TYPE = 3;
     public static final int LOCKING = 4;
-    public static final int COMMENT = 5;
-    public static final int COLUMN_COUNT = 6;
+    public static final int LAZY = 5;
+    public static final int COMMENT = 6;
+    public static final int COLUMN_COUNT = 7;
 
     private ObjEntity entity;
     private DbEntity dbEntity;
@@ -98,9 +99,10 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         return table;
     }
 
-    public Class getColumnClass(int col) {
+    public Class<?> getColumnClass(int col) {
         switch (col) {
             case LOCKING:
+            case LAZY:
                 return Boolean.class;
             default:
                 return String.class;
@@ -162,6 +164,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 return "DB Type";
             case LOCKING:
                 return "Used for Locking";
+            case LAZY:
+                return "Lazy loading";
             case COMMENT:
                 return "Comment";
             default:
@@ -178,12 +182,14 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 return attribute.getName();
             case OBJ_ATTRIBUTE_TYPE:
                 return attribute.getType();
-            case LOCKING:
-                return attribute.isUsedForLocking() ? Boolean.TRUE : Boolean.FALSE;
             case DB_ATTRIBUTE:
                 return getDBAttribute(attribute, dbAttribute);
             case DB_ATTRIBUTE_TYPE:
                 return getDBAttributeType(attribute, dbAttribute);
+            case LOCKING:
+                return attribute.isUsedForLocking();
+            case LAZY:
+                return attribute.isLazy();
             case COMMENT:
                 return getComment(attribute.getValue());
             default:
@@ -308,6 +314,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         attributeNew.setParent(attribute.getParent());
         attributeNew.setType(attribute.getType());
         attributeNew.setUsedForLocking(attribute.isUsedForLocking());
+        attributeNew.setLazy(attribute.isLazy());
 
         entity.updateAttribute(attributeNew);
 
@@ -335,6 +342,10 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
     private void setColumnLocking(ObjAttributeWrapper attribute, Object value) {
         attribute.setUsedForLocking((value instanceof Boolean) && (Boolean) value);
+    }
+
+    private void setColumnLazy(ObjAttributeWrapper attribute, Object value) {
+        attribute.setLazy((value instanceof Boolean) && (Boolean) value);
     }
 
     private void setDbAttribute(ObjAttributeWrapper attribute, Object value) {
@@ -370,13 +381,17 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 setObjAttributeType(attribute, value);
                 fireTableCellUpdated(row, column);
                 break;
+            case DB_ATTRIBUTE:
+                setDbAttribute(attribute, value);
+                fireTableRowsUpdated(row, row);
+                break;
             case LOCKING:
                 setColumnLocking(attribute, value);
                 fireTableCellUpdated(row, column);
                 break;
-            case DB_ATTRIBUTE:
-                setDbAttribute(attribute, value);
-                fireTableRowsUpdated(row, row);
+            case LAZY:
+                setColumnLazy(attribute, value);
+                fireTableCellUpdated(row, column);
                 break;
             case COMMENT:
                 setComment((String)value, attribute.getValue());
@@ -429,6 +444,9 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
             case LOCKING:
                 sortByElementProperty("usedForLocking", isAscent);
                 break;
+            case LAZY:
+                sortByElementProperty("lazy", isAscent);
+                break;
             case DB_ATTRIBUTE:
             case DB_ATTRIBUTE_TYPE:
                 Collections.sort(objectList, new ObjAttributeTableComparator(sortCol));
@@ -436,8 +454,6 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                     Collections.reverse(objectList);
                 }
                 break;
-            default:
-                return;
         }
     }
 

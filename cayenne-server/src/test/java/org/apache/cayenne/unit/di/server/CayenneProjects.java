@@ -84,4 +84,5 @@ public class CayenneProjects {
     public static final String HYBRID_DATA_OBJECT_PROJECT = "cayenne-hybrid-data-object.xml";
     public static final String JAVA8 = "cayenne-java8.xml";
     public static final String INHERITANCE_WITH_ENUM_PROJECT = "cayenne-inheritance-with-enum.xml";
+    public static final String LAZY_ATTRIBUTES_PROJECT = "cayenne-lazy-attributes.xml";
 }

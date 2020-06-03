@@ -100,9 +100,13 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ## Create Fields ##
 ###################
 #foreach( $attr in ${object.DeclaredAttributes} )
+#if ($attr.Lazy)
+    protected Object $stringUtils.formatVariableName(${attr.Name});
+#else
 #set ( $flag = $importUtils.canUsePrimitive($attr) )
 #set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
     protected $type $stringUtils.formatVariableName(${attr.Name});
+#end
 #end
 
 #foreach( $rel in ${object.DeclaredRelationships} )
@@ -134,6 +138,11 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
     public $type get${stringUtils.capitalized($attr.Name)}() {
 #end
         beforePropertyRead("${attr.Name}");
+#if ($attr.Lazy)
+        if(this.$name instanceof Fault) {
+            this.$name = ((Fault) this.$name).resolveFault(this, "$attr.Name");
+        }
+#end
 #if ($importUtils.isPrimitive($type) && !$attr.isMandatory())
         if(this.$name == null) {
 #if ($importUtils.isBoolean($type))
@@ -143,7 +152,11 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #end
         }
 #end
+#if ($attr.Lazy)
+        return ($type)this.$name;
+#else
         return this.$name;
+#end
     }
 
 #end## of foreach declared attribute
@@ -235,7 +248,11 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #elseif ($importUtils.isPrimitive($type))
                 this.${name} = val == null ? 0 : ($type)val;
 #else
+    #if ($attr.Lazy)
+                this.${name} = val;
+    #else
                 this.${name} = ($type)val;
+    #end
 #end
                 break;
 #end
@@ -285,7 +302,9 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #set ( $name = "$stringUtils.formatVariableName(${attr.Name})")
 #set ( $flag = $importUtils.canUsePrimitive($attr) )
 #set ( $type = "$importUtils.formatJavaType(${attr.Type}, $flag)")
-#if($importUtils.isPrimitive($type))
+#if($attr.Lazy)
+        this.$name = in.readObject();
+#elseif($importUtils.isPrimitive($type))
         this.$name = in.read${stringUtils.capitalized($type)}();
 #else
         this.$name = ($type)in.readObject();
@@ -296,4 +315,5 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
         this.$name = in.readObject();
 #end
     }
+
 }

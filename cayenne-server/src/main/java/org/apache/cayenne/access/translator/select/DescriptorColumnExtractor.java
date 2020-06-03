@@ -109,6 +109,10 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
     @Override
     public boolean visitAttribute(AttributeProperty property) {
         ObjAttribute oa = property.getAttribute();
+        if(oa.isLazy()) {
+            return true;
+        }
+
         PathTranslationResult result = pathTranslator.translatePath(oa.getEntity(), property.getName(), prefix);
 
         int count = result.getDbAttributes().size();

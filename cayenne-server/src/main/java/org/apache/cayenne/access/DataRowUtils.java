@@ -96,7 +96,11 @@ class DataRowUtils {
                 // case, as NULL value is entirely valid; still save a map lookup by
                 // checking for the null value first
                 if (value == null && !snapshot.containsKey(dbAttrPath)) {
-                    isPartialSnapshot[0] = true;
+                    if(attr.isLazy()) {
+                        property.writePropertyDirectly(object, null, new AttributeFault(property));
+                    } else {
+                        isPartialSnapshot[0] = true;
+                    }
                 }
                 return true;
             }
