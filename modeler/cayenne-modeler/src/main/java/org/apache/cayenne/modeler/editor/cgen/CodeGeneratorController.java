@@ -57,7 +57,7 @@ import org.apache.cayenne.modeler.editor.DbImportController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.tools.CayenneToolsModuleProvider;
+import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,12 +164,11 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     @SuppressWarnings("unused")
     public void generateAction() {
-        List<Module> modules = new ModuleLoader()
-                .load(CayenneToolsModuleProvider.class);
-        modules.add(binder -> binder.bind(DataChannelMetaData.class)
-                .toInstance(projectController.getApplication().getMetaData()));
-        ClassGenerationAction generator = DIBootstrap
-                .createInjector(modules)
+        ClassGenerationAction generator = new ToolsInjectorBuilder()
+                .addModule(binder
+                        -> binder.bind(DataChannelMetaData.class)
+                        .toInstance(projectController.getApplication().getMetaData()))
+                .create()
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(cgenConfiguration);
 
