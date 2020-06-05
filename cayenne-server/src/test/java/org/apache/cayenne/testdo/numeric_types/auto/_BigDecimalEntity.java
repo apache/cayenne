@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 
@@ -20,7 +19,6 @@ public abstract class _BigDecimalEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final NumericProperty<BigDecimal> BIG_DECIMAL_FIELD = PropertyFactory.createNumeric("bigDecimalField", BigDecimal.class);
