@@ -41,18 +41,21 @@ import org.apache.cayenne.testdo.numeric_types.DecimalPKTestEntity;
 import org.apache.cayenne.testdo.numeric_types.LongEntity;
 import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
+import org.apache.cayenne.unit.di.CommitStats;
+import org.apache.cayenne.unit.di.DataChannelInterceptor;
+import org.apache.cayenne.unit.di.DataChannelSyncStats;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
 /**
+ *
  */
 @UseServerRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
 public class NumericTypesIT extends ServerCase {
@@ -69,16 +72,25 @@ public class NumericTypesIT extends ServerCase {
     @Inject
     protected DBHelper dbHelper;
 
+    private final CommitStats commitStats = new CommitStats(() -> runtime.getDataDomain());
+
     protected TableHelper tSmallintTest;
     protected TableHelper tTinyintTest;
 
     @Before
-    public void setUp() throws Exception {
+    public void before() {
+        commitStats.before();
+
         tSmallintTest = new TableHelper(dbHelper, "SMALLINT_TEST");
         tSmallintTest.setColumns("ID", "SMALLINT_COL");
 
         tTinyintTest = new TableHelper(dbHelper, "TINYINT_TEST");
         tTinyintTest.setColumns("ID", "TINYINT_COL");
+    }
+
+    @After
+    public void after() {
+        commitStats.after();
     }
 
     protected void createShortDataSet() throws Exception {
@@ -128,21 +140,70 @@ public class NumericTypesIT extends ServerCase {
     }
 
     @Test
-    public void testBigDecimal() throws Exception {
+    public void testBigDecimal_Decimal() {
 
-        BigDecimalEntity test = context.newObject(BigDecimalEntity.class);
+        // this matches the column scale exactly
+        String v1 = "7890.123456";
+        // this has lower scale than the column
+        String v2 = "7890.1";
+        String v2_padded = "7890.100000";
 
-        BigDecimal i = new BigDecimal("1234567890.44");
-        test.setBigDecimalField(i);
-        context.commitChanges();
+        BigDecimalEntity o = context.newObject(BigDecimalEntity.class);
+        o.setBigDecimalDecimal(new BigDecimal(v1));
+        o.getObjectContext().commitChanges();
+        assertEquals(1, commitStats.getCommitCount());
+        BigDecimalEntity o1 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertEquals(v1, o1.getBigDecimalDecimal().toString());
 
-        BigDecimalEntity testRead = ObjectSelect.query(BigDecimalEntity.class)
-                .selectFirst(context);
-        assertNotNull(testRead.getBigDecimalField());
-        assertEquals(i, testRead.getBigDecimalField());
+        o.setBigDecimalDecimal(new BigDecimal(v2));
+        o.getObjectContext().commitChanges();
+        BigDecimalEntity o2 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertEquals(v2_padded, o2.getBigDecimalDecimal().toString());
+        assertEquals(2, commitStats.getCommitCount());
 
-        test.setBigDecimalField(null);
-        context.commitChanges();
+        o2.setBigDecimalDecimal(new BigDecimal(v2));
+        o2.getObjectContext().commitChanges();
+        assertEquals("Commit was not expected. The difference is purely in value padding", 2, commitStats.getCommitCount());
+        BigDecimalEntity o3 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertEquals(v2_padded, o3.getBigDecimalDecimal().toString());
+
+        o3.setBigDecimalDecimal(null);
+        o3.getObjectContext().commitChanges();
+        assertEquals(3, commitStats.getCommitCount());
+        BigDecimalEntity o4 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertNull(o4.getBigDecimalDecimal());
+    }
+
+    @Test
+    public void testBigDecimal_Numeric() {
+
+        String v1 = "1234567890.44";
+        String v2 = "1234567890.4";
+        String v2_padded = "1234567890.40";
+
+        BigDecimalEntity o = context.newObject(BigDecimalEntity.class);
+        o.setBigDecimalNumeric(new BigDecimal(v1));
+        o.getObjectContext().commitChanges();
+        assertEquals(1, commitStats.getCommitCount());
+        BigDecimalEntity o1 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertEquals(v1, o1.getBigDecimalNumeric().toString());
+
+        o1.setBigDecimalNumeric(new BigDecimal(v2));
+        o1.getObjectContext().commitChanges();
+        assertEquals(2, commitStats.getCommitCount());
+        BigDecimalEntity o2 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertEquals(v2_padded, o2.getBigDecimalNumeric().toString());
+
+        o2.setBigDecimalNumeric(new BigDecimal(v2));
+        assertEquals("Commit was not expected. The difference is purely in value padding", 2, commitStats.getCommitCount());
+        BigDecimalEntity o3 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertEquals(v2_padded, o3.getBigDecimalNumeric().toString());
+
+        o3.setBigDecimalNumeric(null);
+        o3.getObjectContext().commitChanges();
+        assertEquals(3, commitStats.getCommitCount());
+        BigDecimalEntity o4 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
+        assertNull(o4.getBigDecimalNumeric());
     }
 
     @Test
