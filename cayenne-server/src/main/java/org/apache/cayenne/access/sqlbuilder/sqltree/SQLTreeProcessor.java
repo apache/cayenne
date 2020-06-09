@@ -17,28 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.translator.select;
-
-import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 /**
  * @since 4.2
  */
-class SQLGenerationStage implements TranslationStage {
-
-    @Override
-    public void perform(TranslatorContext context) {
-        if(context.isSkipSQLGeneration()) {
-            return;
-        }
-        // Build final SQL tree
-        Node node = context.getSelectBuilder().build();
-        // convert to database flavour
-        node = context.getAdapter().getSqlTreeProcessor().process(node);
-        // generate SQL
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultQuotingAppendable(context));
-        node.visit(visitor);
-        context.setFinalSQL(visitor.getSQLString());
-    }
+@FunctionalInterface
+public interface SQLTreeProcessor {
+    Node process(Node node);
 }

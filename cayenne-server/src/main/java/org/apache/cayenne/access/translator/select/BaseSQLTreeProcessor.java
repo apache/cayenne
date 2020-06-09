@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.function.Function;
-
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.DistinctNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
@@ -28,6 +26,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.InNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SimpleNodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 
@@ -35,10 +34,10 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 /**
  * @since 4.2
  */
-public class BaseSQLTreeProcessor extends SimpleNodeTreeVisitor implements Function<Node, Node> {
+public class BaseSQLTreeProcessor extends SimpleNodeTreeVisitor implements SQLTreeProcessor {
 
     @Override
-    public Node apply(Node node) {
+    public Node process(Node node) {
         node.visit(this);
         return node;
     }

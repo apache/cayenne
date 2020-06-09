@@ -22,9 +22,8 @@ package org.apache.cayenne.dba.sybase;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.List;
-import java.util.function.Function;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
@@ -78,7 +77,7 @@ public class SybaseAdapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
+    public SQLTreeProcessor getSqlTreeProcessor() {
         return new SybaseSQLTreeProcessor();
     }
 

@@ -60,7 +60,7 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> {
     protected String doTranslate(NodeBuilder nodeBuilder) {
         Node node = nodeBuilder.build();
         // convert to database flavour
-        node = context.getAdapter().getSqlTreeProcessor().apply(node);
+        node = context.getAdapter().getSqlTreeProcessor().process(node);
         // generate SQL
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultQuotingAppendable(context));
         node.visit(visitor);

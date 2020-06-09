@@ -27,11 +27,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
@@ -544,8 +543,8 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
-        return Function.identity();
+    public SQLTreeProcessor getSqlTreeProcessor() {
+        return node -> node;
     }
 
     @SuppressWarnings("unchecked")

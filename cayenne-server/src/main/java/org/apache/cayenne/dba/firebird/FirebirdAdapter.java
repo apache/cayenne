@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.firebird;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
@@ -39,7 +39,6 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * DbAdapter implementation for <a href="http://www.firebirdsql.org">FirebirdSQL
@@ -113,7 +112,7 @@ public class FirebirdAdapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
+    public SQLTreeProcessor getSqlTreeProcessor() {
         return new FirebirdSQLTreeProcessor();
     }
 

@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
@@ -46,7 +46,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * DbAdapter implementation for the <a href="http://db.apache.org/derby/"> Derby RDBMS
@@ -181,7 +180,7 @@ public class DerbyAdapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
+    public SQLTreeProcessor getSqlTreeProcessor() {
         return new DerbySQLTreeProcessor();
     }
 

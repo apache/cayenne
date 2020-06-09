@@ -19,7 +19,7 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -39,7 +39,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * A SQLite database adapter that works with Zentus JDBC driver. See
@@ -89,7 +88,7 @@ public class SQLiteAdapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
+    public SQLTreeProcessor getSqlTreeProcessor() {
         return new SQLiteTreeProcessor();
     }
 

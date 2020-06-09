@@ -21,10 +21,9 @@ package org.apache.cayenne.dba.sqlserver;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
@@ -109,7 +108,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 * @since 4.2
 	 */
 	@Override
-	public Function<Node, Node> getSqlTreeProcessor() {
+	public SQLTreeProcessor getSqlTreeProcessor() {
 		return new SQLServerTreeProcessor();
 	}
 
