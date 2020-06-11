@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.Arrays;
+
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Before;
@@ -75,5 +78,41 @@ public class EntityPropertyTest {
         BaseProperty<?> other = property.dot("other");
         assertEquals("path.other", other.getName());
         assertEquals(ExpressionFactory.pathExp("path.other"), other.getExpression());
+    }
+
+    @Test
+    public void eqId() {
+        Expression exp = property.eqId(1);
+        assertEquals(ExpressionFactory.exp("path = 1"), exp);
+    }
+
+    @Test
+    public void inIdCollection() {
+        Expression exp = property.inId(Arrays.asList(1, 2, 3));
+        assertEquals(ExpressionFactory.exp("path in (1, 2, 3)"), exp);
+    }
+
+    @Test
+    public void inIdVararg() {
+        Expression exp = property.inId(1, 2, 3);
+        assertEquals(ExpressionFactory.exp("path in (1, 2, 3)"), exp);
+    }
+
+    @Test
+    public void neqId() {
+        Expression exp = property.neqId(1);
+        assertEquals(ExpressionFactory.exp("path <> 1"), exp);
+    }
+
+    @Test
+    public void ninIdCollection() {
+        Expression exp = property.ninId(Arrays.asList(1, 2, 3));
+        assertEquals(ExpressionFactory.exp("path not in (1, 2, 3)"), exp);
+    }
+
+    @Test
+    public void ninIdVararg() {
+        Expression exp = property.ninId(1, 2, 3);
+        assertEquals(ExpressionFactory.exp("path not in (1, 2, 3)"), exp);
     }
 }

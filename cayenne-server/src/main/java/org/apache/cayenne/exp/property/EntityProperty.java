@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.property;
 
+import java.util.Collection;
+
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -52,6 +54,37 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
     protected EntityProperty(String name, Expression expression, Class<E> type) {
         super(name, expression, type);
     }
+
+    public Expression eqId(Object id) {
+        return ExpressionFactory.matchExp(getExpression(), id);
+    }
+
+    public Expression inId(Collection<Object> ids) {
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    public Expression inId(Object firstId, Object... moreIds) {
+        Object[] ids = new Object[moreIds.length + 1];
+        ids[0] = firstId;
+        System.arraycopy(moreIds, 0, ids, 1, moreIds.length);
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    public Expression neqId(Object id) {
+        return ExpressionFactory.noMatchExp(getExpression(), id);
+    }
+
+    public Expression ninId(Collection<Object> ids) {
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+    public Expression ninId(Object firstId, Object... moreIds) {
+        Object[] ids = new Object[moreIds.length + 1];
+        ids[0] = firstId;
+        System.arraycopy(moreIds, 0, ids, 1, moreIds.length);
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
 
     /**
      * {@inheritDoc}

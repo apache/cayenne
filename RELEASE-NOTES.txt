@@ -17,6 +17,7 @@ CAY-2338 Support comments in cgen and default templates
 CAY-2656 Modeler: option to download required jars directly from maven central
 CAY-2659 Use new SQLBuilder utility to generate SQL for batch queries
 CAY-2662 Use custom interface for SQL tree processor istead of a Function<Node, Node>
+CAY-2664 Add methods to EntityProperty to allow direct usage of primary key values
 
 Bug Fixes:
 
