@@ -47,6 +47,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.exp.parser.ASTCustomOperator;
 import org.apache.cayenne.exp.parser.ASTDbIdPath;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFullObject;
@@ -211,6 +212,9 @@ class QualifierTranslator implements TraversalHandler {
             case ASTERISK:
                 return new TextNode(' ' + expToStr(node.getType()));
 
+            case CUSTOM_OP:
+                return new OpExpressionNode(((ASTCustomOperator)node).getOperator());
+
             case EXISTS:
                 return new FunctionNode("EXISTS", null, false);
             case NOT_EXISTS:
@@ -369,7 +373,7 @@ class QualifierTranslator implements TraversalHandler {
             case NOT_IN: case IN: case NOT_BETWEEN: case BETWEEN: case NOT:
             case BITWISE_NOT: case EQUAL_TO: case NOT_EQUAL_TO: case LIKE: case NOT_LIKE:
             case LIKE_IGNORE_CASE: case NOT_LIKE_IGNORE_CASE: case OBJ_PATH: case DBID_PATH: case DB_PATH:
-            case FUNCTION_CALL: case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case NEGATIVE:
+            case FUNCTION_CALL: case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case NEGATIVE: case CUSTOM_OP:
             case BITWISE_AND: case BITWISE_LEFT_SHIFT: case BITWISE_OR: case BITWISE_RIGHT_SHIFT: case BITWISE_XOR:
             case OR: case AND: case LESS_THAN: case LESS_THAN_EQUAL_TO: case GREATER_THAN: case GREATER_THAN_EQUAL_TO:
             case TRUE: case FALSE: case ASTERISK: case EXISTS: case NOT_EXISTS: case SUBQUERY: case ENCLOSING_OBJECT: case FULL_OBJECT:
@@ -466,14 +470,14 @@ class QualifierTranslator implements TraversalHandler {
                 return ">=";
             case ADD:
                 return "+";
+            case NEGATIVE:
             case SUBTRACT:
                 return "-";
             case MULTIPLY:
+            case ASTERISK:
                 return "*";
             case DIVIDE:
                 return "/";
-            case NEGATIVE:
-                return "-";
             case BITWISE_AND:
                 return "&";
             case BITWISE_OR:
@@ -490,8 +494,6 @@ class QualifierTranslator implements TraversalHandler {
                 return "1=1";
             case FALSE:
                 return "1=0";
-            case ASTERISK:
-                return "*";
             default:
                 return "{other}";
         }

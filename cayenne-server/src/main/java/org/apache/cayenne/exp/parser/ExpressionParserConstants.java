@@ -49,83 +49,85 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int DISTINCT = 41;
   /** RegularExpression Id. */
-  int FUNCTION = 42;
+  int CONCAT = 42;
   /** RegularExpression Id. */
-  int CONCAT = 43;
+  int SUBSTRING = 43;
   /** RegularExpression Id. */
-  int SUBSTRING = 44;
+  int TRIM = 44;
   /** RegularExpression Id. */
-  int TRIM = 45;
+  int LOWER = 45;
   /** RegularExpression Id. */
-  int LOWER = 46;
+  int UPPER = 46;
   /** RegularExpression Id. */
-  int UPPER = 47;
+  int LENGTH = 47;
   /** RegularExpression Id. */
-  int LENGTH = 48;
+  int LOCATE = 48;
   /** RegularExpression Id. */
-  int LOCATE = 49;
+  int ABS = 49;
   /** RegularExpression Id. */
-  int ABS = 50;
+  int SQRT = 50;
   /** RegularExpression Id. */
-  int SQRT = 51;
+  int MOD = 51;
   /** RegularExpression Id. */
-  int MOD = 52;
+  int CURRENT_DATE = 52;
   /** RegularExpression Id. */
-  int CURRENT_DATE = 53;
+  int CURRENT_TIME = 53;
   /** RegularExpression Id. */
-  int CURRENT_TIME = 54;
+  int CURRENT_TIMESTAMP = 54;
   /** RegularExpression Id. */
-  int CURRENT_TIMESTAMP = 55;
+  int YEAR = 55;
   /** RegularExpression Id. */
-  int YEAR = 56;
+  int MONTH = 56;
   /** RegularExpression Id. */
-  int MONTH = 57;
+  int WEEK = 57;
   /** RegularExpression Id. */
-  int WEEK = 58;
+  int DAY_OF_YEAR = 58;
   /** RegularExpression Id. */
-  int DAY_OF_YEAR = 59;
+  int DAY = 59;
   /** RegularExpression Id. */
-  int DAY = 60;
+  int DAY_OF_MONTH = 60;
   /** RegularExpression Id. */
-  int DAY_OF_MONTH = 61;
+  int DAY_OF_WEEK = 61;
   /** RegularExpression Id. */
-  int DAY_OF_WEEK = 62;
+  int HOUR = 62;
   /** RegularExpression Id. */
-  int HOUR = 63;
+  int MINUTE = 63;
   /** RegularExpression Id. */
-  int MINUTE = 64;
+  int SECOND = 64;
   /** RegularExpression Id. */
-  int SECOND = 65;
+  int FUNCTION = 65;
   /** RegularExpression Id. */
-  int ASTERISK = 71;
+  int OPERATOR = 66;
   /** RegularExpression Id. */
-  int PROPERTY_PATH = 72;
+  int ASTERISK = 72;
   /** RegularExpression Id. */
-  int IDENTIFIER = 73;
+  int PROPERTY_PATH = 73;
   /** RegularExpression Id. */
-  int LETTER = 74;
+  int IDENTIFIER = 74;
   /** RegularExpression Id. */
-  int DIGIT = 75;
+  int LETTER = 75;
   /** RegularExpression Id. */
-  int ESC = 78;
+  int DIGIT = 76;
   /** RegularExpression Id. */
-  int SINGLE_QUOTED_STRING = 80;
+  int ESC = 79;
   /** RegularExpression Id. */
-  int STRING_ESC = 81;
+  int SINGLE_QUOTED_STRING = 81;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTED_STRING = 83;
+  int STRING_ESC = 82;
   /** RegularExpression Id. */
-  int INT_LITERAL = 84;
+  int DOUBLE_QUOTED_STRING = 84;
   /** RegularExpression Id. */
-  int FLOAT_LITERAL = 85;
+  int INT_LITERAL = 85;
   /** RegularExpression Id. */
-  int DEC_FLT = 86;
+  int FLOAT_LITERAL = 86;
   /** RegularExpression Id. */
-  int DEC_DIGITS = 87;
+  int DEC_FLT = 87;
   /** RegularExpression Id. */
-  int EXPONENT = 88;
+  int DEC_DIGITS = 88;
   /** RegularExpression Id. */
-  int FLT_SUFF = 89;
+  int EXPONENT = 89;
+  /** RegularExpression Id. */
+  int FLT_SUFF = 90;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -178,7 +180,6 @@ public interface ExpressionParserConstants {
     "\"sum\"",
     "\"count\"",
     "\"distinct\"",
-    "\"fn\"",
     "\"concat\"",
     "\"substring\"",
     "\"trim\"",
@@ -202,6 +203,8 @@ public interface ExpressionParserConstants {
     "\"hour\"",
     "\"minute\"",
     "\"second\"",
+    "\"fn\"",
+    "\"op\"",
     "\"$\"",
     "\"obj:\"",
     "\"db:\"",
@@ -215,10 +218,10 @@ public interface ExpressionParserConstants {
     "\"\\\'\"",
     "\"\\\"\"",
     "<ESC>",
-    "<token of kind 79>",
+    "<token of kind 80>",
     "\"\\\'\"",
     "<STRING_ESC>",
-    "<token of kind 82>",
+    "<token of kind 83>",
     "\"\\\"\"",
     "<INT_LITERAL>",
     "<FLOAT_LITERAL>",

@@ -287,6 +287,8 @@ void numericPrimary() : {}
         pathExpression()
     |
         customFunction()
+    |
+        customOperator()
 }
 
 void functionsReturningStrings() : { }
@@ -297,6 +299,11 @@ void functionsReturningStrings() : { }
 void customFunction() #CustomFunction : { }
 {
     <FUNCTION> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
+}
+
+void customOperator() #CustomOperator : { }
+{
+    <OPERATOR> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
 }
 
 void concat() #Concat : { }
@@ -533,7 +540,6 @@ TOKEN : /* aggregates */
 	|	<SUM: "sum" >
 	|	<COUNT: "count" >
 	|	<DISTINCT: "distinct">
-	|   <FUNCTION: "fn" >
 }
 
 TOKEN : /* functions returning strings */
@@ -577,6 +583,16 @@ TOKEN :
     | <HOUR: "hour">
     | <MINUTE: "minute">
     | <SECOND: "second">
+}
+
+/*
+Special operations
+*/
+TOKEN :
+{
+    <FUNCTION: "fn" >
+	|
+	<OPERATOR: "op" >
 }
 
 void namedParameter() :{
