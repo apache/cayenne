@@ -44,6 +44,7 @@ import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
+import org.apache.cayenne.access.types.BigDecimalValueType;
 import org.apache.cayenne.access.types.BigIntegerValueType;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
@@ -149,8 +150,8 @@ import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.reflect.generic.ComparisionStrategyFactory;
-import org.apache.cayenne.reflect.generic.DefaultComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisionStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.template.CayenneSQLTemplateProcessor;
@@ -432,6 +433,7 @@ public class ServerModule implements Module {
         // Custom ValueObjects types contribution
         contributeValueObjectTypes(binder)
                 .add(BigIntegerValueType.class)
+                .add(BigDecimalValueType.class)
                 .add(UUIDValueType.class)
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
@@ -440,7 +442,7 @@ public class ServerModule implements Module {
                 .add(CharacterValueType.class);
 
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-        binder.bind(ComparisionStrategyFactory.class).to(DefaultComparisionStrategyFactory.class);
+        binder.bind(ValueComparisionStrategyFactory.class).to(DefaultValueComparisionStrategyFactory.class);
 
         // configure explicit configurations
         contributeProjectLocations(binder);

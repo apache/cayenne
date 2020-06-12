@@ -344,7 +344,7 @@ public class ObjectDiff extends NodeDiff {
                 Object oldValue = snapshot.get(property.getName());
                 Object newValue = property.readProperty(object);
 
-                if (!Util.nullSafeEquals(oldValue, newValue)) {
+                if (!property.equals(oldValue, newValue)) {
                     modFound[0] = true;
                 }
 
@@ -369,7 +369,7 @@ public class ObjectDiff extends NodeDiff {
                 }
 
                 Object oldValue = arcSnapshot.get(property.getName());
-                if (!Util.nullSafeEquals(oldValue, newValue != null ? ((Persistent) newValue).getObjectId() : null)) {
+                if (!property.equals(oldValue, newValue != null ? ((Persistent) newValue).getObjectId() : null)) {
                     modFound[0] = true;
                 }
 
@@ -424,7 +424,7 @@ public class ObjectDiff extends NodeDiff {
                 else {
                     Object oldValue = snapshot.get(property.getName());
 
-                    if (!property.isEqual(oldValue, newValue)) {
+                    if (!property.equals(oldValue, newValue)) {
                         handler.nodePropertyChanged(nodeId, property.getName(), oldValue, newValue);
                     }
                 }

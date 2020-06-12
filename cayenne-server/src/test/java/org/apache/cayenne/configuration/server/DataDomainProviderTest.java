@@ -113,8 +113,8 @@ import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.reflect.generic.ComparisionStrategyFactory;
-import org.apache.cayenne.reflect.generic.DefaultComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisionStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -247,7 +247,7 @@ public class DataDomainProviderTest {
 
             ServerModule.contributeValueObjectTypes(binder);
             binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-            binder.bind(ComparisionStrategyFactory.class).to(DefaultComparisionStrategyFactory.class);
+            binder.bind(ValueComparisionStrategyFactory.class).to(DefaultValueComparisionStrategyFactory.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

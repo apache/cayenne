@@ -22,16 +22,18 @@ package org.apache.cayenne.access.translator.select;
 import java.sql.Types;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.generic.DefaultComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisionStrategyFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * @since 4.2
@@ -67,7 +69,7 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
 
         EntityResolver resolver = new EntityResolver();
         resolver.addDataMap(dataMap);
-        resolver.setComparisionStrategyFactory(new DefaultComparisionStrategyFactory());
+        resolver.setValueComparisionStrategyFactory(new DefaultValueComparisionStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
         DescriptorColumnExtractor extractor = new DescriptorColumnExtractor(context, resolver.getClassDescriptor("mock"));
         extractor.extract();

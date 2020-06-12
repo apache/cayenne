@@ -209,14 +209,7 @@ public class Util {
 			builder.append(o1, o2);
 			return builder.isEquals();
 		} else { // It is NOT an array, so use regular equals()
-            boolean eq = o1.equals(o2);
-
-            // special case - BigDecimals that differ only in trailing zeros
-            if (!eq && o1 instanceof BigDecimal && o2 instanceof BigDecimal) {
-                return ((BigDecimal) o1).compareTo((BigDecimal) o2) == 0;
-            }
-
-            return eq;
+			return o1.equals(o2);
         }
 	}
 

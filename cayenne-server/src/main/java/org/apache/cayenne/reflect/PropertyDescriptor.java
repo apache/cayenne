@@ -88,7 +88,7 @@ public interface PropertyDescriptor {
      *
      * @since 4.2
      */
-    default boolean isEqual(Object value1, Object value2) {
+    default boolean equals(Object value1, Object value2) {
         return Util.nullSafeEquals(value1, value2);
     }
 

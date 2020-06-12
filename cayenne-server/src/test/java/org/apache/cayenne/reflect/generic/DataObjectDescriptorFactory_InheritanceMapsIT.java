@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -33,6 +34,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.mockito.Mockito.mock;
+
 @UseServerRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
 
@@ -43,7 +46,9 @@ public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
     public void testVisitProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(), new SingletonFaultFactory(), new DefaultComparisionStrategyFactory());
+                resolver.getClassDescriptorMap(),
+                new SingletonFaultFactory(),
+                new DefaultValueComparisionStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
         for (ObjEntity e : resolver.getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());

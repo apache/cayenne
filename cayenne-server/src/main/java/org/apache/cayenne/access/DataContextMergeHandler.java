@@ -35,7 +35,6 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.util.Util;
 
 /**
  * A listener of GraphEvents sent by the DataChannel that merges changes to the DataContext.
@@ -175,7 +174,7 @@ class DataContextMergeHandler implements GraphChangeHandler, DataChannelListener
 
             // do not override local changes....
             PropertyDescriptor p = propertyForId(nodeId, property);
-            if (Util.nullSafeEquals(p.readPropertyDirectly(object), oldValue)) {
+            if (p.equals(p.readPropertyDirectly(object), oldValue)) {
                 p.writePropertyDirectly(object, oldValue, newValue);
             }
         }

@@ -27,7 +27,6 @@ import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.util.Util;
 
 /**
  * An object that merges "backdoor" modifications of the object graph coming from the
@@ -165,8 +164,7 @@ class CayenneContextMergeHandler implements GraphChangeHandler, DataChannelListe
 
             // do not override local changes....
             PropertyDescriptor p = propertyForId(nodeId, property);
-            if (Util.nullSafeEquals(p.readPropertyDirectly(object), oldValue)) {
-
+            if (p.equals(p.readPropertyDirectly(object), oldValue)) {
                 p.writePropertyDirectly(object, oldValue, newValue);
             }
         }
