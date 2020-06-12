@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.util.Util;
+
 /**
  * Defines bean property API used by Cayenne to access object data, do faulting
  * and graph maintenance tasks.
@@ -74,5 +76,20 @@ public interface PropertyDescriptor {
      * object doesn't have it set yet.
      */
     void injectValueHolder(Object object) throws PropertyException;
+
+    /**
+     * This methods allows to use special logic to compare values for equality
+     * as in rare cases it is not suffice to use default equals() method.
+     * Deafult implementation uses {@link Util#nullSafeEquals(Object, Object)} method.
+     *
+     * @param value1 to compare
+     * @param value2 to compare
+     * @return true if given values are equal
+     *
+     * @since 4.2
+     */
+    default boolean isEqual(Object value1, Object value2) {
+        return Util.nullSafeEquals(value1, value2);
+    }
 
 }

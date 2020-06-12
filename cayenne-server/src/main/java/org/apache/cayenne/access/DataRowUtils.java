@@ -155,8 +155,8 @@ class DataRowUtils {
 
                     // if value not modified, update it from snapshot,
                     // otherwise leave it alone
-                    if (Util.nullSafeEquals(curValue, oldValue)
-                            && !Util.nullSafeEquals(newValue, curValue)) {
+                    if (property.isEqual(curValue, oldValue)
+                            && !property.isEqual(newValue, curValue)) {
                         property.writePropertyDirectly(object, oldValue, newValue);
                     }
                 }

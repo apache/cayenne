@@ -42,6 +42,7 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.reflect.generic.ComparisionStrategyFactory;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.slf4j.Logger;
@@ -110,6 +111,12 @@ public class DataDomainProvider implements Provider<DataDomain> {
 	@Inject
 	protected ValueObjectTypeRegistry valueObjectTypeRegistry;
 
+	/**
+	 * @since 4.2
+	 */
+	@Inject
+	protected ComparisionStrategyFactory comparisionStrategyFactory;
+
 	@Override
 	public DataDomain get() throws ConfigurationException {
 
@@ -150,6 +157,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
 		dataDomain.getEntityResolver().applyDBLayerDefaults();
 		dataDomain.getEntityResolver().setValueObjectTypeRegistry(valueObjectTypeRegistry);
+		dataDomain.getEntityResolver().setComparisionStrategyFactory(comparisionStrategyFactory);
 
 		for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
 			addDataNode(dataDomain, nodeDescriptor);

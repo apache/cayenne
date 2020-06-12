@@ -44,9 +44,9 @@ import java.util.Map.Entry;
  */
 public class PersistentDescriptor implements ClassDescriptor {
 
-	static final Integer TRANSIENT_STATE = Integer.valueOf(PersistenceState.TRANSIENT);
-	static final Integer HOLLOW_STATE = Integer.valueOf(PersistenceState.HOLLOW);
-	static final Integer COMMITTED_STATE = Integer.valueOf(PersistenceState.COMMITTED);
+	static final Integer TRANSIENT_STATE = PersistenceState.TRANSIENT;
+	static final Integer HOLLOW_STATE = PersistenceState.HOLLOW;
+	static final Integer COMMITTED_STATE = PersistenceState.COMMITTED;
 
 	protected ClassDescriptor superclassDescriptor;
 

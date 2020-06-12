@@ -34,6 +34,7 @@ import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
+import org.apache.cayenne.reflect.generic.ComparisionStrategyFactory;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.slf4j.Logger;
@@ -68,10 +69,16 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected transient ValueObjectTypeRegistry valueObjectTypeRegistry;
 
     /**
+     * @since 4.2
+     */
+    protected transient ComparisionStrategyFactory comparisionStrategyFactory;
+
+
+    /**
      * Creates new empty EntityResolver.
      */
     public EntityResolver() {
-        this(Collections.<DataMap> emptyList());
+        this(Collections.emptyList());
     }
 
     /**
@@ -96,10 +103,8 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
             for (DbEntity entity : map.getDbEntities()) {
 
-                // iterate by copy to avoid concurrency modification errors on
-                // reflexive relationships
-                DbRelationship[] relationships = entity.getRelationships().toArray(
-                        new DbRelationship[entity.getRelationships().size()]);
+                // iterate by copy to avoid concurrency modification errors on reflexive relationships
+                DbRelationship[] relationships = entity.getRelationships().toArray(new DbRelationship[0]);
 
                 for (DbRelationship relationship : relationships) {
                     if (relationship.getReverseRelationship() == null) {
@@ -555,11 +560,9 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                     // add factories in reverse of the desired chain order
                     classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(classDescriptorMap));
-                    classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory));
+                    classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory, comparisionStrategyFactory));
 
-                    // since ClassDescriptorMap is not synchronized, we need to
-                    // prefill
-                    // it with entity proxies here.
+                    // since ClassDescriptorMap is not synchronized, we need to prefill it with entity proxies here.
                     for (DataMap map : maps) {
                         for (String entityName : map.getObjEntityMap().keySet()) {
                             classDescriptorMap.getDescriptor(entityName);
@@ -589,5 +592,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     public void setValueObjectTypeRegistry(ValueObjectTypeRegistry valueObjectTypeRegistry) {
         this.valueObjectTypeRegistry = valueObjectTypeRegistry;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void setComparisionStrategyFactory(ComparisionStrategyFactory comparisionStrategyFactory) {
+        this.comparisionStrategyFactory = comparisionStrategyFactory;
     }
 }

@@ -149,6 +149,8 @@ import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.reflect.generic.ComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultComparisionStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.template.CayenneSQLTemplateProcessor;
@@ -438,6 +440,7 @@ public class ServerModule implements Module {
                 .add(CharacterValueType.class);
 
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+        binder.bind(ComparisionStrategyFactory.class).to(DefaultComparisionStrategyFactory.class);
 
         // configure explicit configurations
         contributeProjectLocations(binder);

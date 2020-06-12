@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
+import java.util.function.BiFunction;
+
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.PropertyException;
@@ -26,10 +28,19 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 class DataObjectAttributeProperty extends DataObjectBaseProperty implements
         AttributeProperty {
 
-    protected ObjAttribute attribute;
+    protected final ObjAttribute attribute;
 
-    public DataObjectAttributeProperty(ObjAttribute attribute) {
+    /**
+     * @since 4.2
+     */
+    // TODO: solve serialization of this object
+    //      according to DataObjectAttributePropertyTest, DataObjectAttributeProperty class should be serializable
+    //      while this function is a lambda and can't be serialized
+    protected final BiFunction<Object, Object, Boolean> isEquals;
+
+    public DataObjectAttributeProperty(ObjAttribute attribute, BiFunction<Object, Object, Boolean> isEquals) {
         this.attribute = attribute;
+        this.isEquals = isEquals;
     }
 
     @Override
@@ -48,5 +59,10 @@ class DataObjectAttributeProperty extends DataObjectBaseProperty implements
     @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitAttribute(this);
+    }
+
+    @Override
+    public boolean isEqual(Object value1, Object value2) {
+        return isEquals.apply(value1, value2);
     }
 }

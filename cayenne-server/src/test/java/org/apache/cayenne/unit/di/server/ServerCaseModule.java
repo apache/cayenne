@@ -112,6 +112,8 @@ import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.reflect.generic.ComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultComparisionStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -223,6 +225,7 @@ public class ServerCaseModule implements Module {
                 .add(PeriodValueType.class)
                 .add(CharacterValueType.class);
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+        binder.bind(ComparisionStrategyFactory.class).to(DefaultComparisionStrategyFactory.class);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);

@@ -47,7 +47,7 @@ public class DataObjectDescriptorFactoryIT extends ServerCase {
     public void testVisitDeclaredProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(), new SingletonFaultFactory());
+                resolver.getClassDescriptorMap(), new SingletonFaultFactory(), new DefaultComparisionStrategyFactory());
 
         for (ObjEntity e : resolver.getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());
@@ -84,7 +84,7 @@ public class DataObjectDescriptorFactoryIT extends ServerCase {
     public void testVisitProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(), new SingletonFaultFactory());
+                resolver.getClassDescriptorMap(), new SingletonFaultFactory(), new DefaultComparisionStrategyFactory());
 
         for (ObjEntity e : resolver.getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());

@@ -424,7 +424,7 @@ public class ObjectDiff extends NodeDiff {
                 else {
                     Object oldValue = snapshot.get(property.getName());
 
-                    if (!Util.nullSafeEquals(oldValue, newValue)) {
+                    if (!property.isEqual(oldValue, newValue)) {
                         handler.nodePropertyChanged(nodeId, property.getName(), oldValue, newValue);
                     }
                 }
