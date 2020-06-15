@@ -428,7 +428,7 @@ public class BaseProperty<E> implements Property<E> {
         Object[] expressions = new Expression[arguments.length + 1];
         expressions[0] = getExpression();
         for(int i=1; i<=arguments.length; i++) {
-            expressions[i] = arguments[i].getExpression();
+            expressions[i] = arguments[i-1].getExpression();
         }
         return PropertyFactory.createBase(FunctionExpressionFactory.functionCall(functionName, expressions), returnType);
     }
@@ -443,4 +443,29 @@ public class BaseProperty<E> implements Property<E> {
         System.arraycopy(arguments, 0, expressions, 1, arguments.length);
         return PropertyFactory.createBase(FunctionExpressionFactory.functionCall(functionName, expressions), returnType);
     }
+
+    /**
+     * @return An expression for using operator with first argument equals to <b>this</b> property
+     *      and provided additional arguments
+     */
+    public <T> BaseProperty<T> operator(String operator, Class<T> returnType, BaseProperty<?>... arguments) {
+        Object[] expressions = new Expression[arguments.length + 1];
+        expressions[0] = getExpression();
+        for(int i=1; i<=arguments.length; i++) {
+            expressions[i] = arguments[i-1].getExpression();
+        }
+        return PropertyFactory.createBase(FunctionExpressionFactory.operator(operator, expressions), returnType);
+    }
+
+    /**
+     * @return An expression for using operator with first argument equals to <b>this</b> property
+     *      and provided additional arguments
+     */
+    public <T> BaseProperty<T> operator(String operator, Class<T> returnType, Object... arguments) {
+        Object[] expressions = new Object[arguments.length + 1];
+        expressions[0] = getExpression();
+        System.arraycopy(arguments, 0, expressions, 1, arguments.length);
+        return PropertyFactory.createBase(FunctionExpressionFactory.operator(operator, expressions), returnType);
+    }
+
 }

@@ -27,12 +27,14 @@ import org.apache.cayenne.exp.parser.ASTCount;
 import org.apache.cayenne.exp.parser.ASTCurrentDate;
 import org.apache.cayenne.exp.parser.ASTCurrentTime;
 import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
+import org.apache.cayenne.exp.parser.ASTCustomOperator;
 import org.apache.cayenne.exp.parser.ASTLength;
 import org.apache.cayenne.exp.parser.ASTLocate;
 import org.apache.cayenne.exp.parser.ASTLower;
 import org.apache.cayenne.exp.parser.ASTMax;
 import org.apache.cayenne.exp.parser.ASTMin;
 import org.apache.cayenne.exp.parser.ASTMod;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSqrt;
 import org.apache.cayenne.exp.parser.ASTSubstring;
@@ -263,5 +265,17 @@ public class FunctionExpressionFactoryTest {
     public void currentTimestampTest() throws Exception {
         Expression exp = FunctionExpressionFactory.currentTimestamp();
         assertTrue(exp instanceof ASTCurrentTimestamp);
+    }
+
+    @Test
+    public void customOpTest() {
+        Expression exp = FunctionExpressionFactory.operator("==>", 123, Artist.ARTIST_NAME.getExpression());
+        assertTrue(exp instanceof ASTCustomOperator);
+        ASTCustomOperator operator = (ASTCustomOperator) exp;
+        assertEquals("==>", operator.getOperator());
+        assertEquals(2, operator.jjtGetNumChildren());
+
+        assertEquals(123, operator.getOperand(0));
+        assertEquals(Artist.ARTIST_NAME.getExpression(), operator.getOperand(1));
     }
 }
