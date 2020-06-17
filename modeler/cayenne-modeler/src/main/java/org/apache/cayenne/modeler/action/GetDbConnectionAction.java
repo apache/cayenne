@@ -20,23 +20,14 @@
 package org.apache.cayenne.modeler.action;
 
 import java.awt.event.ActionEvent;
-import java.util.Collection;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
-import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
-import org.apache.cayenne.modeler.pref.DataMapDefaults;
-
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.URL_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERTY;
 
 /**
  * @since 4.1
  */
-public class GetDbConnectionAction extends DBWizardAction<DbActionOptionsDialog> {
+public class GetDbConnectionAction extends DBConnectionAwareAction {
 
     public static final String DIALOG_TITLE = "Configure Connection to Database";
     private static final String ACTION_NAME = "Configure Connection";
@@ -51,30 +42,11 @@ public class GetDbConnectionAction extends DBWizardAction<DbActionOptionsDialog>
     }
 
     @Override
-    protected DbActionOptionsDialog createDialog(final Collection<String> catalogs, final Collection<String> schemas,
-                                                 final String currentCatalog, final String currentSchema, final int command) {
-        // NOOP
-        return null;
-    }
-
-    @Override
     public void performAction(final ActionEvent e) {
-        final DataSourceWizard connectWizard = dataSourceWizardDialog(DIALOG_TITLE);
+        DataSourceWizard connectWizard = getDataSourceWizard(DIALOG_TITLE, new String[]{"Continue", "Cancel"});
         if (connectWizard == null) {
             return;
         }
-
-        final DataMapDefaults dataMapDefaults = getProjectController().
-                getDataMapPreferences(getProjectController().getCurrentDataMap());
-
-        if (connectWizard.getConnectionInfo().getDbAdapter() != null) {
-            dataMapDefaults.getCurrentPreference().put(DB_ADAPTER_PROPERTY, connectWizard.getConnectionInfo().getDbAdapter());
-        } else {
-            dataMapDefaults.getCurrentPreference().remove(DB_ADAPTER_PROPERTY);
-        }
-        dataMapDefaults.getCurrentPreference().put(URL_PROPERTY, connectWizard.getConnectionInfo().getUrl());
-        dataMapDefaults.getCurrentPreference().put(USER_NAME_PROPERTY, connectWizard.getConnectionInfo().getUserName());
-        dataMapDefaults.getCurrentPreference().put(PASSWORD_PROPERTY, connectWizard.getConnectionInfo().getPassword());
-        dataMapDefaults.getCurrentPreference().put(JDBC_DRIVER_PROPERTY, connectWizard.getConnectionInfo().getJdbcDriver());
+        saveConnectionInfo(connectWizard);
     }
 }
