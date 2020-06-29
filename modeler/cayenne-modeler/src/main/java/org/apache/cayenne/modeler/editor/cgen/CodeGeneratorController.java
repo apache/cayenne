@@ -340,7 +340,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     void addEntity(DataMap dataMap, ObjEntity objEntity) {
         prepareClasses(dataMap);
         selectionModel.addSelectedEntity(objEntity.getName());
-        cgenConfiguration.loadEntity(objEntity);
+        if(cgenConfiguration != null) {
+            cgenConfiguration.loadEntity(objEntity);
+        }
         checkCgenConfigDirty();
     }
 
@@ -384,7 +386,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     @Override
     public void objEntityRemoved(EntityEvent e) {
         selectionModel.removeFromSelectedEntities((ObjEntity) e.getEntity());
-        cgenConfiguration.getEntities().remove(e.getEntity().getName());
+        if(cgenConfiguration != null) {
+            cgenConfiguration.getEntities().remove(e.getEntity().getName());
+        }
         checkCgenConfigDirty();
     }
 
@@ -396,23 +400,29 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         prepareClasses(map);
         String embeddableClassName = e.getEmbeddable().getClassName();
         selectionModel.addSelectedEmbeddable(embeddableClassName);
-        cgenConfiguration.loadEmbeddable(embeddableClassName);
+        if(cgenConfiguration != null) {
+            cgenConfiguration.loadEmbeddable(embeddableClassName);
+        }
         checkCgenConfigDirty();
     }
 
     @Override
     public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
         selectionModel.removeFromSelectedEmbeddables(e.getEmbeddable());
-        cgenConfiguration.getEmbeddables().remove(e.getEmbeddable().getClassName());
+        if(cgenConfiguration != null) {
+            cgenConfiguration.getEmbeddables().remove(e.getEmbeddable().getClassName());
+        }
         checkCgenConfigDirty();
     }
 
     @Override
     public void dataMapChanged(DataMapEvent e) {
         if(e.getSource() instanceof DbImportController) {
-            for(ObjEntity objEntity : e.getDataMap().getObjEntities()) {
-                if(!cgenConfiguration.getExcludeEntityArtifacts().contains(objEntity.getName())) {
-                    addEntity(cgenConfiguration.getDataMap(), objEntity);
+            if(cgenConfiguration != null) {
+                for (ObjEntity objEntity : e.getDataMap().getObjEntities()) {
+                    if (!cgenConfiguration.getExcludeEntityArtifacts().contains(objEntity.getName())) {
+                        addEntity(cgenConfiguration.getDataMap(), objEntity);
+                    }
                 }
             }
             checkCgenConfigDirty();
