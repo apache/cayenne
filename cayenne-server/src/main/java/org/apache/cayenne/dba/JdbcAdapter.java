@@ -396,9 +396,17 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     public static String getType(DbAdapter adapter, DbAttribute column) {
-        String[] types = adapter.externalTypesForJdbcType(column.getType());
+        int columnType = column.getType();
+        if(columnType == Types.OTHER) {
+            // TODO: warn that this is unsupported yet
+            return "OTHER";
+        }
+
+        String[] types = adapter.externalTypesForJdbcType(columnType);
         if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
+            String entityName = column.getEntity() != null
+                    ? column.getEntity().getFullyQualifiedName()
+                    : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
                     , entityName, column.getName(), column.getType());
         }

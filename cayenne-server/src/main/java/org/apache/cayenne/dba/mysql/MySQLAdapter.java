@@ -25,12 +25,10 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -79,10 +77,9 @@ import org.apache.cayenne.resource.ResourceLocator;
 public class MySQLAdapter extends JdbcAdapter {
 
 	static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
+	static final List<String> SYSTEM_CATALOGS = Arrays.asList("sys", "information_schema", "mysql", "performance_schema");
 
 	protected String storageEngine;
-
-	private List<String> SYSTEM_CATALOGS = Arrays.asList("sys", "information_schema", "mysql", "performance_schema");
 
 	public MySQLAdapter(@Inject RuntimeProperties runtimeProperties,
 						@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -272,7 +269,7 @@ public class MySQLAdapter extends JdbcAdapter {
 
 		// must move generated to the front...
 		List<DbAttribute> pkList = new ArrayList<>(entity.getPrimaryKeys());
-		Collections.sort(pkList, new PKComparator());
+		pkList.sort(PKComparator.INSTANCE);
 
 		Iterator<DbAttribute> pkit = pkList.iterator();
 		if (pkit.hasNext()) {
@@ -300,15 +297,8 @@ public class MySQLAdapter extends JdbcAdapter {
 	@Override
 	public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
 
-		String[] types = externalTypesForJdbcType(column.getType());
-		if (types == null || types.length == 0) {
-			String entityName = column.getEntity() != null
-					? column.getEntity().getFullyQualifiedName() : "<null>";
-			throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-					, entityName, column.getName(), column.getType());
-		}
+		String type = getType(this, column);
 
-		String type = types[0];
 		sqlBuffer.append(quotingStrategy.quotedName(column));
 		sqlBuffer.append(' ').append(type);
 
@@ -360,17 +350,6 @@ public class MySQLAdapter extends JdbcAdapter {
 		return SYSTEM_CATALOGS;
 	}
 
-	final class PKComparator implements Comparator<DbAttribute> {
-
-		public int compare(DbAttribute a1, DbAttribute a2) {
-			if (a1.isGenerated() != a2.isGenerated()) {
-				return a1.isGenerated() ? -1 : 1;
-			} else {
-				return a1.getName().compareTo(a2.getName());
-			}
-		}
-	}
-
 	/**
 	 * @since 3.0
 	 */
@@ -383,5 +362,18 @@ public class MySQLAdapter extends JdbcAdapter {
 	 */
 	public void setStorageEngine(String engine) {
 		this.storageEngine = engine;
+	}
+
+	static final class PKComparator implements Comparator<DbAttribute> {
+
+		static final PKComparator INSTANCE = new PKComparator();
+
+		public int compare(DbAttribute a1, DbAttribute a2) {
+			if (a1.isGenerated() != a2.isGenerated()) {
+				return a1.isGenerated() ? -1 : 1;
+			} else {
+				return a1.getName().compareTo(a2.getName());
+			}
+		}
 	}
 }

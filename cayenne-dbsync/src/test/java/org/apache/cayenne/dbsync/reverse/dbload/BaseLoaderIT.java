@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DetectedDbEntity;
+import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;

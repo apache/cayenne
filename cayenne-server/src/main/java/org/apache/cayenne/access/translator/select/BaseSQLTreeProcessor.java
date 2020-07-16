@@ -69,11 +69,11 @@ public class BaseSQLTreeProcessor extends SimpleNodeTreeVisitor implements SQLTr
     protected void onUndefinedNode(Node parent, Node child, int index) {
     }
 
-    protected void replaceChild(Node parent, int index, Node newChild) {
+    protected static void replaceChild(Node parent, int index, Node newChild) {
         replaceChild(parent, index, newChild, true);
     }
 
-    protected void replaceChild(Node parent, int index, Node newChild, boolean transferChildren) {
+    protected static void replaceChild(Node parent, int index, Node newChild, boolean transferChildren) {
         if (transferChildren) {
             Node oldChild = parent.getChild(index);
             for (int i = 0; i < oldChild.getChildrenCount(); i++) {
@@ -81,6 +81,12 @@ public class BaseSQLTreeProcessor extends SimpleNodeTreeVisitor implements SQLTr
             }
         }
         parent.replaceChild(index, newChild);
+    }
+
+    protected static Node wrapInFunction(Node node, String function) {
+        FunctionNode functionNode = new FunctionNode(function, null);
+        functionNode.addChild(node);
+        return functionNode;
     }
 
     @Override

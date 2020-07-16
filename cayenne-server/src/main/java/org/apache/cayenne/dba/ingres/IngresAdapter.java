@@ -113,14 +113,7 @@ public class IngresAdapter extends JdbcAdapter {
 
 	@Override
 	public void createTableAppendColumn(StringBuffer buf, DbAttribute at) {
-
-		String[] types = externalTypesForJdbcType(at.getType());
-		if (types == null || types.length == 0) {
-			throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-					, at.getEntity().getFullyQualifiedName(), at.getName(), at.getType());
-		}
-
-		String type = types[0];
+		String type = getType(this, at);
 		buf.append(quotingStrategy.quotedName(at)).append(' ').append(type);
 
 		// append size and precision (if applicable)

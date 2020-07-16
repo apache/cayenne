@@ -19,18 +19,26 @@
 
 package org.apache.cayenne.dba.mysql;
 
+import java.util.Optional;
+
+import org.apache.cayenne.access.sqlbuilder.sqltree.ChildProcessor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor;
+import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
+import org.apache.cayenne.access.translator.select.TypeAwareSQLTreeProcessor;
+import org.apache.cayenne.dba.mysql.sqltree.ConvertNode;
 import org.apache.cayenne.dba.mysql.sqltree.MysqlLikeNode;
 import org.apache.cayenne.dba.mysql.sqltree.MysqlLimitOffsetNode;
+import org.apache.cayenne.dba.types.GeoJson;
+import org.apache.cayenne.dba.types.Json;
+import org.apache.cayenne.dba.types.Wkt;
 
 /**
  * @since 4.2
  */
-public class MySQLTreeProcessor extends BaseSQLTreeProcessor {
+public class MySQLTreeProcessor extends TypeAwareSQLTreeProcessor {
 
     private static final MySQLTreeProcessor INSTANCE = new MySQLTreeProcessor();
 
@@ -39,30 +47,46 @@ public class MySQLTreeProcessor extends BaseSQLTreeProcessor {
     }
 
     private MySQLTreeProcessor() {
+        registerProcessor(NodeType.LIKE, (ChildProcessor<LikeNode>) this::onLikeNode);
+        registerProcessor(NodeType.LIMIT_OFFSET, (ChildProcessor<LimitOffsetNode>) this::onLimitOffsetNode);
+        registerProcessor(NodeType.FUNCTION, (ChildProcessor<FunctionNode>) this::onFunctionNode);
+
+        registerColumnProcessor(Wkt.class, (parent, child, i)
+                -> Optional.of(wrapInFunction(child, "ST_AsText")));
+        registerColumnProcessor(GeoJson.class, (parent, child, i)
+                -> Optional.of(wrapInFunction(child, "ST_AsGeoJSON")));
+
+        registerValueProcessor(Wkt.class, (parent, child, i)
+                -> Optional.of(wrapInFunction(child, "ST_GeomFromText")));
+        registerValueProcessor(GeoJson.class, (parent, child, i)
+                -> Optional.of(wrapInFunction(child, "ST_GeomFromGeoJSON")));
+
+        registerValueProcessor(Json.class, (parent, child, i) -> {
+            ConvertNode node = new ConvertNode();
+            node.addChild(child);
+            return Optional.of(node);
+        });
     }
 
-    @Override
-    protected void onLikeNode(Node parent, LikeNode child, int index) {
+    protected Optional<Node> onLikeNode(Node parent, LikeNode child, int index) {
         if(!child.isIgnoreCase()) {
-            replaceChild(parent, index, new MysqlLikeNode(child.isNot(), child.getEscape()));
+            return Optional.of(new MysqlLikeNode(child.isNot(), child.getEscape()));
         }
+        return Optional.empty();
     }
 
-    @Override
-    protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
-        Node replacement = new MysqlLimitOffsetNode(child.getLimit(), child.getOffset());
-        replaceChild(parent, index, replacement, false);
+    protected Optional<Node> onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
+        return Optional.of(new MysqlLimitOffsetNode(child.getLimit(), child.getOffset()));
     }
 
-    @Override
-    protected void onFunctionNode(Node parent, FunctionNode child, int index) {
+    protected Optional<Node> onFunctionNode(Node parent, FunctionNode child, int index) {
         String functionName = child.getFunctionName();
         if("DAY_OF_MONTH".equals(functionName)
                 || "DAY_OF_WEEK".equals(functionName)
                 || "DAY_OF_YEAR".equals(functionName)) {
-            FunctionNode replacement = new FunctionNode(functionName.replace("_", ""), child.getAlias(), true);
-            replaceChild(parent, index, replacement);
+            return Optional.of(new FunctionNode(functionName.replace("_", ""), child.getAlias(), true));
         }
+        return Optional.empty();
     }
 
 }
