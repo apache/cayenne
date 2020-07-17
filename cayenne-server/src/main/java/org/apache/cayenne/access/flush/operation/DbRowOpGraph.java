@@ -29,15 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Graph sorting, copy of DIGraph implementation from cayenne-di.
  */
 class DbRowOpGraph {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(DbRowOpSorter.class);
 
 	/**
 	 * {@link LinkedHashMap} is used for supporting insertion order.
@@ -51,9 +46,7 @@ class DbRowOpGraph {
 	 * Add a vertex to the graph. Nothing happens if vertex is already in graph.
 	 */
 	void add(DbRowOp vertex) {
-		if(null == neighbors.putIfAbsent(vertex, new ArrayList<>(0))) {
-			LOGGER.info("Add graph vertex: {}", vertex);
-		}
+		neighbors.putIfAbsent(vertex, new ArrayList<>(0));
 	}
 
 	/**
@@ -62,7 +55,6 @@ class DbRowOpGraph {
 	 */
 	void add(DbRowOp from, DbRowOp to) {
 		neighbors.computeIfAbsent(from, k -> new ArrayList<>(4)).add(to);
-		LOGGER.info("Add graph edge: {} -> {}", from, to);
 		this.add(to);
 	}
 
