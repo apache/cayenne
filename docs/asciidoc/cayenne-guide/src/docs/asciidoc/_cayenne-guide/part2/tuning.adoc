@@ -234,6 +234,23 @@ try(ResultBatchIterator<Artist> it = ObjectSelect.query(Artist.class).batchItera
 }
 ----
 
+===== MySQL JDBC driver and iterated queries
+
+The MySQL JDBC driver is known to pull the entire ResultSet into memory.
+In order to get the driver to stream the results, append the JDBC parameter
+`useCursorFetch=true` to the JDBC URL.
+
+A fetch size must also be set when doing the query using
+`ObjectSelect.statementFetchSize(..)`, for example:
+[source, java]
+----
+ObjectSelect.query(queryClass)
+    .statementFetchSize(50000)
+    .iterate(objectContext, cayenneObject -> ...
+----
+Adjust the value of the fetch size to fit requirements.  A larger value is more
+performant, but consumes more memory as well.
+
 ==== Paginated Queries
 
 Enabling query pagination allows to load very large result sets in a Java app with very little memory overhead
