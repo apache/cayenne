@@ -33,12 +33,14 @@ public abstract class BaseDbRowOp implements DbRowOp {
     protected final Persistent object;
     protected final DbEntity entity;
     // Can be ObjEntity id or a DB row id for flattened rows
-    protected final ObjectId changeId;
+    protected ObjectId changeId;
+    protected int hashCode;
 
     protected BaseDbRowOp(Persistent object, DbEntity entity, ObjectId id) {
         this.object = Objects.requireNonNull(object);
         this.entity = Objects.requireNonNull(entity);
         this.changeId = Objects.requireNonNull(id);
+        this.hashCode = changeId.hashCode();
     }
 
     @Override
@@ -67,7 +69,7 @@ public abstract class BaseDbRowOp implements DbRowOp {
 
     @Override
     public int hashCode() {
-        return changeId.hashCode();
+        return hashCode;
     }
 
     @Override

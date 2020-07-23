@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
+import java.util.function.Supplier;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -101,6 +103,8 @@ public class ValueNode extends Node {
                 appendValue((Persistent) val, buffer);
             } else if(val instanceof ObjectId) {
                 appendValue((ObjectId) val, buffer);
+            } else if(val instanceof Supplier) {
+                appendValue(((Supplier<?>) val).get(), buffer);
             } else if(val instanceof CharSequence) {
                 appendStringValue(buffer, (CharSequence)val);
             } else {
@@ -135,7 +139,7 @@ public class ValueNode extends Node {
         // value can't be null here
         SQLGenerationContext context = buffer.getContext();
         // allow translation in out-of-context scope, to be able to use as a standalone SQL generator
-        ExtendedType extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+        ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
         DbAttributeBinding binding = new DbAttributeBinding(attribute);
         binding.setStatementPosition(context.getBindings().size() + 1);
         binding.setExtendedType(extendedType);

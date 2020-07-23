@@ -111,7 +111,7 @@ class ObjectIdTmp implements ObjectId {
         }
 
         ObjectIdTmp that = (ObjectIdTmp) o;
-        if (!Arrays.equals(id, that.id)) {
+        if (id != that.id && !Arrays.equals(id, that.id)) {
             return false;
         }
         return entityName.equals(that.entityName);

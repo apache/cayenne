@@ -89,7 +89,7 @@
 		<db-attribute-pair source="KEY1" target="F_KEY1"/>
 		<db-attribute-pair source="KEY2" target="F_KEY2"/>
 	</db-relationship>
-	<db-relationship name="lines" source="compound_order" target="compound_order_line" toMany="true">
+	<db-relationship name="lines" source="compound_order" target="compound_order_line" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 	</db-relationship>
 	<db-relationship name="order" source="compound_order_line" target="compound_order">
