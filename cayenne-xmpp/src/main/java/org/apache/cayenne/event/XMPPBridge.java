@@ -20,7 +20,7 @@
 package org.apache.cayenne.event;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.Base64Codec;
+import org.apache.cayenne.event.util.Base64Codec;
 import org.apache.cayenne.util.Util;
 import org.jivesoftware.smack.GroupChat;
 import org.jivesoftware.smack.PacketListener;
