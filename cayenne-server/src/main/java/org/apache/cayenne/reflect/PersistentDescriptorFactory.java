@@ -173,7 +173,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
 
             for (EntityInheritanceTree child : inheritanceTree.getChildren()) {
                 ObjEntity childEntity = child.getEntity();
-                descriptor.addSubclassDescriptor(childEntity.getClassName(),
+                descriptor.addSubclassDescriptor(childEntity.getName(),
                         descriptorMap.getDescriptor(childEntity.getName()));
 
                 indexSubclassDescriptors(descriptor, child);

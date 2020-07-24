@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -81,7 +82,7 @@ public class DeepMergeOperation {
         final T target = shallowMergeOperation.merge(peerInParentContext);
         seen.put(id, target);
 
-        descriptor = descriptor.getSubclassDescriptor(peerInParentContext.getClass());
+        descriptor = descriptor.getSubclassDescriptor(Cayenne.getObjEntity(peerInParentContext));
         descriptor.visitProperties(new PropertyVisitor() {
 
             public boolean visitToOne(ToOneProperty property) {

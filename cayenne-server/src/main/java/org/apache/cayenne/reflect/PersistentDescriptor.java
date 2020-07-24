@@ -209,16 +209,16 @@ public class PersistentDescriptor implements ClassDescriptor {
 	}
 
 	/**
-	 * Adds a subclass descriptor that maps to a given class name.
+	 * Adds a subclass descriptor that maps to a given entity name.
 	 */
-	public void addSubclassDescriptor(String className, ClassDescriptor subclassDescriptor) {
+	public void addSubclassDescriptor(String entityName, ClassDescriptor subclassDescriptor) {
 		// note that 'className' should be used instead of
 		// "subclassDescriptor.getEntity().getClassName()", as this method is
 		// called in
 		// the early phases of descriptor initialization and we do not want to
 		// trigger
 		// subclassDescriptor resolution just yet to prevent stack overflow.
-		subclassDescriptors.put(className, subclassDescriptor);
+		subclassDescriptors.put(entityName, subclassDescriptor);
 	}
 
 	public ObjEntity getEntity() {
@@ -257,23 +257,26 @@ public class PersistentDescriptor implements ClassDescriptor {
 		this.objectClass = objectClass;
 	}
 
-	public ClassDescriptor getSubclassDescriptor(Class<?> objectClass) {
-		if (objectClass == null) {
-			throw new IllegalArgumentException("Null objectClass");
+	public ClassDescriptor getSubclassDescriptor(ObjEntity subEntity) {
+		if (subEntity == null) {
+			throw new IllegalArgumentException("Null subEntity");
 		}
 
 		if (subclassDescriptors.isEmpty()) {
 			return this;
 		}
 
-		ClassDescriptor subclassDescriptor = subclassDescriptors.get(objectClass.getName());
+		ClassDescriptor subclassDescriptor = subclassDescriptors.get(subEntity.getName());
 
 		// ascend via the class hierarchy (only doing it if there are multiple
 		// choices)
 		if (subclassDescriptor == null) {
-			Class<?> currentClass = objectClass;
-			while (subclassDescriptor == null && (currentClass = currentClass.getSuperclass()) != null) {
-				subclassDescriptor = subclassDescriptors.get(currentClass.getName());
+			ObjEntity currentEntity = subEntity;
+			while (subclassDescriptor == null && (currentEntity = currentEntity.getSuperEntity()) != null) {
+				if(currentEntity == null){
+					break;
+				}
+				subclassDescriptor = subclassDescriptors.get(currentEntity.getName());
 			}
 		}
 
