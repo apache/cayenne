@@ -101,7 +101,7 @@ and more data processing that needs to be done on the Cayenne side.
 different prefetches.
 
 `<<sqlselect,SQLSelect>>` query supports "JOINT" and "DISJOINT_BY_ID". It does not work with "DISJOINT", as the query does not provide
-enough information to Cayenne to build dependent prefetch queries. So "DISJOINT" will be quietly ignored. "JOINT"
+enough information to Cayenne to build dependent prefetch queries. So "DISJOINT" will result in exception. "JOINT"
 prefetching requires a bit of effort shaping the SQL to include the right columns in the result and label them properly
 to be convertable into object properties. The main rules to follow are:
 
