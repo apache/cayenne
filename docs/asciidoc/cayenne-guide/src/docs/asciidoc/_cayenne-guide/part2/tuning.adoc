@@ -54,9 +54,7 @@ query.prefetch(Artist.PAINTINGS.disjoint())
 If a query is fetching DataRows, all "disjoint" prefetches are ignored, only "joint" prefetches are executed
 (see prefetching semantics discussion below for what disjoint and joint prefetches mean).
 
-===== Prefetch Semantics
-
-Prefetch semantics defines a strategy to prefetch relationships. Depending on semantics, Cayenne would generate
+A strategy to prefetch relationships is defined by prefetch "semantics". Depending on semantics, Cayenne would generate
 different types of queries. The end result is the same - query root objects with related objects fully resolved.
 However semantics can affect performance, in some cases significantly. There are 3 types of prefetch semantics
 defined as constants in `org.apache.cayenne.query.PrefetchTreeNode`:
