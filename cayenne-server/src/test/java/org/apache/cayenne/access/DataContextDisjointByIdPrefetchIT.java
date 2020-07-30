@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -121,6 +122,39 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
         queryInterceptor.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Artist b1 = result.get(0);
+            @SuppressWarnings("unchecked")
+            List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertNotNull(toMany);
+            assertFalse(((ValueHolder) toMany).isFault());
+            assertEquals(2, toMany.size());
+
+            List<String> names = new ArrayList<>();
+            for (Painting b : toMany) {
+                assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
+                names.add(b.getPaintingTitle());
+            }
+
+            assertTrue(names.contains("Y1"));
+            assertTrue(names.contains("Y2"));
+        });
+    }
+
+    @Test
+    public void testOneToMany_SQLSelect() throws Exception {
+        createArtistWithTwoPaintingsDataSet();
+
+        List<Artist> result = SQLSelect.query(Artist.class, "SELECT "
+                + "#result('ARTIST_NAME' 'String'), "
+                + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
+                + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
+                + "FROM ARTIST t0")
+                .addPrefetch(Artist.PAINTING_ARRAY.disjointById())
+                .select(context);
+
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            Artist b1 = result.get(0);
+
             @SuppressWarnings("unchecked")
             List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
             assertNotNull(toMany);
