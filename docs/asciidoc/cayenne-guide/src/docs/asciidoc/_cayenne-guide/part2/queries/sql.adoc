@@ -11,6 +11,8 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
+
+[[sqlselect]]
 ==== SQLSelect and SQLExec
 
 SQL is very powerful and allows to manipulate data in ways that can not always be described as a graph of related entities.
