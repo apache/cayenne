@@ -395,8 +395,10 @@ public class JointPrefetchIT extends ServerCase {
     public void testJointPrefetchSQLSelectToMany() throws Exception {
         createJointPrefetchDataSet();
 
-        @SuppressWarnings("unchecked")
-        final List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
+        List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
+                + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintingArray.ESTIMATED_PRICE'), "
+                + "#result('PAINTING_TITLE' 'String' '' 'paintingArray.PAINTING_TITLE'), "
+                + "#result('GALLERY_ID' 'int' '' 'paintingArray.GALLERY_ID'), "
                 + "#result('PAINTING_ID' 'int' '' 'paintingArray.PAINTING_ID'), "
                 + "#result('ARTIST_NAME' 'String'), "
                 + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
@@ -405,8 +407,8 @@ public class JointPrefetchIT extends ServerCase {
                 + "WHERE t0.ARTIST_ID = t1.ARTIST_ID")
                 .addPrefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
+
         queryInterceptor.runWithQueriesBlocked(() -> {
-            assertNotNull(objects);
             assertEquals(2, objects.size());
 
             for (Artist artist : objects) {
@@ -414,6 +416,7 @@ public class JointPrefetchIT extends ServerCase {
                 assertTrue(paintings.size() > 0);
                 for (Painting painting : paintings) {
                     assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
+                    assertNotNull(painting.getPaintingTitle());
                 }
             }
         });
