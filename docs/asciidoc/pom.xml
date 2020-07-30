@@ -125,7 +125,7 @@
                 <executions>
                     <execution>
                         <id>copy docs for site</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -146,7 +146,7 @@
 
                     <execution>
                         <id>copy images for site</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
