@@ -25,16 +25,14 @@ Prefetching example:
 
 [source, Java]
 ----
-ObjectSelect<Artist> query = ObjectSelect
+List<Artist> artists = ObjectSelect
     .query(Artist.class)
-    // Instructs Cayenne to prefetch one of Artist's relationships.
-    // Equivalent to ".prefetch("paintings", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS)")
-    .prefetch(Artist.PAINTINGS.disjoint());
-
-// query is expecuted as usual, but the resulting Artists will have
-// their paintings "inflated"
-List<Artist> artists = query.select(context);
+    .prefetch(Artist.PAINTINGS.disjoint()) // <1>
+    .select(context); // <2>
 ----
+
+<1> Instructs Cayenne to prefetch one of Artist's relationships.
+<2> Query is executed as usual, but the resulting Artists will have their paintings "inflated"
 
 All types of relationships can be prefetched - to-one, to-many, flattened. A prefetch can span multiple relationships:
 
