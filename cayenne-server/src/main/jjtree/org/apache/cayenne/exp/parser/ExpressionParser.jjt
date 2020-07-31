@@ -629,11 +629,13 @@ TOKEN : {
 
 TOKEN :
 {
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* (["#"]<LETTER> (<LETTER>|<DIGIT>)*)? (["+"])? >
+  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>|<DOLLAR_SIGN>)* (["#"]<LETTER> (<LETTER>|<DIGIT>|<DOLLAR_SIGN>)*)? (["+"])? >
 |
   < #LETTER: ["_","a"-"z","A"-"Z"] >
 |
   < #DIGIT: ["0"-"9"] >
+|
+  < #DOLLAR_SIGN: ["$"] >
 }
 
 /**
