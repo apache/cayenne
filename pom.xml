@@ -1724,7 +1724,7 @@
 			</activation>
 			<properties>
 				<javadoc.doclint>none</javadoc.doclint>
-				<javadoc.additionalOptions />
+				<javadoc.additionalOptions>--no-module-directories</javadoc.additionalOptions>
 			</properties>
 		</profile>
 		<profile>
@@ -1733,7 +1733,7 @@
 				<jdk>[9,)</jdk>
 			</activation>
 			<properties>
-				<javadoc.additionalOptions>-html5</javadoc.additionalOptions>
+				<javadoc.additionalOptions>-html5 --no-module-directories</javadoc.additionalOptions>
 			</properties>
 		</profile>
 	</profiles>
