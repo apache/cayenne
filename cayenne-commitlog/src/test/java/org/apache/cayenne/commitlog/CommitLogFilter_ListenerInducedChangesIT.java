@@ -38,7 +38,6 @@ import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -66,7 +65,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCas
 	}
 
 	@Test
-	public void testPostCommit_Insert() throws SQLException {
+	public void testPostCommit_Insert() {
 
 		final InsertListener listener = new InsertListener();
 		runtime.getDataDomain().addListener(listener);
@@ -74,29 +73,26 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCas
 		final Auditable1 a1 = context.newObject(Auditable1.class);
 		a1.setCharProperty1("yy");
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertNotNull(listener.c);
+			assertNotNull(listener.c);
 
-				List<ObjectChange> sortedChanges = sortedChanges(invocation);
+			List<ObjectChange> sortedChanges = sortedChanges(invocation);
 
-				assertEquals(2, sortedChanges.size());
+			assertEquals(2, sortedChanges.size());
 
-				assertEquals(a1.getObjectId(), sortedChanges.get(0).getPostCommitId());
-				assertEquals(ObjectChangeType.INSERT, sortedChanges.get(0).getType());
+			assertEquals(a1.getObjectId(), sortedChanges.get(0).getPostCommitId());
+			assertEquals(ObjectChangeType.INSERT, sortedChanges.get(0).getType());
 
-				assertEquals(listener.c.getObjectId(), sortedChanges.get(1).getPostCommitId());
-				assertEquals(ObjectChangeType.INSERT, sortedChanges.get(1).getType());
+			assertEquals(listener.c.getObjectId(), sortedChanges.get(1).getPostCommitId());
+			assertEquals(ObjectChangeType.INSERT, sortedChanges.get(1).getType());
 
-				AttributeChange listenerInducedChange = sortedChanges.get(1).getAttributeChanges()
-						.get(AuditableChild1.CHAR_PROPERTY1.getName());
-				assertNotNull(listenerInducedChange);
-				assertEquals("c1", listenerInducedChange.getNewValue());
+			AttributeChange listenerInducedChange = sortedChanges.get(1).getAttributeChanges()
+					.get(AuditableChild1.CHAR_PROPERTY1.getName());
+			assertNotNull(listenerInducedChange);
+			assertEquals("c1", listenerInducedChange.getNewValue());
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		context.commitChanges();
@@ -117,30 +113,27 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCas
 				.selectFirst(context);
 		a1.setCharProperty1("zz");
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertNotNull(listener.toDelete);
-				assertEquals(1, listener.toDelete.size());
+			assertNotNull(listener.toDelete);
+			assertEquals(1, listener.toDelete.size());
 
-				List<ObjectChange> sortedChanges = sortedChanges(invocation);
+			List<ObjectChange> sortedChanges = sortedChanges(invocation);
 
-				assertEquals(2, sortedChanges.size());
+			assertEquals(2, sortedChanges.size());
 
-				assertEquals(ObjectChangeType.UPDATE, sortedChanges.get(0).getType());
-				assertEquals(a1.getObjectId(), sortedChanges.get(0).getPostCommitId());
+			assertEquals(ObjectChangeType.UPDATE, sortedChanges.get(0).getType());
+			assertEquals(a1.getObjectId(), sortedChanges.get(0).getPostCommitId());
 
-				assertEquals(ObjectChangeType.DELETE, sortedChanges.get(1).getType());
-				assertEquals(listener.toDelete.get(0).getObjectId(), sortedChanges.get(1).getPostCommitId());
+			assertEquals(ObjectChangeType.DELETE, sortedChanges.get(1).getType());
+			assertEquals(listener.toDelete.get(0).getObjectId(), sortedChanges.get(1).getPostCommitId());
 
-				AttributeChange listenerInducedChange = sortedChanges.get(1).getAttributeChanges()
-						.get(AuditableChild1.CHAR_PROPERTY1.getName());
-				assertNotNull(listenerInducedChange);
-				assertEquals("yyc", listenerInducedChange.getOldValue());
+			AttributeChange listenerInducedChange = sortedChanges.get(1).getAttributeChanges()
+					.get(AuditableChild1.CHAR_PROPERTY1.getName());
+			assertNotNull(listenerInducedChange);
+			assertEquals("yyc", listenerInducedChange.getOldValue());
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		context.commitChanges();
@@ -161,31 +154,28 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCas
 				.selectFirst(context);
 		a1.setCharProperty1("zz");
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertNotNull(listener.toUpdate);
-				assertEquals(1, listener.toUpdate.size());
+			assertNotNull(listener.toUpdate);
+			assertEquals(1, listener.toUpdate.size());
 
-				List<ObjectChange> sortedChanges = sortedChanges(invocation);
+			List<ObjectChange> sortedChanges = sortedChanges(invocation);
 
-				assertEquals(2, sortedChanges.size());
+			assertEquals(2, sortedChanges.size());
 
-				assertEquals(ObjectChangeType.UPDATE, sortedChanges.get(0).getType());
-				assertEquals(a1.getObjectId(), sortedChanges.get(0).getPostCommitId());
+			assertEquals(ObjectChangeType.UPDATE, sortedChanges.get(0).getType());
+			assertEquals(a1.getObjectId(), sortedChanges.get(0).getPostCommitId());
 
-				assertEquals(ObjectChangeType.UPDATE, sortedChanges.get(1).getType());
-				assertEquals(listener.toUpdate.get(0).getObjectId(), sortedChanges.get(1).getPostCommitId());
+			assertEquals(ObjectChangeType.UPDATE, sortedChanges.get(1).getType());
+			assertEquals(listener.toUpdate.get(0).getObjectId(), sortedChanges.get(1).getPostCommitId());
 
-				AttributeChange listenerInducedChange = sortedChanges.get(1).getAttributeChanges()
-						.get(AuditableChild1.CHAR_PROPERTY1.getName());
-				assertNotNull(listenerInducedChange);
-				assertEquals("yyc", listenerInducedChange.getOldValue());
-				assertEquals("yyc_", listenerInducedChange.getNewValue());
+			AttributeChange listenerInducedChange = sortedChanges.get(1).getAttributeChanges()
+					.get(AuditableChild1.CHAR_PROPERTY1.getName());
+			assertNotNull(listenerInducedChange);
+			assertEquals("yyc", listenerInducedChange.getOldValue());
+			assertEquals("yyc_", listenerInducedChange.getNewValue());
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		context.commitChanges();
@@ -199,11 +189,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCas
 		ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 
 		List<ObjectChange> sortedChanges = new ArrayList<>(changes.getUniqueChanges());
-		Collections.sort(sortedChanges, new Comparator<ObjectChange>() {
-			public int compare(ObjectChange o1, ObjectChange o2) {
-				return o1.getPostCommitId().getEntityName().compareTo(o2.getPostCommitId().getEntityName());
-			}
-		});
+		sortedChanges.sort(Comparator.comparing(o -> o.getPostCommitId().getEntityName()));
 
 		return sortedChanges;
 	}
