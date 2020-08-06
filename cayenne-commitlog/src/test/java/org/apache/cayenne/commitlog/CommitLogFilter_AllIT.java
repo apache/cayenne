@@ -61,9 +61,9 @@ public class CommitLogFilter_AllIT extends AuditableServerCase {
 	@Test
 	public void testPostCommit_Insert() {
 
-		final Auditable1 a1 = context.newObject(Auditable1.class);
+		Auditable1 a1 = context.newObject(Auditable1.class);
 		a1.setCharProperty1("yy");
-		final ObjectId preCommitId = a1.getObjectId();
+		ObjectId preCommitId = a1.getObjectId();
 
 		doAnswer((Answer<Object>) invocation -> {
 

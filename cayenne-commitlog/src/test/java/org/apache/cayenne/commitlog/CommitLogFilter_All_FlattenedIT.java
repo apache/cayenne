@@ -62,9 +62,9 @@ public class CommitLogFilter_All_FlattenedIT extends FlattenedServerCase {
 		e4.insert(12);
 		e34.insert(1, 11);
 
-		final E3 e3 = SelectById.query(E3.class, 1).selectOne(context);
-		final E4 e4_1 = SelectById.query(E4.class, 11).selectOne(context);
-		final E4 e4_2 = SelectById.query(E4.class, 12).selectOne(context);
+		E3 e3 = SelectById.query(E3.class, 1).selectOne(context);
+		E4 e4_1 = SelectById.query(E4.class, 11).selectOne(context);
+		E4 e4_2 = SelectById.query(E4.class, 12).selectOne(context);
 
 		doAnswer((Answer<Object>) invocation -> {
 
