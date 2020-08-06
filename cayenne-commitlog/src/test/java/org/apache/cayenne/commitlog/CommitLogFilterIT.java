@@ -29,7 +29,6 @@ import org.apache.cayenne.query.SelectById;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
 
