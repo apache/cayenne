@@ -22,6 +22,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.commitlog.db.Auditable1;
 import org.apache.cayenne.commitlog.db.AuditableChild1;
+import org.apache.cayenne.commitlog.db.AuditableChild1x;
 import org.apache.cayenne.commitlog.model.*;
 import org.apache.cayenne.commitlog.unit.AuditableServerCase;
 import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
@@ -184,6 +185,37 @@ public class CommitLogFilterIT extends AuditableServerCase {
         assertEquals(new ObjectId("Auditable1", Auditable1.ID_PK_COLUMN, 1),
                 change.getToOneRelationshipChanges().get(AuditableChild1.PARENT.getName()).getOldValue());
     }
+
+    @Test
+    public void testPostCommit_Delete_ToOne_OneWay() throws SQLException {
+        auditable1.insert(1, "xx");
+        auditableChild1x.insert(1, 1, "cc1");
+        auditableChild1x.insert(2, 1, "cc2");
+
+        AuditableChild1x ac1 = SelectById.query(AuditableChild1x.class, 2).selectOne(context);
+        context.deleteObject(ac1);
+        context.commitChanges();
+
+        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
+        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+
+        assertNotNull(changeMap.getValue());
+        assertEquals(1, changeMap.getValue().getUniqueChanges().size());
+
+        ObjectChange change = changeMap.getValue().getChanges().get(new ObjectId("AuditableChild1x", AuditableChild1x.ID_PK_COLUMN, 2));
+        assertNotNull(change);
+        assertEquals(ObjectChangeType.DELETE, change.getType());
+
+        assertEquals(1, change.getAttributeChanges().size());
+        assertEquals("cc2", change.getAttributeChanges().get(AuditableChild1x.CHAR_PROPERTY1.getName()).getOldValue());
+        assertNull(change.getAttributeChanges().get(AuditableChild1x.CHAR_PROPERTY1.getName()).getNewValue());
+
+        assertTrue("No 1..N relationships in the entity", change.getToManyRelationshipChanges().isEmpty());
+        assertEquals("N..1 state was not captured", 1, change.getToOneRelationshipChanges().size());
+        assertEquals(new ObjectId("Auditable1", Auditable1.ID_PK_COLUMN, 1),
+                change.getToOneRelationshipChanges().get(AuditableChild1x.PARENT.getName()).getOldValue());
+    }
+
 
     @Test
     public void testPostCommit_UpdateToOne() throws SQLException {
