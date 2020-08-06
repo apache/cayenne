@@ -109,25 +109,27 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int DIGIT = 76;
   /** RegularExpression Id. */
-  int ESC = 79;
+  int DOLLAR_SIGN = 77;
   /** RegularExpression Id. */
-  int SINGLE_QUOTED_STRING = 81;
+  int ESC = 80;
   /** RegularExpression Id. */
-  int STRING_ESC = 82;
+  int SINGLE_QUOTED_STRING = 82;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTED_STRING = 84;
+  int STRING_ESC = 83;
   /** RegularExpression Id. */
-  int INT_LITERAL = 85;
+  int DOUBLE_QUOTED_STRING = 85;
   /** RegularExpression Id. */
-  int FLOAT_LITERAL = 86;
+  int INT_LITERAL = 86;
   /** RegularExpression Id. */
-  int DEC_FLT = 87;
+  int FLOAT_LITERAL = 87;
   /** RegularExpression Id. */
-  int DEC_DIGITS = 88;
+  int DEC_FLT = 88;
   /** RegularExpression Id. */
-  int EXPONENT = 89;
+  int DEC_DIGITS = 89;
   /** RegularExpression Id. */
-  int FLT_SUFF = 90;
+  int EXPONENT = 90;
+  /** RegularExpression Id. */
+  int FLT_SUFF = 91;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -215,13 +217,14 @@ public interface ExpressionParserConstants {
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
+    "<DOLLAR_SIGN>",
     "\"\\\'\"",
     "\"\\\"\"",
     "<ESC>",
-    "<token of kind 80>",
+    "<token of kind 81>",
     "\"\\\'\"",
     "<STRING_ESC>",
-    "<token of kind 83>",
+    "<token of kind 84>",
     "\"\\\"\"",
     "<INT_LITERAL>",
     "<FLOAT_LITERAL>",
