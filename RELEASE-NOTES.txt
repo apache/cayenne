@@ -8,6 +8,15 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.1.1
+Date: 
+----------------------------------
+
+Bug Fixes:
+
+CAY-2670 CommitLog does not include FKs for deleted objects with one-way relationships
+
+----------------------------------
 Release: 4.1
 Date: July 14, 2020
 ----------------------------------
