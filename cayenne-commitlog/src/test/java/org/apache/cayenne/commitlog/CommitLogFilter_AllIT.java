@@ -59,35 +59,32 @@ public class CommitLogFilter_AllIT extends AuditableServerCase {
 	}
 
 	@Test
-	public void testPostCommit_Insert() throws SQLException {
+	public void testPostCommit_Insert() {
 
 		final Auditable1 a1 = context.newObject(Auditable1.class);
 		a1.setCharProperty1("yy");
 		final ObjectId preCommitId = a1.getObjectId();
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, invocation.getArguments()[0]);
 
-				ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
-				assertNotNull(changes);
-				assertEquals(2, changes.getChanges().size());
-				assertEquals(1, changes.getUniqueChanges().size());
+			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
+			assertNotNull(changes);
+			assertEquals(2, changes.getChanges().size());
+			assertEquals(1, changes.getUniqueChanges().size());
 
-				ObjectChange c = changes.getUniqueChanges().iterator().next();
-				assertNotNull(c);
-				assertEquals(ObjectChangeType.INSERT, c.getType());
-				assertEquals(1, c.getAttributeChanges().size());
-				assertEquals("yy", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
+			ObjectChange c = changes.getUniqueChanges().iterator().next();
+			assertNotNull(c);
+			assertEquals(ObjectChangeType.INSERT, c.getType());
+			assertEquals(1, c.getAttributeChanges().size());
+			assertEquals("yy", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
 
-				assertNotEquals(preCommitId, a1.getObjectId());
-				assertEquals(preCommitId, c.getPreCommitId());
-				assertEquals(a1.getObjectId(), c.getPostCommitId());
+			assertNotEquals(preCommitId, a1.getObjectId());
+			assertEquals(preCommitId, c.getPreCommitId());
+			assertEquals(a1.getObjectId(), c.getPostCommitId());
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		context.commitChanges();
@@ -105,31 +102,28 @@ public class CommitLogFilter_AllIT extends AuditableServerCase {
 
 		final ObjectId preCommitId = a1.getObjectId();
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, invocation.getArguments()[0]);
 
-				ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
-				assertNotNull(changes);
-				assertEquals(1, changes.getUniqueChanges().size());
+			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
+			assertNotNull(changes);
+			assertEquals(1, changes.getUniqueChanges().size());
 
-				ObjectChange c = changes.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
-				assertNotNull(c);
-				assertEquals(ObjectChangeType.UPDATE, c.getType());
-				assertEquals(1, c.getAttributeChanges().size());
-				AttributeChange pc = c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName());
-				assertNotNull(pc);
-				assertEquals("xx", pc.getOldValue());
-				assertEquals("yy", pc.getNewValue());
+			ObjectChange c = changes.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+			assertNotNull(c);
+			assertEquals(ObjectChangeType.UPDATE, c.getType());
+			assertEquals(1, c.getAttributeChanges().size());
+			AttributeChange pc = c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName());
+			assertNotNull(pc);
+			assertEquals("xx", pc.getOldValue());
+			assertEquals("yy", pc.getNewValue());
 
-				assertEquals(preCommitId, a1.getObjectId());
-				assertEquals(preCommitId, c.getPreCommitId());
-				assertEquals(preCommitId, c.getPostCommitId());
+			assertEquals(preCommitId, a1.getObjectId());
+			assertEquals(preCommitId, c.getPreCommitId());
+			assertEquals(preCommitId, c.getPostCommitId());
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		context.commitChanges();
@@ -141,25 +135,22 @@ public class CommitLogFilter_AllIT extends AuditableServerCase {
 	public void testPostCommit_Delete() throws SQLException {
 		auditable1.insert(1, "xx");
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, invocation.getArguments()[0]);
 
-				ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
-				assertNotNull(changes);
-				assertEquals(1, changes.getUniqueChanges().size());
+			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
+			assertNotNull(changes);
+			assertEquals(1, changes.getUniqueChanges().size());
 
-				ObjectChange c = changes.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
-				assertNotNull(c);
-				assertEquals(ObjectChangeType.DELETE, c.getType());
-				assertEquals(1, c.getAttributeChanges().size());
-				assertEquals("xx", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getOldValue());
-				assertNull(c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
+			ObjectChange c = changes.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+			assertNotNull(c);
+			assertEquals(ObjectChangeType.DELETE, c.getType());
+			assertEquals(1, c.getAttributeChanges().size());
+			assertEquals("xx", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getOldValue());
+			assertNull(c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
@@ -185,45 +176,42 @@ public class CommitLogFilter_AllIT extends AuditableServerCase {
 		final Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
 		final Auditable1 a2 = SelectById.query(Auditable1.class, 2).selectOne(context);
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, invocation.getArguments()[0]);
 
-				ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
-				assertNotNull(changes);
-				assertEquals(4, changes.getUniqueChanges().size());
+			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
+			assertNotNull(changes);
+			assertEquals(4, changes.getUniqueChanges().size());
 
-				ObjectChange ac1c = changes.getChanges().get(
-						ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 1));
-				assertNotNull(ac1c);
-				assertEquals(ObjectChangeType.UPDATE, ac1c.getType());
-				ToOneRelationshipChange ac1c1 = ac1c.getToOneRelationshipChanges()
-						.get(AuditableChild1.PARENT.getName());
-				assertEquals(a1.getObjectId(), ac1c1.getOldValue());
-                assertNull(ac1c1.getNewValue());
+			ObjectChange ac1c = changes.getChanges().get(
+					ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 1));
+			assertNotNull(ac1c);
+			assertEquals(ObjectChangeType.UPDATE, ac1c.getType());
+			ToOneRelationshipChange ac1c1 = ac1c.getToOneRelationshipChanges()
+					.get(AuditableChild1.PARENT.getName());
+			assertEquals(a1.getObjectId(), ac1c1.getOldValue());
+assertNull(ac1c1.getNewValue());
 
-				ObjectChange ac2c = changes.getChanges().get(
-						ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
-				assertNotNull(ac2c);
-				assertEquals(ObjectChangeType.UPDATE, ac2c.getType());
-				ToOneRelationshipChange ac2c1 = ac2c.getToOneRelationshipChanges()
-						.get(AuditableChild1.PARENT.getName());
-				assertEquals(a2.getObjectId(), ac2c1.getOldValue());
-				assertEquals(a1.getObjectId(), ac2c1.getNewValue());
+			ObjectChange ac2c = changes.getChanges().get(
+					ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
+			assertNotNull(ac2c);
+			assertEquals(ObjectChangeType.UPDATE, ac2c.getType());
+			ToOneRelationshipChange ac2c1 = ac2c.getToOneRelationshipChanges()
+					.get(AuditableChild1.PARENT.getName());
+			assertEquals(a2.getObjectId(), ac2c1.getOldValue());
+			assertEquals(a1.getObjectId(), ac2c1.getNewValue());
 
-				ObjectChange ac3c = changes.getChanges().get(
-						ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 3));
-				assertNotNull(ac3c);
-				assertEquals(ObjectChangeType.UPDATE, ac3c.getType());
-				ToOneRelationshipChange ac3c1 = ac3c.getToOneRelationshipChanges()
-						.get(AuditableChild1.PARENT.getName());
-				assertEquals(null, ac3c1.getOldValue());
-				assertEquals(a1.getObjectId(), ac3c1.getNewValue());
+			ObjectChange ac3c = changes.getChanges().get(
+					ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 3));
+			assertNotNull(ac3c);
+			assertEquals(ObjectChangeType.UPDATE, ac3c.getType());
+			ToOneRelationshipChange ac3c1 = ac3c.getToOneRelationshipChanges()
+					.get(AuditableChild1.PARENT.getName());
+			assertNull(ac3c1.getOldValue());
+			assertEquals(a1.getObjectId(), ac3c1.getNewValue());
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		a1.removeFromChildren1(ac1);
@@ -248,35 +236,32 @@ public class CommitLogFilter_AllIT extends AuditableServerCase {
 
 		final Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, invocation.getArguments()[0]);
 
-				ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
-				assertNotNull(changes);
-				assertEquals(4, changes.getUniqueChanges().size());
+			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
+			assertNotNull(changes);
+			assertEquals(4, changes.getUniqueChanges().size());
 
-				ObjectChange a1c = changes.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
-				assertNotNull(a1c);
-				assertEquals(ObjectChangeType.UPDATE, a1c.getType());
-				assertEquals(0, a1c.getAttributeChanges().size());
+			ObjectChange a1c = changes.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+			assertNotNull(a1c);
+			assertEquals(ObjectChangeType.UPDATE, a1c.getType());
+			assertEquals(0, a1c.getAttributeChanges().size());
 
-				assertEquals(1, a1c.getToManyRelationshipChanges().size());
+			assertEquals(1, a1c.getToManyRelationshipChanges().size());
 
-				ToManyRelationshipChange a1c1 = a1c.getToManyRelationshipChanges().get(Auditable1.CHILDREN1.getName());
-				assertNotNull(a1c1);
+			ToManyRelationshipChange a1c1 = a1c.getToManyRelationshipChanges().get(Auditable1.CHILDREN1.getName());
+			assertNotNull(a1c1);
 
-				assertEquals(2, a1c1.getAdded().size());
-				assertTrue(a1c1.getAdded().contains(ac2.getObjectId()));
-				assertTrue(a1c1.getAdded().contains(ac3.getObjectId()));
+			assertEquals(2, a1c1.getAdded().size());
+			assertTrue(a1c1.getAdded().contains(ac2.getObjectId()));
+			assertTrue(a1c1.getAdded().contains(ac3.getObjectId()));
 
-				assertEquals(1, a1c1.getRemoved().size());
-				assertTrue(a1c1.getRemoved().contains(ac1.getObjectId()));
+			assertEquals(1, a1c1.getRemoved().size());
+			assertTrue(a1c1.getRemoved().contains(ac1.getObjectId()));
 
-				return null;
-			}
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		a1.removeFromChildren1(ac1);

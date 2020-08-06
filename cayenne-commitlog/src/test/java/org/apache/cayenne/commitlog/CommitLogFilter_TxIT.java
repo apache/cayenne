@@ -21,7 +21,6 @@ package org.apache.cayenne.commitlog;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.commitlog.db.AuditLog;
 import org.apache.cayenne.commitlog.db.Auditable2;
-import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.unit.AuditableServerCase;
 import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
@@ -42,19 +41,15 @@ public class CommitLogFilter_TxIT extends AuditableServerCase {
 
 	@Override
 	protected ServerRuntimeBuilder configureCayenne() {
-		this.listener = new CommitLogListener() {
+		this.listener = (originatingContext, changes) -> {
 
-			@Override
-			public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
+			// assert we are inside transaction
+			assertNotNull(BaseTransaction.getThreadTransaction());
 
-				// assert we are inside transaction
-				assertNotNull(BaseTransaction.getThreadTransaction());
-
-				for (ObjectChange c : changes.getUniqueChanges()) {
-					AuditLog log = runtime.newContext().newObject(AuditLog.class);
-					log.setLog("DONE: " + c.getPostCommitId());
-					log.getObjectContext().commitChanges();
-				}
+			for (ObjectChange c : changes.getUniqueChanges()) {
+				AuditLog log = runtime.newContext().newObject(AuditLog.class);
+				log.setLog("DONE: " + c.getPostCommitId());
+				log.getObjectContext().commitChanges();
 			}
 		};
 		return super.configureCayenne().addModule(
