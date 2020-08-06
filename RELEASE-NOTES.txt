@@ -20,6 +20,7 @@ CAY-2662 Use custom interface for SQL tree processor instead of a Function<Node,
 CAY-2663 Support for custom SQL operators
 CAY-2664 Add methods to EntityProperty to allow direct usage of primary key values
 CAY-2668 Experimental graph-based db operations sorter
+CAY-2670 CommitLog does not include FKs for deleted objects with one-way relationships
 
 Bug Fixes:
 
