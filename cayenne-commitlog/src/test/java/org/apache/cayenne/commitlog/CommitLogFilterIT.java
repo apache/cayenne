@@ -114,8 +114,11 @@ public class CommitLogFilterIT extends AuditableServerCase {
     @Test
     public void testPostCommit_Delete() throws SQLException {
         auditable1.insert(1, "xx");
+        auditableChild1.insert(1, 1, "cc1");
+        auditableChild1.insert(2, 1, "cc2");
 
         Auditable1 a1 = SelectById.query(Auditable1.class, 1).selectOne(context);
+        context.deleteObjects(a1.getChildren1());
         context.deleteObject(a1);
         context.commitChanges();
 
@@ -123,14 +126,63 @@ public class CommitLogFilterIT extends AuditableServerCase {
         verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
 
         assertNotNull(changeMap.getValue());
-        assertEquals(1, changeMap.getValue().getUniqueChanges().size());
+        assertEquals(3, changeMap.getValue().getUniqueChanges().size());
 
-        ObjectChange c = changeMap.getValue().getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
-        assertNotNull(c);
-        assertEquals(ObjectChangeType.DELETE, c.getType());
-        assertEquals(1, c.getAttributeChanges().size());
-        assertEquals("xx", c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getOldValue());
-        assertNull(c.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
+        // check from the perspective of the master object
+        ObjectChange masterChange = changeMap.getValue().getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+        assertNotNull(masterChange);
+        assertEquals(ObjectChangeType.DELETE, masterChange.getType());
+
+        assertEquals(1, masterChange.getAttributeChanges().size());
+        assertEquals("xx", masterChange.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getOldValue());
+        assertNull(masterChange.getAttributeChanges().get(Auditable1.CHAR_PROPERTY1.getName()).getNewValue());
+
+        assertEquals("1..N was explicitly unset as a part of delete. Expected to be recorded in changes",
+                1, masterChange.getToManyRelationshipChanges().size());
+        assertTrue("No N..1 relationships in the entity", masterChange.getToOneRelationshipChanges().isEmpty());
+
+        // check from the perspective of the child object
+        ObjectChange childChange = changeMap.getValue().getChanges().get(ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
+        assertNotNull(childChange);
+        assertEquals(ObjectChangeType.DELETE, childChange.getType());
+
+        assertEquals(1, childChange.getAttributeChanges().size());
+        assertEquals("cc2", childChange.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getOldValue());
+        assertNull(childChange.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getNewValue());
+
+        assertTrue("No 1..N relationships in the entity", childChange.getToManyRelationshipChanges().isEmpty());
+        assertEquals("N..1 was explicitly unset as a part of delete. Expected to be recorded in changes",
+                1, childChange.getToOneRelationshipChanges().size());
+    }
+
+    @Test
+    public void testPostCommit_Delete_ToOneNullify() throws SQLException {
+        auditable1.insert(1, "xx");
+        auditableChild1.insert(1, 1, "cc1");
+        auditableChild1.insert(2, 1, "cc2");
+
+        AuditableChild1 ac1 = SelectById.query(AuditableChild1.class, 2).selectOne(context);
+        context.deleteObject(ac1);
+        context.commitChanges();
+
+        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
+        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+
+        assertNotNull(changeMap.getValue());
+        assertEquals(2, changeMap.getValue().getUniqueChanges().size());
+
+        ObjectChange change = changeMap.getValue().getChanges().get(ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
+        assertNotNull(change);
+        assertEquals(ObjectChangeType.DELETE, change.getType());
+
+        assertEquals(1, change.getAttributeChanges().size());
+        assertEquals("cc2", change.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getOldValue());
+        assertNull(change.getAttributeChanges().get(AuditableChild1.CHAR_PROPERTY1.getName()).getNewValue());
+
+        assertTrue("No 1..N relationships in the entity", change.getToManyRelationshipChanges().isEmpty());
+        assertEquals("N..1 state was not captured", 1, change.getToOneRelationshipChanges().size());
+        assertEquals(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1),
+                change.getToOneRelationshipChanges().get(AuditableChild1.PARENT.getName()).getOldValue());
     }
 
     @Test
