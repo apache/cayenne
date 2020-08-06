@@ -34,6 +34,7 @@ public abstract class AuditableServerCase {
 
 	protected TableHelper auditable1;
 	protected TableHelper auditableChild1;
+	protected TableHelper auditableChild1x;
 
 	protected TableHelper auditable2;
 	protected TableHelper auditableChild3;
@@ -55,6 +56,8 @@ public abstract class AuditableServerCase {
 
 		this.auditableChild1 = new TableHelper(dbHelper, "AUDITABLE_CHILD1").setColumns("ID", "AUDITABLE1_ID",
 				"CHAR_PROPERTY1");
+		this.auditableChild1x = new TableHelper(dbHelper, "AUDITABLE_CHILD1X").setColumns("ID", "AUDITABLE1_ID",
+				"CHAR_PROPERTY1");
 
 		this.auditable2 = new TableHelper(dbHelper, "AUDITABLE2").setColumns("ID", "CHAR_PROPERTY1", "CHAR_PROPERTY2");
 
@@ -66,6 +69,7 @@ public abstract class AuditableServerCase {
 				"AUDITABLE3_ID");
 
 		this.auditableChild1.deleteAll();
+		this.auditableChild1x.deleteAll();
 		this.auditable1.deleteAll();
 		this.auditableChild3.deleteAll();
 		this.auditable2.deleteAll();

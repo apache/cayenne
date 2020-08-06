@@ -29,6 +29,11 @@
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="AUDITABLE_CHILD1X">
+		<db-attribute name="AUDITABLE1_ID" type="INTEGER"/>
+		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="AUDITABLE_CHILD3">
 		<db-attribute name="AUDITABLE2_ID" type="INTEGER"/>
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
@@ -76,6 +81,9 @@
 	<obj-entity name="AuditableChild1" className="org.apache.cayenne.commitlog.db.AuditableChild1" dbEntityName="AUDITABLE_CHILD1">
 		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 	</obj-entity>
+	<obj-entity name="AuditableChild1x" className="org.apache.cayenne.commitlog.db.AuditableChild1x" dbEntityName="AUDITABLE_CHILD1X">
+		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
+	</obj-entity>
 	<obj-entity name="AuditableChild3" className="org.apache.cayenne.commitlog.db.AuditableChild3" dbEntityName="AUDITABLE_CHILD3">
 		<obj-attribute name="charProperty1" type="java.lang.String" db-attribute-path="CHAR_PROPERTY1"/>
 		<obj-attribute name="charProperty2" type="java.lang.String" db-attribute-path="CHAR_PROPERTY2"/>
@@ -85,6 +93,9 @@
 	<obj-entity name="E3" className="org.apache.cayenne.commitlog.db.E3" dbEntityName="E3"/>
 	<obj-entity name="E4" className="org.apache.cayenne.commitlog.db.E4" dbEntityName="E4"/>
 	<db-relationship name="children1" source="AUDITABLE1" target="AUDITABLE_CHILD1" toMany="true">
+		<db-attribute-pair source="ID" target="AUDITABLE1_ID"/>
+	</db-relationship>
+	<db-relationship name="children1x" source="AUDITABLE1" target="AUDITABLE_CHILD1X" toMany="true">
 		<db-attribute-pair source="ID" target="AUDITABLE1_ID"/>
 	</db-relationship>
 	<db-relationship name="children" source="AUDITABLE2" target="AUDITABLE_CHILD3" toMany="true">
@@ -97,6 +108,9 @@
 		<db-attribute-pair source="AUDITABLE3_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
+		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="parent" source="AUDITABLE_CHILD1X" target="AUDITABLE1">
 		<db-attribute-pair source="AUDITABLE1_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
@@ -119,6 +133,7 @@
 	<obj-relationship name="auditable4s" source="Auditable3" target="Auditable4" deleteRule="Deny" db-relationship-path="auditable4s"/>
 	<obj-relationship name="auditable3" source="Auditable4" target="Auditable3" deleteRule="Nullify" db-relationship-path="auditable3"/>
 	<obj-relationship name="parent" source="AuditableChild1" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
+	<obj-relationship name="parent" source="AuditableChild1x" target="Auditable1" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="e4s" source="E3" target="E4" deleteRule="Deny" db-relationship-path="e34s.e4"/>
 	<obj-relationship name="e3s" source="E4" target="E3" deleteRule="Deny" db-relationship-path="e34s.e3"/>
