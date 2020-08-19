@@ -34,7 +34,7 @@ import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
-import org.apache.cayenne.reflect.generic.ValueComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.DataObjectDescriptorFactory;
 import org.apache.cayenne.reflect.valueholder.ValueHolderDescriptorFactory;
 import org.slf4j.Logger;
@@ -71,7 +71,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 4.2
      */
-    protected transient ValueComparisionStrategyFactory valueComparisionStrategyFactory;
+    protected transient ValueComparisonStrategyFactory valueComparisonStrategyFactory;
 
 
     /**
@@ -560,7 +560,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
                     // add factories in reverse of the desired chain order
                     classDescriptorMap.addFactory(new ValueHolderDescriptorFactory(classDescriptorMap));
-                    classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory, valueComparisionStrategyFactory));
+                    classDescriptorMap.addFactory(new DataObjectDescriptorFactory(classDescriptorMap, faultFactory, valueComparisonStrategyFactory));
 
                     // since ClassDescriptorMap is not synchronized, we need to prefill it with entity proxies here.
                     for (DataMap map : maps) {
@@ -597,7 +597,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 4.2
      */
-    public void setValueComparisionStrategyFactory(ValueComparisionStrategyFactory valueComparisionStrategyFactory) {
-        this.valueComparisionStrategyFactory = valueComparisionStrategyFactory;
+    public void setValueComparisionStrategyFactory(ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
+        this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
     }
 }

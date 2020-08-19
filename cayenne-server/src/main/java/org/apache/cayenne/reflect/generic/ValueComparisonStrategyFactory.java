@@ -24,7 +24,7 @@ import org.apache.cayenne.map.ObjAttribute;
 /**
  * @since 4.2
  */
-public interface ValueComparisionStrategyFactory {
+public interface ValueComparisonStrategyFactory {
 
     ValueComparisionStrategy<Object> getStrategy(ObjAttribute attribute);
 

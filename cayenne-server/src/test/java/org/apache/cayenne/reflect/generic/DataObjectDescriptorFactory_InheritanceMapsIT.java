@@ -48,7 +48,7 @@ public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
                 resolver.getClassDescriptorMap(),
                 new SingletonFaultFactory(),
-                new DefaultValueComparisionStrategyFactory(mock(ValueObjectTypeRegistry.class)));
+                new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
         for (ObjEntity e : resolver.getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());

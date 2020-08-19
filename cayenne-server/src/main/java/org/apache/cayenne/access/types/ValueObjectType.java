@@ -63,9 +63,9 @@ public interface ValueObjectType<V, T> {
     String toCacheKey(V object);
 
     /**
-     * This methods allows to use special logic to compare values for equality
+     * Allows to use special logic to compare values for equality
      * as in rare cases it is not suffice to use default equals() method.
-     * Deafult implementation uses {@link Objects#equals(Object, Object)} method.
+     * Default implementation uses {@link Objects#equals(Object, Object)} method.
      *
      * @param value1 to compare
      * @param value2 to compare

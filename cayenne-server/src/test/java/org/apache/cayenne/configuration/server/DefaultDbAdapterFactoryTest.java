@@ -44,8 +44,8 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.reflect.generic.ValueComparisionStrategyFactory;
-import org.apache.cayenne.reflect.generic.DefaultValueComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.junit.Test;
@@ -162,7 +162,7 @@ public class DefaultDbAdapterFactoryTest {
 
             ServerModule.contributeValueObjectTypes(binder);
             binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-            binder.bind(ValueComparisionStrategyFactory.class).to(DefaultValueComparisionStrategyFactory.class);
+            binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

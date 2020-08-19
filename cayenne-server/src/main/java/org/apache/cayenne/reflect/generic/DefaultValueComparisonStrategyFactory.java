@@ -19,24 +19,24 @@
 
 package org.apache.cayenne.reflect.generic;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjAttribute;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 /**
  * @since 4.2
  */
-public class DefaultValueComparisionStrategyFactory implements ValueComparisionStrategyFactory {
+public class DefaultValueComparisonStrategyFactory implements ValueComparisonStrategyFactory {
 
     private static final ValueComparisionStrategy<Object> DEFAULT_STRATEGY = new DefaultValueComparisionStrategy();
 
     private final ValueObjectTypeRegistry valueObjectTypeRegistry;
 
-    public DefaultValueComparisionStrategyFactory(@Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
+    public DefaultValueComparisonStrategyFactory(@Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
         this.valueObjectTypeRegistry = valueObjectTypeRegistry;
     }
 
@@ -46,17 +46,17 @@ public class DefaultValueComparisionStrategyFactory implements ValueComparisionS
         if(valueObjectType == null) {
             return DEFAULT_STRATEGY;
         } else {
-            return new ValueObjectTypeComparisionStrategy(valueObjectType);
+            return new ValueObjectTypeComparisonStrategy(valueObjectType);
         }
     }
 
     // Using classes instead of lambdas to allow serialization
 
     @SuppressWarnings({"rawtypes"})
-    static class ValueObjectTypeComparisionStrategy implements ValueComparisionStrategy<Object>, Serializable {
+    static class ValueObjectTypeComparisonStrategy implements ValueComparisionStrategy<Object>, Serializable {
         private final ValueObjectType valueObjectType;
 
-        public ValueObjectTypeComparisionStrategy(ValueObjectType<?, ?> valueObjectType) {
+        public ValueObjectTypeComparisonStrategy(ValueObjectType<?, ?> valueObjectType) {
             this.valueObjectType = valueObjectType;
         }
 

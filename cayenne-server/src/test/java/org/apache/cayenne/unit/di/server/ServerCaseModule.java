@@ -113,8 +113,8 @@ import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.reflect.generic.ValueComparisionStrategyFactory;
-import org.apache.cayenne.reflect.generic.DefaultValueComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -227,7 +227,7 @@ public class ServerCaseModule implements Module {
                 .add(PeriodValueType.class)
                 .add(CharacterValueType.class);
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-        binder.bind(ValueComparisionStrategyFactory.class).to(DefaultValueComparisionStrategyFactory.class);
+        binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);

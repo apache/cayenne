@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.generic.DefaultValueComparisionStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -69,7 +69,7 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
 
         EntityResolver resolver = new EntityResolver();
         resolver.addDataMap(dataMap);
-        resolver.setValueComparisionStrategyFactory(new DefaultValueComparisionStrategyFactory(mock(ValueObjectTypeRegistry.class)));
+        resolver.setValueComparisionStrategyFactory(new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
         DescriptorColumnExtractor extractor = new DescriptorColumnExtractor(context, resolver.getClassDescriptor("mock"));
         extractor.extract();

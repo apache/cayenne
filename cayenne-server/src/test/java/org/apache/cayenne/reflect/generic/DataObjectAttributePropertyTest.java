@@ -33,7 +33,7 @@ public class DataObjectAttributePropertyTest {
 		ObjEntity e1 = new ObjEntity("objEntityName");
 		ObjAttribute a1 = new ObjAttribute("aName", "aType", e1);
 		
-		DataObjectAttributeProperty p1 = new DataObjectAttributeProperty(a1, new DefaultValueComparisionStrategyFactory.DefaultValueComparisionStrategy());
+		DataObjectAttributeProperty p1 = new DataObjectAttributeProperty(a1, new DefaultValueComparisonStrategyFactory.DefaultValueComparisionStrategy());
 		DataObjectAttributeProperty p2 = Util.cloneViaSerialization(p1);
 		
 		assertNotNull(p2);
