@@ -23,7 +23,7 @@ package org.apache.cayenne.reflect.generic;
  * @since 4.2
  * @param <V> type of values to compare
  */
-public interface ValueComparisionStrategy<V> {
+public interface ValueComparisonStrategy<V> {
 
     boolean equals(V value1, V value2);
 

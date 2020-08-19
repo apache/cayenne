@@ -32,7 +32,7 @@ import java.util.Objects;
  */
 public class DefaultValueComparisonStrategyFactory implements ValueComparisonStrategyFactory {
 
-    private static final ValueComparisionStrategy<Object> DEFAULT_STRATEGY = new DefaultValueComparisionStrategy();
+    private static final ValueComparisonStrategy<Object> DEFAULT_STRATEGY = new DefaultValueComparisonStrategy();
 
     private final ValueObjectTypeRegistry valueObjectTypeRegistry;
 
@@ -41,7 +41,7 @@ public class DefaultValueComparisonStrategyFactory implements ValueComparisonStr
     }
 
     @Override
-    public ValueComparisionStrategy<Object> getStrategy(ObjAttribute attribute) {
+    public ValueComparisonStrategy<Object> getStrategy(ObjAttribute attribute) {
         ValueObjectType<?, ?> valueObjectType = valueObjectTypeRegistry.getValueType(attribute.getJavaClass());
         if(valueObjectType == null) {
             return DEFAULT_STRATEGY;
@@ -53,7 +53,7 @@ public class DefaultValueComparisonStrategyFactory implements ValueComparisonStr
     // Using classes instead of lambdas to allow serialization
 
     @SuppressWarnings({"rawtypes"})
-    static class ValueObjectTypeComparisonStrategy implements ValueComparisionStrategy<Object>, Serializable {
+    static class ValueObjectTypeComparisonStrategy implements ValueComparisonStrategy<Object>, Serializable {
         private final ValueObjectType valueObjectType;
 
         public ValueObjectTypeComparisonStrategy(ValueObjectType<?, ?> valueObjectType) {
@@ -67,7 +67,7 @@ public class DefaultValueComparisonStrategyFactory implements ValueComparisonStr
         }
     }
 
-    static class DefaultValueComparisionStrategy implements ValueComparisionStrategy<Object>, Serializable {
+    static class DefaultValueComparisonStrategy implements ValueComparisonStrategy<Object>, Serializable {
         @Override
         public boolean equals(Object a, Object b) {
             return Objects.equals(a, b);

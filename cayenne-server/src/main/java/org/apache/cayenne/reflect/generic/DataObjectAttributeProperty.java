@@ -31,11 +31,11 @@ class DataObjectAttributeProperty extends DataObjectBaseProperty implements
     /**
      * @since 4.2
      */
-    protected final ValueComparisionStrategy<Object> valueComparisionStrategy;
+    protected final ValueComparisonStrategy<Object> valueComparisonStrategy;
 
-    public DataObjectAttributeProperty(ObjAttribute attribute, ValueComparisionStrategy<Object> valueComparisionStrategy) {
+    public DataObjectAttributeProperty(ObjAttribute attribute, ValueComparisonStrategy<Object> valueComparisonStrategy) {
         this.attribute = attribute;
-        this.valueComparisionStrategy = valueComparisionStrategy;
+        this.valueComparisonStrategy = valueComparisonStrategy;
     }
 
     @Override
@@ -58,6 +58,6 @@ class DataObjectAttributeProperty extends DataObjectBaseProperty implements
 
     @Override
     public boolean equals(Object value1, Object value2) {
-        return valueComparisionStrategy.equals(value1, value2);
+        return valueComparisonStrategy.equals(value1, value2);
     }
 }
