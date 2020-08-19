@@ -19,54 +19,26 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.ValueNodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.sqltree.BetweenNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.BitwiseNotNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.EqualNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.InNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.NotEqualNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.NotNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.parser.ASTCustomOperator;
-import org.apache.cayenne.exp.parser.ASTDbIdPath;
-import org.apache.cayenne.exp.parser.ASTDbPath;
-import org.apache.cayenne.exp.parser.ASTFullObject;
-import org.apache.cayenne.exp.parser.ASTFunctionCall;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTSubquery;
-import org.apache.cayenne.exp.parser.PatternMatchNode;
-import org.apache.cayenne.exp.parser.SimpleNode;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.exp.parser.*;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.aliased;
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.function;
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.value;
+import java.util.*;
+
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 import static org.apache.cayenne.exp.Expression.*;
 
 /**
@@ -278,7 +250,7 @@ class QualifierTranslator implements TraversalHandler {
         expressionsToSkip.add(node);
         expressionsToSkip.add(parentNode);
 
-        return buildMultiValueComparision(result, valueSnapshot);
+        return buildMultiValueComparison(result, valueSnapshot);
     }
 
     private Map<String, Object> getEmbeddableValueSnapshot(Embeddable embeddable, Expression node, Expression parentNode) {
@@ -322,7 +294,7 @@ class QualifierTranslator implements TraversalHandler {
         expressionsToSkip.add(node);
         expressionsToSkip.add(parentNode);
 
-        return buildMultiValueComparision(result, valueSnapshot);
+        return buildMultiValueComparison(result, valueSnapshot);
     }
 
     private Map<String, Object> getMultiAttributeValueSnapshot(Expression node, Expression parentNode) {
@@ -338,8 +310,8 @@ class QualifierTranslator implements TraversalHandler {
             } else if(operand instanceof ObjectId) {
                 return  ((ObjectId) operand).getIdSnapshot();
             } else if(operand instanceof ASTObjPath) {
-                // TODO: support comparision of multi attribute ObjPath with other multi attribute ObjPath
-                throw new UnsupportedOperationException("Comparision of multiple attributes not supported for ObjPath");
+                // TODO: support comparison of multi attribute ObjPath with other multi attribute ObjPath
+                throw new UnsupportedOperationException("Comparison of multiple attributes not supported for ObjPath");
             }
         }
 
@@ -347,7 +319,7 @@ class QualifierTranslator implements TraversalHandler {
                 "List or Persistent object required.");
     }
 
-    private Node buildMultiValueComparision(PathTranslationResult result, Map<String, Object> valueSnapshot) {
+    private Node buildMultiValueComparison(PathTranslationResult result, Map<String, Object> valueSnapshot) {
         ExpressionNodeBuilder expressionNodeBuilder = null;
         ExpressionNodeBuilder eq;
 

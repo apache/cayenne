@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import java.sql.Types;
-
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+
+import java.sql.Types;
 
 /**
  * @since 4.2
@@ -41,7 +41,7 @@ public class TrimmingColumnNode extends Node {
             if(isCharType() && isAllowedForTrimming()) {
                 appendRtrim(buffer);
                 appendAlias(buffer, isResult);
-            } else if(isComparisionWithClob()) {
+            } else if(isComparisonWithClob()) {
                 appendClobColumnNode(buffer);
                 appendAlias(buffer, isResult);
             } else {
@@ -54,7 +54,7 @@ public class TrimmingColumnNode extends Node {
         return buffer;
     }
 
-    private boolean isComparisionWithClob() {
+    private boolean isComparisonWithClob() {
         if(isInsertOrUpdateSet()) {
             return false;
         }
