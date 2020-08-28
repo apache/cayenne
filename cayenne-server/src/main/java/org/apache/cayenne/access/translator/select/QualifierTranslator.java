@@ -29,7 +29,15 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.parser.*;
+import org.apache.cayenne.exp.parser.ASTCustomOperator;
+import org.apache.cayenne.exp.parser.ASTDbIdPath;
+import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.parser.ASTFullObject;
+import org.apache.cayenne.exp.parser.ASTFunctionCall;
+import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.ASTSubquery;
+import org.apache.cayenne.exp.parser.PatternMatchNode;
+import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -291,10 +299,23 @@ class QualifierTranslator implements TraversalHandler {
             valueSnapshot = relationship.srcFkSnapshotWithTargetSnapshot(valueSnapshot);
         }
 
+        // build compound PK/FK comparison node
+        Node multiValueComparison = buildMultiValueComparison(result, valueSnapshot);
+
+        // replace current node with multi value comparison
+        Node currentNodeParent = currentNode.getParent();
+        currentNodeParent.replaceChild(currentNodeParent.getChildrenCount() - 1, multiValueComparison);
+        multiValueComparison.setParent(currentNodeParent);
+        currentNode = currentNodeParent;
+
+        // we should skip all related nodes as we build this part of the tree manually
         expressionsToSkip.add(node);
         expressionsToSkip.add(parentNode);
+        for(int i=0; i<parentNode.getOperandCount(); i++) {
+            expressionsToSkip.add(parentNode.getOperand(i));
+        }
 
-        return buildMultiValueComparison(result, valueSnapshot);
+        return null;
     }
 
     private Map<String, Object> getMultiAttributeValueSnapshot(Expression node, Expression parentNode) {

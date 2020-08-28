@@ -25,6 +25,7 @@ CAY-2670 CommitLog does not include FKs for deleted objects with one-way relatio
 Bug Fixes:
 
 CAY-2591 Modeler: project becomes dirty after click on dbImport or cgen tab
+CAY-2671 QualifierTranslator fails to translate expressions with compound PKs/FKs
 
 ----------------------------------
 Release: 4.2.M1
