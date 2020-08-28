@@ -22,7 +22,7 @@ package org.apache.cayenne.access.types;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ChildProcessor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.dba.types.Wkt;
+import org.apache.cayenne.value.Wkt;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;

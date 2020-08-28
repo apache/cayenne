@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.types;
 
-import org.apache.cayenne.dba.types.GeoJson;
+import org.apache.cayenne.value.GeoJson;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;

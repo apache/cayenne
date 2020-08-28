@@ -24,7 +24,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 
-import org.apache.cayenne.dba.types.Json;
+import org.apache.cayenne.value.Json;
 
 /**
  * @since 4.2

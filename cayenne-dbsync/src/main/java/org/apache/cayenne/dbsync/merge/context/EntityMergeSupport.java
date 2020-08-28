@@ -20,8 +20,8 @@
 package org.apache.cayenne.dbsync.merge.context;
 
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dba.types.Json;
-import org.apache.cayenne.dba.types.Wkt;
+import org.apache.cayenne.value.Json;
+import org.apache.cayenne.value.Wkt;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.model.DetectedDbAttribute;
 import org.apache.cayenne.dbsync.naming.NameBuilder;

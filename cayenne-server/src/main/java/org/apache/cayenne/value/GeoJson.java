@@ -17,7 +17,7 @@
  *    under the License.
  */
 
-package org.apache.cayenne.dba.types;
+package org.apache.cayenne.value;
 
 import java.util.Objects;
 

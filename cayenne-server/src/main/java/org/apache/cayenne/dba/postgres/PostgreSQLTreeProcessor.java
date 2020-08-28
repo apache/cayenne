@@ -37,8 +37,8 @@ import org.apache.cayenne.dba.postgres.sqltree.PositionFunctionNode;
 import org.apache.cayenne.dba.postgres.sqltree.PostgresExtractFunctionNode;
 import org.apache.cayenne.dba.postgres.sqltree.PostgresLikeNode;
 import org.apache.cayenne.dba.postgres.sqltree.PostgresLimitOffsetNode;
-import org.apache.cayenne.dba.types.GeoJson;
-import org.apache.cayenne.dba.types.Wkt;
+import org.apache.cayenne.value.GeoJson;
+import org.apache.cayenne.value.Wkt;
 
 /**
  * @since 4.2

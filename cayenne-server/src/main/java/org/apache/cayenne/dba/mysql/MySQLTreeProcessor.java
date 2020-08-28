@@ -31,9 +31,9 @@ import org.apache.cayenne.access.translator.select.TypeAwareSQLTreeProcessor;
 import org.apache.cayenne.dba.mysql.sqltree.ConvertNode;
 import org.apache.cayenne.dba.mysql.sqltree.MysqlLikeNode;
 import org.apache.cayenne.dba.mysql.sqltree.MysqlLimitOffsetNode;
-import org.apache.cayenne.dba.types.GeoJson;
-import org.apache.cayenne.dba.types.Json;
-import org.apache.cayenne.dba.types.Wkt;
+import org.apache.cayenne.value.GeoJson;
+import org.apache.cayenne.value.Json;
+import org.apache.cayenne.value.Wkt;
 
 /**
  * @since 4.2
