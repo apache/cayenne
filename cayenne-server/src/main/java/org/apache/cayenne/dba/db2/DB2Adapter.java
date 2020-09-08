@@ -97,13 +97,7 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-                    , entityName, column.getName(), column.getType());
-        }
-        String type = types[0];
+        String type = getType(this, column);
 
         sqlBuffer.append(quotingStrategy.quotedName(column)).append(' ');
 

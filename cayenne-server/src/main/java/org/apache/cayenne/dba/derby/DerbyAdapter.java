@@ -129,20 +129,11 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? (column.getEntity()).getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-                    , entityName, column.getName(), column.getType());
-        }
-
+        String type = getType(this, column);
+        String length = sizeAndPrecision(this, column);
 
         sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ');
-
-        String type = types[0];
-        String length = sizeAndPrecision(this, column);
 
         // assemble...
         // note that max length for types like XYZ FOR BIT DATA must be entered in the

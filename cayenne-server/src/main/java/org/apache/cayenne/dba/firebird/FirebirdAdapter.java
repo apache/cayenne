@@ -84,19 +84,11 @@ public class FirebirdAdapter extends JdbcAdapter {
     }
 
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-                    , entityName, column.getName(), column.getType());
-        }
+        String type = getType(this, column);
+        String length = sizeAndPrecision(this, column);
 
         sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ');
-
-        String type = types[0];
-        String length = sizeAndPrecision(this, column);
 
         int suffixIndex = type.indexOf(NCHAR_SUFFIX);
         if (!length.isEmpty() && suffixIndex > 0) {

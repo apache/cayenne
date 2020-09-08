@@ -16,10 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.dbsync.model;
+
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * A {@link DbEntity} subclass used to hold extra JDBC metadata.
+ * @since 4.2 moved from org.apache.cayenne.map package
  */
 public class DetectedDbEntity extends DbEntity {
 

@@ -22,7 +22,7 @@ import java.awt.Color;
 import java.util.Collection;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DetectedDbEntity;
+import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.AttributeEvent;

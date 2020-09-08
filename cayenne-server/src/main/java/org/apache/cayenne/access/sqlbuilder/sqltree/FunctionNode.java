@@ -31,6 +31,12 @@ public class FunctionNode extends Node {
     private final boolean needParentheses;
     private String alias;
 
+    static public FunctionNode wrap(Node node, String functionName) {
+        FunctionNode functionNode = new FunctionNode(functionName, null);
+        functionNode.addChild(node);
+        return functionNode;
+    }
+
     public FunctionNode(String functionName, String alias) {
         this(functionName, alias, true);
     }
