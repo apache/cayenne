@@ -22,16 +22,10 @@ package org.apache.cayenne.util;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.AttributeFault;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyMapProperty;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.reflect.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -197,7 +191,11 @@ public class ObjectDetachOperation {
             public boolean visitAttribute(AttributeProperty property) {
                 PropertyDescriptor targetProperty = targetDescriptor
                         .getProperty(property.getName());
-                targetProperty.writeProperty(target, null, property.readProperty(source));
+                if (!property.getAttribute().isLazy()) {
+                    targetProperty.writeProperty(target, null, property.readProperty(source));
+                } else {
+                    targetProperty.writeProperty(target, null, new AttributeFault(property));
+                }
                 return true;
             }
         });

@@ -89,19 +89,18 @@ class DataRowUtils {
                 ObjAttribute attr = property.getAttribute();
                 String dbAttrPath = attr.getDbAttributePath();
 
-                Object value = snapshot.get(dbAttrPath);
-                property.writePropertyDirectly(object, null, value);
-
                 // note that a check "snaphsot.get(..) == null" would be incorrect in this
                 // case, as NULL value is entirely valid; still save a map lookup by
                 // checking for the null value first
-                if (value == null && !snapshot.containsKey(dbAttrPath)) {
-                    if(attr.isLazy()) {
-                        property.writePropertyDirectly(object, null, new AttributeFault(property));
-                    } else {
-                        isPartialSnapshot[0] = true;
-                    }
+                if (snapshot.containsKey(dbAttrPath) && !attr.isLazy()) {
+                    Object value = snapshot.get(dbAttrPath);
+                    property.writePropertyDirectly(object, null, value);
+                } else if (attr.isLazy()) {
+                    property.writePropertyDirectly(object, null, new AttributeFault(property));
+                } else {
+                    isPartialSnapshot[0] = true;
                 }
+
                 return true;
             }
 
