@@ -16,30 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.reflect.generic;
 
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.util.Util;
-import org.junit.Test;
+/**
+ * @since 4.2
+ * @param <V> type of values to compare
+ */
+public interface ValueComparisonStrategy<V> {
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-public class DataObjectAttributePropertyTest {
-
-    @Test
-	public void testSerialization() throws Exception {
-		ObjEntity e1 = new ObjEntity("objEntityName");
-		ObjAttribute a1 = new ObjAttribute("aName", "aType", e1);
-		
-		DataObjectAttributeProperty p1 = new DataObjectAttributeProperty(a1, new DefaultValueComparisonStrategyFactory.DefaultValueComparisonStrategy());
-		DataObjectAttributeProperty p2 = Util.cloneViaSerialization(p1);
-		
-		assertNotNull(p2);
-		assertNotNull(p2.getAttribute());
-		assertEquals(p1.getAttribute().getName(), p2.getAttribute().getName());
-		assertEquals(p1.getName(), p2.getName());
-	}
+    boolean equals(V value1, V value2);
 
 }

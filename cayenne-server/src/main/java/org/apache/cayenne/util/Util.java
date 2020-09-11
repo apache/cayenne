@@ -53,6 +53,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -209,7 +210,7 @@ public class Util {
 			return builder.isEquals();
 		} else { // It is NOT an array, so use regular equals()
 			return o1.equals(o2);
-		}
+        }
 	}
 
 	/**

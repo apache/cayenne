@@ -64,15 +64,15 @@ public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
     public void testABS() {
 
         BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
-        o1.setBigDecimalField(new BigDecimal("4.1"));
+        o1.setBigDecimalNumeric(new BigDecimal("4.1"));
 
         BigDecimalEntity o2 = context.newObject(BigDecimalEntity.class);
-        o2.setBigDecimalField(new BigDecimal("-5.1"));
+        o2.setBigDecimalNumeric(new BigDecimal("-5.1"));
 
         context.commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT d FROM BigDecimalEntity d WHERE ABS(d.bigDecimalField) < 5.0");
+                "SELECT d FROM BigDecimalEntity d WHERE ABS(d.bigDecimalNumeric) < 5.0");
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o1));
@@ -82,15 +82,15 @@ public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
     public void testSQRT() {
 
         BigDecimalEntity o1 = context.newObject(BigDecimalEntity.class);
-        o1.setBigDecimalField(new BigDecimal("9"));
+        o1.setBigDecimalNumeric(new BigDecimal("9"));
 
         BigDecimalEntity o2 = context.newObject(BigDecimalEntity.class);
-        o2.setBigDecimalField(new BigDecimal("16"));
+        o2.setBigDecimalNumeric(new BigDecimal("16"));
 
         context.commitChanges();
 
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT d FROM BigDecimalEntity d WHERE SQRT(d.bigDecimalField) > 3.1");
+                "SELECT d FROM BigDecimalEntity d WHERE SQRT(d.bigDecimalNumeric) > 3.1");
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
         assertTrue(objects.contains(o2));

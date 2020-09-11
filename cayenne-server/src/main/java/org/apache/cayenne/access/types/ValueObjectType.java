@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.types;
 
+import java.util.Objects;
+
 /**
  * Descriptor and serialization helper for custom value objects that can be safely stored in the DB.
  * Lightweight alternative for the {@link ExtendedType}.
@@ -60,4 +62,16 @@ public interface ValueObjectType<V, T> {
      */
     String toCacheKey(V object);
 
+    /**
+     * Allows to use special logic to compare values for equality
+     * as in rare cases it is not suffice to use default equals() method.
+     * Default implementation uses {@link Objects#equals(Object, Object)} method.
+     *
+     * @param value1 to compare
+     * @param value2 to compare
+     * @return true if given values are equal
+     */
+    default boolean equals(V value1, V value2) {
+        return Objects.equals(value1, value2);
+    }
 }

@@ -22,15 +22,18 @@ package org.apache.cayenne.access.translator.select;
 import java.sql.Types;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * @since 4.2
@@ -59,13 +62,14 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
         ObjAttribute attribute = new ObjAttribute();
         attribute.setName("not_name");
         attribute.setDbAttributePath("name");
-        attribute.setType("my.type");
+        attribute.setType("java.lang.Integer");
         entity.addAttribute(attribute);
 
         dataMap.addObjEntity(entity);
 
         EntityResolver resolver = new EntityResolver();
         resolver.addDataMap(dataMap);
+        resolver.setValueComparisionStrategyFactory(new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
         DescriptorColumnExtractor extractor = new DescriptorColumnExtractor(context, resolver.getClassDescriptor("mock"));
         extractor.extract();
@@ -83,7 +87,7 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
         assertNotNull(descriptor0.getDbAttribute());
         assertEquals("name", descriptor0.getDataRowKey());
         assertEquals(Types.VARBINARY, descriptor0.getJdbcType());
-        assertEquals("my.type", descriptor0.getJavaType());
+        assertEquals("java.lang.Integer", descriptor0.getJavaType());
 
         assertNull(descriptor1.getProperty());
         assertNotNull(descriptor1.getNode());
