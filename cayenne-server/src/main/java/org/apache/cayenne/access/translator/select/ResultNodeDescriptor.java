@@ -34,9 +34,9 @@ import org.apache.cayenne.map.DbAttribute;
 class ResultNodeDescriptor {
     private final Node node;
     private final boolean inDataRow;
-    private final boolean isAggregate;
     private final Property<?> property;
 
+    private boolean isAggregate;
     private String dataRowKey;
     private DbAttribute dbAttribute;
     private String javaType;
@@ -48,6 +48,10 @@ class ResultNodeDescriptor {
         this.dataRowKey = dataRowKey;
         this.isAggregate = property != null
                 && property.getExpression() instanceof ASTAggregateFunctionCall;
+    }
+
+    public void setAggregate(boolean aggregate) {
+        isAggregate = aggregate;
     }
 
     public boolean isAggregate() {
