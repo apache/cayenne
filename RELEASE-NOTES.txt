@@ -22,6 +22,8 @@ CAY-2664 Add methods to EntityProperty to allow direct usage of primary key valu
 CAY-2665 Support for widespread SQL types that falls into Jdbc type OTHER
 CAY-2668 Experimental graph-based db operations sorter
 CAY-2670 CommitLog does not include FKs for deleted objects with one-way relationships
+CAY-2673 Support ordering by aggregate functions
+CAY-2674 Support in-memory evaluation of aggregate functions
 
 Bug Fixes:
 
