@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -32,6 +34,9 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
+import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv1Root;
@@ -754,5 +759,49 @@ public class VerticalInheritanceIT extends ServerCase {
 
 		EJBQLQuery query3 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub2 a");
 		assertEquals(Collections.singletonList(2L), context.performQuery(query3));
+	}
+
+	@Test
+	public void testGenericVerticalInheritancePersistentDescriptor() throws NoSuchFieldException, IllegalAccessException {
+		final LazyClassDescriptorDecorator lazyStudentDescriptor = (LazyClassDescriptorDecorator) context.getEntityResolver().getClassDescriptor("GenStudent");
+		final ClassDescriptor studentDescriptor = lazyStudentDescriptor.getDescriptor();
+
+		final Field subclassDescriptorsField = PersistentDescriptor.class.getDeclaredField("subclassDescriptors");
+		subclassDescriptorsField.setAccessible(true);
+		final Map<String, ClassDescriptor> subclassDescriptors = (Map<String, ClassDescriptor>) subclassDescriptorsField.get(studentDescriptor);
+		assertEquals(2, subclassDescriptors.size());
+	}
+
+	@Test
+	public void testInsertTwoGenericVerticalInheritanceObjects() {
+		// Generic DataObjects play nicer with a DataContext
+		final DataContext dataContext = (DataContext) context;
+
+		final DataObject girlEmma = (DataObject) dataContext.newObject("GenGirl");
+		final DataObject boyLuke = (DataObject) dataContext.newObject("GenBoy");
+
+		assertEquals("Girl is type G", girlEmma.readProperty("type"), "G");
+		assertEquals("Boy is type B", boyLuke.readProperty("type"), "B");
+
+		girlEmma.writeProperty("reference", "g1");
+		girlEmma.writeProperty("name", "Emma");
+		girlEmma.writeProperty("toyDolls", 5);
+
+		boyLuke.writeProperty("reference", "b1");
+		boyLuke.writeProperty("name", "Luke");
+		boyLuke.writeProperty("toyTrucks", 12);
+
+		context.commitChanges();
+
+		assertEquals(2, ObjectSelect.query(DataObject.class, "GenStudent").selectCount(context));
+
+		final List<DataObject> students = ObjectSelect.query(DataObject.class, "GenStudent").select(context);
+		assertTrue(students.contains(girlEmma));
+		assertTrue(students.contains(boyLuke));
+
+		final List<DataObject> girls = ObjectSelect.query(DataObject.class, "GenGirl").select(context);
+		assertEquals(1, girls.size());
+		final List<DataObject> boys = ObjectSelect.query(DataObject.class, "GenBoy").select(context);
+		assertEquals(1, boys.size());
 	}
 }

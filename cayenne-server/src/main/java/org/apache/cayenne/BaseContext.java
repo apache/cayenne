@@ -637,7 +637,7 @@ public abstract class BaseContext implements ObjectContext {
 
 		ObjEntity entity;
 		try {
-			entity = getEntityResolver().getObjEntity(object.getClass());
+			entity = getEntityResolver().getObjEntity(object);
 		} catch (CayenneRuntimeException ex) {
 			// ObjEntity cannot be fetched, ignored
 			entity = null;

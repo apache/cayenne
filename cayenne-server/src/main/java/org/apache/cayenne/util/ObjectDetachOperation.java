@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.util;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -80,7 +81,7 @@ public class ObjectDetachOperation {
             return seenTarget;
         }
 
-        descriptor = descriptor.getSubclassDescriptor(source.getClass());
+        descriptor = descriptor.getSubclassDescriptor(Cayenne.getObjEntity(source));
 
         // presumably id's entity name should be of the right subclass.
         final ClassDescriptor targetDescriptor = targetResolver.getClassDescriptor(id
