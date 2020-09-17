@@ -78,7 +78,11 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 ## Create ivars
 #foreach( $attr in ${object.DeclaredAttributes} )
+#if ($attr.Lazy)
+    protected Object ${attr.Name};
+#else
     protected $importUtils.formatJavaType(${attr.Type}) ${attr.Name};
+#end
 #end
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
@@ -110,7 +114,17 @@ public abstract class ${superClassName} extends ${baseClassName} {
             objectContext.prepareForAccess(this, "${attr.Name}", false);
         }
 
+#if ($attr.Lazy)
+        if(this.$attrName instanceof Fault) {
+            this.$attrName = ((Fault) this.$attrName).resolveFault(this, "$attr.Name");
+        }
+#end
+
+#if ($attr.Lazy)
+        return ($importUtils.formatJavaType(${attr.Type})) $attrName;
+#else
         return $attrName;
+#end
     }
 
 #end

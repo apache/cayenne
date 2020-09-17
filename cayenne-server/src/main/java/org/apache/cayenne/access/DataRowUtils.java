@@ -101,6 +101,7 @@ class DataRowUtils {
                         isPartialSnapshot[0] = true;
                     }
                 }
+
                 return true;
             }
 

@@ -82,7 +82,7 @@ public class HessianConfig {
             Collection<String> additionalWhitelist) {
 
         SerializerFactory factory = new CayenneSerializerFactory();
-
+        factory.setAllowNonSerializable(true);
         List<String> whitelist = new ArrayList<>(additionalWhitelist);
         if(resolver != null) {
             whitelist.add("org.apache.cayenne.*");
