@@ -11,7 +11,7 @@ import org.apache.cayenne.query.MappedSelect;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public class _DataMapTest {
+public class _SelectQuery {
 
     public static final String SELECT_QUERYNAME = "select";
 

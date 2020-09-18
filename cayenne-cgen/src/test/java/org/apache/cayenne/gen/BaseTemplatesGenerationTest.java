@@ -2,42 +2,53 @@ package org.apache.cayenne.gen;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.*;
-import org.junit.After;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
 
-public class CgenTest {
+public class BaseTemplatesGenerationTest {
 
-    protected ClassGenerationAction action;
+    @Rule
+    public TemporaryFolder folder= new TemporaryFolder();
+
     protected CgenConfiguration cgenConfiguration;
-
+    protected ClassGenerationAction action;
     protected DataMap dataMap;
     protected ObjEntity objEntity;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         cgenConfiguration = new CgenConfiguration(false);
         action = new ClassGenerationAction(cgenConfiguration);
-
         dataMap = new DataMap();
+        dataMap.setDefaultPackage("test");
         objEntity = new ObjEntity();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dataMap = null;
-        objEntity = null;
     }
 
     @Test
     public void testSelectQuery() throws Exception {
+        dataMap.setName("SelectQuery");
 
         String param = "param";
         String qualifierString = "name = $" + param;
@@ -56,18 +67,17 @@ public class CgenTest {
         selectQueryDescriptor.setName("select");
         selectQueryDescriptor.setRoot(objEntity);
 
-        dataMap.setName("DataMapTest");
-        dataMap.setDefaultPackage("test");
-
         Collection<QueryDescriptor> descriptors = new ArrayList<>();
         descriptors.add(selectQueryDescriptor);
 
         DataMapArtifact dataMapArtifact = new DataMapArtifact(dataMap, descriptors);
 
-        execute(dataMapArtifact);    }
+        execute(dataMapArtifact);
+    }
 
     @Test
     public void testSQLTemplate() throws Exception {
+        dataMap.setName("SQLTemplate");
 
         DbEntity dbEntity = new DbEntity();
         objEntity.setDbEntity(dbEntity);
@@ -79,9 +89,6 @@ public class CgenTest {
         sqlTemplateDescriptor.setName("select");
         sqlTemplateDescriptor.setRoot(objEntity);
 
-        dataMap.setName("SQLTemplate");
-        dataMap.setDefaultPackage("test");
-
         Collection<QueryDescriptor> descriptors = new ArrayList<>();
         descriptors.add(sqlTemplateDescriptor);
 
@@ -92,13 +99,12 @@ public class CgenTest {
 
     @Test
     public void testGenClass() throws Exception {
-
-        dataMap.setName("EntityTest");
+        dataMap.setName("ObjEntity");
 
         DbEntity dbEntity = new DbEntity();
         dbEntity.setName("EntityTest");
         objEntity.setDbEntity(dbEntity);
-        objEntity.setClassName("test.EntityTest");
+        objEntity.setClassName("test.ObjEntity");
         objEntity.setDataMap(dataMap);
 
         EntityArtifact entityArtifact = new EntityArtifact(objEntity);
@@ -109,62 +115,44 @@ public class CgenTest {
     public void execute(Artifact artifact) throws Exception{
         cgenConfiguration.addArtifact(artifact);
 
-        cgenConfiguration.setRelPath("src/test/resources");
+        cgenConfiguration.setRootPath(folder.getRoot().toPath());
+        cgenConfiguration.setRelPath(Paths.get("."));
         cgenConfiguration.loadEntity(objEntity);
         cgenConfiguration.setDataMap(dataMap);
 
         action.setUtilsFactory(new DefaultToolsUtilsFactory());
         action.execute();
 
-        fileComparison(dataMap.getName());
+        String targetName = dataMap.getName();
 
-        fileComparison("auto/_" + dataMap.getName());
-
-        rmdir(new File(cgenConfiguration.getRelPath() + "/test"));
+        fileComparison(targetName);
+        fileComparison("auto/_" + targetName);
     }
 
-    public void fileComparison(String fileName) {
+    private void fileComparison(String fileName) throws IOException {
+        String expected = readResource(fileName);
 
-        try {
-            FileReader fileReader1 = new FileReader(new File("src/test/resources/templateTest/" + fileName + ".java"));
-            BufferedReader reader1 = new BufferedReader(fileReader1);
-            String lineFile1;
-            String string1 = "";
+        StringBuilder generated = new StringBuilder();
+        Files.readAllLines(new File(folder.getRoot() + "/test/" + fileName + ".java").toPath())
+                .forEach(generated::append);
 
-            FileReader fileReader2 = new FileReader(new File("src/test/resources/test/" + fileName + ".java"));
-            BufferedReader reader2 = new BufferedReader(fileReader2);
-            String lineFile2;
-            String string2 = "";
-
-            while ((lineFile1 = reader1.readLine()) != null
-                    && (lineFile2 = reader2.readLine()) != null) {
-                string1 += lineFile1;
-                string2 += lineFile2;
-            }
-
-            assertEquals(string1, string2);
-
-            reader1.close();
-            reader2.close();
-            fileReader1.close();
-            fileReader2.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals(expected, generated.toString());
     }
 
-    public void rmdir(File file) {
-        if (!file.exists())
-            return;
-
-        if (file.isDirectory()) {
-            for (File f : file.listFiles()) {
-                rmdir(f);
+    private String readResource(String name) throws IOException {
+        String resourceName = "templateTest/" + name + ".java";
+        InputStream stream = getClass().getClassLoader().getResourceAsStream(resourceName);
+        if(stream == null) {
+            throw new FileNotFoundException("Resource not found: " + resourceName);
+        }
+        StringBuilder expected = new StringBuilder();
+        try(BufferedReader resource = new BufferedReader(new InputStreamReader(stream))) {
+            String line;
+            while ((line = resource.readLine()) != null) {
+                expected.append(line);
             }
         }
-        file.delete();
+
+        return expected.toString();
     }
 }
