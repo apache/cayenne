@@ -44,7 +44,7 @@ ${importUtils.generate()}
  */
 public#if("true" == "${object.getIsAbstract()}") abstract#end class ${subClassName} extends ${superClassName} {
 
-     private static final long serialVersionUID = 1L; 
+     private static final long serialVersionUID = 1L;
      
 ##callback methods
 #foreach( $cbname in ${entityUtils.callbackNames})
