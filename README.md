@@ -112,7 +112,7 @@ See tutorial https://cayenne.apache.org/docs/4.1/getting-started-db-first/
 
 And here is example of Cayenne Gradle plugin setup:
 
-```groovy
+```gradle
 buildscript {
     repositories {
         mavenCentral()
@@ -166,7 +166,7 @@ gradlew build
 
 ##### Gradle
 
-```groovy
+```gradle
 compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.1'
  
 // or, if Gradle plugin is used
