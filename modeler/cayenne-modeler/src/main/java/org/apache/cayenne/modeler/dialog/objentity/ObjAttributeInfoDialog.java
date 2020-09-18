@@ -155,6 +155,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		view.getSourceEntityLabel().setText(attribute.getEntity().getName());
 		view.getTypeComboBox().setSelectedItem(attribute.getType());
 		view.getUsedForLockingCheckBox().setSelected(attribute.isUsedForLocking());
+		view.getLazyCheckBox().setSelected(attribute.isLazy());
 		view.getCommentField().setText(ObjectInfo
 				.getFromMetaData(mediator.getApplication().getMetaData(),
 						attr,
@@ -375,6 +376,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 			}
 			attributeSaved.setName(view.getAttributeName().getText());
 			attributeSaved.setUsedForLocking(view.getUsedForLockingCheckBox().isSelected());
+			attributeSaved.setLazy(view.getLazyCheckBox().isSelected());
 			ObjectInfo.putToMetaData(mediator.getApplication().getMetaData(),
 					attributeSaved,
 					ObjectInfo.COMMENT,
@@ -451,6 +453,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 				|| (attribute.getType() == null && view.getTypeComboBox().getSelectedItem() != null)
 				|| !Objects.equals(attribute.getType(), view.getTypeComboBox().getSelectedItem())
 				|| attribute.isUsedForLocking() != view.getUsedForLockingCheckBox().isSelected()
+				|| attribute.isLazy() != view.getLazyCheckBox().isSelected()
 				|| !ObjectInfo.getFromMetaData(
 						mediator.getApplication().getMetaData(), attribute, ObjectInfo.COMMENT)
 				.equals(view.getCommentField().getText());
@@ -460,10 +463,11 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		model.setUpdatedValueAt(attributeSaved.getName(), row, 0);
 		model.setUpdatedValueAt(attributeSaved.getType(), row, 1);
 		model.setUpdatedValueAt(attributeSaved.isUsedForLocking(), row, 4);
+		model.setUpdatedValueAt(attributeSaved.isLazy(), row, 5);
 		model.setUpdatedValueAt(ObjectInfo
 				.getFromMetaData(mediator.getApplication().getMetaData(),
 						attributeSaved,
-						ObjectInfo.COMMENT), row, 5);
+						ObjectInfo.COMMENT), row, 6);
 	}
 
 	public void saveMapping() {
@@ -649,6 +653,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		attributeSaved.setParent(attribute.getParent());
 		attributeSaved.setType(attribute.getType());
 		attributeSaved.setUsedForLocking(attribute.isUsedForLocking());
+		attributeSaved.setLazy(attribute.isLazy());
 		String comment = ObjectInfo
 				.getFromMetaData(mediator.getApplication().getMetaData(),
 						attribute,

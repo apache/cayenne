@@ -107,7 +107,9 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         Set<ArcTarget> processedArcs = new HashSet<>();
 
         DbRowOpFactory factory = new DbRowOpFactory(resolver, objectStore, processedArcs);
-        changesByObjectId.forEach((obj, diff) -> ops.addAll(factory.createRows(diff)));
+        // ops.addAll() method is slower in this case as it will allocate new array for all values
+        //noinspection UseBulkOperation
+        changesByObjectId.forEach((obj, diff) -> factory.createRows(diff).forEach(ops::add));
 
         return ops;
     }

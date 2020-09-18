@@ -44,6 +44,7 @@ public interface Artifact {
     String CREATE_PROPERTY_NAMES = "createPropertyNames";
     String CREATE_PK_PROPERTIES = "createPKProperties";
     String PROPERTY_UTILS_KEY = "propertyUtils";
+    String METADATA_UTILS_KEY = "metadataUtils";
 
     TemplateType[] getTemplateTypes(ArtifactGenerationMode mode);
 

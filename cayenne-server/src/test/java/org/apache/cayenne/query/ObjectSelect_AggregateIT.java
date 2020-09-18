@@ -34,6 +34,7 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -79,11 +80,11 @@ public class ObjectSelect_AggregateIT extends ServerCase {
         tGallery.insert(1, "tate modern");
 
         TableHelper tPaintings = new TableHelper(dbHelper, "PAINTING");
-        tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
+        tPaintings.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID", "ESTIMATED_PRICE");
         for (int i = 1; i <= 20; i++) {
-            tPaintings.insert(i, "painting" + i, i % 5 + 1, 1);
+            tPaintings.insert(i, "painting" + i, i % 5 + 1, 1, i * 10);
         }
-        tPaintings.insert(21, "painting21", 2, 1);
+        tPaintings.insert(21, "painting21", 2, 1, 1000);
     }
 
     @After
@@ -177,5 +178,41 @@ public class ObjectSelect_AggregateIT extends ServerCase {
                 .selectOne(context);
         assertEquals("artist1", result[0]);
         assertEquals(4L, result[1]);
+    }
+
+    @Test
+    public void testOrderByCount() {
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.PAINTING_ARRAY.outer().count().desc())
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .select(context);
+
+        assertEquals(20, artists.size());
+
+        assertEquals(5, artists.get(0).getPaintingArray().size());
+        assertEquals("artist2", artists.get(0).getArtistName());
+        assertEquals(4, artists.get(1).getPaintingArray().size());
+        assertEquals(4, artists.get(2).getPaintingArray().size());
+
+        assertEquals(0, artists.get(17).getPaintingArray().size());
+        assertEquals(0, artists.get(18).getPaintingArray().size());
+        assertEquals(0, artists.get(19).getPaintingArray().size());
+    }
+
+    @Test
+    public void testOrderByAvg() {
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).avg().asc())
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .select(context);
+
+        assertEquals(5, artists.size());
+
+        assertEquals("artist3", artists.get(0).getArtistName());
+        assertEquals("artist4", artists.get(1).getArtistName());
+        assertEquals("artist5", artists.get(2).getArtistName());
+        assertEquals("artist1", artists.get(3).getArtistName());
+        assertEquals("artist2", artists.get(4).getArtistName());
+
     }
 }

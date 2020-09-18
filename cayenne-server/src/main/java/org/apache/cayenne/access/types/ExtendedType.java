@@ -22,6 +22,10 @@ package org.apache.cayenne.access.types;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Optional;
+
+import org.apache.cayenne.access.sqlbuilder.sqltree.ChildProcessor;
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
  * Defines methods to read Java objects from JDBC ResultSets and write as parameters of PreparedStatements.
@@ -75,4 +79,19 @@ public interface ExtendedType<T> {
      */
     String toString(T value);
 
+    /**
+     * @since 4.2
+     * @return
+     */
+    default ChildProcessor<?> readProcessor() {
+        return ChildProcessor.EMPTY;
+    }
+
+    /**
+     * @since 4.2
+     * @return
+     */
+    default ChildProcessor<?> writeProcessor() {
+        return ChildProcessor.EMPTY;
+    }
 }

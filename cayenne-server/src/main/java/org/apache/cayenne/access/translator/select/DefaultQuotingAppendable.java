@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
 
 /**
@@ -27,9 +28,9 @@ import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
  */
 public class DefaultQuotingAppendable extends StringBuilderAppendable {
 
-    private final TranslatorContext context;
+    private final SQLGenerationContext context;
 
-    public DefaultQuotingAppendable(TranslatorContext context) {
+    public DefaultQuotingAppendable(SQLGenerationContext context) {
         super();
         this.context = context;
     }
@@ -41,7 +42,7 @@ public class DefaultQuotingAppendable extends StringBuilderAppendable {
     }
 
     @Override
-    public TranslatorContext getContext() {
+    public SQLGenerationContext getContext() {
         return context;
     }
 }

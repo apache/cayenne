@@ -230,9 +230,9 @@ public class OracleSQLTreeProcessor extends BaseSQLTreeProcessor {
     }
 
     @Override
-    public Node apply(Node node) {
+    public Node process(Node node) {
         root = node;
-        super.apply(node);
+        super.process(node);
         if(selectBuilder != null) {
             return selectBuilder.build();
         }

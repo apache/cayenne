@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.cayenne.EmbeddableObject;
+import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -133,6 +134,9 @@ public class PropertyUtils {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
+        if(attribute.isLazy()) {
+            importUtils.addType(Fault.class.getName());
+        }
     }
 
     public void addImport(EmbeddedAttribute attribute) throws ClassNotFoundException {

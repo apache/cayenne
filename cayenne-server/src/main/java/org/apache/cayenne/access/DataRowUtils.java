@@ -35,7 +35,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.util.Util;
 
 /**
  * DataRowUtils contains a number of static methods to work with DataRows. This is a
@@ -96,8 +95,13 @@ class DataRowUtils {
                 // case, as NULL value is entirely valid; still save a map lookup by
                 // checking for the null value first
                 if (value == null && !snapshot.containsKey(dbAttrPath)) {
-                    isPartialSnapshot[0] = true;
+                    if(attr.isLazy()) {
+                        property.writePropertyDirectly(object, null, new AttributeFault(property));
+                    } else {
+                        isPartialSnapshot[0] = true;
+                    }
                 }
+
                 return true;
             }
 
@@ -151,8 +155,8 @@ class DataRowUtils {
 
                     // if value not modified, update it from snapshot,
                     // otherwise leave it alone
-                    if (Util.nullSafeEquals(curValue, oldValue)
-                            && !Util.nullSafeEquals(newValue, curValue)) {
+                    if (property.equals(curValue, oldValue)
+                            && !property.equals(newValue, curValue)) {
                         property.writePropertyDirectly(object, oldValue, newValue);
                     }
                 }
@@ -187,7 +191,7 @@ class DataRowUtils {
 
                             if (diff == null
                                     || !diff.containsArcSnapshot(relationship.getName())
-                                    || !Util.nullSafeEquals(id, diff
+                                    || !property.equals(id, diff
                                             .getArcSnapshotValue(relationship.getName()))) {
 
                                 if (id == null) {
@@ -258,7 +262,7 @@ class DataRowUtils {
         }
 
         ObjectId targetId = diff.getArcSnapshotValue(property.getName());
-        return !Util.nullSafeEquals(currentId, targetId);
+        return !property.equals(currentId, targetId);
     }
 
     // not for instantiation

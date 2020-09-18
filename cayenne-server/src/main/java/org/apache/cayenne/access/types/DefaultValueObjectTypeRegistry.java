@@ -31,7 +31,7 @@ import org.apache.cayenne.di.Inject;
  */
 public class DefaultValueObjectTypeRegistry implements ValueObjectTypeRegistry {
 
-    final Map<String, ValueObjectType<?,?>> typeCache;
+    final Map<String, ValueObjectType> typeCache;
 
     public DefaultValueObjectTypeRegistry(@Inject List<ValueObjectType<?, ?>> valueObjectTypeList) {
         typeCache = new ConcurrentHashMap<>();
@@ -43,17 +43,10 @@ public class DefaultValueObjectTypeRegistry implements ValueObjectTypeRegistry {
             typeCache.put(valueObjectType.getValueType().getName(), valueObjectType);
         }
     }
-
-    /**
-     * @inheritDoc
-     */
+    
     @SuppressWarnings("unchecked")
     @Override
     public <T> ValueObjectType<T, ?> getValueType(Class<? extends T> valueClass) {
-        ValueObjectType type = typeCache.get(valueClass.getName());
-        if(type == null) {
-            return null;
-        }
-        return type;
+        return typeCache.get(valueClass.getName());
     }
 }

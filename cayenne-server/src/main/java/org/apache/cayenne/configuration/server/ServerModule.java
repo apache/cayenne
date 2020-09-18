@@ -44,6 +44,7 @@ import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
+import org.apache.cayenne.access.types.BigDecimalValueType;
 import org.apache.cayenne.access.types.BigIntegerValueType;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
@@ -58,7 +59,9 @@ import org.apache.cayenne.access.types.DurationType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.FloatType;
+import org.apache.cayenne.access.types.GeoJsonType;
 import org.apache.cayenne.access.types.IntegerType;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.LocalDateTimeValueType;
 import org.apache.cayenne.access.types.LocalDateValueType;
 import org.apache.cayenne.access.types.LocalTimeValueType;
@@ -72,6 +75,7 @@ import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.access.types.VoidType;
+import org.apache.cayenne.access.types.WktType;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
@@ -149,6 +153,8 @@ import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.template.CayenneSQLTemplateProcessor;
@@ -423,13 +429,18 @@ public class ServerModule implements Module {
                 // should be converted from ExtendedType to ValueType
                 .add(new UtilDateType())
                 .add(new CalendarType<>(GregorianCalendar.class))
-                .add(new CalendarType<>(Calendar.class));
+                .add(new CalendarType<>(Calendar.class))
+                // non-standard types
+                .add(GeoJsonType.class)
+                .add(WktType.class)
+                .add(JsonType.class);
         contributeUserTypes(binder);
         contributeTypeFactories(binder);
 
         // Custom ValueObjects types contribution
         contributeValueObjectTypes(binder)
                 .add(BigIntegerValueType.class)
+                .add(BigDecimalValueType.class)
                 .add(UUIDValueType.class)
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
@@ -438,6 +449,7 @@ public class ServerModule implements Module {
                 .add(CharacterValueType.class);
 
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+        binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
         // configure explicit configurations
         contributeProjectLocations(binder);

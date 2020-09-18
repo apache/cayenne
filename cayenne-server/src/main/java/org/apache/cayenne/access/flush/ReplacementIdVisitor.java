@@ -79,15 +79,22 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
 
     private void updateId(DbRowOp dbRow) {
         ObjectId id = dbRow.getChangeId();
+        Persistent object = dbRow.getObject();
+
+        // check that PK was generated or set properly
         if (!id.isReplacementIdAttached()) {
             if (id == dbRow.getObject().getObjectId() && id.isTemporary()) {
-                throw new CayenneRuntimeException("PK for the object %s is not set during insert.", dbRow.getObject());
+                throw new CayenneRuntimeException("PK for the object %s is not set during insert.", object);
             }
             return;
         }
-
-        Persistent object = dbRow.getObject();
         Map<String, Object> replacement = id.getReplacementIdMap();
+        replacement.forEach((attr, val) -> {
+            if(val instanceof IdGenerationMarker) {
+                throw new CayenneRuntimeException("PK for the object %s is not set during insert.", object);
+            }
+        });
+
         ObjectId replacementId = id.createReplacementId();
         if (object.getObjectId() == id && !replacementId.getEntityName().startsWith(ASTDbPath.DB_PREFIX)) {
             object.setObjectId(replacementId);

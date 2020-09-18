@@ -16,11 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.translator.batch;
+package org.apache.cayenne.access.translator.batch.legacy;
 
 import java.sql.Types;
 
 import org.apache.cayenne.access.translator.DbAttributeBinding;
+import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
@@ -31,7 +32,9 @@ import org.apache.cayenne.query.BatchQueryRow;
  * Superclass of batch query translators.
  * 
  * @since 4.0
+ * @deprecated since 4.2
  */
+@Deprecated
 public abstract class DefaultBatchTranslator implements BatchTranslator {
 
     protected BatchQuery query;

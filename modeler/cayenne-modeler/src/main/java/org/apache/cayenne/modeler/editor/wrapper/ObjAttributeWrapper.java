@@ -139,6 +139,14 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
         objAttribute.setUsedForLocking(usedForLocking);
     }
 
+    public boolean isLazy() {
+        return objAttribute.isLazy();
+    }
+
+    public void setLazy(boolean lazy) {
+        objAttribute.setLazy(lazy);
+    }
+
     public DbAttribute getDbAttribute() {
         try {
             return objAttribute.getDbAttribute();

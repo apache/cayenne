@@ -153,6 +153,7 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
         lastAttribute = new ObjAttribute(attributes.getValue("name"));
         lastAttribute.setType(attributes.getValue("type"));
         lastAttribute.setUsedForLocking(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("lock")));
+        lastAttribute.setLazy(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("lazy")));
         lastAttribute.setDbAttributePath(dbPath);
         entity.addAttribute(lastAttribute);
     }

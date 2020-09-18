@@ -19,34 +19,17 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.sqlbuilder.ExpressionNodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.ValueNodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.sqltree.BetweenNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.BitwiseNotNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.EqualNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.InNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.NotEqualNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.NotNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.exp.parser.ASTCustomOperator;
 import org.apache.cayenne.exp.parser.ASTDbIdPath;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFullObject;
@@ -55,17 +38,15 @@ import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
-import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.aliased;
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.function;
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
-import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.value;
+import java.util.*;
+
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 import static org.apache.cayenne.exp.Expression.*;
 
 /**
@@ -211,6 +192,9 @@ class QualifierTranslator implements TraversalHandler {
             case ASTERISK:
                 return new TextNode(' ' + expToStr(node.getType()));
 
+            case CUSTOM_OP:
+                return new OpExpressionNode(((ASTCustomOperator)node).getOperator());
+
             case EXISTS:
                 return new FunctionNode("EXISTS", null, false);
             case NOT_EXISTS:
@@ -274,7 +258,7 @@ class QualifierTranslator implements TraversalHandler {
         expressionsToSkip.add(node);
         expressionsToSkip.add(parentNode);
 
-        return buildMultiValueComparision(result, valueSnapshot);
+        return buildMultiValueComparison(result, valueSnapshot);
     }
 
     private Map<String, Object> getEmbeddableValueSnapshot(Embeddable embeddable, Expression node, Expression parentNode) {
@@ -315,10 +299,23 @@ class QualifierTranslator implements TraversalHandler {
             valueSnapshot = relationship.srcFkSnapshotWithTargetSnapshot(valueSnapshot);
         }
 
+        // build compound PK/FK comparison node
+        Node multiValueComparison = buildMultiValueComparison(result, valueSnapshot);
+
+        // replace current node with multi value comparison
+        Node currentNodeParent = currentNode.getParent();
+        currentNodeParent.replaceChild(currentNodeParent.getChildrenCount() - 1, multiValueComparison);
+        multiValueComparison.setParent(currentNodeParent);
+        currentNode = currentNodeParent;
+
+        // we should skip all related nodes as we build this part of the tree manually
         expressionsToSkip.add(node);
         expressionsToSkip.add(parentNode);
+        for(int i=0; i<parentNode.getOperandCount(); i++) {
+            expressionsToSkip.add(parentNode.getOperand(i));
+        }
 
-        return buildMultiValueComparision(result, valueSnapshot);
+        return null;
     }
 
     private Map<String, Object> getMultiAttributeValueSnapshot(Expression node, Expression parentNode) {
@@ -334,8 +331,8 @@ class QualifierTranslator implements TraversalHandler {
             } else if(operand instanceof ObjectId) {
                 return  ((ObjectId) operand).getIdSnapshot();
             } else if(operand instanceof ASTObjPath) {
-                // TODO: support comparision of multi attribute ObjPath with other multi attribute ObjPath
-                throw new UnsupportedOperationException("Comparision of multiple attributes not supported for ObjPath");
+                // TODO: support comparison of multi attribute ObjPath with other multi attribute ObjPath
+                throw new UnsupportedOperationException("Comparison of multiple attributes not supported for ObjPath");
             }
         }
 
@@ -343,7 +340,7 @@ class QualifierTranslator implements TraversalHandler {
                 "List or Persistent object required.");
     }
 
-    private Node buildMultiValueComparision(PathTranslationResult result, Map<String, Object> valueSnapshot) {
+    private Node buildMultiValueComparison(PathTranslationResult result, Map<String, Object> valueSnapshot) {
         ExpressionNodeBuilder expressionNodeBuilder = null;
         ExpressionNodeBuilder eq;
 
@@ -369,7 +366,7 @@ class QualifierTranslator implements TraversalHandler {
             case NOT_IN: case IN: case NOT_BETWEEN: case BETWEEN: case NOT:
             case BITWISE_NOT: case EQUAL_TO: case NOT_EQUAL_TO: case LIKE: case NOT_LIKE:
             case LIKE_IGNORE_CASE: case NOT_LIKE_IGNORE_CASE: case OBJ_PATH: case DBID_PATH: case DB_PATH:
-            case FUNCTION_CALL: case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case NEGATIVE:
+            case FUNCTION_CALL: case ADD: case SUBTRACT: case MULTIPLY: case DIVIDE: case NEGATIVE: case CUSTOM_OP:
             case BITWISE_AND: case BITWISE_LEFT_SHIFT: case BITWISE_OR: case BITWISE_RIGHT_SHIFT: case BITWISE_XOR:
             case OR: case AND: case LESS_THAN: case LESS_THAN_EQUAL_TO: case GREATER_THAN: case GREATER_THAN_EQUAL_TO:
             case TRUE: case FALSE: case ASTERISK: case EXISTS: case NOT_EXISTS: case SUBQUERY: case ENCLOSING_OBJECT: case FULL_OBJECT:
@@ -466,14 +463,14 @@ class QualifierTranslator implements TraversalHandler {
                 return ">=";
             case ADD:
                 return "+";
+            case NEGATIVE:
             case SUBTRACT:
                 return "-";
             case MULTIPLY:
+            case ASTERISK:
                 return "*";
             case DIVIDE:
                 return "/";
-            case NEGATIVE:
-                return "-";
             case BITWISE_AND:
                 return "&";
             case BITWISE_OR:
@@ -490,8 +487,6 @@ class QualifierTranslator implements TraversalHandler {
                 return "1=1";
             case FALSE:
                 return "1=0";
-            case ASTERISK:
-                return "*";
             default:
                 return "{other}";
         }

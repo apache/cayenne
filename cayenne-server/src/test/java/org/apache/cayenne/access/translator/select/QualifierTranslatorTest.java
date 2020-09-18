@@ -19,38 +19,20 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.Arrays;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.StringBuilderAppendable;
-import org.apache.cayenne.access.sqlbuilder.sqltree.BetweenNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.BitwiseNotNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.EqualNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.InNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.LikeNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.NotEqualNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.NotNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.SelectNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTAsterisk;
 import org.apache.cayenne.exp.property.BaseProperty;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.query.ObjectSelect;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
@@ -368,7 +350,7 @@ public class QualifierTranslatorTest {
     }
 
     @Test
-    public void translateComparision() {
+    public void translateComparison() {
         {
             Node op = translate("a < 2");
             assertThat(op, instanceOf(OpExpressionNode.class));
@@ -484,7 +466,7 @@ public class QualifierTranslatorTest {
     }
 
     @Test
-    public void translateNullComparision() {
+    public void translateNullComparison() {
         Node or = translate("a > null");
         assertNotNull(or);
         assertThat(or, instanceOf(OpExpressionNode.class));

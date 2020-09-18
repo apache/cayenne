@@ -34,7 +34,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.gen.ImportUtils;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -43,6 +42,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.ToolManager;
+import org.apache.velocity.tools.config.ConfigurationUtils;
+import org.apache.velocity.tools.config.FactoryConfiguration;
 import org.slf4j.Logger;
 
 public class ClassGenerationAction {
@@ -75,20 +76,29 @@ public class ClassGenerationAction {
     protected Map<String, Template> templateCache;
 
     private ToolsUtilsFactory utilsFactory;
+	private MetadataUtils metadataUtils;
 
 	/**
 	Optionally allows user-defined tools besides {@link ImportUtils} for working with velocity templates.<br/>
-	To use this feature, set the java system property {@code -Dorg.apache.velocity.tools=tools.properties}
-	And create the file "tools.properties" in the working directory or in the 
-	root of the classpath with content like this: 
+	To use this feature, either set the java system property {@code -Dorg.apache.velocity.tools=tools.properties}
+	or set the {@code externalToolConfig} property to "tools.properties" in {@code CgenConfiguration}. Then 
+	create the file "tools.properties" in the working directory or in the root of the classpath with content 
+	like this: 
 	<pre>
 	tools.toolbox = application
 	tools.application.myTool = com.mycompany.MyTool</pre>
 	Then the methods in the MyTool class will be available for use in the template like ${myTool.myMethod(arg)}
 	 */
-	public ClassGenerationAction() {
-		if (System.getProperty("org.apache.velocity.tools") != null) {
+	public ClassGenerationAction(CgenConfiguration cgenConfig) {
+		this.cgenConfiguration = cgenConfig;
+		String toolConfigFile = cgenConfig.getExternalToolConfig();
+		
+		if (System.getProperty("org.apache.velocity.tools") != null || toolConfigFile != null) {
 			ToolManager manager = new ToolManager(true, true);
+			if (toolConfigFile != null) {
+				FactoryConfiguration config = ConfigurationUtils.find(toolConfigFile);
+				manager.getToolboxFactory().configure(config);
+			}
 			this.context = manager.createContext();
 		} else {
 			this.context = new VelocityContext();
@@ -191,6 +201,7 @@ public class ClassGenerationAction {
         ImportUtils importUtils = utilsFactory.createImportUtils();
         context.put(Artifact.IMPORT_UTILS_KEY, importUtils);
 		context.put(Artifact.PROPERTY_UTILS_KEY, utilsFactory.createPropertyUtils(logger, importUtils));
+		context.put(Artifact.METADATA_UTILS_KEY, metadataUtils);
 		artifact.postInitContext(context);
 	}
 
@@ -501,5 +512,13 @@ public class ClassGenerationAction {
 
 	public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
 		this.utilsFactory = utilsFactory;
+	}
+
+	public void setMetadataUtils(MetadataUtils metadataUtils) {
+		this.metadataUtils = metadataUtils;
+	}
+
+	public MetadataUtils getMetadataUtils() {
+		return metadataUtils;
 	}
 }

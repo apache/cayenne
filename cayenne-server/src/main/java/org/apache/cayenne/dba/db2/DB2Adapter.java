@@ -22,11 +22,10 @@ package org.apache.cayenne.dba.db2;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
@@ -98,13 +97,7 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-                    , entityName, column.getName(), column.getType());
-        }
-        String type = types[0];
+        String type = getType(this, column);
 
         sqlBuffer.append(quotingStrategy.quotedName(column)).append(' ');
 
@@ -148,7 +141,7 @@ public class DB2Adapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
+    public SQLTreeProcessor getSqlTreeProcessor() {
         return new DB2SQLTreeProcessor();
     }
 

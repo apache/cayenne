@@ -126,7 +126,6 @@ public class ColumnSelectIT extends ServerCase {
     public void testSelectSimpleHaving() throws Exception {
         Object[] result = ObjectSelect.query(Artist.class)
                 .columns(Artist.DATE_OF_BIRTH, PropertyFactory.COUNT)
-                .orderBy(Artist.DATE_OF_BIRTH.asc())
                 .having(Artist.DATE_OF_BIRTH.eq(dateFormat.parse("1/2/17")))
                 .selectOne(context);
 

@@ -24,7 +24,7 @@
 	<groupId>org.apache.cayenne</groupId>
 	<name>cayenne-parent: Top-level parent of Cayenne modules</name>
 
-	<version>4.2.M1-SNAPSHOT</version>
+	<version>4.2.M2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -1738,7 +1738,7 @@
 			</activation>
 			<properties>
 				<javadoc.doclint>none</javadoc.doclint>
-				<javadoc.additionalOptions />
+				<javadoc.additionalOptions>--no-module-directories</javadoc.additionalOptions>
 			</properties>
 		</profile>
 		<profile>
@@ -1747,7 +1747,7 @@
 				<jdk>[9,)</jdk>
 			</activation>
 			<properties>
-				<javadoc.additionalOptions>-html5</javadoc.additionalOptions>
+				<javadoc.additionalOptions>-html5 --no-module-directories</javadoc.additionalOptions>
 			</properties>
 		</profile>
 	</profiles>

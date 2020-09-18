@@ -74,7 +74,7 @@ public class DerbyUnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
-    public boolean supportsNullComparision() {
+    public boolean supportsNullComparison() {
         return false;
     }
 }

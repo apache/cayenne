@@ -29,11 +29,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteType;
@@ -83,13 +82,13 @@ public class OracleAdapter extends JdbcAdapter {
 
 	protected static boolean supportsOracleLOB;
 
-	private String[] SYSTEM_SCHEMAS = new String[]{
+	private List<String> SYSTEM_SCHEMAS = Arrays.asList(
 			"ANONYMOUS", "APPQOSSYS", "AUDSYS", "CTXSYS", "DBSFWUSER",
 			"DBSNMP", "DIP", "DVF", "GGSYS", "DVSYS", "GSMADMIN_INTERNAL",
 			"GSMCATUSER", "GSMUSER", "LBACSYS", "MDDATA", "MDSYS", "OJVMSYS",
 			"OLAPSYS", "ORACLE_OCM", "ORDDATA", "ORDPLUGINS", "ORDSYS", "OUTLN",
 			"REMOTE_SCHEDULER_AGENT", "SYSTEM", "WMSYS", "SI_INFORMTN_SCHEMA",
-			"SYS", "SYSBACKUP", "SYSDG", "SYSKM", "SYSRAC", "SYS$UMF", "XDB", "XS$NULL"};
+			"SYS", "SYSBACKUP", "SYSDG", "SYSKM", "SYSRAC", "SYS$UMF", "XDB", "XS$NULL");
 
 	static {
 		// TODO: as CAY-234 shows, having such initialization done in a static
@@ -180,7 +179,7 @@ public class OracleAdapter extends JdbcAdapter {
 	 * @since 4.2
 	 */
 	@Override
-	public Function<Node, Node> getSqlTreeProcessor() {
+	public SQLTreeProcessor getSqlTreeProcessor() {
 		return new OracleSQLTreeProcessor();
 	}
 
@@ -302,7 +301,7 @@ public class OracleAdapter extends JdbcAdapter {
 
 	@Override
 	public List<String> getSystemSchemas() {
-		return Arrays.asList(SYSTEM_SCHEMAS);
+		return SYSTEM_SCHEMAS;
 	}
 
 	/**

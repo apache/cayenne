@@ -23,6 +23,8 @@ import java.util.Collection;
 
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
@@ -32,4 +34,8 @@ public interface SQLGenerationContext {
     DbAdapter getAdapter();
 
     Collection<DbAttributeBinding> getBindings();
+
+    QuotingStrategy getQuotingStrategy();
+
+    DbEntity getRootDbEntity();
 }

@@ -32,8 +32,11 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
 
@@ -41,6 +44,8 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
  * @since 4.2
  */
 class PrefetchNodeStage implements TranslationStage {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SelectTranslator.class);
 
     @Override
     public void perform(TranslatorContext context) {
@@ -62,12 +67,14 @@ class PrefetchNodeStage implements TranslationStage {
     }
 
     private void processJoint(TranslatorContext context) {
-        PrefetchTreeNode prefetch = context.getMetadata().getPrefetchTree();
+        QueryMetadata queryMetadata = context.getMetadata();
+        PrefetchTreeNode prefetch = queryMetadata.getPrefetchTree();
         if(prefetch == null) {
             return;
         }
 
-        ObjEntity objEntity = context.getMetadata().getObjEntity();
+        ObjEntity objEntity = queryMetadata.getObjEntity();
+        boolean warnPrefetchWithLimit = false;
 
         for(PrefetchTreeNode node : prefetch.adjacentJointNodes()) {
             Expression prefetchExp = ExpressionFactory.exp(node.getPath());
@@ -94,6 +101,17 @@ class PrefetchNodeStage implements TranslationStage {
 
             DescriptorColumnExtractor columnExtractor = new DescriptorColumnExtractor(context, prefetchClassDescriptor);
             columnExtractor.extract("p:" + dbPath);
+
+            if(!warnPrefetchWithLimit && targetRel.isToMany()
+                    && (queryMetadata.getFetchLimit() > 0 || queryMetadata.getFetchOffset() > 0)) {
+                warnPrefetchWithLimit = true;
+            }
+        }
+
+        // warn about a potentially faulty joint prefetch + limit combination
+        if(warnPrefetchWithLimit) {
+            LOGGER.warn("The query uses both limit/offset and a joint prefetch, this most probably will lead to an incorrect result. " +
+                    "Either use disjointById prefetch or get a full result set.");
         }
     }
 

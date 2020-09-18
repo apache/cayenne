@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.Collection;
+
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -41,5 +43,10 @@ public class ASTCount extends ASTAggregateFunctionCall {
     @Override
     public Expression shallowCopy() {
         return new ASTCount(id);
+    }
+
+    @Override
+    protected Object evaluateCollection(Collection<?> values) {
+        return values.size();
     }
 }

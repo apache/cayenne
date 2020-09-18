@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.util;
+package org.apache.cayenne.event.util;
 
 /**
  * Provides Base64 encoding and decoding as defined by RFC 2045.
@@ -25,9 +25,11 @@ package org.apache.cayenne.util;
  * <i>This codec is based on Apache commons.codec implementation, copyright The Apache
  * Software Foundation.</i>
  * </p>
- * 
+ *
  * @since 1.2
+ * @deprecated since 4.2. Java 8 has a built-in Base64 class.
  */
+@Deprecated
 public class Base64Codec {
 
     /**
@@ -36,14 +38,14 @@ public class Base64Codec {
      * The {@value} character limit does not count the trailing CRLF, but counts all other
      * characters, including any equal signs.
      * </p>
-     * 
+     *
      * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045 section 6.8</a>
      */
     static final int CHUNK_SIZE = 76;
 
     /**
      * Chunk separator per RFC 2045 section 2.1.
-     * 
+     *
      * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045 section 2.1</a>
      */
     static final byte[] CHUNK_SEPARATOR = "\r\n".getBytes();
@@ -130,11 +132,9 @@ public class Base64Codec {
     private static boolean isBase64(byte octect) {
         if (octect == PAD) {
             return true;
-        }
-        else if (base64Alphabet[octect] == -1) {
+        } else if (base64Alphabet[octect] == -1) {
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
@@ -142,10 +142,10 @@ public class Base64Codec {
     /**
      * Tests a given byte array to see if it contains only valid characters within the
      * Base64 alphabet.
-     * 
+     *
      * @param arrayOctect byte array to test
      * @return true if all bytes are valid characters in the Base64 alphabet or if the
-     *         byte array is empty; false, otherwise
+     * byte array is empty; false, otherwise
      */
     public static boolean isArrayByteBase64(byte[] arrayOctect) {
 
@@ -167,7 +167,7 @@ public class Base64Codec {
 
     /**
      * Encodes binary data using the base64 algorithm but does not chunk the output.
-     * 
+     *
      * @param binaryData binary data to encode
      * @return Base64 characters
      */
@@ -178,7 +178,7 @@ public class Base64Codec {
     /**
      * Encodes binary data using the base64 algorithm and chunks the encoded output into
      * 76 character blocks
-     * 
+     *
      * @param binaryData binary data to encode
      * @return Base64 characters chunked in 76 character blocks
      */
@@ -189,10 +189,10 @@ public class Base64Codec {
     /**
      * Encodes binary data using the base64 algorithm, optionally chunking the output into
      * 76 character blocks.
-     * 
+     *
      * @param binaryData Array containing binary data to encode.
-     * @param isChunked if isChunked is true this encoder will chunk the base64 output
-     *            into 76 character blocks
+     * @param isChunked  if isChunked is true this encoder will chunk the base64 output
+     *                   into 76 character blocks
      * @return Base64-encoded data.
      */
     public static byte[] encodeBase64(byte[] binaryData, boolean isChunked) {
@@ -206,8 +206,7 @@ public class Base64Codec {
         if (fewerThan24bits != 0) {
             // data not divisible by 24 bit
             encodedDataLength = (numberTriplets + 1) * 4;
-        }
-        else {
+        } else {
             // 16 or 8 bit
             encodedDataLength = numberTriplets * 4;
         }
@@ -289,8 +288,7 @@ public class Base64Codec {
             encodedData[encodedIndex + 1] = lookUpBase64Alphabet[k << 4];
             encodedData[encodedIndex + 2] = PAD;
             encodedData[encodedIndex + 3] = PAD;
-        }
-        else if (fewerThan24bits == SIXTEENBIT) {
+        } else if (fewerThan24bits == SIXTEENBIT) {
 
             b1 = binaryData[dataIndex];
             b2 = binaryData[dataIndex + 1];
@@ -319,7 +317,7 @@ public class Base64Codec {
 
     /**
      * Decodes Base64 data into octects
-     * 
+     *
      * @param base64Data Byte array containing Base64 data
      * @return Array containing decoded data.
      */
@@ -368,12 +366,10 @@ public class Base64Codec {
                 decodedData[encodedIndex] = (byte) (b1 << 2 | b2 >> 4);
                 decodedData[encodedIndex + 1] = (byte) (((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
                 decodedData[encodedIndex + 2] = (byte) (b3 << 6 | b4);
-            }
-            else if (marker0 == PAD) {
+            } else if (marker0 == PAD) {
                 // Two PAD e.g. 3c[Pad][Pad]
                 decodedData[encodedIndex] = (byte) (b1 << 2 | b2 >> 4);
-            }
-            else if (marker1 == PAD) {
+            } else if (marker1 == PAD) {
                 // One PAD e.g. 3cQ[Pad]
                 b3 = base64Alphabet[marker0];
 
@@ -387,7 +383,7 @@ public class Base64Codec {
 
     /**
      * Discards any whitespace from a base-64 encoded block.
-     * 
+     *
      * @param data The base-64 encoded data to discard the whitespace from.
      * @return The data, less whitespace (see RFC 2045).
      */
@@ -418,7 +414,7 @@ public class Base64Codec {
      * Discards any characters outside of the base64 alphabet, per the requirements on
      * page 25 of RFC 2045 - "Any characters outside of the base64 alphabet are to be
      * ignored in base64 encoded data."
-     * 
+     *
      * @param data The base-64 encoded data to groom
      * @return The data, less non-base64 characters (see RFC 2045).
      */

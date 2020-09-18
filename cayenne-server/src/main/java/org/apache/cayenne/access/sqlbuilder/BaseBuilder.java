@@ -16,42 +16,51 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+
+package org.apache.cayenne.access.sqlbuilder;
+
+import java.util.function.Supplier;
+
+import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 
 /**
- * A {@link DbEntity} subclass used to hold extra JDBC metadata.
+ * @since 4.2
  */
-public class DetectedDbEntity extends DbEntity {
-
-    protected String primaryKeyName;
-    protected String type;
-
-    public DetectedDbEntity(String name) {
-        super(name);
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
+public abstract class BaseBuilder implements NodeBuilder {
     /**
-     * Sets the optional primary key name of this DbEntity. This is not the same as the
-     * name of the DbAttribute, but the name of the unique constraint.
+     * Main root of this query
      */
-    public void setPrimaryKeyName(String primaryKeyName) {
-        this.primaryKeyName = primaryKeyName;
+    protected final Node root;
+
+    /*
+     * Following nodes are all children of root,
+     * but we keep them here for quick access.
+     */
+    protected final Node[] nodes;
+
+    public BaseBuilder(Node root, int size) {
+        this.root = root;
+        this.nodes = new Node[size];
     }
 
-    /**
-     * Returns the optional primary key name of this DbEntity. This is not the same as the
-     * name of the DbAttribute, but the name of the unique constraint.
-     */
-    public String getPrimaryKeyName() {
-        return primaryKeyName;
+    protected Node node(int idx, Supplier<Node> nodeSupplier) {
+        if(nodes[idx] == null) {
+            nodes[idx] = nodeSupplier.get();
+        }
+        return nodes[idx];
     }
 
+    @Override
+    public Node build() {
+        for (Node next : nodes) {
+            if (next != null) {
+                root.addChild(next);
+            }
+        }
+        return root;
+    }
+
+    public Node getRoot() {
+        return root;
+    }
 }

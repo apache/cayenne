@@ -25,7 +25,7 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DetectedDbEntity;
+import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

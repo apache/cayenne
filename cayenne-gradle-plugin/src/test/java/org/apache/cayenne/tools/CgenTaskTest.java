@@ -88,8 +88,7 @@ public class CgenTaskTest {
         task.setUsePkgPath(true);
 
         CgenConfiguration configuration = task.buildConfiguration(dataMap);
-        ClassGenerationAction createdAction = new ClassGenerationAction();
-        createdAction.setCgenConfiguration(configuration);
+        ClassGenerationAction createdAction = new ClassGenerationAction(configuration);
 
         CgenConfiguration cgenConfiguration = createdAction.getCgenConfiguration();
         assertEquals(cgenConfiguration.getEmbeddableSuperTemplate(), "superTemplate");

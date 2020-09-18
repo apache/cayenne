@@ -412,7 +412,7 @@ public class UnitDbAdapter {
         return true;
     }
 
-    public boolean supportsNullComparision() {
+    public boolean supportsNullComparison() {
         return true;
     }
 }

@@ -34,6 +34,8 @@ import org.apache.cayenne.modeler.editor.dbimport.DbImportModel;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.undo.DbImportTreeUndoableEdit;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
@@ -48,6 +50,8 @@ import java.util.Map;
  * @since 4.1
  */
 public abstract class TreeManipulationAction extends CayenneAction {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TreeManipulationAction.class);
 
     static final String EMPTY_NAME = "";
 
@@ -154,7 +158,12 @@ public abstract class TreeManipulationAction extends CayenneAction {
             return false;
         }
         Class<?> selectedObjectClass = node.getUserObject().getClass();
-        return levels.get(selectedObjectClass).contains(insertableNodeClass);
+        List<Class<?>> classes = levels.get(selectedObjectClass);
+        if(classes == null) {
+            LOGGER.warn("Trying to insert node of the unknown class '" + selectedObjectClass.getName() + "' to the dbimport tree.");
+            return false;
+        }
+        return classes.contains(insertableNodeClass);
     }
 
     boolean canInsert() {

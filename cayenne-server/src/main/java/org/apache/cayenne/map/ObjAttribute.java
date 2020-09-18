@@ -36,6 +36,10 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
 
     protected String type;
     protected boolean usedForLocking;
+    /**
+     * @since 4.2
+     */
+    protected boolean lazy;
     protected String dbAttributePath;
 
     public ObjAttribute() {
@@ -62,6 +66,7 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
         setEntity(attribute.getEntity());
         setDbAttributePath(attribute.getDbAttributePath());
         setUsedForLocking(attribute.isUsedForLocking());
+        setLazy(attribute.isLazy());
     }
 
     @Override
@@ -104,6 +109,7 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
                 .attribute("name", getName())
                 .attribute("type", getType())
                 .attribute("lock", isUsedForLocking())
+                .attribute("lazy", isLazy())
                 .attribute("db-attribute-path", getDbAttributePath());
 
         delegate.visitObjAttribute(this);
@@ -154,6 +160,22 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
      */
     public void setUsedForLocking(boolean usedForLocking) {
         this.usedForLocking = usedForLocking;
+    }
+
+    /**
+     * @return whether this attribute should be loaded lazily.
+     * @since 4.2
+     */
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    /**
+     * Sets whether this attribute should be loaded lazily.
+     * @since 4.2
+     */
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
 
     /**

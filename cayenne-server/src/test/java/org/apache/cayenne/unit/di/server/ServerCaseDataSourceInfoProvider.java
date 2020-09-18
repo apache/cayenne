@@ -73,7 +73,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         hsqldb.setAdapterClassName(HSQLDBAdapter.class.getName());
         hsqldb.setUserName("sa");
         hsqldb.setPassword("");
-        hsqldb.setDataSourceUrl("jdbc:hsqldb:mem:aname");
+        hsqldb.setDataSourceUrl("jdbc:hsqldb:mem:aname;sql.regular_names=false");
         hsqldb.setJdbcDriver("org.hsqldb.jdbcDriver");
         hsqldb.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
         hsqldb.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
@@ -83,7 +83,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         h2.setAdapterClassName(H2Adapter.class.getName());
         h2.setUserName("sa");
         h2.setPassword("");
-        h2.setDataSourceUrl("jdbc:h2:mem:aname;MVCC=TRUE;DB_CLOSE_DELAY=-1");
+        h2.setDataSourceUrl("jdbc:h2:mem:aname;DB_CLOSE_DELAY=-1");
         h2.setJdbcDriver("org.h2.Driver");
         h2.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
         h2.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);

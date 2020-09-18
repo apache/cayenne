@@ -28,7 +28,7 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 /**
  * Default implementation of {@link BatchTranslatorFactory}.
  * 
- * @since 4.0
+ * @since 4.2
  */
 public class DefaultBatchTranslatorFactory implements BatchTranslatorFactory {
 
@@ -37,24 +37,24 @@ public class DefaultBatchTranslatorFactory implements BatchTranslatorFactory {
         if (query instanceof InsertBatchQuery) {
             return insertTranslator((InsertBatchQuery) query, adapter);
         } else if (query instanceof UpdateBatchQuery) {
-            return updateTranslator((UpdateBatchQuery) query, adapter, trimFunction);
+            return updateTranslator((UpdateBatchQuery) query, adapter);
         } else if (query instanceof DeleteBatchQuery) {
-            return deleteTranslator((DeleteBatchQuery) query, adapter, trimFunction);
+            return deleteTranslator((DeleteBatchQuery) query, adapter);
         } else {
             throw new CayenneRuntimeException("Unsupported batch query: %s", query);
         }
     }
 
-    protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter, String trimFunction) {
-        return new DeleteBatchTranslator(query, adapter, trimFunction);
+    protected BatchTranslator deleteTranslator(DeleteBatchQuery query, DbAdapter adapter) {
+        return new DeleteBatchTranslator(query, adapter);
     }
 
     protected BatchTranslator insertTranslator(InsertBatchQuery query, DbAdapter adapter) {
         return new InsertBatchTranslator(query, adapter);
     }
 
-    protected BatchTranslator updateTranslator(UpdateBatchQuery query, DbAdapter adapter, String trimFunction) {
-        return new UpdateBatchTranslator(query, adapter, trimFunction);
+    protected BatchTranslator updateTranslator(UpdateBatchQuery query, DbAdapter adapter) {
+        return new UpdateBatchTranslator(query, adapter);
     }
 
 }

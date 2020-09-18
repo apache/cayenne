@@ -19,21 +19,26 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.unit.di.DICase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.2
  */
 public class CgenCase extends DICase {
 
+    private final static Logger LOGGER = LoggerFactory.getLogger(CgenCase.class);
+
     private static final Injector injector;
 
     static {
         DefaultScope testScope = new DefaultScope();
-        injector = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule());
+        injector = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule(), new ToolsModule(LOGGER));
     }
 
     @Override

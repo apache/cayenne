@@ -265,4 +265,38 @@ public class BasePropertyTest {
         assertNotEquals(INT_FIELD.hashCode(), INT_FIELD3.hashCode());
     }
 
+    @Test
+    public void testFunctionProperty() {
+        BaseProperty<Integer> property = new BaseProperty<>("intField", null, Integer.class);
+        BaseProperty<Integer> arg = new BaseProperty<>("intField2", null, Integer.class);
+
+        BaseProperty<Integer> operator = property.function("%", Integer.class, arg);
+        assertEquals(ExpressionFactory.exp("fn('%', intField, intField2)"), operator.getExpression());
+    }
+
+    @Test
+    public void testFunctionScalar() {
+        BaseProperty<Integer> property = new BaseProperty<>("intField", null, Integer.class);
+
+        BaseProperty<Integer> operator = property.function("%", Integer.class, 10);
+        assertEquals(ExpressionFactory.exp("fn('%', intField, 10)"), operator.getExpression());
+    }
+
+    @Test
+    public void testOperatorProperty() {
+        BaseProperty<Integer> property = new BaseProperty<>("intField", null, Integer.class);
+        BaseProperty<Integer> arg = new BaseProperty<>("intField2", null, Integer.class);
+
+        BaseProperty<Integer> operator = property.operator("%", Integer.class, arg);
+        assertEquals(ExpressionFactory.exp("op('%', intField, intField2)"), operator.getExpression());
+    }
+
+    @Test
+    public void testOperatorScalar() {
+        BaseProperty<Integer> property = new BaseProperty<>("intField", null, Integer.class);
+
+        BaseProperty<Integer> operator = property.operator("%", Integer.class, 10);
+        assertEquals(ExpressionFactory.exp("op('%', intField, 10)"), operator.getExpression());
+    }
+
 }

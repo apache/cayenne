@@ -23,7 +23,7 @@
     <parent>
         <artifactId>cayenne-docs-parent</artifactId>
         <groupId>org.apache.cayenne.docs</groupId>
-        <version>4.2.M1-SNAPSHOT</version>
+        <version>4.2.M2-SNAPSHOT</version>
     </parent>
 
     <artifactId>cayenne-asciidoc-parent</artifactId>
@@ -125,7 +125,7 @@
                 <executions>
                     <execution>
                         <id>copy docs for site</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
@@ -146,7 +146,7 @@
 
                     <execution>
                         <id>copy images for site</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>

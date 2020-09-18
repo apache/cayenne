@@ -26,7 +26,7 @@ import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 
 public class PrintColumnsBiFunction implements BiFunction<FilterContainer, DbImportTreeNode, Void> {
 
-    private DbImportTree dbImportTree;
+    private final DbImportTree dbImportTree;
 
     public PrintColumnsBiFunction(DbImportTree dbImportTree) {
         this.dbImportTree = dbImportTree;

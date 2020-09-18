@@ -70,6 +70,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
     private TableColumnPreferences tablePreferences;
 
     private JCheckBox usedForLockingCheckBox;
+    private JCheckBox lazyCheckBox;
     private JTextField commentField;
 
     private static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
@@ -89,6 +90,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         typeComboBox.getRenderer();
 
         this.usedForLockingCheckBox = new JCheckBox();
+        this.lazyCheckBox = new JCheckBox();
         this.commentField = new JTextField();
 
         overrideAttributeTable = new CayenneTable();
@@ -125,8 +127,11 @@ public class ObjAttributeInfoDialogView extends JDialog {
         builder.addLabel("Used for locking:", cc.xy(1, 11));
         builder.add(usedForLockingCheckBox, cc.xywh(3, 11, 1, 1));
 
-        builder.addLabel("Comment:", cc.xy(1, 13));
-        builder.add(commentField, cc.xywh(3, 13, 1, 1));
+        builder.addLabel("Lazy loading:", cc.xy(1, 13));
+        builder.add(lazyCheckBox, cc.xywh(3, 13, 1, 1));
+
+        builder.addLabel("Comment:", cc.xy(1, 15));
+        builder.add(commentField, cc.xywh(3, 15, 1, 1));
 
         builder.addSeparator("Mapping to DbAttributes", cc.xywh(1, 15, 7, 1));
 
@@ -240,6 +245,10 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
     public JCheckBox getUsedForLockingCheckBox() {
         return usedForLockingCheckBox;
+    }
+
+    public JCheckBox getLazyCheckBox() {
+        return lazyCheckBox;
     }
 
     public JTextField getCommentField() {

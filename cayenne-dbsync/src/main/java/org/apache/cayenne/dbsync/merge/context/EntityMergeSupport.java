@@ -20,7 +20,10 @@
 package org.apache.cayenne.dbsync.merge.context;
 
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.value.Json;
+import org.apache.cayenne.value.Wkt;
 import org.apache.cayenne.dbsync.filter.NameFilter;
+import org.apache.cayenne.dbsync.model.DetectedDbAttribute;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DataMap;
@@ -60,6 +63,11 @@ public class EntityMergeSupport {
      */
     private static final Map<Integer, String> SQL_TYPE_TO_JAVA8_TYPE = new HashMap<>();
 
+    /**
+     * Type conversion for the most spread DB data types that are out of the standard
+     */
+    private static final Map<String, String> SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE = new HashMap<>();
+
     static {
         CLASS_TO_PRIMITIVE.put(Byte.class.getName(), "byte");
         CLASS_TO_PRIMITIVE.put(Long.class.getName(), "long");
@@ -72,6 +80,9 @@ public class EntityMergeSupport {
         SQL_TYPE_TO_JAVA8_TYPE.put(Types.DATE,      "java.time.LocalDate");
         SQL_TYPE_TO_JAVA8_TYPE.put(Types.TIME,      "java.time.LocalTime");
         SQL_TYPE_TO_JAVA8_TYPE.put(Types.TIMESTAMP, "java.time.LocalDateTime");
+
+        SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.put("json",       Json.class.getName());
+        SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.put("geometry",   Wkt.class.getName());
     }
 
     private ObjectNameGenerator nameGenerator;
@@ -285,6 +296,19 @@ public class EntityMergeSupport {
         if(!usingJava7Types && (java8Type = SQL_TYPE_TO_JAVA8_TYPE.get(dbAttribute.getType())) != null) {
             return java8Type;
         }
+
+        // Check additional common DB types, like 'json' or 'geometry'
+        if(dbAttribute.getType() == Types.OTHER) {
+            if(dbAttribute instanceof DetectedDbAttribute) {
+                DetectedDbAttribute detectedDbAttribute = (DetectedDbAttribute)dbAttribute;
+                String jdbcTypeName = detectedDbAttribute.getJdbcTypeName();
+                String type = SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.get(jdbcTypeName.toLowerCase());
+                if(type != null) {
+                    return type;
+                }
+            }
+        }
+
         String type = TypesMapping.getJavaBySqlType(dbAttribute.getType());
         String primitiveType;
         if (usingPrimitives && (primitiveType = CLASS_TO_PRIMITIVE.get(type)) != null) {

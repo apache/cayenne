@@ -124,23 +124,22 @@ public class ASTEqual extends ConditionNode implements ValueInjector {
 	}
 
 	public void injectValue(Object o) {
-		// try to inject value, if one of the operands is scalar, and other is a
-		// path
+		// try to inject value, if one of the operands is scalar, and other is a path
+		ASTScalar scalar = null;
+		ASTObjPath path = null;
 
-		Node[] args = new Node[] { jjtGetChild(0), jjtGetChild(1) };
-
-		int scalarIndex = -1;
-		if (args[0] instanceof ASTScalar) {
-			scalarIndex = 0;
-		} else if (args[1] instanceof ASTScalar) {
-			scalarIndex = 1;
+		for(int i=0; i<=1; i++) {
+			Node node = jjtGetChild(i);
+			if(node instanceof ASTScalar) {
+				scalar = (ASTScalar)node;
+			} else if(node instanceof ASTObjPath) {
+				path = (ASTObjPath) node;
+			}
 		}
 
-		if (scalarIndex != -1 && args[1 - scalarIndex] instanceof ASTObjPath) {
-			// inject
-			ASTObjPath path = (ASTObjPath) args[1 - scalarIndex];
+		if (scalar != null && path != null) {
 			try {
-				path.injectValue(o, evaluateChild(scalarIndex, o));
+				path.injectValue(o, scalar.getValue());
 			} catch (Exception ex) {
 				LOGGER.warn("Failed to inject value " + " on path " + path.getPath() + " to " + o, ex);
 			}
