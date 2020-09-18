@@ -33,16 +33,18 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ClassGenerationActionTest extends CgenCase {
+
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
 
 	protected ClassGenerationAction action;
 	protected Collection<StringWriter> writers;
@@ -287,21 +289,21 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
 
-		cgenConfiguration.setRelPath("./src/test/resources");
+		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
+		cgenConfiguration.setRelPath(".");
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
 		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
 		action.context.put(Artifact.SUPER_CLASS_KEY, "TestClass1");
 
-		File outFile = new File("./src/test/resources/TestClass1.java");
+		File outFile = new File(tempFolder.getRoot() + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
 		action.openWriter(templateType);
 		assertTrue(outFile.exists());
 
-		assertEquals(null, action.openWriter(templateType));
-		outFile.delete();
+		assertNull(action.openWriter(templateType));
 	}
 
 	@Test
@@ -309,27 +311,26 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		TemplateType templateType = TemplateType.DATAMAP_SINGLE_CLASS;
 
-		cgenConfiguration.setRelPath("./src/test/resources");
+		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
+		cgenConfiguration.setRelPath(".");
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
 		action.context.put(Artifact.SUB_PACKAGE_KEY, "");
 		action.context.put(Artifact.SUB_CLASS_KEY, "TestClass1");
 
-		File outFile = new File("./src/test/resources/TestClass1.java");
+		File outFile = new File(tempFolder.getRoot() + "/TestClass1.java");
 		assertFalse(outFile.exists());
 
 		action.openWriter(templateType);
 		assertTrue(outFile.exists());
 
-		assertEquals(null, action.openWriter(templateType));
+		assertNull(action.openWriter(templateType));
 
 		cgenConfiguration.setMakePairs(false);
-		assertEquals(null, action.openWriter(templateType));
+		assertNull(action.openWriter(templateType));
 
 		cgenConfiguration.setOverwrite(true);
-		assertEquals(null, action.openWriter(templateType));
-
-		outFile.delete();
+		assertNull(action.openWriter(templateType));
 	}
 }
