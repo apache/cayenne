@@ -193,8 +193,10 @@ public class SelectQueryDescriptor extends QueryDescriptor {
             prefetchesMap.forEach(query::prefetch);
         }
 
-        // TODO: apply DISTINCT property
         query.initWithProperties(this.getProperties());
+        if(this.isDistinct()) {
+            query.distinct();
+        }
         return query;
     }
 

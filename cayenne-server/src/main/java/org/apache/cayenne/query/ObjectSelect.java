@@ -655,6 +655,15 @@ public class ObjectSelect<T> extends FluentSelect<T> implements ParameterizedQue
     }
 
     /**
+     * @since 4.2
+     * @return this
+     */
+    public ObjectSelect<T> distinct() {
+        this.distinct = true;
+        return this;
+    }
+
+    /**
      * <p>Quick way to select count of records</p>
      * <p>Usage:
      * <pre>
