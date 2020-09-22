@@ -30,6 +30,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -231,5 +232,22 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         dep2.setToMeaningfulPK(obj2);
         dep2.setPk(10);
         context.commitChanges();
+    }
+
+    @Test
+    public void testMeaningfulFKToOneInvalidate() {
+        MeaningfulPk pk = context.newObject(MeaningfulPk.class);
+        MeaningfulPkDep2 dep = context.newObject(MeaningfulPkDep2.class);
+        dep.setMeaningfulPk(pk);
+        dep.setDescr("test");
+
+        ObjectContext childContext = runtime.newContext(context);
+
+        MeaningfulPkDep2 depChild = childContext.localObject(dep);
+        depChild.setDescr("test2");
+
+        assertEquals("test2", depChild.getDescr());
+        assertNotNull(depChild.getMeaningfulPk());
+        assertNull(depChild.getMeaningfulPk().getPk());
     }
 }

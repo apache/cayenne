@@ -30,6 +30,7 @@ Bug Fixes:
 
 CAY-2591 Modeler: project becomes dirty after click on dbImport or cgen tab
 CAY-2671 QualifierTranslator fails to translate expressions with compound PKs/FKs
+CAY-2675 A one-to-one relationship with meaningful PK can be nullified in the nested context
 
 ----------------------------------
 Release: 4.2.M1

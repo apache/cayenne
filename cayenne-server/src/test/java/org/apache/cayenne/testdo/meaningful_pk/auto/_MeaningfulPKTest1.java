@@ -20,7 +20,7 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
  */
 public abstract class _MeaningfulPKTest1 extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 

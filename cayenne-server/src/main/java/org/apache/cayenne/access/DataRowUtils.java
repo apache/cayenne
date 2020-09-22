@@ -59,13 +59,10 @@ class DataRowUtils {
 
         if (state == PersistenceState.HOLLOW || descriptor.getEntity().isReadOnly()) {
             refreshObjectWithSnapshot(descriptor, object, snapshot, true);
-        }
-        else if (state != PersistenceState.COMMITTED) {
+        } else if (state != PersistenceState.COMMITTED) {
             forceMergeWithSnapshot(context, descriptor, object, snapshot);
-        }
-        else {
-            // do not invalidate to-many relationships, since they might have
-            // just been prefetched...
+        } else {
+            // do not invalidate to-many relationships, since they might have just been prefetched...
             refreshObjectWithSnapshot(descriptor, object, snapshot, false);
         }
     }
@@ -153,8 +150,7 @@ class DataRowUtils {
                     Object oldValue = diff != null ? diff.getSnapshotValue(property
                             .getName()) : null;
 
-                    // if value not modified, update it from snapshot,
-                    // otherwise leave it alone
+                    // if value not modified, update it from snapshot, otherwise leave it alone
                     if (property.equals(curValue, oldValue)
                             && !property.equals(newValue, curValue)) {
                         property.writePropertyDirectly(object, oldValue, newValue);
@@ -171,42 +167,35 @@ class DataRowUtils {
             public boolean visitToOne(ToOneProperty property) {
                 ObjRelationship relationship = property.getRelationship();
                 if (relationship.isToPK()) {
-                    // TODO: will this work for flattened, how do we save snapshots for
-                    // them?
+                    // TODO: will this work for flattened, how do we save snapshots for them?
 
-                    // if value not modified, update it from snapshot,
-                    // otherwise leave it alone
+                    // if value not modified, update it from snapshot, otherwise leave it alone
                     if (!isToOneTargetModified(property, object, diff)) {
 
                         DbRelationship dbRelationship = relationship
                                 .getDbRelationships()
                                 .get(0);
 
-                        // must check before creating ObjectId because of partial
-                        // snapshots
+                        // must check before creating ObjectId because of partial snapshots
                         if (hasFK(dbRelationship, snapshot)) {
                             ObjectId id = snapshot.createTargetObjectId(
                                     relationship.getTargetEntityName(),
-                                    dbRelationship);
+                                    dbRelationship
+                            );
 
                             if (diff == null
                                     || !diff.containsArcSnapshot(relationship.getName())
-                                    || !property.equals(id, diff
-                                            .getArcSnapshotValue(relationship.getName()))) {
+                                    || !property.equals(id, diff.getArcSnapshotValue(relationship.getName()))) {
 
                                 if (id == null) {
                                     property.writeProperty(object, null, null);
-                                }
-                                else {
-                                    // we can't use 'localObject' if relationship is
-                                    // optional or inheritance is involved
+                                } else {
+                                    // we can't use 'localObject' if relationship is optional or inheritance is involved
                                     // .. must turn to fault instead
                                     if (!relationship
-                                            .isSourceDefiningTargetPrecenseAndType(context
-                                                    .getEntityResolver())) {
+                                            .isSourceDefiningTargetPrecenseAndType(context.getEntityResolver())) {
                                         property.invalidate(object);
-                                    }
-                                    else {
+                                    } else {
                                         property.writeProperty(
                                                 object,
                                                 null,
@@ -224,7 +213,7 @@ class DataRowUtils {
 
     static boolean hasFK(DbRelationship relationship, Map<String, Object> snapshot) {
         for (final DbJoin join : relationship.getJoins()) {
-            if (!snapshot.containsKey(join.getSourceName())) {
+            if (snapshot.get(join.getSourceName()) == null) {
                 return false;
             }
         }

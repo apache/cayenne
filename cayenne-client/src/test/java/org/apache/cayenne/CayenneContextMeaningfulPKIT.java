@@ -63,7 +63,7 @@ public class CayenneContextMeaningfulPKIT extends ClientCase {
         deleteAndCreateTwoMeaningfulPKsDataSet();
 
         List<?> results = ObjectSelect.query(ClientMeaningfulPk.class)
-                .orderBy(ClientMeaningfulPk.PK_PROPERTY, SortOrder.DESCENDING)
+                .orderBy(ClientMeaningfulPk.PK.desc())
                 .select(clientContext);
         assertEquals(2, results.size());
     }
