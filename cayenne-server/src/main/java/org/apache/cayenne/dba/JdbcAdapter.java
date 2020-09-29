@@ -541,6 +541,7 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
+    @Deprecated
     public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
         return new DefaultSelectTranslator(query, this, entityResolver);
     }

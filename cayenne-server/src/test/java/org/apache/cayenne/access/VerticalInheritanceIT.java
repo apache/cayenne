@@ -31,7 +31,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv1Root;
@@ -308,7 +307,6 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
-	@Deprecated
 	public void testSelectQuery_SuperSub() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -323,7 +321,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		ivRootTable.insert(2, "xSUB1_ROOT", "IvSub1");
 		ivSub1Table.insert(2, "xSUB1");
 
-		SelectQuery<IvRoot> query = new SelectQuery<>(IvRoot.class);
+		ObjectSelect<IvRoot> query = ObjectSelect.query(IvRoot.class);
 		List<IvRoot> results = context.select(query);
 
 		assertEquals(2, results.size());
@@ -351,7 +349,6 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
-	@Deprecated
 	public void testSelectQuery_DeepAndWide() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -380,7 +377,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
 		ivSub2Table.insert(4, "xSUB2");
 
-		SelectQuery<IvRoot> query = new SelectQuery<>(IvRoot.class);
+		ObjectSelect<IvRoot> query = ObjectSelect.query(IvRoot.class);
 		List<IvRoot> results = context.select(query);
 
 		assertEquals(4, results.size());
@@ -422,7 +419,6 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
-	@Deprecated
 	public void testSelectQuery_MiddleLeaf() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -451,7 +447,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		ivRootTable.insert(4, "xROOT_SUB2", "IvSub2");
 		ivSub2Table.insert(4, "xSUB2");
 
-		SelectQuery<IvSub1> query = new SelectQuery<>(IvSub1.class);
+		ObjectSelect<IvSub1> query = ObjectSelect.query(IvSub1.class);
 		List<IvSub1> results = context.select(query);
 
 		assertEquals(2, results.size());
@@ -556,7 +552,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		iv1RootTable.insert(2, "xSUB1_ROOT", "Iv1Sub1");
 		iv1Sub1Table.insert(2, "xSUB1");
 
-		SelectQuery<Iv1Root> query = new SelectQuery<>(Iv1Root.class);
+		ObjectSelect<Iv1Root> query = ObjectSelect.query(Iv1Root.class);
 		List<Iv1Root> results = context.select(query);
 
 		assertEquals(2, results.size());

@@ -49,7 +49,7 @@ public class StatementFetchSizeIT extends ServerCase {
 
     @Test
     public void testObjectSelect() {
-        ObjectSelect query = ObjectSelect.query(Artist.class).statementFetchSize(10);
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).statementFetchSize(10);
 
         assertEquals(10, query
                 .getMetaData(context.getEntityResolver())

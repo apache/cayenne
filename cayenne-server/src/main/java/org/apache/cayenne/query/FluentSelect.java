@@ -199,7 +199,7 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
         return false;
     }
 
-    private void routePrefetches(QueryRouter router, EntityResolver resolver) {
+    protected void routePrefetches(QueryRouter router, EntityResolver resolver) {
         new FluentSelectPrefetchRouterAction().route(this, router, resolver);
     }
 

@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
@@ -117,14 +118,13 @@ public class RelationshipQuery extends IndirectQuery {
         ObjRelationship relationship = getRelationship(resolver);
 
         // build executable select...
-        Expression qualifier = ExpressionFactory.matchDbExp(relationship
-                .getReverseDbRelationshipPath(), objectId);
+        Expression qualifier = ExpressionFactory
+                .matchDbExp(relationship.getReverseDbRelationshipPath(), objectId);
 
-        SelectQuery<Object> query = new SelectQuery<Object>(
-                (ObjEntity) relationship.getTargetEntity(),
-                qualifier);
-        query.setStatementFetchSize(statementFetchSize);
-        return query;
+        return ObjectSelect.query(Persistent.class)
+                .entityName(relationship.getTargetEntityName())
+                .where(qualifier)
+                .statementFetchSize(statementFetchSize);
     }
 
     /**

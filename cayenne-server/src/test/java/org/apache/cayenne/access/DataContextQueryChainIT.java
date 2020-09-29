@@ -23,8 +23,8 @@ import java.util.List;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryChain;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -48,8 +48,8 @@ public class DataContextQueryChainIT extends ServerCase {
         context.commitChanges();
 
         QueryChain chain = new QueryChain();
-        chain.addQuery(new SelectQuery(Artist.class));
-        chain.addQuery(new SelectQuery(Artist.class));
+        chain.addQuery(ObjectSelect.query(Artist.class));
+        chain.addQuery(ObjectSelect.query(Artist.class));
 
         QueryResponse r = context.performGenericQuery(chain);
 

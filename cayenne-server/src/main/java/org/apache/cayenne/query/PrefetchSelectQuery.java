@@ -30,8 +30,10 @@ import org.apache.cayenne.util.Util;
 /**
  * A SelectQuery to perform a prefetch based on another query. Used internally by Cayenne
  * and is normally never used directly.
+ *
+ * @since 4.2 this query extends {@link ObjectSelect} as part of the deprecation of the {@link SelectQuery}
  */
-public class PrefetchSelectQuery<T> extends SelectQuery<T> {
+public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
 
     /**
      * The relationship path from root objects to the objects being prefetched.
@@ -53,19 +55,13 @@ public class PrefetchSelectQuery<T> extends SelectQuery<T> {
      * @since 3.1
      */
     public PrefetchSelectQuery(String prefetchPath, ObjRelationship lastPrefetchHint) {
-        setRoot(lastPrefetchHint.getTargetEntity());
+        entityName(lastPrefetchHint.getTargetEntityName());
         this.prefetchPath = prefetchPath;
         this.lastPrefetchHint = lastPrefetchHint;
     }
 
-    /**
-     * Overrides super implementation to suppress disjoint prefetch routing, as the parent
-     * query should take care of that.
-     * 
-     * @since 1.2
-     */
     @Override
-    void routePrefetches(QueryRouter router, EntityResolver resolver) {
+    protected void routePrefetches(QueryRouter router, EntityResolver resolver) {
         // noop - intentional.
     }
 
@@ -83,6 +79,16 @@ public class PrefetchSelectQuery<T> extends SelectQuery<T> {
      */
     public void setPrefetchPath(String prefetchPath) {
         this.prefetchPath = prefetchPath;
+    }
+
+    /**
+     * Clean set of the prefetch tree without any merge with existing nodes.
+     *
+     * @param prefetch prefetch tree
+     * @since 4.2
+     */
+    public void setPrefetchTree(PrefetchTreeNode prefetch) {
+        getBaseMetaData().setPrefetchTree(prefetch);
     }
 
     /**

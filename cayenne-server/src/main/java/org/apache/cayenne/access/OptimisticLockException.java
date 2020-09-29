@@ -23,16 +23,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 
 /**
  * An exception thrown on optimistic lock failure.
@@ -85,9 +83,9 @@ public class OptimisticLockException extends CayenneRuntimeException {
                     : attributeQualifier;
         }
 
-        SelectQuery<DataRow> query = new SelectQuery<DataRow>(rootEntity, qualifier);
-        query.setFetchingDataRows(true);
-        return (Map<?, ?>) Cayenne.objectForQuery(context, query);
+        return ObjectSelect.dbQuery(rootEntity.getName(), qualifier)
+                .fetchDataRows()
+                .selectFirst(context);
     }
 
     /**

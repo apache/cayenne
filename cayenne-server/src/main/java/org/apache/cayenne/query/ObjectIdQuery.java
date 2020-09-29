@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
@@ -124,11 +125,13 @@ public class ObjectIdQuery extends IndirectQuery {
             throw new CayenneRuntimeException("Can't build a query for temporary id: %s", objectId);
         }
 
-        SelectQuery<Object> query = new SelectQuery<>(objectId.getEntityName(), ExpressionFactory
-                .matchAllDbExp(objectId.getIdSnapshot(), Expression.EQUAL_TO));
-
+        ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
+                .entityName(objectId.getEntityName())
+                .where(ExpressionFactory.matchAllDbExp(objectId.getIdSnapshot(), Expression.EQUAL_TO));
         // if we got to the point of fetch, always force refresh....
-        query.setFetchingDataRows(fetchingDataRows);
+        if(fetchingDataRows) {
+            query.fetchDataRows();
+        }
         return query;
     }
 
