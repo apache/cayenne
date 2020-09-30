@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -335,7 +336,9 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	// stores relationships for the map of entities
 	private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 		for (Entity entity : new TreeMap<>(getDbEntityMap()).values()) {
-			entity.getRelationships().stream().filter(r -> !r.isRuntime())
+			entity.getRelationships().stream()
+					.filter(r -> !r.isRuntime())
+					.sorted(Comparator.comparing(Relationship::getName))
 					.forEach(r -> r.encodeAsXML(encoder, delegate));
 		}
 	}
@@ -343,7 +346,9 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	// stores relationships for the map of entities
 	private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
 		for (ObjEntity entity : new TreeMap<>(getObjEntityMap()).values()) {
-			entity.getDeclaredRelationships().stream().filter(r -> !r.isRuntime())
+			entity.getDeclaredRelationships().stream()
+					.filter(r -> !r.isRuntime())
+					.sorted(Comparator.comparing(Relationship::getName))
 					.forEach(r -> r.encodeAsXML(encoder, delegate));
 		}
 	}
