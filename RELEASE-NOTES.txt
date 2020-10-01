@@ -16,6 +16,7 @@ Bug Fixes:
 
 CAY-2670 CommitLog does not include FKs for deleted objects with one-way relationships
 CAY-2679 Unstable ordering of relationships in the .map.xml file
+CAY-2681 Modeler: All selected checkboxes cause project to become dirty at initialization
 
 ----------------------------------
 Release: 4.1
