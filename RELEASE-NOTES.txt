@@ -32,6 +32,7 @@ CAY-2591 Modeler: project becomes dirty after click on dbImport or cgen tab
 CAY-2671 QualifierTranslator fails to translate expressions with compound PKs/FKs
 CAY-2675 A one-to-one relationship with meaningful PK can be nullified in the nested context
 CAY-2679 Unstable ordering of relationships in the .map.xml file
+CAY-2681 Modeler: All selected checkboxes cause project to become dirty at initialization
 
 ----------------------------------
 Release: 4.2.M1

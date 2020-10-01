@@ -21,15 +21,36 @@ package org.apache.cayenne.swing.components;
 
 import org.apache.cayenne.modeler.undo.JCheckBoxUndoListener;
 
-import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import javax.swing.JCheckBox;
 
 public class JCayenneCheckBox extends JCheckBox {
 
     private ActionListener actionListener;
+    private boolean modelUpdateDisabled;
 
     public JCayenneCheckBox() {
         this.actionListener = new JCheckBoxUndoListener();
         this.addActionListener(this.actionListener);
+    }
+
+    @Override
+    public void setSelected(boolean b) {
+        modelUpdateDisabled = true;
+        try {
+            super.setSelected(b);
+        } finally {
+            modelUpdateDisabled = false;
+        }
+    }
+
+    @Override
+    public void addItemListener(ItemListener l) {
+        super.addItemListener(e -> {
+            if(!modelUpdateDisabled) {
+                l.itemStateChanged(e);
+            }
+        });
     }
 }
