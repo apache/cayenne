@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -675,5 +676,14 @@ public class VerticalInheritanceIT extends ServerCase {
 
 		EJBQLQuery query3 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub2 a");
 		assertEquals(Collections.singletonList(2L), context.performQuery(query3));
+	}
+
+	@Test
+	public void testPropagatedGeneratedPK() {
+		IvGenKeySub sub = context.newObject(IvGenKeySub.class);
+		sub.setName("test");
+		context.commitChanges();
+
+		assertTrue(Cayenne.intPKForObject(sub) > 0);
 	}
 }
