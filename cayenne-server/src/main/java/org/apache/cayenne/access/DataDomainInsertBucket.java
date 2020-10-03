@@ -154,9 +154,6 @@ class DataDomainInsertBucket extends DataDomainSyncBucket {
 
                 // skip propagated
                 if (isPropagated(dbAttr)) {
-                    // this covers rare case of the DB-generated flattened PK,
-                    // for normal propagated PK this will be overwritten by the arc diff later
-                    idMap.put(dbAttrName, new PropagatedValueFactory(id, dbAttrName));
                     continue;
                 }
 
