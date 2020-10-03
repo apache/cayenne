@@ -33,6 +33,7 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -679,6 +680,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
 	@Test
+	@Ignore("CAY-2682. Fixed in 4.2 as the FlushAction is reimplemented")
 	public void testPropagatedGeneratedPK() {
 		IvGenKeySub sub = context.newObject(IvGenKeySub.class);
 		sub.setName("test");
