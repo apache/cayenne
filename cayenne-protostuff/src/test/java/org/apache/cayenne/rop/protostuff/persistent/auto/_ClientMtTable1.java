@@ -42,6 +42,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "dateAttribute", false);
         }
 
+
         return dateAttribute;
     }
 
@@ -58,6 +59,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "globalAttribute", false);
         }
+
 
         return globalAttribute;
     }
@@ -76,6 +78,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "oldDateAttribute", false);
         }
 
+
         return oldDateAttribute;
     }
 
@@ -92,6 +95,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "serverAttribute", false);
         }
+
 
         return serverAttribute;
     }
@@ -110,6 +114,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
             objectContext.prepareForAccess(this, "timeAttribute", false);
         }
 
+
         return timeAttribute;
     }
 
@@ -126,6 +131,7 @@ public abstract class _ClientMtTable1 extends PersistentObject {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "timestampAttribute", false);
         }
+
 
         return timestampAttribute;
     }

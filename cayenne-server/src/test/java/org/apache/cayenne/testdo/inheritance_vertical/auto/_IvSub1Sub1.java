@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
@@ -20,7 +18,6 @@ public abstract class _IvSub1Sub1 extends IvSub1 {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> SUB1SUB1NAME = PropertyFactory.createString("sub1Sub1Name", String.class);

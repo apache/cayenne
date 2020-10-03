@@ -43,6 +43,15 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
+	<db-entity name="IV_GEN_KEY_ROOT">
+		<db-attribute name="DISCRIMINATOR" type="VARCHAR" length="10"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="100"/>
+	</db-entity>
+	<db-entity name="IV_GEN_KEY_SUB">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SUB1_NAME" type="VARCHAR" length="100"/>
+	</db-entity>
 	<db-entity name="IV_IMPL">
 		<db-attribute name="ATTR1" type="VARCHAR" length="100"/>
 		<db-attribute name="ATTR2" type="VARCHAR" length="100"/>
@@ -111,6 +120,14 @@
 	<obj-entity name="IvConcrete" superEntityName="IvAbstract" className="org.apache.cayenne.testdo.inheritance_vertical.IvConcrete">
 		<qualifier><![CDATA[type = "S"]]></qualifier>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="concrete.NAME"/>
+	</obj-entity>
+	<obj-entity name="IvGenKeyRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvGenKeyRoot" dbEntityName="IV_GEN_KEY_ROOT">
+		<obj-attribute name="discriminator" type="java.lang.String" db-attribute-path="DISCRIMINATOR"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
+	<obj-entity name="IvGenKeySub" superEntityName="IvGenKeyRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvGenKeySub">
+		<qualifier><![CDATA[discriminator = "sub1"]]></qualifier>
+		<attribute-override name="name" db-attribute-path="sub1.SUB1_NAME"/>
 	</obj-entity>
 	<obj-entity name="IvImpl" superEntityName="IvBase" className="org.apache.cayenne.testdo.inheritance_vertical.IvImpl">
 		<qualifier><![CDATA[type = "I"]]></qualifier>
@@ -183,6 +200,12 @@
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="sub1" source="IV_GEN_KEY_ROOT" target="IV_GEN_KEY_SUB" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="root" source="IV_GEN_KEY_SUB" target="IV_GEN_KEY_ROOT">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="base" source="IV_IMPL" target="IV_BASE">

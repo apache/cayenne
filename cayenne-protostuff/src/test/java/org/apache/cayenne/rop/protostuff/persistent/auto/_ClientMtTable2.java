@@ -26,6 +26,7 @@ public abstract class _ClientMtTable2 extends PersistentObject {
             objectContext.prepareForAccess(this, "globalAttribute", false);
         }
 
+
         return globalAttribute;
     }
 

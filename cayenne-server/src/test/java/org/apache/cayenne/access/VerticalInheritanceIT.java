@@ -18,13 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
@@ -33,23 +27,18 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv1Root;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv1Sub1;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
-import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
-import org.apache.cayenne.testdo.inheritance_vertical.IvConcrete;
-import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
-import org.apache.cayenne.testdo.inheritance_vertical.IvImplWithLock;
-import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
-import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
-import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
-import org.apache.cayenne.testdo.inheritance_vertical.IvSub1Sub1;
-import org.apache.cayenne.testdo.inheritance_vertical.IvSub2;
-import org.apache.cayenne.testdo.inheritance_vertical.IvSub3;
+import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
+
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -750,5 +739,14 @@ public class VerticalInheritanceIT extends ServerCase {
 
 		EJBQLQuery query3 = new EJBQLQuery("SELECT COUNT(a) FROM IvSub2 a");
 		assertEquals(Collections.singletonList(2L), context.performQuery(query3));
+	}
+
+	@Test
+	public void testPropagatedGeneratedPK() {
+		IvGenKeySub sub = context.newObject(IvGenKeySub.class);
+		sub.setName("test");
+		context.commitChanges();
+
+		assertTrue(Cayenne.intPKForObject(sub) > 0);
 	}
 }

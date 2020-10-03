@@ -25,6 +25,7 @@ CAY-2668 Experimental graph-based db operations sorter
 CAY-2670 CommitLog does not include FKs for deleted objects with one-way relationships
 CAY-2673 Support ordering by aggregate functions
 CAY-2674 Support in-memory evaluation of aggregate functions
+CAY-2682 Vertical Inheritance: DB-generated PK doesn't propagate from the root to children
 
 Bug Fixes:
 
