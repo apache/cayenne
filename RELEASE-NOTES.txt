@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.2.M2
-Date:
+Date: October 6, 2020
 ----------------------------------
 Changes/New Features:
 
@@ -31,9 +31,9 @@ Bug Fixes:
 CAY-2591 Modeler: project becomes dirty after click on dbImport or cgen tab
 CAY-2671 QualifierTranslator fails to translate expressions with compound PKs/FKs
 CAY-2675 A one-to-one relationship with meaningful PK can be nullified in the nested context
+CAY-2676 Degradation: Custom class generation templates are not working anymore
 CAY-2679 Unstable ordering of relationships in the .map.xml file
 CAY-2681 Modeler: All selected checkboxes cause project to become dirty at initialization
-CAY-2676 Degredation: Custom class generation templates are not working anymore
 CAY-2682 Vertical Inheritance: DB-generated PK doesn't propagate from the root to children
 
 ----------------------------------
