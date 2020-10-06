@@ -283,6 +283,9 @@ public class ClassGenerationAction {
 			props.put("resource.loader", "cayenne");
 			props.put("cayenne.resource.loader.class", ClassGeneratorResourceLoader.class.getName());
 			props.put("cayenne.resource.loader.cache", "false");
+			if (cgenConfiguration.getRootPath() != null) {
+				props.put("cayenne.resource.loader.path", cgenConfiguration.getRootPath().toString());
+			}
 
 			VelocityEngine velocityEngine = new VelocityEngine();
 			velocityEngine.init(props);
