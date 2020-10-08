@@ -18,17 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import java.util.Map;
-
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.map.EmbeddedAttribute;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.*;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.Map;
 
 class ObjAttributeValidator extends ConfigurationNodeValidator {
 
@@ -85,7 +80,7 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
 
         ObjEntity superEntity = attribute.getEntity().getSuperEntity();
         if (selfAttribute && superEntity != null && superEntity.getAttribute(attribute.getName()) != null) {
-            addFailure(validationResult, attribute, "'%s' and super '%s' can't have attribute '%s' together ",
+            addFailure(validationResult, attribute, "'%s' and super '%s' can't both have attribute '%s'",
                     attribute.getEntity().getName(), superEntity.getName(), attribute.getName());
         }
     }
