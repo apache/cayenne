@@ -8,6 +8,16 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.2.M3
+Date:
+----------------------------------
+Changes/New Features:
+
+Bug Fixes:
+
+CAY-2683 Don't use DISTINCT for joins on to-one related tables
+
+----------------------------------
 Release: 4.2.M2
 Date: October 6, 2020
 ----------------------------------

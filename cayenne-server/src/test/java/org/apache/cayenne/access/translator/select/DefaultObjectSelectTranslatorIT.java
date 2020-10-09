@@ -102,7 +102,7 @@ public class DefaultObjectSelectTranslatorIT extends ServerCase {
 
         String sql = translator.getSql();
 
-        assertTrue(sql.startsWith("SELECT DISTINCT"));
+        assertTrue(sql.startsWith("SELECT "));
         assertTrue(sql.contains("t0.ESTIMATED_PRICE"));
         assertTrue(sql.contains("t0.PAINTING_DESCRIPTION"));
         assertTrue(sql.contains("t0.PAINTING_TITLE"));
