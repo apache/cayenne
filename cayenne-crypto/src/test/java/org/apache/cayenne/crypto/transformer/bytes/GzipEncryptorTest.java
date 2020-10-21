@@ -26,11 +26,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class GzipEncryptorTest {
@@ -38,46 +37,55 @@ public class GzipEncryptorTest {
     @Test
     public void testGzip() throws IOException {
 
-        byte[] input1 = "Hello Hello Hello".getBytes("UTF8");
+        byte[] input1 = "Hello Hello Hello".getBytes(StandardCharsets.UTF_8);
         byte[] output1 = GzipEncryptor.gzip(input1);
         byte[] expectedOutput1 = CryptoUnitUtils.hexToBytes("1f8b0800000000000000f348cdc9c957f0409000a91a078c11000000");
+
+        // since JDK 16, gzip call sets OS flag to 255, that means "unknown", previous versions set this byte to 0
+        // see http://www.zlib.org/rfc-gzip.html spec for gzip header bytes details
+        if(output1.length > 8 && output1[9] == -1) {
+            output1[9] = 0;
+        }
+
         assertArrayEquals(expectedOutput1, output1);
     }
 
     @Test
-    public void testEncrypt() throws UnsupportedEncodingException {
+    public void testEncrypt() {
 
         BytesEncryptor delegate = mock(BytesEncryptor.class);
-        when(delegate.encrypt(any(byte[].class), anyInt(), any(byte[].class))).thenAnswer(new Answer<byte[]>() {
-            @Override
-            public byte[] answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
+        when(delegate.encrypt(any(byte[].class), anyInt(), any(byte[].class))).thenAnswer((Answer<byte[]>) invocation -> {
+            Object[] args = invocation.getArguments();
 
-                byte[] answer = (byte[]) args[0];
-                int offset = (Integer) args[1];
+            byte[] answer = (byte[]) args[0];
+            int offset = (Integer) args[1];
 
-                assertEquals(1, offset);
+            assertEquals(1, offset);
 
-                return answer;
-            }
+            return answer;
         });
 
         GzipEncryptor e = new GzipEncryptor(delegate);
 
-        byte[] input1 = "Hello Hello Hello".getBytes("UTF8");
+        byte[] input1 = "Hello Hello Hello".getBytes(StandardCharsets.UTF_8);
         byte[] output1 = e.encrypt(input1, 1, new byte[1]);
         byte[] expectedOutput1 = input1;
 
         assertArrayEquals(expectedOutput1, output1);
 
         byte[] input2 = ("Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello "
-                + "Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello").getBytes("UTF8");
+                + "Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello AAAAA Hello").getBytes(StandardCharsets.UTF_8);
         byte[] output2 = e.encrypt(input2, 1, new byte[1]);
 
         // somehow 'gzip -c' fills bytes 3..9 with values... the rest of the
         // gzip string is identical...
         byte[] expectedOutput2 = CryptoUnitUtils
                 .hexToBytes("1f8b0800000000000000f348cdc9c957700401050f8ad9949b80c40600bbec62509b000000");
+        // since JDK 16, gzip call sets OS flag to 255, that means "unknown", previous versions set this byte to 0
+        // see http://www.zlib.org/rfc-gzip.html spec for gzip header bytes details
+        if(output2.length > 8 && output2[9] == -1) {
+            output2[9] = 0;
+        }
 
         assertArrayEquals(expectedOutput2, output2);
 
