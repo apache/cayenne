@@ -26,6 +26,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SimpleNodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TextNode;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
@@ -40,7 +41,15 @@ public final class SQLBuilder {
         return new InsertBuilder(table);
     }
 
+    public static InsertBuilder insert(DbEntity table) {
+        return new InsertBuilder(table);
+    }
+
     public static UpdateBuilder update(String table) {
+        return new UpdateBuilder(table);
+    }
+
+    public static UpdateBuilder update(DbEntity table) {
         return new UpdateBuilder(table);
     }
 
@@ -48,7 +57,15 @@ public final class SQLBuilder {
         return new DeleteBuilder(table);
     }
 
+    public static DeleteBuilder delete(DbEntity table) {
+        return new DeleteBuilder(table);
+    }
+
     public static TableNodeBuilder table(String table) {
+        return new TableNodeBuilder(table);
+    }
+
+    public static TableNodeBuilder table(DbEntity table) {
         return new TableNodeBuilder(table);
     }
 

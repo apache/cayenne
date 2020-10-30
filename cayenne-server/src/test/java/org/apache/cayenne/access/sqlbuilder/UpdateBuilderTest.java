@@ -21,6 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateNode;
+import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
@@ -30,7 +31,7 @@ import static org.junit.Assert.*;
 /**
  * @since 4.2
  */
-public class UpdateBuilderTest {
+public class UpdateBuilderTest extends BaseSqlBuilderTest {
 
     @Test
     public void testUpdate() {
@@ -38,6 +39,29 @@ public class UpdateBuilderTest {
         Node node = builder.build();
         assertThat(node, instanceOf(UpdateNode.class));
         assertSQL("UPDATE test", node);
+    }
+
+    @Test
+    public void testUpdateDbEntityCatalog() {
+        DbEntity entity = new DbEntity("test");
+        entity.setCatalog("catalog");
+        UpdateBuilder builder = new UpdateBuilder(entity);
+        Node node = builder.build();
+        assertThat(node, instanceOf(UpdateNode.class));
+        assertSQL("UPDATE catalog.test", node);
+        assertQuotedSQL("UPDATE `catalog`.`test`", node);
+    }
+
+    @Test
+    public void testUpdateDbEntityCatalogAndSchema() {
+        DbEntity entity = new DbEntity("test");
+        entity.setSchema("schema");
+        entity.setCatalog("catalog");
+        UpdateBuilder builder = new UpdateBuilder(entity);
+        Node node = builder.build();
+        assertThat(node, instanceOf(UpdateNode.class));
+        assertSQL("UPDATE catalog.schema.test", node);
+        assertQuotedSQL("UPDATE `catalog`.`schema`.`test`", node);
     }
 
     @Test
@@ -65,9 +89,4 @@ public class UpdateBuilderTest {
         assertSQL("UPDATE test SET col1 = 1 WHERE id = 123", node);
     }
 
-    private void assertSQL(String expected, Node node) {
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
-        node.visit(visitor);
-        assertEquals(expected, visitor.getSQLString());
-    }
 }

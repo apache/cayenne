@@ -41,7 +41,7 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
     public String getSql() {
         UpdateBatchQuery query = context.getQuery();
 
-        UpdateBuilder updateBuilder = SQLBuilder.update(context.getRootDbEntity().getFullyQualifiedName());
+        UpdateBuilder updateBuilder = SQLBuilder.update(context.getRootDbEntity());
         for (DbAttribute attr : query.getUpdatedAttributes()) {
             updateBuilder.set(SQLBuilder
                     .column(attr.getName()).attribute(attr)

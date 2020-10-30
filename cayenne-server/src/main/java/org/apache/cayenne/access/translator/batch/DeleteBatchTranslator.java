@@ -40,7 +40,7 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery>
     @Override
     public String getSql() {
         DeleteBuilder deleteBuilder = SQLBuilder
-                .delete(context.getRootDbEntity().getFullyQualifiedName())
+                .delete(context.getRootDbEntity())
                 .where(buildQualifier(context.getQuery().getDbAttributes()));
         return doTranslate(deleteBuilder);
     }

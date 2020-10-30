@@ -48,7 +48,7 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
         DeleteBatchQuery query = context.getQuery();
         DbAttribute deleteAttribute = query.getDbEntity().getAttribute(deletedFieldName);
 
-        UpdateBuilder updateBuilder = update(context.getRootDbEntity().getFullyQualifiedName())
+        UpdateBuilder updateBuilder = update(context.getRootDbEntity())
                 .set(column(deletedFieldName).attribute(deleteAttribute)
                         .eq(SQLBuilder.value(true).attribute(deleteAttribute)))
                 .where(buildQualifier(query.getDbAttributes()));

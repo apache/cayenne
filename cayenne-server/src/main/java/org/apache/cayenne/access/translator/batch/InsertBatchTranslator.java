@@ -40,7 +40,7 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
     @Override
     public String getSql() {
         InsertBatchQuery query = context.getQuery();
-        InsertBuilder insertBuilder = SQLBuilder.insert(context.getRootDbEntity().getFullyQualifiedName());
+        InsertBuilder insertBuilder = SQLBuilder.insert(context.getRootDbEntity());
 
         for(DbAttribute attribute : query.getDbAttributes()) {
             // skip generated attributes, if needed

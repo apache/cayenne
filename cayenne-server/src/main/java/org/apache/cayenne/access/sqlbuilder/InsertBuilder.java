@@ -23,6 +23,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.InsertColumnsNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.InsertNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.InsertValuesNode;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
@@ -38,6 +39,11 @@ public class InsertBuilder extends BaseBuilder {
     private static final int VALUES_NODE  = 2;
 
     public InsertBuilder(String table) {
+        super(new InsertNode(), VALUES_NODE + 1);
+        node(TABLE_NODE, () -> new TableNode(table, null));
+    }
+
+    public InsertBuilder(DbEntity table) {
         super(new InsertNode(), VALUES_NODE + 1);
         node(TABLE_NODE, () -> new TableNode(table, null));
     }

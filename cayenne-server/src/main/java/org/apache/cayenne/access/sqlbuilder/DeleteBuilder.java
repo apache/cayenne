@@ -22,6 +22,7 @@ package org.apache.cayenne.access.sqlbuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.DeleteNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.WhereNode;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
@@ -32,6 +33,11 @@ public class DeleteBuilder extends BaseBuilder {
     private static final int WHERE_NODE = 1;
 
     public DeleteBuilder(String table) {
+        super(new DeleteNode(), WHERE_NODE + 1);
+        node(TABLE_NODE, () -> new TableNode(table, null));
+    }
+
+    public DeleteBuilder(DbEntity table) {
         super(new DeleteNode(), WHERE_NODE + 1);
         node(TABLE_NODE, () -> new TableNode(table, null));
     }

@@ -21,13 +21,14 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.DeleteNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
-public class DeleteBuilderTest {
+public class DeleteBuilderTest extends BaseSqlBuilderTest {
 
     @Test
     public void testDelete() {
@@ -49,9 +50,27 @@ public class DeleteBuilderTest {
         assertSQL("DELETE FROM test WHERE ( ( col1 = 1 ) AND ( col2 = 'test' ) ) AND ( col3 IS NULL )", node);
     }
 
-    private void assertSQL(String expected, Node node) {
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
-        node.visit(visitor);
-        assertEquals(expected, visitor.getSQLString());
+    @Test
+    public void testDeleteDbEntityCatalog() {
+        DbEntity entity = new DbEntity("test");
+        entity.setCatalog("catalog");
+        DeleteBuilder builder = new DeleteBuilder(entity);
+        Node node = builder.build();
+        assertThat(node, instanceOf(DeleteNode.class));
+        assertSQL("DELETE FROM catalog.test", node);
+        assertQuotedSQL("DELETE FROM `catalog`.`test`", node);
     }
+
+    @Test
+    public void testDeleteDbEntityCatalogAndSchema() {
+        DbEntity entity = new DbEntity("test");
+        entity.setSchema("schema");
+        entity.setCatalog("catalog");
+        DeleteBuilder builder = new DeleteBuilder(entity);
+        Node node = builder.build();
+        assertThat(node, instanceOf(DeleteNode.class));
+        assertSQL("DELETE FROM catalog.schema.test", node);
+        assertQuotedSQL("DELETE FROM `catalog`.`schema`.`test`", node);
+    }
+
 }

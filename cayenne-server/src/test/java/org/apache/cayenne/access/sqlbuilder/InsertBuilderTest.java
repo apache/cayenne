@@ -21,13 +21,14 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.InsertNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
-public class InsertBuilderTest {
+public class InsertBuilderTest extends BaseSqlBuilderTest  {
 
     @Test
     public void testInsert() {
@@ -35,6 +36,29 @@ public class InsertBuilderTest {
         Node node = builder.build();
         assertThat(node, instanceOf(InsertNode.class));
         assertSQL("INSERT INTO test", node);
+    }
+
+    @Test
+    public void testInsertDbEntityCatalog() {
+        DbEntity entity = new DbEntity("test");
+        entity.setCatalog("catalog");
+        InsertBuilder builder = new InsertBuilder(entity);
+        Node node = builder.build();
+        assertThat(node, instanceOf(InsertNode.class));
+        assertSQL("INSERT INTO catalog.test", node);
+        assertQuotedSQL("INSERT INTO `catalog`.`test`", node);
+    }
+
+    @Test
+    public void testInsertDbEntityCatalogAndSchema() {
+        DbEntity entity = new DbEntity("test");
+        entity.setSchema("schema");
+        entity.setCatalog("catalog");
+        InsertBuilder builder = new InsertBuilder(entity);
+        Node node = builder.build();
+        assertThat(node, instanceOf(InsertNode.class));
+        assertSQL("INSERT INTO catalog.schema.test", node);
+        assertQuotedSQL("INSERT INTO `catalog`.`schema`.`test`", node);
     }
 
     @Test
@@ -79,9 +103,4 @@ public class InsertBuilderTest {
         assertSQL("INSERT INTO test( col1, col2, col3) VALUES( 1, 'test', NULL)", node);
     }
 
-    private void assertSQL(String expected, Node node) {
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
-        node.visit(visitor);
-        assertEquals(expected, visitor.getSQLString());
-    }
 }
