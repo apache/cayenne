@@ -73,12 +73,12 @@ public abstract class AddPatternParamAction extends TreeManipulationAction {
         if (paramClass == IncludeColumn.class) {
             element = new IncludeColumn(name);
             includeTable.addIncludeColumn((IncludeColumn) element);
-
+            node.insert(new DbImportTreeNode(element), includeTable.getIncludeColumns().size() - 1);
         } else if (paramClass == ExcludeColumn.class) {
             element = new ExcludeColumn(name);
             includeTable.addExcludeColumn((ExcludeColumn) element);
+            node.add(new DbImportTreeNode(element));
         }
-        node.add(new DbImportTreeNode(element));
     }
 
     @Override

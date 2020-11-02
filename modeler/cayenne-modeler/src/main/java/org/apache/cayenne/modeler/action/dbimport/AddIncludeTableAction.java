@@ -53,7 +53,7 @@ public class AddIncludeTableAction extends TreeManipulationAction {
         IncludeTable newTable = new IncludeTable(name);
         if (canBeInserted(selectedElement)) {
             ((FilterContainer) selectedElement.getUserObject()).addIncludeTable(newTable);
-            selectedElement.add(new DbImportTreeNode(newTable));
+            selectedElement.insert(new DbImportTreeNode(newTable), this.getLastPositionIncludeTable());
             updateSelected = true;
         } else {
             if (parentElement == null) {
