@@ -24,10 +24,11 @@ import java.awt.event.ActionEvent;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.BrowserControl;
 import org.apache.cayenne.modeler.util.CayenneAction;
+import org.apache.cayenne.util.LocalizedStringsHandler;
 
 public class DocumentationAction extends CayenneAction {
 
-    public final static String getActionName() {
+    public static String getActionName() {
         return "Documentation";
     }
 
@@ -35,7 +36,14 @@ public class DocumentationAction extends CayenneAction {
         super(getActionName(), application);
     }
 
+    @Override
     public void performAction(ActionEvent e) {
-        BrowserControl.displayURL("http://cayenne.apache.org");
+        String version = LocalizedStringsHandler.getString("cayenne.version");
+        String url = "https://cayenne.apache.org";
+        if(!"".equals(version)) {
+            String majorVersion = version.substring(0, version.lastIndexOf('.'));
+            url = url + "/docs/" + majorVersion + "/cayenne-guide/";
+        }
+        BrowserControl.displayURL(url);
     }
 }

@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import java.sql.Types;
-
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+
+import java.sql.Types;
 
 /**
  * @since 4.2
@@ -41,7 +41,7 @@ public class TrimmingColumnNode extends Node {
             if(isCharType() && isAllowedForTrimming()) {
                 appendRtrim(buffer);
                 appendAlias(buffer, isResult);
-            } else if(isComparisionWithClob()) {
+            } else if(isComparisonWithClob()) {
                 appendClobColumnNode(buffer);
                 appendAlias(buffer, isResult);
             } else {
@@ -54,7 +54,10 @@ public class TrimmingColumnNode extends Node {
         return buffer;
     }
 
-    private boolean isComparisionWithClob() {
+    private boolean isComparisonWithClob() {
+        if(isInsertOrUpdateSet()) {
+            return false;
+        }
         return (getParent().getType() == NodeType.EQUALITY
                 || getParent().getType() == NodeType.LIKE)
                 && columnNode.getAttribute() != null
@@ -75,7 +78,10 @@ public class TrimmingColumnNode extends Node {
     protected boolean isAllowedForTrimming() {
         Node parent = getParent();
         while(parent != null) {
-            if(parent.getType() == NodeType.JOIN || parent.getType() == NodeType.FUNCTION) {
+            if(parent.getType() == NodeType.JOIN
+                    || parent.getType() == NodeType.FUNCTION
+                    || parent.getType() == NodeType.UPDATE_SET
+                    || parent.getType() == NodeType.INSERT_COLUMNS) {
                 return false;
             }
             parent = parent.getParent();
@@ -84,9 +90,17 @@ public class TrimmingColumnNode extends Node {
     }
 
     protected boolean isResultNode() {
+        return isParentOfType(NodeType.RESULT);
+    }
+
+    protected boolean isInsertOrUpdateSet() {
+        return isParentOfType(NodeType.UPDATE_SET) || isParentOfType(NodeType.INSERT_COLUMNS);
+    }
+
+    protected boolean isParentOfType(NodeType nodeType) {
         Node parent = getParent();
         while(parent != null) {
-            if(parent.getType() == NodeType.RESULT) {
+            if(parent.getType() == nodeType) {
                 return true;
             }
             parent = parent.getParent();

@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 
@@ -20,22 +19,33 @@ public abstract class _BigDecimalEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final NumericProperty<BigDecimal> BIG_DECIMAL_FIELD = PropertyFactory.createNumeric("bigDecimalField", BigDecimal.class);
+    public static final NumericProperty<BigDecimal> BIG_DECIMAL_DECIMAL = PropertyFactory.createNumeric("bigDecimalDecimal", BigDecimal.class);
+    public static final NumericProperty<BigDecimal> BIG_DECIMAL_NUMERIC = PropertyFactory.createNumeric("bigDecimalNumeric", BigDecimal.class);
 
-    protected BigDecimal bigDecimalField;
+    protected BigDecimal bigDecimalDecimal;
+    protected BigDecimal bigDecimalNumeric;
 
 
-    public void setBigDecimalField(BigDecimal bigDecimalField) {
-        beforePropertyWrite("bigDecimalField", this.bigDecimalField, bigDecimalField);
-        this.bigDecimalField = bigDecimalField;
+    public void setBigDecimalDecimal(BigDecimal bigDecimalDecimal) {
+        beforePropertyWrite("bigDecimalDecimal", this.bigDecimalDecimal, bigDecimalDecimal);
+        this.bigDecimalDecimal = bigDecimalDecimal;
     }
 
-    public BigDecimal getBigDecimalField() {
-        beforePropertyRead("bigDecimalField");
-        return this.bigDecimalField;
+    public BigDecimal getBigDecimalDecimal() {
+        beforePropertyRead("bigDecimalDecimal");
+        return this.bigDecimalDecimal;
+    }
+
+    public void setBigDecimalNumeric(BigDecimal bigDecimalNumeric) {
+        beforePropertyWrite("bigDecimalNumeric", this.bigDecimalNumeric, bigDecimalNumeric);
+        this.bigDecimalNumeric = bigDecimalNumeric;
+    }
+
+    public BigDecimal getBigDecimalNumeric() {
+        beforePropertyRead("bigDecimalNumeric");
+        return this.bigDecimalNumeric;
     }
 
     @Override
@@ -45,8 +55,10 @@ public abstract class _BigDecimalEntity extends BaseDataObject {
         }
 
         switch(propName) {
-            case "bigDecimalField":
-                return this.bigDecimalField;
+            case "bigDecimalDecimal":
+                return this.bigDecimalDecimal;
+            case "bigDecimalNumeric":
+                return this.bigDecimalNumeric;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -59,8 +71,11 @@ public abstract class _BigDecimalEntity extends BaseDataObject {
         }
 
         switch (propName) {
-            case "bigDecimalField":
-                this.bigDecimalField = (BigDecimal)val;
+            case "bigDecimalDecimal":
+                this.bigDecimalDecimal = (BigDecimal)val;
+                break;
+            case "bigDecimalNumeric":
+                this.bigDecimalNumeric = (BigDecimal)val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -78,13 +93,15 @@ public abstract class _BigDecimalEntity extends BaseDataObject {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
-        out.writeObject(this.bigDecimalField);
+        out.writeObject(this.bigDecimalDecimal);
+        out.writeObject(this.bigDecimalNumeric);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
-        this.bigDecimalField = (BigDecimal)in.readObject();
+        this.bigDecimalDecimal = (BigDecimal)in.readObject();
+        this.bigDecimalNumeric = (BigDecimal)in.readObject();
     }
 
 }

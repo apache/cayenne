@@ -19,24 +19,48 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
+import java.util.Objects;
+
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
  */
 public class TableNode extends Node {
 
+    private final DbEntity dbEntity;
     private final String tableName;
     private final String alias;
 
     public TableNode(String tableName, String alias) {
-        this.tableName = tableName;
+        this.dbEntity = null;
+        this.tableName = Objects.requireNonNull(tableName);
+        this.alias = alias;
+    }
+
+    public TableNode(DbEntity dbEntity, String alias) {
+        this.dbEntity = Objects.requireNonNull(dbEntity);
+        this.tableName = null;
         this.alias = alias;
     }
 
     @Override
     public QuotingAppendable append(QuotingAppendable buffer) {
-        buffer.append(' ').appendQuoted(tableName);
+        buffer.append(' ');
+
+        if(dbEntity != null) {
+            if(dbEntity.getCatalog() != null) {
+                buffer.appendQuoted(dbEntity.getCatalog()).append('.');
+            }
+            if(dbEntity.getSchema() != null) {
+                buffer.appendQuoted(dbEntity.getSchema()).append('.');
+            }
+            buffer.appendQuoted(dbEntity.getName());
+        } else {
+            buffer.appendQuoted(tableName);
+        }
+
         if (alias != null) {
             buffer.append(' ').appendQuoted(alias);
         }

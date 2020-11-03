@@ -117,12 +117,9 @@ public class ModuleLoaderTest {
             return Module1.class;
         }
 
-
-        @SuppressWarnings("unchecked")
         @Override
         public Collection<Class<? extends Module>> overrides() {
-            Collection c = Collections.singletonList(Module2.class);
-            return c;
+            return Collections.singletonList(Module2.class);
         }
     }
 
@@ -138,11 +135,9 @@ public class ModuleLoaderTest {
             return Module2.class;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Collection<Class<? extends Module>> overrides() {
-            Collection c = Collections.singletonList(Module4.class);
-            return c;
+            return Collections.singletonList(Module4.class);
         }
     }
 
@@ -177,10 +172,8 @@ public class ModuleLoaderTest {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public Collection<Class<? extends Module>> overrides() {
-            Collection c = Collections.singletonList(Module3.class);
-            return c;
+            return Collections.singletonList(Module3.class);
         }
     }
 
@@ -215,10 +208,8 @@ public class ModuleLoaderTest {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public Collection<Class<? extends Module>> overrides() {
-            Collection c = Collections.singletonList(Module5.class);
-            return c;
+            return Collections.singletonList(Module5.class);
         }
     }
 }

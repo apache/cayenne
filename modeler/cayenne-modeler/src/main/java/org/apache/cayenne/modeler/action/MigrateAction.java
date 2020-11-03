@@ -20,19 +20,28 @@
 package org.apache.cayenne.modeler.action;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
+import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.DataSourceWizard;
 import org.apache.cayenne.modeler.dialog.db.DbActionOptionsDialog;
 import org.apache.cayenne.modeler.dialog.db.merge.MergerOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  * Action that alter database schema to match a DataMap.
  */
-public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
+public class MigrateAction extends DBConnectionAwareAction {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(MigrateAction.class);
 
     private boolean dialogShown;
 
@@ -46,7 +55,7 @@ public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
 
     public void performAction(ActionEvent e) {
 
-        DataSourceWizard connectWizard = dataSourceWizardDialog("Migrate DB Schema: Connect to Database");
+        DataSourceWizard connectWizard = getDataSourceWizard("Migrate DB Schema: Connect to Database");
         if(connectWizard == null) {
             return;
         }
@@ -76,16 +85,72 @@ public class MigrateAction extends DBWizardAction<DbActionOptionsDialog> {
                 map, selectedCatalog, selectedSchema, mergerTokenFactoryProvider).startupAction();
     }
 
-    @Override
     protected DbActionOptionsDialog createDialog(Collection<String> catalogs, Collection<String> schemas,
                                                  String currentCatalog, String currentSchema, int command) {
         dialogShown = true;
-        switch (command) {
-            case DbActionOptionsDialog.SELECT:
-                return new DbActionOptionsDialog(Application.getFrame(), "Migrate DB Schema: Select Catalog and Schema",
+        if (command == DbActionOptionsDialog.SELECT) {
+            return new DbActionOptionsDialog(Application.getFrame(), "Migrate DB Schema: Select Catalog and Schema",
                     catalogs, schemas, currentCatalog, currentSchema);
-            default:
-                return null;
         }
+        return null;
+    }
+
+    protected DbActionOptionsDialog loaderOptionDialog(DataSourceWizard connectWizard) {
+
+        // use this catalog as the default...
+        List<String> catalogs;
+        List<String> schemas;
+        String currentCatalog;
+        String currentSchema = null;
+        try(Connection connection = connectWizard.getDataSource().getConnection()) {
+            catalogs = getCatalogs(connectWizard, connection);
+            schemas = getSchemas(connection);
+            if (catalogs.isEmpty() && schemas.isEmpty()) {
+                return null;
+            }
+            currentCatalog = connection.getCatalog();
+
+            try {
+                currentSchema = connection.getSchema();
+            } catch (Throwable th) {
+                LOGGER.warn("Error getting schema.", th);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    Application.getFrame(),
+                    ex.getMessage(),
+                    "Error loading schemas dialog",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        DbActionOptionsDialog optionsDialog = getStartDialog(catalogs, schemas, currentCatalog, currentSchema);
+        optionsDialog.setVisible(true);
+        while ((optionsDialog.getChoice() != DbActionOptionsDialog.CANCEL)) {
+            if (optionsDialog.getChoice() == DbActionOptionsDialog.SELECT) {
+                return optionsDialog;
+            }
+            optionsDialog = createDialog(catalogs, schemas, currentCatalog, currentSchema, optionsDialog.getChoice());
+            optionsDialog.setVisible(true);
+        }
+
+        return null;
+    }
+
+    private DbActionOptionsDialog getStartDialog(List<String> catalogs, List<String> schemas, String currentCatalog, String currentSchema) {
+        int command = DbActionOptionsDialog.SELECT;
+        return createDialog(catalogs, schemas, currentCatalog, currentSchema, command);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> getCatalogs(DataSourceWizard connectWizard, Connection connection) throws Exception {
+        if(!connectWizard.getAdapter().supportsCatalogsOnReverseEngineering()) {
+            return (List<String>) Collections.EMPTY_LIST;
+        }
+
+        return DbLoader.loadCatalogs(connection);
+    }
+
+    private List<String> getSchemas(Connection connection) throws Exception {
+        return DbLoader.loadSchemas(connection);
     }
 }

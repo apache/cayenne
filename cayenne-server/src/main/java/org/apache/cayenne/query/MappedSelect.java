@@ -199,18 +199,18 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
 
         switch (descriptor.getType()) {
             case QueryDescriptor.SELECT_QUERY:
-                SelectQuery selectQuery = (SelectQuery) query;
+                ObjectSelect<?> selectQuery = (ObjectSelect<?>) query;
                 if (fetchLimit != null) {
-                    selectQuery.setFetchLimit(fetchLimit);
+                    selectQuery.limit(fetchLimit);
                 }
                 if (fetchOffset != null) {
-                    selectQuery.setFetchOffset(fetchOffset);
+                    selectQuery.offset(fetchOffset);
                 }
                 if (statementFetchSize != null) {
-                    selectQuery.setStatementFetchSize(statementFetchSize);
+                    selectQuery.statementFetchSize(statementFetchSize);
                 }
                 if (pageSize != null) {
-                    selectQuery.setPageSize(pageSize);
+                    selectQuery.pageSize(pageSize);
                 }
                 if (cacheStrategyOverride != null) {
                     selectQuery.setCacheStrategy(cacheStrategyOverride);

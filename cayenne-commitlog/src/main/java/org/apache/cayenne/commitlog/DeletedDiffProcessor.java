@@ -18,27 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import java.util.List;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.graph.ArcId;
-import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.commitlog.meta.CommitLogEntity;
+import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.model.MutableObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
-import org.apache.cayenne.commitlog.meta.CommitLogEntity;
-import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
+import org.apache.cayenne.graph.ArcId;
+import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.reflect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 class DeletedDiffProcessor implements GraphChangeHandler {
 
@@ -102,7 +99,21 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 
 			@Override
 			public boolean visitToOne(ToOneProperty property) {
-				// TODO record FK changes?
+                if (!entity.isIncluded(property.getName())) {
+                    return true;
+                }
+
+                // TODO: is there such a thing as "confidential" relationship that we need to hide?
+
+                DbRelationship dbRelationship = property.getRelationship().getDbRelationships().get(0);
+
+                ObjectId value = row.createTargetObjectId(
+                        property.getTargetDescriptor().getEntity().getName(),
+                        dbRelationship);
+
+                if (value != null) {
+                    objectChangeSet.toOneRelationshipDisconnected(property.getName(), value);
+                }
 				return true;
 			}
 

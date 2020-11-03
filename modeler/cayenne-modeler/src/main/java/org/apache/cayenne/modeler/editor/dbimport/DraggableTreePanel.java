@@ -64,7 +64,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,16 +83,16 @@ public class DraggableTreePanel extends JScrollPane {
     private static final String MOVE_BUTTON_LABEL = "Include";
     private static final String MOVE_INV_BUTTON_LABEL = "Exclude";
 
-    private DbImportTree sourceTree;
-    private DbImportTree targetTree;
+    private final ProjectController projectController;
+    private final DbImportTree sourceTree;
+    private final DbImportTree targetTree;
+    private final Map<DataMap, ReverseEngineering> databaseStructures;
+    private final Map<Class<?>, Integer> levels;
+    private final Map<Class<?>, List<Class<?>>> insertableLevels;
+    private final Map<Class<?>, Class<? extends TreeManipulationAction>> actions;
+
     private CayenneAction.CayenneToolbarButton moveButton;
     private CayenneAction.CayenneToolbarButton moveInvertButton;
-    private Map<DataMap, ReverseEngineering> databaseStructures;
-
-    private ProjectController projectController;
-    private Map<Class, Integer> levels;
-    private Map<Class, List<Class>> insertableLevels;
-    private Map<Class, Class> actions;
 
     public DraggableTreePanel(ProjectController projectController, DbImportTree sourceTree, DbImportTree targetTree) {
         super(sourceTree);
@@ -100,6 +100,10 @@ public class DraggableTreePanel extends JScrollPane {
         this.sourceTree = sourceTree;
         this.projectController = projectController;
         this.databaseStructures = new HashMap<>();
+        this.levels = new HashMap<>();
+        this.insertableLevels = new HashMap<>();
+        this.actions = new HashMap<>();
+
         initLevels();
         initElement();
         initActions();
@@ -107,7 +111,6 @@ public class DraggableTreePanel extends JScrollPane {
     }
 
     private void initActions() {
-        actions = new HashMap<>();
         actions.put(Catalog.class, AddCatalogAction.class);
         actions.put(Schema.class, AddSchemaAction.class);
         actions.put(IncludeTable.class, AddIncludeTableAction.class);
@@ -132,26 +135,22 @@ public class DraggableTreePanel extends JScrollPane {
 
     private void initListeners() {
         sourceTree.addKeyListener(new SourceTreeKeyListener());
-        targetTree.addKeyListener(new TargetTreeKeyListener());
-        targetTree.addTreeSelectionListener(new TargetTreeSelectionListener());
-        targetTree.setTransferHandler(new TargetTreeTransferHandler());
         sourceTree.setTransferHandler(new SourceTreeTransferHandler());
         sourceTree.addTreeSelectionListener(new SourceTreeSelectionListener());
         sourceTree.addMouseListener(new ResetFocusMouseAdapter());
+
+        targetTree.addKeyListener(new TargetTreeKeyListener());
+        targetTree.setTransferHandler(new TargetTreeTransferHandler());
+        targetTree.addTreeSelectionListener(new TargetTreeSelectionListener());
         targetTree.setDragEnabled(true);
     }
 
     private boolean canBeInverted() {
-        if (sourceTree.getSelectionPath() != null) {
-            DbImportTreeNode selectedElement = sourceTree.getSelectedNode();
-            if (selectedElement == null) {
-                return false;
-            }
-            if (levels.get(selectedElement.getUserObject().getClass()) < SECOND_LEVEL) {
-                return true;
-            }
+        DbImportTreeNode selectedElement = sourceTree.getSelectedNode();
+        if (selectedElement == null) {
+            return false;
         }
-        return false;
+        return levels.get(selectedElement.getUserObject().getClass()) < SECOND_LEVEL;
     }
 
     private void initElement() {
@@ -159,16 +158,16 @@ public class DraggableTreePanel extends JScrollPane {
         sourceTree.setCellRenderer(new ColorTreeRenderer());
         sourceTree.setDropMode(DropMode.INSERT);
 
-        MoveImportNodeAction action = projectController.getApplication().
-                getActionManager().getAction(MoveImportNodeAction.class);
+        MoveImportNodeAction action = projectController.getApplication().getActionManager()
+                .getAction(MoveImportNodeAction.class);
         action.setPanel(this);
         action.setSourceTree(sourceTree);
         action.setTargetTree(targetTree);
         moveButton = (CayenneAction.CayenneToolbarButton) action.buildButton();
         moveButton.setShowingText(true);
         moveButton.setText(MOVE_BUTTON_LABEL);
-        MoveInvertNodeAction actionInv = projectController.getApplication().
-                getActionManager().getAction(MoveInvertNodeAction.class);
+        MoveInvertNodeAction actionInv = projectController.getApplication().getActionManager()
+                .getAction(MoveInvertNodeAction.class);
         actionInv.setPanel(this);
         actionInv.setSourceTree(sourceTree);
         actionInv.setTargetTree(targetTree);
@@ -184,7 +183,6 @@ public class DraggableTreePanel extends JScrollPane {
     }
 
     private void initLevels() {
-        levels = new HashMap<>();
         levels.put(ReverseEngineering.class, ROOT_LEVEL);
         levels.put(Catalog.class, FIRST_LEVEL);
         levels.put(Schema.class, SECOND_LEVEL);
@@ -195,73 +193,60 @@ public class DraggableTreePanel extends JScrollPane {
         levels.put(IncludeProcedure.class, FIFTH_LEVEL);
         levels.put(ExcludeProcedure.class, FIFTH_LEVEL);
 
-        insertableLevels = new HashMap<>();
-        List<Class> rootLevelClasses = new ArrayList<>();
-        rootLevelClasses.add(Catalog.class);
-        rootLevelClasses.add(Schema.class);
-        rootLevelClasses.add(IncludeTable.class);
-        rootLevelClasses.add(ExcludeTable.class);
-        rootLevelClasses.add(IncludeColumn.class);
-        rootLevelClasses.add(ExcludeColumn.class);
-        rootLevelClasses.add(IncludeProcedure.class);
-        rootLevelClasses.add(ExcludeProcedure.class);
+        insertableLevels.put(ReverseEngineering.class, Arrays.asList(
+                Catalog.class, Schema.class,
+                IncludeTable.class, ExcludeTable.class,
+                IncludeColumn.class, ExcludeColumn.class,
+                IncludeProcedure.class, ExcludeProcedure.class
+        ));
 
-        List<Class> catalogLevelClasses = new ArrayList<>();
-        catalogLevelClasses.add(Schema.class);
-        catalogLevelClasses.add(IncludeTable.class);
-        catalogLevelClasses.add(ExcludeTable.class);
-        catalogLevelClasses.add(IncludeColumn.class);
-        catalogLevelClasses.add(ExcludeColumn.class);
-        catalogLevelClasses.add(IncludeProcedure.class);
-        catalogLevelClasses.add(ExcludeProcedure.class);
+        insertableLevels.put(Catalog.class, Arrays.asList(
+                Schema.class,
+                IncludeTable.class, ExcludeTable.class,
+                IncludeColumn.class, ExcludeColumn.class,
+                IncludeProcedure.class, ExcludeProcedure.class
+        ));
 
-        List<Class> schemaLevelClasses = new ArrayList<>();
-        schemaLevelClasses.add(IncludeTable.class);
-        schemaLevelClasses.add(ExcludeTable.class);
-        schemaLevelClasses.add(IncludeColumn.class);
-        schemaLevelClasses.add(ExcludeColumn.class);
-        schemaLevelClasses.add(IncludeProcedure.class);
-        schemaLevelClasses.add(ExcludeProcedure.class);
+        insertableLevels.put(Schema.class, Arrays.asList(
+                IncludeTable.class, ExcludeTable.class,
+                IncludeColumn.class, ExcludeColumn.class,
+                IncludeProcedure.class, ExcludeProcedure.class
+        ));
 
-        List<Class> includeTableLevelClasses = new ArrayList<>();
-        includeTableLevelClasses.add(IncludeColumn.class);
-        includeTableLevelClasses.add(ExcludeColumn.class);
-
-        insertableLevels.put(ReverseEngineering.class, rootLevelClasses);
-        insertableLevels.put(Catalog.class, catalogLevelClasses);
-        insertableLevels.put(Schema.class, schemaLevelClasses);
-        insertableLevels.put(IncludeTable.class, includeTableLevelClasses);
+        insertableLevels.put(IncludeTable.class, Arrays.asList(
+                IncludeColumn.class, ExcludeColumn.class
+        ));
     }
 
     private boolean canBeMoved() {
-        if (sourceTree.getSelectionPath() != null) {
-            DbImportTreeNode selectedElement = sourceTree.getSelectedNode();
-            if (selectedElement == null) {
+        DbImportTreeNode selectedElement = sourceTree.getSelectedNode();
+        if (selectedElement == null) {
+            return false;
+        }
+
+        if (selectedElement.isIncludeColumn() || selectedElement.isExcludeColumn()) {
+            DbImportTreeNode node = targetTree.findNode(targetTree.getRootNode(), selectedElement.getParent(), 0);
+            if(node != null && node.isExcludeTable()) {
                 return false;
             }
-            if (selectedElement.isIncludeColumn() || selectedElement.isExcludeColumn()) {
-                DbImportTreeNode node = targetTree.findNode(targetTree.getRootNode(), (DbImportTreeNode) selectedElement.getParent(), 0);
-                if(node != null && node.isExcludeTable()) {
-                    return false;
-                }
-            }
-            Class draggableElementClass = selectedElement.getUserObject().getClass();
-            Class reverseEngineeringElementClass;
-            if (targetTree.getSelectionPath() != null) {
-                selectedElement = targetTree.getSelectedNode();
-                DbImportTreeNode parent = (DbImportTreeNode) selectedElement.getParent();
-                if (parent != null) {
-                    reverseEngineeringElementClass = parent.getUserObject().getClass();
-                } else {
-                    reverseEngineeringElementClass = selectedElement.getUserObject().getClass();
-                }
-            } else {
-                reverseEngineeringElementClass = ReverseEngineering.class;
-            }
-            List<Class> containsList = insertableLevels.get(reverseEngineeringElementClass);
-            return containsList.contains(draggableElementClass);
         }
-        return false;
+
+        Class<?> draggableElementClass = selectedElement.getUserObject().getClass();
+        Class<?> reverseEngineeringElementClass;
+        if (targetTree.getSelectionPath() != null) {
+            selectedElement = targetTree.getSelectedNode();
+            DbImportTreeNode parent = selectedElement.getParent();
+            if (parent != null) {
+                reverseEngineeringElementClass = parent.getUserObject().getClass();
+            } else {
+                reverseEngineeringElementClass = selectedElement.getUserObject().getClass();
+            }
+        } else {
+            reverseEngineeringElementClass = ReverseEngineering.class;
+        }
+
+        List<Class<?>> containsList = insertableLevels.get(reverseEngineeringElementClass);
+        return containsList.contains(draggableElementClass);
     }
 
     public JButton getMoveButton() {
@@ -272,14 +257,12 @@ public class DraggableTreePanel extends JScrollPane {
         return moveInvertButton;
     }
 
-    public TreeManipulationAction getActionByNodeType(Class nodeType) {
-        Class actionClass = actions.get(nodeType);
-        if (actionClass != null) {
-            TreeManipulationAction action = (TreeManipulationAction) projectController.getApplication().
-                    getActionManager().getAction(actionClass);
-            return action;
+    public TreeManipulationAction getActionByNodeType(Class<?> nodeType) {
+        Class<? extends TreeManipulationAction> actionClass = actions.get(nodeType);
+        if (actionClass == null) {
+            return null;
         }
-        return null;
+        return projectController.getApplication().getActionManager().getAction(actionClass);
     }
 
     public void bindReverseEngineeringToDatamap(DataMap dataMap, ReverseEngineering reverseEngineering) {
@@ -301,8 +284,9 @@ public class DraggableTreePanel extends JScrollPane {
         public Transferable createTransferable(JComponent c) {
             JTree tree = (JTree) c;
             TreePath[] paths = tree.getSelectionPaths();
-            DbImportTreeNode[] nodes = new DbImportTreeNode[paths.length];
-            for (int i = 0; i < paths.length; i++) {
+            int pathLength = paths == null ? 0 : paths.length;
+            DbImportTreeNode[] nodes = new DbImportTreeNode[pathLength];
+            for (int i = 0; i < pathLength; i++) {
                 nodes[i] = (DbImportTreeNode) paths[i].getLastPathComponent();
             }
             return new Transferable() {
@@ -317,7 +301,7 @@ public class DraggableTreePanel extends JScrollPane {
                 }
 
                 @Override
-                public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+                public Object getTransferData(DataFlavor flavor) {
                     return nodes;
                 }
             };
@@ -365,17 +349,9 @@ public class DraggableTreePanel extends JScrollPane {
             if (root.getChildCount() > 0) {
                 model.nodesChanged(root, new int[]{root.getChildCount() - 1});
             }
-            if (canBeMoved()) {
-                moveButton.setEnabled(true);
-                if (canBeInverted()) {
-                    moveInvertButton.setEnabled(true);
-                } else {
-                    moveInvertButton.setEnabled(false);
-                }
-            } else {
-                moveButton.setEnabled(false);
-                moveInvertButton.setEnabled(false);
-            }
+            boolean canBeMoved = canBeMoved();
+            moveButton.setEnabled(canBeMoved);
+            moveInvertButton.setEnabled(canBeMoved && canBeInverted());
         }
     }
 
@@ -388,10 +364,7 @@ public class DraggableTreePanel extends JScrollPane {
 
         @Override
         public boolean canImport(TransferSupport support) {
-            if (!support.isDrop()) {
-                return false;
-            }
-            return true;
+            return support.isDrop();
         }
 
         @Override
@@ -412,8 +385,8 @@ public class DraggableTreePanel extends JScrollPane {
                 return false;
             }
             if (transferData != null) {
-                MoveImportNodeAction action = projectController.getApplication().
-                        getActionManager().getAction(MoveImportNodeAction.class);
+                MoveImportNodeAction action = projectController.getApplication().getActionManager()
+                        .getAction(MoveImportNodeAction.class);
                 action.setSourceTree(sourceTree);
                 action.setTargetTree(targetTree);
                 action.setPanel(DraggableTreePanel.this);
@@ -428,17 +401,9 @@ public class DraggableTreePanel extends JScrollPane {
         @Override
         public void valueChanged(TreeSelectionEvent e) {
             if (sourceTree.getLastSelectedPathComponent() != null) {
-                if (canBeMoved()) {
-                    moveButton.setEnabled(true);
-                    if (canBeInverted()) {
-                        moveInvertButton.setEnabled(true);
-                    } else {
-                        moveInvertButton.setEnabled(false);
-                    }
-                } else {
-                    moveInvertButton.setEnabled(false);
-                    moveButton.setEnabled(false);
-                }
+                boolean canBeMoved = canBeMoved();
+                moveButton.setEnabled(canBeMoved);
+                moveInvertButton.setEnabled(canBeMoved && canBeInverted());
             }
         }
     }

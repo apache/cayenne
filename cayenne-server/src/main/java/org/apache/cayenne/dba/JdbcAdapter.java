@@ -27,11 +27,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
@@ -397,9 +396,17 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     public static String getType(DbAdapter adapter, DbAttribute column) {
-        String[] types = adapter.externalTypesForJdbcType(column.getType());
+        int columnType = column.getType();
+        if(columnType == Types.OTHER) {
+            // TODO: warn that this is unsupported yet
+            return "OTHER";
+        }
+
+        String[] types = adapter.externalTypesForJdbcType(columnType);
         if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? column.getEntity().getFullyQualifiedName() : "<null>";
+            String entityName = column.getEntity() != null
+                    ? column.getEntity().getFullyQualifiedName()
+                    : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
                     , entityName, column.getName(), column.getType());
         }
@@ -534,6 +541,7 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
+    @Deprecated
     public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
         return new DefaultSelectTranslator(query, this, entityResolver);
     }
@@ -544,8 +552,8 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
-        return Function.identity();
+    public SQLTreeProcessor getSqlTreeProcessor() {
+        return node -> node;
     }
 
     @SuppressWarnings("unchecked")

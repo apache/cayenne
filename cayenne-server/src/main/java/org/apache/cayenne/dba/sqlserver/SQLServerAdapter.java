@@ -21,10 +21,9 @@ package org.apache.cayenne.dba.sqlserver;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
@@ -81,10 +80,10 @@ public class SQLServerAdapter extends SybaseAdapter {
 	@Deprecated
 	public static final String TRIM_FUNCTION = "RTRIM";
 
-	private String[] SYSTEM_SCHEMAS = new String[]{"db_accessadmin", "db_backupoperator",
+	private List<String> SYSTEM_SCHEMAS = Arrays.asList("db_accessadmin", "db_backupoperator",
 			"db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",
 			"db_denydatawriter","dbo", "sys", "db_owner", "db_securityadmin", "guest",
-			"INFORMATION_SCHEMA"};
+			"INFORMATION_SCHEMA");
 
 	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
 							@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -97,11 +96,19 @@ public class SQLServerAdapter extends SybaseAdapter {
 		this.setSupportsBatchUpdates(true);
 	}
 
+    /**
+     * Not supported, see: <a href="http://microsoft/mssql-jdbc#245">mssql-jdbc #245</a>
+     */
+	@Override
+	public boolean supportsGeneratedKeysForBatchInserts() {
+		return false;
+	}
+	
 	/**
 	 * @since 4.2
 	 */
 	@Override
-	public Function<Node, Node> getSqlTreeProcessor() {
+	public SQLTreeProcessor getSqlTreeProcessor() {
 		return new SQLServerTreeProcessor();
 	}
 
@@ -117,7 +124,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 
 	@Override
 	public List<String> getSystemSchemas() {
-		return Arrays.asList(SYSTEM_SCHEMAS);
+		return SYSTEM_SCHEMAS;
 	}
 
 }

@@ -33,7 +33,6 @@ import java.util.prefs.Preferences;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.action.GetDbConnectionAction;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.event.DataSourceModificationEvent;
@@ -44,11 +43,7 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ObjectBinding;
 
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.DB_ADAPTER_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.JDBC_DRIVER_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.PASSWORD_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.URL_PROPERTY;
-import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERTY;
+import static org.apache.cayenne.modeler.pref.DBConnectionInfo.*;
 
 /**
  * A subclass of ConnectionWizard that tests configured DataSource, but does not
@@ -57,52 +52,43 @@ import static org.apache.cayenne.modeler.pref.DBConnectionInfo.USER_NAME_PROPERT
  */
 public class DataSourceWizard extends CayenneController {
 
-	private DataSourceWizardView view;
+	private final ProjectController projectController;
+	private final DataSourceWizardView view;
+	private final String[] buttons;
+
 	private ObjectBinding dataSourceBinding;
 	private Map<String, DBConnectionInfo> dataSources;
 	private String dataSourceKey;
-	private ProjectController projectController;
-
-	// this object is a clone of an object selected from the dropdown, as we
-	// need to allow
-	// local temporary modifications
+	// this object is a clone of an object selected from the dropdown, as we need to allow local temporary modifications
 	private DBConnectionInfo connectionInfo;
-
-	private boolean canceled;
-
-	private DataSourceModificationListener dataSourceListener;
-
 	private DbAdapter adapter;
 	private DataSource dataSource;
+	private boolean canceled;
+	private DataSourceModificationListener dataSourceListener;
 
-	public DataSourceWizard(final CayenneController parent, final String title) {
+	public DataSourceWizard(ProjectController parent, String title) {
+		this(parent, title, new String[]{"Continue", "Cancel"});
+	}
+
+	public DataSourceWizard(ProjectController parent, String title, String[] buttons) {
 		super(parent);
 
-		this.view = createView(title);
-		this.view.setTitle(title);
+		this.buttons = buttons;
 		this.connectionInfo = new DBConnectionInfo();
-		this.projectController = (ProjectController) parent;
+		this.projectController = parent;
+
+		this.view = createView();
+		this.view.setTitle(title);
 
 		initBindings();
 		initDataSourceListener();
 	}
 
-	private String[] getLabelsForDialog(final String viewTitle) {
-		switch (viewTitle) {
-			case GetDbConnectionAction.DIALOG_TITLE: {
-				return new String[]{"Save", "Cancel"};
-			}
-			default:
-				return new String[]{"Continue", "Cancel"};
-		}
-	}
-
 	/**
 	 * Creates swing dialog for this wizard
 	 */
-	private DataSourceWizardView createView(final String viewTitle) {
-		final String[] labels = getLabelsForDialog(viewTitle);
-		return new DataSourceWizardView(this, labels);
+	private DataSourceWizardView createView() {
+		return new DataSourceWizardView(this, buttons);
 	}
 
 	protected void initBindings() {
@@ -145,15 +131,19 @@ public class DataSourceWizard extends CayenneController {
 	}
 
 	private DBConnectionInfo getConnectionInfoFromPreferences() {
-		final DBConnectionInfo connectionInfo = new DBConnectionInfo();
-		final DataMapDefaults dataMapDefaults = projectController.
-				getDataMapPreferences(projectController.getCurrentDataMap());
+		DBConnectionInfo connectionInfo = new DBConnectionInfo();
+		DataMapDefaults dataMapDefaults = getProjectController()
+				.getDataMapPreferences(getProjectController().getCurrentDataMap());
 		connectionInfo.setDbAdapter(dataMapDefaults.getCurrentPreference().get(DB_ADAPTER_PROPERTY, null));
 		connectionInfo.setUrl(dataMapDefaults.getCurrentPreference().get(URL_PROPERTY, null));
 		connectionInfo.setUserName(dataMapDefaults.getCurrentPreference().get(USER_NAME_PROPERTY, null));
 		connectionInfo.setPassword(dataMapDefaults.getCurrentPreference().get(PASSWORD_PROPERTY, null));
 		connectionInfo.setJdbcDriver(dataMapDefaults.getCurrentPreference().get(JDBC_DRIVER_PROPERTY, null));
 		return connectionInfo;
+	}
+
+	private ProjectController getProjectController() {
+		return projectController;
 	}
 
 	public String getDataSourceKey() {

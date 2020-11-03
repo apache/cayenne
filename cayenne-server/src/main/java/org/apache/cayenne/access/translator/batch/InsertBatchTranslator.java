@@ -19,129 +19,73 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.List;
-
+import org.apache.cayenne.access.sqlbuilder.InsertBuilder;
+import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.InsertBatchQuery;
 
 /**
- * Translator of InsertBatchQueries.
+ * @since 4.2
  */
-public class InsertBatchTranslator extends DefaultBatchTranslator {
+public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery> implements BatchTranslator {
 
     public InsertBatchTranslator(InsertBatchQuery query, DbAdapter adapter) {
-        // no trimming is needed here, so passing hardcoded NULL for trim
-        // function
-        super(query, adapter, null);
+        super(query, adapter);
     }
 
     @Override
-    protected String createSql() {
+    public String getSql() {
+        InsertBatchQuery query = context.getQuery();
+        InsertBuilder insertBuilder = SQLBuilder.insert(context.getRootDbEntity());
 
-        List<DbAttribute> dbAttributes = query.getDbAttributes();
-        QuotingStrategy strategy = adapter.getQuotingStrategy();
-
-        StringBuilder buffer = new StringBuilder("INSERT INTO ");
-        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
-        buffer.append(" (");
-
-        int columnCount = 0;
-        for (DbAttribute attribute : dbAttributes) {
-
-            // attribute inclusion rule - one of the rules below must be true:
-            // (1) attribute not generated
-            // (2) attribute is generated and PK and adapter does not support
-            // generated
-            // keys
-
-            if (includeInBatch(attribute)) {
-
-                if (columnCount > 0) {
-                    buffer.append(", ");
-                }
-                buffer.append(strategy.quotedName(attribute));
-                columnCount++;
+        for(DbAttribute attribute : query.getDbAttributes()) {
+            // skip generated attributes, if needed
+            if(excludeInBatch(attribute)) {
+                continue;
             }
+            insertBuilder
+                    .column(SQLBuilder.column(attribute.getName()).attribute(attribute))
+                    // We can use here any non-null value, to create attribute binding,
+                    // actual value and ExtendedType will be set at updateBindings() call.
+                    .value(SQLBuilder.value(1).attribute(attribute));
         }
 
-        buffer.append(") VALUES (");
-
-        for (int i = 0; i < columnCount; i++) {
-            if (i > 0) {
-                buffer.append(", ");
-            }
-
-            buffer.append('?');
-        }
-        buffer.append(')');
-        return buffer.toString();
+        return doTranslate(insertBuilder);
     }
 
     @Override
-    protected DbAttributeBinding[] createBindings() {
-        List<DbAttribute> attributes = query.getDbAttributes();
-        int len = attributes.size();
-
-        DbAttributeBinding[] bindings = new DbAttributeBinding[len];
-
-        for (int i = 0; i < len; i++) {
-            DbAttribute a = attributes.get(i);
-
-            bindings[i] = new DbAttributeBinding(a);
-
-            // include/exclude state depends on DbAttribute only and can be
-            // precompiled here
-            if (includeInBatch(a)) {
-                // setting fake position here... all we care about is that it is
-                // > -1
-                bindings[i].include(1, null, null);
-            } else {
-                bindings[i].exclude();
+    public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
+        InsertBatchQuery query = context.getQuery();
+        int i=0;
+        int j=0;
+        for(DbAttribute attribute : query.getDbAttributes()) {
+            if(excludeInBatch(attribute)) {
+                i++;
+                continue;
             }
-        }
 
+            Object value = row.getValue(i++);
+            ExtendedType<?> extendedType = value != null
+                    ? context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass())
+                    : context.getAdapter().getExtendedTypes().getDefaultType();
+            bindings[j].include(++j, value, extendedType);
+        }
         return bindings;
     }
 
-    @Override
-    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
-        int len = bindings.length;
-
-        for (int i = 0, j = 1; i < len; i++) {
-
-            DbAttributeBinding b = bindings[i];
-
-            // exclusions are permanent
-            if (!b.isExcluded()) {
-                Object value = row.getValue(i);
-                ExtendedType extendedType = value != null
-                        ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
-                        : adapter.getExtendedTypes().getDefaultType();
-
-                b.include(j++, value, extendedType);
-            }
-        }
-
-        return bindings;
-    }
-
-    /**
-     * Returns true if an attribute should be included in the batch.
-     * 
-     * @since 1.2
-     */
-    protected boolean includeInBatch(DbAttribute attribute) {
+    protected boolean excludeInBatch(DbAttribute attribute) {
         // attribute inclusion rule - one of the rules below must be true:
-        // (1) attribute not generated
-        // (2) attribute is generated and PK and adapter does not support
-        // generated
-        // keys
+        //  (1) attribute not generated
+        //  (2) attribute is generated and PK and adapter does not support generated keys
+        return attribute.isGenerated() && (!attribute.isPrimaryKey() || context.getAdapter().supportsGeneratedKeys());
+    }
 
-        return !attribute.isGenerated() || (attribute.isPrimaryKey() && !adapter.supportsGeneratedKeys());
+    @Override
+    protected boolean isNullAttribute(DbAttribute attribute) {
+        return false;
     }
 }

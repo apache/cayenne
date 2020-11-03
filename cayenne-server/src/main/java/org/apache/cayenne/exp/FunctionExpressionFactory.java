@@ -27,6 +27,7 @@ import org.apache.cayenne.exp.parser.ASTCurrentDate;
 import org.apache.cayenne.exp.parser.ASTCurrentTime;
 import org.apache.cayenne.exp.parser.ASTCurrentTimestamp;
 import org.apache.cayenne.exp.parser.ASTCustomFunction;
+import org.apache.cayenne.exp.parser.ASTCustomOperator;
 import org.apache.cayenne.exp.parser.ASTDistinct;
 import org.apache.cayenne.exp.parser.ASTExtract;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
@@ -536,6 +537,17 @@ public class FunctionExpressionFactory {
      */
     public static Expression functionCall(String function, Object... args) {
         return new ASTCustomFunction(function, args);
+    }
+
+    /**
+     * @param operator to call
+     * @param args arguments
+     * @return expression to use custom "operator" with provided arguments
+     *
+     * @since 4.2
+     */
+    public static Expression operator(String operator, Object... args) {
+        return new ASTCustomOperator(operator, args);
     }
 
     static Expression extractExp(String path, ASTExtract.DateTimePart part) {

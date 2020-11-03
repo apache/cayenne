@@ -25,9 +25,9 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.Util;
 
 import java.io.Serializable;
@@ -62,7 +62,6 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	protected final List elements;
 	protected DataContext dataContext;
 	protected ObjEntity rootEntity;
-	protected SelectQuery<?> internalQuery;
 	protected int unfetchedObjects;
 
 	/**
@@ -116,13 +115,6 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			throw new CayenneRuntimeException("Pagination is not supported for queries not rooted in an ObjEntity");
 		}
 
-		// create an internal query, it is a partial replica of
-		// the original query and will serve as a value holder for
-		// various parameters
-		this.internalQuery = new SelectQuery<>(rootEntity);
-		this.internalQuery.setFetchingDataRows(metadata.isFetchingDataRows());
-		this.internalQuery.setPrefetchTree(metadata.getPrefetchTree());
-
 		this.idWidth = metadata.getDbEntity().getPrimaryKeys().size();
 
 		List<Object> elementsUnsynced = new ArrayList<>();
@@ -151,13 +143,6 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	}
 
 	/**
-	 * @since 1.2
-	 */
-	SelectQuery getInternalQuery() {
-		return internalQuery;
-	}
-
-	/**
 	 * Performs initialization of the list of objects. Only the first page is
 	 * fully resolved. For the rest of the list, only ObjectIds are read.
 	 * 
@@ -167,7 +152,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 		elementsList.clear();
 
-		try (ResultIterator it = dataContext.performIteratedQuery(query)) {
+		try (ResultIterator<?> it = dataContext.performIteratedQuery(query)) {
 			while (it.hasNextRow()) {
 				elementsList.add(it.nextRow());
 			}
@@ -191,7 +176,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 		// I am not sure if such a check makes sense???
 
-		if (internalQuery.isFetchingDataRows()) {
+		if (metadata.isFetchingDataRows()) {
 			if (!(object instanceof Map)) {
 				throw new IllegalArgumentException("Only Map objects can be stored in this list.");
 			}
@@ -249,7 +234,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			int fetchEnd = Math.min(qualsSize, fetchSize);
 			int fetchBegin = 0;
 			while (fetchBegin < qualsSize) {
-				SelectQuery<Object> query = createSelectQuery(quals.subList(fetchBegin, fetchEnd));
+				ObjectSelect<Persistent> query = createSelectQuery(quals.subList(fetchBegin, fetchEnd));
 				objects.addAll(dataContext.performQuery(query));
 				fetchBegin = fetchEnd;
 				fetchEnd += Math.min(fetchSize, qualsSize - fetchEnd);
@@ -271,12 +256,15 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		unfetchedObjects -= objects.size();
 	}
 
-	SelectQuery<Object> createSelectQuery(List<Expression> expressions) {
-		SelectQuery<Object> query = new SelectQuery<>(rootEntity, ExpressionFactory.joinExp(Expression.OR, expressions));
+	ObjectSelect<Persistent> createSelectQuery(List<Expression> expressions) {
+		ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
+				.entityName(rootEntity.getName())
+				.where(ExpressionFactory.joinExp(Expression.OR, expressions));
 
-		query.setFetchingDataRows(internalQuery.isFetchingDataRows());
-		if (!query.isFetchingDataRows()) {
-			query.setPrefetchTree(internalQuery.getPrefetchTree());
+		if(metadata.isFetchingDataRows()) {
+			query.fetchDataRows();
+		} else if (metadata.getPrefetchTree() != null) {
+			query.prefetch(metadata.getPrefetchTree());
 		}
 
 		return query;

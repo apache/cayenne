@@ -224,6 +224,13 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     @Parameter
     private Boolean createPKProperties;
 
+    /**
+     * Optional path (classpath or filesystem) to external velocity tool configuration file
+     * @since 4.2 
+     */
+    @Parameter
+    private String externalToolConfig;
+    
     private transient Injector injector;
 
     private static final Logger logger = LoggerFactory.getLogger(CayenneGeneratorMojo.class);
@@ -297,7 +304,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 				makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
 				superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
 				usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
-				querySuperTemplate != null || createPKProperties != null;
+				querySuperTemplate != null || createPKProperties != null || externalToolConfig != null;
 	}
 
 	/**
@@ -349,6 +356,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
 		cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
 		cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
+		cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
 		if(!cgenConfiguration.isMakePairs()) {
 			if(template == null) {
 				cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);

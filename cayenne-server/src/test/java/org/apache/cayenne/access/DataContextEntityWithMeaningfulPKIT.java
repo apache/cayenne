@@ -30,6 +30,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -203,5 +204,50 @@ public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
         MeaningfulPk pkObj2 = context.newObject(MeaningfulPk.class);
         pkObj2.setPk("123");
         context.commitChanges();
+    }
+
+    @Test
+    @Ignore
+    public void test_MeaningfulPkInsertDeleteCascade() {
+        // setup
+        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
+        obj.setPkAttribute(1000);
+        obj.setDescr("aaa");
+        context.commitChanges();
+
+        // must be able to set reverse relationship
+        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
+        dep.setToMeaningfulPK(obj);
+        dep.setPk(10);
+        context.commitChanges();
+
+        // test
+        context.deleteObject(obj);
+
+        MeaningfulPKTest1 obj2 = context.newObject(MeaningfulPKTest1.class);
+        obj2.setPkAttribute(1000);
+        obj2.setDescr("bbb");
+
+        MeaningfulPKDep dep2 = context.newObject(MeaningfulPKDep.class);
+        dep2.setToMeaningfulPK(obj2);
+        dep2.setPk(10);
+        context.commitChanges();
+    }
+
+    @Test
+    public void testMeaningfulFKToOneInvalidate() {
+        MeaningfulPk pk = context.newObject(MeaningfulPk.class);
+        MeaningfulPkDep2 dep = context.newObject(MeaningfulPkDep2.class);
+        dep.setMeaningfulPk(pk);
+        dep.setDescr("test");
+
+        ObjectContext childContext = runtime.newContext(context);
+
+        MeaningfulPkDep2 depChild = childContext.localObject(dep);
+        depChild.setDescr("test2");
+
+        assertEquals("test2", depChild.getDescr());
+        assertNotNull(depChild.getMeaningfulPk());
+        assertNull(depChild.getMeaningfulPk().getPk());
     }
 }

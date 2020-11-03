@@ -67,6 +67,7 @@ public class IncludeTable extends PatternParam {
     }
 
     /**
+     * @param pattern RegExp pattern to use for relationship exclusion
      * @since 4.1
      */
     public void excludeRelationship(String pattern){
@@ -74,6 +75,7 @@ public class IncludeTable extends PatternParam {
     }
 
     /**
+     * @param patterns collection of RegExp patterns to use for relationship exclusion
      * @since 4.1
      */
     public void excludeRelationships(String... patterns){

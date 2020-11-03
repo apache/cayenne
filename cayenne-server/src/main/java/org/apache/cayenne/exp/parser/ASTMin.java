@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -37,5 +40,11 @@ public class ASTMin extends ASTAggregateFunctionCall {
     @Override
     public Expression shallowCopy() {
         return new ASTMin(id);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
+    protected Object evaluateCollection(Collection<?> values) {
+        return Collections.min((Collection)values);
     }
 }

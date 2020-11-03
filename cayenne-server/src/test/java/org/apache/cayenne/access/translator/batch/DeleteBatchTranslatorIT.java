@@ -19,6 +19,11 @@
 
 package org.apache.cayenne.access.translator.batch;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -33,11 +38,6 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -60,32 +60,34 @@ public class DeleteBatchTranslatorIT extends ServerCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(mock(DeleteBatchQuery.class), adapter, null);
+        DeleteBatchQuery query = mock(DeleteBatchQuery.class);
+        DeleteBatchTranslator builder = new DeleteBatchTranslator(query, adapter);
 
-        assertSame(adapter, builder.adapter);
+        assertSame(adapter, builder.context.getAdapter());
+        assertSame(query, builder.context.getQuery());
     }
 
     @Test
-    public void testCreateSqlString() throws Exception {
+    public void testCreateSqlString() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
+        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
+        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
         String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
 
     @Test
-    public void testCreateSqlStringWithNulls() throws Exception {
+    public void testCreateSqlStringWithNulls() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
@@ -97,14 +99,14 @@ public class DeleteBatchTranslatorIT extends ServerCase {
         DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
+        DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
         String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
-        assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ? AND NAME IS NULL", generatedSql);
+        assertEquals("DELETE FROM " + entity.getName() + " WHERE ( LOCKING_TEST_ID = ? ) AND ( NAME IS NULL )", generatedSql);
     }
 
     @Test
-    public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
+    public void testCreateSqlStringWithIdentifiersQuote() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {
@@ -112,9 +114,9 @@ public class DeleteBatchTranslatorIT extends ServerCase {
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.<String> emptySet(), 1);
+            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
-            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
+            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
             String generatedSql = builder.getSql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
@@ -130,7 +132,7 @@ public class DeleteBatchTranslatorIT extends ServerCase {
     }
 
     @Test
-    public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
+    public void testCreateSqlStringWithNullsWithIdentifiersQuote() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {
@@ -146,15 +148,15 @@ public class DeleteBatchTranslatorIT extends ServerCase {
 
             JdbcAdapter adapter = (JdbcAdapter) this.adapter;
 
-            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter, null);
+            DeleteBatchTranslator builder = new DeleteBatchTranslator(deleteQuery, adapter);
             String generatedSql = builder.getSql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
 
-            assertEquals("DELETE FROM " + charStart + entity.getName() + charEnd + " WHERE " + charStart
-                    + "LOCKING_TEST_ID" + charEnd + " = ? AND " + charStart + "NAME" + charEnd + " IS NULL",
+            assertEquals("DELETE FROM " + charStart + entity.getName() + charEnd + " WHERE ( " + charStart
+                    + "LOCKING_TEST_ID" + charEnd + " = ? ) AND ( " + charStart + "NAME" + charEnd + " IS NULL )",
                     generatedSql);
         } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);

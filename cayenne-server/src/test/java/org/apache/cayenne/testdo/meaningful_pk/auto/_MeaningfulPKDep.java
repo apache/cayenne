@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -20,15 +19,16 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
  */
 public abstract class _MeaningfulPKDep extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> PK_ATTRIBUTE_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PK_ATTRIBUTE"), Integer.class);
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 
     public static final StringProperty<String> DESCR = PropertyFactory.createString("descr", String.class);
+    public static final NumericProperty<Integer> PK = PropertyFactory.createNumeric("pk", Integer.class);
     public static final EntityProperty<MeaningfulPKTest1> TO_MEANINGFUL_PK = PropertyFactory.createEntity("toMeaningfulPK", MeaningfulPKTest1.class);
 
     protected String descr;
+    protected int pk;
 
     protected Object toMeaningfulPK;
 
@@ -40,6 +40,16 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
     public String getDescr() {
         beforePropertyRead("descr");
         return this.descr;
+    }
+
+    public void setPk(int pk) {
+        beforePropertyWrite("pk", this.pk, pk);
+        this.pk = pk;
+    }
+
+    public int getPk() {
+        beforePropertyRead("pk");
+        return this.pk;
     }
 
     public void setToMeaningfulPK(MeaningfulPKTest1 toMeaningfulPK) {
@@ -59,6 +69,8 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
         switch(propName) {
             case "descr":
                 return this.descr;
+            case "pk":
+                return this.pk;
             case "toMeaningfulPK":
                 return this.toMeaningfulPK;
             default:
@@ -75,6 +87,9 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
         switch (propName) {
             case "descr":
                 this.descr = (String)val;
+                break;
+            case "pk":
+                this.pk = val == null ? 0 : (int)val;
                 break;
             case "toMeaningfulPK":
                 this.toMeaningfulPK = val;
@@ -96,6 +111,7 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
         out.writeObject(this.descr);
+        out.writeInt(this.pk);
         out.writeObject(this.toMeaningfulPK);
     }
 
@@ -103,6 +119,7 @@ public abstract class _MeaningfulPKDep extends BaseDataObject {
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
         this.descr = (String)in.readObject();
+        this.pk = in.readInt();
         this.toMeaningfulPK = in.readObject();
     }
 

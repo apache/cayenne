@@ -31,7 +31,6 @@ import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
 import org.apache.cayenne.query.SelectById;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
@@ -63,65 +62,62 @@ public class CommitLogFilter_All_FlattenedIT extends FlattenedServerCase {
 		e4.insert(12);
 		e34.insert(1, 11);
 
-		final E3 e3 = SelectById.query(E3.class, 1).selectOne(context);
-		final E4 e4_1 = SelectById.query(E4.class, 11).selectOne(context);
-		final E4 e4_2 = SelectById.query(E4.class, 12).selectOne(context);
+		E3 e3 = SelectById.query(E3.class, 1).selectOne(context);
+		E4 e4_1 = SelectById.query(E4.class, 11).selectOne(context);
+		E4 e4_2 = SelectById.query(E4.class, 12).selectOne(context);
 
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+		doAnswer((Answer<Object>) invocation -> {
 
-				assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, invocation.getArguments()[0]);
 
-				ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
-				assertNotNull(changes);
-				assertEquals(3, changes.getUniqueChanges().size());
+			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
+			assertNotNull(changes);
+			assertEquals(3, changes.getUniqueChanges().size());
 
-				ObjectChange e3c = changes.getChanges().get(ObjectId.of("E3", E3.ID_PK_COLUMN, 1));
-				assertNotNull(e3c);
-				assertEquals(ObjectChangeType.UPDATE, e3c.getType());
-				assertEquals(0, e3c.getAttributeChanges().size());
-				assertEquals(1, e3c.getToManyRelationshipChanges().size());
+			ObjectChange e3c = changes.getChanges().get(ObjectId.of("E3", E3.ID_PK_COLUMN, 1));
+			assertNotNull(e3c);
+			assertEquals(ObjectChangeType.UPDATE, e3c.getType());
+			assertEquals(0, e3c.getAttributeChanges().size());
+			assertEquals(1, e3c.getToManyRelationshipChanges().size());
 
-				ToManyRelationshipChange e3c1 = e3c.getToManyRelationshipChanges().get(E3.E4S.getName());
-				assertNotNull(e3c1);
+			ToManyRelationshipChange e3c1 = e3c.getToManyRelationshipChanges().get(E3.E4S.getName());
+			assertNotNull(e3c1);
 
-				assertEquals(1, e3c1.getAdded().size());
-				assertTrue(e3c1.getAdded().contains(e4_2.getObjectId()));
+			assertEquals(1, e3c1.getAdded().size());
+			assertTrue(e3c1.getAdded().contains(e4_2.getObjectId()));
 
-				assertEquals(1, e3c1.getRemoved().size());
-				assertTrue(e3c1.getRemoved().contains(e4_1.getObjectId()));
-				
-				ObjectChange e41c = changes.getChanges().get(ObjectId.of("E4", E4.ID_PK_COLUMN, 11));
-				assertNotNull(e41c);
-				assertEquals(ObjectChangeType.UPDATE, e41c.getType());
-				assertEquals(0, e41c.getAttributeChanges().size());
-				assertEquals(1, e41c.getToManyRelationshipChanges().size());
+			assertEquals(1, e3c1.getRemoved().size());
+			assertTrue(e3c1.getRemoved().contains(e4_1.getObjectId()));
 
-				ToManyRelationshipChange e41c1 = e41c.getToManyRelationshipChanges().get(E4.E3S.getName());
-				assertNotNull(e41c);
+			ObjectChange e41c = changes.getChanges().get(ObjectId.of("E4", E4.ID_PK_COLUMN, 11));
+			assertNotNull(e41c);
+			assertEquals(ObjectChangeType.UPDATE, e41c.getType());
+			assertEquals(0, e41c.getAttributeChanges().size());
+			assertEquals(1, e41c.getToManyRelationshipChanges().size());
 
-				assertEquals(0, e41c1.getAdded().size());
+			ToManyRelationshipChange e41c1 = e41c.getToManyRelationshipChanges().get(E4.E3S.getName());
+			assertNotNull(e41c);
 
-				assertEquals(1, e41c1.getRemoved().size());
-				assertTrue(e41c1.getRemoved().contains(e3.getObjectId()));
-				
-				ObjectChange e42c = changes.getChanges().get(ObjectId.of("E4", E4.ID_PK_COLUMN, 12));
-				assertNotNull(e42c);
-				assertEquals(ObjectChangeType.UPDATE, e42c.getType());
-				assertEquals(0, e42c.getAttributeChanges().size());
-				assertEquals(1, e42c.getToManyRelationshipChanges().size());
+			assertEquals(0, e41c1.getAdded().size());
 
-				ToManyRelationshipChange e42c1 = e42c.getToManyRelationshipChanges().get(E4.E3S.getName());
-				assertNotNull(e42c);
+			assertEquals(1, e41c1.getRemoved().size());
+			assertTrue(e41c1.getRemoved().contains(e3.getObjectId()));
 
-				assertEquals(0, e42c1.getRemoved().size());
+			ObjectChange e42c = changes.getChanges().get(ObjectId.of("E4", E4.ID_PK_COLUMN, 12));
+			assertNotNull(e42c);
+			assertEquals(ObjectChangeType.UPDATE, e42c.getType());
+			assertEquals(0, e42c.getAttributeChanges().size());
+			assertEquals(1, e42c.getToManyRelationshipChanges().size());
 
-				assertEquals(1, e42c1.getAdded().size());
-				assertTrue(e42c1.getAdded().contains(e3.getObjectId()));
+			ToManyRelationshipChange e42c1 = e42c.getToManyRelationshipChanges().get(E4.E3S.getName());
+			assertNotNull(e42c);
 
-				return null;
-			}
+			assertEquals(0, e42c1.getRemoved().size());
+
+			assertEquals(1, e42c1.getAdded().size());
+			assertTrue(e42c1.getAdded().contains(e3.getObjectId()));
+
+			return null;
 		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
 
 		e3.removeFromE4s(e4_1);

@@ -55,10 +55,13 @@ class OrderingStage implements TranslationStage {
         }
 
         // If query is DISTINCT then we need to add all ORDER BY clauses as result columns
-        if(shouldAddToResult(context, exp)) {
+        if(!context.isDistinctSuppression()) {
             // TODO: need to check duplicates?
             // need UPPER() function here too, as some DB expect exactly the same expression in select and in ordering
-            context.addResultNode(nodeBuilder.build().deepCopy());
+            ResultNodeDescriptor descriptor = context.addResultNode(nodeBuilder.build().deepCopy());
+            if(exp instanceof ASTAggregateFunctionCall) {
+                descriptor.setAggregate(true);
+            }
         }
 
         OrderingNodeBuilder orderingNodeBuilder = order(nodeBuilder);
@@ -66,16 +69,6 @@ class OrderingStage implements TranslationStage {
             orderingNodeBuilder.desc();
         }
         context.getSelectBuilder().orderBy(orderingNodeBuilder);
-    }
-
-    private boolean shouldAddToResult(TranslatorContext context, Expression exp) {
-        if(context.isDistinctSuppression()) {
-            return false;
-        }
-        if(exp instanceof ASTAggregateFunctionCall) {
-            return false;
-        }
-        return true;
     }
 
 }

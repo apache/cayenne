@@ -42,7 +42,6 @@ public class ProjectCompatibilityModuleProvider implements CayenneServerModulePr
         return ProjectCompatibilityModule.class;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
         // compatibility module overrides XML loaders defined in ServerModule and

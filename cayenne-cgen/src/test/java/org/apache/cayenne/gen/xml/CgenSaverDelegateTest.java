@@ -36,12 +36,12 @@ public class CgenSaverDelegateTest {
     public void testExistingRootOverride() throws Exception {
         CgenConfiguration config = new CgenConfiguration(false);
 
-        config.setRootPath(Paths.get("/tmp/src/main/java"));
+        config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
         URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
 
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
-        assertEquals(Paths.get("/tmp/src/main/resources"), config.getRootPath());
+        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
         assertEquals(Paths.get("../java"), config.getRelPath());
     }
 
@@ -49,14 +49,14 @@ public class CgenSaverDelegateTest {
     public void testExistingRootAndRelPath() throws Exception {
         CgenConfiguration config = new CgenConfiguration(false);
 
-        config.setRootPath(Paths.get("/tmp/src/main/java"));
+        config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
         config.setRelPath(Paths.get(""));
 
         URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
 
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
-        assertEquals(Paths.get("/tmp/src/main/resources"), config.getRootPath());
+        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
         assertEquals(Paths.get("../java"), config.getRelPath());
     }
 
@@ -68,7 +68,7 @@ public class CgenSaverDelegateTest {
 
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
-        assertEquals(Paths.get("/tmp/src/main/resources"), config.getRootPath());
+        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
         assertEquals(Paths.get(""), config.getRelPath());
     }
 

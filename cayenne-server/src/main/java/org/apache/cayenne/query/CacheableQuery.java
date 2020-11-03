@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class CacheableQuery implements Query {
 
-    protected static final Logger logger = LoggerFactory.getLogger(SelectQuery.class);
+    protected static final Logger logger = LoggerFactory.getLogger(CacheableQuery.class);
 
     abstract protected BaseQueryMetadata getBaseMetaData();
 

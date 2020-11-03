@@ -22,10 +22,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
@@ -55,12 +54,15 @@ public interface DbAdapter {
 	 */
 	String getBatchTerminator();
 
-	/**
-	 * Returns a SelectTranslator that works with the adapter target database.
-	 *
-	 * @since 4.0
-	 */
-	SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
+    /**
+     * Returns a SelectTranslator that works with the adapter target database.
+     *
+     * @since 4.0
+     * @deprecated since 4.2 as {@link SelectQuery} is deprecated.
+     * {@link #getSelectTranslator(FluentSelect, EntityResolver)} replaces this method.
+     */
+    @Deprecated
+    SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
 
 	/**
 	 * @since 4.2
@@ -69,9 +71,9 @@ public interface DbAdapter {
 
 	/**
 	 * @since 4.2
-	 * @return {@link Function} that can adjust SQL tree to specific database flavour
+	 * @return {@link SQLTreeProcessor} that can adjust SQL tree to specific database flavour
 	 */
-	Function<Node, Node> getSqlTreeProcessor();
+	SQLTreeProcessor getSqlTreeProcessor();
 
 	/**
 	 * Returns an instance of SQLAction that should handle the query.
@@ -102,6 +104,15 @@ public interface DbAdapter {
 	 * @since 1.2
 	 */
 	boolean supportsGeneratedKeys();
+
+    /**
+	 * Returns true if a target database supports key autogeneration in a batch insert.
+	 * @see #supportsGeneratedKeys()
+     * @since 4.2
+     */
+    default boolean supportsGeneratedKeysForBatchInserts() {
+    	return supportsGeneratedKeys();
+    }
 
 	/**
 	 * Returns <code>true</code> if the target database supports batch updates.

@@ -39,10 +39,8 @@ public class ProtostuffClientModuleProvider implements CayenneClientModuleProvid
         return ProtostuffModule.class;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        Collection modules = Collections.singletonList(ClientModule.class);
-        return modules;
+        return Collections.singletonList(ClientModule.class);
     }
 }

@@ -35,7 +35,7 @@ import java.awt.*;
  * Data map editing tabs container
  *
  */
-public class DataMapTabbedView extends JTabbedPane{
+public class DataMapTabbedView extends JTabbedPane {
 
     ProjectController mediator;
     private DbImportView dbImportView;
@@ -71,7 +71,7 @@ public class DataMapTabbedView extends JTabbedPane{
         JScrollPane dataMapScrollPane = new JScrollPane(new DataMapView(mediator));
         dbImportView = new DbImportView(mediator);
         dbImportScrollPane = new JScrollPane(dbImportView);
-        codeGeneratorController = new CodeGeneratorController(Application.getInstance().getFrameController(), mediator);
+        codeGeneratorController = new CodeGeneratorController(mediator);
         cgenView = new JScrollPane(codeGeneratorController.getView());
         addTab("DataMap", dataMapScrollPane);
         addTab("DB Import", dbImportScrollPane);

@@ -43,12 +43,13 @@ public class ClasspathPreferences extends CayenneController {
 
     private static final Logger logger = LoggerFactory.getLogger(ClasspathPreferences.class);
 
-    protected ClasspathPreferencesView view;
-    protected List<String> classPathEntries;
-    protected ClasspathTableModel tableModel;
-    protected CayennePreferenceEditor editor;
-    protected List<String> classPathKeys;
-    private Preferences preferences;
+    private final ClasspathPreferencesView view;
+    private final List<String> classPathEntries;
+    private final List<String> classPathKeys;
+    private final ClasspathTableModel tableModel;
+    private final CayennePreferenceEditor editor;
+    private final Preferences preferences;
+
     private int counter;
 
     public ClasspathPreferences(PreferenceDialog parentController) {
@@ -56,29 +57,24 @@ public class ClasspathPreferences extends CayenneController {
 
         this.view = new ClasspathPreferencesView();
 
+        PreferenceEditor editor = parentController.getEditor();
+        this.editor = editor instanceof CayennePreferenceEditor
+                ? (CayennePreferenceEditor) editor
+                : null;
+
         // this prefs node is shared with other dialog panels... be aware of
         // that when accessing the keys
         this.preferences = getApplication().getPreferencesNode(this.getClass(), "");
 
-        PreferenceEditor editor = parentController.getEditor();
-        if (editor instanceof CayennePreferenceEditor) {
-            this.editor = (CayennePreferenceEditor) editor;
-        }
-
-        List<String> classPathEntries = new ArrayList<String>();
-        List<String> classPathKeys = new ArrayList<String>();
-
-        this.counter = loadPreferences(classPathEntries, classPathKeys);
-
-        this.classPathEntries = classPathEntries;
-        this.classPathKeys = classPathKeys;
-
-        this.tableModel = new ClasspathTableModel();
+        this.classPathEntries = new ArrayList<>();
+        this.classPathKeys = new ArrayList<>();
+        this.counter = loadPreferences();
+        this.tableModel = new ClasspathTableModel(classPathEntries);
 
         initBindings();
     }
 
-    private int loadPreferences(List<String> classPathEntries, List<String> classPathKeys) {
+    private synchronized int loadPreferences() {
 
         String[] cpKeys;
         try {
@@ -89,13 +85,12 @@ public class ClasspathPreferences extends CayenneController {
         }
 
         int max = 0;
-
         for (String cpKey : cpKeys) {
-
-            int c;
-
             try {
-                c = Integer.parseInt(cpKey);
+                int c = Integer.parseInt(cpKey);
+                if (c > max) {
+                    max = c;
+                }
             } catch (NumberFormatException e) {
                 // we are sharing the 'preferences' node with other dialogs, and
                 // this is a rather poor way of telling our preference keys from
@@ -104,10 +99,6 @@ public class ClasspathPreferences extends CayenneController {
 
                 // TODO: better key namespacing...
                 continue;
-            }
-
-            if (c > max) {
-                max = c;
             }
 
             String tempValue = preferences.get(cpKey, "");
@@ -127,8 +118,9 @@ public class ClasspathPreferences extends CayenneController {
     protected void initBindings() {
         view.getTable().setModel(tableModel);
         view.getAddDirButton().addActionListener(e -> addClassDirectoryAction());
-        view.getRemoveEntryButton().addActionListener(e -> removeEntryAction());
         view.getAddJarButton().addActionListener(e -> addJarOrZipAction());
+        view.getAddMvnButton().addActionListener(e -> addMvnDependencyAction());
+        view.getRemoveEntryButton().addActionListener(e -> removeEntryAction());
     }
 
     protected void addJarOrZipAction() {
@@ -139,13 +131,18 @@ public class ClasspathPreferences extends CayenneController {
         chooseClassEntry(null, "Select Java Class Directory.", JFileChooser.DIRECTORIES_ONLY);
     }
 
-    protected void removeEntryAction() {
+    protected void addMvnDependencyAction() {
+        MavenDependencyDialog dialog = new MavenDependencyDialog(this);
+        dialog.getView().setVisible(true);
+    }
+
+    protected synchronized void removeEntryAction() {
         int selected = view.getTable().getSelectedRow();
         if (selected < 0) {
             return;
         }
 
-        addRemovedPreferences(classPathKeys.get(selected));
+        updatePreferences(classPathKeys.get(selected), "");
         classPathEntries.remove(selected);
         classPathKeys.remove(selected);
 
@@ -157,13 +154,10 @@ public class ClasspathPreferences extends CayenneController {
         chooser.setFileSelectionMode(selectionMode);
         chooser.setDialogType(JFileChooser.OPEN_DIALOG);
         chooser.setAcceptAllFileFilterUsed(true);
-
         getLastDirectory().updateChooser(chooser);
-
         if (filter != null) {
             chooser.addChoosableFileFilter(filter);
         }
-
         chooser.setDialogTitle(title);
 
         File selected = null;
@@ -172,25 +166,29 @@ public class ClasspathPreferences extends CayenneController {
             selected = chooser.getSelectedFile();
         }
 
-        if (selected != null) {
-            if (!classPathEntries.contains(selected.getAbsolutePath())) {
-                // store last dir in preferences
-                getLastDirectory().updateFromChooser(chooser);
-
-                int len = classPathEntries.size();
-                int key = ++counter;
-
-                String value = selected.getAbsolutePath();
-                addChangedPreferences(Integer.toString(key), value);
-                classPathEntries.add(value);
-                classPathKeys.add(Integer.toString(key));
-
-                tableModel.fireTableRowsInserted(len, len);
-            }
-        }
+        // store last dir in preferences
+        getLastDirectory().updateFromChooser(chooser);
+        // add to classpath list
+        addClasspathEntry(selected);
     }
 
-    public void addChangedPreferences(String key, String value) {
+    public synchronized void addClasspathEntry(File selected) {
+        if (selected == null || classPathEntries.contains(selected.getAbsolutePath())) {
+            return;
+        }
+
+        int len = classPathEntries.size();
+        int key = ++counter;
+
+        String value = selected.getAbsolutePath();
+        updatePreferences(Integer.toString(key), value);
+        classPathEntries.add(value);
+        classPathKeys.add(Integer.toString(key));
+
+        tableModel.fireTableRowsInserted(len, len);
+    }
+
+    public void updatePreferences(String key, String value) {
         Map<String, String> map = editor.getChangedPreferences().get(preferences);
         if (map == null) {
             map = new HashMap<>();
@@ -199,16 +197,13 @@ public class ClasspathPreferences extends CayenneController {
         editor.getChangedPreferences().put(preferences, map);
     }
 
-    public void addRemovedPreferences(String key) {
-        Map<String, String> map = editor.getRemovedPreferences().get(preferences);
-        if (map == null) {
-            map = new HashMap<>();
-        }
-        map.put(key, "");
-        editor.getRemovedPreferences().put(preferences, map);
-    }
+    static class ClasspathTableModel extends AbstractTableModel {
 
-    class ClasspathTableModel extends AbstractTableModel {
+        private final List<String> classPathEntries;
+
+        ClasspathTableModel(List<String> classPathEntries) {
+            this.classPathEntries = classPathEntries;
+        }
 
         public int getColumnCount() {
             return 1;

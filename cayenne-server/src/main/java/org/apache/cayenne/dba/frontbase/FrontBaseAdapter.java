@@ -24,10 +24,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -80,7 +79,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
      * @since 4.2
      */
 	@Override
-	public Function<Node, Node> getSqlTreeProcessor() {
+	public SQLTreeProcessor getSqlTreeProcessor() {
 		return new FrontBaseSQLTreeProcessor();
 	}
 

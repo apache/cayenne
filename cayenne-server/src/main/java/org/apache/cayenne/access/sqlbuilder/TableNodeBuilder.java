@@ -19,9 +19,12 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
+import java.util.Objects;
+
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 
 /**
  * @since 4.2
@@ -29,11 +32,18 @@ import org.apache.cayenne.map.DbAttribute;
 public class TableNodeBuilder implements NodeBuilder {
 
     private final String tableName;
+    private final DbEntity dbEntity;
 
     private String alias;
 
     TableNodeBuilder(String tableName) {
-        this.tableName = tableName;
+        this.tableName = Objects.requireNonNull(tableName);
+        this.dbEntity = null;
+    }
+
+    TableNodeBuilder(DbEntity dbEntity) {
+        this.dbEntity = Objects.requireNonNull(dbEntity);
+        this.tableName = dbEntity.getName();
     }
 
     public TableNodeBuilder as(String alias) {
@@ -59,6 +69,9 @@ public class TableNodeBuilder implements NodeBuilder {
 
     @Override
     public Node build() {
+        if(dbEntity != null) {
+            return new TableNode(dbEntity, alias);
+        }
         return new TableNode(tableName, alias);
     }
 

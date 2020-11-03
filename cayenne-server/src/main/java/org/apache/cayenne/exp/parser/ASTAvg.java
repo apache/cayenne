@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.parser;
 
+import java.util.Collection;
+
 import org.apache.cayenne.exp.Expression;
 
 /**
@@ -37,5 +39,23 @@ public class ASTAvg extends ASTAggregateFunctionCall {
     @Override
     public Expression shallowCopy() {
         return new ASTAvg(id);
+    }
+
+    @Override
+    protected Object evaluateCollection(Collection<?> values) {
+        if(values.isEmpty()) {
+            return 0.0;
+        }
+
+        double sum = 0;
+        for(Object value : values) {
+            if(value instanceof Number) {
+                sum += ((Number) value).doubleValue();
+            } else {
+                throw new UnsupportedOperationException("Can't calculate average for non-numeric type.");
+            }
+        }
+
+        return sum / values.size();
     }
 }

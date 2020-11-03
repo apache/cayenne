@@ -21,6 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SelectNode;
+import org.apache.cayenne.map.DbEntity;
 import org.junit.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
@@ -30,7 +31,7 @@ import static org.junit.Assert.*;
 /**
  * @since 4.2
  */
-public class SelectBuilderTest {
+public class SelectBuilderTest extends BaseSqlBuilderTest  {
 
     @Test
     public void testSelect() {
@@ -46,6 +47,7 @@ public class SelectBuilderTest {
         Node node = builder.build();
         assertThat(node, instanceOf(SelectNode.class));
         assertSQL("SELECT a, c.b", node);
+        assertQuotedSQL("SELECT `a`, `c`.`b`", node);
     }
 
     @Test
@@ -54,6 +56,19 @@ public class SelectBuilderTest {
         Node node = builder.build();
         assertThat(node, instanceOf(SelectNode.class));
         assertSQL("SELECT a FROM b", node);
+        assertQuotedSQL("SELECT `a` FROM `b`", node);
+    }
+
+    @Test
+    public void testSelectFromDbEntity() {
+        DbEntity entity = new DbEntity("b");
+        entity.setSchema("d");
+        entity.setCatalog("c");
+        SelectBuilder builder = new SelectBuilder(column("a")).from(table(entity));
+        Node node = builder.build();
+        assertThat(node, instanceOf(SelectNode.class));
+        assertSQL("SELECT a FROM c.d.b", node);
+        assertQuotedSQL("SELECT `a` FROM `c`.`d`.`b`", node);
     }
 
     @Test
@@ -123,9 +138,4 @@ public class SelectBuilderTest {
                 " ORDER BY p_count DESC, a_id", node);
     }
 
-    private void assertSQL(String expected, Node node) {
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
-        node.visit(visitor);
-        assertEquals(expected, visitor.getSQLString());
-    }
 }

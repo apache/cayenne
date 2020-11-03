@@ -29,6 +29,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
+import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -40,10 +41,16 @@ import org.apache.cayenne.map.ObjEntity;
  */
 class RootRowOpProcessor implements DbRowOpVisitor<Void> {
     private final DbRowOpFactory dbRowOpFactory;
+    private final GraphChangeHandler insertHandler;
+    private final GraphChangeHandler updateHandler;
+    private final GraphChangeHandler deleteHandler;
     private ObjectDiff diff;
 
     RootRowOpProcessor(DbRowOpFactory dbRowOpFactory) {
         this.dbRowOpFactory = dbRowOpFactory;
+        this.insertHandler = new ValuesCreationHandler(dbRowOpFactory, DbRowOpType.INSERT);
+        this.updateHandler = new ValuesCreationHandler(dbRowOpFactory, DbRowOpType.UPDATE);
+        this.deleteHandler = new ArcValuesCreationHandler(dbRowOpFactory, DbRowOpType.DELETE);
     }
 
     void setDiff(ObjectDiff diff) {
@@ -52,13 +59,13 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
 
     @Override
     public Void visitInsert(InsertDbRowOp dbRow) {
-        diff.apply(new ValuesCreationHandler(dbRowOpFactory, DbRowOpType.INSERT));
+        diff.apply(insertHandler);
         return null;
     }
 
     @Override
     public Void visitUpdate(UpdateDbRowOp dbRow) {
-        diff.apply(new ValuesCreationHandler(dbRowOpFactory, DbRowOpType.UPDATE));
+        diff.apply(updateHandler);
         if (dbRowOpFactory.getDescriptor().getEntity().getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
             dbRowOpFactory.getDescriptor().visitAllProperties(new OptimisticLockQualifierBuilder(dbRow, diff));
         }
@@ -71,7 +78,7 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
             throw new CayenneRuntimeException("Attempt to modify object(s) mapped to a read-only entity: '%s'. " +
                     "Can't commit changes.", dbRowOpFactory.getDescriptor().getEntity().getName());
         }
-        diff.apply(new ArcValuesCreationHandler(dbRowOpFactory, DbRowOpType.DELETE));
+        diff.apply(deleteHandler);
         Collection<ObjectId> flattenedIds = dbRowOpFactory.getStore().getFlattenedIds(dbRow.getChangeId());
         flattenedIds.forEach(id -> dbRowOpFactory.getOrCreate(dbRowOpFactory.getDbEntity(id), id, DbRowOpType.DELETE));
         if (dbRowOpFactory.getDescriptor().getEntity().getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {

@@ -330,8 +330,8 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
             if (objEntity.getDeclaredAttribute(e.getAttribute().getName()) != null) {
 
                 JOptionPane pane = new JOptionPane(
-                        String.format("'%s' and '%s' can't have attribute '%s' together. " +
-                                        "Would you like to delete this attribute from the '%s' class?",
+                        String.format("'%s' and '%s' can't both have attribute '%s'. " +
+                                        "Would you like to delete this attribute from the '%s'?",
                                 objEntity.getName(), e.getEntity().getName(), e.getAttribute().getName(), objEntity.getName()),
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.YES_NO_OPTION);

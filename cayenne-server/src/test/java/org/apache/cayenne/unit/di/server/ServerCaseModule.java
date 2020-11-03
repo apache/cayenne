@@ -28,6 +28,7 @@ import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
+import org.apache.cayenne.access.types.BigDecimalValueType;
 import org.apache.cayenne.access.types.BigIntegerValueType;
 import org.apache.cayenne.access.types.BooleanType;
 import org.apache.cayenne.access.types.ByteArrayType;
@@ -112,6 +113,8 @@ import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -216,6 +219,7 @@ public class ServerCaseModule implements Module {
         ServerModule.contributeTypeFactories(binder);
         ServerModule.contributeValueObjectTypes(binder)
                 .add(BigIntegerValueType.class)
+                .add(BigDecimalValueType.class)
                 .add(UUIDValueType.class)
                 .add(LocalDateValueType.class)
                 .add(LocalTimeValueType.class)
@@ -223,6 +227,7 @@ public class ServerCaseModule implements Module {
                 .add(PeriodValueType.class)
                 .add(CharacterValueType.class);
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+        binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
         binder.bind(SchemaBuilder.class).to(SchemaBuilder.class);
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);

@@ -5,6 +5,12 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 4.2.M2
+
+* Per CAY-2659 All batch translators (`InsertBatchTranslator`, `UpdateBatchTranslator`, etc.) are updated to the new SQLBuilder utility.
+If you are using customized versions of these classes you should either update them accordingly, or you could keep using
+old versions witch are moved to the `org.apache.cayenne.access.translator.batch.legacy` package.
+
 UPGRADING TO 4.2.M1
 
 * Per CAY-2520 ObjectId can't be instantiated directly, ObjectId.of(..) methods should be used.

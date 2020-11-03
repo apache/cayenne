@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler;
 
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -166,13 +167,16 @@ public class CodeTemplateManager {
 	public String getTemplatePath(String name, Resource rootPath) {
 		Object value = customTemplates.get(name);
 		if (value != null) {
-			if(rootPath != null) {
-				Path path = Paths.get(rootPath.getURL().getPath()).getParent();
-				value = path.relativize(Paths.get((String) value));
+			try {
+				if(rootPath != null) {
+						Path path = Paths.get(rootPath.getURL().toURI()).getParent();
+						value = path.relativize(Paths.get((String) value));
+				}
+				return value.toString();
+			} catch (URISyntaxException e) {
+				logger.warn("Path for template named '{}' could not be resolved", name);
 			}
-			return value.toString();
 		}
-
 		value = standardTemplates.get(name);
 		return value != null ? value.toString() : null;
 	}

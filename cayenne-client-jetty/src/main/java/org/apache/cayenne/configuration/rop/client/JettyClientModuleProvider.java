@@ -39,10 +39,8 @@ public class JettyClientModuleProvider implements CayenneClientModuleProvider {
         return ClientJettyHttpModule.class;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        Collection modules = Collections.singletonList(ClientModule.class);
-        return modules;
+        return Collections.singletonList(ClientModule.class);
     }
 }

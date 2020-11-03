@@ -67,7 +67,6 @@ public class DbImportTask extends BaseCayenneTask {
     @Internal
     private ReverseEngineering reverseEngineering;
 
-    @Internal
     private File cayenneProject;
 
     public DbImportTask() {

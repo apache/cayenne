@@ -98,9 +98,9 @@ class SelectQueryPrefetchRouterAction implements PrefetchProcessor {
 
         // create and configure PrefetchSelectQuery
         PrefetchSelectQuery<?> prefetchQuery = new PrefetchSelectQuery<>(prefetchPath, relationship);
-        prefetchQuery.setStatementFetchSize(query.getStatementFetchSize());
+        prefetchQuery.statementFetchSize(query.getStatementFetchSize());
 
-        prefetchQuery.setQualifier(classDescriptor.getEntity()
+        prefetchQuery.where(classDescriptor.getEntity()
                 .translateToRelatedEntity(queryQualifier, prefetchPath));
 
         if (relationship.isSourceIndependentFromTargetChange()) {

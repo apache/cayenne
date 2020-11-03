@@ -41,10 +41,14 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
 
     protected FaultFactory faultFactory;
 
+    protected ValueComparisonStrategyFactory valueComparisonStrategyFactory;
+
     public DataObjectDescriptorFactory(ClassDescriptorMap descriptorMap,
-            FaultFactory faultFactory) {
+                                       FaultFactory faultFactory,
+                                       ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
         super(descriptorMap);
         this.faultFactory = faultFactory;
+        this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
     }
 
     @Override
@@ -65,7 +69,9 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
     protected void createAttributeProperty(
             PersistentDescriptor descriptor,
             ObjAttribute attribute) {
-        descriptor.addDeclaredProperty(new DataObjectAttributeProperty(attribute));
+        DataObjectAttributeProperty property
+                = new DataObjectAttributeProperty(attribute, valueComparisonStrategyFactory.getStrategy(attribute));
+        descriptor.addDeclaredProperty(property);
     }
 
     @Override

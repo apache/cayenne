@@ -220,11 +220,11 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
     public void testMixedPrefetch2() throws Exception {
         createTwoArtistsWithExhibitsDataSet();
 
-        List<Gallery> galleries = ObjectSelect.query(Gallery.class)
+        ObjectSelect<Gallery> gallerySelect = ObjectSelect.query(Gallery.class)
                 .where(Gallery.GALLERY_NAME.eq("gallery2"))
                 .prefetch(Gallery.EXHIBIT_ARRAY.disjoint())
-                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).joint())
-                .select(context);
+                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).joint());
+        List<Gallery> galleries = gallerySelect.select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);

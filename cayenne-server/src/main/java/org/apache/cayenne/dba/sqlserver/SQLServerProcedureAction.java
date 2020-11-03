@@ -171,8 +171,8 @@ public class SQLServerProcedureAction extends ProcedureAction {
 		}
 
 		@Override
-		public void nextGeneratedRows(Query query, ResultIterator keys, ObjectId idToUpdate) {
-			observer.nextGeneratedRows(query, keys, idToUpdate);
+		public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
+			observer.nextGeneratedRows(query, keys, idsToUpdate);
 		}
 
 		@Override

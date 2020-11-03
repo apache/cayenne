@@ -81,7 +81,15 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     private boolean client;
 
+    /**
+     * @since 4.2
+     */
+    private String externalToolConfig;
+    
     public CgenConfiguration(boolean client) {
+        /**
+         * {@link #isDefault()} method should be in sync with the following values
+         */
         this.outputPattern = "*.java";
         this.timestamp = 0L;
         this.usePkgPath = true;
@@ -318,6 +326,14 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.client = client;
     }
 
+    public String getExternalToolConfig() {
+    	return externalToolConfig;
+    }
+    
+    public void setExternalToolConfig(String config) {
+    	this.externalToolConfig = config;
+    }
+    
     void addArtifact(Artifact artifact) {
         artifacts.add(artifact);
     }
@@ -404,7 +420,28 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("superPkg", this.superPkg)
                 .simpleTag("createPKProperties", Boolean.toString(this.createPKProperties))
                 .simpleTag("client", Boolean.toString(client))
+                .simpleTag("externalToolConfig", this.externalToolConfig)
                 .end();
     }
 
+    /**
+     * @return is this configuration with all values set to the default
+     */
+    public boolean isDefault() {
+        // this must be is sync with actual default values
+        return isMakePairs()
+                && usePkgPath
+                && !overwrite
+                && !createPKProperties
+                && !createPropertyNames
+                && "*.java".equals(outputPattern)
+                && (template.equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
+                    || template.equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE))
+                && (superTemplate.equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
+                    || superTemplate.equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE))
+                && (superPkg == null
+                    || superPkg.isEmpty())
+                && (externalToolConfig == null
+                    || externalToolConfig.isEmpty());
+    }
 }

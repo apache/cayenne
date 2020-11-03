@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
 
@@ -20,13 +18,16 @@ public abstract class _IvSub3 extends IvRoot {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final EntityProperty<IvRoot> IV_ROOT = PropertyFactory.createEntity("ivRoot", IvRoot.class);
 
 
     protected Object ivRoot;
+
+    public void setIvRoot(IvRoot ivRoot) {
+        setToOneTarget("ivRoot", ivRoot, true);
+    }
 
     public IvRoot getIvRoot() {
         return (IvRoot)readProperty("ivRoot");

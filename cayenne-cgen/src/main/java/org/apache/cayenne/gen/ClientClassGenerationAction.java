@@ -41,8 +41,8 @@ public class ClientClassGenerationAction extends ClassGenerationAction {
 
     public static final String CLIENT_SUPERCLASS_PREFIX = "_Client";
 
-    public ClientClassGenerationAction() {
-        super();
+    public ClientClassGenerationAction(CgenConfiguration config) {
+        super(config);
     }
 
     @Override

@@ -38,7 +38,9 @@ public class Values {
     protected final DbRowOp row;
     protected final boolean includeId;
     // new values to store to DB
-    protected Map<String, Object> snapshot;
+    protected Map<String, Object> attributeSnapshot;
+    protected Map<String, Object> fkSnapshot;
+
     protected List<DbAttribute> updatedAttributes;
     // generated flattened Ids for this insert
     protected Map<String, ObjectId> flattenedIds;
@@ -48,28 +50,52 @@ public class Values {
         this.includeId = includeId;
     }
 
-    public void addValue(DbAttribute attribute, Object value) {
-        if(snapshot == null) {
-            snapshot = new HashMap<>();
+    public void addValue(DbAttribute attribute, Object value, boolean fk) {
+        if(fk) {
+            if (fkSnapshot == null) {
+                fkSnapshot = new HashMap<>();
+            }
+            fkSnapshot.put(attribute.getName(), value);
+        } else {
+            if (attributeSnapshot == null) {
+                attributeSnapshot = new HashMap<>();
+            }
+            attributeSnapshot.put(attribute.getName(), value);
+        }
+
+        if(updatedAttributes == null) {
             updatedAttributes = new ArrayList<>();
         }
-        snapshot.put(attribute.getName(), value);
         if(!updatedAttributes.contains(attribute)) {
             updatedAttributes.add(attribute);
         }
     }
 
     public void merge(Values other) {
-        if(this.snapshot == null) {
-            this.snapshot = other.snapshot;
+        if(this.updatedAttributes == null || updatedAttributes.isEmpty()) {
+            this.attributeSnapshot = other.attributeSnapshot;
+            this.fkSnapshot = other.fkSnapshot;
             this.updatedAttributes = other.updatedAttributes;
-        } else if(other.snapshot != null) {
-            other.snapshot.forEach(snapshot::putIfAbsent);
-            other.updatedAttributes.forEach(attr -> {
-                if(!updatedAttributes.contains(attr)) {
-                    updatedAttributes.add(attr);
+        } else {
+            if(other.attributeSnapshot != null) {
+                if(this.attributeSnapshot == null) {
+                    this.attributeSnapshot = new HashMap<>(other.attributeSnapshot.size());
                 }
-            });
+                other.attributeSnapshot.forEach(attributeSnapshot::putIfAbsent);
+            }
+            if(other.fkSnapshot != null) {
+                if(this.fkSnapshot == null) {
+                    this.fkSnapshot = new HashMap<>(other.fkSnapshot.size());
+                }
+                other.fkSnapshot.forEach(fkSnapshot::putIfAbsent);
+            }
+            if(other.updatedAttributes != null) {
+                other.updatedAttributes.forEach(attr -> {
+                    if (!updatedAttributes.contains(attr)) {
+                        updatedAttributes.add(attr);
+                    }
+                });
+            }
         }
 
         if(other.flattenedIds != null) {
@@ -99,19 +125,29 @@ public class Values {
 
     public Map<String, Object> getSnapshot() {
         if(!includeId) {
-            if(snapshot == null) {
-                return Collections.emptyMap();
-            }
-            return snapshot;
+            return mergeSnapshots();
         } else {
-            if (snapshot == null) {
-                snapshot = new HashMap<>();
-                snapshot.putAll(row.getChangeId().getIdSnapshot());
-                return snapshot;
+            Map<String, Object> mergedSnapshot = mergeSnapshots();
+            if(mergedSnapshot.isEmpty()) {
+                return new HashMap<>(row.getChangeId().getIdSnapshot());
             }
-            snapshot.putAll(row.getChangeId().getIdSnapshot());
-            return snapshot;
+            mergedSnapshot.putAll(row.getChangeId().getIdSnapshot());
+            return mergedSnapshot;
         }
+    }
+
+    private Map<String, Object> mergeSnapshots() {
+        if(attributeSnapshot == null && fkSnapshot == null) {
+            return Collections.emptyMap();
+        }
+        if(attributeSnapshot == null) {
+            return fkSnapshot;
+        } else if(fkSnapshot == null) {
+            return attributeSnapshot;
+        }
+        // FK should override attribute values
+        fkSnapshot.forEach(attributeSnapshot::put);
+        return attributeSnapshot;
     }
 
     public List<DbAttribute> getUpdatedAttributes() {
@@ -132,12 +168,16 @@ public class Values {
         if(includeId) {
             return false;
         }
-        return snapshot == null || snapshot.isEmpty();
+        return (attributeSnapshot == null || attributeSnapshot.isEmpty())
+                && (fkSnapshot == null || fkSnapshot.isEmpty());
     }
 
     public void clear() {
-        if(snapshot != null) {
-            snapshot.clear();
+        if(attributeSnapshot != null) {
+            attributeSnapshot.clear();
+        }
+        if(fkSnapshot != null) {
+            fkSnapshot.clear();
         }
         if(updatedAttributes != null) {
             updatedAttributes.clear();
@@ -148,12 +188,12 @@ public class Values {
     }
 
     public boolean isSameBatch(Values other) {
-        if(snapshot == null) {
-            return other.snapshot == null;
+        if(updatedAttributes == null) {
+            return other.updatedAttributes == null;
         }
-        if(other.snapshot == null) {
+        if(other.updatedAttributes == null) {
             return false;
         }
-        return snapshot.keySet().equals(other.snapshot.keySet());
+        return updatedAttributes.equals(other.updatedAttributes);
     }
 }

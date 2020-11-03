@@ -88,6 +88,12 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     protected Boolean createpkproperties;
 
+    /**
+     * Optional path (classpath or filesystem) to external velocity tool configuration file
+     * @since 4.2 
+     */
+    protected String externaltoolconfig;
+
     public CayenneGeneratorTask() {
     }
 
@@ -158,7 +164,7 @@ public class CayenneGeneratorTask extends CayenneTask {
                 makepairs != null || mode != null || outputPattern != null || overwrite != null || superpkg != null ||
                 supertemplate != null || template != null || embeddabletemplate != null || embeddablesupertemplate != null ||
                 usepkgpath != null || createpropertynames != null || querytemplate != null ||
-                querysupertemplate != null || createpkproperties != null || force;
+                querysupertemplate != null || createpkproperties != null || force || externaltoolconfig != null;
     }
 
     private CgenConfiguration buildConfiguration(DataMap dataMap) {
@@ -200,6 +206,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setQueryTemplate(querytemplate != null ? querytemplate : cgenConfiguration.getQueryTemplate());
         cgenConfiguration.setQuerySuperTemplate(querysupertemplate != null ? querysupertemplate : cgenConfiguration.getQuerySuperTemplate());
         cgenConfiguration.setCreatePKProperties(createpkproperties != null ? createpkproperties : cgenConfiguration.isCreatePKProperties());
+        cgenConfiguration.setExternalToolConfig(externaltoolconfig != null ? externaltoolconfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
                 cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
@@ -393,6 +400,13 @@ public class CayenneGeneratorTask extends CayenneTask {
         this.force = force;
     }
 
+    /**
+     * @since 4.2
+     */
+    public void setExternaltoolconfig(String externaltoolconfig) {
+    	this.externaltoolconfig = externaltoolconfig;
+    }
+    
     /**
      * Provides a <code>VPPConfig</code> object to configure. (Written with createConfig()
      * instead of addConfig() to avoid run-time dependency on VPP).

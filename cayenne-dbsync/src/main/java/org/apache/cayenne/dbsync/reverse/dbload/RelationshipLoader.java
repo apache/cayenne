@@ -120,7 +120,7 @@ public class RelationshipLoader extends AbstractLoader {
                 .tableFilter(relationship.getTargetEntity().getCatalog(), relationship.getTargetEntity().getSchema());
 
         // check that relationship can be included
-        if(!sourceTableFilter.getIncludeTableRelationshipFilter(entity.getName())
+        if(sourceTableFilter != null && !sourceTableFilter.getIncludeTableRelationshipFilter(entity.getName())
                 .isIncluded(relationship.getName())) {
             return;
         }
@@ -131,12 +131,14 @@ public class RelationshipLoader extends AbstractLoader {
             return;
         }
 
-        // check that all join attributes are included
-        for(DbJoin join : relationship.getJoins()) {
-            if(!sourceTableFilter.getIncludeTableColumnFilter(entity.getName()).isIncluded(join.getSourceName()) ||
-                    !targetTableFilter.getIncludeTableColumnFilter(relationship.getTargetEntityName()).isIncluded(join.getTargetName())) {
-                return;
-            }
+        if(sourceTableFilter != null && targetTableFilter != null) {
+	        // check that all join attributes are included
+	        for(DbJoin join : relationship.getJoins()) {
+	            if(!sourceTableFilter.getIncludeTableColumnFilter(entity.getName()).isIncluded(join.getSourceName()) ||
+	                    !targetTableFilter.getIncludeTableColumnFilter(relationship.getTargetEntityName()).isIncluded(join.getTargetName())) {
+	                return;
+	            }
+	        }
         }
 
         // add relationship if delegate permit it

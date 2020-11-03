@@ -22,6 +22,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -139,6 +140,39 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
     }
 
     @Test
+    public void testOneToMany_SQLSelect() throws Exception {
+        createArtistWithTwoPaintingsDataSet();
+
+        List<Artist> result = SQLSelect.query(Artist.class, "SELECT "
+                + "#result('ARTIST_NAME' 'String'), "
+                + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
+                + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
+                + "FROM ARTIST t0")
+                .addPrefetch(Artist.PAINTING_ARRAY.disjointById())
+                .select(context);
+
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            Artist b1 = result.get(0);
+
+            @SuppressWarnings("unchecked")
+            List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            assertNotNull(toMany);
+            assertFalse(((ValueHolder) toMany).isFault());
+            assertEquals(2, toMany.size());
+
+            List<String> names = new ArrayList<>();
+            for (Painting b : toMany) {
+                assertEquals(PersistenceState.COMMITTED, b.getPersistenceState());
+                names.add(b.getPaintingTitle());
+            }
+
+            assertTrue(names.contains("Y1"));
+            assertTrue(names.contains("Y2"));
+        });
+    }
+
+    @Test
     public void testManyToOne() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
@@ -152,6 +186,32 @@ public class DataContextDisjointByIdPrefetchIT extends ServerCase {
             assertNotNull(b1.getToArtist());
             assertEquals(PersistenceState.COMMITTED, b1.getToArtist().getPersistenceState());
             assertEquals("X", b1.getToArtist().getArtistName());
+        });
+    }
+
+    @Test
+    public void testManyToOne_SQLSelect() throws Exception {
+        createArtistWithTwoPaintingsDataSet();
+
+        List<Painting> result = SQLSelect.query(Painting.class, "SELECT "
+                + "#result('ESTIMATED_PRICE' 'BigDecimal'), "
+                + "#result('PAINTING_TITLE' 'String'), "
+                + "#result('PAINTING_DESCRIPTION' 'String'), "
+                + "#result('GALLERY_ID' 'int'), "
+                + "#result('PAINTING_ID' 'int'), "
+                + "#result('ARTIST_ID' 'int') "
+                + "FROM PAINTING")
+                .addPrefetch(Painting.TO_ARTIST.disjointById())
+                .select(context);
+
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            assertFalse(result.isEmpty());
+            Painting p1 = result.get(0);
+            assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
+
+            assertNotNull(p1.getToArtist());
+            assertEquals(PersistenceState.COMMITTED, p1.getToArtist().getPersistenceState());
+            assertEquals("X", p1.getToArtist().getArtistName());
         });
     }
 

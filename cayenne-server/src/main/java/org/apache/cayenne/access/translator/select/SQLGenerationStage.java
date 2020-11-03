@@ -35,7 +35,7 @@ class SQLGenerationStage implements TranslationStage {
         // Build final SQL tree
         Node node = context.getSelectBuilder().build();
         // convert to database flavour
-        node = context.getAdapter().getSqlTreeProcessor().apply(node);
+        node = context.getAdapter().getSqlTreeProcessor().process(node);
         // generate SQL
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultQuotingAppendable(context));
         node.visit(visitor);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.numeric_types"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
@@ -9,7 +9,8 @@
 	<property name="defaultClientPackage" value="test.client"/>
 	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="BIGDECIMAL_ENTITY">
-		<db-attribute name="BIGDECIMAL_FIELD" type="NUMERIC" length="12" scale="2"/>
+		<db-attribute name="BIG_DECIMAL_DECIMAL" type="DECIMAL" length="12" scale="6"/>
+		<db-attribute name="BIG_DECIMAL_NUMERIC" type="NUMERIC" length="12" scale="2"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="BIGINTEGER_ENTITY">
@@ -45,7 +46,8 @@
 		<db-attribute name="TINYINT_COL" type="TINYINT"/>
 	</db-entity>
 	<obj-entity name="BigDecimalEntity" className="org.apache.cayenne.testdo.numeric_types.BigDecimalEntity" dbEntityName="BIGDECIMAL_ENTITY">
-		<obj-attribute name="bigDecimalField" type="java.math.BigDecimal" db-attribute-path="BIGDECIMAL_FIELD"/>
+		<obj-attribute name="bigDecimalDecimal" type="java.math.BigDecimal" db-attribute-path="BIG_DECIMAL_DECIMAL"/>
+		<obj-attribute name="bigDecimalNumeric" type="java.math.BigDecimal" db-attribute-path="BIG_DECIMAL_NUMERIC"/>
 	</obj-entity>
 	<obj-entity name="BigIntegerEntity" className="org.apache.cayenne.testdo.numeric_types.BigIntegerEntity" dbEntityName="BIGINTEGER_ENTITY">
 		<obj-attribute name="bigIntegerField" type="java.math.BigInteger" db-attribute-path="BIG_INTEGER_FIELD"/>

@@ -158,7 +158,7 @@ class HierarchicalObjectResolver {
                     createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
 
                     currentQuery = new PrefetchSelectQuery<>(node.getPath(), relationship);
-                    currentQuery.setFetchingDataRows(true);
+                    currentQuery.fetchDataRows();
                     queries.add(currentQuery);
                     qualifiersCount = 0;
                     values = new HashSet<>();
@@ -203,7 +203,7 @@ class HierarchicalObjectResolver {
             return true;
         }
 
-        private void createDisjointByIdPrefetchQualifier(String pathPrefix, PrefetchSelectQuery currentQuery,
+        private void createDisjointByIdPrefetchQualifier(String pathPrefix, PrefetchSelectQuery<?> currentQuery,
                                                          List<DbJoin> joins, Set<List<Object>> values) {
             Expression allJoinsQualifier;
             if(currentQuery != null) {
@@ -223,7 +223,7 @@ class HierarchicalObjectResolver {
                     qualifiers[i++] = allJoinsQualifier;
                 }
 
-                currentQuery.orQualifier(ExpressionFactory.joinExp(Expression.OR, qualifiers));
+                currentQuery.or(ExpressionFactory.joinExp(Expression.OR, qualifiers));
             }
         }
 

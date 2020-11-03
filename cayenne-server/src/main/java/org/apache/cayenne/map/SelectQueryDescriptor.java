@@ -23,21 +23,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
  * @since 4.0
- * @deprecated since 4.2
  */
-@Deprecated
 public class SelectQueryDescriptor extends QueryDescriptor {
 
 	private static final long serialVersionUID = -8798258795351950215L;
+
+    public static final String DISTINCT_PROPERTY = "cayenne.SelectQuery.distinct";
+    public static final boolean DISTINCT_DEFAULT = false;
 
 	protected Expression qualifier;
 
@@ -49,13 +51,12 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     public void setDistinct(boolean value) {
-        setProperty(SelectQuery.DISTINCT_PROPERTY, String.valueOf(value));
+        setProperty(DISTINCT_PROPERTY, String.valueOf(value));
     }
 
     public boolean isDistinct() {
-        String distinct = getProperty(SelectQuery.DISTINCT_PROPERTY);
-
-        return distinct != null ? Boolean.valueOf(distinct) : false;
+        String distinct = getProperty(DISTINCT_PROPERTY);
+        return distinct != null ? Boolean.parseBoolean(distinct) : DISTINCT_DEFAULT;
     }
 
     /**
@@ -167,27 +168,36 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public SelectQuery<?> buildQuery() {
-        SelectQuery<Object> selectQuery = new SelectQuery<>();
-        selectQuery.setRoot(this.getRoot());
-        selectQuery.setQualifier(this.getQualifier());
+    public ObjectSelect<?> buildQuery() {
+        // resolve root
+        Object root = getRoot();
+        String rootEntityName;
+        if(root instanceof ObjEntity) {
+            rootEntityName = ((ObjEntity) root).getName();
+        } else if(root instanceof String) {
+            rootEntityName = (String)root;
+        } else {
+            throw new CayenneRuntimeException("Unexpected root for the SelectQueryDescriptor '%s'.", root);
+        }
+
+        ObjectSelect<?> query = ObjectSelect.query(Object.class, getQualifier());
+        query.entityName(rootEntityName);
+        query.setRoot(root);
 
         List<Ordering> orderings = this.getOrderings();
-
         if (orderings != null && !orderings.isEmpty()) {
-            selectQuery.addOrderings(orderings);
+            query.orderBy(orderings);
         }
 
         if (prefetchesMap != null) {
-            for (Map.Entry<String, Integer> entry : prefetchesMap.entrySet()) {
-                selectQuery.addPrefetch(PrefetchTreeNode.withPath(entry.getKey(), entry.getValue()));
-            }
+            prefetchesMap.forEach(query::prefetch);
         }
 
-        // init properties
-        selectQuery.initWithProperties(this.getProperties());
-
-        return selectQuery;
+        query.initWithProperties(this.getProperties());
+        if(this.isDistinct()) {
+            query.distinct();
+        }
+        return query;
     }
 
     @Override

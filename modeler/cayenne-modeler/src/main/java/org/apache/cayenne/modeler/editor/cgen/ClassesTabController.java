@@ -19,24 +19,36 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ImageRendererColumn;
 import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
+import org.apache.cayenne.validation.ValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
 
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.table.TableColumnModel;
 import java.awt.Component;
+import java.util.List;
 
 /**
  * @since 4.1
  */
 public class ClassesTabController extends CayenneController {
 
+    private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
+
     protected ClassesTabPanel view;
     protected ObjectBinding tableBinding;
 
+    private ValidationResult lastValidationResult;
     private BindingBuilder builder;
 
     public ClassesTabController(CodeGeneratorController parent) {
@@ -60,7 +72,7 @@ public class ClassesTabController extends CayenneController {
     }
 
     protected void initBindings() {
-        builder.bindToAction(((CodeGeneratorPane)parent.getView()).getCheckAll(), "checkAllAction()");
+        builder.bindToAction(getParentController().getView().getCheckAll(), "checkAllAction()");
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 
@@ -70,16 +82,17 @@ public class ClassesTabController extends CayenneController {
                 Boolean.class,
                 true,
                 Boolean.TRUE);
+
         tableBuilder.addColumn(
                 "Class",
-                "parent.getItemName(#item)",
+                "getItemName(#item)",
                 JLabel.class,
                 false,
                 "XXXXXXXXXXXXXXXXXXXXXXXXXX");
 
         tableBuilder.addColumn(
                 "",
-                "parent.getProblem(#item)",
+                "getProblem(#item)",
                 String.class,
                 false,
                 "XX");
@@ -119,14 +132,69 @@ public class ClassesTabController extends CayenneController {
      */
     @SuppressWarnings("unused")
     public void checkAllAction() {
-        if (getParentController().updateSelection(((CodeGeneratorPane)parent.getView()).getCheckAll().isSelected() ? o -> true : o -> false)) {
+        if (getParentController().updateSelection(getParentController().getView().getCheckAll().isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
             getParentController().updateSelectedEntities();
-            if(((CodeGeneratorPane)parent.getView()).getCheckAll().isSelected()) {
+            if(getParentController().getView().getCheckAll().isSelected()) {
                 getParentController().enableGenerateButton(true);
             } else {
                 getParentController().enableGenerateButton(false);
             }
         }
     }
+
+    public void validate(List<Object> classes) {
+        ClassGenerationValidator validator = new ClassGenerationValidator();
+        this.lastValidationResult = validator.getValidationResult(classes);
+    }
+
+    /**
+     * Returns the first encountered validation problem for an antity matching the name or
+     * null if the entity is valid or the entity is not present.
+     */
+    public JLabel getProblem(Object obj) {
+        String name = null;
+        if (obj instanceof ObjEntity) {
+            name = ((ObjEntity) obj).getName();
+        } else if (obj instanceof Embeddable) {
+            name = ((Embeddable) obj).getClassName();
+        }
+
+        ValidationFailure validationFailure = null;
+        if (lastValidationResult != null) {
+            List<ValidationFailure> failures = lastValidationResult.getFailures(name);
+            if (!failures.isEmpty()) {
+                validationFailure = failures.get(0);
+            }
+        }
+
+        JLabel labelIcon = new JLabel();
+        labelIcon.setVisible(true);
+        if(validationFailure != null) {
+            labelIcon.setIcon(ERROR_ICON);
+            labelIcon.setToolTipText(validationFailure.getDescription());
+        }
+        return labelIcon;
+    }
+
+    public JLabel getItemName(Object obj) {
+        String className;
+        Icon icon;
+        if (obj instanceof Embeddable) {
+            className = ((Embeddable) obj).getClassName();
+            icon = CellRenderers.iconForObject(new Embeddable());
+        } else if(obj instanceof ObjEntity) {
+            className = ((ObjEntity) obj).getName();
+            icon = CellRenderers.iconForObject(new ObjEntity());
+        } else {
+            className = ((DataMap) obj).getName();
+            icon = CellRenderers.iconForObject(new DataMap());
+        }
+        JLabel labelIcon = new JLabel();
+        labelIcon.setIcon(icon);
+        labelIcon.setVisible(true);
+        labelIcon.setText(className);
+        return labelIcon;
+    }
+
 }

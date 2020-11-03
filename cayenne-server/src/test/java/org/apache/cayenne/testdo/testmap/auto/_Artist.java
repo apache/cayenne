@@ -21,6 +21,9 @@ import org.apache.cayenne.testdo.testmap.Painting;
  * It is probably a good idea to avoid changing this class manually,
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
+ *
+ * Example of a comment
+ *
  */
 public abstract class _Artist extends BaseDataObject {
 

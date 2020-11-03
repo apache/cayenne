@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Objects;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Ordering;
@@ -32,6 +31,7 @@ import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 4.2
+ * @deprecated this class should gone with the {@link SelectQuery}
  */
 public class SelectQueryWrapper implements TranslatableQueryWrapper {
 

@@ -70,7 +70,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     private Collection<Property<?>> columns;
     // package private for tests
     boolean singleColumn = true;
-    boolean distinct;
 
     ColumnSelectMetadata metaData = new ColumnSelectMetadata();
 
@@ -602,14 +601,6 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     @Override
     public Collection<Property<?>> getColumns() {
         return columns;
-    }
-
-    /**
-     * @since 4.2
-     */
-    @Override
-    public boolean isDistinct() {
-        return distinct;
     }
 
     @Override

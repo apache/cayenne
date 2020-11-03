@@ -53,9 +53,9 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityIT extends PeopleProj
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
 
-        assertSame(departmentEntity, prefetch.getRoot());
+        assertEquals(departmentEntity.getName(), prefetch.getEntityName());
         assertEquals(ExpressionFactory.exp("db:employees.NAME = 'abc' and (db:employees.PERSON_TYPE = 'EE' "
-                + "or db:employees.PERSON_TYPE = 'EM')"), prefetch.getQualifier());
+                + "or db:employees.PERSON_TYPE = 'EM')"), prefetch.getWhere());
     }
 
     @Test
@@ -72,8 +72,8 @@ public class SelectQueryPrefetchRouterActionQualifiedEntityIT extends PeopleProj
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
-        assertSame(departmentEntity, prefetch.getRoot());
+        assertEquals(departmentEntity.getName(), prefetch.getEntityName());
         assertEquals(ExpressionFactory.exp("db:employees.NAME = 'abc' and db:employees.PERSON_TYPE = 'EM'"),
-                prefetch.getQualifier());
+                prefetch.getWhere());
     }
 }

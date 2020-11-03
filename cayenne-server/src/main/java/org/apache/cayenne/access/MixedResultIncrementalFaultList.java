@@ -33,9 +33,9 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -46,7 +46,7 @@ import org.apache.cayenne.util.Util;
  * if there is no Persistent objects in the result Collection it will be iterated as is, without faulting anything.
  *
  * @see QueryMetadata#getPageSize()
- * @see org.apache.cayenne.query.SelectQueryMetadata
+ * @see org.apache.cayenne.query.QueryMetadata
  *
  * @since 4.0
  */
@@ -72,11 +72,6 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
      */
     MixedResultIncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
         super(dataContext, query, maxFetchSize);
-
-        // this should generally be true, and may be it worth to do something if it's not
-        if(query instanceof ColumnSelect) {
-            this.internalQuery.setColumns(((ColumnSelect<?>) query).getColumns());
-        }
     }
 
     @Override
@@ -160,8 +155,8 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 int fetchEnd = Math.min(qualsSize, fetchSize);
                 int fetchBegin = 0;
                 while (fetchBegin < qualsSize) {
-                    SelectQuery<Persistent> query = createSelectQuery(entry.getValue(), quals.subList(fetchBegin, fetchEnd));
-                    objects.addAll(dataContext.performQuery(query));
+                    ObjectSelect<Persistent> query = createSelectQuery(entry.getValue(), quals.subList(fetchBegin, fetchEnd));
+                    objects.addAll(query.select(dataContext));
                     fetchBegin = fetchEnd;
                     fetchEnd += Math.min(fetchSize, qualsSize - fetchEnd);
                 }
@@ -179,10 +174,12 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         }
     }
 
-    SelectQuery<Persistent> createSelectQuery(ObjEntity entity, List<Expression> expressions) {
-        SelectQuery<Persistent> query = new SelectQuery<>(entity, ExpressionFactory.joinExp(Expression.OR, expressions));
-        if (entity.equals(rootEntity)) {
-            query.setPrefetchTree(internalQuery.getPrefetchTree());
+    ObjectSelect<Persistent> createSelectQuery(ObjEntity entity, List<Expression> expressions) {
+        ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
+                .entityName(entity.getName())
+                .where(ExpressionFactory.joinExp(Expression.OR, expressions));
+        if (entity.equals(rootEntity) && metadata.getPrefetchTree() != null) {
+            query.prefetch(metadata.getPrefetchTree());
         }
         return query;
     }

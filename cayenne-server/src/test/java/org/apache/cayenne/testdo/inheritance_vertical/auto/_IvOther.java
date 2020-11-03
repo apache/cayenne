@@ -6,9 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
@@ -24,7 +22,6 @@ public abstract class _IvOther extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
@@ -46,9 +43,25 @@ public abstract class _IvOther extends BaseDataObject {
         return this.name;
     }
 
+    public void addToImpls(IvImpl obj) {
+        addToManyTarget("impls", obj, true);
+    }
+
+    public void removeFromImpls(IvImpl obj) {
+        removeToManyTarget("impls", obj, true);
+    }
+
     @SuppressWarnings("unchecked")
     public List<IvImpl> getImpls() {
         return (List<IvImpl>)readProperty("impls");
+    }
+
+    public void addToImplsWithLock(IvImplWithLock obj) {
+        addToManyTarget("implsWithLock", obj, true);
+    }
+
+    public void removeFromImplsWithLock(IvImplWithLock obj) {
+        removeToManyTarget("implsWithLock", obj, true);
     }
 
     @SuppressWarnings("unchecked")

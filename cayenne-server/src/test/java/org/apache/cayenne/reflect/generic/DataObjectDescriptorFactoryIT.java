@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
@@ -36,6 +37,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataObjectDescriptorFactoryIT extends ServerCase {
@@ -47,7 +49,9 @@ public class DataObjectDescriptorFactoryIT extends ServerCase {
     public void testVisitDeclaredProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(), new SingletonFaultFactory());
+                resolver.getClassDescriptorMap(),
+                new SingletonFaultFactory(),
+                new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
         for (ObjEntity e : resolver.getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());
@@ -84,7 +88,9 @@ public class DataObjectDescriptorFactoryIT extends ServerCase {
     public void testVisitProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
-                resolver.getClassDescriptorMap(), new SingletonFaultFactory());
+                resolver.getClassDescriptorMap(),
+                new SingletonFaultFactory(),
+                new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
 
         for (ObjEntity e : resolver.getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());

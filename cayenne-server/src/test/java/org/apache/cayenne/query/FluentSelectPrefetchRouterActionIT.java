@@ -55,8 +55,8 @@ public class FluentSelectPrefetchRouterActionIT extends ServerCase {
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
 
-        assertSame(paintingEntity, prefetch.getRoot());
-        assertEquals(ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'abc'"), prefetch.getQualifier());
+        assertEquals(paintingEntity.getName(), prefetch.entityName);
+        assertEquals(ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'abc'"), prefetch.getWhere());
     }
 
     @Test
@@ -75,9 +75,9 @@ public class FluentSelectPrefetchRouterActionIT extends ServerCase {
         assertEquals(1, router.getQueryCount());
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
-        assertSame(paintingEntity, prefetch.getRoot());
+        assertEquals(paintingEntity.getName(), prefetch.entityName);
         assertEquals(ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'abc' or db:toArtist.ARTIST_NAME = 'xyz'"),
-                prefetch.getQualifier());
+                prefetch.getWhere());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class FluentSelectPrefetchRouterActionIT extends ServerCase {
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
 
-        assertSame(galleryEntity, prefetch.getRoot());
-        assertEquals(ExpressionFactory.exp("db:paintingArray.toArtist.ARTIST_NAME = 'abc'"), prefetch.getQualifier());
+        assertEquals(galleryEntity.getName(), prefetch.entityName);
+        assertEquals(ExpressionFactory.exp("db:paintingArray.toArtist.ARTIST_NAME = 'abc'"), prefetch.getWhere());
     }
 }

@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
@@ -46,7 +46,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * DbAdapter implementation for the <a href="http://db.apache.org/derby/"> Derby RDBMS
@@ -88,6 +87,14 @@ public class DerbyAdapter extends JdbcAdapter {
         setSupportsBatchUpdates(true);
     }
 
+    /**
+     * Not supported, see: <a href="https://issues.apache.org/jira/browse/DERBY-3609">DERBY-3609</a>
+     */
+	@Override
+	public boolean supportsGeneratedKeysForBatchInserts() {
+		return false;
+	}
+	
     @Override
     protected PkGenerator createPkGenerator() {
         return new DerbyPkGenerator(this);
@@ -122,20 +129,11 @@ public class DerbyAdapter extends JdbcAdapter {
      */
     @Override
     public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-
-        String[] types = externalTypesForJdbcType(column.getType());
-        if (types == null || types.length == 0) {
-            String entityName = column.getEntity() != null ? (column.getEntity()).getFullyQualifiedName() : "<null>";
-            throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-                    , entityName, column.getName(), column.getType());
-        }
-
+        String type = getType(this, column);
+        String length = sizeAndPrecision(this, column);
 
         sqlBuffer.append(quotingStrategy.quotedName(column));
         sqlBuffer.append(' ');
-
-        String type = types[0];
-        String length = sizeAndPrecision(this, column);
 
         // assemble...
         // note that max length for types like XYZ FOR BIT DATA must be entered in the
@@ -173,7 +171,7 @@ public class DerbyAdapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public Function<Node, Node> getSqlTreeProcessor() {
+    public SQLTreeProcessor getSqlTreeProcessor() {
         return new DerbySQLTreeProcessor();
     }
 

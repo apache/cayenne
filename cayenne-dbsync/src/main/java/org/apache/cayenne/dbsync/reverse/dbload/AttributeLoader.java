@@ -26,6 +26,7 @@ import java.sql.SQLException;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.dbsync.model.DetectedDbAttribute;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
@@ -119,19 +120,23 @@ class AttributeLoader extends PerCatalogAndSchemaLoader {
         }
 
         // create attribute delegating this task to adapter
-        DbAttribute attr = adapter.buildAttribute(
+        DetectedDbAttribute detectedDbAttribute = new DetectedDbAttribute(adapter.buildAttribute(
                 rs.getString("COLUMN_NAME"),
                 rs.getString("TYPE_NAME"),
                 columnType,
                 rs.getInt("COLUMN_SIZE"),
                 decimalDigits,
-                rs.getBoolean("NULLABLE"));
+                rs.getBoolean("NULLABLE")));
+
+        // store raw type name
+        detectedDbAttribute.setJdbcTypeName(rs.getString("TYPE_NAME"));
 
         if (supportAutoIncrement) {
             if ("YES".equals(rs.getString("IS_AUTOINCREMENT"))) {
-                attr.setGenerated(true);
+                detectedDbAttribute.setGenerated(true);
             }
         }
-        return attr;
+
+        return detectedDbAttribute;
     }
 }

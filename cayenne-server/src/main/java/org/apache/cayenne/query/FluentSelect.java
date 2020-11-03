@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
@@ -50,6 +51,7 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
     boolean havingExpressionIsActive = false;
 
     protected Collection<Ordering> orderings;
+    boolean distinct;
 
     protected FluentSelect() {
     }
@@ -197,7 +199,7 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
         return false;
     }
 
-    private void routePrefetches(QueryRouter router, EntityResolver resolver) {
+    protected void routePrefetches(QueryRouter router, EntityResolver resolver) {
         new FluentSelectPrefetchRouterAction().route(this, router, resolver);
     }
 
@@ -212,6 +214,13 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
      * @since 4.2
      */
     public boolean isDistinct() {
-        return false;
+        return distinct;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void initWithProperties(Map<String, String> properties) {
+        getBaseMetaData().initWithProperties(properties);
     }
 }

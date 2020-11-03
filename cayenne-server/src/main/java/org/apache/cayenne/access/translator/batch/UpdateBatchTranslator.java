@@ -19,128 +19,69 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.Iterator;
-import java.util.List;
-
+import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
+import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
- * A translator for UpdateBatchQueries that produces parameterized SQL.
+ * @since 4.2
  */
-public class UpdateBatchTranslator extends DefaultBatchTranslator {
+public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery> implements BatchTranslator {
 
-    public UpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter, String trimFunction) {
-        super(query, adapter, trimFunction);
+    public UpdateBatchTranslator(UpdateBatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
     @Override
-    protected String createSql() {
-        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
+    public String getSql() {
+        UpdateBatchQuery query = context.getQuery();
 
-        QuotingStrategy strategy = adapter.getQuotingStrategy();
-
-        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
-        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
-
-        StringBuilder buffer = new StringBuilder("UPDATE ");
-        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
-        buffer.append(" SET ");
-
-        int len = updatedDbAttributes.size();
-        for (int i = 0; i < len; i++) {
-            if (i > 0) {
-                buffer.append(", ");
-            }
-
-            DbAttribute attribute = updatedDbAttributes.get(i);
-            buffer.append(strategy.quotedName(attribute));
-            buffer.append(" = ?");
+        UpdateBuilder updateBuilder = SQLBuilder.update(context.getRootDbEntity());
+        for (DbAttribute attr : query.getUpdatedAttributes()) {
+            updateBuilder.set(SQLBuilder
+                    .column(attr.getName()).attribute(attr)
+                    .eq(SQLBuilder.value(1).attribute(attr))
+            );
         }
+        updateBuilder.where(buildQualifier(query.getQualifierAttributes()));
 
-        buffer.append(" WHERE ");
-
-        Iterator<DbAttribute> i = qualifierAttributes.iterator();
-        while (i.hasNext()) {
-            DbAttribute attribute = i.next();
-            appendDbAttribute(buffer, attribute);
-            buffer.append(updateBatch.isNull(attribute) ? " IS NULL" : " = ?");
-
-            if (i.hasNext()) {
-                buffer.append(" AND ");
-            }
-        }
-
-        return buffer.toString();
+        return doTranslate(updateBuilder);
     }
 
     @Override
-    protected DbAttributeBinding[] createBindings() {
-        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
-
-        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
-        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
-
-        int ul = updatedDbAttributes.size();
-        int ql = qualifierAttributes.size();
-
-        DbAttributeBinding[] bindings = new DbAttributeBinding[ul + ql];
-
-        for (int i = 0; i < ul; i++) {
-            bindings[i] = new DbAttributeBinding(updatedDbAttributes.get(i));
-        }
-
-        for (int i = 0; i < ql; i++) {
-            bindings[ul + i] = new DbAttributeBinding(qualifierAttributes.get(i));
-        }
-
-        return bindings;
+    protected boolean isNullAttribute(DbAttribute attribute) {
+        return context.getQuery().isNull(attribute);
     }
 
     @Override
-    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
+    public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
+        UpdateBatchQuery updateBatch = context.getQuery();
 
-        UpdateBatchQuery updateBatch = (UpdateBatchQuery) query;
-
-        List<DbAttribute> updatedDbAttributes = updateBatch.getUpdatedAttributes();
-        List<DbAttribute> qualifierAttributes = updateBatch.getQualifierAttributes();
-
-        int ul = updatedDbAttributes.size();
-        int ql = qualifierAttributes.size();
-
-        int j = 1;
-
-        for (int i = 0; i < ul; i++) {
+        int i = 0;
+        int j = 0;
+        for(; i < updateBatch.getUpdatedAttributes().size(); i++) {
             Object value = row.getValue(i);
-            ExtendedType extendedType = value != null
-                    ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
-                    : adapter.getExtendedTypes().getDefaultType();
-
-            bindings[i].include(j++, value, extendedType);
+            ExtendedType<?> extendedType = value == null
+                ? context.getAdapter().getExtendedTypes().getDefaultType()
+                : context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[j].include(++j, value, extendedType);
         }
 
-        for (int i = 0; i < ql; i++) {
-
-            DbAttribute a = qualifierAttributes.get(i);
-
-            // skip null attributes... they are translated as "IS NULL"
-            if (updateBatch.isNull(a)) {
+        for(DbAttribute attribute : updateBatch.getQualifierAttributes()) {
+            if(updateBatch.isNull(attribute)) {
+                i++;
                 continue;
             }
-
-            Object value = row.getValue(ul + i);
-            ExtendedType extendedType = value != null
-                    ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
-                    : adapter.getExtendedTypes().getDefaultType();
-
-            bindings[ul + i].include(j++, value, extendedType);
+            Object value = row.getValue(i);
+            ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[j].include(++j, value, extendedType);
+            i++;
         }
-
         return bindings;
     }
 }

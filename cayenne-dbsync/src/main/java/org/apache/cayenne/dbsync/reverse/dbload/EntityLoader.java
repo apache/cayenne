@@ -29,7 +29,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DetectedDbEntity;
+import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

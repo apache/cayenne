@@ -53,17 +53,20 @@ public class InsertBatchTranslatorIT extends ServerCase {
     private AdhocObjectFactory objectFactory;
 
     @Test
-    public void testConstructor() throws Exception {
+    public void testConstructor() {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
-        InsertBatchTranslator builder = new InsertBatchTranslator(mock(InsertBatchQuery.class), adapter);
+        InsertBatchQuery query = mock(InsertBatchQuery.class);
+        InsertBatchTranslator builder = new InsertBatchTranslator(query, adapter);
 
-        assertSame(adapter, builder.adapter);
+        assertSame(adapter, builder.context.getAdapter());
+        assertSame(query, builder.context.getQuery());
     }
 
     @Test
-    public void testCreateSqlString() throws Exception {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
+    public void testCreateSqlString() {
+        DbEntity entity = runtime.getDataDomain().getEntityResolver()
+                .getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
@@ -71,12 +74,13 @@ public class InsertBatchTranslatorIT extends ServerCase {
         InsertBatchTranslator builder = new InsertBatchTranslator(insertQuery, adapter);
         String generatedSql = builder.getSql();
         assertNotNull(generatedSql);
-        assertEquals("INSERT INTO " + entity.getName() + " (DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) VALUES (?, ?, ?, ?, ?)",
+        assertEquals("INSERT INTO " + entity.getName() + "( DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) " +
+                        "VALUES( ?, ?, ?, ?, ?)",
                 generatedSql);
     }
 
     @Test
-    public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
+    public void testCreateSqlStringWithIdentifiersQuote() {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {
@@ -92,11 +96,11 @@ public class InsertBatchTranslatorIT extends ServerCase {
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
             assertEquals("INSERT INTO " + charStart + entity.getName() + charEnd
-                    + " (" + charStart + "DESCRIPTION" + charEnd + ", "
+                    + "( " + charStart + "DESCRIPTION" + charEnd + ", "
                     + charStart + "INT_COLUMN_NOTNULL" + charEnd + ", "
                     + charStart + "INT_COLUMN_NULL" + charEnd + ", "
                     + charStart + "LOCKING_TEST_ID" + charEnd + ", "
-                    + charStart + "NAME" + charEnd + ") VALUES (?, ?, ?, ?, ?)", generatedSql);
+                    + charStart + "NAME" + charEnd + ") VALUES( ?, ?, ?, ?, ?)", generatedSql);
         } finally {
             entity.getDataMap().setQuotingSQLIdentifiers(false);
         }

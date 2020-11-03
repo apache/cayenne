@@ -73,7 +73,7 @@ public class ValuesTest {
 
         Values values = new Values(row, false);
         DbAttribute attr1 = new DbAttribute("attr1");
-        values.addValue(attr1, 32);
+        values.addValue(attr1, 32, false);
 
         assertEquals(Collections.singletonList(attr1), values.getUpdatedAttributes());
         assertEquals(Collections.singletonMap("attr1", 32), values.getSnapshot());

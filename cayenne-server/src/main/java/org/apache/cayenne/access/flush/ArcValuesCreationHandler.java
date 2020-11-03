@@ -254,13 +254,13 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
 
         @Override
         public Void visitInsert(InsertDbRowOp dbRow) {
-            dbRow.getValues().addValue(attribute, add ? valueToUse : null);
+            dbRow.getValues().addValue(attribute, add ? valueToUse : null, true);
             return null;
         }
 
         @Override
         public Void visitUpdate(UpdateDbRowOp dbRow) {
-            dbRow.getValues().addValue(attribute, add ? valueToUse : null);
+            dbRow.getValues().addValue(attribute, add ? valueToUse : null, true);
             return null;
         }
 

@@ -186,7 +186,7 @@ void variable() #Variable : {
     Token t;
 }
 {
-    <DOLLAR> ( t = <IDENTIFIER> ) {
+    <DOLLAR> ( t = <IDENTIFIER> | t = <TEXT_OTHER> ) {
         jjtThis.setIdentifier(t.image);
     }
     ( method() )*

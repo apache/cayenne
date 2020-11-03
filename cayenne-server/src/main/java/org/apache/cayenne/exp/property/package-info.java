@@ -39,7 +39,7 @@
  * Currently supported Property types:
  * <ul>
  *     <li>{@link org.apache.cayenne.exp.property.NumericProperty} for all data types inherited from {@link java.lang.Number}.<br>
- *     Supports comparision and math functions (like {@link org.apache.cayenne.exp.property.NumericProperty#sqrt() sqrt()}).
+ *     Supports comparison and math functions (like {@link org.apache.cayenne.exp.property.NumericProperty#sqrt() sqrt()}).
  *     <br>
  *     <li>{@link org.apache.cayenne.exp.property.StringProperty} for all data types inherited from {@link java.lang.CharSequence}.<br>
  *     Supports multiple string functions ({@link org.apache.cayenne.exp.property.StringProperty#like(java.lang.String) like()},
@@ -54,7 +54,7 @@
  *     <br>
  *     <li>{@link org.apache.cayenne.exp.property.ListProperty}, {@link org.apache.cayenne.exp.property.SetProperty}
  *     and {@link org.apache.cayenne.exp.property.MapProperty} are for to-many relationships.<br>
- *     In addition to to-one related methods these properties support collection comparision methods
+ *     In addition to to-one related methods these properties support collection comparison methods
  *     like {@link org.apache.cayenne.exp.property.ListProperty#contains(org.apache.cayenne.Persistent) contains()}.
  *     <br>
  *     <li>{@link org.apache.cayenne.exp.property.EmbeddableProperty} for embeddable objects

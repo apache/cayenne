@@ -17,14 +17,14 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cayenne-parent</artifactId>
 	<groupId>org.apache.cayenne</groupId>
 	<name>cayenne-parent: Top-level parent of Cayenne modules</name>
 
-	<version>4.2.M1-SNAPSHOT</version>
+	<version>4.2.M3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<description>
@@ -342,7 +342,7 @@
             <dependency>
                 <groupId>com.caucho</groupId>
                 <artifactId>hessian</artifactId>
-                <version>4.0.51</version>
+                <version>4.0.63</version>
                 <scope>provided</scope>
             </dependency>
 			<dependency>
@@ -869,7 +869,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.31.0</version>
+                    <version>0.33.0</version>
                 </plugin>
             </plugins>
 		</pluginManagement>
@@ -1549,8 +1549,11 @@
 							<images>
 								<image>
 									<alias>db</alias>
-									<name>postgres:9.5</name>
+									<name>postgres:12</name>
 									<run>
+										<env>
+											<POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
+										</env>
 										<ports>
 											<port>${db.host}:${db.port}:5432</port>
 										</ports>
@@ -1735,7 +1738,7 @@
 			</activation>
 			<properties>
 				<javadoc.doclint>none</javadoc.doclint>
-				<javadoc.additionalOptions />
+				<javadoc.additionalOptions>--no-module-directories</javadoc.additionalOptions>
 			</properties>
 		</profile>
 		<profile>
@@ -1744,7 +1747,7 @@
 				<jdk>[9,)</jdk>
 			</activation>
 			<properties>
-				<javadoc.additionalOptions>-html5</javadoc.additionalOptions>
+				<javadoc.additionalOptions>-html5 --no-module-directories</javadoc.additionalOptions>
 			</properties>
 		</profile>
 	</profiles>

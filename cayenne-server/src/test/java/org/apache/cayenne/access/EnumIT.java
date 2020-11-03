@@ -71,10 +71,22 @@ public class EnumIT extends ServerCase {
     public void testSelectQuery() throws Exception {
         createDataSet();
 
-        SelectQuery q = new SelectQuery(EnumEntity.class);
+        SelectQuery<EnumEntity> q = new SelectQuery<>(EnumEntity.class);
         q.andQualifier(EnumEntity.ENUM_ATTRIBUTE.eq(Enum1.one));
 
         EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
+        assertNotNull(e);
+        assertSame(Enum1.one, e.getEnumAttribute());
+    }
+
+    @Test
+    public void testObjectSelect() throws Exception {
+        createDataSet();
+
+        EnumEntity e = ObjectSelect.query(EnumEntity.class)
+                .where(EnumEntity.ENUM_ATTRIBUTE.eq(Enum1.one))
+                .selectOne(context);
+
         assertNotNull(e);
         assertSame(Enum1.one, e.getEnumAttribute());
     }

@@ -19,98 +19,52 @@
 
 package org.apache.cayenne.access.translator.batch;
 
-import java.util.Iterator;
-import java.util.List;
-
+import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
+import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.query.DeleteBatchQuery;
 
 /**
- * Translator for delete BatchQueries. Creates parameterized DELETE SQL
- * statements.
+ * @since 4.2
  */
-public class DeleteBatchTranslator extends DefaultBatchTranslator {
+public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery> implements BatchTranslator {
 
-    public DeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter, String trimFunction) {
-        super(query, adapter, trimFunction);
+    public DeleteBatchTranslator(DeleteBatchQuery query, DbAdapter adapter) {
+        super(query, adapter);
     }
 
     @Override
-    protected String createSql() {
-
-        QuotingStrategy strategy = adapter.getQuotingStrategy();
-
-        StringBuilder buffer = new StringBuilder("DELETE FROM ");
-        buffer.append(strategy.quotedFullyQualifiedName(query.getDbEntity()));
-
-        applyQualifier(buffer);
-
-        return buffer.toString();
-    }
-
-    /**
-     * Appends WHERE clause to SQL string
-     */
-    protected void applyQualifier(StringBuilder buffer) {
-        buffer.append(" WHERE ");
-
-        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
-        Iterator<DbAttribute> i = deleteBatch.getDbAttributes().iterator();
-        while (i.hasNext()) {
-            DbAttribute attribute = i.next();
-            appendDbAttribute(buffer, attribute);
-            buffer.append(deleteBatch.isNull(attribute) ? " IS NULL" : " = ?");
-
-            if (i.hasNext()) {
-                buffer.append(" AND ");
-            }
-        }
+    public String getSql() {
+        DeleteBuilder deleteBuilder = SQLBuilder
+                .delete(context.getRootDbEntity())
+                .where(buildQualifier(context.getQuery().getDbAttributes()));
+        return doTranslate(deleteBuilder);
     }
 
     @Override
-    protected DbAttributeBinding[] createBindings() {
-        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
-        List<DbAttribute> attributes = deleteBatch.getDbAttributes();
-        int len = attributes.size();
+    protected boolean isNullAttribute(DbAttribute attribute) {
+        return context.getQuery().isNull(attribute);
+    }
 
-        DbAttributeBinding[] bindings = new DbAttributeBinding[len];
-
-        for (int i = 0; i < len; i++) {
-            bindings[i] = new DbAttributeBinding(attributes.get(i));
+    @Override
+    public DbAttributeBinding[] updateBindings(BatchQueryRow row) {
+        DeleteBatchQuery deleteBatch = context.getQuery();
+        for(int i=0, position=0; i<deleteBatch.getDbAttributes().size(); i++) {
+            position = updateBinding(row.getValue(i), position);
         }
-
         return bindings;
     }
 
-    @Override
-    protected DbAttributeBinding[] doUpdateBindings(BatchQueryRow row) {
-
-        int len = bindings.length;
-
-        DeleteBatchQuery deleteBatch = (DeleteBatchQuery) query;
-
-        for (int i = 0, j = 1; i < len; i++) {
-
-            DbAttributeBinding b = bindings[i];
-
-            // skip null attributes... they are translated as "IS NULL"
-            if (deleteBatch.isNull(b.getAttribute())) {
-                b.exclude();
-            } else {
-                Object value = row.getValue(i);
-                ExtendedType extendedType = value != null
-                        ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
-                        : adapter.getExtendedTypes().getDefaultType();
-
-                b.include(j++, value, extendedType);
-            }
+    protected int updateBinding(Object value, int position) {
+        // skip null attributes... they are translated as "IS NULL"
+        if(value != null) {
+            ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(value.getClass());
+            bindings[position].include(++position, value, extendedType);
         }
-
-        return bindings;
+        return position;
     }
 }

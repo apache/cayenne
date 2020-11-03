@@ -128,7 +128,7 @@ public class ExpressionIT extends ServerCase {
 		try {
             artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.lt((String) null)).select(context);
         } catch (CayenneRuntimeException ex) {
-		    if(adapter.supportsNullComparision()) {
+		    if(adapter.supportsNullComparison()) {
 		        throw ex;
             } else {
 		        return;
@@ -148,7 +148,7 @@ public class ExpressionIT extends ServerCase {
         try {
             artists = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.in("Picasso", (String) null)).select(context);
         } catch (CayenneRuntimeException ex) {
-            if(adapter.supportsNullComparision()) {
+            if(adapter.supportsNullComparison()) {
                 throw ex;
             } else {
                 return;

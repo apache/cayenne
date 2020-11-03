@@ -26,10 +26,16 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 class DataObjectAttributeProperty extends DataObjectBaseProperty implements
         AttributeProperty {
 
-    protected ObjAttribute attribute;
+    protected final ObjAttribute attribute;
 
-    public DataObjectAttributeProperty(ObjAttribute attribute) {
+    /**
+     * @since 4.2
+     */
+    protected final ValueComparisonStrategy<Object> valueComparisonStrategy;
+
+    public DataObjectAttributeProperty(ObjAttribute attribute, ValueComparisonStrategy<Object> valueComparisonStrategy) {
         this.attribute = attribute;
+        this.valueComparisonStrategy = valueComparisonStrategy;
     }
 
     @Override
@@ -48,5 +54,10 @@ class DataObjectAttributeProperty extends DataObjectBaseProperty implements
     @Override
     public boolean visit(PropertyVisitor visitor) {
         return visitor.visitAttribute(this);
+    }
+
+    @Override
+    public boolean equals(Object value1, Object value2) {
+        return valueComparisonStrategy.equals(value1, value2);
     }
 }

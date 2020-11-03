@@ -20,27 +20,25 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
  */
-@Deprecated
 public class SelectQueryDescriptorTest {
 
     @Test
-    public void testGetQueryType() throws Exception {
+    public void testGetQueryType() {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
-        assertTrue(builder.buildQuery() instanceof SelectQuery);
+        assertTrue(builder.buildQuery() instanceof ObjectSelect);
     }
 
     @Test
-    public void testGetQueryRoot() throws Exception {
+    public void testGetQueryRoot() {
         DataMap map = new DataMap();
         ObjEntity entity = new ObjEntity("A");
         map.addObjEntity(entity);
@@ -48,31 +46,31 @@ public class SelectQueryDescriptorTest {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot(entity);
 
-        assertTrue(builder.buildQuery() instanceof SelectQuery);
+        assertTrue(builder.buildQuery() instanceof ObjectSelect);
         assertSame(entity, builder.buildQuery().getRoot());
     }
 
     @Test
-    public void testGetQueryQualifier() throws Exception {
+    public void testGetQueryQualifier() {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
         builder.setQualifier(ExpressionFactory.exp("abc = 5"));
 
-        SelectQuery query = builder.buildQuery();
+        ObjectSelect<?> query = builder.buildQuery();
 
-        assertEquals(ExpressionFactory.exp("abc = 5"), query.getQualifier());
+        assertEquals(ExpressionFactory.exp("abc = 5"), query.getWhere());
     }
 
     @Test
-    public void testGetQueryProperties() throws Exception {
+    public void testGetQueryProperties() {
         SelectQueryDescriptor builder = QueryDescriptor.selectQueryDescriptor();
         builder.setRoot("FakeRoot");
         builder.setProperty(QueryMetadata.FETCH_LIMIT_PROPERTY, "5");
         builder.setProperty(QueryMetadata.STATEMENT_FETCH_SIZE_PROPERTY, "6");
 
-        SelectQuery<?> query = builder.buildQuery();
-        assertTrue(query instanceof SelectQuery);
-        assertEquals(5, query.getFetchLimit());
+        ObjectSelect<?> query = builder.buildQuery();
+        assertTrue(query instanceof ObjectSelect);
+        assertEquals(5, query.getLimit());
         assertEquals(6, query.getStatementFetchSize());
 
         // TODO: test other properties...

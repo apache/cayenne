@@ -25,20 +25,16 @@ Prefetching example:
 
 [source, Java]
 ----
-ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-
-// instructs Cayenne to prefetch one of Artist's relationships
-query.prefetch(Artist.PAINTINGS.disjoint());
-
-// the above line is equivalent to the following:
-// query.prefetch("paintings", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-
-// query is expecuted as usual, but the resulting Artists will have
-// their paintings "inflated"
-List<Artist> artists = query.select(context);
+List<Artist> artists = ObjectSelect
+    .query(Artist.class)
+    .prefetch(Artist.PAINTINGS.disjoint()) // <1>
+    .select(context); // <2>
 ----
 
-All types of relationships can be preftetched - to-one, to-many, flattened. A prefetch can span multiple relationships:
+<1> Instructs Cayenne to prefetch one of Artist's relationships.
+<2> Query is executed as usual, but the resulting Artists will have their paintings "inflated"
+
+All types of relationships can be prefetched - to-one, to-many, flattened. A prefetch can span multiple relationships:
 
 [source, Java]
 ----
@@ -49,18 +45,17 @@ A query can have multiple prefetches:
 
 [source, Java]
 ----
-query.prefetch(Artist.PAINTINGS.disjoint());
-query.prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());
+query.prefetch(Artist.PAINTINGS.disjoint())
+   .prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());
 ----
 
 If a query is fetching DataRows, all "disjoint" prefetches are ignored, only "joint" prefetches are executed
 (see prefetching semantics discussion below for what disjoint and joint prefetches mean).
 
-===== Prefetching Semantics
-
-Prefetching semantics defines a strategy to prefetch relationships. Depending on it, Cayenne would generate different types of queries.
-The end result is the same - query root objects with related objects fully resolved. However semantics can affect performance,
-in some cases significantly. There are 3 types of prefetch semantics, all defined as constants in `org.apache.cayenne.query.PrefetchTreeNode`:
+A strategy to prefetch relationships is defined by prefetch "semantics". Depending on semantics, Cayenne would generate
+different types of queries. The end result is the same - query root objects with related objects fully resolved.
+However semantics can affect performance, in some cases significantly. There are 3 types of prefetch semantics
+defined as constants in `org.apache.cayenne.query.PrefetchTreeNode`:
 
 [source]
 ----
@@ -69,13 +64,7 @@ PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS
 PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS
 ----
 
-There's no limitation on mixing different types of semantics in the same query. Each prefetch can have its own semantics.
-`SelectQuery` uses `DISJOINT_PREFETCH_SEMANTICS` by default. `ObjectSelect` requires explicit semantics as we've seen above.
- `SQLTemplate` and `ProcedureQuery` are both using `JOINT_PREFETCH_SEMANTICS` and it can not be changed due to the nature of those two queries.
-
-===== Disjoint Prefetching Semantics
-
-This semantics results in Cayenne generatiing one SQL statement for the main objects, and a separate statement for
+*Disjoint prefetch semantics* results in Cayenne generating one SQL statement for the main objects, and a separate statement for
 each prefetch path (hence "disjoint" - related objects are not fetched with the main query).
 Each additional SQL statement uses a qualifier of the main query plus a set of joins traversing the
 prefetch path between the main and related entity.
@@ -83,12 +72,10 @@ prefetch path between the main and related entity.
 This strategy has an advantage of efficient JVM memory use, and faster overall result processing by Cayenne,
 but it requires (1+N) SQL statements to be executed, where N is the number of prefetched relationships.
 
-===== Disjoint-by-ID Prefetching Semantics
-
-This is a variation of disjoint prefetch where related objects are matched against a set of IDs derived from the fetched
-main objects (or intermediate objects in a multi-step prefetch). Cayenne limits the size of the generated WHERE clause,
-as most DBs can't parse arbitrary large SQL. So prefetch queries are broken into smaller queries.
-The size of is controlled by the DI property `Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY`
+*Disjoint-by-ID prefetch semantics* is a variation of disjoint prefetch where related objects are matched against a set
+of IDs derived from the fetched main objects (or intermediate objects in a multi-step prefetch). Cayenne limits the
+size of the generated WHERE clause, as most DBs can't parse arbitrary large SQL. So prefetch queries are broken into
+smaller queries. The size of is controlled by the DI property `Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY`
 (the default number of conditions in the generated WHERE clause is 10000).
 Cayenne will generate (1 + N * M) SQL statements for each query using disjoint-by-ID prefetches,
 where N is the number of relationships to prefetch, and M is the number of queries for a given prefetch
@@ -100,9 +87,7 @@ Both joint and regular disjoint prefetches may produce invalid results or genera
 
 The disadvantage is that query SQL can get unwieldy for large result sets, as each object will have to have its own condition in the WHERE clause of the generated SQL.
 
-===== Joint Prefetching Semantics
-
-Joint semantics results in a single SQL statement for root objects and any number of jointly prefetched paths.
+*Joint prefetch semantics* results in a single SQL statement for root objects and any number of jointly prefetched paths.
 Cayenne processes in memory a cartesian product of the entities involved, converting it to an object tree.
 It uses OUTER joins to connect prefetched entities.
 
@@ -110,17 +95,42 @@ Joint is the most efficient prefetch type of the three as far as generated SQL g
 Its downsides are the potentially increased amount of data that needs to get across the network between the application server and the database,
 and more data processing that needs to be done on the Cayenne side.
 
-===== Similar Behaviours Using EJBQL
+`<<select,ObjectSelect>>` query supports all three types of semantics. You can mix and match them in the same query for
+different prefetches.
 
-It is possible to achieve similar behaviours with <<EJBQLQuery>> queries by employing the "FETCH" keyword.
+`<<sqlselect,SQLSelect>>` query supports "JOINT" and "DISJOINT_BY_ID". It does not work with "DISJOINT", as the query does not provide
+enough information to Cayenne to build dependent prefetch queries. So "DISJOINT" will result in exception. "JOINT"
+prefetching requires a bit of effort shaping the SQL to include the right columns in the result and label them properly
+to be convertable into object properties. The main rules to follow are:
+
+* Include _all_ columns from the root entity and every prefetched entity.
+* Label each prefetched entity columns as "dbRelationship.column".
+
+E.g.:
+
+[source, Java]
+----
+List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
+    + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintingArray.ESTIMATED_PRICE'), "
+    + "#result('PAINTING_TITLE' 'String' '' 'paintingArray.PAINTING_TITLE'), "
+    + "#result('GALLERY_ID' 'int' '' 'paintingArray.GALLERY_ID'), "
+    + "#result('PAINTING_ID' 'int' '' 'paintingArray.PAINTING_ID'), "
+    + "#result('t1.ARTIST_ID' 'int' '' 'paintingArray.ARTIST_ID'), "
+    + "#result('ARTIST_NAME' 'String'), "
+    + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
+    + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
+    + "FROM ARTIST t0, PAINTING t1 "
+    + "WHERE t0.ARTIST_ID = t1.ARTIST_ID")
+    .addPrefetch(Artist.PAINTING_ARRAY.joint())
+    .select(context);
+----
+
+`<<ejbql,EJBQLQuery>>` uses the "FETCH" keyword to enable prefetching:
 
 [source, SQL]
 ----
 SELECT a FROM Artist a LEFT JOIN FETCH a.paintings
 ----
-
-In this case, the Paintings that exist for the Artist will be obtained at the same time as the Artists are fetched.
-Refer to third-party query language documentation for further detail on this mechanism.
 
 ==== Data Rows
 

@@ -37,6 +37,7 @@ public class ClasspathPreferencesView extends JPanel {
 
     protected JButton addJarButton;
     protected JButton addDirButton;
+    protected JButton addMvnButton;
     protected JButton removeEntryButton;
     protected JTable table;
 
@@ -45,6 +46,7 @@ public class ClasspathPreferencesView extends JPanel {
         // create widgets
         addJarButton = new JButton("Add Jar/Zip");
         addDirButton = new JButton("Add Class Folder");
+        addMvnButton = new JButton("Get From Maven Central");
         removeEntryButton = new JButton("Remove");
 
         table = new CayenneTable();
@@ -59,6 +61,7 @@ public class ClasspathPreferencesView extends JPanel {
 
         builder.append(addJarButton);
         builder.append(addDirButton);
+        builder.append(addMvnButton);
         builder.append(removeEntryButton);
 
         setLayout(new BorderLayout());
@@ -74,6 +77,10 @@ public class ClasspathPreferencesView extends JPanel {
 
     public JButton getAddJarButton() {
         return addJarButton;
+    }
+
+    public JButton getAddMvnButton() {
+        return addMvnButton;
     }
 
     public JButton getRemoveEntryButton() {

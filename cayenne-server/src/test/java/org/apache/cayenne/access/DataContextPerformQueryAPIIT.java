@@ -207,12 +207,9 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         List<?> artists = context.performQuery("QueryWithLocalCache", true);
         assertEquals(2, artists.size());
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                List<?> artists1 = context.performQuery("QueryWithLocalCache", false);
-                assertEquals(2, artists1.size());
-            }
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            List<?> artists1 = context.performQuery("QueryWithLocalCache", false);
+            assertEquals(2, artists1.size());
         });
     }
 
@@ -223,12 +220,9 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
         List<?> artists = context.performQuery("QueryWithSharedCache", true);
         assertEquals(2, artists.size());
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                List<?> artists1 = context2.performQuery("QueryWithSharedCache", false);
-                assertEquals(2, artists1.size());
-            }
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            List<?> artists1 = context2.performQuery("QueryWithSharedCache", false);
+            assertEquals(2, artists1.size());
         });
     }
 }
