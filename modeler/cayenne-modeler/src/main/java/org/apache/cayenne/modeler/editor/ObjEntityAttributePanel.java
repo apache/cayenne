@@ -224,7 +224,7 @@ public class ObjEntityAttributePanel extends JPanel implements ObjEntityDisplayL
 
         TableColumn typeColumn = table.getColumnModel().getColumn(ObjAttributeTableModel.OBJ_ATTRIBUTE_TYPE);
 
-        JComboBox javaTypesCombo = Application.getWidgetFactory().createComboBox(typeNames.toArray(), false);
+        JComboBox<String> javaTypesCombo = Application.getWidgetFactory().createComboBox(typeNames.toArray(new String[0]), false);
         AutoCompletion.enable(javaTypesCombo, false, true);
         typeColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(javaTypesCombo));
     }

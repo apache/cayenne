@@ -53,6 +53,9 @@ import org.apache.cayenne.modeler.action.MultipleObjectsAction;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.value.GeoJson;
+import org.apache.cayenne.value.Json;
+import org.apache.cayenne.value.Wkt;
 
 /**
  * Various unorganized utility methods used by CayenneModeler.
@@ -126,6 +129,9 @@ public final class ModelerUtil {
                 Calendar.class.getName(),
                 UUID.class.getName(),
                 Serializable.class.getName(),
+                Json.class.getName(),
+                Wkt.class.getName(),
+                GeoJson.class.getName(),
                 "java.lang.Character[]",
                 "java.lang.Byte[]",
                 "java.time.LocalDate",
