@@ -298,12 +298,12 @@ public class EntityMergeSupport {
         }
 
         // Check additional common DB types, like 'json' or 'geometry'
-        if(dbAttribute.getType() == Types.OTHER) {
-            if(dbAttribute instanceof DetectedDbAttribute) {
-                DetectedDbAttribute detectedDbAttribute = (DetectedDbAttribute)dbAttribute;
-                String jdbcTypeName = detectedDbAttribute.getJdbcTypeName();
+        if(dbAttribute instanceof DetectedDbAttribute) {
+            DetectedDbAttribute detectedDbAttribute = (DetectedDbAttribute)dbAttribute;
+            String jdbcTypeName = detectedDbAttribute.getJdbcTypeName();
+            if(jdbcTypeName != null) {
                 String type = SQL_ADDITIONAL_TYPES_TO_JAVA_TYPE.get(jdbcTypeName.toLowerCase());
-                if(type != null) {
+                if (type != null) {
                     return type;
                 }
             }
