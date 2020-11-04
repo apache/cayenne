@@ -46,7 +46,7 @@ public class MySQLTreeProcessor extends TypeAwareSQLTreeProcessor {
         return INSTANCE;
     }
 
-    private MySQLTreeProcessor() {
+    protected MySQLTreeProcessor() {
         registerProcessor(NodeType.LIKE, (ChildProcessor<LikeNode>) this::onLikeNode);
         registerProcessor(NodeType.LIMIT_OFFSET, (ChildProcessor<LimitOffsetNode>) this::onLimitOffsetNode);
         registerProcessor(NodeType.FUNCTION, (ChildProcessor<FunctionNode>) this::onFunctionNode);
