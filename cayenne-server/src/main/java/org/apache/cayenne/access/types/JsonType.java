@@ -31,10 +31,12 @@ import org.apache.cayenne.value.Json;
  */
 public class JsonType implements ExtendedType<Json> {
 
-    private CharType delegate;
+    private final CharType delegate;
+    private final boolean useRealType;
 
-    public JsonType() {
-        this.delegate = new CharType(true, false);
+    public JsonType(CharType delegate, boolean useRealType) {
+        this.delegate = delegate;
+        this.useRealType = useRealType;
     }
 
     @Override
@@ -45,18 +47,18 @@ public class JsonType implements ExtendedType<Json> {
     @Override
     public void setJdbcObject(PreparedStatement statement, Json json, int pos, int type, int scale) throws Exception {
         String value = json != null ? json.getRawJson() : null;
-        delegate.setJdbcObject(statement, value, pos, Types.OTHER, scale);
+        delegate.setJdbcObject(statement, value, pos, useRealType ? type : Types.OTHER, scale);
     }
 
     @Override
     public Json materializeObject(ResultSet rs, int index, int type) throws Exception {
-        String value = delegate.materializeObject(rs, index, Types.OTHER);
+        String value = delegate.materializeObject(rs, index, useRealType ? type : Types.OTHER);
         return value != null ? new Json(value) : null;
     }
 
     @Override
     public Json materializeObject(CallableStatement rs, int index, int type) throws Exception {
-        String value = delegate.materializeObject(rs, index, Types.OTHER);
+        String value = delegate.materializeObject(rs, index, useRealType ? type : Types.OTHER);
         return value != null ? new Json(value) : null;
     }
 

@@ -432,8 +432,7 @@ public class ServerModule implements Module {
                 .add(new CalendarType<>(Calendar.class))
                 // non-standard types
                 .add(GeoJsonType.class)
-                .add(WktType.class)
-                .add(JsonType.class);
+                .add(WktType.class);
         contributeUserTypes(binder);
         contributeTypeFactories(binder);
 

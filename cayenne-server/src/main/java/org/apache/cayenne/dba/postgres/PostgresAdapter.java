@@ -36,6 +36,7 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -106,8 +107,10 @@ public class PostgresAdapter extends JdbcAdapter {
 
 		super.configureExtendedTypes(map);
 
-		map.registerType(new CharType(true, false));
+		CharType charType = new CharType(true, false);
+		map.registerType(charType);
 		map.registerType(new PostgresByteArrayType(true, true));
+		map.registerType(new JsonType(charType, false));
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
@@ -114,11 +115,13 @@ public class DerbyAdapter extends JdbcAdapter {
         super.configureExtendedTypes(map);
 
         // create specially configured CharType handler
-        map.registerType(new CharType(true, true));
+        CharType charType = new CharType(true, true);
+        map.registerType(charType);
 
         // address Derby driver inability to handle java.lang.Short and java.lang.Byte
         map.registerType(new ShortType(true));
         map.registerType(new ByteType(true));
+        map.registerType(new JsonType(charType, true));
     }
 
     /**

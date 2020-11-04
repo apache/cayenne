@@ -39,6 +39,7 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -148,8 +149,10 @@ public class MySQLAdapter extends JdbcAdapter {
 		// are problems with NULL clobs that are treated
 		// as empty strings... somehow this doesn't happen
 		// for BLOBs (ConnectorJ v. 3.0.9)
-		map.registerType(new CharType(false, false));
+		CharType charType = new CharType(false, false);
+		map.registerType(charType);
 		map.registerType(new ByteArrayType(false, false));
+		map.registerType(new JsonType(charType, true));
 	}
 
 	@Override
