@@ -16,6 +16,7 @@ Changes/New Features:
 Bug Fixes:
 
 CAY-2683 Don't use DISTINCT for joins on to-one related tables
+CAY-2685 JsonType should use the actual JDBC type, not OTHER
 CAY-2686 SQL translator incorrectly quotes fully qualified tables' names
 
 ----------------------------------
