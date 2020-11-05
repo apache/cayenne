@@ -22,6 +22,7 @@ package org.apache.cayenne.map;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
+import org.apache.cayenne.annotation.*;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
@@ -144,6 +146,26 @@ public class EntityResolver implements MappingNamespace, Serializable {
             // load entity callbacks
             for (ObjEntity entity : getObjEntities()) {
                 Class<?> entityClass = entity.getJavaClass();
+
+                for (Method m : entityClass.getDeclaredMethods()) {
+                    if (m.isAnnotationPresent(PostAdd.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.POST_ADD, entityClass, m.getName());
+                    } else if (m.isAnnotationPresent(PrePersist.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.PRE_PERSIST, entityClass, m.getName());
+                    } else if (m.isAnnotationPresent(PostPersist.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.POST_PERSIST, entityClass, m.getName());
+                    } else if (m.isAnnotationPresent(PreUpdate.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.PRE_UPDATE, entityClass, m.getName());
+                    } else if (m.isAnnotationPresent(PostUpdate.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.POST_UPDATE, entityClass, m.getName());
+                    } else if (m.isAnnotationPresent(PreRemove.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.PRE_REMOVE, entityClass, m.getName());
+                    } else if (m.isAnnotationPresent(PostRemove.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.POST_REMOVE, entityClass, m.getName());
+                    } else if (m.isAnnotationPresent(PostLoad.class)) {
+                        callbackRegistry.addCallback(LifecycleEvent.POST_LOAD, entityClass, m.getName());
+                    }
+                }
 
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (CallbackDescriptor callback : callbacks) {

@@ -82,7 +82,8 @@ public class SchemaBuilder {
 			"qualified.map.xml", "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml",
 			"inheritance-vertical.map.xml", "oneway-rels.map.xml", "unsupported-distinct-types.map.xml",
 			"array-type.map.xml", "cay-2032.map.xml", "weighted-sort.map.xml", "hybrid-data-object.map.xml",
-			"java8.map.xml", "inheritance-with-enum.map.xml", "lazy-attributes.map.xml", "cay2666/datamap.map.xml", "cay2641/datamapLazy.map.xml" };
+			"java8.map.xml", "inheritance-with-enum.map.xml", "lazy-attributes.map.xml", "cay2666/datamap.map.xml", "cay2641/datamapLazy.map.xml",
+			"annotation/datamapAnnotation.map.xml" };
 
 	// hardcoded dependent entities that should be excluded
 	// if LOBs are not supported
