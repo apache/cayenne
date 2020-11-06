@@ -28,11 +28,9 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
 import org.apache.cayenne.access.translator.select.TypeAwareSQLTreeProcessor;
-import org.apache.cayenne.dba.mysql.sqltree.ConvertNode;
 import org.apache.cayenne.dba.mysql.sqltree.MysqlLikeNode;
 import org.apache.cayenne.dba.mysql.sqltree.MysqlLimitOffsetNode;
 import org.apache.cayenne.value.GeoJson;
-import org.apache.cayenne.value.Json;
 import org.apache.cayenne.value.Wkt;
 
 /**
@@ -60,12 +58,6 @@ public class MySQLTreeProcessor extends TypeAwareSQLTreeProcessor {
                 -> Optional.of(wrapInFunction(child, "ST_GeomFromText")));
         registerValueProcessor(GeoJson.class, (parent, child, i)
                 -> Optional.of(wrapInFunction(child, "ST_GeomFromGeoJSON")));
-
-        registerValueProcessor(Json.class, (parent, child, i) -> {
-            ConvertNode node = new ConvertNode();
-            node.addChild(child);
-            return Optional.of(node);
-        });
     }
 
     protected Optional<Node> onLikeNode(Node parent, LikeNode child, int index) {
