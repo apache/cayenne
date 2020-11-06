@@ -198,6 +198,11 @@ public class MySQLAdapter extends JdbcAdapter {
 			// JDBC mapping for BigInteger
 		}
 
+		// This is a special case for the Json type and older MySQL drivers (5.x)
+		if(type == Types.CHAR && "json".equals(typeName)) {
+			type = Types.LONGVARCHAR;
+		}
+
 		return super.buildAttribute(name, typeName, type, size, precision, allowNulls);
 	}
 
