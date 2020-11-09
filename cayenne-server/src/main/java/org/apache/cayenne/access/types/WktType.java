@@ -69,13 +69,4 @@ public class WktType implements ExtendedType<Wkt> {
         return value != null ? value.getWkt() : null;
     }
 
-    @Override
-    public ChildProcessor<? extends Node> readProcessor() {
-        return (p, c, i) -> Optional.of(FunctionNode.wrap(c, "ST_AsText"));
-    }
-
-    @Override
-    public ChildProcessor<? extends Node> writeProcessor() {
-        return (p, c, i) -> Optional.of(FunctionNode.wrap(c, "ST_GeomFromText"));
-    }
 }

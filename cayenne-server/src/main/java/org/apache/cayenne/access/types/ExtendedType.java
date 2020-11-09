@@ -79,19 +79,4 @@ public interface ExtendedType<T> {
      */
     String toString(T value);
 
-    /**
-     * @since 4.2
-     * @return
-     */
-    default ChildProcessor<?> readProcessor() {
-        return ChildProcessor.EMPTY;
-    }
-
-    /**
-     * @since 4.2
-     * @return
-     */
-    default ChildProcessor<?> writeProcessor() {
-        return ChildProcessor.EMPTY;
-    }
 }
