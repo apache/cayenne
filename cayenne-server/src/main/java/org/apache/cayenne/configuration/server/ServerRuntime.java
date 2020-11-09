@@ -21,17 +21,14 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.tx.TransactionDescriptor;
 import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.tx.TransactionalOperation;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
-
-import static java.util.Arrays.asList;
 
 /**
  * Object representing Cayenne stack. Serves as an entry point to Cayenne for user applications and a factory of ObjectContexts.
@@ -103,6 +100,47 @@ public class ServerRuntime extends CayenneRuntime {
     public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback) {
         TransactionManager tm = injector.getInstance(TransactionManager.class);
         return tm.performInTransaction(op, callback);
+    }
+
+    /**
+     * Runs provided operation wrapped in a single transaction. Transaction
+     * handling delegated to the internal {@link TransactionManager}. Nested
+     * calls to 'performInTransaction' are safe and attached to the same
+     * in-progress transaction. TransactionalOperation can be some arbitrary
+     * user code, which most often than not will consist of multiple Cayenne
+     * operations.
+     *
+     * @param op         an operation to perform within the transaction.
+     * @param descriptor describes additional transaction parameters
+     * @param <T> result type
+     * @return a value returned by the "op" operation.
+     *
+     * @since 4.2
+     */
+    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionDescriptor descriptor) {
+        TransactionManager tm = injector.getInstance(TransactionManager.class);
+        return tm.performInTransaction(op, descriptor);
+    }
+
+    /**
+     * Runs provided operation wrapped in a single transaction. Transaction
+     * handling delegated to the internal {@link TransactionManager}. Nested
+     * calls to 'performInTransaction' are safe and attached to the same
+     * in-progress transaction. TransactionalOperation can be some arbitrary
+     * user code, which most often than not will consist of multiple Cayenne
+     * operations.
+     *
+     * @param op         an operation to perform within the transaction.
+     * @param callback   a callback to notify as transaction progresses through stages.
+     * @param descriptor describes additional transaction parameters
+     * @param <T> returned value type
+     * @return a value returned by the "op" operation.
+     *
+     * @since 4.2
+     */
+    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
+        TransactionManager tm = injector.getInstance(TransactionManager.class);
+        return tm.performInTransaction(op, callback, descriptor);
     }
 
     /**

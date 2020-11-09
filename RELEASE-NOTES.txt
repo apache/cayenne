@@ -13,6 +13,8 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2689 ServerRuntime API: missing some variants of the performInTransaction() method
+
 Bug Fixes:
 
 CAY-2683 Don't use DISTINCT for joins on to-one related tables
