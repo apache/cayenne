@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -40,6 +41,8 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
@@ -214,5 +217,15 @@ public class FrontBaseAdapter extends JdbcAdapter {
 	@Override
 	protected PkGenerator createPkGenerator() {
 		return new FrontBasePkGenerator(this);
+	}
+
+	/**
+	 * Uses FrontBaseActionBuilder to create the right action.
+	 *
+	 * @since 4.2
+	 */
+	@Override
+	public SQLAction getAction(Query query, DataNode node) {
+		return query.createSQLAction(new FrontBaseActionBuilder(node));
 	}
 }
