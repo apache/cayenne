@@ -137,7 +137,11 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
         }
 
         if(original.getMaxLength() != imported.getMaxLength()) {
-            int[] typesWithMaxLength = {Types.NCHAR, Types.NVARCHAR, Types.CHAR, Types.VARCHAR};
+            int[] typesWithMaxLength = {
+                    Types.NCHAR, Types.NVARCHAR,
+                    Types.CHAR, Types.VARCHAR,
+                    Types.BINARY, Types.VARBINARY
+            };
             for(int type : typesWithMaxLength) {
                 if(original.getType() == type) {
                     return true;
