@@ -51,4 +51,9 @@ public class Wkt {
     public int hashCode() {
         return Objects.hash(wkt);
     }
+
+    @Override
+    public String toString() {
+        return "WKT value: " + wkt;
+    }
 }

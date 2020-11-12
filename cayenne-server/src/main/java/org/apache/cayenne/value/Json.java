@@ -50,4 +50,9 @@ public class Json {
     public int hashCode() {
         return Objects.hash(json);
     }
+
+    @Override
+    public String toString() {
+        return "JSON value: " + json;
+    }
 }

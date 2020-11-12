@@ -52,4 +52,9 @@ public class GeoJson {
     public int hashCode() {
         return Objects.hash(geometry);
     }
+
+    @Override
+    public String toString() {
+        return "GeoJSON value: " + geometry;
+    }
 }
