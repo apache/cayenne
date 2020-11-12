@@ -41,7 +41,6 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DefaultScalarResultSegment;
@@ -189,9 +188,7 @@ public class SQLTemplateAction implements SQLAction {
 		boolean iteratedResult = callback.isIteratedResult();
 		int generatedKeys = query.isReturnGeneratedKeys() ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS;
 		PreparedStatement statement = connection.prepareStatement(compiled.getSql(), generatedKeys);
-		if (statement == null && this.dbAdapter instanceof FrontBaseAdapter) {
-			statement = connection.prepareStatement(compiled.getSql());
-		}
+
 		try {
 			bind(statement, compiled.getBindings());
 
