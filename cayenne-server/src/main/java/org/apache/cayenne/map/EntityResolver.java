@@ -22,10 +22,9 @@ package org.apache.cayenne.map;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cayenne.Persistent;
@@ -147,23 +146,14 @@ public class EntityResolver implements MappingNamespace, Serializable {
             for (ObjEntity entity : getObjEntities()) {
                 Class<?> entityClass = entity.getJavaClass();
 
+                Map<Class, LifecycleEvent> annotationsMap = createAnnotationsMap();
+
                 for (Method m : entityClass.getDeclaredMethods()) {
-                    if (m.isAnnotationPresent(PostAdd.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.POST_ADD, entityClass, m.getName());
-                    } else if (m.isAnnotationPresent(PrePersist.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.PRE_PERSIST, entityClass, m.getName());
-                    } else if (m.isAnnotationPresent(PostPersist.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.POST_PERSIST, entityClass, m.getName());
-                    } else if (m.isAnnotationPresent(PreUpdate.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.PRE_UPDATE, entityClass, m.getName());
-                    } else if (m.isAnnotationPresent(PostUpdate.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.POST_UPDATE, entityClass, m.getName());
-                    } else if (m.isAnnotationPresent(PreRemove.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.PRE_REMOVE, entityClass, m.getName());
-                    } else if (m.isAnnotationPresent(PostRemove.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.POST_REMOVE, entityClass, m.getName());
-                    } else if (m.isAnnotationPresent(PostLoad.class)) {
-                        callbackRegistry.addCallback(LifecycleEvent.POST_LOAD, entityClass, m.getName());
+                    Annotation[] annotations = m.getAnnotations();
+                    for (int i = 0; i < annotations.length; i++) {
+                        if (annotationsMap.containsKey(annotations[i].annotationType())) {
+                            callbackRegistry.addCallback(annotationsMap.get(annotations[i].annotationType()), entityClass, m.getName());
+                        }
                     }
                 }
 
@@ -621,5 +611,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public void setValueComparisionStrategyFactory(ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
         this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
+    }
+
+    private Map<Class, LifecycleEvent> createAnnotationsMap() {
+        Map<Class, LifecycleEvent> annotationsMap = new HashMap<>();
+        annotationsMap.put(PostAdd.class, LifecycleEvent.POST_ADD);
+        annotationsMap.put(PrePersist.class, LifecycleEvent.PRE_PERSIST);
+        annotationsMap.put(PostPersist.class, LifecycleEvent.POST_PERSIST);
+        annotationsMap.put(PreUpdate.class, LifecycleEvent.PRE_UPDATE);
+        annotationsMap.put(PostUpdate.class, LifecycleEvent.POST_UPDATE);
+        annotationsMap.put(PreRemove.class, LifecycleEvent.PRE_REMOVE);
+        annotationsMap.put(PostRemove.class, LifecycleEvent.POST_REMOVE);
+        annotationsMap.put(PostLoad.class, LifecycleEvent.POST_LOAD);
+
+        return annotationsMap;
     }
 }
