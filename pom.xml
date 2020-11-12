@@ -1724,7 +1724,7 @@
 			</activation>
 			<properties>
 				<javadoc.doclint>none</javadoc.doclint>
-				<javadoc.additionalOptions>--no-module-directories</javadoc.additionalOptions>
+				<javadoc.additionalOptions/>
 			</properties>
 		</profile>
 		<profile>
