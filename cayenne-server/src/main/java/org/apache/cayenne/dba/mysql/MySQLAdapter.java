@@ -29,9 +29,13 @@ import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.TimeType;
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -163,6 +167,12 @@ public class MySQLAdapter extends JdbcAdapter {
 		// for BLOBs (ConnectorJ v. 3.0.9)
 		map.registerType(new CharType(false, false));
 		map.registerType(new ByteArrayType(false, false));
+
+		// register non-default types for the dates, see CAY-2691
+		map.registerType(new DateType(true));
+		map.registerType(new TimeType(true));
+		map.registerType(new TimestampType(true));
+		map.registerType(new UtilDateType(true));
 	}
 
 	@Override

@@ -24,7 +24,9 @@ import org.apache.cayenne.dba.TypesMapping;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Time;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -32,6 +34,28 @@ import java.util.Date;
  * DATE, TIMESTAMP.
  */
 public class UtilDateType implements ExtendedType<Date> {
+
+    private final Calendar calendar;
+    private final boolean useCalendar;
+
+    /**
+     * @since 4.1.1
+     */
+    public UtilDateType() {
+        this(false);
+    }
+
+    /**
+     * @since 4.1.1
+     */
+    public UtilDateType(boolean useCalendar) {
+        this.useCalendar = useCalendar;
+        if(this.useCalendar) {
+            this.calendar = Calendar.getInstance();
+        } else {
+            this.calendar = null;
+        }
+    }
 
     /**
      * Returns "java.util.Date".
@@ -41,35 +65,29 @@ public class UtilDateType implements ExtendedType<Date> {
         return Date.class.getName();
     }
 
-    protected Object convertToJdbcObject(Date val, int type) throws Exception {
-        if (type == Types.DATE) {
-            return new java.sql.Date(val.getTime());
-        } else if (type == Types.TIME) {
-            return new java.sql.Time(val.getTime());
-        } else if (type == Types.TIMESTAMP) {
-            return new java.sql.Timestamp(val.getTime());
-        } else {
-            throw new IllegalArgumentException(
-                    "Only DATE, TIME or TIMESTAMP can be mapped as '" + getClassName()
-                            + "', got " + TypesMapping.getSqlNameByType(type));
-        }
-    }
-
     @Override
     public Date materializeObject(ResultSet rs, int index, int type) throws Exception {
         Date val;
         switch (type) {
             case Types.TIMESTAMP:
-                val = rs.getTimestamp(index);
+                val = useCalendar
+                        ? rs.getTimestamp(index, calendar)
+                        : rs.getTimestamp(index);
                 break;
             case Types.DATE:
-                val = rs.getDate(index);
+                val = useCalendar
+                        ? rs.getDate(index, calendar)
+                        : rs.getDate(index);
                 break;
             case Types.TIME:
-                val = rs.getTime(index);
+                val = useCalendar
+                        ? rs.getTime(index, calendar)
+                        : rs.getTime(index);
                 break;
             default:
-                val = rs.getTimestamp(index);
+                val = useCalendar
+                        ? rs.getTimestamp(index, calendar)
+                        : rs.getTimestamp(index);
                 break;
         }
 
@@ -82,16 +100,24 @@ public class UtilDateType implements ExtendedType<Date> {
         Date val;
         switch (type) {
             case Types.TIMESTAMP:
-                val = cs.getTimestamp(index);
+                val = useCalendar
+                        ? cs.getTimestamp(index, calendar)
+                        : cs.getTimestamp(index);
                 break;
             case Types.DATE:
-                val = cs.getDate(index);
+                val = useCalendar
+                        ? cs.getDate(index, calendar)
+                        : cs.getDate(index);
                 break;
             case Types.TIME:
-                val = cs.getTime(index);
+                val = useCalendar
+                        ? cs.getTime(index, calendar)
+                        : cs.getTime(index);
                 break;
             default:
-                val = cs.getTimestamp(index);
+                val = useCalendar
+                        ? cs.getTimestamp(index, calendar)
+                        : cs.getTimestamp(index);
                 break;
         }
 
@@ -110,7 +136,30 @@ public class UtilDateType implements ExtendedType<Date> {
         if (value == null) {
             statement.setNull(pos, type);
         } else {
-            statement.setObject(pos, convertToJdbcObject(value, type), type);
+            if (type == Types.DATE) {
+                if(useCalendar) {
+                    statement.setDate(pos, new java.sql.Date(value.getTime()), calendar);
+                } else {
+                    statement.setDate(pos, new java.sql.Date(value.getTime()));
+                }
+            } else if (type == Types.TIME) {
+                Time time = new Time(value.getTime());
+                if(useCalendar) {
+                    statement.setTime(pos, time, calendar);
+                } else {
+                    statement.setTime(pos, time);
+                }
+            } else if (type == Types.TIMESTAMP) {
+                if(useCalendar) {
+                    statement.setTimestamp(pos, new java.sql.Timestamp(value.getTime()), calendar);
+                } else {
+                    statement.setTimestamp(pos, new java.sql.Timestamp(value.getTime()));
+                }
+            } else {
+                throw new IllegalArgumentException(
+                        "Only DATE, TIME or TIMESTAMP can be mapped as '" + getClassName()
+                                + "', got " + TypesMapping.getSqlNameByType(type));
+            }
         }
     }
 
@@ -121,6 +170,6 @@ public class UtilDateType implements ExtendedType<Date> {
         }
 
         long time = value.getTime();
-        return "\'" + new java.sql.Timestamp(time) + "\'";
+        return '\'' + new java.sql.Timestamp(time).toString() + '\'';
     }
 }
