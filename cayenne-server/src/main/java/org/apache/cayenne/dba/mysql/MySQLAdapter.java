@@ -36,10 +36,14 @@ import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteArrayType;
 import org.apache.cayenne.access.types.CharType;
+import org.apache.cayenne.access.types.DateType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.JsonType;
+import org.apache.cayenne.access.types.TimeType;
+import org.apache.cayenne.access.types.TimestampType;
+import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -153,6 +157,12 @@ public class MySQLAdapter extends JdbcAdapter {
 		map.registerType(charType);
 		map.registerType(new ByteArrayType(false, false));
 		map.registerType(new JsonType(charType, true));
+
+		// register non-default types for the dates, see CAY-2691
+		map.registerType(new DateType(true));
+		map.registerType(new TimeType(true));
+		map.registerType(new TimestampType(true));
+		map.registerType(new UtilDateType(true));
 	}
 
 	@Override

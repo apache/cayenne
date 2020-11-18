@@ -48,13 +48,13 @@ public class DateTimeTypesIT extends ServerCase {
     private DataContext context;
 
     @Test
-    public void testCalendar() throws Exception {
+    public void testCalendar() {
 
         CalendarEntity test = context.newObject(CalendarEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2002, 1, 1);
+        cal.set(2002, Calendar.FEBRUARY, 1);
 
         test.setCalendarField(cal);
         context.commitChanges();
@@ -69,12 +69,12 @@ public class DateTimeTypesIT extends ServerCase {
     }
 
     @Test
-    public void testDate() throws Exception {
+    public void testDate() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2002, 1, 1);
+        cal.set(2002, Calendar.FEBRUARY, 1);
         Date nowDate = cal.getTime();
         test.setDateColumn(nowDate);
         context.commitChanges();
@@ -87,12 +87,12 @@ public class DateTimeTypesIT extends ServerCase {
     }
 
     @Test
-    public void testTime() throws Exception {
+    public void testTime() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(1970, 0, 1, 1, 20, 30);
+        cal.set(1970, Calendar.JANUARY, 1, 1, 20, 30);
         Date nowTime = cal.getTime();
         test.setTimeColumn(nowTime);
         context.commitChanges();
@@ -112,12 +112,12 @@ public class DateTimeTypesIT extends ServerCase {
     }
 
     @Test
-    public void testTimestamp() throws Exception {
+    public void testTimestamp() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2003, 1, 1, 1, 20, 30);
+        cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
 
         // most databases fail millisecond accuracy
         // cal.set(Calendar.MILLISECOND, 55);
@@ -133,12 +133,12 @@ public class DateTimeTypesIT extends ServerCase {
     }
 
     @Test
-    public void testSQLTemplateTimestamp() throws Exception {
+    public void testSQLTemplateTimestamp() {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2003, 1, 1, 1, 20, 30);
+        cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
 
         // most databases fail millisecond accuracy
         // cal.set(Calendar.MILLISECOND, 55);
@@ -154,12 +154,12 @@ public class DateTimeTypesIT extends ServerCase {
     }
 
     @Test
-    public void testSQLTemplateDate() throws Exception {
+    public void testSQLTemplateDate() {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2003, 1, 1, 1, 20, 30);
+        cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
 
         // most databases fail millisecond accuracy
         // cal.set(Calendar.MILLISECOND, 55);
@@ -175,12 +175,12 @@ public class DateTimeTypesIT extends ServerCase {
     }
 
     @Test
-    public void testSQLTemplateTime() throws Exception {
+    public void testSQLTemplateTime() {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
         Calendar cal = Calendar.getInstance();
         cal.clear();
-        cal.set(2003, 1, 1, 1, 20, 30);
+        cal.set(2003, Calendar.FEBRUARY, 1, 1, 20, 30);
 
         // most databases fail millisecond accuracy
         // cal.set(Calendar.MILLISECOND, 55);

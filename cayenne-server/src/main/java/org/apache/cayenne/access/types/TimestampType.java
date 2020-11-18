@@ -22,11 +22,34 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Calendar;
 
 /**
  * @since 3.0
  */
 public class TimestampType implements ExtendedType<Timestamp> {
+
+    private final Calendar calendar;
+    private final boolean useCalendar;
+
+    /**
+     * @since 4.2
+     */
+    public TimestampType() {
+        this(false);
+    }
+
+    /**
+     * @since 4.2
+     */
+    public TimestampType(boolean useCalendar) {
+        this.useCalendar = useCalendar;
+        if(this.useCalendar) {
+            this.calendar = Calendar.getInstance();
+        } else {
+            this.calendar = null;
+        }
+    }
 
     @Override
     public String getClassName() {
@@ -35,12 +58,12 @@ public class TimestampType implements ExtendedType<Timestamp> {
 
     @Override
     public Timestamp materializeObject(ResultSet rs, int index, int type) throws Exception {
-        return rs.getTimestamp(index);
+        return useCalendar ? rs.getTimestamp(index, calendar) : rs.getTimestamp(index);
     }
 
     @Override
     public Timestamp materializeObject(CallableStatement cs, int index, int type) throws Exception {
-        return cs.getTimestamp(index);
+        return useCalendar ? cs.getTimestamp(index, calendar) : cs.getTimestamp(index);
     }
 
     @Override
@@ -53,6 +76,8 @@ public class TimestampType implements ExtendedType<Timestamp> {
 
         if (value == null) {
             statement.setNull(pos, type);
+        } else if(useCalendar) {
+            statement.setTimestamp(pos, value, calendar);
         } else {
             statement.setTimestamp(pos, value);
         }
