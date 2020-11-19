@@ -24,12 +24,25 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.annotation.*;
+
+import org.apache.cayenne.annotation.PostAdd;
+import org.apache.cayenne.annotation.PostLoad;
+import org.apache.cayenne.annotation.PostPersist;
+import org.apache.cayenne.annotation.PostRemove;
+import org.apache.cayenne.annotation.PostUpdate;
+import org.apache.cayenne.annotation.PrePersist;
+import org.apache.cayenne.annotation.PreRemove;
+import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
@@ -55,6 +68,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     protected static final Logger logger = LoggerFactory.getLogger(EntityResolver.class);
     protected static AtomicLong incrementer = new AtomicLong();
+
+    protected static final Map<LifecycleEvent, Class<? extends Annotation>> LIFECYCLE_EVENT_MAP;
+    static {
+        LIFECYCLE_EVENT_MAP = new EnumMap<>(LifecycleEvent.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_ADD, PostAdd.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.PRE_PERSIST, PrePersist.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_PERSIST, PostPersist.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.PRE_UPDATE, PreUpdate.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_UPDATE, PostUpdate.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.PRE_REMOVE, PreRemove.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_REMOVE, PostRemove.class);
+        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_LOAD, PostLoad.class);
+    }
 
     protected Collection<DataMap> maps;
     protected transient MappingNamespace mappingCache;
@@ -146,17 +172,16 @@ public class EntityResolver implements MappingNamespace, Serializable {
             for (ObjEntity entity : getObjEntities()) {
                 Class<?> entityClass = entity.getJavaClass();
 
-                Map<Class, LifecycleEvent> annotationsMap = createAnnotationsMap();
-
+                // load annotated methods
                 for (Method m : entityClass.getDeclaredMethods()) {
-                    Annotation[] annotations = m.getAnnotations();
-                    for (int i = 0; i < annotations.length; i++) {
-                        if (annotationsMap.containsKey(annotations[i].annotationType())) {
-                            callbackRegistry.addCallback(annotationsMap.get(annotations[i].annotationType()), entityClass, m.getName());
+                    LIFECYCLE_EVENT_MAP.forEach((eventType, annotationType) -> {
+                        if(m.getDeclaredAnnotation(annotationType) != null) {
+                            callbackRegistry.addCallback(eventType, entityClass, m.getName());
                         }
-                    }
+                    });
                 }
 
+                // load callback defined in the model
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (CallbackDescriptor callback : callbacks) {
                     for (String method : callback.getCallbackMethods()) {
@@ -613,17 +638,4 @@ public class EntityResolver implements MappingNamespace, Serializable {
         this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
     }
 
-    private Map<Class, LifecycleEvent> createAnnotationsMap() {
-        Map<Class, LifecycleEvent> annotationsMap = new HashMap<>();
-        annotationsMap.put(PostAdd.class, LifecycleEvent.POST_ADD);
-        annotationsMap.put(PrePersist.class, LifecycleEvent.PRE_PERSIST);
-        annotationsMap.put(PostPersist.class, LifecycleEvent.POST_PERSIST);
-        annotationsMap.put(PreUpdate.class, LifecycleEvent.PRE_UPDATE);
-        annotationsMap.put(PostUpdate.class, LifecycleEvent.POST_UPDATE);
-        annotationsMap.put(PreRemove.class, LifecycleEvent.PRE_REMOVE);
-        annotationsMap.put(PostRemove.class, LifecycleEvent.POST_REMOVE);
-        annotationsMap.put(PostLoad.class, LifecycleEvent.POST_LOAD);
-
-        return annotationsMap;
-    }
 }

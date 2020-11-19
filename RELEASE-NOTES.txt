@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-2689 ServerRuntime API: missing some variants of the performInTransaction() method
+CAY-2692 Add entity lifecycle callbacks via annotated methods
 
 Bug Fixes:
 
