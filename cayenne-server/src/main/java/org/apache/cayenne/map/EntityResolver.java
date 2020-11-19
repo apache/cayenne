@@ -22,13 +22,14 @@ package org.apache.cayenne.map;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
+import org.apache.cayenne.annotation.*;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
@@ -144,6 +145,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
             // load entity callbacks
             for (ObjEntity entity : getObjEntities()) {
                 Class<?> entityClass = entity.getJavaClass();
+
+                Map<Class, LifecycleEvent> annotationsMap = createAnnotationsMap();
+
+                for (Method m : entityClass.getDeclaredMethods()) {
+                    Annotation[] annotations = m.getAnnotations();
+                    for (int i = 0; i < annotations.length; i++) {
+                        if (annotationsMap.containsKey(annotations[i].annotationType())) {
+                            callbackRegistry.addCallback(annotationsMap.get(annotations[i].annotationType()), entityClass, m.getName());
+                        }
+                    }
+                }
 
                 CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
                 for (CallbackDescriptor callback : callbacks) {
@@ -599,5 +611,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public void setValueComparisionStrategyFactory(ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
         this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
+    }
+
+    private Map<Class, LifecycleEvent> createAnnotationsMap() {
+        Map<Class, LifecycleEvent> annotationsMap = new HashMap<>();
+        annotationsMap.put(PostAdd.class, LifecycleEvent.POST_ADD);
+        annotationsMap.put(PrePersist.class, LifecycleEvent.PRE_PERSIST);
+        annotationsMap.put(PostPersist.class, LifecycleEvent.POST_PERSIST);
+        annotationsMap.put(PreUpdate.class, LifecycleEvent.PRE_UPDATE);
+        annotationsMap.put(PostUpdate.class, LifecycleEvent.POST_UPDATE);
+        annotationsMap.put(PreRemove.class, LifecycleEvent.PRE_REMOVE);
+        annotationsMap.put(PostRemove.class, LifecycleEvent.POST_REMOVE);
+        annotationsMap.put(PostLoad.class, LifecycleEvent.POST_LOAD);
+
+        return annotationsMap;
     }
 }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
+	 project-version="10">
+	<property name="defaultPackage" value="org.apache.cayenne.testdo.annotation"/>
+	<db-entity name="artist_annotation">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="PostCallback" type="VARCHAR" length="15"/>
+		<db-attribute name="PreCallback" type="VARCHAR" length="15"/>
+	</db-entity>
+	<obj-entity name="ArtistAnnotation" className="org.apache.cayenne.testdo.annotation.ArtistAnnotation" dbEntityName="artist_annotation">
+		<obj-attribute name="postCallback" type="java.lang.String" db-attribute-path="PostCallback"/>
+		<obj-attribute name="preCallback" type="java.lang.String" db-attribute-path="PreCallback"/>
+		<post-add method-name="onPostAdd"/>
+	</obj-entity>
+</data-map>
