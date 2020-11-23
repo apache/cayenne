@@ -39,14 +39,13 @@ import org.junit.Test;
 import java.sql.Types;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @since 4.2
  */
 @UseServerRuntime(CayenneProjects.CAY_2641)
-public class Cay2641 extends ServerCase {
+public class Cay2641IT extends ServerCase {
 
     @Inject
     private ObjectContext context;
@@ -80,7 +79,7 @@ public class Cay2641 extends ServerCase {
         assertFalse(sql.contains("t0.NAME"));
 
         String string = "SELECT t0.SURNAME, t0.ID FROM ArtistLazy t0";
-        assertTrue(sql.equals(string));
+        assertEquals(sql, string);
 
         ColumnSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
         translator = new DefaultSelectTranslator(select, adapter, context.getEntityResolver());
@@ -97,7 +96,7 @@ public class Cay2641 extends ServerCase {
         assertTrue(object instanceof Fault);
 
         object = artists.get(0).readPropertyDirectly("surname");
-        assertTrue(object.equals("artist2"));
+        assertEquals("artist2", object);
     }
 
     @Test
@@ -109,7 +108,7 @@ public class Cay2641 extends ServerCase {
 
         artist.getName();
         object = artist.readPropertyDirectly("name");
-        assertTrue(object.equals("artist1"));
+        assertEquals("artist1", object);
     }
 
     @Test
@@ -119,31 +118,33 @@ public class Cay2641 extends ServerCase {
         String sql = translator.getSql();
         assertFalse(sql.contains("t0.NAME"));
 
-        String string = "SELECT DISTINCT t0.ARTIST_ID, t0.ID, t1.ID, t1.SURNAME FROM PaintingLazy t0 LEFT JOIN ArtistLazy t1 ON t0.ARTIST_ID = t1.ID";
-        assertTrue(sql.equals(string));
+        String string = "SELECT t0.ARTIST_ID, t0.ID, t1.ID, t1.SURNAME FROM PaintingLazy t0 LEFT JOIN ArtistLazy t1 ON t0.ARTIST_ID = t1.ID";
+        assertEquals(sql, string);
     }
 
     @Test
     public void testPrefetchLazyTypeAttributes() {
-        List<PaintingLazy> paintingLazyList = ObjectSelect.query(PaintingLazy.class).prefetch(PaintingLazy.ARTIST.joint()).select(context);
+        List<PaintingLazy> paintingLazyList = ObjectSelect.query(PaintingLazy.class)
+                .prefetch(PaintingLazy.ARTIST.joint())
+                .select(context);
 
         Object object = paintingLazyList.get(0).readPropertyDirectly("name");
         assertTrue(object instanceof Fault);
 
         object = paintingLazyList.get(0).getName();
         assertTrue(object instanceof String);
-        assertTrue(object.equals("painting1"));
+        assertEquals("painting1", object);
 
         ArtistLazy artist = (ArtistLazy) paintingLazyList.get(0).readPropertyDirectly("artist");
         object = artist.readPropertyDirectly("name");
         assertTrue(object instanceof Fault);
 
         object = artist.readPropertyDirectly("surname");
-        assertTrue(object.equals("artist2"));
+        assertEquals("artist2", object);
 
         object = artist.getName();
         assertTrue(object instanceof String);
-        assertTrue(object.equals("artist1"));
+        assertEquals("artist1", object);
     }
 
     @Test
@@ -156,7 +157,7 @@ public class Cay2641 extends ServerCase {
 
         object = artistLazies.get(0).readPropertyDirectly("surname");
         assertTrue(object instanceof String);
-        assertTrue(object.equals("artist2"));
+        assertEquals("artist2", object);
     }
 
     @Test

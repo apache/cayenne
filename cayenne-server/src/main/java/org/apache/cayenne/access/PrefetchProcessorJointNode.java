@@ -197,7 +197,9 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
             public boolean visitAttribute(AttributeProperty property) {
                 String target = property.getAttribute().getDbAttributePath();
-                appendColumn(targetSource, target, prefix + target);
+                if(!property.getAttribute().isLazy()) {
+                    appendColumn(targetSource, target, prefix + target);
+                }
                 return true;
             }
 
