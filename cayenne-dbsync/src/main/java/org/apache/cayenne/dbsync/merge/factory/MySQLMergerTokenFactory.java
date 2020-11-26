@@ -31,6 +31,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -180,5 +181,14 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
                 return false;
             }
         };
+    }
+
+    @Override
+    public boolean needUpdateSpecificType(DbAttribute columnOriginal, DbAttribute columnNew) {
+        if ( (columnOriginal.getType() == Types.BOOLEAN && columnNew.getType() == Types.BIT) ||
+                (columnOriginal.getType() == Types.BLOB && columnNew.getType() == Types.LONGVARBINARY)) {
+            return false;
+        }
+        return true;
     }
 }
