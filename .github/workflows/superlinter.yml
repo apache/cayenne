@@ -56,7 +56,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name = 'push' AND github.ref = refs/heads/master AND github.repository = apache/cayenne
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'apache/cayenne' }}
     env:
       SNAPSHOT_REPO_USERNAME: ${{ secrets.SNAPSHOT_REPO_USERNAME }}
       SNAPSHOT_REPO_PASSWORD: ${{ secrets.SNAPSHOT_REPO_PASSWORD }}
