@@ -20,7 +20,7 @@ on: [push, pull_request]
 jobs:
   test-job:
     runs-on: ubuntu-latest
-    name: Java ${{ matrix.java }}
+    name: JDK ${{ matrix.java }}, DB ${{ matrix.db-profile }}
     strategy:
       matrix:
         java: [8, 11]
@@ -40,16 +40,6 @@ jobs:
           path: $HOME/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-
-      - name: Download Maven
-        run: |
-          curl -sL https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip -o maven.zip
-          apt-get update
-          apt-get -y install unzip
-          unzip -d /usr/share maven.zip
-          rm maven.zip
-          ln -s /usr/share/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
-          echo "M2_HOME=/usr/share/apache-maven-3.6.3" | tee -a /etc/environment
 
       - name: Set up DB ${{ matrix.db-profile }}
         run: mvn verify -q -DcayenneTestConnection=${{ matrix.db-profile }} -DcayenneLogLevel=ERROR
