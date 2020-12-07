@@ -18,13 +18,18 @@ name: cayenne
 on: [push, pull_request]
 
 jobs:
-  test-job:
+  test:
     runs-on: ubuntu-latest
     name: JDK ${{ matrix.java }}, DB ${{ matrix.db-profile }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
         java: [8, 11]
         db-profile: [hsql, h2, derby, mysql-docker, postgres-docker, sqlserver-docker]
+        experimental: [false]
+        include:
+          - java: 16-ea
+            experimental: true
 
     steps:
       - name: Checkout repository
@@ -57,14 +62,5 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 8
-      - name: Download Maven
-        run: |
-          curl -sL https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip -o maven.zip
-          apt-get update
-          apt-get -y install unzip
-          unzip -d /usr/share maven.zip
-          rm maven.zip
-          ln -s /usr/share/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
-          echo "M2_HOME=/usr/share/apache-maven-3.6.3" | tee -a /etc/environment
       - name: Deploy
         run: mvn deploy -DskipTests --settings .settings.xml
