@@ -21,15 +21,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: JDK ${{ matrix.java }}, DB ${{ matrix.db-profile }}
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: ${{ matrix.java == '16-ea' }}
     strategy:
       matrix:
-        java: [8, 11]
+        java: [8, 11, 16-ea]
         db-profile: [hsql, h2, derby, mysql-docker, postgres-docker, sqlserver-docker]
-        experimental: [false]
-        include:
-          - java: 16-ea
-            experimental: true
 
     steps:
       - name: Checkout repository
