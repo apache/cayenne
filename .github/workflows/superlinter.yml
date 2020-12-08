@@ -43,7 +43,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Set up DB ${{ matrix.db-profile }}
-        run: mvn verify -q -DcayenneTestConnection=${{ matrix.db-profile }} -DcayenneLogLevel=ERROR
+        run: mvn verify -q -DcayenneTestConnection=${{ matrix.db-profile }} -DcayenneLogLevel=ERROR -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false
 
   deploy:
     runs-on: ubuntu-latest
