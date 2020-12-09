@@ -22,9 +22,50 @@
           xsi:schemaLocation="https://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
     <servers>
         <server>
-            <id>apache.snapshots.https</id>
-            <username>${env.SNAPSHOT_REPO_USERNAME}</username>
-            <password>${env.SNAPSHOT_REPO_PASSWORD}</password>
+<!--            <id>apache.snapshots.https</id>-->
+<!--            <username>${env.SNAPSHOT_REPO_USERNAME}</username>-->
+<!--            <password>${env.SNAPSHOT_REPO_PASSWORD}</password>-->
+            <id>github</id>
+            <username>KravchenkoAS</username>
+            <password>andreyKravchenko98</password>
+
         </server>
+
+        <properties>
+            <github.global.server>github</github.global.server>
+        </properties>
+        <build>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                        <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/github-actions</altDeploymentRepository>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.github</groupId>
+                    <artifactId>site-maven-plugin</artifactId>
+                    <version>0.11</version>
+                    <configuration>
+                        <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+                        <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+                        <outputDirectory>${project.build.directory}/github-actions</outputDirectory> <!-- matches distribution management repository url above -->
+                        <branch>refs/heads/github-actions</branch>                       <!-- remote branch name -->
+                        <includes><include>**/*</include></includes>
+                        <repositoryName>cayenne</repositoryName>      <!-- github repo name -->
+                        <repositoryOwner>KravchenkoAS</repositoryOwner>    <!-- github username  -->
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>site</goal>
+                            </goals>
+                            <phase>deploy</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+
     </servers>
 </settings>

@@ -47,16 +47,16 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'apache/cayenne' }}
-    env:
-      SNAPSHOT_REPO_USERNAME: ${{ secrets.SNAPSHOT_REPO_USERNAME }}
-      SNAPSHOT_REPO_PASSWORD: ${{ secrets.SNAPSHOT_REPO_PASSWORD }}
+#    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository == 'apache/cayenne' }}
+#    env:
+#      SNAPSHOT_REPO_USERNAME: ${{ secrets.SNAPSHOT_REPO_USERNAME }}
+#      SNAPSHOT_REPO_PASSWORD: ${{ secrets.SNAPSHOT_REPO_PASSWORD }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v1
-      - name: Set up openjdk8
+      - name: Set up java 8
         uses: actions/setup-java@v1
         with:
           java-version: 8
       - name: Deploy
-        run: mvn deploy -DskipTests --settings .settings.xml
+        run: mvn deploy -DskipTests --settings .github/workflows/.settings.xml
