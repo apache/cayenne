@@ -42,7 +42,7 @@
         <repository>
             <id>internal.repo</id>
             <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/github-actions</url>
+            <url>https://maven.pkg.github.com/KravchenkoAS/cayenne/github-actions</url>
         </repository>
 
     </distributionManagement>
