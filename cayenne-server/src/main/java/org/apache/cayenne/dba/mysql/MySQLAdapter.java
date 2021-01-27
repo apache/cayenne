@@ -213,6 +213,16 @@ public class MySQLAdapter extends JdbcAdapter {
 			type = Types.LONGVARCHAR;
 		}
 
+		if(type == Types.TIME || type == Types.TIMESTAMP) {
+			if (size == 8 || size == 19) {
+				precision = 0;
+			} else if (size > 9 && size < 16) {
+				precision = size - 9;
+			} else if (size > 20 && size < 27) {
+				precision = size - 20;
+			}
+		}
+
 		return super.buildAttribute(name, typeName, type, size, precision, allowNulls);
 	}
 
@@ -326,19 +336,23 @@ public class MySQLAdapter extends JdbcAdapter {
 
 			int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
 
-			// sanity check
-			if (scale > len) {
-				scale = -1;
-			}
-
-			if (len > 0) {
-				sqlBuffer.append('(').append(len);
-
-				if (scale >= 0) {
-					sqlBuffer.append(", ").append(scale);
+			if ((column.getType() == Types.TIME || column.getType() == Types.TIMESTAMP) && scale >= 0) {
+				sqlBuffer.append('(').append(scale).append(')');
+			} else {
+				// sanity check
+				if (scale > len) {
+					scale = -1;
 				}
 
-				sqlBuffer.append(')');
+				if (len > 0) {
+					sqlBuffer.append('(').append(len);
+
+					if (scale >= 0) {
+						sqlBuffer.append(", ").append(scale);
+					}
+
+					sqlBuffer.append(')');
+				}
 			}
 		}
 

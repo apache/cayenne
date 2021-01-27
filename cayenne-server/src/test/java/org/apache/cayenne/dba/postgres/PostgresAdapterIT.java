@@ -59,4 +59,54 @@ public class PostgresAdapterIT extends ServerCase {
         assertEquals("CREATE TABLE Test (dbl1 float(22) NULL)", sql);
     }
 
+    @Test
+    public void testCreateTableWithTimeAndTimestampAttributeWithScale() {
+        PostgresAdapter adapter = objectFactory.newInstance(
+                PostgresAdapter.class,
+                PostgresAdapter.class.getName());
+        DbEntity e = new DbEntity("Test");
+        DbAttribute dblPrec = new DbAttribute("dbl1");
+        dblPrec.setType(Types.TIMESTAMP);
+        dblPrec.setMaxLength(-1);
+        dblPrec.setScale(3);
+        e.addAttribute(dblPrec);
+
+        DbAttribute dblPrec2 = new DbAttribute("dbl2");
+        dblPrec2.setType(Types.TIME);
+        dblPrec2.setMaxLength(-1);
+        dblPrec2.setScale(6);
+        e.addAttribute(dblPrec2);
+
+        String sql = adapter.createTable(e);
+
+        // CAY-2694.
+        assertTrue(sql.indexOf("time(6)") > 0);
+        assertTrue(sql.indexOf("timestamp(3) with time zone") > 0);
+        assertEquals("CREATE TABLE Test (dbl1 timestamp(3) with time zone NULL, dbl2 time(6) NULL)", sql);
+    }
+
+    @Test
+    public void testCreateTableWithTimeAndTimestampAttributeWithoutScale() {
+        PostgresAdapter adapter = objectFactory.newInstance(
+                PostgresAdapter.class,
+                PostgresAdapter.class.getName());
+        DbEntity e = new DbEntity("Test");
+        DbAttribute dblPrec = new DbAttribute("dbl1");
+        dblPrec.setType(Types.TIMESTAMP);
+        dblPrec.setMaxLength(-1);
+        e.addAttribute(dblPrec);
+
+        DbAttribute dblPrec2 = new DbAttribute("dbl2");
+        dblPrec2.setType(Types.TIME);
+        dblPrec2.setMaxLength(-1);
+        e.addAttribute(dblPrec2);
+
+        String sql = adapter.createTable(e);
+
+        // CAY-2694.
+        assertTrue(sql.indexOf("time") > 0);
+        assertTrue(sql.indexOf("timestamp with time zone") > 0);
+        assertEquals("CREATE TABLE Test (dbl1 timestamp with time zone NULL, dbl2 time NULL)", sql);
+
+    }
 }

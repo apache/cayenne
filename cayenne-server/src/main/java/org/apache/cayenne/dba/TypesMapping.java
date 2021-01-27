@@ -316,7 +316,7 @@ public class TypesMapping {
 	 * Returns true if supplied type is a decimal type.
 	 */
 	public static boolean isDecimal(int type) {
-		return type == DECIMAL || type == DOUBLE || type == FLOAT || type == REAL || type == NUMERIC;
+		return type == DECIMAL || type == DOUBLE || type == FLOAT || type == REAL || type == NUMERIC || type == TIME || type == TIMESTAMP;
 	}
 
 	/**

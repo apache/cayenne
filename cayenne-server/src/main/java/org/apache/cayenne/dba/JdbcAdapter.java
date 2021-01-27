@@ -509,6 +509,10 @@ public class JdbcAdapter implements DbAdapter {
         attr.setType(type);
         attr.setMandatory(!allowNulls);
 
+        if(type == Types.TIME || type == Types.TIMESTAMP) {
+            size = -1;
+        }
+
         if (size >= 0) {
             attr.setMaxLength(size);
         }
