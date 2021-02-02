@@ -44,6 +44,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     private ComboBoxAdapter<String> subclassTemplate;
     private ComboBoxAdapter<String> superclassTemplate;
+    private ComboBoxAdapter<String> embeddableTemplate;
+    private ComboBoxAdapter<String> embeddableSuperTemplate;
+    private ComboBoxAdapter<String> queryTemplate;
+    private ComboBoxAdapter<String> querySuperTemplate;
     private JCheckBox pairs;
     private JCheckBox overwrite;
     private JCheckBox usePackagePath;
@@ -57,6 +61,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     CustomModePanel(ProjectController projectController, CodeGeneratorController codeGeneratorControllerBase) {
         super(projectController, codeGeneratorControllerBase);
+        
         JComboBox<String> superclassField = new JComboBox<>();
         this.superclassTemplate = new ComboBoxAdapter<String>(superclassField) {
             @Override
@@ -81,6 +86,58 @@ public class CustomModePanel extends GeneratorControllerPanel {
                     projectController.setDirty(true);
                 }
             }
+        };
+        
+        JComboBox<String> embeddableField = new JComboBox<>();
+        this.embeddableTemplate = new ComboBoxAdapter<String>(embeddableField) {
+        	@Override
+        	protected void updateModel(String item) throws ValidationException {
+        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		cgenConfiguration.setEmbeddableTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+        				cgenConfiguration.getDataMap().getConfigurationSource()));
+        		if(!codeGeneratorControllerBase.isInitFromModel()) {
+        			projectController.setDirty(true);
+        		}
+        	}
+        };
+        
+        JComboBox<String> embeddableSuperField = new JComboBox<>();
+        this.embeddableSuperTemplate = new ComboBoxAdapter<String>(embeddableSuperField) {
+        	@Override
+        	protected void updateModel(String item) throws ValidationException {
+        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		cgenConfiguration.setEmbeddableSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+        				cgenConfiguration.getDataMap().getConfigurationSource()));
+        		if(!codeGeneratorControllerBase.isInitFromModel()) {
+        			projectController.setDirty(true);
+        		}
+        	}
+        };
+        
+        JComboBox<String> queryField = new JComboBox<>();
+        this.queryTemplate = new ComboBoxAdapter<String>(queryField) {
+        	@Override
+        	protected void updateModel(String item) throws ValidationException {
+        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		cgenConfiguration.setQueryTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+        				cgenConfiguration.getDataMap().getConfigurationSource()));
+        		if(!codeGeneratorControllerBase.isInitFromModel()) {
+        			projectController.setDirty(true);
+        		}
+        	}
+        };
+        
+        JComboBox<String> querySuperField = new JComboBox<>();
+        this.querySuperTemplate = new ComboBoxAdapter<String>(querySuperField) {
+        	@Override
+        	protected void updateModel(String item) throws ValidationException {
+        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		cgenConfiguration.setQuerySuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+        				cgenConfiguration.getDataMap().getConfigurationSource()));
+        		if(!codeGeneratorControllerBase.isInitFromModel()) {
+        			projectController.setDirty(true);
+        		}
+        	}
         };
 
         this.pairs = new JCayenneCheckBox();
@@ -121,7 +178,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         // assemble
         FormLayout layout = new FormLayout(
-                "right:74dlu, 1dlu, fill:240:grow, 1dlu, left:100dlu, 100dlu", "");
+                "right:105dlu, 1dlu, fill:240:grow, 1dlu, left:100dlu, 100dlu", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
@@ -132,6 +189,18 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.nextLine();
 
         builder.append("Superclass Template:", superclassTemplate.getComboBox());
+        builder.nextLine();
+        
+        builder.append("Embeddable Template:", embeddableTemplate.getComboBox());
+        builder.nextLine();
+        
+        builder.append("Embeddable Superclass Template:", embeddableSuperTemplate.getComboBox());
+        builder.nextLine();
+        
+        builder.append("DataMap Template:", queryTemplate.getComboBox());
+        builder.nextLine();
+        
+        builder.append("DataMap Superclass Template:", querySuperTemplate.getComboBox());
         builder.nextLine();
 
         builder.append("Output Pattern:", outputPattern.getComponent());
@@ -167,16 +236,36 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     public void setDisableSuperComboBoxes(boolean val){
         superclassTemplate.getComboBox().setEnabled(val);
+        embeddableSuperTemplate.getComboBox().setEnabled(val);
+        querySuperTemplate.getComboBox().setEnabled(val);
     }
 
     public JButton getManageTemplatesLink() {
         return manageTemplatesLink;
     }
 
-    public ComboBoxAdapter<String> getSubclassTemplate() { return subclassTemplate; }
+    public ComboBoxAdapter<String> getSubclassTemplate() { 
+    	return subclassTemplate; 
+    }
 
     public ComboBoxAdapter<String> getSuperclassTemplate() {
         return superclassTemplate;
+    }
+	
+    public ComboBoxAdapter<String> getEmbeddableTemplate() { 
+    	return embeddableTemplate; 
+    }
+    
+    public ComboBoxAdapter<String> getEmbeddableSuperTemplate() {
+    	return embeddableSuperTemplate;
+    }
+	
+    public ComboBoxAdapter<String> getQueryTemplate() { 
+    	return queryTemplate; 
+    }
+    
+    public ComboBoxAdapter<String> getQuerySuperTemplate() {
+    	return querySuperTemplate;
     }
 
     public JCheckBox getOverwrite() {

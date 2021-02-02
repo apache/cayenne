@@ -43,17 +43,19 @@ public class CodeTemplateManager {
 
 	public static final String STANDARD_SERVER_SUPERCLASS = "Standard Server Superclass";
 	public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
-	public static final String SINGLE_SERVER_CLASS = "Single Server class";
+	public static final String SINGLE_SERVER_CLASS = "Single Server Class";
 	static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
 	static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
-	private static final String STANDART_EMBEDDABLE_SUPERCLASS = "Standart Embeddable Superclass";
-	private static final String STANDART_EMBEDDABLE_SUBCLASS = "Standart Embeddable Subclass";
-	private static final String SINGLE_EMBEDDABLE_CLASS = "Single Embeddable class";
+	private static final String STANDARD_EMBEDDABLE_SUPERCLASS = "Standard Embeddable Superclass";
+	private static final String STANDARD_EMBEDDABLE_SUBCLASS = "Standard Embeddable Subclass";
+	private static final String SINGLE_EMBEDDABLE_CLASS = "Single Embeddable Class";
 
-	private static final String STANDART_DATAMAP_SUPERCLASS = "Standart DataMap Superclass";
-	private static final String STANDART_DATAMAP_SUBCLASS = "Standart DataMap Subclass";
-	private static final String SINGLE_DATAMAP_CLASS = "Single DataMap class";
+	private static final String STANDARD_SERVER_DATAMAP_SUPERCLASS = "Standard Server DataMap Superclass";
+	private static final String STANDARD_SERVER_DATAMAP_SUBCLASS = "Standard Server DataMap Subclass";
+	private static final String STANDARD_CLIENT_DATAMAP_SUPERCLASS = "Standard Client DataMap Superclass";
+	private static final String STANDARD_CLIENT_DATAMAP_SUBCLASS = "Standard Client DataMap Subclass";
+	private static final String SINGLE_DATAMAP_CLASS = "Single DataMap Class";
 
 	public static final String NODE_NAME = "codeTemplateManager";
 
@@ -65,11 +67,13 @@ public class CodeTemplateManager {
 	private Map<String, String> reverseCustomTemplate;
 	private Map<String, String> standardTemplates;
 
-	private List<String> standartEmbeddableTemplates;
-	private List<String> standartEmbeddableSuperclassTemplates;
+	private List<String> standardEmbeddableTemplates;
+	private List<String> standardEmbeddableSuperclassTemplates;
 
-	private List<String> standartDataMapTemplates;
-	private List<String> standartDataMapSuperclassTemplates;
+	private List<String> standardServerDataMapTemplates;
+	private List<String> standardServerDataMapSuperclassTemplates;
+	private List<String> standardClientDataMapTemplates;
+	private List<String> standardClientDataMapSuperclassTemplates;
 
 	private Map<String, String> reverseStandartTemplates;
 
@@ -93,19 +97,25 @@ public class CodeTemplateManager {
 		standardClientSubclassTemplates = new ArrayList<>();
 		standardClientSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 
-		standartEmbeddableTemplates = new ArrayList<>();
-		standartEmbeddableTemplates.add(SINGLE_EMBEDDABLE_CLASS);
-		standartEmbeddableTemplates.add(STANDART_EMBEDDABLE_SUBCLASS);
+		standardEmbeddableTemplates = new ArrayList<>();
+		standardEmbeddableTemplates.add(STANDARD_EMBEDDABLE_SUBCLASS);
+		standardEmbeddableTemplates.add(SINGLE_EMBEDDABLE_CLASS);
 
-		standartEmbeddableSuperclassTemplates = new ArrayList<>();
-		standartEmbeddableSuperclassTemplates.add(STANDART_EMBEDDABLE_SUPERCLASS);
+		standardEmbeddableSuperclassTemplates = new ArrayList<>();
+		standardEmbeddableSuperclassTemplates.add(STANDARD_EMBEDDABLE_SUPERCLASS);
 
-		standartDataMapTemplates = new ArrayList<>();
-		standartDataMapTemplates.add(STANDART_DATAMAP_SUBCLASS);
-		standartDataMapTemplates.add(SINGLE_DATAMAP_CLASS);
+		standardServerDataMapTemplates = new ArrayList<>();
+		standardServerDataMapTemplates.add(STANDARD_SERVER_DATAMAP_SUBCLASS);
+		standardServerDataMapTemplates.add(SINGLE_DATAMAP_CLASS);
 
-		standartDataMapSuperclassTemplates = new ArrayList<>();
-		standartDataMapSuperclassTemplates.add(STANDART_DATAMAP_SUPERCLASS);
+		standardServerDataMapSuperclassTemplates = new ArrayList<>();
+		standardServerDataMapSuperclassTemplates.add(STANDARD_SERVER_DATAMAP_SUPERCLASS);
+		
+		standardClientDataMapTemplates = new ArrayList<>();
+		standardClientDataMapTemplates.add(STANDARD_CLIENT_DATAMAP_SUBCLASS);
+		
+		standardClientDataMapSuperclassTemplates = new ArrayList<>();
+		standardClientDataMapSuperclassTemplates.add(STANDARD_CLIENT_DATAMAP_SUPERCLASS);
 
 		updateCustomTemplates(getTemplatePreferences(application));
 		reverseCustomTemplate = new HashMap<>();
@@ -120,13 +130,15 @@ public class CodeTemplateManager {
 		standardTemplates.put(STANDARD_CLIENT_SUBCLASS, ClientClassGenerationAction.SUBCLASS_TEMPLATE);
 		standardTemplates.put(SINGLE_SERVER_CLASS, ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
 
-		standardTemplates.put(STANDART_EMBEDDABLE_SUPERCLASS, ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE);
-		standardTemplates.put(STANDART_EMBEDDABLE_SUBCLASS, ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_EMBEDDABLE_SUPERCLASS, ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_EMBEDDABLE_SUBCLASS, ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
 		standardTemplates.put(SINGLE_EMBEDDABLE_CLASS, ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
 
-		standardTemplates.put(STANDART_DATAMAP_SUBCLASS, ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_SERVER_DATAMAP_SUBCLASS, ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_CLIENT_DATAMAP_SUBCLASS, ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE);
 		standardTemplates.put(SINGLE_DATAMAP_CLASS, ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
-		standardTemplates.put(STANDART_DATAMAP_SUPERCLASS, ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_SERVER_DATAMAP_SUPERCLASS, ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
+		standardTemplates.put(STANDARD_CLIENT_DATAMAP_SUPERCLASS, ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE);
 
 		reverseStandartTemplates = new HashMap<>();
 		reverseStandartTemplates.put(ClassGenerationAction.SUBCLASS_TEMPLATE, STANDARD_SERVER_SUBCLASS);
@@ -135,13 +147,15 @@ public class CodeTemplateManager {
 		reverseStandartTemplates.put(ClientClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_CLIENT_SUPERCLASS);
 		reverseStandartTemplates.put(ClassGenerationAction.SUPERCLASS_TEMPLATE, STANDARD_SERVER_SUPERCLASS);
 
-		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUPERCLASS);
-		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE, STANDART_EMBEDDABLE_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE, STANDARD_EMBEDDABLE_SUPERCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE, STANDARD_EMBEDDABLE_SUBCLASS);
 		reverseStandartTemplates.put(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE, SINGLE_EMBEDDABLE_CLASS);
 
-		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE, STANDART_DATAMAP_SUBCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE, STANDARD_SERVER_DATAMAP_SUBCLASS);
+		reverseStandartTemplates.put(ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE, STANDARD_CLIENT_DATAMAP_SUBCLASS);
 		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE, SINGLE_DATAMAP_CLASS);
-		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE, STANDART_DATAMAP_SUPERCLASS);
+		reverseStandartTemplates.put(ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE, STANDARD_SERVER_DATAMAP_SUPERCLASS);
+		reverseStandartTemplates.put(ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE, STANDARD_CLIENT_DATAMAP_SUPERCLASS);
 	}
 
 	/**
@@ -212,14 +226,26 @@ public class CodeTemplateManager {
 	}
 
 	public List<String> getStandartEmbeddableTemplates() {
-		return standartEmbeddableTemplates;
+		return standardEmbeddableTemplates;
 	}
 
 	public List<String> getStandartEmbeddableSuperclassTemplates() {
-		return standartEmbeddableSuperclassTemplates;
+		return standardEmbeddableSuperclassTemplates;
 	}
 
-	public List<String> getStandartDataMapTemplates() { return standartDataMapTemplates; }
+	public List<String> getStandartDataMapTemplates() {
+		return standardServerDataMapTemplates; 
+	}
 
-	public List<String> getStandartDataMapSuperclassTemplates() { return standartDataMapSuperclassTemplates; }
+	public List<String> getStandartDataMapSuperclassTemplates() {
+		return standardServerDataMapSuperclassTemplates;
+	}
+	
+	public List<String> getStandardClientDataMapTemplates() {
+		return standardClientDataMapTemplates; 
+	}
+	
+	public List<String> getStandardClientDataMapSuperclassTemplates() { 
+		return standardClientDataMapSuperclassTemplates; 
+	}
 }

@@ -32,6 +32,10 @@
                     <xs:element name="mode" minOccurs="0" type="xs:string"/>
                     <xs:element name="template" minOccurs="0" type="xs:string"/>
                     <xs:element name="superTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="embeddableTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="embeddableSuperTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="queryTemplate" minOccurs="0" type="xs:string"/>
+                    <xs:element name="querySuperTemplate" minOccurs="0" type="xs:string"/>
                     <xs:element name="outputPattern" minOccurs="0" type="xs:string"/>
                     <xs:element name="makePairs" minOccurs="0" type="xs:boolean"/>
                     <xs:element name="skipRelationshipsLoading" minOccurs="0" type="xs:boolean"/>
