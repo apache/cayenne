@@ -35,10 +35,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * A SQLite database adapter that works with Zentus JDBC driver. See
@@ -54,6 +51,8 @@ import java.util.List;
  */
 // check http://cwiki.apache.org/CAY/sqliteadapter.html for current limitations.
 public class SQLiteAdapter extends JdbcAdapter {
+
+    public static final String MAIN_SCHEMA = "main";
 
     public SQLiteAdapter(
             @Inject RuntimeProperties runtimeProperties,
@@ -136,5 +135,10 @@ public class SQLiteAdapter extends JdbcAdapter {
         }
 
         super.createTableAppendPKClause(sqlBuffer, entity);
+    }
+
+    @Override
+    public boolean supportsSchemasOnReverseEngineering() {
+        return false;
     }
 }

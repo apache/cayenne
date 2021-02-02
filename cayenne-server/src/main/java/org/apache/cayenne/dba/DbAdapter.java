@@ -255,4 +255,12 @@ public interface DbAdapter {
 	 * @return list of system schemas
 	 */
 	List<String> getSystemSchemas();
+
+	/**
+	 * Returns true if a target database supports schemas on reverse
+	 * engineering.
+	 *
+	 * @since 4.2
+	 */
+	boolean supportsSchemasOnReverseEngineering();
 }

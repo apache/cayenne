@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
 import org.apache.cayenne.map.DbEntity;
@@ -55,6 +56,9 @@ class EntityLoader extends PerCatalogAndSchemaLoader {
         String catalogName = rs.getString("TABLE_CAT");
         String schemaName = rs.getString("TABLE_SCHEM");
         String type = rs.getString("TABLE_TYPE");
+        if (this.adapter instanceof SQLiteAdapter && schemaName == null && schema != null) {
+            schemaName = schema.name;
+        }
 
         // Oracle 9i and newer has a nifty recycle bin feature...
         // but we don't want dropped tables to be included here;

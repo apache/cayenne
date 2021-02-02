@@ -270,4 +270,9 @@ public class AutoAdapter implements DbAdapter {
 	public List<String> getSystemSchemas() {
 		return getAdapter().getSystemSchemas();
 	}
+
+	@Override
+	public boolean supportsSchemasOnReverseEngineering() {
+		return getAdapter().supportsSchemasOnReverseEngineering();
+	}
 }

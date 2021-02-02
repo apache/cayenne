@@ -653,4 +653,13 @@ public class JdbcAdapter implements DbAdapter {
         return this;
     }
 
+    /**
+     * Returns true.
+     *
+     * @since 4.2
+     */
+    @Override
+    public boolean supportsSchemasOnReverseEngineering() {
+        return true;
+    }
 }

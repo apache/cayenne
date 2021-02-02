@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
@@ -97,6 +98,11 @@ public class DatabaseSchemaLoader {
     private void processSchemas(Connection connection,
                                 String catalog,
                                 DbAdapter dbAdapter) throws SQLException {
+        if (!dbAdapter.supportsSchemasOnReverseEngineering()) {
+            packFilterContainer(null, SQLiteAdapter.MAIN_SCHEMA);
+            return;
+        }
+
         DatabaseMetaData metaData = connection.getMetaData();
         try(ResultSet rsSchema = metaData.getSchemas(catalog, null)) {
             boolean hasSchemas = false;
@@ -148,6 +154,10 @@ public class DatabaseSchemaLoader {
                     String table = resultSet.getString("TABLE_NAME");
                     String schema = resultSet.getString("TABLE_SCHEM");
                     String catalog = resultSet.getString("TABLE_CAT");
+                    if (connectionInfo.getDbAdapter().equals(SQLiteAdapter.class.getName()) && schema == null && schemaName != null) {
+                        schema = schemaName;
+                    }
+
                     packTable(table, catalog == null ? catalogName : catalog, schema, null);
                 }
                 if(!hasTables) {
