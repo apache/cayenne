@@ -133,7 +133,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
                 (imported.getType() == Types.DECIMAL || imported.getType() == Types.NUMERIC)) {
                 return false;
             }
-            return true;
+            return getTokenFactory().needUpdateSpecificType(original, imported);
         }
 
         if(original.getMaxLength() != imported.getMaxLength()) {

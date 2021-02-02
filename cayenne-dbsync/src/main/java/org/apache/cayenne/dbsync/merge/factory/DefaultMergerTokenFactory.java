@@ -215,4 +215,9 @@ public class DefaultMergerTokenFactory implements MergerTokenFactory {
     public MergerToken createSetGeneratedFlagToModel(DbEntity entity, DbAttribute column, boolean isGenerated) {
         return new SetGeneratedFlagToModel(entity, column, isGenerated);
     }
+
+    @Override
+    public boolean needUpdateSpecificType(DbAttribute columnOriginal, DbAttribute columnNew) {
+        return true;
+    }
 }

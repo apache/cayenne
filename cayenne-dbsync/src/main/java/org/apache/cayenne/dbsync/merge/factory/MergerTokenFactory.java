@@ -98,4 +98,6 @@ public interface MergerTokenFactory {
     MergerToken createSetGeneratedFlagToDb(DbEntity entity, DbAttribute column, boolean isGenerated);
 
     MergerToken createSetGeneratedFlagToModel(DbEntity entity, DbAttribute column, boolean isGenerated);
+
+    boolean needUpdateSpecificType(DbAttribute columnOriginal, DbAttribute columnNew);
 }
