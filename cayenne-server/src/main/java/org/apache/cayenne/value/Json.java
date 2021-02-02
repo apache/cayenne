@@ -21,6 +21,8 @@ package org.apache.cayenne.value;
 
 import java.util.Objects;
 
+import org.apache.cayenne.value.json.JsonUtils;
+
 /**
  * A Cayenne-supported values object that holds Json string.
  *
@@ -43,7 +45,7 @@ public class Json {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Json other = (Json) o;
-        return Objects.equals(json, other.json);
+        return JsonUtils.compare(json, other.json);
     }
 
     @Override

@@ -17,45 +17,16 @@
  *    under the License.
  */
 
-package org.apache.cayenne.value;
-
-import java.util.Objects;
-
-import org.apache.cayenne.value.json.JsonUtils;
+package org.apache.cayenne.value.json;
 
 /**
- * A Cayenne-supported values object that holds GeoJson string.
- *
  * @since 4.2
  */
-public class GeoJson {
+public final class MalformedJsonException extends RuntimeException {
 
-    private final String geometry;
+    private static final long serialVersionUID = 1L;
 
-    public GeoJson(String geometry) {
-        this.geometry = geometry;
-    }
-
-    public String getGeometry() {
-        return geometry;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GeoJson other = (GeoJson) o;
-
-        return JsonUtils.compare(geometry, other.geometry);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(geometry);
-    }
-
-    @Override
-    public String toString() {
-        return "GeoJSON value: " + geometry;
+    public MalformedJsonException(String msg) {
+        super(msg);
     }
 }
