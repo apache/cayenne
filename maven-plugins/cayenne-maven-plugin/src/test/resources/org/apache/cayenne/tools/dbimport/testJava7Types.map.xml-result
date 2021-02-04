@@ -27,8 +27,8 @@
     <db-entity name="CHILD" schema="SCHEMA_01">
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
         <db-attribute name="date" type="DATE" length="10" />
-        <db-attribute name="time" type="TIME" length="8" />
-        <db-attribute name="timestamp" type="TIMESTAMP" length="29" />
+        <db-attribute name="time" type="TIME" />
+        <db-attribute name="timestamp" type="TIMESTAMP" scale="9" />
     </db-entity>
 
     <obj-entity name="Child" className="Child" dbEntityName="CHILD">

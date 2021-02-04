@@ -230,6 +230,8 @@ public class PostgresAdapter extends JdbcAdapter {
 
 		buf.append(context.quotedName(at)).append(' ').append(type).append(sizeAndPrecision(this, at))
 				.append(at.isMandatory() ? " NOT" : "").append(" NULL");
+
+		addPrecisionIfTypeTimeOrTimestamp(buf, at);
 	}
 
 	@Override
@@ -277,4 +279,14 @@ public class PostgresAdapter extends JdbcAdapter {
 		return SYSTEM_SCHEMAS;
 	}
 
+	public void addPrecisionIfTypeTimeOrTimestamp(StringBuilder buf, DbAttribute at) {
+		if (at.getType() == Types.TIME || at.getType() == Types.TIMESTAMP) {
+			String stringSqlNameByType = TypesMapping.getSqlNameByType(at.getType()).toLowerCase();
+			int index = buf.lastIndexOf(stringSqlNameByType);
+			if (at.getScale() >= 0) {
+				String string = "(" + at.getScale() + ")";
+				buf.insert(index + stringSqlNameByType.length(), string);
+			}
+		}
+	}
 }
