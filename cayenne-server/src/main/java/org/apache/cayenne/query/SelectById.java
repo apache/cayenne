@@ -56,20 +56,20 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	PrefetchTreeNode prefetches;
 
 	public static <T> SelectById<T> query(Class<T> entityType, Object id) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleScalarIdSpec(id);
 		return new SelectById<>(root, idSpec);
 	}
 
 	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> id) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleMapIdSpec(id);
 		return new SelectById<>(root, idSpec);
 	}
 
 	public static <T> SelectById<T> query(Class<T> entityType, ObjectId id) {
 		checkObjectId(id);
-		QueryRoot root = resolver -> resolver.getObjEntity(id.getEntityName());
+		QueryRoot root = new ByEntityNameResolver(id.getEntityName());
 		IdSpec idSpec = new SingleMapIdSpec(id.getIdSnapshot());
 		return new SelectById<>(root, idSpec);
 	}
@@ -78,7 +78,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 4.2
 	 */
 	public static <T> SelectById<T> query(Class<T> entityType, Object firstId, Object... otherIds) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(firstId, otherIds);
 		return new SelectById<>(root, idSpec);
 	}
@@ -87,7 +87,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 4.2
 	 */
 	public static <T> SelectById<T> query(Class<T> entityType, Collection<Object> ids) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(ids);
 		return new SelectById<>(root, idSpec);
 	}
@@ -97,7 +97,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 */
 	@SafeVarargs
 	public static <T> SelectById<T> query(Class<T> entityType, Map<String, ?> firstId, Map<String, ?>... otherIds) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
 		return new SelectById<>(root, idSpec);
 	}
@@ -111,26 +111,26 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 			checkObjectId(id, firstId.getEntityName());
 		}
 
-		QueryRoot root = resolver -> resolver.getObjEntity(firstId.getEntityName());
+		QueryRoot root = new ByEntityNameResolver(firstId.getEntityName());
 		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
 		return new SelectById<>(root, idSpec);
 	}
 
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object id) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleScalarIdSpec(id);
 		return new SelectById<>(root, idSpec, true);
 	}
 
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> id) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new SingleMapIdSpec(id);
 		return new SelectById<>(root, idSpec, true);
 	}
 
 	public static SelectById<DataRow> dataRowQuery(ObjectId id) {
 		checkObjectId(id);
-		QueryRoot root = resolver -> resolver.getObjEntity(id.getEntityName());
+		QueryRoot root = new ByEntityNameResolver(id.getEntityName());
 		IdSpec idSpec = new SingleMapIdSpec(id.getIdSnapshot());
 		return new SelectById<>(root, idSpec, true);
 	}
@@ -139,7 +139,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 * @since 4.2
 	 */
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Object firstId, Object... otherIds) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiScalarIdSpec(firstId, otherIds);
 		return new SelectById<>(root, idSpec, true);
 	}
@@ -149,7 +149,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 	 */
 	@SafeVarargs
 	public static SelectById<DataRow> dataRowQuery(Class<?> entityType, Map<String, ?> firstId, Map<String, ?>... otherIds) {
-		QueryRoot root = resolver -> resolver.getObjEntity(entityType, true);
+		QueryRoot root = new ByEntityTypeResolver(entityType);
 		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
 		return new SelectById<>(root, idSpec, true);
 	}
@@ -163,7 +163,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 			checkObjectId(id, firstId.getEntityName());
 		}
 
-		QueryRoot root = resolver -> resolver.getObjEntity(firstId.getEntityName());
+		QueryRoot root = new ByEntityNameResolver(firstId.getEntityName());
 		IdSpec idSpec = new MultiMapIdSpec(firstId, otherIds);
 		return new SelectById<>(root, idSpec, true);
 	}
@@ -453,6 +453,32 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 			}
 
 			return or(expressions);
+		}
+	}
+
+	private static class ByEntityTypeResolver implements QueryRoot {
+		private final Class<?> entityType;
+
+		public ByEntityTypeResolver(Class<?> entityType) {
+			this.entityType = entityType;
+		}
+
+		@Override
+		public ObjEntity resolve(EntityResolver resolver) {
+			return resolver.getObjEntity(entityType, true);
+		}
+	}
+
+	private static class ByEntityNameResolver implements QueryRoot {
+		private final String entityName;
+
+		public ByEntityNameResolver(String entityName) {
+			this.entityName = entityName;
+		}
+
+		@Override
+		public ObjEntity resolve(EntityResolver resolver) {
+			return resolver.getObjEntity(entityName);
 		}
 	}
 }
