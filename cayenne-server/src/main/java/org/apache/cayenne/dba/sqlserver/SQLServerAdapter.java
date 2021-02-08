@@ -109,7 +109,9 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 */
 	@Override
 	public SQLTreeProcessor getSqlTreeProcessor() {
-		return new SQLServerTreeProcessor();
+		SQLServerTreeProcessor sqlServerTreeProcessor = new SQLServerTreeProcessor();
+		sqlServerTreeProcessor.setVersion(this.getVersion());
+		return sqlServerTreeProcessor;
 	}
 
 	/**

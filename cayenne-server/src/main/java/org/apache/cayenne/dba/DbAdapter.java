@@ -255,4 +255,6 @@ public interface DbAdapter {
 	 * @return list of system schemas
 	 */
 	List<String> getSystemSchemas();
+
+	Integer getVersion();
 }

@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.dba.sqlserver.sqltree.SQLServerColumnNode;
+import org.apache.cayenne.dba.sqlserver.sqltree.SQLServerLimitOffsetNode;
 import org.apache.cayenne.dba.sybase.SybaseSQLTreeProcessor;
 
 /**
@@ -29,8 +29,32 @@ import org.apache.cayenne.dba.sybase.SybaseSQLTreeProcessor;
  */
 public class SQLServerTreeProcessor extends SybaseSQLTreeProcessor {
 
+    private Integer version;
+
     @Override
     protected void onColumnNode(Node parent, ColumnNode child, int index) {
         replaceChild(parent, index,  new SQLServerColumnNode(child));
+    }
+
+    @Override
+    protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
+        if (version >= 12) {
+            for (int i = 0; i < parent.getChildrenCount(); i++) {
+                if (parent.getChild(i) instanceof OrderByNode) {
+                    replaceChild(parent, index,  new SQLServerLimitOffsetNode(child.getLimit(), child.getOffset()));
+                    return;
+                }
+            }
+        }
+
+        super.onLimitOffsetNode(parent, child, index);
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }
