@@ -21,9 +21,7 @@ package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.*;
 
 /**
  * @since 1.2
@@ -52,5 +50,29 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	@Override
 	public SQLAction procedureAction(ProcedureQuery query) {
 		return new SQLServerProcedureAction(query, dataNode);
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	@Override
+	public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
+		if (query.getOrderings() == null || query.getOrderings().size() == 0) {
+			return new SQLServerSelectAction(query, dataNode, true);
+		}
+
+		return new SQLServerSelectAction(query, dataNode, false);
+	}
+
+	/**
+	 * @since 4.2
+	 */
+	@Override
+	public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
+		if (query.getOrderings() == null || query.getOrderings().size() == 0) {
+			return new SQLServerSelectAction(query, dataNode, true);
+		}
+
+		return new SQLServerSelectAction(query, dataNode, false);
 	}
 }

@@ -17,37 +17,34 @@
  *    under the License.
  */
 
-package org.apache.cayenne.dba.sqlserver.sqltree;
+package org.apache.cayenne.dba.sqlserver;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
-import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.jdbc.SelectAction;
+import org.apache.cayenne.query.Select;
 
 /**
  * @since 4.2
  */
-public class SQLServerLimitOffsetNode extends LimitOffsetNode {
+public class SQLServerSelectAction extends SelectAction {
 
-    public SQLServerLimitOffsetNode(int limit, int offset) {
-        super(limit, offset);
+    /**
+     * When using TOP N instead of LIMIT. The offset will be manual.
+     *
+     */
+    private Boolean isManualOffset;
+
+    public SQLServerSelectAction(Select<?> query, DataNode dataNode, Boolean isManualOffset) {
+        super(query, dataNode);
+
+        this.isManualOffset = isManualOffset;
     }
 
     @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
-        // OFFSET X ROWS FETCH NEXT Y ROWS ONLY
-        if(limit == 0 && offset == 0) {
-            return buffer;
+    protected int getInMemoryOffset(int queryOffset) {
+        if (isManualOffset) {
+            return super.getInMemoryOffset(queryOffset);
         }
-        buffer.append(" OFFSET ").append(offset).append(" ROWS");
-        if (limit > 0) {
-            return buffer.append(" FETCH NEXT ").append(limit).append(" ROWS ONLY");
-        }
-        return buffer;
+        return 0;
     }
-
-    @Override
-    public Node copy() {
-        return new SQLServerLimitOffsetNode(limit, offset);
-    }
-
 }

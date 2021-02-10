@@ -60,8 +60,6 @@ public class AutoAdapter implements DbAdapter {
 	 */
 	volatile DbAdapter adapter;
 
-	protected Integer version;
-
 	/**
 	 * Creates an {@link AutoAdapter} based on a delegate adapter obtained via
 	 * "adapterProvider".
@@ -273,8 +271,4 @@ public class AutoAdapter implements DbAdapter {
 		return getAdapter().getSystemSchemas();
 	}
 
-	@Override
-	public Integer getVersion() {
-		return version;
-	}
 }

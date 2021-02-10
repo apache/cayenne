@@ -38,10 +38,10 @@ public class SQLServerTreeProcessor extends SybaseSQLTreeProcessor {
 
     @Override
     protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
-        if (version >= 12) {
+        if (version == null || version >= 12) {
             for (int i = 0; i < parent.getChildrenCount(); i++) {
                 if (parent.getChild(i) instanceof OrderByNode) {
-                    replaceChild(parent, index,  new SQLServerLimitOffsetNode(child.getLimit(), child.getOffset()));
+                    replaceChild(parent, index,  new SQLServerLimitOffsetNode(child.getLimit(), child.getOffset()), false);
                     return;
                 }
             }

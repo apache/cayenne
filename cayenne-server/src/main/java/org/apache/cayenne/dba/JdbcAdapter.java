@@ -78,8 +78,6 @@ public class JdbcAdapter implements DbAdapter {
     protected ResourceLocator resourceLocator;
     protected boolean caseInsensitiveCollations;
 
-    protected Integer version;
-
     /**
      * @since 3.1
      * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the DataNode.
@@ -655,12 +653,4 @@ public class JdbcAdapter implements DbAdapter {
         return this;
     }
 
-    @Override
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
 }

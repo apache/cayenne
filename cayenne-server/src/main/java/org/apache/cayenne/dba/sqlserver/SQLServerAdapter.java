@@ -75,6 +75,15 @@ import org.apache.cayenne.resource.ResourceLocator;
 public class SQLServerAdapter extends SybaseAdapter {
 
 	/**
+	 * Stores the major version of the database.
+	 * Database versions 12 and higher support the use of LIMIT,
+	 * lower versions use TOP N
+	 *
+	 * @since 4.2
+	 */
+	protected Integer version;
+
+	/**
 	 * @deprecated since 4.2 unused
 	 */
 	@Deprecated
@@ -110,7 +119,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 	@Override
 	public SQLTreeProcessor getSqlTreeProcessor() {
 		SQLServerTreeProcessor sqlServerTreeProcessor = new SQLServerTreeProcessor();
-		sqlServerTreeProcessor.setVersion(this.getVersion());
+		sqlServerTreeProcessor.setVersion(getVersion());
 		return sqlServerTreeProcessor;
 	}
 
@@ -129,4 +138,11 @@ public class SQLServerAdapter extends SybaseAdapter {
 		return SYSTEM_SCHEMAS;
 	}
 
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 }

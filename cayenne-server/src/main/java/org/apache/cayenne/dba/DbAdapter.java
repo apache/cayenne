@@ -256,5 +256,4 @@ public interface DbAdapter {
 	 */
 	List<String> getSystemSchemas();
 
-	Integer getVersion();
 }
