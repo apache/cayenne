@@ -81,7 +81,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 *
 	 * @since 4.2
 	 */
-	protected Integer version;
+	private Integer version;
 
 	/**
 	 * @deprecated since 4.2 unused
@@ -130,7 +130,9 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 */
 	@Override
 	public SQLAction getAction(Query query, DataNode node) {
-		return query.createSQLAction(new SQLServerActionBuilder(node));
+		SQLServerActionBuilder sqlServerActionBuilder = new SQLServerActionBuilder(node);
+		sqlServerActionBuilder.setVersion(this.version);
+		return query.createSQLAction(sqlServerActionBuilder);
 	}
 
 	@Override

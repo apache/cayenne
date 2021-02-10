@@ -29,6 +29,13 @@ import org.apache.cayenne.query.*;
 public class SQLServerActionBuilder extends JdbcActionBuilder {
 
 	/**
+	 * Stores the major version of the database.
+	 *
+	 * @since 4.2
+	 */
+	private Integer version;
+
+	/**
 	 * @since 4.0
 	 */
 	public SQLServerActionBuilder(DataNode dataNode) {
@@ -57,7 +64,8 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	 */
 	@Override
 	public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-		if (query.getOrderings() == null || query.getOrderings().size() == 0) {
+		if (query.getOrderings() == null || query.getOrderings().size() == 0 ||
+				version == null || version < 12) {
 			return new SQLServerSelectAction(query, dataNode, true);
 		}
 
@@ -69,10 +77,19 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	 */
 	@Override
 	public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
-		if (query.getOrderings() == null || query.getOrderings().size() == 0) {
+		if (query.getOrderings() == null || query.getOrderings().size() == 0 ||
+				version == null || version < 12) {
 			return new SQLServerSelectAction(query, dataNode, true);
 		}
 
 		return new SQLServerSelectAction(query, dataNode, false);
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
 	}
 }
