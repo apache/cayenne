@@ -40,8 +40,7 @@ import org.apache.cayenne.util.WeakValueMap;
 public class EventSubject implements Serializable {
 
     // a Map that will allow the values to be GC'ed
-    @SuppressWarnings("unchecked")
-    private static Map<String, EventSubject> _registeredSubjects = new WeakValueMap<>();
+    private static final Map<String, EventSubject> _registeredSubjects = new WeakValueMap<>();
 
     // Subject identifier in the form "com.foo.bar/SubjectName"
     private String _fullyQualifiedSubjectName;
@@ -64,10 +63,14 @@ public class EventSubject implements Serializable {
         }
 
         String fullSubjectName = subjectOwner.getName() + "/" + subjectName;
-        EventSubject newSubject = _registeredSubjects.get(fullSubjectName);
-        if (newSubject == null) {
-            newSubject = new EventSubject(fullSubjectName);
-            _registeredSubjects.put(newSubject.getSubjectName(), newSubject);
+
+        EventSubject newSubject;
+        synchronized (_registeredSubjects) {
+            newSubject = _registeredSubjects.get(fullSubjectName);
+            if(newSubject == null) {
+                newSubject = new EventSubject(fullSubjectName);
+                _registeredSubjects.put(fullSubjectName, newSubject);
+            }
         }
 
         return newSubject;
@@ -92,8 +95,7 @@ public class EventSubject implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof EventSubject) {
-            return _fullyQualifiedSubjectName.equals(((EventSubject) obj)
-                    .getSubjectName());
+            return _fullyQualifiedSubjectName.equals(((EventSubject) obj).getSubjectName());
         }
 
         return false;
@@ -101,7 +103,9 @@ public class EventSubject implements Serializable {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 3).append(_fullyQualifiedSubjectName).toHashCode();
+        return new HashCodeBuilder(17, 3)
+                .append(_fullyQualifiedSubjectName)
+                .toHashCode();
     }
 
     public String getSubjectName() {
@@ -114,15 +118,7 @@ public class EventSubject implements Serializable {
      */
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(64);
-
-        buf.append("<");
-        buf.append(this.getClass().getName());
-        buf.append(" 0x");
-        buf.append(Integer.toHexString(System.identityHashCode(this)));
-        buf.append("> ");
-        buf.append(_fullyQualifiedSubjectName);
-
-        return buf.toString();
+        return "<" + this.getClass().getName() + " 0x" + Integer.toHexString(System.identityHashCode(this)) + "> "
+                + _fullyQualifiedSubjectName;
     }
 }
