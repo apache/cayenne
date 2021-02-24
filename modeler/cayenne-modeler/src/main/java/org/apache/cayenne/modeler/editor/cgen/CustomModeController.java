@@ -79,8 +79,32 @@ public class CustomModeController extends GeneratorController {
         Collections.sort(subTemplates);
         subTemplates.addAll(customTemplates);
 
+        List<String> querySuperTemplates = isClient ?
+                new ArrayList<>(templateManager.getStandardClientDataMapSuperclassTemplates()) :
+                new ArrayList<>(templateManager.getStandartDataMapSuperclassTemplates());
+        Collections.sort(querySuperTemplates);
+        querySuperTemplates.addAll(customTemplates);
+
+        List<String> queryTemplates = isClient ?
+                new ArrayList<>(templateManager.getStandardClientDataMapTemplates()) :
+                new ArrayList<>(templateManager.getStandartDataMapTemplates());
+        Collections.sort(queryTemplates);
+        queryTemplates.addAll(customTemplates);
+        
+        List<String> embeddableSuperTemplates = new ArrayList<>(templateManager.getStandartEmbeddableSuperclassTemplates());
+		Collections.sort(embeddableSuperTemplates);
+		embeddableSuperTemplates.addAll(customTemplates);
+        		
+		List<String> embeddableTemplates = new ArrayList<>(templateManager.getStandartEmbeddableTemplates());
+		Collections.sort(embeddableTemplates);
+		embeddableTemplates.addAll(customTemplates);
+
         this.view.getSubclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
         this.view.getSuperclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));
+        this.view.getQueryTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(queryTemplates.toArray(new String[0])));
+        this.view.getQuerySuperTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(querySuperTemplates.toArray(new String[0])));
+        this.view.getEmbeddableTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(embeddableTemplates.toArray(new String[0])));
+        this.view.getEmbeddableSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(embeddableSuperTemplates.toArray(new String[0])));
     }
 
     public Component getView() {
@@ -108,8 +132,22 @@ public class CustomModeController extends GeneratorController {
                 cgenConfiguration.getTemplate(), cgenConfiguration.getRootPath());
         String superTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
                 cgenConfiguration.getSuperTemplate(), cgenConfiguration.getRootPath());
+        String embeddableTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+        		cgenConfiguration.getEmbeddableTemplate(), cgenConfiguration.getRootPath());
+        String embeddableSuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+        		cgenConfiguration.getEmbeddableSuperTemplate(), cgenConfiguration.getRootPath());
+        String queryTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+        		cgenConfiguration.getQueryTemplate(), cgenConfiguration.getRootPath());
+        String querySuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+        		cgenConfiguration.getQuerySuperTemplate(), cgenConfiguration.getRootPath());
+        
         String path = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getTemplate())).normalize().toString();
         String superPath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getSuperTemplate())).normalize().toString();
+        String embeddableTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getEmbeddableTemplate())).normalize().toString();
+        String embeddableSuperTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getEmbeddableSuperTemplate())).normalize().toString();
+        String queryTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getQueryTemplate())).normalize().toString();
+        String querySuperTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getQuerySuperTemplate())).normalize().toString();
+        
         if(templateName == null && superTemplateName == null) {
             view.getSubclassTemplate().setItem(null);
             view.getSuperclassTemplate().setItem(null);
@@ -124,6 +162,27 @@ public class CustomModeController extends GeneratorController {
             view.getSubclassTemplate().setItem(templateName);
             view.getSuperclassTemplate().setItem(superTemplateName);
         }
+        
+        if(embeddableTemplateName == null && embeddableSuperTemplateName == null) {
+        	missTemplateDialog(cgenConfiguration, embeddableTemplatePath, embeddableSuperTemplatePath);
+        } else if(embeddableTemplateName == null) {
+        	missTemplateDialog(cgenConfiguration, embeddableTemplatePath, null);
+        } else if(embeddableSuperTemplateName == null) {
+        	missTemplateDialog(cgenConfiguration, null, embeddableSuperTemplatePath);
+        }
+    	view.getEmbeddableTemplate().setItem(embeddableTemplateName);
+    	view.getEmbeddableSuperTemplate().setItem(embeddableSuperTemplateName);
+    	
+    	if(queryTemplateName == null && querySuperTemplateName == null) {
+    		missTemplateDialog(cgenConfiguration, queryTemplatePath, querySuperTemplatePath);
+    	} else if(queryTemplateName == null) {
+    		missTemplateDialog(cgenConfiguration, queryTemplatePath, null);
+    	} else if(querySuperTemplateName == null) {
+    		missTemplateDialog(cgenConfiguration, null, querySuperTemplatePath);
+    	}
+    	view.getQueryTemplate().setItem(queryTemplateName);
+    	view.getQuerySuperTemplate().setItem(querySuperTemplateName);
+        
         view.setDisableSuperComboBoxes(view.getPairs().isSelected());
     }
 
@@ -179,9 +238,13 @@ public class CustomModeController extends GeneratorController {
             if(isSelected) {
                 cgenConfiguration.setTemplate(ClientClassGenerationAction.SUBCLASS_TEMPLATE);
                 cgenConfiguration.setSuperTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE);
+                cgenConfiguration.setQuerySuperTemplate(ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE);
             } else {
                 cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
                 cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+                cgenConfiguration.setQuerySuperTemplate(ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
             }
             updateTemplates();
             String templateName = getApplication().getCodeTemplateManager().getNameByPath(
@@ -194,8 +257,20 @@ public class CustomModeController extends GeneratorController {
                             ClientClassGenerationAction.SUBCLASS_TEMPLATE :
                             ClassGenerationAction.SUBCLASS_TEMPLATE,
                     cgenConfiguration.getRootPath());
+            String queryTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+            		isSelected ?
+            				ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE :
+            					ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE,
+            					cgenConfiguration.getRootPath());
+            String querySuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
+            		isSelected ?
+            				ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE :
+            					ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE,
+            					cgenConfiguration.getRootPath());
             view.getSubclassTemplate().setItem(templateName);
             view.getSuperclassTemplate().setItem(superTemplateName);
+            view.getQueryTemplate().setItem(queryTemplateName);
+            view.getQuerySuperTemplate().setItem(querySuperTemplateName);
             if(!getParentController().isInitFromModel()) {
                 getParentController().getProjectController().setDirty(true);
             }

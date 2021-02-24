@@ -43,6 +43,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String GENERATION_MODE_TAG = "mode";
     private static final String SUBCLASS_TEMPLATE_TAG = "template";
     private static final String SUPERCLASS_TEMPLATE_TAG = "superTemplate";
+    private static final String EMBEDDABLE_TEMPLATE_TAG = "embeddableTemplate";
+    private static final String EMBEDDABLE_SUPER_TEMPLATE_TAG = "embeddableSuperTemplate";
+    private static final String QUERY_TEMPLATE_TAG = "queryTemplate";
+    private static final String QUERY_SUPER_TEMPLATE_TAG = "querySuperTemplate";
     private static final String OUTPUT_PATTERN_TAG = "outputPattern";
     private static final String MAKE_PAIRS_TAG = "makePairs";
     private static final String USE_PKG_PATH_TAG = "usePkgPath";
@@ -96,6 +100,17 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
                 break;
             case SUPERCLASS_TEMPLATE_TAG:
                 createSuperclassTemplate(data);
+                break;
+            case EMBEDDABLE_TEMPLATE_TAG:
+            	createEmbeddableTemplate(data);
+            	break;
+            case EMBEDDABLE_SUPER_TEMPLATE_TAG:
+            	createEmbeddableSuperTemplate(data);
+            case QUERY_TEMPLATE_TAG:
+            	createQueryTemplate(data);
+            	break;
+            case QUERY_SUPER_TEMPLATE_TAG:
+            	createQuerySuperTemplate(data);
                 break;
             case OUTPUT_PATTERN_TAG:
                 createOutputPattern(data);
@@ -164,6 +179,34 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             return;
         }
         configuration.setSuperTemplate(template);
+    }
+    
+    private void createEmbeddableTemplate(String template) {
+    	if(template.trim().length() == 0) {
+    		return;
+    	}
+    	configuration.setEmbeddableTemplate(template);
+    }
+    
+    private void createEmbeddableSuperTemplate(String template) {
+    	if(template.trim().length() == 0) {
+    		return;
+    	}
+    	configuration.setEmbeddableSuperTemplate(template);
+    }
+    
+    private void createQueryTemplate(String template) {
+    	if(template.trim().length() == 0) {
+    		return;
+    	}
+    	configuration.setQueryTemplate(template);
+    }
+    
+    private void createQuerySuperTemplate(String template) {
+    	if(template.trim().length() == 0) {
+    		return;
+    	}
+    	configuration.setQuerySuperTemplate(template);
     }
 
     private void createOutputPattern(String pattern) {
