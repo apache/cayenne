@@ -25,6 +25,7 @@ CAY-2686 SQL translator incorrectly quotes fully qualified tables' names
 CAY-2687 Modeler Migrate Repeatedly Asks to Set Column Type for MySQL
 CAY-2690 dbimport skips length changes for BINARY and VARBINARY columns
 CAY-2691 MySQL driver 8.0.x stores LocalDateTime differently than 5.1.x
+CAY-2698 EventSubject.getSubject() is not thread safe
 
 ----------------------------------
 Release: 4.2.M2
