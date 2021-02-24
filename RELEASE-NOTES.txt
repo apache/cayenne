@@ -16,9 +16,12 @@ Bug Fixes:
 
 CAY-2670 CommitLog does not include FKs for deleted objects with one-way relationships
 CAY-2676 Degradation: Custom class generation templates are not working anymore
+CAY-2677 Modeler: Custom Class Generation Templates for Embeddables and DataMaps
 CAY-2679 Unstable ordering of relationships in the .map.xml file
 CAY-2681 Modeler: All selected checkboxes cause project to become dirty at initialization
 CAY-2690 dbimport skips length changes for BINARY and VARBINARY columns
+CAY-2698 EventSubject.getSubject() is not thread safe
+
 ----------------------------------
 Release: 4.1
 Date: July 14, 2020
