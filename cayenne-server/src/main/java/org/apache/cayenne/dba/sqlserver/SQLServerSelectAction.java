@@ -29,22 +29,17 @@ import org.apache.cayenne.query.Select;
 public class SQLServerSelectAction extends SelectAction {
 
     /**
-     * When using TOP N instead of LIMIT. The offset will be manual.
-     *
+     * When using TOP N instead of LIMIT the offset will be processed in-memory.
      */
-    private Boolean isManualOffset;
+    private final boolean needsInMemoryOffset;
 
-    public SQLServerSelectAction(Select<?> query, DataNode dataNode, Boolean isManualOffset) {
+    public SQLServerSelectAction(Select<?> query, DataNode dataNode, boolean needsInMemoryOffset) {
         super(query, dataNode);
-
-        this.isManualOffset = isManualOffset;
+        this.needsInMemoryOffset = needsInMemoryOffset;
     }
 
     @Override
     protected int getInMemoryOffset(int queryOffset) {
-        if (isManualOffset) {
-            return super.getInMemoryOffset(queryOffset);
-        }
-        return 0;
+        return needsInMemoryOffset ? super.getInMemoryOffset(queryOffset) : 0;
     }
 }

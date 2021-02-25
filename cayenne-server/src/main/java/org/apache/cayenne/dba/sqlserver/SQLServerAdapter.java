@@ -76,8 +76,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 
 	/**
 	 * Stores the major version of the database.
-	 * Database versions 12 and higher support the use of LIMIT,
-	 * lower versions use TOP N
+	 * Database versions 12 and higher supports the use of LIMIT,lower versions use TOP N.
 	 *
 	 * @since 4.2
 	 */
@@ -89,10 +88,12 @@ public class SQLServerAdapter extends SybaseAdapter {
 	@Deprecated
 	public static final String TRIM_FUNCTION = "RTRIM";
 
-	private List<String> SYSTEM_SCHEMAS = Arrays.asList("db_accessadmin", "db_backupoperator",
+	private final List<String> SYSTEM_SCHEMAS = Arrays.asList(
+			"db_accessadmin", "db_backupoperator",
 			"db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",
 			"db_denydatawriter","dbo", "sys", "db_owner", "db_securityadmin", "guest",
-			"INFORMATION_SCHEMA");
+			"INFORMATION_SCHEMA"
+	);
 
 	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
 							@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -106,7 +107,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 	}
 
     /**
-     * Not supported, see: <a href="http://microsoft/mssql-jdbc#245">mssql-jdbc #245</a>
+     * Not supported, see: <a href="https://github.com/microsoft/mssql-jdbc/issues/245">mssql-jdbc #245</a>
      */
 	@Override
 	public boolean supportsGeneratedKeysForBatchInserts() {
@@ -118,9 +119,10 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 */
 	@Override
 	public SQLTreeProcessor getSqlTreeProcessor() {
-		SQLServerTreeProcessor sqlServerTreeProcessor = new SQLServerTreeProcessor();
-		sqlServerTreeProcessor.setVersion(getVersion());
-		return sqlServerTreeProcessor;
+		if(getVersion() != null && getVersion() >= 12) {
+			return new SQLServerTreeProcessorV12();
+		}
+		return new SQLServerTreeProcessor();
 	}
 
 	/**
@@ -130,9 +132,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 */
 	@Override
 	public SQLAction getAction(Query query, DataNode node) {
-		SQLServerActionBuilder sqlServerActionBuilder = new SQLServerActionBuilder(node);
-		sqlServerActionBuilder.setVersion(this.version);
-		return query.createSQLAction(sqlServerActionBuilder);
+		return query.createSQLAction(new SQLServerActionBuilder(node, getVersion()));
 	}
 
 	@Override
@@ -144,6 +144,10 @@ public class SQLServerAdapter extends SybaseAdapter {
 		return version;
 	}
 
+	/**
+	 * @since 4.2
+	 * @param version of the server as provided by the JDBC driver
+	 */
 	public void setVersion(Integer version) {
 		this.version = version;
 	}

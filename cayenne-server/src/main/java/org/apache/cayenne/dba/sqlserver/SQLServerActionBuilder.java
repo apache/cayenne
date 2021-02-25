@@ -33,23 +33,32 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	 *
 	 * @since 4.2
 	 */
-	private Integer version;
+	private final Integer version;
 
 	/**
+	 * @param dataNode current data node
 	 * @since 4.0
 	 */
 	public SQLServerActionBuilder(DataNode dataNode) {
+		this(dataNode, null);
+	}
+
+	/**
+	 * @param dataNode current data node
+	 * @param version database server version
+	 * @since 4.2
+	 */
+	public SQLServerActionBuilder(DataNode dataNode, Integer version) {
 		super(dataNode);
+		this.version = version;
 	}
 
 	@Override
 	public SQLAction batchAction(BatchQuery query) {
 		// check run strategy...
 
-		// optimistic locking is not supported in batches due to JDBC driver
-		// limitations
+		// optimistic locking is not supported in batches due to JDBC driver limitations
 		boolean useOptimisticLock = query.isUsingOptimisticLocking();
-
 		boolean runningAsBatch = !useOptimisticLock && dataNode.getAdapter().supportsBatchUpdates();
 		return new SQLServerBatchAction(query, dataNode, runningAsBatch);
 	}
@@ -64,12 +73,7 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	 */
 	@Override
 	public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-		if (query.getOrderings() == null || query.getOrderings().size() == 0 ||
-				version == null || version < 12) {
-			return new SQLServerSelectAction(query, dataNode, true);
-		}
-
-		return new SQLServerSelectAction(query, dataNode, false);
+		return new SQLServerSelectAction(query, dataNode, needInMemoryOffset(query));
 	}
 
 	/**
@@ -77,19 +81,16 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	 */
 	@Override
 	public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
-		if (query.getOrderings() == null || query.getOrderings().size() == 0 ||
-				version == null || version < 12) {
-			return new SQLServerSelectAction(query, dataNode, true);
-		}
-
-		return new SQLServerSelectAction(query, dataNode, false);
+		return new SQLServerSelectAction(query, dataNode, needInMemoryOffset(query));
 	}
 
-	public Integer getVersion() {
-		return version;
+	private boolean needInMemoryOffset(SelectQuery<?> query) {
+		return query.getOrderings() == null || query.getOrderings().size() == 0
+				|| version == null || version < 12;
 	}
 
-	public void setVersion(Integer version) {
-		this.version = version;
+	private boolean needInMemoryOffset(FluentSelect<?> query) {
+		return query.getOrderings() == null || query.getOrderings().size() == 0
+				|| version == null || version < 12;
 	}
 }

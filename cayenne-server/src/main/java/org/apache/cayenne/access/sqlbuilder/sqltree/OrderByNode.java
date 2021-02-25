@@ -40,4 +40,9 @@ public class OrderByNode extends Node {
     public Node copy() {
         return new OrderByNode();
     }
+
+    @Override
+    public NodeType getType() {
+        return NodeType.ORDER_BY;
+    }
 }

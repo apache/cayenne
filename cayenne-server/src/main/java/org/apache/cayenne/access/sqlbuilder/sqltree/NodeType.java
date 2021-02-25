@@ -38,5 +38,6 @@ public enum NodeType {
     FROM,
     UPDATE_SET,
     INSERT_COLUMNS,
-    INSERT_VALUES
+    INSERT_VALUES,
+    ORDER_BY
 }
