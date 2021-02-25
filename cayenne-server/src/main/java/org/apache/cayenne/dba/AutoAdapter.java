@@ -270,4 +270,5 @@ public class AutoAdapter implements DbAdapter {
 	public List<String> getSystemSchemas() {
 		return getAdapter().getSystemSchemas();
 	}
+
 }
