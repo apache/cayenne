@@ -45,7 +45,7 @@ public class DatabaseSchemaLoader {
 
     private static final String INCLUDE_ALL_PATTERN = "%";
 
-    private ReverseEngineering databaseReverseEngineering;
+    private final ReverseEngineering databaseReverseEngineering;
 
     public DatabaseSchemaLoader() {
         databaseReverseEngineering = new ReverseEngineering();
@@ -98,19 +98,22 @@ public class DatabaseSchemaLoader {
                                 String catalog,
                                 DbAdapter dbAdapter) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        try(ResultSet rsSchema = metaData.getSchemas(catalog, null)) {
-            boolean hasSchemas = false;
-            List<String> systemSchemas = dbAdapter.getSystemSchemas();
-            while (rsSchema.next()) {
-                hasSchemas = true;
-                String schema = rsSchema.getString("TABLE_SCHEM");
-                if(!systemSchemas.contains(schema)) {
-                    packFilterContainer(catalog, schema);
+        boolean hasSchemas = false;
+        if(metaData.supportsSchemasInTableDefinitions()) {
+            try(ResultSet rsSchema = metaData.getSchemas(catalog, null)) {
+                List<String> systemSchemas = dbAdapter.getSystemSchemas();
+                while (rsSchema.next()) {
+                    hasSchemas = true;
+                    String schema = rsSchema.getString("TABLE_SCHEM");
+                    if (!systemSchemas.contains(schema)) {
+                        packFilterContainer(catalog, schema);
+                    }
                 }
             }
-            if(!hasSchemas) {
-                packFilterContainer(catalog, null);
-            }
+        }
+
+        if(catalog != null && !hasSchemas) {
+            packFilterContainer(catalog, null);
         }
     }
 

@@ -113,6 +113,11 @@ public final class FiltersConfigBuilder {
     private List<Schema> processSchemas(DatabaseMetaData databaseMetaData,
                                         String catalogName,
                                         List<String> systemSchemas) throws SQLException {
+
+        if(!databaseMetaData.supportsSchemasInTableDefinitions()) {
+            return Collections.emptyList();
+        }
+
         List<Schema> schemas = new ArrayList<>();
         try(ResultSet schemaRs = databaseMetaData.getSchemas(catalogName, null)) {
             while(schemaRs.next()) {
@@ -183,26 +188,6 @@ public final class FiltersConfigBuilder {
         }
 
         return filter;
-
-    }
-
-    private PatternFilter transform(Collection<? extends PatternParam> include, Collection<? extends PatternParam> exclude, Collection<? extends PatternParam> excludeRel) {
-        PatternFilter filter = new PatternFilter();
-
-        for (PatternParam patternParam : include) {
-            filter.include(patternParam.getPattern());
-        }
-
-        for (PatternParam patternParam : exclude) {
-            filter.exclude(patternParam.getPattern());
-        }
-
-        for(PatternParam patternParam : excludeRel){
-            filter.exclude(patternParam.getPattern());
-        }
-
-        return filter;
-
     }
 
     /**

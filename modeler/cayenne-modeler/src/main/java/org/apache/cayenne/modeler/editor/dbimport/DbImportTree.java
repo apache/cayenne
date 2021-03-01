@@ -242,7 +242,7 @@ public class DbImportTree extends JTree {
     public  <T extends PatternParam> void printParams(Collection<T> collection, DbImportTreeNode parent) {
         for (T element : collection) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(element) : new TransferableNode(element);
-            if (!node.getSimpleNodeName().equals("")) {
+            if (!"".equals(node.getSimpleNodeName())) {
                 parent.add(node);
             }
         }
@@ -276,7 +276,7 @@ public class DbImportTree extends JTree {
     private void printSchemas(Collection<Schema> schemas, DbImportTreeNode parent) {
         for (Schema schema : schemas) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(schema) : new TransferableNode(schema);
-            if (!node.getSimpleNodeName().equals("")) {
+            if (!"".equals(node.getSimpleNodeName())) {
 
                 if (isTransferable && schema.getIncludeTables().isEmpty() && schema.getExcludeTables().isEmpty()) {
                     printParams(Collections.singletonList(new IncludeTable("Loading...")), node);
@@ -291,7 +291,7 @@ public class DbImportTree extends JTree {
     private void printCatalogs(Collection<Catalog> catalogs, DbImportTreeNode parent) {
         for (Catalog catalog : catalogs) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(catalog) : new TransferableNode(catalog);
-            if (!node.getSimpleNodeName().equals("")) {
+            if (!"".equals(node.getSimpleNodeName())) {
 
                 if (isTransferable && catalog.getSchemas().isEmpty() &&
                         catalog.getIncludeTables().isEmpty() && catalog.getExcludeTables().isEmpty()) {
