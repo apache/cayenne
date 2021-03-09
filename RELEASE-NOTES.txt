@@ -17,6 +17,7 @@ Bug Fixes:
 CAY-2670 CommitLog does not include FKs for deleted objects with one-way relationships
 CAY-2676 Degradation: Custom class generation templates are not working anymore
 CAY-2677 Modeler: Custom Class Generation Templates for Embeddables and DataMaps
+CAY-2678 Inheritance warnings caused by unnecessary MappingCache creations during initialization
 CAY-2679 Unstable ordering of relationships in the .map.xml file
 CAY-2681 Modeler: All selected checkboxes cause project to become dirty at initialization
 CAY-2690 dbimport skips length changes for BINARY and VARBINARY columns

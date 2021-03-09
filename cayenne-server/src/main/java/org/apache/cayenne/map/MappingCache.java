@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.commons.CompositeCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,11 +71,13 @@ class MappingCache implements MappingNamespace {
         // index DbEntities separately and before ObjEntities to avoid infinite
         // loops when looking up DbEntities during ObjEntity index op
         for (DataMap map : maps) {
+            checkNameDuplicates(map.getDbEntityMap(), dbEntities, map);
             dbEntities.putAll(map.getDbEntityMap());
         }
 
         for (DataMap map : maps) {
             // index ObjEntities by name
+            checkNameDuplicates(map.getObjEntityMap(), objEntities, map);
             objEntities.putAll(map.getObjEntityMap());
 
             // index ObjEntities by class name
@@ -96,6 +99,7 @@ class MappingCache implements MappingNamespace {
             }
 
             // index stored procedures
+            checkNameDuplicates(map.getProcedureMap(), procedures, map);
             procedures.putAll(map.getProcedureMap());
 
             // index embeddables
@@ -139,6 +143,26 @@ class MappingCache implements MappingNamespace {
 
                     superNode.addChildNode(node);
                 }
+            }
+        }
+    }
+
+    /**
+     * Utility method to warn about name duplicates in different DataMaps.
+     *
+     * @param src map
+     * @param dst map with already added entities
+     * @param srcMap source DataMap
+     */
+    private void checkNameDuplicates(Map<String, ? extends CayenneMapEntry> src,
+                                     Map<String, ? extends CayenneMapEntry> dst,
+                                     DataMap srcMap) {
+        for(CayenneMapEntry entry : src.values()) {
+            CayenneMapEntry duplicate = dst.get(entry.getName());
+            if(duplicate != null) {
+                DataMap parent = (DataMap) duplicate.getParent();
+                logger.warn("Found duplicated name " + entry.getName()
+                        + " in datamaps " + srcMap.getName() + " and " + parent.getName());
             }
         }
     }
