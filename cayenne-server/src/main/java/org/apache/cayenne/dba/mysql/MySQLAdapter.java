@@ -213,6 +213,16 @@ public class MySQLAdapter extends JdbcAdapter {
 			type = Types.LONGVARCHAR;
 		}
 
+		// driver reports column size that we should "translate" to the column precision
+		// see CAY-2694 for details
+		if(type == Types.TIME) {
+			precision = Math.max(0, size - 9);
+			size = -1;
+		} else if(type == Types.TIMESTAMP) {
+			precision = Math.max(0, size - 20);
+			size = -1;
+		}
+
 		return super.buildAttribute(name, typeName, type, size, precision, allowNulls);
 	}
 
@@ -321,7 +331,22 @@ public class MySQLAdapter extends JdbcAdapter {
 		sqlBuffer.append(' ').append(type);
 
 		// append size and precision (if applicable)s
-		if (typeSupportsLength(column.getType())) {
+		appendLengthAndScale(sqlBuffer, column);
+
+		sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
+
+		if (column.isGenerated()) {
+			sqlBuffer.append(" AUTO_INCREMENT");
+		}
+	}
+
+	private void appendLengthAndScale(StringBuffer sqlBuffer, DbAttribute column) {
+		if(column.getType() == Types.TIME || column.getType() == Types.TIMESTAMP) {
+			int scale = column.getScale();
+			if(scale >= 0) {
+				sqlBuffer.append('(').append(scale).append(')');
+			}
+		} else if (typeSupportsLength(column.getType())) {
 			int len = column.getMaxLength();
 
 			int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
@@ -341,13 +366,8 @@ public class MySQLAdapter extends JdbcAdapter {
 				sqlBuffer.append(')');
 			}
 		}
-
-		sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
-
-		if (column.isGenerated()) {
-			sqlBuffer.append(" AUTO_INCREMENT");
-		}
 	}
+
 
 	@Override
 	public boolean typeSupportsLength(int type) {
