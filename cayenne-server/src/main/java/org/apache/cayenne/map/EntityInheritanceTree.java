@@ -34,7 +34,8 @@ import java.util.Collections;
  */
 public class EntityInheritanceTree {
 
-    protected ObjEntity entity;
+    protected final ObjEntity entity;
+    protected EntityInheritanceTree parent;
     protected Collection<EntityInheritanceTree> subentities;
     protected Expression normalizedQualifier;
 
@@ -43,13 +44,12 @@ public class EntityInheritanceTree {
     }
 
     /**
-     * Returns a qualifier Expression that matches root entity of this tree and all its
-     * subentities.
+     * Returns a qualifier Expression that matches root entity of this tree and all its subentities.
      */
     public Expression qualifierForEntityAndSubclasses() {
         Expression qualifier = entity.getDeclaredQualifier();
 
-        if (qualifier == null) {
+        if (qualifier == null && parent == null) {
             // match all
             return null;
         }
@@ -58,13 +58,16 @@ public class EntityInheritanceTree {
             for (EntityInheritanceTree child : subentities) {
                 Expression childQualifier = child.qualifierForEntityAndSubclasses();
 
-                // if any child qualifier is null, just return null, since no filtering is
-                // possible
+                // if any child qualifier is null, just return null, since no filtering is possible
                 if (childQualifier == null) {
                     return null;
                 }
 
-                qualifier = qualifier.orExp(childQualifier);
+                if(qualifier == null) {
+                    qualifier = childQualifier;
+                } else {
+                    qualifier = qualifier.orExp(childQualifier);
+                }
             }
         }
 
@@ -93,7 +96,7 @@ public class EntityInheritanceTree {
         }
 
         // no qualifier ... matches all rows
-        return entity;
+        return parent == null ? entity : null;
     }
 
     /**
@@ -120,6 +123,7 @@ public class EntityInheritanceTree {
         }
 
         subentities.add(node);
+        node.parent = this;
     }
 
     public int getChildrenCount() {
@@ -127,7 +131,7 @@ public class EntityInheritanceTree {
     }
 
     public Collection<EntityInheritanceTree> getChildren() {
-        return (subentities != null) ? subentities : Collections.<EntityInheritanceTree>emptyList();
+        return (subentities != null) ? subentities : Collections.emptyList();
     }
 
     public ObjEntity getEntity() {

@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
@@ -76,8 +77,7 @@ public class EntityInheritanceTreeTest {
         subEntity.setDeclaredQualifier(ExpressionFactory.matchDbExp("x", 1));
         dataMap.addObjEntity(subEntity);
 
-        // creating EntityInheritanceTree via EntityResolver to ensure the entities are
-        // indexed
+        // creating EntityInheritanceTree via EntityResolver to ensure the entities are indexed
         EntityResolver resolver = new EntityResolver(Collections.singleton(dataMap));
         EntityInheritanceTree t1 = resolver.getInheritanceTree("E1");
 
@@ -93,5 +93,63 @@ public class EntityInheritanceTreeTest {
         assertSame(subEntity, t1.entityMatchingRow(row11));
         assertSame(entity, t1.entityMatchingRow(row12));
         assertNull(t1.entityMatchingRow(row13));
+    }
+
+    @Test
+    public void testEntityMatchingRow_CAY_2693() {
+        DataMap dataMap = new DataMap("map");
+
+        DbEntity dbEntity = new DbEntity("a");
+        dbEntity.addAttribute(new DbAttribute("type"));
+        dataMap.addDbEntity(dbEntity);
+
+        ObjEntity entityA = new ObjEntity("A");
+        entityA.setAbstract(true);
+        entityA.setDbEntityName(dbEntity.getName());
+        dataMap.addObjEntity(entityA);
+
+        ObjEntity subEntityC = new ObjEntity("AC"); // name it AC so it would be sorted before B
+        subEntityC.setSuperEntityName("A");
+        subEntityC.setAbstract(true);
+        dataMap.addObjEntity(subEntityC);
+
+        ObjEntity subEntityB = new ObjEntity("B");
+        subEntityB.setSuperEntityName("A");
+        subEntityB.setDeclaredQualifier(ExpressionFactory.matchDbExp("type", 0));
+        dataMap.addObjEntity(subEntityB);
+
+        ObjEntity subEntityD = new ObjEntity("D");
+        subEntityD.setSuperEntityName("AC");
+        subEntityD.setDeclaredQualifier(ExpressionFactory.matchDbExp("type", 1));
+        dataMap.addObjEntity(subEntityD);
+
+        ObjEntity subEntityE = new ObjEntity("E");
+        subEntityE.setSuperEntityName("AC");
+        subEntityE.setDeclaredQualifier(ExpressionFactory.matchDbExp("type", 2));
+        dataMap.addObjEntity(subEntityE);
+
+        // creating EntityInheritanceTree via EntityResolver to ensure the entities are indexed
+        EntityResolver resolver = new EntityResolver(Collections.singleton(dataMap));
+        EntityInheritanceTree treeA = resolver.getInheritanceTree("A");
+        EntityInheritanceTree treeC = resolver.getInheritanceTree("AC");
+
+        DataRow row11 = new DataRow(5);
+        row11.put("type", 0);
+
+        DataRow row12 = new DataRow(5);
+        row12.put("type", 1);
+
+        DataRow row13 = new DataRow(5);
+        row13.put("type", 2);
+
+        assertSame(subEntityB, treeA.entityMatchingRow(row11));
+        assertSame(subEntityD, treeA.entityMatchingRow(row12));
+        assertSame(subEntityE, treeA.entityMatchingRow(row13));
+
+        assertSame(subEntityD, treeC.entityMatchingRow(row12));
+        assertSame(subEntityE, treeC.entityMatchingRow(row13));
+
+        assertNull(treeA.qualifierForEntityAndSubclasses());
+        assertEquals(ExpressionFactory.exp("(db:type = 1) or (db:type = 2)"), treeC.qualifierForEntityAndSubclasses());
     }
 }

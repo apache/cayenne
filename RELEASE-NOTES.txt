@@ -29,6 +29,7 @@ CAY-2686 SQL translator incorrectly quotes fully qualified tables' names
 CAY-2687 Modeler Migrate Repeatedly Asks to Set Column Type for MySQL
 CAY-2690 dbimport skips length changes for BINARY and VARBINARY columns
 CAY-2691 MySQL driver 8.0.x stores LocalDateTime differently than 5.1.x
+CAY-2693 Abstract subentities do not have rows materialized correctly
 CAY-2694 Precision issues with reverse / forward engineering of time types on MySQL
 CAY-2695 Reverse engineering on SQLite fails due to feature not being supported
 CAY-2698 EventSubject.getSubject() is not thread safe
