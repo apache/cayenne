@@ -22,6 +22,7 @@ CAY-2679 Unstable ordering of relationships in the .map.xml file
 CAY-2681 Modeler: All selected checkboxes cause project to become dirty at initialization
 CAY-2690 dbimport skips length changes for BINARY and VARBINARY columns
 CAY-2698 EventSubject.getSubject() is not thread safe
+CAY-2702 Modeler: Callbacks table has too small default width
 
 ----------------------------------
 Release: 4.1
