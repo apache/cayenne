@@ -57,15 +57,11 @@ public class ObjEntityCallbackMethodsTab extends AbstractCallbackMethodsTab  {
                 }
         );
 
-        mediator.addObjEntityDisplayListener(
-                new ObjEntityDisplayListener() {
-                    public void currentObjEntityChanged(EntityDisplayEvent e) {
-                        if (ObjEntityCallbackMethodsTab.this.isVisible()) {
-                            rebuildTables();
-                        }
-                    }
-                }
-        );
+        mediator.addObjEntityDisplayListener(e -> {
+            if (ObjEntityCallbackMethodsTab.this.isVisible()) {
+                rebuildTables();
+            }
+        });
     }
 
 
