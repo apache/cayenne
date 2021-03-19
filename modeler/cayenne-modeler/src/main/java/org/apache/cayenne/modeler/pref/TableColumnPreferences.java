@@ -144,15 +144,14 @@ public class TableColumnPreferences extends CayennePreference {
             int defaultWidth;
             if (minSizes != null && minSizes.containsKey(modelIndex)) {
                 column.setMinWidth(minSizes.get(modelIndex));
-                
             }
 
             if (maxSizes != null && maxSizes.containsKey(modelIndex)) {
                 column.setMaxWidth(maxSizes.get(modelIndex));
             }
 
-            if(defaultSizes!=null && defaultSizes.containsKey(modelIndex)){
-                defaultWidth=defaultSizes.get(modelIndex);
+            if(defaultSizes != null && defaultSizes.containsKey(modelIndex)){
+                defaultWidth = defaultSizes.get(modelIndex);
             } else {
                 defaultWidth = column.getPreferredWidth();
             }

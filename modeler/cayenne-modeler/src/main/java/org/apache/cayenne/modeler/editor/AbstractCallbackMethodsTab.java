@@ -69,7 +69,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Base abstract class for all callback methods editing tabs Contains logic for callback
@@ -78,7 +81,12 @@ import java.util.List;
  */
 public abstract class AbstractCallbackMethodsTab extends JPanel {
 
-    private static Logger logger = LoggerFactory.getLogger(AbstractCallbackMethodsTab.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCallbackMethodsTab.class);
+
+    /**
+     * Min sizes for the table columns
+     */
+    private static final Map<Integer, Integer> MIN_SIZES = Collections.singletonMap(0, 150);
 
     /**
      * mediator instance
@@ -286,7 +294,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
         }
 
         for (CayenneTable table : tables) {
-            tablePreferences.bind(table, null, null, null);
+            tablePreferences.bind(table, MIN_SIZES, null, null);
         }
     }
     
@@ -607,7 +615,7 @@ public abstract class AbstractCallbackMethodsTab extends JPanel {
 		
 		public void mouseDragged(MouseEvent e) {
 	    	if(table.getColumnWidthChanged()) {
-	    		tablePreferences.bind(table, null, null, null);
+	    		tablePreferences.bind(table, MIN_SIZES, null, null);
                 for (CayenneTable nextTable : tables) {
                     if (!table.equals(nextTable)) {
                         nextTable.getColumnModel().getColumn(0).setPreferredWidth(table.getWidth());
