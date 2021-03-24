@@ -33,19 +33,31 @@ import org.apache.cayenne.util.Util;
  */
 class CallbackOnEntity extends AbstractCallback {
 
-    private Method callbackMethod;
+    private final Method callbackMethod;
 
-    CallbackOnEntity(Class<?> objectClass, String methodName)
-            throws IllegalArgumentException {
-        this.callbackMethod = findMethod(objectClass, methodName);
+    CallbackOnEntity(Class<?> objectClass, String methodName) throws IllegalArgumentException {
+        this(findMethod(objectClass, methodName));
+    }
+
+    /**
+     * @since 4.2
+     */
+    CallbackOnEntity(Method method) throws IllegalArgumentException {
+        if(!validateMethod(method)) {
+            throw new IllegalArgumentException("Class " + method.getDeclaringClass().getName()
+                    + " has no valid callback method '" + method.getName() + "'");
+        }
+        this.callbackMethod = method;
+        if (!Util.isAccessible(callbackMethod)) {
+            callbackMethod.setAccessible(true);
+        }
     }
 
     @Override
     public void performCallback(Object entity) {
         try {
             callbackMethod.invoke(entity, (Object[]) null);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CayenneRuntimeException("Error invoking entity callback method "
                     + callbackMethod.getName(), e);
         }
@@ -59,32 +71,23 @@ class CallbackOnEntity extends AbstractCallback {
                 + callbackMethod.getName();
     }
 
-    private Method findMethod(Class<?> objectClass, String methodName)
-            throws IllegalArgumentException {
-        Method[] methods = objectClass.getDeclaredMethods();
-        for (Method method : methods) {
-            if (methodName.equals(method.getName())) {
+    static private boolean validateMethod(Method method) {
+        int modifiers = method.getModifiers();
+        // must be non-static, void, with no args
+        // JPA spec also requires it to be non-final, but we don't care
+        return !Modifier.isStatic(modifiers)
+                && Void.TYPE.isAssignableFrom(method.getReturnType())
+                && method.getParameterTypes().length == 0;
+    }
 
-                // must be non-static, void, with no args
-                // JPA spec also requires it to be non-final, but we don't care
-                int modifiers = method.getModifiers();
-                if (!Modifier.isStatic(modifiers)
-                        && Void.TYPE.isAssignableFrom(method.getReturnType())
-                        && method.getParameterTypes().length == 0) {
-
-                    if (!Util.isAccessible(method)) {
-                        method.setAccessible(true);
-                    }
-
-                    return method;
-                }
-            }
+    static private Method findMethod(Class<?> objectClass, String methodName) throws IllegalArgumentException {
+        Method method;
+        try {
+            method = objectClass.getDeclaredMethod(methodName);
+        } catch (NoSuchMethodException ex) {
+            throw new IllegalArgumentException("Class " + objectClass.getName()
+                    + " has no valid callback method '" + methodName + "'");
         }
-
-        throw new IllegalArgumentException("Class "
-                + objectClass.getName()
-                + " has no valid callback method '"
-                + methodName
-                + "'");
+        return method;
     }
 }

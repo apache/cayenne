@@ -176,7 +176,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 for (Method m : entityClass.getDeclaredMethods()) {
                     LIFECYCLE_EVENT_MAP.forEach((eventType, annotationType) -> {
                         if(m.getDeclaredAnnotation(annotationType) != null) {
-                            callbackRegistry.addCallback(eventType, entityClass, m.getName());
+                            callbackRegistry.addCallback(eventType, entityClass, m);
                         }
                     });
                 }

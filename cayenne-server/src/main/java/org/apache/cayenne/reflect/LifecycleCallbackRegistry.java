@@ -64,9 +64,7 @@ public class LifecycleCallbackRegistry {
 
 		this.entityResolver = resolver;
 
-		// initialize callbacks map in constructor to avoid synchronization
-		// issues
-		// downstream.
+		// initialize callbacks map in constructor to avoid synchronization issues downstream.
 		this.eventCallbacks = new LifecycleCallbackEventHandler[LifecycleEvent.values().length];
 		for (int i = 0; i < eventCallbacks.length; i++) {
 			eventCallbacks[i] = new LifecycleCallbackEventHandler();
@@ -158,6 +156,20 @@ public class LifecycleCallbackRegistry {
 	 */
 	public void addCallback(LifecycleEvent type, Class<?> entityClass, String methodName) {
 		eventCallbacks[type.ordinal()].addListener(entityClass, methodName);
+	}
+
+	/**
+	 * Registers a callback method to be invoked on an entity class instances
+	 * when a lifecycle event occurs.
+	 *
+	 * @param type of the lifecycle event
+	 * @param entityClass type of the entity
+	 * @param method callback method reference
+	 *
+	 * @since 4.2
+	 */
+	public void addCallback(LifecycleEvent type, Class<?> entityClass, Method method) {
+		eventCallbacks[type.ordinal()].addListener(entityClass, method);
 	}
 
 	/**

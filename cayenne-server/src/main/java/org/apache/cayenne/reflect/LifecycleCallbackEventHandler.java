@@ -87,6 +87,15 @@ class LifecycleCallbackEventHandler {
     }
 
     /**
+     * Registers a callback method to be invoked on an entity class instances when a
+     * lifecycle event occurs.
+     * @since 4.2
+     */
+    void addListener(Class<?> entityClass, Method method) {
+        addCallback(entityClass, new CallbackOnEntity(method));
+    }
+
+    /**
      * Registers callback method to be invoked on a provided non-entity object when a
      * lifecycle event occurs.
      */

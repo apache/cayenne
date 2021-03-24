@@ -16,6 +16,7 @@ Changes/New Features:
 Bug Fixes:
 
 CAY-2702 Modeler: Callbacks table has too small default width
+CAY-2705 Performance of callback annotation processing
 
 ----------------------------------
 Release: 4.2.M3
