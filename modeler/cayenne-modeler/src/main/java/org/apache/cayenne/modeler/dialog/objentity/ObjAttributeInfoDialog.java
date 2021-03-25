@@ -121,8 +121,27 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	private void initController(ObjAttribute attr) {
 
 		for (String embeddableName : embeddableNames) {
-			((DefaultComboBoxModel) view.getTypeComboBox().getModel()).addElement(embeddableName);
+			((DefaultComboBoxModel<String>) view.getTypeComboBox().getModel()).addElement(embeddableName);
 		}
+		// need to initialize this early, to react to the later call of the view.getTypeComboBox().setSelectedItem()
+		view.getTypeComboBox().addActionListener(e -> {
+			boolean isType = false;
+			String[] typeNames = ModelerUtil.getRegisteredTypeNames();
+			for (String typeName : typeNames) {
+				if (view.getTypeComboBox().getSelectedItem() == null ||
+						typeName.equals(view.getTypeComboBox().getSelectedItem().toString())) {
+					isType = true;
+				}
+			}
+
+			if (isType || !mediator.getEmbeddableNamesInCurrentDataDomain()
+					.contains((String)view.getTypeComboBox().getSelectedItem())) {
+				((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), FLATTENED_PANEL);
+			} else {
+				((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), EMBEDDABLE_PANEL);
+				view.getCurrentPathLabel().setText("");
+			}
+		});
 
 		this.attribute = attr;
 
@@ -134,7 +153,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 		copyObjAttribute(attributeSaved, attribute);
 
-		relTargets = new ArrayList<DbEntity>(attribute.getEntity().getDataMap().getDbEntities());
+		relTargets = new ArrayList<>(attribute.getEntity().getDataMap().getDbEntities());
 
 		/*
 		 * Register auto-selection of the target
@@ -228,25 +247,6 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
                 }
             }
         });
-
-		view.getTypeComboBox().addActionListener(e -> {
-			boolean isType = false;
-			String[] typeNames = ModelerUtil.getRegisteredTypeNames();
-			for (String typeName : typeNames) {
-				if (view.getTypeComboBox().getSelectedItem() == null ||
-						typeName.equals(view.getTypeComboBox().getSelectedItem().toString())) {
-					isType = true;
-				}
-			}
-
-			if (isType || !mediator.getEmbeddableNamesInCurrentDataDomain()
-					.contains((String)view.getTypeComboBox().getSelectedItem())) {
-				((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), FLATTENED_PANEL);
-			} else {
-				((CardLayout) view.getTypeManagerPane().getLayout()).show(view.getTypeManagerPane(), EMBEDDABLE_PANEL);
-				view.getCurrentPathLabel().setText("");
-			}
-		});
 
 		view.getAttributeName().addKeyListener(new KeyListener() {
 
@@ -370,7 +370,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 
 	public boolean setPath(boolean isChange) {
 
-		if (isChange()) {
+		if (isModified()) {
 			if(view.getTypeComboBox().getSelectedItem() != null) {
 				attributeSaved.setType(view.getTypeComboBox().getSelectedItem().toString());
 			}
@@ -383,7 +383,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 					view.getCommentField().getText());
 		}
 
-		if (!(attributeSaved instanceof EmbeddedAttribute) || isRegistredType(attributeSaved.getType())) {
+		if (!(attributeSaved instanceof EmbeddedAttribute) || isRegisteredType(attributeSaved.getType())) {
 
 			StringBuilder attributePath = new StringBuilder();
 			StringBuilder pathStr = new StringBuilder();
@@ -444,36 +444,33 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		return false;
 	}
 
-	public boolean isChange() {
-
-		boolean isOverrideTableChange = ((OverrideEmbeddableAttributeTableModel) view.getOverrideAttributeTable()
-				.getModel()).isAttributeOverrideChange();
+	public boolean isModified() {
+		boolean isOverrideTableChange =
+				((OverrideEmbeddableAttributeTableModel) view.getOverrideAttributeTable().getModel())
+						.isAttributeOverrideChange();
+		String comment = ObjectInfo
+				.getFromMetaData(mediator.getApplication().getMetaData(), attribute, ObjectInfo.COMMENT);
 		return isOverrideTableChange
 				|| !attribute.getName().equals(view.getAttributeName().getText())
 				|| (attribute.getType() == null && view.getTypeComboBox().getSelectedItem() != null)
 				|| !Objects.equals(attribute.getType(), view.getTypeComboBox().getSelectedItem())
 				|| attribute.isUsedForLocking() != view.getUsedForLockingCheckBox().isSelected()
 				|| attribute.isLazy() != view.getLazyCheckBox().isSelected()
-				|| !ObjectInfo.getFromMetaData(
-						mediator.getApplication().getMetaData(), attribute, ObjectInfo.COMMENT)
-				.equals(view.getCommentField().getText());
+				|| !Objects.equals(comment, view.getCommentField().getText());
 	}
 
 	private void updateTable() {
+		String comment = ObjectInfo
+				.getFromMetaData(mediator.getApplication().getMetaData(), attributeSaved, ObjectInfo.COMMENT);
 		model.setUpdatedValueAt(attributeSaved.getName(), row, 0);
 		model.setUpdatedValueAt(attributeSaved.getType(), row, 1);
 		model.setUpdatedValueAt(attributeSaved.isUsedForLocking(), row, 4);
 		model.setUpdatedValueAt(attributeSaved.isLazy(), row, 5);
-		model.setUpdatedValueAt(ObjectInfo
-				.getFromMetaData(mediator.getApplication().getMetaData(),
-						attributeSaved,
-						ObjectInfo.COMMENT), row, 6);
+		model.setUpdatedValueAt(comment, row, 6);
 	}
 
 	public void saveMapping() {
-
  		if (setPath(false)) {
-
 			if (JOptionPane.showConfirmDialog(getView(),
 					"You have changed Db Attribute path. Do you want it to be saved?", "Save ObjAttribute",
 					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -552,17 +549,17 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	}
 
 	public Map<String, String> getCurrentOverrideAttribute() {
-		Map<String, String> currentEmbeddableOverrite = new HashMap<>();
+		Map<String, String> currentEmbeddableOverride = new HashMap<>();
 		Collection<EmbeddableAttribute> embList = embeddableModel.getEmbeddableList();
 		Embeddable emb = stringToEmbeddables.get(attributeSaved.getType());
 		for (EmbeddableAttribute e : embList) {
 			if ((emb.getAttribute(e.getName()).getDbAttributeName() == null && e.getDbAttributeName() != null)
 					|| (emb.getAttribute(e.getName()).getDbAttributeName() != null && !emb.getAttribute(e.getName())
 					.getDbAttributeName().equals(e.getDbAttributeName()))) {
-				currentEmbeddableOverrite.put(e.getName(), e.getDbAttributeName());
+				currentEmbeddableOverride.put(e.getName(), e.getDbAttributeName());
 			}
 		}
-		return currentEmbeddableOverrite;
+		return currentEmbeddableOverride;
 	}
 
 	public void valueChanged(TreeSelectionEvent e) {
@@ -613,19 +610,18 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		}
 	}
 
-	public boolean isRegistredType(String typeName) {
-		boolean isType = false;
+	public boolean isRegisteredType(String typeName) {
 		String[] typeNames = ModelerUtil.getRegisteredTypeNames();
 		for (String nextTypeName : typeNames) {
 			if (nextTypeName.equals(typeName)) {
-				isType = true;
+				return true;
 			}
 		}
-		return isType;
+		return false;
 	}
 
 	// custom renderer used for inherited attributes highlighting
-	final class CellRenderer extends DefaultTableCellRenderer {
+	static final class CellRenderer extends DefaultTableCellRenderer {
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -678,23 +674,21 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		}
 	}
 
-	private void compareAndSetOverrideInEmbeddedAttribute(ObjAttribute attribute, Map<String, String> overrides,
-			Map<String, String> currentOverrAttr) {
+	private void compareAndSetOverrideInEmbeddedAttribute(ObjAttribute attribute,
+														  Map<String, String> overrides,
+														  Map<String, String> currentOverrAttr) {
 		ArrayList<String> keysForDelete = new ArrayList<>();
 		ArrayList<String> keysForAdd = new ArrayList<>();
 
-		for (Object o : overrides.entrySet()) {
-			Map.Entry obj = (Map.Entry) o;
-
-			String key = (String) obj.getKey();
+		for (Map.Entry<String, String> obj : overrides.entrySet()) {
+			String key = obj.getKey();
 			if (currentOverrAttr.get(key) == null || !(obj.getValue().equals(currentOverrAttr.get(key)))) {
 				keysForDelete.add(key);
 			}
 		}
 
-		for (Object o : currentOverrAttr.entrySet()) {
-			Map.Entry obj = (Map.Entry) o;
-			String key = (String) obj.getKey();
+		for (Map.Entry<String, String> obj : currentOverrAttr.entrySet()) {
+			String key = obj.getKey();
 			if (overrides.get(key) == null || !(obj.getValue().equals(overrides.get(key)))) {
 				keysForAdd.add(key);
 			}

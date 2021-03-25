@@ -133,7 +133,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         builder.addLabel("Comment:", cc.xy(1, 15));
         builder.add(commentField, cc.xywh(3, 15, 1, 1));
 
-        builder.addSeparator("Mapping to DbAttributes", cc.xywh(1, 15, 7, 1));
+        builder.addSeparator("Mapping to DbAttributes", cc.xywh(1, 17, 7, 1));
 
         typeManagerPane = new JPanel();
         typeManagerPane.setLayout(new CardLayout());
@@ -172,7 +172,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
         typeManagerPane.add(builderPathPane.getPanel(), FLATTENED_PANEL);
         typeManagerPane.add(embeddablePane.getPanel(), EMBEDDABLE_PANEL);
 
-        builder.add(typeManagerPane, cc.xywh(1, 17, 7, 1));
+        builder.add(typeManagerPane, cc.xywh(1, 19, 7, 1));
 
         add(builder.getPanel(), BorderLayout.CENTER);
 
