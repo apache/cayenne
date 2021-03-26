@@ -54,6 +54,21 @@ public class EmbeddedAttribute extends ObjAttribute {
         setEntity(entity);
     }
 
+    /**
+     * Copying constructor
+     * @param other attribute to copy
+     * @since 4.2
+     */
+    public EmbeddedAttribute(EmbeddedAttribute other) {
+        setName(other.getName());
+        setType(other.getType());
+        setEntity(other.getEntity());
+        setDbAttributePath(other.getDbAttributePath());
+        setUsedForLocking(other.isUsedForLocking());
+        setLazy(other.isLazy());
+        attributeOverrides = other.getAttributeOverrides();
+    }
+
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("embedded-attribute")
@@ -91,15 +106,10 @@ public class EmbeddedAttribute extends ObjAttribute {
         return makeObjAttribute(embeddableAttribute, dbPath);
     }
 
-    private ObjAttribute makeObjAttribute(
-            EmbeddableAttribute embeddableAttribute,
-            String dbPath) {
+    private ObjAttribute makeObjAttribute(EmbeddableAttribute embeddableAttribute, String dbPath) {
         String fullName = getName() + "." + embeddableAttribute.getName();
 
-        ObjAttribute oa = new ObjAttribute(
-                fullName,
-                embeddableAttribute.getType(),
-                (ObjEntity) getEntity());
+        ObjAttribute oa = new ObjAttribute(fullName, embeddableAttribute.getType(), getEntity());
         oa.setDbAttributePath(dbPath);
         return oa;
     }

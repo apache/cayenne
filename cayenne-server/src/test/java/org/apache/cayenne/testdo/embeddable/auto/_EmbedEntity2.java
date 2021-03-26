@@ -20,7 +20,7 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
  */
 public abstract class _EmbedEntity2 extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     public static final String ID_PK_COLUMN = "ID";
 

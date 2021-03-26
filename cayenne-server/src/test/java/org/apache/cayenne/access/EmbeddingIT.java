@@ -25,8 +25,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testdo.embeddable.EmbedChild;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
+import org.apache.cayenne.testdo.embeddable.EmbedRoot;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -38,6 +40,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
 public class EmbeddingIT extends ServerCase {
@@ -50,6 +53,8 @@ public class EmbeddingIT extends ServerCase {
     
     protected TableHelper tEmbedEntity1;
     protected TableHelper tEmbedEntity2;
+    protected TableHelper tEmbedRoot;
+    protected TableHelper tEmbedChild;
 
     @Before
     public void setUp() throws Exception {
@@ -58,6 +63,12 @@ public class EmbeddingIT extends ServerCase {
 
         tEmbedEntity2 = new TableHelper(dbHelper, "EMBED_ENTITY2");
         tEmbedEntity2.setColumns("ID", "NAME", "ENTITY1_ID", "EMBEDDED10", "EMBEDDED20");
+
+        tEmbedRoot = new TableHelper(dbHelper, "EMBED_ROOT");
+        tEmbedRoot.setColumns("ID", "NAME", "EMBEDDED10", "EMBEDDED20", "TYPE");
+
+        tEmbedChild = new TableHelper(dbHelper, "EMBED_CHILD");
+        tEmbedChild.setColumns("ID", "CHILD_ATTR");
     }
     
     protected void createSelectDataSet() throws Exception {
@@ -69,6 +80,12 @@ public class EmbeddingIT extends ServerCase {
         createSelectDataSet();
         tEmbedEntity2.insert(1, "n2-1", 1, "e1", "e2");
         tEmbedEntity2.insert(2, "n2-1", 2, "e1", "e2");
+    }
+
+    protected void createSelectDataSetInheritance() throws Exception {
+        tEmbedRoot.insert(1, "root1", "e1-1", "e2-1", 0);
+        tEmbedRoot.insert(2, "root2", "e1-2", "e2-2", 1);
+        tEmbedChild.insert(2, "child-attr1");
     }
 
     protected void createUpdateDataSet() throws Exception {
@@ -297,5 +314,50 @@ public class EmbeddingIT extends ServerCase {
                 .where(EmbedEntity1.EMBEDDED1.eq(embeddable1))
                 .select(context);
         assertEquals(1, result.size());
+    }
+
+    @Test
+    public void testSelectWithInheritance() throws Exception {
+        createSelectDataSetInheritance();
+
+        List<EmbedRoot> roots = ObjectSelect.query(EmbedRoot.class)
+                .orderBy(EmbedRoot.NAME.asc())
+                .select(context);
+
+        assertEquals(2, roots.size());
+
+        EmbedRoot root = roots.get(0);
+        EmbedRoot child = roots.get(1);
+        assertTrue(child instanceof EmbedChild);
+
+        assertEquals("e1-1", root.getEmbedded().getEmbedded10());
+        assertEquals("e2-1", root.getEmbedded().getEmbedded20());
+
+        assertEquals("e1-2", child.getEmbedded().getEmbedded10());
+        assertEquals("e2-2", child.getEmbedded().getEmbedded20());
+        assertEquals("child-attr1", ((EmbedChild) child).getChildAttr());
+    }
+
+    @Test
+    public void testInsertWithInheritance() {
+        {
+            EmbedRoot root = context.newObject(EmbedRoot.class);
+            root.setName("root");
+            Embeddable1 embeddable1 = new Embeddable1();
+            embeddable1.setEmbedded10("root-10");
+            embeddable1.setEmbedded20("root-20");
+            root.setEmbedded(embeddable1);
+        }
+
+        {
+            EmbedChild child = context.newObject(EmbedChild.class);
+            child.setName("child");
+            Embeddable1 embeddable1 = new Embeddable1();
+            embeddable1.setEmbedded10("child-10");
+            embeddable1.setEmbedded20("child-20");
+            child.setEmbedded(embeddable1);
+        }
+
+        context.commitChanges();
     }
 }

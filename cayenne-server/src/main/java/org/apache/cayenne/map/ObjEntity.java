@@ -32,6 +32,8 @@ import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,11 +54,12 @@ import java.util.function.Function;
  */
 public class ObjEntity extends Entity implements ObjEntityListener, ConfigurationNode {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntity.class);
+
     public static final int LOCK_TYPE_NONE = 0;
     public static final int LOCK_TYPE_OPTIMISTIC = 1;
 
-    // do not import CayenneDataObject as it introduces unneeded client
-    // dependency
+    // do not import CayenneDataObject as it introduces unneeded client dependency
     private static final String CAYENNE_DATA_OBJECT_CLASS = "org.apache.cayenne.CayenneDataObject";
     /**
      * A collection of default "generic" entity classes excluded from class
@@ -641,11 +644,23 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
                 String overridedDbPath = attributeOverrides.get(attributeName);
 
-                ObjAttribute attribute = new ObjAttribute(attributeMap.get(attributeName));
-                attribute.setEntity(this);
-                if (overridedDbPath != null) {
-                    attribute.setDbAttributePath(overridedDbPath);
+                ObjAttribute superAttribute = attributeMap.get(attributeName);
+                ObjAttribute attribute;
+
+                if(superAttribute instanceof EmbeddedAttribute) {
+                    EmbeddedAttribute embeddedAttribute = new EmbeddedAttribute((EmbeddedAttribute)superAttribute);
+                    if(overridedDbPath != null) {
+                        LOGGER.warn("'{}.{}': DB path override for an embedded attribute is not supported.",
+                                getName(), attributeName);
+                    }
+                    attribute = embeddedAttribute;
+                } else {
+                    attribute = new ObjAttribute(superAttribute);
+                    if (overridedDbPath != null) {
+                        attribute.setDbAttributePath(overridedDbPath);
+                    }
                 }
+                attribute.setEntity(this);
                 map.put(attributeName, attribute);
             }
         }

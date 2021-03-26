@@ -8,6 +8,10 @@
 		<embeddable-attribute name="embedded20" type="java.lang.String" db-attribute-name="EMBEDDED20"/>
 		<embeddable-attribute name="embedded10" type="java.lang.String" db-attribute-name="EMBEDDED10"/>
 	</embeddable>
+	<db-entity name="EMBED_CHILD">
+		<db-attribute name="CHILD_ATTR" type="VARCHAR" length="100"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="EMBED_ENTITY1">
 		<db-attribute name="EMBEDDED10" type="VARCHAR" length="100"/>
 		<db-attribute name="EMBEDDED20" type="VARCHAR" length="100"/>
@@ -23,6 +27,17 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 	</db-entity>
+	<db-entity name="EMBED_ROOT">
+		<db-attribute name="EMBEDDED10" type="VARCHAR" length="100"/>
+		<db-attribute name="EMBEDDED20" type="VARCHAR" length="100"/>
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
+		<db-attribute name="TYPE" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<obj-entity name="EmbedChild" superEntityName="EmbedRoot" className="org.apache.cayenne.testdo.embeddable.EmbedChild">
+		<qualifier><![CDATA[type = 1]]></qualifier>
+		<obj-attribute name="childAttr" type="java.lang.String" db-attribute-path="child.CHILD_ATTR"/>
+	</obj-entity>
 	<obj-entity name="EmbedEntity1" className="org.apache.cayenne.testdo.embeddable.EmbedEntity1" dbEntityName="EMBED_ENTITY1">
 		<embedded-attribute name="embedded1" type="org.apache.cayenne.testdo.embeddable.Embeddable1"/>
 		<embedded-attribute name="embedded2" type="org.apache.cayenne.testdo.embeddable.Embeddable1">
@@ -35,11 +50,23 @@
 		<embedded-attribute name="embedded" type="org.apache.cayenne.testdo.embeddable.Embeddable1"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<obj-entity name="EmbedRoot" className="org.apache.cayenne.testdo.embeddable.EmbedRoot" dbEntityName="EMBED_ROOT">
+		<qualifier><![CDATA[type = 0]]></qualifier>
+		<embedded-attribute name="embedded" type="org.apache.cayenne.testdo.embeddable.Embeddable1"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<obj-attribute name="type" type="int" db-attribute-path="TYPE"/>
+	</obj-entity>
+	<db-relationship name="root" source="EMBED_CHILD" target="EMBED_ROOT">
+		<db-attribute-pair source="ID" target="ID"/>
+	</db-relationship>
 	<db-relationship name="untitledRel" source="EMBED_ENTITY1" target="EMBED_ENTITY2" toMany="true">
 		<db-attribute-pair source="ID" target="ENTITY1_ID"/>
 	</db-relationship>
 	<db-relationship name="untitledRel" source="EMBED_ENTITY2" target="EMBED_ENTITY1">
 		<db-attribute-pair source="ENTITY1_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="child" source="EMBED_ROOT" target="EMBED_CHILD" toDependentPK="true">
+		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="embedEntity2s" source="EmbedEntity1" target="EmbedEntity2" deleteRule="Deny" db-relationship-path="untitledRel"/>
 	<obj-relationship name="entity1" source="EmbedEntity2" target="EmbedEntity1" deleteRule="Nullify" db-relationship-path="untitledRel"/>
