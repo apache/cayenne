@@ -28,8 +28,6 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
@@ -40,7 +38,7 @@ import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.GeneratorsTabController;
 import org.apache.cayenne.modeler.event.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.util.ModelerUtil;
-import org.apache.cayenne.tools.CayenneToolsModuleProvider;
+import org.apache.cayenne.tools.ToolsInjectorBuilder;
 
 /**
  * @since 4.1
@@ -65,9 +63,10 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
                 if(cgenConfiguration == null) {
                     cgenConfiguration = createConfiguration(dataMap);
                 }
-                ClassGenerationAction classGenerationAction = DIBootstrap
-                        .createInjector(new ModuleLoader()
-                                .load(CayenneToolsModuleProvider.class))
+                ClassGenerationAction classGenerationAction = new ToolsInjectorBuilder()
+                        .addModule(binder
+                                -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
+                        .create()
                         .getInstance(ClassGenerationActionFactory.class)
                         .createAction(cgenConfiguration);
                 classGenerationAction.prepareArtifacts();

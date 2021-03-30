@@ -18,6 +18,7 @@ Bug Fixes:
 CAY-2702 Modeler: Callbacks table has too small default width
 CAY-2705 Performance of callback annotation processing
 CAY-2706 Modeler: object attribute dialog doesn't properly initialized for the embeddable type
+CAY-2707 Modeler: code generation is broken in the DataDomain tab
 
 ----------------------------------
 Release: 4.2.M3
