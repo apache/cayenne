@@ -289,39 +289,42 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @since 3.0
 	 */
 	void checkPageResultConsistency(List<?> objects, List<?> ids) {
+		if (objects.size() == ids.size()) {
+			return;
+		} else if (objects.size() > ids.size()) {
+			throw new CayenneRuntimeException("Expected %d objects, retrieved %d", ids.size(), objects.size());
+		}
 
-		if (objects.size() < ids.size()) {
-			// find missing ids
-			StringBuilder buffer = new StringBuilder();
-			buffer.append("Some ObjectIds are missing from the database. ");
-			buffer.append("Expected ").append(ids.size()).append(", fetched ").append(objects.size());
-
-			boolean first = true;
-			for (Object id : ids) {
-				boolean found = false;
-
-				for (Object object : objects) {
-
-					if (getHelper().replacesObject(object, id)) {
-						found = true;
-						break;
-					}
-				}
-
-				if (!found) {
-					if (first) {
-						first = false;
-					} else {
-						buffer.append(", ");
-					}
-
-					buffer.append(id.toString());
+		// We have less objects then ids
+		// check that we are really missing some ids and throw an exception in that case
+		StringBuilder buffer = null;
+		boolean first = true;
+		for (Object id : ids) {
+			boolean found = false;
+			for (Object object : objects) {
+				if (getHelper().replacesObject(object, id)) {
+					found = true;
+					break;
 				}
 			}
 
+			if (!found) {
+				if(buffer == null) {
+					buffer = new StringBuilder();
+				}
+				if (first) {
+					first = false;
+				} else {
+					buffer.append(", ");
+				}
+				buffer.append(id.toString());
+			}
+		}
+
+		// we have some objects missing, throw
+		if(buffer != null) {
+			buffer.insert(0, "Some ObjectIds are missing from the database. Expected " + ids.size() + ", fetched " + objects.size());
 			throw new CayenneRuntimeException(buffer.toString());
-		} else if (objects.size() > ids.size()) {
-			throw new CayenneRuntimeException("Expected %d objects, retrieved %d", ids.size(), objects.size());
 		}
 	}
 

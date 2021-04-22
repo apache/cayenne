@@ -15,6 +15,7 @@ Changes/New Features:
 
 Bug Fixes:
 
+CAY-2092 Exception for query that uses pagination and sorting on to-many
 CAY-2702 Modeler: Callbacks table has too small default width
 CAY-2703 Modeler: incorrect active tab style on the MacOS version
 CAY-2705 Performance of callback annotation processing

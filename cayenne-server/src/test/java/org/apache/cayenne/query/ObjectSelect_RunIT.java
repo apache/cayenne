@@ -29,6 +29,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -222,5 +223,17 @@ public class ObjectSelect_RunIT extends ServerCase {
 				.select(context);
 
 		assertEquals(1, artists.size());
+	}
+
+	@Test
+	public void test_CAY_2092() {
+		List<Artist> artists = ObjectSelect.query(Artist.class)
+				.orderBy(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).asc())
+				.pageSize(5)
+				.select(context);
+		// just read everything to trigger page resolving
+		for (Artist artist : artists) {
+			assertNotNull(artist);
+		}
 	}
 }
