@@ -98,6 +98,15 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         UIManager.put("Table.selectionBackground",    lightGrey);
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
 
+        // MacOS BigSur needs additional style tweaking for the tabs active state
+        OSXVersion version = OSXVersion.fromSystemProperties();
+        if(version.gt(OSXVersion.CATALINA)) {
+            UIManager.put("TabbedPane.selectedTabTitlePressedColor", Color.BLACK);
+            UIManager.put("TabbedPane.selectedTabTitleNormalColor", Color.BLACK);
+            UIManager.put("TabbedPane.selectedTabTitleShadowDisabledColor", new Color(0, 0, 0, 0));
+            UIManager.put("TabbedPane.selectedTabTitleShadowNormalColor", new Color(0, 0, 0, 0));
+        }
+
         Border backgroundPainter = new AbstractBorder() {
             @Override
             public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
@@ -107,7 +116,6 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         };
         UIManager.put("MenuItem.selectedBackgroundPainter", backgroundPainter);
         UIManager.put("MenuItem.selectionForeground",       Color.BLACK);
-
     }
 
     public void setupMenus(JFrame frame) {
