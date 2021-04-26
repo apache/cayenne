@@ -66,12 +66,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.superclassTemplate = new ComboBoxAdapter<String>(superclassField) {
             @Override
             protected void updateModel(String item) throws ValidationException {
-                CgenConfiguration cgenConfiguration = getCgenByDataMap();
+                CgenConfiguration cgenConfiguration = getCgenConfig();
                 cgenConfiguration.setSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
                         cgenConfiguration.getDataMap().getConfigurationSource()));
-                if(!codeGeneratorControllerBase.isInitFromModel()) {
-                    projectController.setDirty(true);
-                }
+                checkConfigDirty();
             }
         };
 
@@ -79,12 +77,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.subclassTemplate = new ComboBoxAdapter<String>(subclassField) {
             @Override
             protected void updateModel(String item) throws ValidationException {
-                CgenConfiguration cgenConfiguration = getCgenByDataMap();
+                CgenConfiguration cgenConfiguration = getCgenConfig();
                 cgenConfiguration.setTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
                         cgenConfiguration.getDataMap().getConfigurationSource()));
-                if(!codeGeneratorControllerBase.isInitFromModel()) {
-                    projectController.setDirty(true);
-                }
+                checkConfigDirty();
             }
         };
         
@@ -92,12 +88,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.embeddableTemplate = new ComboBoxAdapter<String>(embeddableField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
-        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		CgenConfiguration cgenConfiguration = getCgenConfig();
         		cgenConfiguration.setEmbeddableTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
         				cgenConfiguration.getDataMap().getConfigurationSource()));
-        		if(!codeGeneratorControllerBase.isInitFromModel()) {
-        			projectController.setDirty(true);
-        		}
+                checkConfigDirty();
         	}
         };
         
@@ -105,12 +99,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.embeddableSuperTemplate = new ComboBoxAdapter<String>(embeddableSuperField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
-        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		CgenConfiguration cgenConfiguration = getCgenConfig();
         		cgenConfiguration.setEmbeddableSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
         				cgenConfiguration.getDataMap().getConfigurationSource()));
-        		if(!codeGeneratorControllerBase.isInitFromModel()) {
-        			projectController.setDirty(true);
-        		}
+                checkConfigDirty();
         	}
         };
         
@@ -118,12 +110,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.queryTemplate = new ComboBoxAdapter<String>(queryField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
-        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		CgenConfiguration cgenConfiguration = getCgenConfig();
         		cgenConfiguration.setQueryTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
         				cgenConfiguration.getDataMap().getConfigurationSource()));
-        		if(!codeGeneratorControllerBase.isInitFromModel()) {
-        			projectController.setDirty(true);
-        		}
+                checkConfigDirty();
         	}
         };
         
@@ -131,12 +121,10 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.querySuperTemplate = new ComboBoxAdapter<String>(querySuperField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
-        		CgenConfiguration cgenConfiguration = getCgenByDataMap();
+        		CgenConfiguration cgenConfiguration = getCgenConfig();
         		cgenConfiguration.setQuerySuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
         				cgenConfiguration.getDataMap().getConfigurationSource()));
-        		if(!codeGeneratorControllerBase.isInitFromModel()) {
-        			projectController.setDirty(true);
-        		}
+                checkConfigDirty();
         	}
         };
 
@@ -147,10 +135,8 @@ public class CustomModePanel extends GeneratorControllerPanel {
         JTextField outputPatternField = new JTextField();
         this.outputPattern = new TextAdapter(outputPatternField) {
             protected void updateModel(String text) {
-                getCgenByDataMap().setOutputPattern(text);
-                if(!codeGeneratorControllerBase.isInitFromModel()) {
-                    projectController.setDirty(true);
-                }
+                getCgenConfig().setOutputPattern(text);
+                checkConfigDirty();
             }
         };
 
@@ -158,10 +144,8 @@ public class CustomModePanel extends GeneratorControllerPanel {
         this.superPkg = new TextAdapter(superPkgField) {
             @Override
             protected void updateModel(String text) throws ValidationException {
-                getCgenByDataMap().setSuperPkg(text);
-                if(!codeGeneratorControllerBase.isInitFromModel()) {
-                    projectController.setDirty(true);
-                }
+                getCgenConfig().setSuperPkg(text);
+                checkConfigDirty();
             }
         };
 

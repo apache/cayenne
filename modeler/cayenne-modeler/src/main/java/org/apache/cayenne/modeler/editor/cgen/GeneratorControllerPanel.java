@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.validation.ValidationException;
@@ -38,18 +37,18 @@ public class GeneratorControllerPanel extends JPanel {
     protected TextAdapter outputFolder;
     protected JButton selectOutputFolder;
     protected ProjectController projectController;
+    protected CodeGeneratorController codeGeneratorController;
 
-    public GeneratorControllerPanel(ProjectController projectController, CodeGeneratorController codeGeneratorControllerBase) {
+    public GeneratorControllerPanel(ProjectController projectController, CodeGeneratorController codeGeneratorController) {
         this.projectController = projectController;
+        this.codeGeneratorController = codeGeneratorController;
         this.outputFolder = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) throws ValidationException {
-                CgenConfiguration cgenByDataMap = getCgenByDataMap();
+                CgenConfiguration cgenByDataMap = getCgenConfig();
                 if(cgenByDataMap != null) {
                     cgenByDataMap.setRelPath(text);
-                    if (!codeGeneratorControllerBase.isInitFromModel()) {
-                        projectController.setDirty(true);
-                    }
+                    checkConfigDirty();
                 }
             }
         };
@@ -64,8 +63,13 @@ public class GeneratorControllerPanel extends JPanel {
         return selectOutputFolder;
     }
 
-    public CgenConfiguration getCgenByDataMap() {
-        DataMap dataMap = projectController.getCurrentDataMap();
-        return projectController.getApplication().getMetaData().get(dataMap, CgenConfiguration.class);
+    protected void checkConfigDirty() {
+        if (!codeGeneratorController.isInitFromModel()) {
+            codeGeneratorController.checkCgenConfigDirty();
+        }
+    }
+
+    protected CgenConfiguration getCgenConfig() {
+        return codeGeneratorController.getCgenConfiguration();
     }
 }
