@@ -36,6 +36,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.cayenne.validation.ValidationException;
 
 /**
  * Used to keep config of class generation action.
@@ -176,12 +177,14 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     public void setRelPath(String pathStr) {
         Path path = Paths.get(pathStr);
-        if(path.isAbsolute() && rootPath != null) {
-            this.relPath = rootPath.relativize(path);
-        } else {
-            this.relPath = path;
-        }
-	}
+        if (path.isAbsolute() && !pathStr.isEmpty()) {
+            if (rootPath != null && path.getRoot().equals(rootPath.getRoot())) {
+                this.relPath = rootPath.relativize(path);
+            } else {
+                this.relPath = path;
+            }
+        } else throw new ValidationException("Invalid out directory path");
+    }
 
     public boolean isOverwrite() {
         return overwrite;
