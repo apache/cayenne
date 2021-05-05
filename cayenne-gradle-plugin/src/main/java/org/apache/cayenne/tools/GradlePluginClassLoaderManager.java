@@ -75,7 +75,7 @@ public class GradlePluginClassLoaderManager implements ClassLoaderManager {
             return classLoader;
         }
 
-        Configuration configuration = configurations.getByName("compile");
+        Configuration configuration = configurations.getByName("implementation");
         DependencySet dependencies = configuration.getDependencies();
         if(dependencies == null || dependencies.isEmpty()) {
             return classLoader;

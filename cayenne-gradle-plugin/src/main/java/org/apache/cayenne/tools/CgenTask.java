@@ -431,6 +431,22 @@ public class CgenTask extends BaseCayenneTask {
         this.excludeEmbeddables = excludeEmbeddables;
     }
 
+    public Boolean getCreatePKProperties() {
+        return createPKProperties;
+    }
+
+    public String getExternalToolConfig() {
+        return externalToolConfig;
+    }
+
+    public String getQueryTemplate() {
+        return queryTemplate;
+    }
+
+    public String getQuerySuperTemplate() {
+        return querySuperTemplate;
+    }
+
     /**
      * @param excludeEmbeddables pattern to use for embeddable exclusion
      * @since 4.1

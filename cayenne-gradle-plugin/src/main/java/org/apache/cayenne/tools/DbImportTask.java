@@ -188,6 +188,11 @@ public class DbImportTask extends BaseCayenneTask {
         setAdapter(adapter);
     }
 
+
+    public ReverseEngineering getReverseEngineering() {
+        return reverseEngineering;
+    }
+
     @OutputFile
     @Optional
     public File getCayenneProject() {

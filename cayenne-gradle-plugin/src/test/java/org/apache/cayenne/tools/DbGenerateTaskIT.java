@@ -59,7 +59,7 @@ public class DbGenerateTaskIT extends BaseTaskIT {
                 "cdbgen",
                 "-PdbUrl=" + dbUrl,
                 "-PdataMap=test_datamap.map.xml",
-                "--info"
+                "--debug"
         );
 
         BuildResult result = runner.build();
