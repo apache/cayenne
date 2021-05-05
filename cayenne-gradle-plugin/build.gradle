@@ -44,7 +44,7 @@ def getProjectVersion() {
     }
 }
 
-def classpathFile = file('build/classpath2.txt')
+def classpathFile = file('build/classpath.txt')
 if (classpathFile.file) {
     String[] paths = classpathFile.text.split(';')
     dependencies {
