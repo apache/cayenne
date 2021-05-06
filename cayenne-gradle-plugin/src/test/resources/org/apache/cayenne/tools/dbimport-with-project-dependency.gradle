@@ -20,7 +20,9 @@
 plugins {
     id 'org.apache.cayenne'
 }
-apply plugin:'java'
+
+
+apply plugin: 'java'
 cdbimport {
     map 'datamap.map.xml'
 
@@ -36,6 +38,10 @@ cdbimport {
 
 dependencies {
     implementation 'mysql:mysql-connector-java:6.0.5'
+}
+
+configurations {
+    project.configurations.getByName("implementation").setCanBeResolved(true)
 }
 
 repositories {
