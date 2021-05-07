@@ -36,7 +36,13 @@ import org.gradle.api.artifacts.DependencySet;
  * Gradle class loader manager to update class loader urls with project dependencies.
  *
  * @since 4.1
+ *
+ * @deprecated
+ * Class supports only compile gradle configuration, which is removed in gradle 7.0
+ * replaced with org.apache.cayenne.di.spi.DefaultClassLoaderManager
+ * @since 4.2.M4
  */
+@Deprecated(since = "4.2.M4",forRemoval = true)
 public class GradlePluginClassLoaderManager implements ClassLoaderManager {
 
     private Project project;
@@ -75,7 +81,7 @@ public class GradlePluginClassLoaderManager implements ClassLoaderManager {
             return classLoader;
         }
 
-        Configuration configuration = configurations.getByName("implementation");
+        Configuration configuration = configurations.getByName("compile");
         DependencySet dependencies = configuration.getDependencies();
         if(dependencies == null || dependencies.isEmpty()) {
             return classLoader;

@@ -48,6 +48,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 
 /**
  * @since 4.0
@@ -79,7 +80,7 @@ public class DbImportTask extends BaseCayenneTask {
         dataSource.validate();
 
         final Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()), new DbImportModule(),
-                binder -> binder.bind(ClassLoaderManager.class).toInstance(new GradlePluginClassLoaderManager(getProject())));
+                binder -> binder.bind(ClassLoaderManager.class).toInstance(new DefaultClassLoaderManager()));
 
         final DbImportConfiguration config = createConfig();
 
@@ -187,7 +188,6 @@ public class DbImportTask extends BaseCayenneTask {
     public void adapter(final String adapter) {
         setAdapter(adapter);
     }
-
 
     public ReverseEngineering getReverseEngineering() {
         return reverseEngineering;
