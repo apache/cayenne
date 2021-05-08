@@ -47,6 +47,8 @@ import javax.sql.DataSource;
 
 /**
  * @since 4.0
+ *
+ * Gradle 7.0 can't recognize @Optional for some fields
  */
 public class DbGenerateTask extends BaseCayenneTask {
 
