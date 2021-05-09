@@ -40,9 +40,10 @@ import org.gradle.api.artifacts.DependencySet;
  * @deprecated
  * Class supports only compile gradle configuration, which is removed in gradle 7.0
  * replaced with org.apache.cayenne.di.spi.DefaultClassLoaderManager
+ * Will be removed
  * @since 4.2.M4
  */
-@Deprecated(since = "4.2.M4",forRemoval = true)
+@Deprecated
 public class GradlePluginClassLoaderManager implements ClassLoaderManager {
 
     private Project project;
