@@ -61,7 +61,7 @@ public class GradlePluginIT extends BaseTaskIT {
         } else if(javaMajorVersion >= 11) {
             versions = new String[]{"4.8"};
         } else if (javaMajorVersion < 9) {
-            versions = new String[]{"4.3", "4.0", "3.5", "3.3", "3.0", "2.12", "2.8"};
+            versions = new String[]{"4.3", "4.0", "3.5"};
         } else {
             versions = new String[]{"4.3.1", "4.3"};
         }
