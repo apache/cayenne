@@ -58,23 +58,18 @@ public class DbGenerateTask extends BaseCayenneTask {
     private DataSourceConfig dataSource = new DataSourceConfig();
 
     @Input
-    @Optional
     private boolean dropTables;
 
     @Input
-    @Optional
     private boolean dropPK;
 
     @Input
-    @Optional
     private boolean createTables = true;
 
     @Input
-    @Optional
     private boolean createPK = true;
 
     @Input
-    @Optional
     private boolean createFK = true;
 
     @InputFile

@@ -35,7 +35,11 @@ cdbimport {
 }
 
 dependencies {
-    compile 'mysql:mysql-connector-java:6.0.5'
+    implementation 'mysql:mysql-connector-java:6.0.5'
+}
+
+configurations {
+    project.configurations.getByName("implementation").setCanBeResolved(true)
 }
 
 repositories {
