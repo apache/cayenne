@@ -38,11 +38,10 @@ env:
 jdk:
   - openjdk8
   - openjdk11
-  - openjdk16
   - openjdk-ea
 
 script:
-  - travis_wait mvn verify -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
+  - travis_wait mvn verify -fae -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
 jobs:
   allow_failures:
