@@ -38,6 +38,7 @@ env:
 jdk:
   - openjdk8
   - openjdk11
+  - openjdk16
   - openjdk-ea
 
 script:

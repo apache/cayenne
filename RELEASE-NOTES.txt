@@ -21,6 +21,7 @@ CAY-2703 Modeler: incorrect active tab style on the MacOS version
 CAY-2705 Performance of callback annotation processing
 CAY-2706 Modeler: object attribute dialog doesn't properly initialized for the embeddable type
 CAY-2707 Modeler: code generation is broken in the DataDomain tab
+CAY-2708 Gradle build plugin fails on Java 16
 CAY-2709 Modeler: Cgen fails to generate code for a new unsaved project with all settings set to default
 
 ----------------------------------
