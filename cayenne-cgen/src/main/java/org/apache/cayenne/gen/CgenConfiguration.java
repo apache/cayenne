@@ -36,12 +36,14 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.cayenne.validation.ValidationException;
 
 /**
  * Used to keep config of class generation action.
  * Previously was the part of ClassGeneretionAction class.
  * Now CgenConfiguration is saved in dataMap file.
  * You can reuse it in next cgen actions.
+ *
  * @since 4.1
  */
 public class CgenConfiguration implements Serializable, XMLSerializable {
@@ -97,7 +99,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
         this.client = client;
 
-        if(!client) {
+        if (!client) {
             this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
             this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
             this.queryTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
@@ -112,7 +114,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.embeddableSuperTemplate = ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
     }
 
-    public void resetCollections(){
+    public void resetCollections() {
         embeddableArtifacts.clear();
         entityArtifacts.clear();
     }
@@ -141,7 +143,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         }
     }
 
-    public String getArtifactsGenerationMode(){
+    public String getArtifactsGenerationMode() {
         return artifactsGenerationMode.getLabel();
     }
 
@@ -168,12 +170,20 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     public void setRelPath(String pathStr) {
         Path path = Paths.get(pathStr);
-        if(path.isAbsolute() && rootPath != null) {
-            this.relPath = rootPath.relativize(path);
-        } else {
-            this.relPath = path;
+
+        if (rootPath != null) {
+
+            if (!rootPath.isAbsolute()) {
+                throw new ValidationException("Root path : " + '"' + rootPath.toString() + '"' + "should be absolute");
+            }
+
+            if (path.isAbsolute() && rootPath.getRoot().equals(path.getRoot())) {
+                this.relPath = rootPath.relativize(path);
+                return;
+            }
         }
-	}
+        this.relPath = path;
+    }
 
     public boolean isOverwrite() {
         return overwrite;
@@ -292,7 +302,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public String buildRelPath() {
-        if(relPath == null || relPath.toString().isEmpty()) {
+        if (relPath == null || relPath.toString().isEmpty()) {
             return ".";
         }
         return relPath.toString();
@@ -323,11 +333,11 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public Path buildPath() {
-		return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : relPath;
-	}
+        return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : relPath;
+    }
 
     public void loadEntity(ObjEntity entity) {
-        if(!entity.isGeneric()) {
+        if (!entity.isGeneric()) {
             entityArtifacts.add(entity.getName());
         }
     }
@@ -362,23 +372,23 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         return String.join(",", excludeEmbeddable);
     }
 
-	public void resolveExcludeEntities() {
-		entityArtifacts = dataMap.getObjEntities()
-				.stream()
-				.filter(entity -> !excludeEntityArtifacts.contains(entity.getName()))
+    public void resolveExcludeEntities() {
+        entityArtifacts = dataMap.getObjEntities()
+                .stream()
+                .filter(entity -> !excludeEntityArtifacts.contains(entity.getName()))
 				.map(ObjEntity::getName)
-				.collect(Collectors.toSet());
-	}
+                .collect(Collectors.toSet());
+    }
 
-	public void resolveExcludeEmbeddables() {
-    	embeddableArtifacts = dataMap.getEmbeddables()
-				.stream()
-				.filter(embeddable -> !excludeEmbeddableArtifacts.contains(embeddable.getClassName()))
+    public void resolveExcludeEmbeddables() {
+        embeddableArtifacts = dataMap.getEmbeddables()
+                .stream()
+                .filter(embeddable -> !excludeEmbeddableArtifacts.contains(embeddable.getClassName()))
 				.map(Embeddable::getClassName)
-				.collect(Collectors.toSet());
-	}
+                .collect(Collectors.toSet());
+    }
 
-	public Collection<String> getExcludeEntityArtifacts() {
+    public Collection<String> getExcludeEntityArtifacts() {
         return excludeEntityArtifacts;
     }
 

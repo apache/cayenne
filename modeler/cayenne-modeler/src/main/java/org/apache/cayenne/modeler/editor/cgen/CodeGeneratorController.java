@@ -76,7 +76,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         CgenConfiguration cgenConfiguration = createConfiguration();
         GeneratorController modeController = prevGeneratorController.get(dataMap) != null
                 ? prevGeneratorController.get(dataMap)
-                : isDefaultConfig(cgenConfiguration)
+                : isDefaultConfig (cgenConfiguration)
                     ? cgenConfiguration.isClient()
                         ? generatorSelector.getClientGeneratorController()
                         : generatorSelector.getStandartController()
@@ -101,7 +101,7 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
 
     }
 
-    private void initListeners(){
+    private void initListeners() {
         projectController.addObjEntityListener(this);
         projectController.addEmbeddableListener(this);
         projectController.addDataMapListener(this);
@@ -173,7 +173,8 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     @Override
-    public void objEntityChanged(EntityEvent e) {}
+    public void objEntityChanged(EntityEvent e) {
+    }
 
     @Override
     public void objEntityAdded(EntityEvent e) {
@@ -185,13 +186,14 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
         super.removeFromSelectedEntities((ObjEntity) e.getEntity());
         DataMap map = e.getEntity().getDataMap();
         CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.getEntities().remove(e.getEntity().getName());
         }
     }
 
     @Override
-    public void embeddableChanged(EmbeddableEvent e, DataMap map) {}
+    public void embeddableChanged(EmbeddableEvent e, DataMap map) {
+    }
 
     @Override
     public void embeddableAdded(EmbeddableEvent e, DataMap map) {
@@ -202,16 +204,16 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
         super.removeFromSelectedEmbeddables(e.getEmbeddable());
         CgenConfiguration cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.getEmbeddables().remove(e.getEmbeddable().getClassName());
         }
     }
 
     @Override
     public void dataMapChanged(DataMapEvent e) {
-        if(e.getSource() instanceof DbImportController) {
+        if (e.getSource() instanceof DbImportController) {
             CgenConfiguration cgenConfiguration = getCurrentConfiguration();
-            if(cgenConfiguration != null) {
+            if (cgenConfiguration != null) {
                 for(ObjEntity objEntity : e.getDataMap().getObjEntities()) {
                     if(!cgenConfiguration.getExcludeEntityArtifacts().contains(objEntity.getName())) {
                         addEntity(cgenConfiguration.getDataMap(), objEntity);
@@ -222,8 +224,10 @@ public class CodeGeneratorController extends CodeGeneratorControllerBase impleme
     }
 
     @Override
-    public void dataMapAdded(DataMapEvent e) {}
+    public void dataMapAdded(DataMapEvent e) {
+    }
 
     @Override
-    public void dataMapRemoved(DataMapEvent e) {}
+    public void dataMapRemoved(DataMapEvent e) {
+    }
 }

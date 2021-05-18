@@ -28,6 +28,8 @@ import org.apache.cayenne.validation.ValidationException;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @since 4.1
@@ -44,8 +46,14 @@ public class GeneratorControllerPanel extends JPanel {
         this.outputFolder = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) throws ValidationException {
+
                 getCgenByDataMap().setRelPath(text);
-                if(!codeGeneratorControllerBase.isInitFromModel()) {
+
+                if (!codeGeneratorControllerBase.isInitFromModel()) {
+
+                    if (getCgenByDataMap().getRootPath() == null && !Paths.get(text).isAbsolute()) {
+                        throw new ValidationException("You should save project to use rel path as output directory ");
+                    }
                     projectController.setDirty(true);
                 }
             }
