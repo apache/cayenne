@@ -101,8 +101,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         createConfiguration(dataMap);
 
         GeneratorController modeController = prevGeneratorController.get(dataMap);
-        if(modeController == null) {
-            if(cgenConfiguration.isDefault()) {
+        if (modeController == null) {
+            if (cgenConfiguration.isDefault()) {
                 modeController = cgenConfiguration.isClient()
                         ? generatorSelector.getClientGeneratorController()
                         : generatorSelector.getStandartController();
@@ -118,7 +118,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         classesSelector.validate(classes);
     }
 
-    private void initListeners(){
+    private void initListeners() {
         projectController.addObjEntityListener(this);
         projectController.addEmbeddableListener(this);
         projectController.addDataMapListener(this);
@@ -207,7 +207,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
      */
     public void createConfiguration(DataMap map) {
         cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
-        if(cgenConfiguration != null){
+        if (cgenConfiguration != null) {
             addToSelectedEntities(cgenConfiguration.getEntities());
             addToSelectedEmbeddables(cgenConfiguration.getEmbeddables());
             cgenConfiguration.setForce(true);
@@ -236,7 +236,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
             return;
         }
 
-        cgenConfiguration.setRootPath(basePath);
+        if (map.getLocation() != null) {
+            cgenConfiguration.setRootPath(basePath);
+        }
         Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
         if (preferences != null) {
             cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
@@ -260,7 +262,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         boolean modified = selectionModel.updateSelection(predicate, classes);
 
         for (Object classObj : classes) {
-            if(classObj instanceof DataMap) {
+            if (classObj instanceof DataMap) {
                 boolean selected = predicate.test(classObj);
                 updateArtifactGenerationMode(selected);
             }
@@ -270,7 +272,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     private void updateArtifactGenerationMode(boolean selected) {
-        if(selected) {
+        if (selected) {
             cgenConfiguration.setArtifactsGenerationMode("all");
         } else {
             cgenConfiguration.setArtifactsGenerationMode("entity");
@@ -293,19 +295,19 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         this.currentClass = currentClass;
     }
 
-    public void updateSelectedEntities(){
+    public void updateSelectedEntities() {
         updateEntities();
         updateEmbeddables();
     }
 
     public void checkCgenConfigDirty() {
-        if(initFromModel || cgenConfiguration == null) {
+        if (initFromModel || cgenConfiguration == null) {
             return;
         }
 
         DataMap map = projectController.getCurrentDataMap();
         CgenConfiguration existingConfig = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
-        if(existingConfig == null) {
+        if (existingConfig == null) {
             getApplication().getMetaData().add(map, cgenConfiguration);
         }
 
@@ -313,9 +315,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     private void updateEntities() {
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.getEntities().clear();
-            for(ObjEntity entity: selectionModel.getSelectedEntities(classes)) {
+            for (ObjEntity entity : selectionModel.getSelectedEntities(classes)) {
                 cgenConfiguration.loadEntity(entity);
             }
         }
@@ -323,9 +325,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     private void updateEmbeddables() {
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.getEmbeddables().clear();
-            for(Embeddable embeddable : selectionModel.getSelectedEmbeddables(classes)) {
+            for (Embeddable embeddable : selectionModel.getSelectedEmbeddables(classes)) {
                 cgenConfiguration.loadEmbeddable(embeddable.getClassName());
             }
         }
@@ -340,7 +342,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     void addEntity(DataMap dataMap, ObjEntity objEntity) {
         prepareClasses(dataMap);
         selectionModel.addSelectedEntity(objEntity.getName());
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.loadEntity(objEntity);
         }
         checkCgenConfigDirty();
@@ -376,7 +378,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     @Override
-    public void objEntityChanged(EntityEvent e) {}
+    public void objEntityChanged(EntityEvent e) {
+    }
 
     @Override
     public void objEntityAdded(EntityEvent e) {
@@ -386,21 +389,22 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     @Override
     public void objEntityRemoved(EntityEvent e) {
         selectionModel.removeFromSelectedEntities((ObjEntity) e.getEntity());
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.getEntities().remove(e.getEntity().getName());
         }
         checkCgenConfigDirty();
     }
 
     @Override
-    public void embeddableChanged(EmbeddableEvent e, DataMap map) {}
+    public void embeddableChanged(EmbeddableEvent e, DataMap map) {
+    }
 
     @Override
     public void embeddableAdded(EmbeddableEvent e, DataMap map) {
         prepareClasses(map);
         String embeddableClassName = e.getEmbeddable().getClassName();
         selectionModel.addSelectedEmbeddable(embeddableClassName);
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.loadEmbeddable(embeddableClassName);
         }
         checkCgenConfigDirty();
@@ -409,7 +413,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     @Override
     public void embeddableRemoved(EmbeddableEvent e, DataMap map) {
         selectionModel.removeFromSelectedEmbeddables(e.getEmbeddable());
-        if(cgenConfiguration != null) {
+        if (cgenConfiguration != null) {
             cgenConfiguration.getEmbeddables().remove(e.getEmbeddable().getClassName());
         }
         checkCgenConfigDirty();
@@ -417,8 +421,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     @Override
     public void dataMapChanged(DataMapEvent e) {
-        if(e.getSource() instanceof DbImportController) {
-            if(cgenConfiguration != null) {
+        if (e.getSource() instanceof DbImportController) {
+            if (cgenConfiguration != null) {
                 for (ObjEntity objEntity : e.getDataMap().getObjEntities()) {
                     if (!cgenConfiguration.getExcludeEntityArtifacts().contains(objEntity.getName())) {
                         addEntity(cgenConfiguration.getDataMap(), objEntity);
@@ -430,10 +434,12 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     @Override
-    public void dataMapAdded(DataMapEvent e) {}
+    public void dataMapAdded(DataMapEvent e) {
+    }
 
     @Override
-    public void dataMapRemoved(DataMapEvent e) {}
+    public void dataMapRemoved(DataMapEvent e) {
+    }
 
     public CgenConfiguration getCgenConfiguration() {
         return cgenConfiguration;
