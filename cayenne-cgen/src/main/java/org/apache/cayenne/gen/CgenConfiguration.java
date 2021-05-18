@@ -22,11 +22,7 @@ package org.apache.cayenne.gen;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -36,12 +32,14 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+import org.apache.cayenne.validation.ValidationException;
 
 /**
  * Used to keep config of class generation action.
  * Previously was the part of ClassGeneretionAction class.
  * Now CgenConfiguration is saved in dataMap file.
  * You can reuse it in next cgen actions.
+ *
  * @since 4.1
  */
 public class CgenConfiguration implements Serializable, XMLSerializable {
@@ -85,7 +83,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      * @since 4.2
      */
     private String externalToolConfig;
-    
+
     public CgenConfiguration(boolean client) {
         /**
          * {@link #isDefault()} method should be in sync with the following values
@@ -105,7 +103,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
         this.client = client;
 
-        if(!client) {
+        if (!client) {
             this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
             this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
             this.queryTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
@@ -120,7 +118,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.embeddableSuperTemplate = ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
     }
 
-    public void resetCollections(){
+    public void resetCollections() {
         embeddableArtifacts.clear();
         entityArtifacts.clear();
     }
@@ -149,7 +147,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         }
     }
 
-    public String getArtifactsGenerationMode(){
+    public String getArtifactsGenerationMode() {
         return artifactsGenerationMode.getLabel();
     }
 
@@ -176,12 +174,20 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     public void setRelPath(String pathStr) {
         Path path = Paths.get(pathStr);
-        if(path.isAbsolute() && rootPath != null) {
-            this.relPath = rootPath.relativize(path);
-        } else {
-            this.relPath = path;
+
+        if (rootPath != null) {
+
+            if (!rootPath.isAbsolute()) {
+                throw new ValidationException("Root path : " + '"' + rootPath.toString() + '"' + "should be absolute");
+            }
+
+            if (path.isAbsolute() && rootPath.getRoot().equals(path.getRoot())) {
+                this.relPath = rootPath.relativize(path);
+                return;
+            }
         }
-	}
+        this.relPath = path;
+    }
 
     public boolean isOverwrite() {
         return overwrite;
@@ -300,7 +306,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public String buildRelPath() {
-        if(relPath == null || relPath.toString().isEmpty()) {
+        if (relPath == null || relPath.toString().isEmpty()) {
             return ".";
         }
         return relPath.toString();
@@ -327,23 +333,23 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public String getExternalToolConfig() {
-    	return externalToolConfig;
+        return externalToolConfig;
     }
-    
+
     public void setExternalToolConfig(String config) {
-    	this.externalToolConfig = config;
+        this.externalToolConfig = config;
     }
-    
+
     void addArtifact(Artifact artifact) {
         artifacts.add(artifact);
     }
 
     public Path buildPath() {
-		return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : relPath;
-	}
+        return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : relPath;
+    }
 
     public void loadEntity(ObjEntity entity) {
-        if(!entity.isGeneric()) {
+        if (!entity.isGeneric()) {
             entityArtifacts.add(entity.getName());
         }
     }
@@ -378,23 +384,23 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         return String.join(",", excludeEmbeddable);
     }
 
-	public void resolveExcludeEntities() {
-		entityArtifacts = dataMap.getObjEntities()
-				.stream()
-				.map(ObjEntity::getName)
-				.filter(name -> !excludeEntityArtifacts.contains(name))
-				.collect(Collectors.toSet());
-	}
+    public void resolveExcludeEntities() {
+        entityArtifacts = dataMap.getObjEntities()
+                .stream()
+                .map(ObjEntity::getName)
+                .filter(name -> !excludeEntityArtifacts.contains(name))
+                .collect(Collectors.toSet());
+    }
 
-	public void resolveExcludeEmbeddables() {
-    	embeddableArtifacts = dataMap.getEmbeddables()
-				.stream()
-				.map(Embeddable::getClassName)
-				.filter(className -> !excludeEmbeddableArtifacts.contains(className))
-				.collect(Collectors.toSet());
-	}
+    public void resolveExcludeEmbeddables() {
+        embeddableArtifacts = dataMap.getEmbeddables()
+                .stream()
+                .map(Embeddable::getClassName)
+                .filter(className -> !excludeEmbeddableArtifacts.contains(className))
+                .collect(Collectors.toSet());
+    }
 
-	public Collection<String> getExcludeEntityArtifacts() {
+    public Collection<String> getExcludeEntityArtifacts() {
         return excludeEntityArtifacts;
     }
 
@@ -442,12 +448,12 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 && !createPropertyNames
                 && "*.java".equals(outputPattern)
                 && (template.equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
-                    || template.equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE))
+                || template.equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE))
                 && (superTemplate.equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
-                    || superTemplate.equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE))
+                || superTemplate.equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE))
                 && (superPkg == null
-                    || superPkg.isEmpty())
+                || superPkg.isEmpty())
                 && (externalToolConfig == null
-                    || externalToolConfig.isEmpty());
+                || externalToolConfig.isEmpty());
     }
 }

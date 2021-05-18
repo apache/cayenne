@@ -72,9 +72,15 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
         Path prevPath = cgenConfiguration.buildPath();
         if(prevPath != null) {
             if(prevPath.isAbsolute()) {
-                Path relPath = resourcePath.relativize(prevPath).normalize();
+
+                Path relPath = prevPath;
+
+                if (resourcePath.getRoot().equals(prevPath.getRoot())) {
+                    relPath = resourcePath.relativize(prevPath).normalize();
+                }
                 cgenConfiguration.setRelPath(relPath);
             }
+
             Path templatePath = Paths.get(cgenConfiguration.getTemplate());
             if(templatePath.isAbsolute()) {
                 cgenConfiguration.setTemplate(resourcePath.relativize(templatePath).normalize().toString());
