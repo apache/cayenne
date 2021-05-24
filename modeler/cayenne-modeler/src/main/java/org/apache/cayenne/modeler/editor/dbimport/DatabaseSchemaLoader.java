@@ -58,6 +58,10 @@ public class DatabaseSchemaLoader {
             processCatalogs(connection, dbAdapter);
         }
 
+        if (databaseReverseEngineering.getSchemas().isEmpty() && databaseReverseEngineering.getCatalogs().isEmpty()) {
+            loadTables(connectionInfo, loadingService, null, null);
+        }
+
         sort();
         return databaseReverseEngineering;
     }
@@ -84,11 +88,11 @@ public class DatabaseSchemaLoader {
             while (rsCatalog.next() && dbAdapter.supportsCatalogsOnReverseEngineering()) {
                 hasCatalogs = true;
                 String catalog = rsCatalog.getString("TABLE_CAT");
-                if(!systemCatalogs.contains(catalog)) {
+                if (!systemCatalogs.contains(catalog)) {
                     processSchemas(connection, catalog, dbAdapter);
                 }
             }
-            if(!hasCatalogs) {
+            if (!hasCatalogs) {
                 processSchemas(connection, null, dbAdapter);
             }
         }
@@ -99,8 +103,8 @@ public class DatabaseSchemaLoader {
                                 DbAdapter dbAdapter) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         boolean hasSchemas = false;
-        if(metaData.supportsSchemasInTableDefinitions()) {
-            try(ResultSet rsSchema = metaData.getSchemas(catalog, null)) {
+        if (metaData.supportsSchemasInTableDefinitions()) {
+            try (ResultSet rsSchema = metaData.getSchemas(catalog, null)) {
                 List<String> systemSchemas = dbAdapter.getSystemSchemas();
                 while (rsSchema.next()) {
                     hasSchemas = true;
@@ -112,7 +116,7 @@ public class DatabaseSchemaLoader {
             }
         }
 
-        if(catalog != null && !hasSchemas) {
+        if (catalog != null && !hasSchemas) {
             packFilterContainer(catalog, null);
         }
     }
@@ -125,17 +129,19 @@ public class DatabaseSchemaLoader {
         String catalogName = null, schemaName = null;
 
         Object userObject = getUserObject(path, pathIndex);
-        if(userObject instanceof Catalog) {
-            Catalog catalog = (Catalog) userObject;
-            catalogName = catalog.getName();
-            if(!catalog.getSchemas().isEmpty()) {
-                userObject = getUserObject(path, ++pathIndex);
-                if (userObject instanceof Schema) {
-                    schemaName = ((Schema) userObject).getName();
+        if (userObject != null) {
+            if (userObject instanceof Catalog) {
+                Catalog catalog = (Catalog) userObject;
+                catalogName = catalog.getName();
+                if (!catalog.getSchemas().isEmpty()) {
+                    userObject = getUserObject(path, ++pathIndex);
+                    if (userObject instanceof Schema) {
+                        schemaName = ((Schema) userObject).getName();
+                    }
                 }
+            } else if (userObject instanceof Schema) {
+                schemaName = ((Schema) userObject).getName();
             }
-        } else if(userObject instanceof Schema) {
-            schemaName = ((Schema) userObject).getName();
         }
 
         try (Connection connection = connectionInfo.makeDataSource(loadingService).getConnection()) {
@@ -153,8 +159,9 @@ public class DatabaseSchemaLoader {
                     String catalog = resultSet.getString("TABLE_CAT");
                     packTable(table, catalog == null ? catalogName : catalog, schema, null);
                 }
-                if(!hasTables) {
-                    packFilterContainer(catalogName, schemaName);
+                if (!hasTables) {
+                    if (catalogName != null ||  schemaName != null)
+                        packFilterContainer(catalogName, schemaName);
                 }
                 packProcedures(connection);
             }
@@ -169,14 +176,11 @@ public class DatabaseSchemaLoader {
         String catalogName = null, schemaName = null;
 
         Object userObject = getUserObject(path, pathIndex);
-        if(userObject instanceof Catalog) {
+        if (userObject instanceof Catalog) {
             catalogName = ((Catalog) userObject).getName();
             userObject = getUserObject(path, ++pathIndex);
-            if(userObject instanceof Schema) {
-                schemaName = ((Schema) userObject).getName();
-                userObject = getUserObject(path, ++pathIndex);
-            }
-        } else if(userObject instanceof Schema) {
+        }
+        if (userObject instanceof Schema) {
             schemaName = ((Schema) userObject).getName();
             userObject = getUserObject(path, ++pathIndex);
         }
@@ -198,7 +202,7 @@ public class DatabaseSchemaLoader {
         if (catalogName != null && schemaName == null) {
             Catalog parentCatalog = getCatalogByName(databaseReverseEngineering.getCatalogs(), catalogName);
 
-            if(parentCatalog == null) {
+            if (parentCatalog == null) {
                 parentCatalog = new Catalog();
                 parentCatalog.setName(catalogName);
                 databaseReverseEngineering.addCatalog(parentCatalog);
@@ -208,7 +212,7 @@ public class DatabaseSchemaLoader {
         } else if (catalogName == null) {
             Schema parentSchema = getSchemaByName(databaseReverseEngineering.getSchemas(), schemaName);
 
-            if(parentSchema == null) {
+            if (parentSchema == null) {
                 parentSchema = new Schema();
                 parentSchema.setName(schemaName);
                 databaseReverseEngineering.addSchema(parentSchema);
@@ -219,7 +223,7 @@ public class DatabaseSchemaLoader {
             Schema parentSchema;
             if (parentCatalog != null) {
                 parentSchema = getSchemaByName(parentCatalog.getSchemas(), schemaName);
-                if(parentSchema == null) {
+                if (parentSchema == null) {
                     parentSchema = new Schema();
                     parentSchema.setName(schemaName);
                     parentCatalog.addSchema(parentSchema);
@@ -237,22 +241,24 @@ public class DatabaseSchemaLoader {
     }
 
     private Object getUserObject(TreePath path, int pathIndex) {
-        return ((DbImportTreeNode)path.getPathComponent(pathIndex)).getUserObject();
+        if (path == null)
+            return null;
+        return ((DbImportTreeNode) path.getPathComponent(pathIndex)).getUserObject();
     }
 
     private String processTable(Object userObject) {
-        if(userObject instanceof IncludeTable) {
-            return  ((IncludeTable) userObject).getPattern();
+        if (userObject instanceof IncludeTable) {
+            return ((IncludeTable) userObject).getPattern();
         }
         return null;
     }
 
     private void packProcedures(Connection connection) throws SQLException {
         Collection<Catalog> catalogs = databaseReverseEngineering.getCatalogs();
-        for(Catalog catalog : catalogs) {
+        for (Catalog catalog : catalogs) {
             Collection<Schema> schemas = catalog.getSchemas();
-            if(!schemas.isEmpty()) {
-                for(Schema schema : schemas) {
+            if (!schemas.isEmpty()) {
+                for (Schema schema : schemas) {
                     ResultSet procResultSet = getProcedures(connection, catalog.getName(), schema.getName());
                     packProcedures(procResultSet, schema);
                 }
@@ -263,7 +269,7 @@ public class DatabaseSchemaLoader {
         }
 
         Collection<Schema> schemas = databaseReverseEngineering.getSchemas();
-        for(Schema schema : schemas) {
+        for (Schema schema : schemas) {
             ResultSet procResultSet = getProcedures(connection, null, schema.getName());
             packProcedures(procResultSet, schema);
         }
@@ -291,6 +297,7 @@ public class DatabaseSchemaLoader {
             if (!databaseReverseEngineering.getIncludeTables().contains(table)) {
                 databaseReverseEngineering.addIncludeTable(table);
             }
+            addColumn(null, table, columnName);
             return;
         }
 
@@ -306,12 +313,17 @@ public class DatabaseSchemaLoader {
     }
 
     private void addColumn(FilterContainer filterContainer, IncludeTable table, String columnName) {
-        IncludeTable foundTable = getTableByName(filterContainer.getIncludeTables(), table.getPattern());
+        if (columnName == null)
+            return;
+
+        IncludeTable foundTable;
+        if (filterContainer != null)
+            foundTable = getTableByName(filterContainer.getIncludeTables(), table.getPattern());
+        else
+            foundTable = getTableByName(databaseReverseEngineering.getIncludeTables(), table.getPattern());
         table = foundTable != null ? foundTable : table;
-        if (columnName != null) {
-            IncludeColumn includeColumn = new IncludeColumn(columnName);
-            table.addIncludeColumn(includeColumn);
-        }
+        IncludeColumn includeColumn = new IncludeColumn(columnName);
+        table.addIncludeColumn(includeColumn);
     }
 
     private Catalog getCatalogByName(Collection<Catalog> catalogs, String catalogName) {
