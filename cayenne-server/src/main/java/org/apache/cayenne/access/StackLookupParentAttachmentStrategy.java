@@ -23,7 +23,7 @@ import org.apache.cayenne.Persistent;
 
 class StackLookupParentAttachmentStrategy implements ParentAttachmentStrategy {
 
-    private PrefetchProcessorNode node;
+    private final PrefetchProcessorNode node;
 
     StackLookupParentAttachmentStrategy(PrefetchProcessorNode node) {
         this.node = node;
