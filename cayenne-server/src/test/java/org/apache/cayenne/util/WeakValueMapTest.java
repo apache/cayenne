@@ -180,6 +180,32 @@ public class WeakValueMapTest {
         assertEquals(map1.hashCode(), map2.hashCode());
     }
 
+    @Test
+    public void testEntrySetValue() {
+        Map<String, Integer> map = new WeakValueMap<>(3);
+        map.put("key_1", 123);
+        map.put("key_2", 42);
+        map.put("key_3", 543);
+        assertEquals(3, map.size());
+
+        for(Map.Entry<String, Integer> entry : map.entrySet()) {
+            if("key_2".equals(entry.getKey())) {
+                assertEquals(Integer.valueOf(42), entry.getValue());
+                assertEquals(Integer.valueOf(42), entry.setValue(24));
+                assertEquals(Integer.valueOf(24), entry.getValue());
+            }
+        }
+
+        for(Map.Entry<String, Integer> entry : map.entrySet()) {
+            if("key_2".equals(entry.getKey())) {
+                assertEquals(Integer.valueOf(24), entry.getValue());
+            }
+        }
+
+        assertEquals(3, map.size());
+        assertEquals(Integer.valueOf(24), map.get("key_2"));
+    }
+
     @Test(expected = ConcurrentModificationException.class)
     public void testConcurrentModification() {
         Map<String, Integer> map = new WeakValueMap<>(3);

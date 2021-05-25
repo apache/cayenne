@@ -251,6 +251,7 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
     }
 
     private void resetReferenceQueue() {
+        //noinspection StatementWithEmptyBody
         while(referenceQueue.poll() != null) {
             // just purge this queue
         }
@@ -371,8 +372,9 @@ abstract class ReferenceMap<K, V, R extends Reference<V>> extends AbstractMap<K,
         public V setValue(V value) {
             R newRef = newReference(value);
             R oldRef = refEntry.setValue(newRef);
+            super.setValue(value);
             if(oldRef != null) {
-                return getValue();
+                return oldRef.get();
             }
             return null;
         }
