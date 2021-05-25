@@ -30,6 +30,8 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.graph.ArcId;
+import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -78,10 +80,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
             // if a relationship is to-one (i.e. flattened to-one), can connect right away....
             // write directly to prevent changing persistence state.
             if (incoming instanceof ToOneProperty) {
-                ObjectDiff diff = ((DataContext)parent.getObjectContext())
-                        .getObjectStore().getChangesByObjectId().get(parent.getObjectId());
-                // check that there are no pending changes for that property
-                if (diff == null || !diff.containsArcSnapshot(incoming.getName())) {
+                if(relationshipNotModified(parent, incoming)) {
                     incoming.writePropertyDirectly(parent, null, object);
                 }
             } else {
@@ -95,6 +94,27 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
                 peers.add(object);
             }
         }
+    }
+
+    boolean relationshipNotModified(Persistent object, ArcProperty property) {
+        if(object.getPersistenceState() != PersistenceState.MODIFIED) {
+            return true;
+        }
+
+        ObjectDiff diff = ((DataContext)object.getObjectContext())
+                .getObjectStore().getChangesByObjectId().get(object.getObjectId());
+        // check that there are no pending changes for that property
+        if(diff == null) {
+            return true;
+        }
+
+        if(diff.containsArcSnapshot(property.getName())) {
+            return false;
+        }
+
+        PropertyDiffTester tester = new PropertyDiffTester(property);
+        diff.apply(tester);
+        return !tester.hasArcDiff();
     }
 
     void connectToParents() {
@@ -145,12 +165,11 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     private void connect(Persistent object, List<Persistent> related) {
         if (incoming.getRelationship().isToMany()) {
-            @SuppressWarnings("unchecked")
-            ValueHolder<List<?>> toManyList = (ValueHolder<List<?>>) incoming.readProperty(object);
-
-            // TODO, Andrus 11/15/2005 -
-            //       if list is modified, shouldn't we attempt to merge the changes instead of overwriting?
-            toManyList.setValueDirectly(related != null ? related : new ArrayList<>(1));
+            if(relationshipNotModified(object, incoming)) {
+                @SuppressWarnings("unchecked")
+                ValueHolder<List<?>> toManyList = (ValueHolder<List<?>>) incoming.readProperty(object);
+                toManyList.setValueDirectly(related != null ? related : new ArrayList<>(1));
+            }
         } else {
             // this should've been handled elsewhere
             throw new CayenneRuntimeException("To-one relationship wasn't handled properly: %s", incoming.getName());
@@ -224,5 +243,48 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     void setParentAttachmentStrategy(ParentAttachmentStrategy parentAttachmentStrategy) {
         this.parentAttachmentStrategy = parentAttachmentStrategy;
+    }
+
+    private static class PropertyDiffTester implements GraphChangeHandler {
+        private final ArcProperty property;
+        private boolean hasArcDiff;
+
+        public PropertyDiffTester(ArcProperty property) {
+            this.property = property;
+        }
+
+        boolean hasArcDiff() {
+            return hasArcDiff;
+        }
+
+        @Override
+        public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+            if(arcId.getForwardArc().equals(property.getName())) {
+                hasArcDiff = true;
+            }
+        }
+
+        @Override
+        public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+            if(arcId.getForwardArc().equals(property.getName())) {
+                hasArcDiff = true;
+            }
+        }
+
+        @Override
+        public void nodeIdChanged(Object nodeId, Object newId) {
+        }
+
+        @Override
+        public void nodeCreated(Object nodeId) {
+        }
+
+        @Override
+        public void nodeRemoved(Object nodeId) {
+        }
+
+        @Override
+        public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
+        }
     }
 }

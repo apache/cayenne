@@ -476,4 +476,42 @@ public class JointPrefetchIT extends ServerCase {
 
         assertEquals(artist, painting.getToArtist());
     }
+
+    @Test
+    public void testJointPrefetchPreservesPendingToManyArcDiff() throws Exception {
+        createJointPrefetchDataSet();
+
+        Artist artist = ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist1"))
+                .selectFirst(context);
+
+        Painting painting = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.eq("P_artist21"))
+                .selectFirst(context);
+
+        // create pending arc diff
+        artist.addToPaintingArray(painting);
+
+        // refresh the painting (should preserve pending arc diff)
+        ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.eq("P_artist21"))
+                .selectFirst(context);
+        assertEquals(3, artist.getPaintingArray().size());
+        assertTrue(artist.getPaintingArray().contains(painting));
+
+        // refresh the artist (should preserve pending arc diff)
+        ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist1"))
+                .selectFirst(context);
+        assertEquals(3, artist.getPaintingArray().size());
+        assertTrue(artist.getPaintingArray().contains(painting));
+
+        // refresh them both together (should preserve pending arc diff)
+        ObjectSelect.query(Artist.class)
+                .where(Artist.ARTIST_NAME.eq("artist1"))
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .select(context);
+        assertEquals(3, artist.getPaintingArray().size());
+        assertTrue(artist.getPaintingArray().contains(painting));
+    }
 }
