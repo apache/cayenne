@@ -22,11 +22,7 @@ package org.apache.cayenne.tx;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
@@ -204,7 +200,10 @@ public abstract class BaseTransaction implements Transaction {
         Connection c = getExistingConnection(connectionName);
 
         if (c == null || c.isClosed()) {
-            c = dataSource.getConnection();
+            if(descriptor.getCustomConnectionSupplier() != null)
+                c = descriptor.getCustomConnectionSupplier().get();
+            else
+                c = dataSource.getConnection();
             addConnection(connectionName, c);
         }
 
@@ -219,18 +218,17 @@ public abstract class BaseTransaction implements Transaction {
 
     protected Connection addConnection(String connectionName, Connection connection) {
 
-        if(descriptor.getIsolation() != TransactionDescriptor.ISOLATION_DEFAULT) {
-            try {
-                defaultIsolationLevel = connection.getTransactionIsolation();
-                connection.setTransactionIsolation(descriptor.getIsolation());
-            } catch (SQLException ex) {
-                throw new CayenneRuntimeException("Unable to set required isolation level: " + descriptor.getIsolation(), ex);
-            }
-        }
+        setIsolationLevelFrom(connection);
 
-        TransactionConnectionDecorator wrapper = new TransactionConnectionDecorator(connection);
+        TransactionConnectionDecorator wrapper = null;
 
         if (listeners != null) {
+            for (TransactionListener listener : listeners) {
+                connection = listener.decorateConnection(this, connection);
+            }
+
+            wrapper = new TransactionConnectionDecorator(connection);
+
             for (TransactionListener listener : listeners) {
                 listener.willAddConnection(this, connectionName, wrapper);
             }
@@ -241,11 +239,25 @@ public abstract class BaseTransaction implements Transaction {
             connections = new HashMap<>();
         }
 
+        if (wrapper == null)
+            wrapper = new TransactionConnectionDecorator(connection);
+
         if (connections.put(connectionName, wrapper) != wrapper) {
             connectionAdded(connection);
         }
 
         return wrapper;
+    }
+
+    private void setIsolationLevelFrom(Connection connection) {
+        if (descriptor.getIsolation() != TransactionDescriptor.ISOLATION_DEFAULT) {
+            try {
+                defaultIsolationLevel = connection.getTransactionIsolation();
+                connection.setTransactionIsolation(descriptor.getIsolation());
+            } catch (SQLException ex) {
+                throw new CayenneRuntimeException("Unable to set required isolation level: " + descriptor.getIsolation(), ex);
+            }
+        }
     }
 
     protected void connectionAdded(Connection connection) {
@@ -278,7 +290,7 @@ public abstract class BaseTransaction implements Transaction {
                 // ignore for now
             } finally {
                 // restore connection default isolation level ...
-                if(defaultIsolationLevel != -1) {
+                if (defaultIsolationLevel != -1) {
                     try {
                         c.setTransactionIsolation(defaultIsolationLevel);
                     } catch (SQLException ignore) {

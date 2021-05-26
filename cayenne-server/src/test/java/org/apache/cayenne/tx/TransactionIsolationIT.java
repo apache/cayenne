@@ -74,10 +74,10 @@ public class TransactionIsolationIT extends ServerCase {
             return;
         }
 
-        TransactionDescriptor descriptor = new TransactionDescriptor(
-                Connection.TRANSACTION_SERIALIZABLE,
-                TransactionPropagation.REQUIRES_NEW
-        );
+        TransactionDescriptor descriptor = new TransactionDescriptor.Builder()
+                .propagation(TransactionPropagation.REQUIRES_NEW)
+                .isolation(Connection.TRANSACTION_SERIALIZABLE)
+                .build();
 
         CountDownLatch startSignal = new CountDownLatch(1);
         CountDownLatch resumeSerializableTransaction = new CountDownLatch(1);

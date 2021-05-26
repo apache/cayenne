@@ -83,10 +83,12 @@ public class DefaultTransactionManagerIT {
         try {
             final Object expectedResult = new Object();
             Object result = txManager.performInTransaction(() -> {
-                    assertSame(tx, BaseTransaction.getThreadTransaction());
-                    return expectedResult;
-                },
-                new TransactionDescriptor(TransactionPropagation.NESTED)
+                        assertSame(tx, BaseTransaction.getThreadTransaction());
+                        return expectedResult;
+                    },
+                    new TransactionDescriptor.Builder()
+                            .propagation(TransactionPropagation.NESTED)
+                            .build()
             );
             assertSame(expectedResult, result);
         } finally {
@@ -109,7 +111,9 @@ public class DefaultTransactionManagerIT {
                         assertSame(tx, BaseTransaction.getThreadTransaction());
                         return expectedResult;
                     },
-                    new TransactionDescriptor(TransactionPropagation.MANDATORY)
+                    new TransactionDescriptor.Builder()
+                            .propagation(TransactionPropagation.MANDATORY)
+                            .build()
             );
             assertSame(expectedResult, result);
         } finally {
@@ -133,7 +137,9 @@ public class DefaultTransactionManagerIT {
                         assertSame(tx, BaseTransaction.getThreadTransaction());
                         return expectedResult;
                     },
-                    new TransactionDescriptor(TransactionPropagation.MANDATORY)
+                    new TransactionDescriptor.Builder()
+                            .propagation(TransactionPropagation.MANDATORY)
+                            .build()
             );
             assertSame(expectedResult, result);
         } finally {
@@ -163,7 +169,9 @@ public class DefaultTransactionManagerIT {
                         assertSame(tx2, BaseTransaction.getThreadTransaction());
                         return expectedResult;
                     },
-                    new TransactionDescriptor(TransactionPropagation.REQUIRES_NEW)
+                    new TransactionDescriptor.Builder()
+                            .propagation(TransactionPropagation.REQUIRES_NEW)
+                            .build()
             );
             assertSame(expectedResult, result);
             assertSame(tx1, BaseTransaction.getThreadTransaction());

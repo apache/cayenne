@@ -33,4 +33,8 @@ public interface TransactionListener {
     void willRollback(Transaction tx);
 
     void willAddConnection(Transaction tx, String connectionName, Connection connection);
+
+    default Connection decorateConnection(Transaction tx, Connection connection){
+        return connection;
+    }
 }
