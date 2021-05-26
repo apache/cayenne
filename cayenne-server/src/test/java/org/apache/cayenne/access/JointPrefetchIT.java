@@ -42,6 +42,7 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Date;
@@ -442,6 +443,7 @@ public class JointPrefetchIT extends ServerCase {
     }
     
     @Test
+    @Ignore("Waiting for a fix, see CAY-2630")
     public void testJointPrefetchPreservesPendingToOneArcDiff() throws Exception {
         createJointPrefetchDataSet();
 
