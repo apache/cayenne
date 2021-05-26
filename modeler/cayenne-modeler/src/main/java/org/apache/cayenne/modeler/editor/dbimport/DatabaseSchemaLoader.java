@@ -29,7 +29,15 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dbsync.reverse.dbimport.*;
+import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
+import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
+import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
+import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.dbsync.reverse.dbimport.SchemaContainer;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -152,9 +160,8 @@ public class DatabaseSchemaLoader {
                     String catalog = resultSet.getString("TABLE_CAT");
                     packTable(table, catalog == null ? catalogName : catalog, schema, null);
                 }
-                if (!hasTables) {
-                    if (catalogName != null || schemaName != null)
-                        packFilterContainer(catalogName, schemaName);
+                if (!hasTables && (catalogName != null || schemaName != null)) {
+                    packFilterContainer(catalogName, schemaName);
                 }
                 packProcedures(connection);
             }
@@ -218,8 +225,9 @@ public class DatabaseSchemaLoader {
     }
 
     private Object getUserObjectOrNull(TreePath path, int pathIndex) {
-        if (path == null)
+        if (path == null) {
             return null;
+        }
         return ((DbImportTreeNode) path.getPathComponent(pathIndex)).getUserObject();
     }
 
@@ -290,8 +298,9 @@ public class DatabaseSchemaLoader {
     }
 
     private void addColumn(FilterContainer filterContainer, IncludeTable table, String columnName) {
-        if (columnName == null)
+        if (columnName == null) {
             return;
+        }
 
         filterContainer = filterContainer == null ? databaseReverseEngineering : filterContainer;
         IncludeTable foundTable = getTableByName(filterContainer.getIncludeTables(), table.getPattern());

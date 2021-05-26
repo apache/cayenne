@@ -105,10 +105,11 @@ public class DbImportTree extends JTree {
         if (container != null) {
             container.setLoaded(true);
         } else {
-            if (!filterContainer.getIncludeTables().isEmpty())
+            if (!filterContainer.getIncludeTables().isEmpty()) {
                 container = root;
-            else
+            } else {
                 return;
+            }
         }
 
         processor.apply(filterContainer, container);
