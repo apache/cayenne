@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.editor.dbimport;
 import java.util.function.BiFunction;
 
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
+import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 
 public class PrintColumnsBiFunction implements BiFunction<FilterContainer, DbImportTreeNode, Void> {
@@ -34,22 +35,26 @@ public class PrintColumnsBiFunction implements BiFunction<FilterContainer, DbImp
 
     @Override
     public Void apply(FilterContainer filterContainer, DbImportTreeNode root) {
-        DbImportModel model = (DbImportModel) dbImportTree.getModel();
-        filterContainer.getIncludeTables().forEach(tableFilter -> {
-            DbImportTreeNode container = dbImportTree
-                    .findNodeInParent(root, tableFilter);
-            if (container == null) {
-                return;
-            }
-            if (container.getChildCount() != 0) {
-                container.removeAllChildren();
-            }
-
-            dbImportTree.packColumns(tableFilter , container);
-
-            container.setLoaded(true);
-            model.reload(container);
-        });
+        if (filterContainer != null) {
+            filterContainer.getIncludeTables().forEach(tableFilter -> processTable(tableFilter, root));
+        }
         return null;
+    }
+
+    private void processTable(IncludeTable tableFilter, DbImportTreeNode root) {
+        DbImportModel model = (DbImportModel) dbImportTree.getModel();
+        DbImportTreeNode container = dbImportTree
+                .findNodeInParent(root, tableFilter);
+        if (container == null) {
+            return;
+        }
+        if (container.getChildCount() != 0) {
+            container.removeAllChildren();
+        }
+
+        dbImportTree.packColumns(tableFilter, container);
+
+        container.setLoaded(true);
+        model.reload(container);
     }
 }

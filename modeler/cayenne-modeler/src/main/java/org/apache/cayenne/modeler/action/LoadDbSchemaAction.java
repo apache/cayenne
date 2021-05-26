@@ -76,21 +76,23 @@ public class LoadDbSchemaAction extends DBConnectionAwareAction {
             try {
 
                 DBConnectionInfo connectionInfo = getConnectionInfo("Load Db Schema");
-                if(connectionInfo == null) {
+                if (connectionInfo == null) {
                     return;
                 }
 
                 if (tablePath != null) {
                     Object userObject = ((DbImportTreeNode) tablePath.getLastPathComponent()).getUserObject();
-                    if(userObject instanceof Catalog) {
+                    if (userObject instanceof Catalog) {
                         Catalog catalog = (Catalog) userObject;
-                        if(catalog.getSchemas().isEmpty()) {
+                        if (catalog.getSchemas().isEmpty()) {
                             loadTables(connectionInfo, tablePath, rootParent);
                         }
-                    } else if(userObject instanceof Schema) {
+                    } else if (userObject instanceof Schema) {
                         loadTables(connectionInfo, tablePath, rootParent);
-                    } else if(userObject instanceof IncludeTable) {
+                    } else if (userObject instanceof IncludeTable) {
                         loadColumns(connectionInfo, tablePath);
+                    } else {
+                        loadTables(connectionInfo, tablePath, rootParent);
                     }
                 } else {
                     loadDataBase(connectionInfo);

@@ -79,18 +79,22 @@ public class DbImportTree extends JTree {
         DbImportModel model = (DbImportModel) this.getModel();
         DbImportTreeNode root = (DbImportTreeNode) model.getRoot();
         Collection<Catalog> catalogs = reverseEngineering.getCatalogs();
-        if(!catalogs.isEmpty()) {
+        if (!catalogs.isEmpty()) {
             catalogs.forEach(catalog -> {
                 Collection<Schema> schemas = catalog.getSchemas();
-                if(!schemas.isEmpty()) {
+                if (!schemas.isEmpty()) {
                     DbImportTreeNode currentRoot = findNodeInParent(root, catalog);
                     schemas.forEach(schema -> packNextFilter(schema, currentRoot, processor));
                 } else {
                     packNextFilter(catalog, root, processor);
                 }
             });
-        } else {
+        } else if (!reverseEngineering.getSchemas().isEmpty()) {
             reverseEngineering.getSchemas().forEach(schema -> packNextFilter(schema, root, processor));
+        } else if (!reverseEngineering.getIncludeTables().isEmpty()) {
+            Schema schema = new Schema();
+            schema.getIncludeTables().addAll(reverseEngineering.getIncludeTables());
+            packNextFilter(schema, root, processor);
         }
     }
 
@@ -98,11 +102,15 @@ public class DbImportTree extends JTree {
                                 BiFunction<FilterContainer, DbImportTreeNode, Void> processor) {
         DbImportTreeNode container = findNodeInParent(root, filterContainer);
 
-        if (container == null) {
-            return;
+        if (container != null) {
+            container.setLoaded(true);
+        } else {
+            if (!filterContainer.getIncludeTables().isEmpty())
+                container = root;
+            else
+                return;
         }
 
-        container.setLoaded(true);
         processor.apply(filterContainer, container);
     }
 
@@ -128,14 +136,14 @@ public class DbImportTree extends JTree {
                 }
             }
 
-            if(object instanceof Schema) {
+            if (object instanceof Schema) {
                 Schema schema = (Schema) object;
-                if(!(userObject instanceof Schema)) {
+                if (!(userObject instanceof Schema)) {
                     continue;
                 }
 
                 Schema currentSchema = (Schema) userObject;
-                if(currentSchema.getName().equals(schema.getName())) {
+                if (currentSchema.getName().equals(schema.getName())) {
                     return node;
                 }
             }
@@ -239,7 +247,7 @@ public class DbImportTree extends JTree {
         expandBeginningWithNode(getRootNode(), expandIndexesList);
     }
 
-    public  <T extends PatternParam> void printParams(Collection<T> collection, DbImportTreeNode parent) {
+    public <T extends PatternParam> void printParams(Collection<T> collection, DbImportTreeNode parent) {
         for (T element : collection) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(element) : new TransferableNode(element);
             if (!"".equals(node.getSimpleNodeName())) {
@@ -334,7 +342,7 @@ public class DbImportTree extends JTree {
     }
 
     public DbImportTreeNode getSelectedNode() {
-        if(this.getSelectionPath() == null) {
+        if (this.getSelectionPath() == null) {
             return null;
         }
         return (DbImportTreeNode) this.getSelectionPath().getLastPathComponent();

@@ -36,9 +36,12 @@ abstract class TableNode<T extends Node> extends Node<T> {
     
     @Override
     public Status getStatus(ReverseEngineering config) {
-        Status parentStatus = getParent().getStatus(config);
-        if(parentStatus != Status.INCLUDE) {
-            return parentStatus;
+        T parent = getParent();
+        if(parent != null) {
+            Status parentStatus = parent.getStatus(config);
+            if (parentStatus != Status.INCLUDE) {
+                return parentStatus;
+            }
         }
 
         List<IncludeTable> includeTables = new ArrayList<>();
