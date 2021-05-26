@@ -440,4 +440,40 @@ public class JointPrefetchIT extends ServerCase {
             assertEquals("G1", g1.readProperty("galleryName"));
         });
     }
+    
+    @Test
+    public void testJointPrefetchPreservesPendingToOneArcDiff() throws Exception {
+        createJointPrefetchDataSet();
+
+    	Artist artist = ObjectSelect.query(Artist.class)
+        		.where(Artist.ARTIST_NAME.eq("artist1"))
+        		.selectFirst(context);
+    	
+    	Painting painting = ObjectSelect.query(Painting.class)
+    		.where(Painting.PAINTING_TITLE.eq("P_artist21"))
+    		.selectFirst(context);
+        
+    	// create pending arc diff
+    	painting.setToArtist(artist); 
+    	
+    	// refresh the painting (should preserve pending arc diff)
+    	ObjectSelect.query(Painting.class)
+			.where(Painting.PAINTING_TITLE.eq("P_artist21"))
+			.selectFirst(context);
+    	assertEquals(artist, painting.getToArtist());
+
+    	// refresh the artist (should preserve pending arc diff)
+    	ObjectSelect.query(Artist.class)
+			.where(Artist.ARTIST_NAME.eq("artist1"))
+			.selectFirst(context);
+    	assertEquals(artist, painting.getToArtist());
+
+    	// refresh them both together (should preserve pending arc diff)
+    	ObjectSelect.query(Painting.class)
+    		.where(Painting.PAINTING_TITLE.eq("P_artist21"))
+    		.prefetch(Painting.TO_ARTIST.joint())
+    		.selectFirst(context);
+
+    	assertEquals(artist, painting.getToArtist());
+    }
 }
