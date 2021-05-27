@@ -63,6 +63,8 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
                 if(cgenConfiguration == null) {
                     cgenConfiguration = createConfiguration(dataMap);
                 }
+                // should always run here
+                cgenConfiguration.setForce(true);
                 ClassGenerationAction classGenerationAction = new ToolsInjectorBuilder()
                         .addModule(binder
                                 -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
