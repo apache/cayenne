@@ -69,7 +69,7 @@ public class TransactionPropagationRollbackIT extends ServerCase {
      */
     @Test
     public void testPropagationRequiresNew() {
-        TransactionDescriptor descriptor = new TransactionDescriptor.Builder()
+        TransactionDescriptor descriptor = TransactionDescriptor.builder()
                 .propagation(TransactionPropagation.REQUIRES_NEW)
                 .isolation(Connection.TRANSACTION_SERIALIZABLE)
                 .build();
@@ -89,7 +89,7 @@ public class TransactionPropagationRollbackIT extends ServerCase {
     @Test
     public void testPropagationNested() {
 
-        TransactionDescriptor descriptor = new TransactionDescriptor.Builder()
+        TransactionDescriptor descriptor = TransactionDescriptor.builder()
                 .isolation(Connection.TRANSACTION_SERIALIZABLE)
                 .propagation(TransactionPropagation.NESTED)
                 .build();
@@ -109,7 +109,7 @@ public class TransactionPropagationRollbackIT extends ServerCase {
     @Test
     public void testPropagationMandatory() {
 
-        TransactionDescriptor descriptor = new TransactionDescriptor.Builder()
+        TransactionDescriptor descriptor = TransactionDescriptor.builder()
                 .isolation(Connection.TRANSACTION_SERIALIZABLE)
                 .propagation(TransactionPropagation.MANDATORY)
                 .build();

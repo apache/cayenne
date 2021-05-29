@@ -74,7 +74,7 @@ public class TransactionIsolationIT extends ServerCase {
             return;
         }
 
-        TransactionDescriptor descriptor = new TransactionDescriptor.Builder()
+        TransactionDescriptor descriptor = TransactionDescriptor.builder()
                 .propagation(TransactionPropagation.REQUIRES_NEW)
                 .isolation(Connection.TRANSACTION_SERIALIZABLE)
                 .build();

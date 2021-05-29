@@ -52,7 +52,7 @@ public class TransactionDescriptor {
      *                    <code>TransactionDescriptor.ISOLATION_DEFAULT</code>
      * @param propagation transaction propagation behaviour
      * @see TransactionPropagation
-     * @deprecated since 4.2.M4. Use builder instead
+     * @deprecated since 4.2. Use builder instead
      */
     @Deprecated
     public TransactionDescriptor(int isolation, TransactionPropagation propagation) {
@@ -78,7 +78,7 @@ public class TransactionDescriptor {
     /**
      * @param propagation transaction propagation behaviour
      * @see TransactionPropagation
-     * @deprecated since 4.2.M4. Use builder instead
+     * @deprecated since 4.2. Use builder instead
      */
     @Deprecated
     public TransactionDescriptor(TransactionPropagation propagation) {
@@ -106,13 +106,18 @@ public class TransactionDescriptor {
         return customConnectionSupplier;
     }
 
+    public static Builder builder(){
+        return new Builder();
+    }
+
     /**
      * Builder class for TransactionDescriptor.
-     *
-     * @since 4.2.M4
+     * @since 4.2
      */
     public static class Builder {
         private final TransactionDescriptor transactionDescriptor = new TransactionDescriptor();
+
+        private Builder(){}
 
         /**
          * @param isolation one of the following <code>Connection</code> constants:

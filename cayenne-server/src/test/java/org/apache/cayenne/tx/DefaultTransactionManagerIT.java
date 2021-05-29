@@ -86,7 +86,7 @@ public class DefaultTransactionManagerIT {
                         assertSame(tx, BaseTransaction.getThreadTransaction());
                         return expectedResult;
                     },
-                    new TransactionDescriptor.Builder()
+                    TransactionDescriptor.builder()
                             .propagation(TransactionPropagation.NESTED)
                             .build()
             );
@@ -111,7 +111,7 @@ public class DefaultTransactionManagerIT {
                         assertSame(tx, BaseTransaction.getThreadTransaction());
                         return expectedResult;
                     },
-                    new TransactionDescriptor.Builder()
+                    TransactionDescriptor.builder()
                             .propagation(TransactionPropagation.MANDATORY)
                             .build()
             );
@@ -137,7 +137,7 @@ public class DefaultTransactionManagerIT {
                         assertSame(tx, BaseTransaction.getThreadTransaction());
                         return expectedResult;
                     },
-                    new TransactionDescriptor.Builder()
+                    TransactionDescriptor.builder()
                             .propagation(TransactionPropagation.MANDATORY)
                             .build()
             );
@@ -169,7 +169,7 @@ public class DefaultTransactionManagerIT {
                         assertSame(tx2, BaseTransaction.getThreadTransaction());
                         return expectedResult;
                     },
-                    new TransactionDescriptor.Builder()
+                    TransactionDescriptor.builder()
                             .propagation(TransactionPropagation.REQUIRES_NEW)
                             .build()
             );
