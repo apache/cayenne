@@ -37,9 +37,7 @@ import java.sql.Connection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ServerRuntimeIT extends ServerCase {
@@ -50,10 +48,34 @@ public class ServerRuntimeIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    class DefaultListenerImpl implements TransactionListener{
+
+        @Override
+        public void willCommit(Transaction tx) {
+
+        }
+
+        @Override
+        public void willRollback(Transaction tx) {
+
+        }
+
+        @Override
+        public void willAddConnection(Transaction tx, String connectionName, Connection connection) {
+
+        }
+
+        @Override
+        public Connection decorateConnection(Transaction tx, Connection connection) {
+            return connection;
+        }
+    }
+
     @Test
     public void testPerformInTransaction_Local_Callback() {
 
-        TransactionListener callback = mock(TransactionListener.class);
+        TransactionListener callback = mock(DefaultListenerImpl.class);
+        when(callback.decorateConnection(any(Transaction.class),any(Connection.class))).thenCallRealMethod();
 
         Artist a = runtime.performInTransaction(new TransactionalOperation<Artist>() {
 
@@ -72,12 +94,14 @@ public class ServerRuntimeIT extends ServerCase {
         verify(callback).willCommit(any(Transaction.class));
         verify(callback).willAddConnection(any(Transaction.class), any(String.class), any(Connection.class));
         verify(callback, times(0)).willRollback(any(Transaction.class));
+        verify(callback).decorateConnection(any(Transaction.class),any(Connection.class));
     }
 
     @Test
     public void testPerformInTransaction_Local_Callback_Rollback() {
 
         TransactionListener callback = mock(TransactionListener.class);
+        when(callback.decorateConnection(any(Transaction.class),any(Connection.class))).thenCallRealMethod();
 
         try {
             runtime.performInTransaction(new TransactionalOperation<Artist>() {
