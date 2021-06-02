@@ -13,6 +13,8 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2399 Convert string values to Enum in qualifiers
+
 Bug Fixes:
 
 CAY-2092 Exception for query that uses pagination and sorting on to-many

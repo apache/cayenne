@@ -19,9 +19,12 @@
 package org.apache.cayenne.exp.parser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
+import org.apache.cayenne.testdo.enum_test.Enum1;
+import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.util.TstBean;
 import org.junit.Test;
@@ -75,4 +78,16 @@ public class ASTObjPathTest {
 		b2.setProperty2(-3);
 		assertEquals(-3, node.evaluate(b2));
 	}
+
+	@Test
+	public void testInjectDataObject() {
+		ASTObjPath node = new ASTObjPath("artistName");
+
+		Artist artist = new Artist();
+		assertNull(artist.getArtistName());
+
+		node.injectValue(artist, "test");
+		assertEquals("test", artist.getArtistName());
+	}
+
 }

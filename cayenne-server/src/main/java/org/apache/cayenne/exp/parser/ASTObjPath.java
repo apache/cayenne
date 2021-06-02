@@ -24,10 +24,14 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataObject;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.PropertyUtils;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +103,8 @@ public class ASTObjPath extends ASTPath {
 		if (!getPath().contains(ObjEntity.PATH_SEPARATOR)) {
 			try {
 				if (source instanceof DataObject) {
-					((DataObject) source).writeProperty(getPath(), value);
+					DataObject dataObject = (DataObject) source;
+					dataObject.writeProperty(getPath(), dynamicCastValue(dataObject, value));
 				} else {
 					PropertyUtils.setProperty(source, getPath(), value);
 				}
@@ -107,5 +112,36 @@ public class ASTObjPath extends ASTPath {
 				LOGGER.warn("Failed to inject value " + value + " on path " + getPath() + " to " + source, ex);
 			}
 		}
+	}
+
+	private Object dynamicCastValue(DataObject source, Object value) {
+		Class<?> javaClass = getDataTypeForObject(source);
+		if(javaClass == null) {
+			return value;
+		}
+
+		if(javaClass.isEnum()) {
+			@SuppressWarnings({"unchecked", "rawtypes"})
+			Enum enumValue = Enum.valueOf((Class<Enum>) javaClass, value.toString());
+			return enumValue;
+		}
+
+		return value;
+	}
+
+	private Class<?> getDataTypeForObject(DataObject source) {
+		ObjectContext context = source.getObjectContext();
+		ObjectId objectId = source.getObjectId();
+		if(context == null || objectId == null) {
+			return null;
+		}
+
+		ObjEntity entity = context.getEntityResolver().getObjEntity(objectId.getEntityName());
+		CayenneMapEntry entry = evaluateEntityNode(entity);
+		if(!(entry instanceof ObjAttribute)) {
+			return null;
+		}
+
+		return ((ObjAttribute) entry).getJavaClass();
 	}
 }
