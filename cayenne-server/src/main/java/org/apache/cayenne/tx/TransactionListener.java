@@ -33,4 +33,20 @@ public interface TransactionListener {
     void willRollback(Transaction tx);
 
     void willAddConnection(Transaction tx, String connectionName, Connection connection);
+
+    /**
+     * This method could be used to decorate or substitute
+     * new connection initiated inside a Cayenne transaction.
+     * <br/>
+     * The default implementation returns the same connection.
+     *
+     * @param tx transaction that initiated connection
+     * @param connection connection (it could be decorated by other listeners)
+     * @return connection
+     *
+     * @since 4.2
+     */
+    default Connection decorateConnection(Transaction tx, Connection connection){
+        return connection;
+    }
 }

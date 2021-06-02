@@ -69,10 +69,10 @@ public class TransactionPropagationRollbackIT extends ServerCase {
      */
     @Test
     public void testPropagationRequiresNew() {
-        TransactionDescriptor descriptor = new TransactionDescriptor(
-                Connection.TRANSACTION_SERIALIZABLE, // ensure that transaction not visible to each other
-                TransactionPropagation.REQUIRES_NEW  // require new transaction for every operation
-        );
+        TransactionDescriptor descriptor = TransactionDescriptor.builder()
+                .propagation(TransactionPropagation.REQUIRES_NEW)
+                .isolation(Connection.TRANSACTION_SERIALIZABLE)
+                .build();
 
         performInTransaction(descriptor);
 
@@ -89,10 +89,10 @@ public class TransactionPropagationRollbackIT extends ServerCase {
     @Test
     public void testPropagationNested() {
 
-        TransactionDescriptor descriptor = new TransactionDescriptor(
-                Connection.TRANSACTION_SERIALIZABLE, // ensure that transaction not visible to each other
-                TransactionPropagation.NESTED        // allow joining to existing transaction
-        );
+        TransactionDescriptor descriptor = TransactionDescriptor.builder()
+                .isolation(Connection.TRANSACTION_SERIALIZABLE)
+                .propagation(TransactionPropagation.NESTED)
+                .build();
 
         performInTransaction(descriptor);
 
@@ -109,10 +109,10 @@ public class TransactionPropagationRollbackIT extends ServerCase {
     @Test
     public void testPropagationMandatory() {
 
-        TransactionDescriptor descriptor = new TransactionDescriptor(
-                Connection.TRANSACTION_SERIALIZABLE, // ensure that transaction not visible to each other
-                TransactionPropagation.MANDATORY     // requires existing transaction to join
-        );
+        TransactionDescriptor descriptor = TransactionDescriptor.builder()
+                .isolation(Connection.TRANSACTION_SERIALIZABLE)
+                .propagation(TransactionPropagation.MANDATORY)
+                .build();
 
         performInTransaction(descriptor);
 
