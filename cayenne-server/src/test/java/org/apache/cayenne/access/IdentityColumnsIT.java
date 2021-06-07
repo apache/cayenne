@@ -361,5 +361,11 @@ public class IdentityColumnsIT extends ServerCase {
         reflexive3.setNext(reflexive4);
 
         context.commitChanges();
+
+        reflexive1.setNext(null);
+        reflexive2.setNext(null);
+        reflexive3.setNext(null);
+
+        context.commitChanges();
     }
 }
