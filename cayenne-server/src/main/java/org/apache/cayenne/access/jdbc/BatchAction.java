@@ -55,7 +55,7 @@ public class BatchAction extends BaseSQLAction {
 	protected RowDescriptor keyRowDescriptor;
 
 	private static void bind(DbAdapter adapter, PreparedStatement statement, DbAttributeBinding[] bindings)
-			throws SQLException, Exception {
+			throws Exception {
 
 		for (DbAttributeBinding b : bindings) {
 			if (!b.isExcluded()) {
@@ -81,20 +81,31 @@ public class BatchAction extends BaseSQLAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws SQLException, Exception {
-
+	public void performAction(Connection connection, OperationObserver observer) throws Exception {
 		BatchTranslator translator = createTranslator();
-		
-		boolean isBatch = runningAsBatch && query.getRows().size() > 1;
-		if (isBatch && hasGeneratedKeys() && !supportsGeneratedKeys(isBatch)) {
-			isBatch = false; // turn off batch mode if we generate keys but can't do so in a batch
-		}
-		
+
+		boolean isBatch = canRunAsBatch();
+		boolean generatesKeys = hasGeneratedKeys() && supportsGeneratedKeys(isBatch);
+
 		if (isBatch) {
-			runAsBatch(connection, translator, observer, hasGeneratedKeys() && supportsGeneratedKeys(isBatch));
+			runAsBatch(connection, translator, observer, generatesKeys);
 		} else {
-			runAsIndividualQueries(connection, translator, observer, hasGeneratedKeys() && supportsGeneratedKeys(isBatch));
+			runAsIndividualQueries(connection, translator, observer, generatesKeys);
 		}
+	}
+
+	protected boolean canRunAsBatch() {
+		if(!runningAsBatch || query.getRows().size() <= 1) {
+			return false;
+		}
+
+		if (hasGeneratedKeys()) {
+			// turn off batch mode if we generate keys but can't do so in a batch
+			return supportsGeneratedKeys(true) &&
+					!dataNode.getEntityResolver().getEntitySorter().isReflexive(query.getDbEntity());
+		}
+
+		return true;
 	}
 
 	protected BatchTranslator createTranslator() {
@@ -102,7 +113,7 @@ public class BatchAction extends BaseSQLAction {
 	}
 
 	protected void runAsBatch(Connection con, BatchTranslator translator, OperationObserver delegate, boolean generatesKeys)
-			throws SQLException, Exception {
+			throws Exception {
 
 		String sql = translator.getSql();
 		JdbcEventLogger logger = dataNode.getJdbcEventLogger();

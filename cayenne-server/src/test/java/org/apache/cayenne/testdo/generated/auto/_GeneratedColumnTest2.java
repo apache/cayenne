@@ -5,8 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 
@@ -18,9 +16,8 @@ import org.apache.cayenne.exp.property.StringProperty;
  */
 public abstract class _GeneratedColumnTest2 extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> GENERATED_COLUMN_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("GENERATED_COLUMN"), Integer.class);
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

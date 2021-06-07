@@ -170,6 +170,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 	@Override
 	public void setEntityResolver(EntityResolver entityResolver) {
 		this.entityResolver = entityResolver;
+		this.entityResolver.setEntitySorter(this);
 		this.dirty = true;
 	}
 

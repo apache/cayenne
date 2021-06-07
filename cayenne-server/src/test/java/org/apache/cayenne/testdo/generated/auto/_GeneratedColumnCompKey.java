@@ -5,9 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster;
@@ -20,13 +18,10 @@ import org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster;
  */
 public abstract class _GeneratedColumnCompKey extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> AUTO_PK_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("AUTO_PK"), Integer.class);
     public static final String AUTO_PK_PK_COLUMN = "AUTO_PK";
-    public static final NumericProperty<Integer> GENERATED_COLUMN_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("GENERATED_COLUMN"), Integer.class);
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
-    public static final NumericProperty<Integer> PROPAGATED_PK_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PROPAGATED_PK"), Integer.class);
     public static final String PROPAGATED_PK_PK_COLUMN = "PROPAGATED_PK";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

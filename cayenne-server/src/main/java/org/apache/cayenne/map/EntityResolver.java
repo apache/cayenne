@@ -100,6 +100,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     protected transient ValueComparisonStrategyFactory valueComparisonStrategyFactory;
 
+    /**
+     * @since 4.2
+     */
+    protected transient EntitySorter entitySorter;
+
 
     /**
      * Creates new empty EntityResolver.
@@ -604,4 +609,17 @@ public class EntityResolver implements MappingNamespace, Serializable {
         this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
     }
 
+    /**
+     * @since 4.2
+     */
+    public void setEntitySorter(EntitySorter entitySorter) {
+        this.entitySorter = entitySorter;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public EntitySorter getEntitySorter() {
+        return entitySorter;
+    }
 }

@@ -39,6 +39,7 @@ import org.apache.cayenne.testdo.generated.GeneratedColumnTest2;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.testdo.generated.GeneratedF1;
 import org.apache.cayenne.testdo.generated.GeneratedF2;
+import org.apache.cayenne.testdo.generated.GeneratedReflexive;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -338,5 +339,27 @@ public class IdentityColumnsIT extends ServerCase {
 
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnTestEntity.class, id1));
         assertNotNull(Cayenne.objectForPK(context, GeneratedColumnDep.class, id2));
+    }
+
+    @Test
+    public void testReflexiveDep() {
+
+        GeneratedReflexive reflexive3 = context.newObject(GeneratedReflexive.class);
+        reflexive3.setName("3");
+
+        GeneratedReflexive reflexive2 = context.newObject(GeneratedReflexive.class);
+        reflexive2.setName("2");
+
+        GeneratedReflexive reflexive4 = context.newObject(GeneratedReflexive.class);
+        reflexive4.setName("4");
+
+        GeneratedReflexive reflexive1 = context.newObject(GeneratedReflexive.class);
+        reflexive1.setName("1");
+
+        reflexive1.setNext(reflexive2);
+        reflexive2.setNext(reflexive3);
+        reflexive3.setNext(reflexive4);
+
+        context.commitChanges();
     }
 }

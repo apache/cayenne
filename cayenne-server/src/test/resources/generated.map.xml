@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.generated"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
@@ -41,6 +41,11 @@
 		<db-attribute name="ID1" type="INTEGER"/>
 		<db-attribute name="ID2" type="INTEGER"/>
 	</db-entity>
+	<db-entity name="GENERATED_REFLEXIVE">
+		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+		<db-attribute name="REF_ID" type="INTEGER"/>
+	</db-entity>
 	<obj-entity name="GeneratedColumnCompKey" className="org.apache.cayenne.testdo.generated.GeneratedColumnCompKey" dbEntityName="GENERATED_COLUMN_COMP_KEY">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
@@ -58,6 +63,9 @@
 	</obj-entity>
 	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" clientClassName="test.client.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject"/>
 	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" clientClassName="test.client.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject"/>
+	<obj-entity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" clientClassName="test.client.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M">
 		<db-attribute-pair source="PROPAGATED_PK" target="ID"/>
 	</db-relationship>
@@ -82,10 +90,14 @@
 	<db-relationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2">
 		<db-attribute-pair source="ID2" target="ID"/>
 	</db-relationship>
+	<db-relationship name="next" source="GENERATED_REFLEXIVE" target="GENERATED_REFLEXIVE">
+		<db-attribute-pair source="REF_ID" target="ID"/>
+	</db-relationship>
 	<obj-relationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" db-relationship-path="toMaster"/>
 	<obj-relationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" db-relationship-path="toDetail"/>
 	<obj-relationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" db-relationship-path="toMaster"/>
 	<obj-relationship name="toDep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" db-relationship-path="toDep"/>
 	<obj-relationship name="f2" source="GeneratedF1" target="GeneratedF2" deleteRule="Nullify" db-relationship-path="join.f2"/>
 	<obj-relationship name="f1" source="GeneratedF2" target="GeneratedF1" deleteRule="Nullify" db-relationship-path="join.f1"/>
+	<obj-relationship name="next" source="GeneratedReflexive" target="GeneratedReflexive" deleteRule="Nullify" db-relationship-path="next"/>
 </data-map>

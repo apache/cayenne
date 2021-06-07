@@ -49,6 +49,18 @@ public class CDOReflexiveRelIT extends ServerCase {
     }
 
     @Test
+    public void testAdd() {
+        ArtGroup parentGroup = context.newObject(ArtGroup.class);
+        parentGroup.setName("parent");
+
+        ArtGroup childGroup1 = context.newObject(ArtGroup.class);
+        childGroup1.setName("child1");
+        childGroup1.setToParentGroup(parentGroup);
+
+        context.commitChanges();
+    }
+
+    @Test
     public void testAddDeleteWithCommit() {
         ArtGroup parentGroup = context.newObject(ArtGroup.class);
         parentGroup.setName("parent");

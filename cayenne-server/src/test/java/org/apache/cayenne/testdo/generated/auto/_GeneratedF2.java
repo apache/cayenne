@@ -6,9 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.generated.GeneratedF1;
 
@@ -20,9 +18,8 @@ import org.apache.cayenne.testdo.generated.GeneratedF1;
  */
 public abstract class _GeneratedF2 extends CayenneDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final ListProperty<GeneratedF1> F1 = PropertyFactory.createList("f1", GeneratedF1.class);
