@@ -37,6 +37,9 @@
                 <exclude>**/.project</exclude>
                 <exclude>**/.settings</exclude>
 				<exclude>**/out/**</exclude>
+				<exclude>**/build/**</exclude>
+				<exclude>**/gradle/**</exclude>
+				<exclude>**/.gradle/**</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
