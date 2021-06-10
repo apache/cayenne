@@ -811,6 +811,9 @@
 								org.apache.cayenne.build-tools:cayenne-legal:${project.version}
 							</resourceBundle>
 						</resourceBundles>
+						<properties>
+							<binary>false</binary>
+						</properties>
 					</configuration>
 				</plugin>
 				<plugin>

@@ -196,6 +196,22 @@
 			<build>
 				<plugins>
 					<plugin>
+						<artifactId>maven-remote-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>process</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/legal</outputDirectory>
+									<properties>
+										<binary>false</binary>
+									</properties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
@@ -221,19 +237,6 @@
 			<id>assembly</id>
 			<build>
 				<plugins>
-					<plugin>
-						<artifactId>maven-remote-resources-plugin</artifactId>
-						<executions>
-							<execution>
-								<goals>
-									<goal>process</goal>
-								</goals>
-								<configuration>
-									<outputDirectory>${project.build.directory}/legal</outputDirectory>
-								</configuration>
-							</execution>
-						</executions>
-	                </plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
@@ -280,6 +283,22 @@
 			</dependencies>
 			<build>
 				<plugins>
+					<plugin>
+						<artifactId>maven-remote-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>process</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/legal</outputDirectory>
+									<properties>
+										<binary>true</binary>
+									</properties>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
@@ -333,6 +352,22 @@
 										</requireOS>
 									</rules>
 									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-remote-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>process</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/legal</outputDirectory>
+									<properties>
+										<binary>true</binary>
+									</properties>
 								</configuration>
 							</execution>
 						</executions>
@@ -426,6 +461,22 @@
 										</requireOS>
 									</rules>
 									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<artifactId>maven-remote-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>process</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>${project.build.directory}/legal</outputDirectory>
+									<properties>
+										<binary>true</binary>
+									</properties>
 								</configuration>
 							</execution>
 						</executions>
