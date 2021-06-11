@@ -169,6 +169,22 @@ public class CheckTypeTest {
     }
 
     @Test
+    public void testTimeType() {
+        original.setType(Types.TIMESTAMP);
+        original.setMaxLength(19);
+
+        imported.setType(Types.TIMESTAMP);
+        imported.setMaxLength(0);
+
+        Collection<MergerToken> mergerTokens = dbAttributeMerger.createTokensForSame(diffPair);
+        assertEquals(1, mergerTokens.size());
+
+        MergerToken mergerToken1 = (MergerToken) mergerTokens.toArray()[0];
+        String mergerToken = "NEW_TABLE.NAME maxLength: 0 -> 19";
+        assertEquals(mergerToken, mergerToken1.getTokenValue());
+    }
+
+    @Test
     public void testCheckTypeWithoutChanges() {
 
         diffPair = new MergerDiffPair<>(original, imported);
