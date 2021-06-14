@@ -43,6 +43,7 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -655,5 +656,19 @@ public class NestedDataContextWriteIT extends ServerCase {
         assertEquals(1, artist.getPaintingArray().size());
         assertEquals(artist.getPaintingArray().get(0).getObjectContext(), context);
 
+    }
+    
+    @Test
+    @Ignore("Waiting for a fix")
+    public void testTwoStageCommit() {
+        DataContext parent = createDataContext();
+        ObjectContext child = runtime.newContext(parent);
+
+        Painting painting = child.newObject(Painting.class);
+        painting.setPaintingTitle("222");
+        
+        child.commitChangesToParent();
+        parent.commitChanges();
+        assertTrue(!painting.getObjectId().isTemporary());
     }
 }
