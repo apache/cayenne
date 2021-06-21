@@ -27,6 +27,7 @@ CAY-2708 Gradle build plugin fails on Java 16
 CAY-2709 Modeler: Cgen fails to generate code for a new unsaved project with all settings set to default
 CAY-2710 Modeler: modeler throws IllegalArgumentsException when root and rel paths have different root
 CAY-2712 Shouldn't run batch inserts with generated keys if there is reflexive dependency
+CAY-2713 ConcurrentModificationException when Inserting
 
 ----------------------------------
 Release: 4.2.M3

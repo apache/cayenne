@@ -28,12 +28,7 @@ import java.util.function.BiFunction;
  */
 public class DbRowOpMerger implements DbRowOpVisitor<DbRowOp>, BiFunction<DbRowOp, DbRowOp, DbRowOp> {
 
-    public static final DbRowOpMerger INSTANCE = new DbRowOpMerger();
-
     private DbRowOp dbRow;
-
-    DbRowOpMerger() {
-    }
 
     @Override
     public DbRowOp apply(DbRowOp oldValue, DbRowOp newValue) {
