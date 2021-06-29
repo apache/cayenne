@@ -36,7 +36,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Default mutable implementation of {@link QueryMetadata}.
- * 
+ *
  * @since 1.1
  */
 class BaseQueryMetadata implements QueryMetadata, Serializable {
@@ -80,6 +80,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 		this.fetchingDataRows = info.isFetchingDataRows();
 		this.fetchLimit = info.getFetchLimit();
+		this.fetchOffset = info.getFetchOffset();
 		this.pageSize = info.getPageSize();
 		this.cacheStrategy = info.getCacheStrategy();
 		this.cacheKey = info.getCacheKey();
@@ -368,7 +369,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	/**
 	 * Sets statement's fetch size (0 for no default size)
-	 * 
+	 *
 	 * @since 3.0
 	 */
 	void setStatementFetchSize(int size) {
@@ -401,7 +402,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	/**
 	 * Adds a joint prefetch.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	PrefetchTreeNode addPrefetch(String path, int semantics) {
@@ -417,7 +418,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	/**
 	 * Adds a joint prefetch.
-	 * 
+	 *
 	 * @since 4.0
 	 */
 	void mergePrefetch(PrefetchTreeNode node) {
@@ -430,7 +431,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	/**
 	 * Adds all prefetches from a provided collection.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	void addPrefetches(Collection<String> prefetches, int semantics) {
@@ -443,7 +444,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	/**
 	 * Clears all joint prefetches.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	void clearPrefetches() {
@@ -452,7 +453,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 	/**
 	 * Removes joint prefetch.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	void removePrefetch(String prefetch) {
