@@ -256,4 +256,15 @@ public class ColumnSelectTest {
         assertTrue(q.metaData.isSuppressingDistinct());
     }
 
+    @Test
+    public void testOffsetCopyFromObjectSelect() {
+        ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).offset(10).limit(10);
+        assertEquals(10, select.getOffset());
+        assertEquals(10, select.getLimit());
+
+        ColumnSelect<String> columnSelect = select.column(Artist.ARTIST_NAME);
+        assertEquals(10, columnSelect.getOffset());
+        assertEquals(10, columnSelect.getLimit());
+    }
+
 }

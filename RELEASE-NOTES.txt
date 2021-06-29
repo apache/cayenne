@@ -28,6 +28,7 @@ CAY-2709 Modeler: Cgen fails to generate code for a new unsaved project with all
 CAY-2710 Modeler: modeler throws IllegalArgumentsException when root and rel paths have different root
 CAY-2712 Shouldn't run batch inserts with generated keys if there is reflexive dependency
 CAY-2713 ConcurrentModificationException when Inserting
+CAY-2714 Offset value is not copied to column select metadata
 
 ----------------------------------
 Release: 4.2.M3
