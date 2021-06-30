@@ -25,7 +25,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -56,14 +55,11 @@ public class DeepMergeOperationIT extends ServerCase {
 
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Artist a2 = (Artist) op.merge(a);
-                assertNotNull(a2);
-                assertEquals(PersistenceState.COMMITTED, a2.getPersistenceState());
-                assertEquals(a.getArtistName(), a2.getArtistName());
-            }
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Artist a2 = op.merge(a);
+            assertNotNull(a2);
+            assertEquals(PersistenceState.COMMITTED, a2.getPersistenceState());
+            assertEquals(a.getArtistName(), a2.getArtistName());
         });
     }
 
@@ -78,15 +74,12 @@ public class DeepMergeOperationIT extends ServerCase {
         a1.setArtistName("BBB");
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            public void execute() {
-                Artist a2 = (Artist) op.merge(a);
-                assertNotNull(a2);
-                assertEquals(PersistenceState.MODIFIED, a2.getPersistenceState());
-                assertSame(a1, a2);
-                assertEquals("BBB", a2.getArtistName());
-            }
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            Artist a2 = op.merge(a);
+            assertNotNull(a2);
+            assertEquals(PersistenceState.MODIFIED, a2.getPersistenceState());
+            assertSame(a1, a2);
+            assertEquals("BBB", a2.getArtistName());
         });
     }
 

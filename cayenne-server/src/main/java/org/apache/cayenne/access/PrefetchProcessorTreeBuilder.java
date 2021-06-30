@@ -181,10 +181,11 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         node.setIncoming(arc);
 
         if (node.getParent() != null && !node.isJointPrefetch()) {
-            node.setResolver(new HierarchicalObjectResolverNode(node, context, descriptor, queryMetadata
-                    .isRefreshingObjects(), seen));
+            node.setResolver(new HierarchicalObjectResolverNode(node, context, descriptor,
+                    queryMetadata.isRefreshingObjects(), seen));
         } else {
-            node.setResolver(new PrefetchObjectResolver(context, descriptor, queryMetadata.isRefreshingObjects(), seen));
+            node.setResolver(new PrefetchObjectResolver(context, descriptor,
+                    queryMetadata.isRefreshingObjects(), seen));
         }
 
         if (node.getParent() == null || node.getParent().isPhantom()) {
@@ -192,7 +193,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         } else if (node.isJointPrefetch()) {
             node.setParentAttachmentStrategy(new StackLookupParentAttachmentStrategy(node));
         } else if (node.getIncoming().getRelationship().isSourceIndependentFromTargetChange()) {
-            node.setParentAttachmentStrategy(new JoinedIdParentAttachementStrategy(context.getGraphManager(), node));
+            node.setParentAttachmentStrategy(new JoinedIdParentAttachmentStrategy(context.getGraphManager(), node));
         } else {
             node.setParentAttachmentStrategy(new ResultScanParentAttachmentStrategy(node));
         }

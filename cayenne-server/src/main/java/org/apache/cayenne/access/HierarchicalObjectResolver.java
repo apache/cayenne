@@ -285,48 +285,43 @@ class HierarchicalObjectResolver {
 
             // delegate processing of the top level joint prefetch to a joint processor,
             // skip non-top joint nodes
-
-            if (node.getParent() != null && !node.getParent().isJointPrefetch()) {
-
-                PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
-
-                JointProcessor subprocessor = new JointProcessor(processorNode);
-
-                PrefetchProcessorNode parent = (PrefetchProcessorNode) processorNode
-                        .getParent();
-
-                while (parent != null && parent.isPhantom()) {
-                    parent = (PrefetchProcessorNode) parent.getParent();
-                }
-
-                if (parent == null) {
-                    return false;
-                }
-
-                List parentRows = parent.getDataRows();
-
-                // phantom node?
-                if (parentRows == null || parentRows.size() == 0) {
-                    return false;
-                }
-
-                List<Persistent> parentObjects = parent.getObjects();
-                int size = parentRows.size();
-
-                for (int i = 0; i < size; i++) {
-                    subprocessor.setCurrentFlatRow((DataRow) parentRows.get(i));
-                    parent.setLastResolved(parentObjects.get(i));
-                    processorNode.traverse(subprocessor);
-                }
-
-                List<Persistent> objects = processorNode.getObjects();
-
-                cache.snapshotsUpdatedForObjects(
-                        objects,
-                        processorNode.getResolvedRows(),
-                        queryMetadata.isRefreshingObjects());
-
+            if (node.getParent() == null || node.getParent().isJointPrefetch()) {
+                return true;
             }
+
+            PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
+            JointProcessor subprocessor = new JointProcessor(processorNode);
+
+            PrefetchProcessorNode parent = (PrefetchProcessorNode) processorNode.getParent();
+            while (parent != null && parent.isPhantom()) {
+                parent = (PrefetchProcessorNode) parent.getParent();
+            }
+
+            if (parent == null) {
+                return false;
+            }
+
+            List<DataRow> parentRows = parent.getDataRows();
+            // phantom node?
+            if (parentRows == null || parentRows.size() == 0) {
+                return false;
+            }
+
+            List<Persistent> parentObjects = parent.getObjects();
+            int size = parentRows.size();
+
+            for (int i = 0; i < size; i++) {
+                subprocessor.setCurrentFlatRow(parentRows.get(i));
+                parent.setLastResolved(parentObjects.get(i));
+                processorNode.traverse(subprocessor);
+            }
+
+            List<Persistent> objects = processorNode.getObjects();
+            cache.snapshotsUpdatedForObjects(
+                    objects,
+                    processorNode.getResolvedRows(),
+                    queryMetadata.isRefreshingObjects());
+
             return true;
         }
 
@@ -346,14 +341,11 @@ class HierarchicalObjectResolver {
 
             // TODO: see TODO in ObjectResolver.relatedObjectsFromDataRows
 
-            if ((node.isDisjointPrefetch() || node.isDisjointByIdPrefetch())
-                    && !needToSaveDuplicates) {
+            if ((node.isDisjointPrefetch() || node.isDisjointByIdPrefetch()) && !needToSaveDuplicates) {
                 PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
                 if (processorNode.isJointChildren()) {
                     List<Persistent> objects = processorNode.getObjects();
-
                     if (objects != null && objects.size() > 1) {
-
                         Set<Persistent> seen = new HashSet<>(objects.size());
                         objects.removeIf(persistent -> !seen.add(persistent));
                     }
@@ -394,7 +386,7 @@ class HierarchicalObjectResolver {
             PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
 
             // find existing object, if found skip further processing
-            Map id = processorNode.idFromFlatRow(currentFlatRow);
+            Map<String, Object> id = processorNode.idFromFlatRow(currentFlatRow);
             Persistent object = processorNode.getResolved(id);
             DataRow row = null;
             if (object == null) {
