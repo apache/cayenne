@@ -159,6 +159,31 @@ public class StringUtils {
     }
 
     /**
+     * Converts string to camel case string
+     * @param aString
+     * @param upOrDown
+     * @return camel cased version
+     */
+    public String camelCase(String aString, boolean upOrDown) {
+        if (aString == null || aString.length() == 0) {
+            return aString;
+        }
+        return Util.underscoredToJava(aString, upOrDown);
+    }
+
+    /**
+     * Converts string to lower case
+     * @param aString
+     * @return
+     */
+    public String toLowerCase(String aString) {
+        if (aString == null || aString.length() == 0) {
+            return aString;
+        }
+        return aString.toLowerCase();
+    }
+
+    /**
      * <p>
      * Strip generic definition from string
      * </p>
