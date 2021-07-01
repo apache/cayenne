@@ -43,6 +43,5 @@
 		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
 		<skipRelationshipsLoading>false</skipRelationshipsLoading>
 		<useJava7Types>false</useJava7Types>
-		<usePrimitives>true</usePrimitives>
 	</dbImport>
 </data-map>

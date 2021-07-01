@@ -52,7 +52,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     private JCheckBox skipPrimaryKeyLoading;
     private JCheckBox forceDataMapCatalog;
     private JCheckBox forceDataMapSchema;
-    private JCheckBox usePrimitives;
     private JCheckBox useJava7Types;
 
     private TextAdapter tableTypes;
@@ -80,7 +79,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         panelBuilder.append("Skip primary key loading:", skipPrimaryKeyLoading);
         panelBuilder.append("Force datamap catalog:", forceDataMapCatalog);
         panelBuilder.append("Force datamap schema:", forceDataMapSchema);
-        panelBuilder.append("Use Java primitive types:", usePrimitives);
         panelBuilder.append("Use java.util.Date type:", useJava7Types);
         panelBuilder.append("Naming strategy:", strategyCombo);
         panelBuilder.append("Table types:", tableTypes.getComponent());
@@ -93,7 +91,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         skipPrimaryKeyLoading.setSelected(reverseEngineering.getSkipPrimaryKeyLoading());
         forceDataMapCatalog.setSelected(reverseEngineering.isForceDataMapCatalog());
         forceDataMapSchema.setSelected(reverseEngineering.isForceDataMapSchema());
-        usePrimitives.setSelected(reverseEngineering.isUsePrimitives());
         useJava7Types.setSelected(reverseEngineering.isUseJava7Types());
     }
 
@@ -189,8 +186,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         useJava7Types = new JCheckBox();
         useJava7Types.setToolTipText("<html>Use <b>java.util.Date</b> for all columns with <i>DATE/TIME/TIMESTAMP</i> types.<br>" +
                 "By default <b>java.time.*</b> types will be used.</html>");
-        usePrimitives = new JCheckBox();
-        usePrimitives.setToolTipText("<html>Use primitive types (e.g. int) or Object types (e.g. java.lang.Integer)</html>");
     }
 
     private void initListeners() {
@@ -214,12 +209,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         });
         forceDataMapSchema.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setForceDataMapSchema(forceDataMapSchema.isSelected());
-            if(!dbImportView.isInitFromModel()) {
-                projectController.setDirty(true);
-            }
-        });
-        usePrimitives.addActionListener(e -> {
-            getReverseEngineeringBySelectedMap().setUsePrimitives(usePrimitives.isSelected());
             if(!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
@@ -279,10 +268,6 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     JCheckBox getForceDataMapSchema() {
         return forceDataMapSchema;
-    }
-
-    JCheckBox getUsePrimitives() {
-        return usePrimitives;
     }
 
     JCheckBox getUseJava7Types() {

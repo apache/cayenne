@@ -56,7 +56,6 @@ public class DbImportConfigTest {
         assertFalse(rr.isForceDataMapCatalog());
         assertFalse(rr.isForceDataMapSchema());
         assertFalse(rr.isUseJava7Types());
-        assertTrue(rr.isUsePrimitives());
 
         assertTrue(rr.isEmptyContainer());
     }
@@ -80,7 +79,6 @@ public class DbImportConfigTest {
         config.setForceDataMapCatalog(true);
         config.setForceDataMapSchema(true);
         config.setUseJava7Types(true);
-        config.setUsePrimitives(false);
 
         ReverseEngineering rr = config.toReverseEngineering();
 
@@ -108,7 +106,6 @@ public class DbImportConfigTest {
         assertTrue(rr.isForceDataMapCatalog());
         assertTrue(rr.isForceDataMapSchema());
         assertTrue(rr.isUseJava7Types());
-        assertFalse(rr.isUsePrimitives());
     }
 
 }

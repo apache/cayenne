@@ -249,7 +249,6 @@ public class DefaultDbImportAction implements DbImportAction {
         config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());
-        config.setUsePrimitives(reverseEngineering.isUsePrimitives());
         config.setUseJava7Types(reverseEngineering.isUseJava7Types());
     }
 
@@ -416,7 +415,6 @@ public class DefaultDbImportAction implements DbImportAction {
         MergerContext mergerContext = MergerContext.builder(targetDataMap)
                 .delegate(mergeDelegate)
                 .nameGenerator(nameGenerator)
-                .usingPrimitives(config.isUsePrimitives())
                 .usingJava7Types(config.isUseJava7Types())
                 .meaningfulPKFilter(config.createMeaningfulPKFilter())
                 .build();

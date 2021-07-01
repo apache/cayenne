@@ -33,7 +33,7 @@
 
     <obj-entity name="Test1" className="Test1" dbEntityName="TEST1"/>
     <obj-entity name="Test2" className="Test2" dbEntityName="TEST2">
-    <obj-attribute name="test1Id" type="int" db-attribute-path="TEST1_ID"/>
+    <obj-attribute name="test1Id" type="java.lang.Integer" db-attribute-path="TEST1_ID"/>
     </obj-entity>
 
 
