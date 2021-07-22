@@ -28,7 +28,7 @@ public class BitwiseNotNode extends ExpressionNode {
 
     @Override
     public QuotingAppendable append(QuotingAppendable buffer) {
-        return buffer.append('!');
+        return buffer.append('~');
     }
 
     @Override
