@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.access;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
@@ -32,9 +35,7 @@ import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.EventUtil;
 import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.mockito.Mockito;
 
 /**
  * Tests that DataContext sends DataChannel events.
@@ -42,159 +43,145 @@ import static org.junit.Assert.assertTrue;
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextDataChannelEventsIT extends ServerCaseContextsSync {
 
-    @Inject
-    private DataContext context;
+	@Inject
+	private DataContext context;
 
-    @Inject
-    private DataContext peer;
+	@Inject
+	private DataContext peer;
 
-    @Inject
-    private ServerRuntime runtime;
+	@Inject
+	private ServerRuntime runtime;
 
-    @Test
-    public void testCommitEvent() throws Exception {
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
-        context.commitChanges();
+	@Test
+	public void testCommitEvent() throws Exception {
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("X");
+		context.commitChanges();
 
-        final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+		// Construct mock object
+		final DataChannelListener listener = mock(DataChannelListener.class);
+		EventUtil.listenForChannelEvents(context, listener);
 
-        a.setArtistName("Y");
-        context.commitChanges();
+		a.setArtistName("Y");
+		context.commitChanges();
 
-        new ParallelTestContainer() {
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertTrue(listener.graphCommitted);
-                assertFalse(listener.graphChanged);
-                assertFalse(listener.graphRolledBack);
-            }
-        }.runTest(10000);
+			@Override
+			protected void assertResult() throws Exception {
+				Mockito.verify(listener, Mockito.atLeastOnce()).graphFlushed(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.never()).graphChanged(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.never()).graphRolledback(any(GraphEvent.class));
+			}
+		}.runTest(10000);
 
-    }
+	}
 
-    @Test
-    public void testRollbackEvent() throws Exception {
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
-        context.commitChanges();
+	@Test
+	public void testRollbackEvent() throws Exception {
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("X");
+		context.commitChanges();
 
-        final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+		// Construct mock object
+		final DataChannelListener listener = mock(DataChannelListener.class);
+		EventUtil.listenForChannelEvents(context, listener);
 
-        a.setArtistName("Y");
-        context.rollbackChanges();
+		a.setArtistName("Y");
+		context.rollbackChanges();
 
-        new ParallelTestContainer() {
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertFalse(listener.graphCommitted);
-                assertFalse(listener.graphChanged);
-                assertTrue(listener.graphRolledBack);
-            }
-        }.runTest(10000);
-    }
+			@Override
+			protected void assertResult() throws Exception {
+				Mockito.verify(listener, Mockito.never()).graphFlushed(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.never()).graphChanged(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.atLeastOnce()).graphRolledback(any(GraphEvent.class));
+			}
+		}.runTest(10000);
+	}
 
-    @Test
-    public void testChangeEventOnChildChange() throws Exception {
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
-        context.commitChanges();
+	@Test
+	public void testChangeEventOnChildChange() throws Exception {
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("X");
+		context.commitChanges();
 
-        final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+		// Construct mock object
+		final DataChannelListener listener = mock(DataChannelListener.class);
+		EventUtil.listenForChannelEvents(context, listener);
 
-        ObjectContext childContext = runtime.newContext(context);
+		ObjectContext childContext = runtime.newContext(context);
 
-        Artist a1 = childContext.localObject(a);
+		Artist a1 = childContext.localObject(a);
 
-        a1.setArtistName("Y");
-        childContext.commitChangesToParent();
+		a1.setArtistName("Y");
+		childContext.commitChangesToParent();
 
-        new ParallelTestContainer() {
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertFalse(listener.graphCommitted);
-                assertTrue(listener.graphChanged);
-                assertFalse(listener.graphRolledBack);
-            }
-        }.runTest(10000);
-    }
+			@Override
+			protected void assertResult() throws Exception {
+				Mockito.verify(listener, Mockito.never()).graphFlushed(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.atLeastOnce()).graphChanged(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.never()).graphRolledback(any(GraphEvent.class));
+			}
+		}.runTest(10000);
+	}
 
-    @Test
-    public void testChangeEventOnPeerChange() throws Exception {
-        Artist a = context.newObject(Artist.class);
-        a.setArtistName("X");
-        context.commitChanges();
+	@Test
+	public void testChangeEventOnPeerChange() throws Exception {
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("X");
+		context.commitChanges();
 
-        final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents(context, listener);
+		// Construct mock object
+		final DataChannelListener listener = mock(DataChannelListener.class);
+		EventUtil.listenForChannelEvents(context, listener);
 
-        Artist a1 = peer.localObject(a);
+		Artist a1 = peer.localObject(a);
 
-        a1.setArtistName("Y");
-        peer.commitChangesToParent();
+		a1.setArtistName("Y");
+		peer.commitChangesToParent();
 
-        new ParallelTestContainer() {
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertFalse(listener.graphCommitted);
-                assertTrue(listener.graphChanged);
-                assertFalse(listener.graphRolledBack);
-            }
-        }.runTest(10000);
-    }
+			@Override
+			protected void assertResult() throws Exception {
+				Mockito.verify(listener, Mockito.never()).graphFlushed(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.atLeastOnce()).graphChanged(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.never()).graphRolledback(any(GraphEvent.class));
+			}
+		}.runTest(10000);
+	}
 
-    @Test
-    public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
-        ObjectContext childPeer1 = runtime.newContext(context);
+	@Test
+	public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
+		ObjectContext childPeer1 = runtime.newContext(context);
 
-        Artist a = childPeer1.newObject(Artist.class);
-        a.setArtistName("X");
-        childPeer1.commitChanges();
+		Artist a = childPeer1.newObject(Artist.class);
+		a.setArtistName("X");
+		childPeer1.commitChanges();
 
-        final MockChannelListener listener = new MockChannelListener();
-        EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
+		// Construct mock object
+		final DataChannelListener listener = mock(DataChannelListener.class);
+		EventUtil.listenForChannelEvents((DataChannel) childPeer1, listener);
 
-        ObjectContext childPeer2 = runtime.newContext(context);
+		ObjectContext childPeer2 = runtime.newContext(context);
 
-        Artist a1 = childPeer2.localObject(a);
+		Artist a1 = childPeer2.localObject(a);
 
-        a1.setArtistName("Y");
-        childPeer2.commitChangesToParent();
+		a1.setArtistName("Y");
+		childPeer2.commitChangesToParent();
 
-        new ParallelTestContainer() {
+		new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-                assertFalse(listener.graphCommitted);
-                assertTrue(listener.graphChanged);
-                assertFalse(listener.graphRolledBack);
-            }
-        }.runTest(10000);
-    }
-
-    class MockChannelListener implements DataChannelListener {
-
-        boolean graphChanged;
-        boolean graphCommitted;
-        boolean graphRolledBack;
-
-        public void graphChanged(GraphEvent event) {
-            graphChanged = true;
-        }
-
-        public void graphFlushed(GraphEvent event) {
-            graphCommitted = true;
-        }
-
-        public void graphRolledback(GraphEvent event) {
-            graphRolledBack = true;
-        }
-    }
+			@Override
+			protected void assertResult() throws Exception {
+				Mockito.verify(listener, Mockito.never()).graphFlushed(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.atLeastOnce()).graphChanged(any(GraphEvent.class));
+				Mockito.verify(listener, Mockito.never()).graphRolledback(any(GraphEvent.class));
+			}
+		}.runTest(10000);
+	}
 }
