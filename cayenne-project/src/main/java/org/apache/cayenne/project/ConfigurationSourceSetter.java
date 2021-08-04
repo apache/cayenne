@@ -19,22 +19,31 @@
 package org.apache.cayenne.project;
 
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 
 /**
  * Updates ConfigurationNode's configuration sources.
- * 
+ *
  * @since 3.1
  */
 class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
 
+    private final ConfigurationNameMapper configurationNameMapper;
     private Resource configurationSource;
 
-    ConfigurationSourceSetter(Resource configurationSource) {
+    public ConfigurationSourceSetter(@Inject ConfigurationNameMapper configurationNameMapper){
+        this.configurationNameMapper = configurationNameMapper;
+    }
+
+
+    ConfigurationSourceSetter(Resource configurationSource, ConfigurationNameMapper configurationNameMapper) {
         this.configurationSource = configurationSource;
+        this.configurationNameMapper = configurationNameMapper;
     }
 
     @Override
@@ -52,6 +61,16 @@ class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
     @Override
     public Void visitDataMap(DataMap node) {
         node.setConfigurationSource(configurationSource);
+        updateLocationOf(node);
         return null;
+    }
+
+    private void updateLocationOf(DataMap node) {
+        String dataMapLocation = getDatamapLocationByName(node.getName());
+        node.setLocation(dataMapLocation);
+    }
+
+    private String getDatamapLocationByName(String name){
+        return configurationNameMapper.configurationLocation(DataMap.class, name);
     }
 }

@@ -26,6 +26,7 @@ import java.io.File;
 import javax.swing.KeyStroke;
 
 import org.apache.cayenne.modeler.Application;
+import org.apache.cayenne.modeler.event.ProjectSavedEvent;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
@@ -87,6 +88,7 @@ public class SaveAction extends SaveAsAction {
         // Reset the watcher now
         getProjectController().getFileChangeTracker().reconfigure();
 
+        getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(this));
         return true;
     }
 }

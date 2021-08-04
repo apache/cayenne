@@ -27,37 +27,28 @@ import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.LinkDataMapAction;
-import org.apache.cayenne.modeler.dialog.datamap.CatalogUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.LockingUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.PackageUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.SchemaUpdateController;
-import org.apache.cayenne.modeler.dialog.datamap.SuperclassUpdateController;
+import org.apache.cayenne.modeler.dialog.datamap.*;
+import org.apache.cayenne.modeler.event.ProjectSavedEvent;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 import org.apache.cayenne.modeler.util.CellRenderers;
 import org.apache.cayenne.modeler.util.Comparators;
 import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
+import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.util.Arrays;
 
 /**
  * Panel for editing a DataMap.
  */
-public class DataMapView extends JPanel {
+public class DataMapView extends JPanel{
 
     protected ProjectController eventController;
 
@@ -219,6 +210,8 @@ public class DataMapView extends JPanel {
                 initFromModel(map);
             }
         });
+
+        eventController.addProjectSavedListener(this::updateNamesAfterSaving);
 
         nodeSelector.addActionListener(e -> setDataNode());
         quoteSQLIdentifiers.addItemListener(e -> setQuoteSQLIdentifiers(quoteSQLIdentifiers.isSelected()));
@@ -613,5 +606,12 @@ public class DataMapView extends JPanel {
 
     private String getComment(DataMap dataMap) {
         return ObjectInfo.getFromMetaData(eventController.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT);
+    }
+
+    public void updateNamesAfterSaving(ProjectSavedEvent e) {
+        DataMap currentDataMap = eventController.getCurrentDataMap();
+        if(!currentDataMap.getLocation().equals(location.getText())) {
+            location.setText(currentDataMap.getLocation());
+        }
     }
 }
