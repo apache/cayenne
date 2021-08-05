@@ -79,6 +79,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Override
     protected Collection<MergerToken> log(List<MergerToken> tokens) {
         resultDialog = dbImportController.createDialog();
+        resultDialog.refreshElements();
         resultDialog.getOkButton().addActionListener(e -> {
             try {
                 if(resultDialog.getTableForMap().containsKey(targetMap)) {
@@ -104,6 +105,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
         if (tokens.isEmpty()) {
             logger.info("Detected changes: No changes to import.");
             String logString = String.format("    %-20s", "Nothing to import");
+            resultDialog.getRevertButton().setVisible(false);
             resultDialog.addRowToOutput(logString, targetMap);
             return tokens;
         }

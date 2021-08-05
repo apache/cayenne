@@ -130,6 +130,10 @@ public class DbLoadResultDialog extends JDialog {
         }
     }
 
+    public void refreshElements(){
+        revertButton.setVisible(true);
+    }
+
     public synchronized void addRowToOutput(String output, DataMap dataMap) {
         prepareTable(dataMap).addRow(new Object[]{output});
     }
