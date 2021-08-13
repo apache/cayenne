@@ -62,7 +62,7 @@ public class ConcurrentPkGeneratorIT extends ServerCase {
 				CallableStatement cs =
 						connection.prepareCall("CALL SYSCS_UTIL.SYSCS_SET_DATABASE_PROPERTY(?, ?)");
 				cs.setString(1, "derby.language.sequence.preallocator");
-				cs.setString(2, "200");
+				cs.setString(2, "1000");
 				cs.execute();
 				cs.close();
 			} catch (SQLException ex) {
