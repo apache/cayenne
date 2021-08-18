@@ -26,9 +26,9 @@ env:
     - DB_PROFILE=hsql
     - DB_PROFILE=h2
     - DB_PROFILE=derby
-    - DB_PROFILE=mysql-docker
-    - DB_PROFILE=postgres-docker
-    - DB_PROFILE=sqlserver-docker
+    - DB_PROFILE=mysql-tc
+    - DB_PROFILE=postgres-tc
+    - DB_PROFILE=sqlserver-tc
   global:
     # travis encrypt -r apache/cayenne "SNAPSHOT_REPO_USERNAME='username'"
     # travis encrypt -r apache/cayenne "SNAPSHOT_REPO_PASSWORD='password'"

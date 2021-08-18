@@ -135,6 +135,13 @@ import org.apache.cayenne.unit.SybaseUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
+import org.apache.cayenne.unit.testcontainers.Db2ContainerProvider;
+import org.apache.cayenne.unit.testcontainers.MariaDbContainerProvider;
+import org.apache.cayenne.unit.testcontainers.MysqlContainerProvider;
+import org.apache.cayenne.unit.testcontainers.OracleContainerProvider;
+import org.apache.cayenne.unit.testcontainers.PostgresContainerProvider;
+import org.apache.cayenne.unit.testcontainers.SqlServerContainerProvider;
+import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.xml.sax.XMLReader;
 
@@ -236,6 +243,14 @@ public class ServerCaseModule implements Module {
 
         // singleton objects
         binder.bind(UnitTestLifecycleManager.class).toInstance(new ServerCaseLifecycleManager(testScope));
+
+        binder.bindMap(TestContainerProvider.class)
+                .put("mysql", MysqlContainerProvider.class)
+                .put("mariadb", MariaDbContainerProvider.class)
+                .put("postgres", PostgresContainerProvider.class)
+                .put("sqlserver", SqlServerContainerProvider.class)
+                .put("oracle", OracleContainerProvider.class)
+                .put("db2", Db2ContainerProvider.class);
 
         binder.bind(DataSourceInfo.class).toProvider(ServerCaseDataSourceInfoProvider.class);
         binder.bind(DataSourceFactory.class).to(ServerCaseSharedDataSourceFactory.class);

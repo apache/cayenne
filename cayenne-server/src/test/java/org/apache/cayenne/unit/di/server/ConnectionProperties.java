@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 class ConnectionProperties {
 
 	static final int MIN_CONNECTIONS = 1;
-	static final int MAX_CONNECTIONS = 2;
+	static final int MAX_CONNECTIONS = 3;
 
 	private static final String ADAPTER_KEY = "adapter";
 	private static final String ADAPTER20_KEY = "cayenne.adapter";
