@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-2399 Convert string values to Enum in qualifiers
+CAY-2718 Use testcontainers for the integration tests
 
 Bug Fixes:
 
