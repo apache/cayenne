@@ -24,9 +24,12 @@ import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.JdbcDatabaseContainer;
 
 import java.io.File;
 import java.io.FileReader;
@@ -41,6 +44,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
 
     private static final String PROPERTIES_FILE = "connection.properties";
     private static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
+    private static final String CONNECTION_DB_VERSION = "cayenneTestDbVersion";
 
     private static final String ADAPTER_KEY_MAVEN = "cayenneAdapter";
     private static final String USER_NAME_KEY_MAVEN = "cayenneJdbcUsername";
@@ -51,8 +55,12 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
     private Map<String, DataSourceInfo> inMemoryDataSources;
     private ConnectionProperties connectionProperties;
 
-    public ServerCaseDataSourceInfoProvider() throws IOException {
+    private final Map<String, TestContainerProvider> testContainerProviders;
 
+    public ServerCaseDataSourceInfoProvider(@Inject Map<String, TestContainerProvider> testContainerProviders)
+            throws IOException {
+
+        this.testContainerProviders = testContainerProviders;
         Map<String, String> propertiesMap = new HashMap<>();
 
         File file = connectionPropertiesFile();
@@ -126,6 +134,10 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
             connectionInfo = inMemoryDataSources.get(connectionKey);
         }
 
+        if (connectionInfo == null) {
+            connectionInfo = checkTestContainersDataSource(connectionKey);
+        }
+
         connectionInfo = applyOverrides(connectionInfo);
 
         if (connectionInfo == null) {
@@ -134,6 +146,33 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
 
         logger.info("loaded connection info: " + connectionInfo);
         return connectionInfo;
+    }
+
+    private DataSourceInfo checkTestContainersDataSource(String connectionKey) {
+        // special case for the testcontainers profile
+        if (!connectionKey.endsWith("-tc")) {
+            return null;
+        }
+
+        String db = connectionKey.substring(0, connectionKey.length() - 3);
+
+        TestContainerProvider testContainerProvider = testContainerProviders.get(db);
+        if(testContainerProvider == null) {
+            return null;
+        }
+
+        String version = property(CONNECTION_DB_VERSION);
+        JdbcDatabaseContainer<?> container = testContainerProvider.startContainer(version);
+
+        DataSourceInfo sourceInfo = new DataSourceInfo();
+        sourceInfo.setAdapterClassName(testContainerProvider.getAdapterClass().getName());
+        sourceInfo.setUserName(container.getUsername());
+        sourceInfo.setPassword(container.getPassword());
+        sourceInfo.setDataSourceUrl(container.getJdbcUrl());
+        sourceInfo.setJdbcDriver(container.getDriverClassName());
+        sourceInfo.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
+        sourceInfo.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
+        return sourceInfo;
     }
 
     private File connectionPropertiesFile() {

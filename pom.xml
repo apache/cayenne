@@ -17,7 +17,8 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>cayenne-parent</artifactId>
@@ -40,6 +41,7 @@
         <jacoco.version>0.7.9</jacoco.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<ant.version>1.10.7</ant.version>
+		<testcontainers.version>1.16.0</testcontainers.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -495,6 +497,48 @@
 				<artifactId>geronimo-jms_1.1_spec</artifactId>
 				<version>1.1.1</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>mysql</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>mariadb</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>oracle-xe</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>mssqlserver</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>db2</artifactId>
+				<version>${testcontainers.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -1350,138 +1394,44 @@
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>5.1.42</version>
+					<version>8.0.24</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
-			<id>mysql-docker</id>
+			<id>mysql-tc</id>
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>mysql-docker</value>
+					<value>mysql-tc</value>
 				</property>
 			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>5.1.42</version>
+					<version>8.0.24</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<systemPropertyVariables>
-								<!-- See https://hub.docker.com/_/mysql/ for details-->
-								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
-								<cayenneAdapter>org.apache.cayenne.dba.mysql.MySQLAdapter</cayenneAdapter>
-								<cayenneJdbcUsername>root</cayenneJdbcUsername>
-								<cayenneJdbcPassword />
-								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne?useUnicode=true&amp;characterEncoding=UTF-8&amp;generateSimpleParameterMetadata=true&amp;useSSL=false</cayenneJdbcUrl>
-								<cayenneJdbcDriver>com.mysql.jdbc.Driver</cayenneJdbcDriver>
-							</systemPropertyVariables>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-						<configuration>
-							<images>
-								<image>
-									<alias>db</alias>
-									<name>mysql:5.7</name>
-									<run>
-										<ports>
-											<port>${db.host}:${db.port}:3306</port>
-										</ports>
-										<wait>
-											<log>MySQL init process done. Ready for start up.</log>
-											<time>60000</time>
-										</wait>
-										<env>
-											<MYSQL_ALLOW_EMPTY_PASSWORD>yes</MYSQL_ALLOW_EMPTY_PASSWORD>
-											<MYSQL_DATABASE>cayenne</MYSQL_DATABASE>
-										</env>
-										<cmd>
-											--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-										</cmd>
-									</run>
-								</image>
-							</images>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 		<profile>
-			<id>mariadb-docker</id>
+			<id>mariadb-tc</id>
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>mariadb-docker</value>
+					<value>mariadb-tc</value>
 				</property>
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-					<version>5.1.42</version>
+					<groupId>org.mariadb.jdbc</groupId>
+					<artifactId>mariadb-java-client</artifactId>
+					<version>2.7.4</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<systemPropertyVariables>
-								<!-- See https://hub.docker.com/_/mariadb/ for details-->
-								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
-								<cayenneAdapter>org.apache.cayenne.dba.mysql.MySQLAdapter</cayenneAdapter>
-								<cayenneJdbcUsername>root</cayenneJdbcUsername>
-								<cayenneJdbcPassword />
-								<cayenneJdbcUrl>jdbc:mysql://${db.host}:${db.port}/cayenne?useUnicode=true&amp;characterEncoding=UTF-8&amp;generateSimpleParameterMetadata=true&amp;useSSL=false</cayenneJdbcUrl>
-								<cayenneJdbcDriver>com.mysql.jdbc.Driver</cayenneJdbcDriver>
-							</systemPropertyVariables>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-						<configuration>
-							<images>
-								<image>
-									<alias>db</alias>
-									<name>mariadb:10.4</name>
-									<run>
-										<ports>
-											<port>${db.host}:${db.port}:3306</port>
-										</ports>
-										<wait>
-											<log>MySQL init process done. Ready for start up.</log>
-											<time>60000</time>
-										</wait>
-										<env>
-											<MYSQL_ALLOW_EMPTY_PASSWORD>yes</MYSQL_ALLOW_EMPTY_PASSWORD>
-											<MYSQL_DATABASE>cayenne</MYSQL_DATABASE>
-										</env>
-										<cmd>
-											--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-										</cmd>
-									</run>
-								</image>
-							</images>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 		<profile>
 			<id>oracle</id>
@@ -1491,11 +1441,48 @@
 					<value>oracle</value>
 				</property>
 			</activation>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>com.oracle.database.jdbc</groupId>
+						<artifactId>ojdbc-bom</artifactId>
+						<version>21.1.0.0</version>
+						<type>pom</type>
+						<scope>import</scope>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
 			<dependencies>
 				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>oracle-driver</artifactId>
-					<version>11</version>
+					<groupId>com.oracle.database.jdbc</groupId>
+					<artifactId>ojdbc8</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>oracle-tc</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>oracle-tc</value>
+				</property>
+			</activation>
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>com.oracle.database.jdbc</groupId>
+						<artifactId>ojdbc-bom</artifactId>
+						<version>21.1.0.0</version>
+						<type>pom</type>
+						<scope>import</scope>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+			<dependencies>
+				<dependency>
+					<groupId>com.oracle.database.jdbc</groupId>
+					<artifactId>ojdbc8</artifactId>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1512,70 +1499,27 @@
 				<dependency>
 					<groupId>org.postgresql</groupId>
 					<artifactId>postgresql</artifactId>
-					<version>9.4.1212.jre7</version>
+					<version>42.2.12</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
-			<id>postgres-docker</id>
+			<id>postgres-tc</id>
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>postgres-docker</value>
+					<value>postgres-tc</value>
 				</property>
 			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>org.postgresql</groupId>
 					<artifactId>postgresql</artifactId>
-					<version>9.4.1212.jre7</version>
+					<version>42.2.12</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<systemPropertyVariables>
-								<!-- Default user, password, and DB name is "postgres", see https://hub.docker.com/_/postgres/ -->
-								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
-								<cayenneAdapter>org.apache.cayenne.dba.postgres.PostgresAdapter</cayenneAdapter>
-								<cayenneJdbcUsername>postgres</cayenneJdbcUsername>
-								<cayenneJdbcPassword>postgres</cayenneJdbcPassword>
-								<cayenneJdbcUrl>jdbc:postgresql://${db.host}:${db.port}/postgres</cayenneJdbcUrl>
-								<cayenneJdbcDriver>org.postgresql.Driver</cayenneJdbcDriver>
-							</systemPropertyVariables>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-						<configuration>
-							<images>
-								<image>
-									<alias>db</alias>
-									<name>postgres:12</name>
-									<run>
-										<env>
-											<POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
-										</env>
-										<ports>
-											<port>${db.host}:${db.port}:5432</port>
-										</ports>
-										<wait>
-											<log>PostgreSQL init process complete; ready for start up.</log>
-											<time>60000</time>
-										</wait>
-									</run>
-								</image>
-							</images>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 		<profile>
 			<id>derby</id>
@@ -1604,73 +1548,27 @@
 				<dependency>
 					<groupId>com.microsoft.sqlserver</groupId>
 					<artifactId>mssql-jdbc</artifactId>
-					<version>7.0.0.jre8</version>
+					<version>9.2.1.jre8</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
-			<id>sqlserver-docker</id>
+			<id>sqlserver-tc</id>
 			<activation>
 				<property>
 					<name>cayenneTestConnection</name>
-					<value>sqlserver-docker</value>
+					<value>sqlserver-tc</value>
 				</property>
 			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.microsoft.sqlserver</groupId>
 					<artifactId>mssql-jdbc</artifactId>
-					<version>7.0.0.jre8</version>
+					<version>9.2.1.jre8</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<configuration>
-							<systemPropertyVariables>
-								<!-- ${db.host} and ${db.port} are dynamically set by docker-maven-plugin below -->
-								<cayenneAdapter>org.apache.cayenne.dba.sqlserver.SQLServerAdapter</cayenneAdapter>
-								<cayenneJdbcUsername>sa</cayenneJdbcUsername>
-								<cayenneJdbcPassword>Cayenne#123</cayenneJdbcPassword>
-								<cayenneJdbcUrl>jdbc:sqlserver://${sqlserver.host}:${sqlserver.port};</cayenneJdbcUrl>
-								<cayenneJdbcDriver>com.microsoft.sqlserver.jdbc.SQLServerDriver</cayenneJdbcDriver>
-								<cayenne.runtime.db.collation.assume.ci>true</cayenne.runtime.db.collation.assume.ci>
-							</systemPropertyVariables>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-						<configuration>
-							<verbose>true</verbose>
-							<images>
-								<image>
-									<alias>sqlserver</alias>
-									<name>microsoft/mssql-server-linux:2017-latest</name>
-									<run>
-										<ports>
-											<port>${sqlserver.host}:${sqlserver.port}:1433</port>
-										</ports>
-										<env>
-											<ACCEPT_EULA>Y</ACCEPT_EULA>
-											<SA_PASSWORD>Cayenne#123</SA_PASSWORD>
-										</env>
-										<wait>
-											<log>SQL Server is now ready for client connections.</log>
-											<time>60000</time>
-										</wait>
-										<cmd>/opt/mssql/bin/sqlservr</cmd>
-									</run>
-								</image>
-							</images>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
 		</profile>
 		<profile>
 			<id>ingres</id>
@@ -1719,6 +1617,7 @@
 					<groupId>org.xerial</groupId>
 					<artifactId>sqlite-jdbc</artifactId>
 					<version>3.25.2</version>
+					<scope>test</scope>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -1735,6 +1634,23 @@
 					<groupId>com.ibm.db2</groupId>
 					<artifactId>db2-driver</artifactId>
 					<version>1.0</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>db2-tc</id>
+			<activation>
+				<property>
+					<name>cayenneTestConnection</name>
+					<value>db2-tc</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.ibm.db2</groupId>
+					<artifactId>jcc</artifactId>
+					<version>11.5.6.0</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
