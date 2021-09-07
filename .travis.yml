@@ -23,6 +23,7 @@ services:
 
 env:
   jobs:
+  fast_finish: true
     - DB_PROFILE=hsql
     - DB_PROFILE=h2
     - DB_PROFILE=derby
@@ -41,7 +42,7 @@ jdk:
   - openjdk-ea
 
 script:
-  - travis_wait mvn verify -fae -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
+  - mvn verify -fae -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
 jobs:
   allow_failures:
