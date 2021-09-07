@@ -22,6 +22,7 @@ package org.apache.cayenne.unit;
 import java.sql.Connection;
 import java.util.Collection;
 
+import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 
@@ -95,5 +96,16 @@ public class SQLServerUnitDbAdapter extends SybaseUnitDbAdapter {
     @Override
     public boolean supportsCatalogs() {
         return true;
+    }
+
+    /**
+     * SqlServer actually supports case sensitivity, but it depends on server/session/table settings,
+     * so we just skip this for tests stability.
+     *
+     * @return false
+     */
+    @Override
+    public boolean supportsCaseSensitiveLike() {
+        return false;
     }
 }
