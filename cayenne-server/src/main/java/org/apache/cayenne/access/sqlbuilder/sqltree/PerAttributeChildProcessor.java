@@ -44,8 +44,12 @@ public class PerAttributeChildProcessor<T extends Node> implements ChildProcesso
 
     @Override
     public Optional<Node> process(Node parent, T child, int index) {
+        DbAttribute dbAttribute = attributeMapper.apply(child);
+        if(dbAttribute == null) {
+            return processorFactory.apply(null).process(parent, child, index);
+        }
         return processorByAttribute
-                .computeIfAbsent(attributeMapper.apply(child), processorFactory)
+                .computeIfAbsent(dbAttribute, processorFactory)
                 .process(parent, child, index);
     }
 }
