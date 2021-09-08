@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.apache.cayenne.map.DbAttribute;
@@ -32,7 +32,7 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class PerAttributeChildProcessor<T extends Node> implements ChildProcessor<T> {
 
-    private final Map<DbAttribute, ChildProcessor<T>> processorByAttribute = new HashMap<>();
+    private final Map<DbAttribute, ChildProcessor<T>> processorByAttribute = new ConcurrentHashMap<>();
     private final Function<T, DbAttribute> attributeMapper;
     private final Function<DbAttribute, ChildProcessor<T>> processorFactory;
 

@@ -31,6 +31,7 @@ CAY-2712 Shouldn't run batch inserts with generated keys if there is reflexive d
 CAY-2713 ConcurrentModificationException when Inserting
 CAY-2714 Offset value is not copied to column select metadata
 CAY-2716 Wrong operator for the bitwise NOT
+CAY-2720 ConcurrentModificationException in the TypeAwareSQLTreeProcessor
 
 ----------------------------------
 Release: 4.2.M3
