@@ -35,20 +35,18 @@ public class PerAttributeChildProcessor<T extends Node> implements ChildProcesso
     private final Map<DbAttribute, ChildProcessor<T>> processorByAttribute = new ConcurrentHashMap<>();
     private final Function<T, DbAttribute> attributeMapper;
     private final Function<DbAttribute, ChildProcessor<T>> processorFactory;
-    private final ChildProcessor<T> nullProcessor;
 
     public PerAttributeChildProcessor(Function<T, DbAttribute> attributeMapper,
                                       Function<DbAttribute, ChildProcessor<T>> processorFactory) {
         this.processorFactory = processorFactory;
         this.attributeMapper = attributeMapper;
-        this.nullProcessor = processorFactory.apply(null);
     }
 
     @Override
     public Optional<Node> process(Node parent, T child, int index) {
         DbAttribute dbAttribute = attributeMapper.apply(child);
         if(dbAttribute == null) {
-            return nullProcessor.process(parent, child, index);
+            return processorFactory.apply(null).process(parent, child, index);
         }
         return processorByAttribute
                 .computeIfAbsent(dbAttribute, processorFactory)
