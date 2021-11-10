@@ -779,7 +779,7 @@
 						<target>1.8</target>
 						<encoding>UTF-8</encoding>
 						<fork>true</fork>
-
+						<useIncrementalCompilation>true</useIncrementalCompilation>
 					</configuration>
 				</plugin>
 				<plugin>
