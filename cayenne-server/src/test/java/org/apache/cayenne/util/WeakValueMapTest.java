@@ -215,10 +215,10 @@ public class WeakValueMapTest {
         map.put("key_4", 321);
         assertEquals(4, map.size());
 
-        for(Map.Entry<String, Integer> entry : map.entrySet()) {
-            map.remove(entry.getKey());
+        for (String key : map.keySet()) {
+            map.remove(key);
         }
-    }
+}
 
     @Test(expected = UnsupportedOperationException.class)
     public void testUnsupportedEntryIteratorRemoval() {
