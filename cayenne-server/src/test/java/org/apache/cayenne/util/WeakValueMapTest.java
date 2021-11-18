@@ -216,9 +216,7 @@ public class WeakValueMapTest {
         assertEquals(4, map.size());
 
         for(Map.Entry<String, Integer> entry : map.entrySet()) {
-            if("key_2".equals(entry.getKey())) {
-                map.remove("key_2");
-            }
+            map.remove(entry.getKey());
         }
     }
 
