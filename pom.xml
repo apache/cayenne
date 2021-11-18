@@ -893,7 +893,7 @@
 				<plugin>
 					<groupId>org.objectstyle.japp</groupId>
 					<artifactId>japp-maven-plugin</artifactId>
-					<version>3.2</version>
+					<version>3.3</version>
 				</plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
