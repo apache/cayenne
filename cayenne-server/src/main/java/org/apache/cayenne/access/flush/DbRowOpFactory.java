@@ -94,6 +94,10 @@ class DbRowOpFactory {
     }
 
     private DbRowOp createRow(DbEntity entity, ObjectId id, DbRowOpType type) {
+        // skip phantom nodes, this could be a created and immediately deleted relationship
+        if(store.getNode(id) == null && !id.getEntityName().startsWith("db:")) {
+            return null;
+        }
         switch (type) {
             case INSERT:
                 return new InsertDbRowOp(object, entity, id);

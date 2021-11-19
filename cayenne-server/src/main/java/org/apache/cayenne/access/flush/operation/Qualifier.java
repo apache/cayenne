@@ -50,7 +50,7 @@ public class Qualifier {
     public Map<String, Object> getSnapshot() {
         Map<String, Object> idSnapshot = row.getChangeId().getIdSnapshot();
         if(additionalQualifier == null || additionalQualifier.isEmpty()) {
-            return idSnapshot;
+            return new HashMap<>(idSnapshot);
         }
 
         Map<String, Object> qualifier = new HashMap<>(additionalQualifier.size() + idSnapshot.size());
