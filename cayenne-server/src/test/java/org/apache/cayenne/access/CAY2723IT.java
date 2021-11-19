@@ -25,6 +25,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -36,6 +37,16 @@ public class CAY2723IT extends ServerCase {
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
+
+    /**
+     * need to run this to ensure that PK generation doesn't affect main test
+     */
+    @Before
+    public void warmup() {
+        Painting painting = context.newObject(Painting.class);
+        painting.setPaintingTitle("test_warmup");
+        context.commitChanges();
+    }
 
     @Test
     public void phantomToDepPKUpdate() {
@@ -50,9 +61,8 @@ public class CAY2723IT extends ServerCase {
 
         context.deleteObject(paintingInfo);
 
-        // here should be only single insert of the painting object, but there will be 3 queries in total
-        // (2 for the PK generation + insert)
+        // here should be only single insert of the painting object
         int queryCounter = queryInterceptor.runWithQueryCounter(() -> context.commitChanges());
-        assertEquals(3, queryCounter);
+        assertEquals(1, queryCounter);
     }
 }
