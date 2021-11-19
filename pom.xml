@@ -1666,12 +1666,21 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>java9-javadoc-html5</id>
+			<id>java9-javadoc-html5-no-modules</id>
 			<activation>
-				<jdk>[9,)</jdk>
+				<jdk>[9,14)</jdk>
 			</activation>
 			<properties>
 				<javadoc.additionalOptions>-html5 --no-module-directories</javadoc.additionalOptions>
+			</properties>
+		</profile>
+		<profile>
+			<id>java14-javadoc-html5</id>
+			<activation>
+				<jdk>[14,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.additionalOptions>-html5</javadoc.additionalOptions>
 			</properties>
 		</profile>
 	</profiles>
