@@ -55,7 +55,7 @@ public class ServerCaseDataNodeFactory implements DataNodeFactory {
 
 	@Override
 	public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
-		DataNode dataNode = new DataNode(nodeDescriptor.getName());
+		DataNode dataNode = new ServerCaseDataNode(nodeDescriptor.getName());
 
 		dataNode.setJdbcEventLogger(jdbcEventLogger);
 		dataNode.setRowReaderFactory(rowReaderFactory);

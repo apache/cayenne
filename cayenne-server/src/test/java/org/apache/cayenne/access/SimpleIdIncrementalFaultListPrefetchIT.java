@@ -134,7 +134,8 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends ServerCase {
         });
 
         // within the same page only one query should've been executed
-        assertEquals(1, count);
+        // we expect the second one for the prefetch
+        assertEquals(2, count);
     }
 
     /**

@@ -48,20 +48,16 @@ public class ServerCaseDataChannelInterceptor implements DataChannelInterceptor 
     }
 
     public int runWithQueryCounter(UnitTestClosure closure) {
+        UnitTestDomain channel = (UnitTestDomain) serverRuntimeProvider.get().getChannel();
+        ServerCaseDataNode node = (ServerCaseDataNode)channel.getDataNodes().iterator().next();
 
-        UnitTestDomain channel = (UnitTestDomain) serverRuntimeProvider
-                .get()
-                .getChannel();
-
-        int start = channel.getQueryCount();
+        int start = node.getQueriesCount();
         int end;
         try {
             closure.execute();
+        } finally {
+            end = node.getQueriesCount();
         }
-        finally {
-            end = channel.getQueryCount();
-        }
-
         return end - start;
     }
 
