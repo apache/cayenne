@@ -20,7 +20,7 @@ package org.apache.cayenne.log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -108,7 +108,7 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
 
     @SuppressWarnings("unchecked")
     private Map<String, List<String>> collectBindings(ParameterBinding[] bindings) {
-        Map<String, List<String>> bindingsMap = new LinkedHashMap<>();
+        Map<String, List<String>> bindingsMap = new HashMap<>();
 
         String key = null;
         String value;
