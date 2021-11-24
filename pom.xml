@@ -1013,6 +1013,9 @@
 
                         <exclude>**/*.log</exclude>
                         <exclude>**/*.iml</exclude>
+
+						<!-- This is a template of a NOTICE file, that will be included to the build artifacts -->
+						<exclude>**/NOTICE.txt.vm</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
