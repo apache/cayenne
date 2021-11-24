@@ -14,13 +14,17 @@ Date:
 Changes/New Features:
 
 CAY-2399 Convert string values to Enum in qualifiers
+CAY-2637 Allow forcing a custom Connection for a transaction
 CAY-2718 Use testcontainers for the integration tests
 
 Bug Fixes:
 
 CAY-2092 Exception for query that uses pagination and sorting on to-many
+CAY-2694 Precision issues with reverse / forward engineering of time types on MySQL
+CAY-2699 Modeler: dbimport schema view not working on SQLite
 CAY-2702 Modeler: Callbacks table has too small default width
 CAY-2703 Modeler: incorrect active tab style on the MacOS version
+CAY-2704 Vertical inheritance with Embeddedables looses ObjAttribute information
 CAY-2705 Performance of callback annotation processing
 CAY-2706 Modeler: object attribute dialog doesn't properly initialized for the embeddable type
 CAY-2707 Modeler: code generation is broken in the DataDomain tab
