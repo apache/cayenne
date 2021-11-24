@@ -33,6 +33,7 @@ CAY-2714 Offset value is not copied to column select metadata
 CAY-2716 Wrong operator for the bitwise NOT
 CAY-2720 ConcurrentModificationException in the TypeAwareSQLTreeProcessor
 CAY-2721 Platform builds of CayenneModeler don't work with Java 17
+CAY-2723 Phantom update of a to-dependent-pk relationship
 
 ----------------------------------
 Release: 4.2.M3
