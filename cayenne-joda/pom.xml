@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>cayenne-parent</artifactId>
 		<groupId>org.apache.cayenne</groupId>
-		<version>4.2.B2-SNAPSHOT</version>
+		<version>4.2.M4-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-joda</artifactId>
 	<name>cayenne-joda: Cayenne Joda Extensions</name>
