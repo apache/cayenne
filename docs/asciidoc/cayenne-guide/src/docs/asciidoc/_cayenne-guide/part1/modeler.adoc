@@ -60,10 +60,10 @@ Cayenne supports three PK generation strategies:
 1. *Cayenne Generated*.
 This is default strategy. Cayenne will use special table `AUTO_PK_SUPPORT` for managing primary keys.
 
-1. *Database Generated*.
+2. *Database Generated*.
 Cayenne will delegate PK generation to database (e.g. auto increment fields on MySQL or `serial` type on PostgreSQL)
 
-1. *Custom Sequence*. In this case Cayenne will use provided sequence to generate primary keys.
+3. *Custom Sequence*. In this case Cayenne will use provided sequence to generate primary keys.
 
 Strategy should be set per each `DbEntity` independently.
 

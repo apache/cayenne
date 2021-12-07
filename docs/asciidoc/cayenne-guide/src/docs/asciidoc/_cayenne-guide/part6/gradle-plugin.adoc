@@ -58,7 +58,7 @@ cgen {
     client = false
     mode = 'all'
     overwrite = true
-    createPropertiesNames = true
+    createPropertyNames = true
 }
 ----
 
@@ -82,9 +82,9 @@ example of configuration for cdbimport task:
 ----
 cdbimport {
     // map can be skipped if it is defined in cayenne.defaultDataMap
-    map 'datamap.map.xml'
+    map 'src/main/resources/datamap.map.xml'
     // optional project file, will be created if missing
-    cayenneProject 'cayenne-project.xml'
+    cayenneProject 'src/main/resources/cayenne-project.xml'
 
     dataSource {
         driver 'com.mysql.cj.jdbc.Driver'
@@ -93,7 +93,7 @@ cdbimport {
         password ''
     }
 
-    dbImport
+    dbImport {
         // additional settings
         usePrimitives false
         defaultPackage 'org.apache.cayenne.test'
