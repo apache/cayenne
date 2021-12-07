@@ -95,7 +95,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
 	/**
 	 * Creates a query that selects scalar values and uses default routing.
-	 * @deprecated since 4.2. Use {@link #scalarQuery(String, Class<T>)} method.
+	 * @deprecated since 4.2. Use {@link #scalarQuery(String, Class)} method.
 	 */
 	@Deprecated
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String sql) {
@@ -105,7 +105,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	/**
 	 * Creates a query that selects scalar values and uses routing based on the
 	 * provided DataMap name.
-	 * @deprecated since 4.2. Use {@link #scalarQuery(String, String, Class<T>)} method.
+	 * @deprecated since 4.2. Use {@link #scalarQuery(String, String, Class)} method.
 	 */
 	@Deprecated
 	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String dataMapName, String sql) {
