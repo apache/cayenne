@@ -52,11 +52,7 @@ import org.apache.cayenne.modeler.dialog.DbRelationshipDialog;
 import org.apache.cayenne.modeler.event.RelationshipDisplayEvent;
 import org.apache.cayenne.modeler.undo.CreateRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RelationshipUndoableEdit;
-import org.apache.cayenne.modeler.util.CayenneController;
-import org.apache.cayenne.modeler.util.Comparators;
-import org.apache.cayenne.modeler.util.EntityTreeModel;
-import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
-import org.apache.cayenne.modeler.util.MultiColumnBrowser;
+import org.apache.cayenne.modeler.util.*;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
@@ -280,10 +276,9 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
                 this.savedDbRelationships = new ArrayList<>(dbRelationships);
             }
         }
-
-        savePath();
-        relationship.getSourceEntity().addRelationship(relationship);
+        configureRelationship();
         if(isCreate) {
+            relationship.getSourceEntity().addRelationship(relationship);
             fireObjRelationshipEvent(this);
             Application.getInstance().getUndoManager().addEdit(
                     new CreateRelationshipUndoableEdit(relationship.getSourceEntity(), new ObjRelationship[]{relationship}));
@@ -541,7 +536,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     /**
      * Stores current state of the model in the internal ObjRelationship.
      */
-    public boolean savePath() {
+    public boolean configureRelationship() {
         boolean hasChanges = false;
 
         boolean oldToMany = relationship.isToMany();
@@ -549,8 +544,8 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
 
         String relationshipName = getRelationshipName();
         if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
+            ProjectUtil.setRelationshipName(relationship.getSourceEntity(), relationship, relationshipName);
             hasChanges = true;
-            relationship.setName(relationshipName);
         }
 
         if (savedDbRelationships.size() > 0) {

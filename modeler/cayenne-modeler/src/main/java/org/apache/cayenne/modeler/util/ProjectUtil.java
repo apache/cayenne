@@ -208,16 +208,19 @@ public class ProjectUtil {
         }
     }
 
-    /** Changes the name of the attribute in all places in DataMap. */
+    /**
+     * Adds or changes the name of the attribute in all places in DataMap.
+     */
     public static void setRelationshipName(Entity entity, Relationship rel, String newName) {
-
-        if (rel == null || rel != entity.getRelationship(rel.getName())) {
-            return;
+        Relationship existingRelationship = entity.getRelationship(newName);
+        if (existingRelationship != null && existingRelationship != rel) {
+            throw new IllegalArgumentException("An attempt to override relationship '" + rel.getName() + "'");
         }
-
-        entity.removeRelationship(rel.getName());
-        rel.setName(newName);
-        entity.addRelationship(rel);
+        if (rel != null) {
+            entity.removeRelationship(rel.getName());
+            rel.setName(newName);
+            entity.addRelationship(rel);
+        }
     }
 
     /**
@@ -253,8 +256,7 @@ public class ProjectUtil {
                             att.setDbAttributePath(null);
                         }
                     }
-                }
-                else {
+                } else {
                     DbAttribute dbAtt = att.getDbAttribute();
                     if (dbAtt != null) {
                         if (dbEnt.getAttribute(dbAtt.getName()) != dbAtt) {
@@ -286,7 +288,7 @@ public class ProjectUtil {
      * objects, each <code>DbRelationship</code> object have  following <code>DbRelationship</code>
      * object as a target, last component is <code>DbAttribute</code>
      *
-     * @param currentEnt current db entity
+     * @param currentEnt      current db entity
      * @param dbAttributePath path to check
      * @return if path is correct return true
      */
@@ -433,7 +435,7 @@ public class ProjectUtil {
 
     public static Collection<ObjEntity> getCollectionOfChildren(ObjEntity objEntity) {
         Collection<ObjEntity> objEntities = new ArrayList<>();
-        for (ObjEntity child: objEntity.getDataMap().getObjEntities()) {
+        for (ObjEntity child : objEntity.getDataMap().getObjEntities()) {
             if (child.isSubentityOf(objEntity)) {
                 objEntities.add(child);
             }
@@ -460,17 +462,17 @@ public class ProjectUtil {
     }
 
     public static Collection<ObjAttribute> findObjAttributesForDbRelationship(ProjectController mediator,
-                                                                               DbRelationship relationship) {
+                                                                              DbRelationship relationship) {
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
         List<ObjAttribute> attributes = new ArrayList<>();
         if (domain != null) {
             for (DataMap map : domain.getDataMaps()) {
                 for (ObjEntity entity : map.getObjEntities()) {
                     for (ObjAttribute objAttribute : entity.getAttributes()) {
-                        if(objAttribute.isFlattened()) {
+                        if (objAttribute.isFlattened()) {
                             objAttribute.getDbPathIterator().forEachRemaining(entry -> {
-                                if(entry instanceof DbRelationship) {
-                                    if(entry.equals(relationship)) {
+                                if (entry instanceof DbRelationship) {
+                                    if (entry.equals(relationship)) {
                                         attributes.add(objAttribute);
                                     }
                                 }
