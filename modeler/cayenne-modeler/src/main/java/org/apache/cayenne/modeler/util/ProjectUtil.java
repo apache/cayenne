@@ -211,13 +211,15 @@ public class ProjectUtil {
     /** Changes the name of the attribute in all places in DataMap. */
     public static void setRelationshipName(Entity entity, Relationship rel, String newName) {
 
-        if (rel == null || rel != entity.getRelationship(rel.getName())) {
-            return;
+        Relationship existingRelationship = entity.getRelationship(newName);
+        if (existingRelationship != null && existingRelationship != rel) {
+            throw new IllegalArgumentException("An attempt to override relationship '" + rel.getName() + "'");
         }
-
-        entity.removeRelationship(rel.getName());
-        rel.setName(newName);
-        entity.addRelationship(rel);
+        if (rel != null) {
+            entity.removeRelationship(rel.getName());
+            rel.setName(newName);
+            entity.addRelationship(rel);
+        }
     }
 
     /**
