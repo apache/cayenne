@@ -268,7 +268,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             }
         }
 
-        if (configureRelationShip()) {
+        if (configureRelationship()) {
             mediator.fireObjRelationshipEvent(new RelationshipEvent(Application.getFrame(), getRelationship(),
                     getRelationship().getSourceEntity()));
         }
@@ -514,7 +514,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     /**
      * Stores current state of the model in the internal ObjRelationship.
      */
-    public boolean configureRelationShip() {
+    public boolean configureRelationship() {
         boolean hasChanges = false;
 
         boolean oldToMany = relationship.isToMany();
