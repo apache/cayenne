@@ -38,6 +38,7 @@ import org.apache.cayenne.modeler.util.EntityTreeModel;
 import org.apache.cayenne.modeler.util.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.util.MultiColumnBrowser;
 import org.apache.cayenne.modeler.util.NameGeneratorPreferences;
+import org.apache.cayenne.modeler.util.ProjectUtil;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.Util;
 
@@ -267,7 +268,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
             }
         }
 
-        if (savePath()) {
+        if (configureRelationShip()) {
             mediator.fireObjRelationshipEvent(new RelationshipEvent(Application.getFrame(), getRelationship(),
                     getRelationship().getSourceEntity()));
         }
@@ -513,7 +514,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     /**
      * Stores current state of the model in the internal ObjRelationship.
      */
-    public boolean savePath() {
+    public boolean configureRelationShip() {
         boolean hasChanges = false;
 
         boolean oldToMany = relationship.isToMany();
@@ -522,7 +523,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         String relationshipName = getRelationshipName();
         if (!Util.nullSafeEquals(relationship.getName(), relationshipName)) {
             hasChanges = true;
-            relationship.setName(relationshipName);
+            ProjectUtil.setRelationshipName(relationship.getSourceEntity(),relationship, relationshipName);
         }
 
         if (savedDbRelationships.size() > 0) {
