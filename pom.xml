@@ -1628,7 +1628,7 @@
 							<images>
 								<image>
 									<alias>sqlserver</alias>
-									<name>microsoft/mssql-server-linux:2017-latest</name>
+									<name>mcr.microsoft.com/mssql/server:2017-latest</name>
 									<run>
 										<ports>
 											<port>${sqlserver.host}:${sqlserver.port}:1433</port>
