@@ -164,7 +164,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
         return $relName;
     }
 
-#if ( ! $rel.ReadOnly )
+#if ( !${object.isReadOnly()} && !$rel.ReadOnly )
 #if ( ${rel.CollectionType} == "java.util.Map")
 	public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClientClassName}) object) {
         if(objectContext != null) {
