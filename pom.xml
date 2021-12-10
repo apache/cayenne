@@ -923,6 +923,14 @@
 				<groupId>org.apache.rat</groupId>
 				<artifactId>apache-rat-plugin</artifactId>
 				<configuration>
+					<licenses>
+						<license implementation="org.apache.rat.analysis.license.ApacheSoftwareLicense20">
+							<notes>Also allow the license url to be https.</notes>
+							<patterns>
+								<pattern>https://www.apache.org/licenses/LICENSE-2.0</pattern>
+							</patterns>
+						</license>
+					</licenses>
 					<excludes>
 						<exclude>build/**/*</exclude>
                         <exclude>**/.*</exclude>
