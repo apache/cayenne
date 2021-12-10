@@ -128,7 +128,7 @@ public abstract class ${superClassName} extends ${baseClassName} {
     }
 
 #end
-#if ("true" != "${object.isReadOnly()}")
+#if (!${object.isReadOnly()})
     public void set${stringUtils.capitalized($attr.Name)}($importUtils.formatJavaType(${attr.Type}) $attrName) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "${attr.Name}", false);

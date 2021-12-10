@@ -122,7 +122,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ##
 ## setter
 ##
-#if ("true" != "${object.isReadOnly()}")
+#if (!${object.isReadOnly()})
     public void set${stringUtils.capitalized($attr.Name)}($type $name) {
         beforePropertyWrite("${attr.Name}", this.$name, $name);
         this.$name = $name;
