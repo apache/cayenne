@@ -25,6 +25,7 @@ CAY-2691 MySQL driver 8.0.x stores LocalDateTime differently than 5.1.x
 CAY-2698 EventSubject.getSubject() is not thread safe
 CAY-2702 Modeler: Callbacks table has too small default width
 CAY-2721 Platform builds of CayenneModeler don't work with Java 17
+CAY-2724 Duplicating relationship after editing its name
 
 ----------------------------------
 Release: 4.1
