@@ -122,7 +122,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ##
 ## setter
 ##
-#if ("true" != "${object.isReadOnly()}")
+#if (!${object.isReadOnly()})
     public void set${stringUtils.capitalized($attr.Name)}($type $name) {
         beforePropertyWrite("${attr.Name}", this.$name, $name);
         this.$name = $name;
@@ -164,7 +164,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 ## Create list add/remove/get methods
 #foreach( $rel in ${object.DeclaredRelationships} )
 #if( $rel.ToMany )
-#if ( ! $rel.ReadOnly )
+#if ( !${object.isReadOnly()} && !$rel.ReadOnly )
     public void addTo${stringUtils.capitalized($rel.Name)}($importUtils.formatJavaType(${rel.TargetEntity.ClassName}) obj) {
         addToManyTarget("${rel.Name}", obj, true);
     }
