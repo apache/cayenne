@@ -14,6 +14,8 @@ Date:
 Changes/New Features:
 
 Bug Fixes:
+
+CAY-2697 Read-only cgen template creates mutator methods for to-many relationships
 CAY-2724 Duplicating relationship after editing its name
 
 ----------------------------------
