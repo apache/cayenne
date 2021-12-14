@@ -40,6 +40,7 @@ CAY-2646 Wrong target path selection logic in cgen config
 CAY-2647 Modeler: project upgrade from 4.0.B2 to 4.1.RC2 failure
 CAY-2653 No methods for queries with qualifier parameters generated
 CAY-2654 Exception in dbimport when relationships should be imported, but no explicit configuration exists
+CAY-2697 Read-only cgen template creates mutator methods for to-many relationships
 CAY-2724 Duplicating relationship after editing its name
 
 ----------------------------------
