@@ -22,6 +22,7 @@ CAY-2679 Unstable ordering of relationships in the .map.xml file
 CAY-2681 Modeler: All selected checkboxes cause project to become dirty at initialization
 CAY-2690 dbimport skips length changes for BINARY and VARBINARY columns
 CAY-2691 MySQL driver 8.0.x stores LocalDateTime differently than 5.1.x
+CAY-2697 Read-only cgen template creates mutator methods for to-many relationships
 CAY-2698 EventSubject.getSubject() is not thread safe
 CAY-2702 Modeler: Callbacks table has too small default width
 CAY-2721 Platform builds of CayenneModeler don't work with Java 17
@@ -40,8 +41,6 @@ CAY-2646 Wrong target path selection logic in cgen config
 CAY-2647 Modeler: project upgrade from 4.0.B2 to 4.1.RC2 failure
 CAY-2653 No methods for queries with qualifier parameters generated
 CAY-2654 Exception in dbimport when relationships should be imported, but no explicit configuration exists
-CAY-2697 Read-only cgen template creates mutator methods for to-many relationships
-CAY-2724 Duplicating relationship after editing its name
 
 ----------------------------------
 Release: 4.1.RC2
