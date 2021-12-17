@@ -9,8 +9,12 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.1.1
-Date: December 15, 2021
+Date: December 17, 2021
 ----------------------------------
+
+Changes/New Features:
+
+CAY-2725 Upgrade Gradle to 7.3
 
 Bug Fixes:
 

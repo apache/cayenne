@@ -48,13 +48,13 @@ def classpathFile = file('build/classpath.txt')
 if (classpathFile.file) {
     String[] paths = classpathFile.text.split(';')
     dependencies {
-        add 'compile', files(paths)
+        add 'implementation', files(paths)
     }
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
+    implementation gradleApi()
+    implementation localGroovy()
 }
 
 // Create file with cayenne-gradle-plugin version

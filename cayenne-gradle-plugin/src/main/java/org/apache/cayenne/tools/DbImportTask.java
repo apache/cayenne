@@ -67,7 +67,6 @@ public class DbImportTask extends BaseCayenneTask {
     @Internal
     private ReverseEngineering reverseEngineering;
 
-    @Internal
     private File cayenneProject;
 
     public DbImportTask() {
@@ -79,9 +78,7 @@ public class DbImportTask extends BaseCayenneTask {
     public void runImport() {
         dataSource.validate();
 
-        final Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()), new DbImportModule(),
-                binder -> binder.bind(ClassLoaderManager.class).toInstance(new GradlePluginClassLoaderManager(getProject())));
-
+        final Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()), new DbImportModule());
         final DbImportConfiguration config = createConfig();
 
         DataSourceFactory dataSourceFactory = injector.getInstance(DataSourceFactory.class);
@@ -187,6 +184,10 @@ public class DbImportTask extends BaseCayenneTask {
 
     public void adapter(final String adapter) {
         setAdapter(adapter);
+    }
+
+    public ReverseEngineering getReverseEngineering() {
+        return reverseEngineering;
     }
 
     @OutputFile
