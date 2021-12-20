@@ -83,6 +83,16 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- GRADLE TASKS EXECUTOR -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -70,7 +70,7 @@ task versionFile {
 
 // Copy license and notice files
 task licenseFiles(type: Copy) {
-    from '../build-tools/cayenne-legal/src/main/resources/'
+    from './target/classes/'
     into "$buildDir/resources/main/"
 }
 
