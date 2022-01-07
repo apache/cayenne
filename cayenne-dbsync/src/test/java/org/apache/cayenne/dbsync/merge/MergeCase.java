@@ -58,6 +58,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
@@ -92,49 +93,65 @@ public abstract class MergeCase extends DbSyncCase {
         // container
         // on every test
         map = runtime.getDataDomain().getDataMap("testmap");
+        map.setQuotingSQLIdentifiers(true);
 
         filterDataMap();
 
-        List<MergerToken> tokens = createMergeTokens();
+        List<MergerToken> tokens = createMergeTokens(true);
+
         execute(tokens);
 
-        assertTokensAndExecute(0, 0);
+        assertTokensAndExecute(0, 0, true);
+        map.setQuotingSQLIdentifiers(false);
     }
 
     protected DataMapMerger.Builder merger() {
-        return DataMapMerger.builder(mergerFactory());
+        return DataMapMerger.builder(mergerFactory()).nameConverter(String::toUpperCase);
     }
 
+    // useCaseSensitiveNaming is false by default
     protected List<MergerToken> createMergeTokens() {
-        return createMergeTokens("ARTIST|GALLERY|PAINTING|NEW_TABLE2?");
+        return createMergeTokens(false);
     }
 
-    protected List<MergerToken> createMergeTokens(String tableFilterInclude) {
+    protected List<MergerToken> createMergeTokens(boolean useCaseSensitiveNaming) {
+        return filterEmpty(createMergeTokensWithoutEmptyFilter(useCaseSensitiveNaming));
+    }
+
+    protected List<MergerToken> createMergeTokensWithoutEmptyFilter(boolean useCaseSensitiveNaming) {
+        return createMergeTokens("ARTIST|GALLERY|PAINTING|NEW_table|NEW_TABLE2?", useCaseSensitiveNaming);
+    }
+
+    private List<MergerToken> createMergeTokens(String tableFilterInclude, boolean useCaseSensitiveNaming) {
 
         FiltersConfig filters = FiltersConfig.create(null, null,
-                TableFilter.include(tableFilterInclude), PatternFilter.INCLUDE_NOTHING);
+                TableFilter.include(tableFilterInclude, useCaseSensitiveNaming), PatternFilter.INCLUDE_NOTHING);
 
         DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
         loaderConfiguration.setFiltersConfig(filters);
 
+        Function<String, String> nameConverter = useCaseSensitiveNaming
+                                                    ? Function.identity()
+                                                    : String::toUpperCase;
         DataMap dbImport;
         try (Connection conn = node.getDataSource().getConnection();) {
             dbImport = new DbLoader(node.getAdapter(), conn,
                     loaderConfiguration,
                     new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
-                    new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
+                    new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
+                    nameConverter)
                     .load();
 
         } catch (SQLException e) {
             throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
         }
 
-        List<MergerToken> tokens = merger().filters(filters).build().createMergeTokens(map, dbImport);
+        List<MergerToken> tokens = merger().filters(filters).nameConverter(nameConverter).build().createMergeTokens(map, dbImport);
         return filter(tokens);
     }
 
     private List<MergerToken> filter(List<MergerToken> tokens) {
-        return filterEmptyTypeChange(filterEmpty(tokens));
+        return filterEmptyTypeChange(tokens);
     }
 
     /**
@@ -172,7 +189,7 @@ public abstract class MergeCase extends DbSyncCase {
         return type == Types.DATE || type == Types.TIME || type == Types.TIMESTAMP;
     }
 
-    private List<MergerToken> filterEmpty(List<MergerToken> tokens) {
+    protected List<MergerToken> filterEmpty(List<MergerToken> tokens) {
         List<MergerToken> tokensOut = new ArrayList<>();
         for(MergerToken token : tokens) {
             if(!token.isEmpty()) {
@@ -253,7 +270,12 @@ public abstract class MergeCase extends DbSyncCase {
     }
 
     protected void assertTokensAndExecute(int expectedToDb, int expectedToModel) {
-        List<MergerToken> tokens = createMergeTokens();
+        assertTokensAndExecute(expectedToDb, expectedToModel, false);
+    }
+
+    protected void assertTokensAndExecute(int expectedToDb, int expectedToModel, boolean useCaseSensitiveNaming) {
+        List<MergerToken> tokens = createMergeTokens(useCaseSensitiveNaming);
+        tokens = filterEmpty(tokens);
         assertTokens(tokens, expectedToDb, expectedToModel);
         execute(tokens);
     }
@@ -267,6 +289,8 @@ public abstract class MergeCase extends DbSyncCase {
         // must have a dummy datamap for the dummy table for the downstream code
         // to work
         DataMap map = new DataMap("dummy");
+        map.setQuotingSQLIdentifiers(true);
+
         map.setQuotingSQLIdentifiers(map.isQuotingSQLIdentifiers());
         DbEntity entity = new DbEntity(tableName);
         map.addDbEntity(entity);
@@ -281,5 +305,6 @@ public abstract class MergeCase extends DbSyncCase {
                 logger.info("Exception dropping table " + tableName + ", probably abscent..");
             }
         }
+        map.setQuotingSQLIdentifiers(false);
     }
 }

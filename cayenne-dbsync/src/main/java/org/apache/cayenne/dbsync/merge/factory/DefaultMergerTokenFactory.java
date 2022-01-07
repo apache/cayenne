@@ -19,6 +19,7 @@
 package org.apache.cayenne.dbsync.merge.factory;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
@@ -185,12 +186,14 @@ public class DefaultMergerTokenFactory implements MergerTokenFactory {
             DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
             Collection<DbAttribute> primaryKeyNew,
-            String detectedPrimaryKeyName) {
+            String detectedPrimaryKeyName,
+            Function<String, String> nameConverter) {
         return new SetPrimaryKeyToDb(
                 entity,
                 primaryKeyOriginal,
                 primaryKeyNew,
-                detectedPrimaryKeyName);
+                detectedPrimaryKeyName,
+                nameConverter);
     }
 
     @Override
@@ -198,12 +201,13 @@ public class DefaultMergerTokenFactory implements MergerTokenFactory {
             DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
             Collection<DbAttribute> primaryKeyNew,
-            String detectedPrimaryKeyName) {
+            String detectedPrimaryKeyName, Function<String, String> nameConverter) {
         return new SetPrimaryKeyToModel(
                 entity,
                 primaryKeyOriginal,
                 primaryKeyNew,
-                detectedPrimaryKeyName);
+                detectedPrimaryKeyName,
+                nameConverter);
     }
 
     @Override

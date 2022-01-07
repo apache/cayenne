@@ -73,6 +73,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 public class MergerOptions extends CayenneController {
 
@@ -162,6 +163,7 @@ public class MergerOptions extends CayenneController {
 
             DataMapMerger merger = DataMapMerger.builder(mergerTokenFactory)
                     .filters(filters)
+                    .nameConverter(Function.identity())
                     .build();
 
             DbLoaderConfiguration config = new DbLoaderConfiguration();
@@ -174,7 +176,8 @@ public class MergerOptions extends CayenneController {
                 dbImport = new DbLoader(adapter, conn,
                         config,
                         new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
-                        new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
+                        new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
+                        Function.identity())
                         .load();
             } catch (SQLException e) {
                 throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);

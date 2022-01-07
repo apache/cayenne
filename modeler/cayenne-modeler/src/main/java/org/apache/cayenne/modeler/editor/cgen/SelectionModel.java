@@ -165,9 +165,23 @@ class SelectionModel {
         selectedEntities.remove(objEntity.getName());
     }
 
+    /**
+     * @since 4.2
+     */
+    void removeFromSelectedEntities(String oldName) {
+        selectedEntities.remove(oldName);
+    }
+
     void removeFromSelectedEmbeddables(Embeddable embeddable) {
         initCollectionsForSelection(embeddable.getDataMap());
         selectedEmbeddables.remove(embeddable.getClassName());
+    }
+
+    /**
+     * @since 4.2
+     */
+    void removeFromSelectedEmbeddables(String oldName) {
+        selectedEmbeddables.remove(oldName);
     }
 
     void addSelectedEntities(Collection<String> entities) {

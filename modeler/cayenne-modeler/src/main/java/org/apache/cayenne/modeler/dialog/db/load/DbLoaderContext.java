@@ -117,6 +117,7 @@ public class DbLoaderContext {
 
     private void fillReverseEngineeringFromView(ReverseEngineering reverseEngineering, DbImportView view) {
         reverseEngineering.setUsePrimitives(view.isUsePrimitives());
+        reverseEngineering.setUseCaseSensitiveNaming(view.isUseCaseSensitiveNaming());
         reverseEngineering.setUseJava7Types(view.isUseJava7Typed());
         reverseEngineering.setForceDataMapCatalog(view.isForceDataMapCatalog());
         reverseEngineering.setForceDataMapSchema(view.isForceDataMapSchema());
@@ -180,6 +181,7 @@ public class DbLoaderContext {
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());
         config.setStripFromTableNames(reverseEngineering.getStripFromTableNames());
         config.setUsePrimitives(reverseEngineering.isUsePrimitives());
+        config.setUseCaseSensitiveNaming(reverseEngineering.isUseCaseSensitiveNaming());
         config.setUseJava7Types(reverseEngineering.isUseJava7Types());
         config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());

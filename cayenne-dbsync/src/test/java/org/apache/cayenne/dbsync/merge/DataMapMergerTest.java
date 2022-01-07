@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.merge;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.builders.DbEntityBuilder;
 import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
@@ -27,6 +30,7 @@ import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.junit.Test;
@@ -65,6 +69,30 @@ public class DataMapMergerTest {
     }
 
     @Test
+    public void testAddTableWithSameNameInDifferentCapitalization() throws Exception {
+        DbEntityBuilder dbEntity =
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt()
+                );
+
+        DbEntityBuilder dbEntity1 =
+                dbEntity("Table1").attributes(
+                        dbAttr("attr01").typeInt()
+                );
+
+        DataMap existing = dataMap().with(dbEntity,dbEntity1).build();
+        DataMap db = dataMap().build();
+
+        List<MergerToken> tokens = dbMerger(Function.identity()).createMergeTokens(existing, db);
+
+        assertEquals(2, tokens.size());
+        assertEquals(factory().createCreateTableToDb(dbEntity.build()).getTokenValue(),
+                tokens.get(0).getTokenValue());
+        assertEquals(factory().createCreateTableToDb(dbEntity1.build()).getTokenValue(),
+                tokens.get(1).getTokenValue());
+    }
+
+    @Test
     public void testRemoveTable() throws Exception {
         DataMap existing = dataMap().build();
         DataMap db = dataMap().with(
@@ -77,6 +105,32 @@ public class DataMapMergerTest {
         assertEquals(1, tokens.size());
         assertEquals(factory().createDropTableToDb(db.getDbEntity("table1")).getTokenValue(),
                      tokens.get(0).getTokenValue());
+    }
+
+    @Test
+    public void testRemoveTableWithSameNameInDifferentCapitalization() throws Exception {
+        DataMap existing = dataMap().build();
+
+        DbEntityBuilder dbEntity =
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt()
+                );
+
+        DbEntityBuilder dbEntity1 =
+                dbEntity("Table1").attributes(
+                        dbAttr("attr01").typeInt()
+                );
+
+        DataMap db = dataMap().with(
+                dbEntity, dbEntity1).build();
+
+        List<MergerToken> tokens = dbMerger(Function.identity()).createMergeTokens(existing, db);
+
+        assertEquals(2, tokens.size());
+        assertEquals(factory().createDropTableToDb(db.getDbEntity("table1")).getTokenValue(),
+                tokens.get(0).getTokenValue());
+        assertEquals(factory().createDropTableToDb(db.getDbEntity("Table1")).getTokenValue(),
+                tokens.get(1).getTokenValue());
     }
 
     @Test
@@ -99,6 +153,33 @@ public class DataMapMergerTest {
         DbEntity entity = existing.getDbEntity("table1");
         assertEquals(factory().createAddColumnToDb(entity, entity.getAttribute("attr02")).getTokenValue(),
                      tokens.get(0).getTokenValue());
+    }
+
+    @Test
+    public void testChangeColumnNameWithSameNameInDifferentCapitalization() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("Attr01").typeInt(),
+                        dbAttr("attr02").typeInt()
+                )).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt()
+                )).build();
+
+        List<MergerToken> tokens = dbMerger(Function.identity()).createMergeTokens(existing, db);
+
+        assertEquals(3, tokens.size());
+
+        DbEntity entity = existing.getDbEntity("table1");
+        DbEntity entity1 = db.getDbEntity("table1");
+        assertEquals(factory().createDropColumnToDb(entity, entity1.getAttribute("attr01")).getTokenValue(),
+                tokens.get(0).getTokenValue());
+        assertEquals(factory().createAddColumnToDb(entity, entity.getAttribute("Attr01")).getTokenValue(),
+                tokens.get(1).getTokenValue());
+        assertEquals(factory().createAddColumnToDb(entity, entity.getAttribute("attr02")).getTokenValue(),
+                tokens.get(2).getTokenValue());
     }
 
     @Test
@@ -377,6 +458,79 @@ public class DataMapMergerTest {
     }
 
     @Test
+    public void testAttributeNameCaseSensitiveNaming() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt().primaryKey(),
+                        dbAttr("attr02").typeInt().primaryKey())
+        ).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt(),
+                        dbAttr("Attr01").typeInt().primaryKey())
+        ).build();
+
+        List<MergerToken> tokens = dbMerger(Function.identity()).createMergeTokens(existing, db);
+
+        assertEquals(2, tokens.size());
+
+        DbEntity entity = existing.getDbEntity("table2");
+        assertEquals(factory().createAddColumnToDb(entity, dbAttr("Attr01").typeInt().primaryKey().build()).getTokenValue(),
+                tokens.get(0).getTokenValue());
+        Set<DbAttribute> newPkAttribute = new HashSet<>();
+        newPkAttribute.add(dbAttr("Attr01").typeInt().primaryKey().build());
+        assertEquals(factory().createSetPrimaryKeyToDb(entity, new HashSet<>(), newPkAttribute, "Attr01", Function.identity()).getTokenValue(),
+                tokens.get(1).getTokenValue());
+    }
+
+    @Test
+    public void testAttributeNameUppercaseRelationshipCaseSensitiveNaming() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt().primaryKey(),
+                        dbAttr("Attr01").typeInt().primaryKey())
+        ).join("rel", "table1.attr01", "table2.attr01")
+                .build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("attr02").typeInt()),
+
+                dbEntity("table2").attributes(
+                        dbAttr("attr01").typeInt().primaryKey(),
+                        dbAttr("Attr01").typeInt().primaryKey())
+        ).join("rel", "table1.attr01", "table2.Attr01")
+                .build();
+
+        List<MergerToken> tokens = dbMerger(Function.identity()).createMergeTokens(existing, db);
+
+        assertEquals(2, tokens.size());
+
+        DbEntity entity = existing.getDbEntity("table1");
+        assertEquals(factory().createDropRelationshipToDb(entity, entity.getRelationship("rel")).getTokenValue(),
+                tokens.get(0).getTokenValue());
+
+        entity = db.getDbEntity("table1");
+        assertEquals(factory().createAddRelationshipToDb(entity, entity.getRelationship("rel")).getTokenValue(),
+                tokens.get(0).getTokenValue());
+    }
+
+    @Test
     public void testRemoveRelationship() throws Exception {
         DataMap existing = dataMap().with(
             dbEntity("table1").attributes(
@@ -433,6 +587,28 @@ public class DataMapMergerTest {
     }
 
     @Test
+    public void testRemoveColumnCaseSensitiveNaming() throws Exception {
+        DataMap existing = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt()
+                )).build();
+
+        DataMap db = dataMap().with(
+                dbEntity("table1").attributes(
+                        dbAttr("attr01").typeInt(),
+                        dbAttr("Attr01").typeInt()
+                )).build();
+
+        List<MergerToken> tokens = dbMerger(Function.identity()).createMergeTokens(existing, db);
+
+        assertEquals(1, tokens.size());
+
+        DbEntity entity = db.getDbEntity("table1");
+        assertEquals(factory().createDropColumnToModel(entity, entity.getAttribute("Attr01")).getTokenValue(),
+                tokens.get(0).getTokenValue());
+    }
+
+    @Test
     public void testChangeGeneratedStatus() {
         DataMap existing = dataMap().with(
                 dbEntity("table1").attributes(
@@ -477,19 +653,50 @@ public class DataMapMergerTest {
 
         DataMap dataMap2 = dataMap().build();
 
-        PatternFilter patternFilter = new PatternFilter();
-        patternFilter.include("proc1");
+        PatternFilter patternFilter = new PatternFilter(false);
+        patternFilter.include(PatternFilter.pattern("proc1", false));
         FiltersConfig filtersConfig = FiltersConfig
                 .create(null, null, null, patternFilter);
         DataMapMerger merger = DataMapMerger
                 .builder(factory())
                 .filters(filtersConfig)
+                .nameConverter(String::toUpperCase)
+                .build();
+        assertEquals(1, merger.createMergeTokens(dataMap1, dataMap2).size());
+    }
+
+    @Test
+    public void testProceduresCaseSensitiveNaming() {
+        DataMap dataMap1 = dataMap().with(
+                procedure("proc1")
+                        .callParameters(new ProcedureParameter("test")),
+                procedure("Proc1")
+                        .callParameters(new ProcedureParameter("Test"))
+        ).build();
+
+        DataMap dataMap2 = dataMap().with(
+                procedure("proc1")
+                        .callParameters(new ProcedureParameter("test"))
+        ).build();
+
+        PatternFilter patternFilter = new PatternFilter(true);
+        patternFilter.include(PatternFilter.pattern("[Pp]roc1", true));
+        FiltersConfig filtersConfig = FiltersConfig
+                .create(null, null, null, patternFilter);
+        DataMapMerger merger = DataMapMerger
+                .builder(factory())
+                .filters(filtersConfig)
+                .nameConverter(Function.identity())
                 .build();
         assertEquals(1, merger.createMergeTokens(dataMap1, dataMap2).size());
     }
 
     private DataMapMerger dbMerger() {
-        return DataMapMerger.build(factory());
+        return DataMapMerger.builder(factory()).nameConverter(String::toUpperCase).build();
+    }
+
+    private DataMapMerger dbMerger(Function<String, String > nameConverter) {
+        return DataMapMerger.builder(factory()).nameConverter(nameConverter).build();
     }
 
     private HSQLMergerTokenFactory factory() {

@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.token.ValueForNullProvider;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
@@ -43,8 +44,8 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
 
     private final ValueForNullProvider valueForNull;
 
-    DbAttributeMerger(MergerTokenFactory tokenFactory, ValueForNullProvider valueForNull) {
-        super(tokenFactory);
+    DbAttributeMerger(MergerTokenFactory tokenFactory, ValueForNullProvider valueForNull, Function<String,String> nameConverter) {
+        super(tokenFactory, nameConverter);
         this.valueForNull = valueForNull;
     }
 
@@ -53,6 +54,7 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
         return new MergerDictionaryDiff.Builder<DbAttribute>()
                 .originalDictionary(new DbAttributeDictionary(original))
                 .importedDictionary(new DbAttributeDictionary(imported))
+                .nameConverter(getNameConverter())
                 .build();
     }
 
@@ -89,7 +91,8 @@ class DbAttributeMerger extends AbstractMerger<DbEntity, DbAttribute> {
      */
     @Override
     Collection<MergerToken> createTokensForMissingOriginal(DbAttribute imported) {
-        DbEntity originalDbEntity = getOriginalDictionary().getByName(imported.getEntity().getName().toUpperCase());
+        String name = getNameConverter().apply(imported.getEntity().getName());
+        DbEntity originalDbEntity = getOriginalDictionary().getByName(name);
         return Collections.singleton(getTokenFactory().createDropColumnToDb(originalDbEntity, imported));
     }
 

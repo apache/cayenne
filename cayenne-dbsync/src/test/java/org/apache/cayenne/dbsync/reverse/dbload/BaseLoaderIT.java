@@ -59,7 +59,7 @@ public class BaseLoaderIT extends ServerCase {
 
     @Before
     public void before() throws Exception {
-        store = new DbLoadDataStore();
+        store = new DbLoadDataStore(String::toUpperCase);
         assertTrue("Store is not empty", store.getDbEntities().isEmpty());
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }

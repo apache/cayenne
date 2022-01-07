@@ -59,7 +59,7 @@ public class CheckTypeTest {
 
         mergerTokenFactory = new MySQLMergerTokenFactory();
         diffPair = new MergerDiffPair<>(original, imported);
-        dbAttributeMerger = new DbAttributeMerger(mergerTokenFactory, null);
+        dbAttributeMerger = new DbAttributeMerger(mergerTokenFactory, null, String::toUpperCase);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class CheckTypeTest {
 
         mergerTokenFactory = new PostgresMergerTokenFactory();
 
-        dbAttributeMerger = new DbAttributeMerger(mergerTokenFactory, null);
+        dbAttributeMerger = new DbAttributeMerger(mergerTokenFactory, null, String::toUpperCase);
 
         Collection<MergerToken> mergerTokens = dbAttributeMerger.createTokensForSame(diffPair);
         assertEquals(1, mergerTokens.size());
@@ -189,7 +189,7 @@ public class CheckTypeTest {
 
         diffPair = new MergerDiffPair<>(original, imported);
 
-        dbAttributeMerger = new DbAttributeMerger(mergerTokenFactory, null);
+        dbAttributeMerger = new DbAttributeMerger(mergerTokenFactory, null,  String::toUpperCase);
         Collection<MergerToken> mergerTokens = dbAttributeMerger.createTokensForSame(diffPair);
         assertEquals(0, mergerTokens.size());
     }

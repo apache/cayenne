@@ -128,6 +128,23 @@ public class FiltersConfigBuilderTest {
     }
 
     @Test
+    public void testCompact_05() {
+        ReverseEngineering engineering = new ReverseEngineering();
+        engineering.setUseCaseSensitiveNaming(true);
+        engineering.addSchema(new Schema("s"));
+
+        FiltersConfigBuilder builder = new FiltersConfigBuilder(engineering);
+        builder.compact();
+        assertEquals(
+                "ReverseEngineering: \n" +
+                        "  Catalog: null\n" +
+                        "    Schema: s\n" +
+                        "      IncludeTable: null\n\n" +
+                        "  Use primitives\n" +
+                        "  Use case sensitive naming", engineering.toString());
+    }
+
+    @Test
     public void testCompact_full() {
         ReverseEngineering engineering = new ReverseEngineering();
         Catalog cat01 = new Catalog("cat_01");

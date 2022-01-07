@@ -44,5 +44,6 @@
 		<skipRelationshipsLoading>false</skipRelationshipsLoading>
 		<useJava7Types>false</useJava7Types>
 		<usePrimitives>true</usePrimitives>
+		<useCaseSensitiveNaming>false</useCaseSensitiveNaming>
 	</dbImport>
 </data-map>

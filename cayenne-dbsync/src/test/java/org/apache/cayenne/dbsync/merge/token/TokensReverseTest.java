@@ -20,6 +20,7 @@
 package org.apache.cayenne.dbsync.merge.token;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
@@ -72,8 +73,11 @@ public class TokensReverseTest {
         testOneToOneReverse(factory().createSetColumnTypeToDb(entity, attr, attr2));
         testOneToOneReverse(factory().createSetColumnTypeToModel(entity, attr, attr2));
 
-        testOneToOneReverse(factory().createSetPrimaryKeyToDb(entity, Collections.singleton(attr), Collections.singleton(attr2), "PK"));
-        testOneToOneReverse(factory().createSetPrimaryKeyToModel(entity, Collections.singleton(attr), Collections.singleton(attr2), "PK"));
+        testOneToOneReverse(factory().createSetPrimaryKeyToDb(entity, Collections.singleton(attr), Collections.singleton(attr2), "PK", String::toUpperCase));
+        testOneToOneReverse(factory().createSetPrimaryKeyToModel(entity, Collections.singleton(attr), Collections.singleton(attr2), "PK", String::toUpperCase));
+
+        testOneToOneReverse(factory().createSetPrimaryKeyToDb(entity, Collections.singleton(attr), Collections.singleton(attr2), "PK", Function.identity()));
+        testOneToOneReverse(factory().createSetPrimaryKeyToModel(entity, Collections.singleton(attr), Collections.singleton(attr2), "PK", Function.identity()));
 
         testOneToOneReverse(factory().createSetValueForNullToDb(entity, attr, new DefaultValueForNullProvider()));
 

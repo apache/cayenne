@@ -299,6 +299,134 @@ r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated an
         assertTokensAndExecute(0, 0);
     }
 
+    @Test
+    public void testAddTableWithSameNameInDifferentCapitalization() throws Exception {
+        map.setQuotingSQLIdentifiers(true);
+        dropTableIfPresent("NEW_TABLE");
+        dropTableIfPresent("NEW_table");
+
+        assertTokensAndExecute(0, 0,true);
+
+        DbEntity dbEntity = new DbEntity("NEW_TABLE");
+        attr(dbEntity, "ID", Types.INTEGER, true, true);
+        attr(dbEntity, "NAME", Types.VARCHAR, false, false).setMaxLength(10);
+        attr(dbEntity, "ARTIST_ID", Types.BIGINT, false, false);
+
+        map.addDbEntity(dbEntity);
+
+        DbEntity artistDbEntity = map.getDbEntity("ARTIST");
+        assertNotNull(artistDbEntity);
+
+        assertTokensAndExecute(1, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        // relation from new_table to artist
+        DbRelationship r1 = new DbRelationship("toArtistR1");
+        r1.setSourceEntity(dbEntity);
+        r1.setTargetEntityName(artistDbEntity);
+        r1.setToMany(false);
+        r1.addJoin(new DbJoin(r1, "ARTIST_ID", "ARTIST_ID"));
+        dbEntity.addRelationship(r1);
+
+        // relation from artist to new_table
+        DbRelationship r2 = new DbRelationship("toNewTableR2");
+        r2.setSourceEntity(artistDbEntity);
+        r2.setTargetEntityName(dbEntity);
+        r2.setToMany(true);
+        r2.addJoin(new DbJoin(r2, "ARTIST_ID", "ARTIST_ID"));
+        artistDbEntity.addRelationship(r2);
+
+        assertTokensAndExecute(1, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        DbEntity dbEntity1 = new DbEntity("NEW_table");
+        attr(dbEntity1, "ID", Types.INTEGER, true, true);
+        attr(dbEntity1, "NAME", Types.VARCHAR, false, false).setMaxLength(10);
+        attr(dbEntity1, "ARTIST_ID", Types.BIGINT, false, false);
+
+        map.addDbEntity(dbEntity1);
+
+        assertTokensAndExecute(1, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        // relation from new_table to artist
+        DbRelationship r3 = new DbRelationship("toArtistR3");
+        r3.setSourceEntity(dbEntity1);
+        r3.setTargetEntityName(artistDbEntity);
+        r3.setToMany(false);
+        r3.addJoin(new DbJoin(r3, "ARTIST_ID", "ARTIST_ID"));
+        dbEntity1.addRelationship(r3);
+
+        // relation from artist to new_table
+        DbRelationship r4 = new DbRelationship("toNewTableR4");
+        r4.setSourceEntity(artistDbEntity);
+        r4.setTargetEntityName(dbEntity1);
+        r4.setToMany(true);
+        r4.addJoin(new DbJoin(r4, "ARTIST_ID", "ARTIST_ID"));
+        artistDbEntity.addRelationship(r4);
+
+        assertTokensAndExecute(1, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        // remove relationships
+        dbEntity.removeRelationship(r1.getName());
+        artistDbEntity.removeRelationship(r2.getName());
+        dbEntity1.removeRelationship(r3.getName());
+        artistDbEntity.removeRelationship(r4.getName());
+        resolver.refreshMappingCache();
+        /*
+         * Add Relationship ARTIST->NEW_TABLE To Model -- Not generated any more
+         * Drop Relationship NEW_TABLE->ARTIST To DB
+         * */
+        assertTokensAndExecute(2, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        // clear up
+        // map.removeObjEntity(objEntity.getName(), true);
+        map.removeDbEntity(dbEntity.getName(), true);
+        map.removeDbEntity(dbEntity1.getName(), true);
+        resolver.refreshMappingCache();
+        // assertNull(map.getObjEntity(objEntity.getName()));
+        assertNull(map.getDbEntity(dbEntity.getName()));
+        assertNull(map.getDbEntity(dbEntity1.getName()));
+        assertFalse(map.getDbEntities().contains(dbEntity));
+        assertFalse(map.getDbEntities().contains(dbEntity1));
+
+        assertTokensAndExecute(2, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        map.setQuotingSQLIdentifiers(false);
+    }
+
+
+    @Test
+    public void testAddAttrWithSameNameInDifferentCapitalization() throws Exception {
+        dropTableIfPresent("NEW_TABLE");
+
+        assertTokensAndExecute(0, 0,true);
+
+        DbEntity dbEntity = new DbEntity("NEW_TABLE");
+        attr(dbEntity, "ID", Types.INTEGER, true, true);
+        attr(dbEntity, "NAME", Types.VARCHAR, false, false).setMaxLength(10);
+        attr(dbEntity, "ARTIST_ID", Types.BIGINT, false, false);
+
+        map.setQuotingSQLIdentifiers(true);
+        map.addDbEntity(dbEntity);
+
+        DbEntity artistDbEntity = map.getDbEntity("ARTIST");
+        assertNotNull(artistDbEntity);
+
+        assertTokensAndExecute(1, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        attr(dbEntity,"id", Types.INTEGER, false, false);
+
+        assertTokensAndExecute(1, 0,true);
+        assertTokensAndExecute(0, 0,true);
+
+        map.setQuotingSQLIdentifiers(false);
+    }
+
     private static DbAttribute attr(DbEntity dbEntity, String name, int type, boolean mandatory, boolean primaryKey) {
         DbAttribute column1 = new DbAttribute(name, type, dbEntity);
         column1.setMandatory(mandatory);

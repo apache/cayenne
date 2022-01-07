@@ -129,6 +129,21 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testImportAddTableCaseSensitiveNaming() throws Exception {
+        test("testImportAddTableCaseSensitiveNaming", true);
+    }
+
+    @Test
+    public void testImportAddColumnCaseSensitiveNaming() throws Exception {
+        test("testImportAddColumnCaseSensitiveNaming", true);
+    }
+
+    @Test
+    public void testImportNewRelationshipCaseSensitiveNaming() throws Exception {
+        test("testImportNewRelationshipCaseSensitiveNaming", true);
+    }
+
+    @Test
     public void testFilteringWithSchema() throws Exception {
         test("testFilteringWithSchema");
     }
@@ -307,6 +322,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
     }
 
     @Test
+    public void testImportProcedureCaseSensitiveNaming() throws Exception {
+        test("testImportProcedureCaseSensitiveNaming", true);
+    }
+
+    @Test
     public void testDropProcedure() throws Exception {
         test("testDropProcedure");
     }
@@ -389,9 +409,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         assertEquals(exceptedMessage, exceptedException.getCause().getMessage());
     }
 
-    private void test(String name) throws Exception {
+    private void test(String name, boolean useCaseSensitiveNaming) throws Exception {
         DbImporterMojo cdbImport = getCdbImport("dbimport/" + name + "-pom.xml");
         File mapFile = cdbImport.getMap();
+        cdbImport.getReverseEngineering().setUseCaseSensitiveNaming(useCaseSensitiveNaming);
         File mapFileCopy = new File(mapFile.getParentFile(), "copy-" + mapFile.getName());
         if (mapFile.exists()) {
             FileUtils.copyFile(mapFile, mapFileCopy);
@@ -409,6 +430,10 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         } finally {
             cleanDb(dataSource);
         }
+    }
+
+    private void test(String name) throws Exception {
+        test(name, false);
     }
 
     private void cleanDb(DbImportDataSourceConfig dataSource) throws Exception {
@@ -433,14 +458,14 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
                     while (tables.next()) {
                         String schema = tables.getString("TABLE_SCHEM");
                         String tableName = tables.getString("TABLE_NAME");
-                        String tableNameFull = (isBlank(schema) ? "" : schema + ".") + tableName;
+                        String tableNameFull = (isBlank(schema) ? "" : "\"" + schema + "\".") + "\"" + tableName + "\"";
 
                         ResultSet keys = connection.getMetaData().getExportedKeys(null, schema, tableName);
                         while (keys.next()) {
                             String fkTableSchem = keys.getString("FKTABLE_SCHEM");
                             String fkTableName = keys.getString("FKTABLE_NAME");
-                            String fkTableNameFull = (isBlank(fkTableSchem) ? "" : fkTableSchem + ".") + fkTableName;
-                            execute(stmt, "ALTER TABLE " + fkTableNameFull + " DROP CONSTRAINT " + keys.getString("FK_NAME"));
+                            String fkTableNameFull = (isBlank(fkTableSchem) ? "" : "\"" + fkTableSchem + "\".") + "\"" + fkTableName + "\"";
+                            execute(stmt, "ALTER TABLE " + fkTableNameFull + " DROP CONSTRAINT \"" + keys.getString("FK_NAME") + "\"");
                         }
 
                         String sql = "DROP TABLE " + tableNameFull;
@@ -449,11 +474,11 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
                 }
 
                 try(ResultSet procedures = connection.getMetaData()
-                        .getProcedures(null, null,"PROC")) {
+                        .getProcedures(null, null,"PRO_")) {
                     while(procedures.next()) {
                         String schema = procedures.getString("PROCEDURE_SCHEM");
                         String name = procedures.getString("PROCEDURE_NAME");
-                        execute(stmt, "DROP PROCEDURE " + (isBlank(schema) ? "" : schema + ".") + name);
+                        execute(stmt, "DROP PROCEDURE " + (isBlank(schema) ? "" : schema + ".") + "\"" + name +  "\"");
                     }
                 }
 

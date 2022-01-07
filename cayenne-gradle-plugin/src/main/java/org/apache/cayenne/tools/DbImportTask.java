@@ -146,6 +146,7 @@ public class DbImportTask extends BaseCayenneTask {
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());
         config.setUsePrimitives(reverseEngineering.isUsePrimitives());
+        config.setUseCaseSensitiveNaming(reverseEngineering.isUseCaseSensitiveNaming());
         config.setUseJava7Types(reverseEngineering.isUseJava7Types());
         config.setCayenneProject(cayenneProject);
 

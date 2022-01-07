@@ -76,10 +76,10 @@ public class DbImporterMojoConfigurationTest extends AbstractMojoTestCase {
         FiltersConfig filters = dbImportConfiguration.getDbLoaderConfig().getFiltersConfig();
 
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
-        includes.add(new IncludeTableFilter(null, new PatternFilter().exclude("^ETL_.*")));
+        includes.add(new IncludeTableFilter(null, new PatternFilter(false).exclude("^ETL_.*"), false));
 
         TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
-        excludes.add(PatternFilter.pattern("^ETL_.*"));
+        excludes.add(PatternFilter.pattern("^ETL_.*", false));
 
         assertEquals(filters.tableFilter(null, "NHL_STATS"),
                 new TableFilter(includes, excludes));

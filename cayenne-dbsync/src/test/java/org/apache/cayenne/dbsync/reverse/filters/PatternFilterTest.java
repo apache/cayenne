@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 public class PatternFilterTest extends TestCase {
 
     public void testInclude() throws Exception {
-        PatternFilter filter = new PatternFilter()
+        PatternFilter filter = new PatternFilter(false)
                 .include("aaa")
                 .include("bbb");
 
@@ -33,7 +33,7 @@ public class PatternFilterTest extends TestCase {
         assertFalse(filter.isIncluded("aa"));
         assertFalse(filter.isIncluded("abb"));
 
-        filter = new PatternFilter().include("^v_.*$");
+        filter = new PatternFilter(false).include("^v_.*$");
         assertTrue(filter.isIncluded("v_new_view"));
         assertFalse(filter.isIncluded("new_view"));
         assertFalse(filter.isIncluded("view"));
@@ -41,7 +41,7 @@ public class PatternFilterTest extends TestCase {
     }
 
     public void testExclude() throws Exception {
-        PatternFilter filter = new PatternFilter()
+        PatternFilter filter = new PatternFilter(false)
                 .exclude("aaa")
                 .exclude("bbb");
 
@@ -53,7 +53,7 @@ public class PatternFilterTest extends TestCase {
     }
 
     public void testIncludeExclude() throws Exception {
-        PatternFilter filter = new PatternFilter()
+        PatternFilter filter = new PatternFilter(false)
                 .include("aa.*")
                 .exclude("aaa");
 
@@ -74,5 +74,45 @@ public class PatternFilterTest extends TestCase {
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded("qwe"));
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded(""));
         assertFalse(PatternFilter.INCLUDE_NOTHING.isIncluded(null));
+    }
+
+    public void testIncludeCaseSensitive() throws Exception {
+        PatternFilter filter = new PatternFilter(true)
+                .include("aaa")
+                .include("bbb");
+
+        assertTrue(filter.isIncluded("aaa"));
+        assertTrue(filter.isIncluded("bbb"));
+        assertFalse(filter.isIncluded("aaA"));
+        assertFalse(filter.isIncluded("AAA"));
+        assertFalse(filter.isIncluded("Bbb"));
+
+        filter = new PatternFilter(true).include("^v_.*$");
+        assertTrue(filter.isIncluded("v_new_view"));
+        assertFalse(filter.isIncluded("V_new_view"));
+    }
+
+    public void testExcludeCaseSensitive() throws Exception {
+        PatternFilter filter = new PatternFilter(true)
+                .exclude("aaa")
+                .exclude("bbb");
+
+        assertTrue(filter.isIncluded("Aaa"));
+        assertTrue(filter.isIncluded("bbB"));
+        assertTrue(filter.isIncluded("AAA"));
+        assertTrue(filter.isIncluded("Bbb"));
+    }
+
+    public void testIncludeExcludeCaseSensitive() throws Exception {
+        PatternFilter filter = new PatternFilter(true)
+                .include("aa.*")
+                .exclude("aaa");
+
+        assertFalse(filter.isIncluded("aaa"));
+        assertTrue(filter.isIncluded("aaA"));
+        assertFalse(filter.isIncluded("bbb"));
+        assertFalse(filter.isIncluded("Aaaa"));
+        assertTrue(filter.isIncluded("aaAA"));
+        assertFalse(filter.isIncluded("abb"));
     }
 }

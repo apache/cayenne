@@ -26,7 +26,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
@@ -36,9 +39,6 @@ import java.util.stream.Collectors;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
@@ -197,8 +197,12 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     private void prepareClasses(DataMap dataMap) {
         classes.clear();
         classes.add(dataMap);
-        classes.addAll(dataMap.getObjEntities());
-        classes.addAll(dataMap.getEmbeddables());
+        TreeSet<ObjEntity> objEntities = new TreeSet<>(Comparator.comparing(ObjEntity::getName));
+        objEntities.addAll(dataMap.getObjEntities());
+        classes.addAll(objEntities);
+        TreeSet<Embeddable> embedded = new TreeSet<>(Comparator.comparing(o -> o.getDataMap().getName()));
+        embedded.addAll(dataMap.getEmbeddables());
+        classes.addAll(embedded);
         selectionModel.initCollectionsForSelection(dataMap);
     }
 
@@ -208,8 +212,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     public void createConfiguration(DataMap map) {
         cgenConfiguration = projectController.getApplication().getMetaData().get(map, CgenConfiguration.class);
         if (cgenConfiguration != null) {
-            addToSelectedEntities(cgenConfiguration.getEntities());
-            addToSelectedEmbeddables(cgenConfiguration.getEmbeddables());
+            updateEntities();
+            updateEmbeddables();
             cgenConfiguration.setForce(true);
             return;
         }
@@ -255,7 +259,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     public List<Object> getClasses() {
-        return classes;
+        return Collections.unmodifiableList(classes);
     }
 
     public boolean updateSelection(Predicate<Object> predicate) {
@@ -379,6 +383,11 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     @Override
     public void objEntityChanged(EntityEvent e) {
+        selectionModel.removeFromSelectedEntities(e.getOldName());
+        objEntityAdded(e);
+        if (cgenConfiguration != null) {
+            cgenConfiguration.getEntities().remove(e.getOldName());
+        }
     }
 
     @Override
@@ -397,6 +406,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     @Override
     public void embeddableChanged(EmbeddableEvent e, DataMap map) {
+        selectionModel.removeFromSelectedEmbeddables(e.getOldName());
     }
 
     @Override

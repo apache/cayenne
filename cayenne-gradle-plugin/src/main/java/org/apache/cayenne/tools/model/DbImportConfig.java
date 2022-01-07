@@ -93,6 +93,12 @@ public class DbImportConfig extends SchemaContainer {
     private boolean usePrimitives = true;
 
     /**
+     * <p>If true, would use case sensitive naming.</p>
+     * <p>Default is <b>"false"</b>, i.e. case insensitive naming will be used.</p>
+     */
+    private boolean useCaseSensitiveNaming = false;
+
+    /**
      * Use old Java 7 date types
      */
     private boolean useJava7Types = false;
@@ -135,6 +141,7 @@ public class DbImportConfig extends SchemaContainer {
         reverseEngineering.setNamingStrategy(namingStrategy);
         reverseEngineering.setStripFromTableNames(stripFromTableNames);
         reverseEngineering.setUsePrimitives(usePrimitives);
+        reverseEngineering.setUseCaseSensitiveNaming(useCaseSensitiveNaming);
         reverseEngineering.setUseJava7Types(useJava7Types);
         reverseEngineering.setTableTypes(tableTypes);
 
@@ -257,6 +264,27 @@ public class DbImportConfig extends SchemaContainer {
 
     public void usePrimitives(boolean usePrimitives) {
         setUsePrimitives(usePrimitives);
+    }
+
+    /**
+     * @since 4.2
+     */
+    public boolean isUseCaseSensitiveNaming() {
+        return useCaseSensitiveNaming;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void setUseCaseSensitiveNaming(boolean useCaseSensitiveNaming) {
+        this.useCaseSensitiveNaming = useCaseSensitiveNaming;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void useCaseSensitiveNaming(boolean useCaseSensitiveNaming) {
+        setUseCaseSensitiveNaming(useCaseSensitiveNaming);
     }
 
     public boolean isUseJava7Types() {

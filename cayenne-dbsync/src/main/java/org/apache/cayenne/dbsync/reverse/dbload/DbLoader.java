@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Loads DB schema into a DataMap, creating DbEntities and Procedures. Consists of a list of specialized loaders that
@@ -46,15 +47,16 @@ public class DbLoader {
     private final DbLoaderConfiguration config;
     private final DbLoaderDelegate delegate;
     private final ObjectNameGenerator nameGenerator;
+    private final Function<String, String> nameConverter;
 
     public DbLoader(DbAdapter adapter, Connection connection, DbLoaderConfiguration config,
-                    DbLoaderDelegate delegate, ObjectNameGenerator nameGenerator) {
+                    DbLoaderDelegate delegate, ObjectNameGenerator nameGenerator, Function<String, String> nameConverter) {
         this.adapter = Objects.requireNonNull(adapter);
         this.connection = Objects.requireNonNull(connection);
         this.config = Objects.requireNonNull(config);
         this.nameGenerator = Objects.requireNonNull(nameGenerator);
         this.delegate = delegate == null ? new DefaultDbLoaderDelegate() : delegate;
-
+        this.nameConverter = Objects.requireNonNull(nameConverter);
         createLoaders();
     }
 
@@ -75,7 +77,7 @@ public class DbLoader {
      * @return new DataMap with data loaded from DB
      */
     public DataMap load() throws SQLException {
-        DbLoadDataStore loadedData = new DbLoadDataStore();
+        DbLoadDataStore loadedData = new DbLoadDataStore(nameConverter);
         DatabaseMetaData metaData = connection.getMetaData();
 
         for(AbstractLoader loader : loaders) {

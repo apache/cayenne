@@ -54,7 +54,8 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
 
         QuotingStrategy context = adapter.getQuotingStrategy();
         return Collections.singletonList(
-                "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " + getFkName());
+                "ALTER TABLE " + context.quotedFullyQualifiedName(getEntity()) + " DROP CONSTRAINT " +
+                        context.quotedIdentifier(getEntity().getDataMap(), getFkName()));
     }
 
     public MergerToken createReverse(MergerTokenFactory factory) {

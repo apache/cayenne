@@ -109,4 +109,183 @@ public class EntityMergeSupportIT extends MergeCase {
 		map.removeDbEntity(dbEntity2.getName());
 		map.removeDbEntity(dbEntity1.getName());
 	}
+
+	@Test
+	public void testMergingTableWithSameNameInDifferentCapitalization() {
+		DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
+
+		DbAttribute e1col1 = new DbAttribute("ID", Types.INTEGER, dbEntity1);
+		e1col1.setMandatory(true);
+		e1col1.setPrimaryKey(true);
+		dbEntity1.addAttribute(e1col1);
+
+		DbAttribute e1col2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity1);
+		e1col2.setMaxLength(10);
+		e1col2.setMandatory(false);
+		dbEntity1.addAttribute(e1col2);
+
+		map.addDbEntity(dbEntity1);
+
+		DbEntity dbEntity2 = new DbEntity("NEW_TABLE2");
+		DbAttribute e2col1 = new DbAttribute("ID", Types.INTEGER, dbEntity2);
+		e2col1.setMandatory(true);
+		e2col1.setPrimaryKey(true);
+		dbEntity2.addAttribute(e2col1);
+		DbAttribute e2col2 = new DbAttribute("FK", Types.INTEGER, dbEntity2);
+		dbEntity2.addAttribute(e2col2);
+
+		map.addDbEntity(dbEntity2);
+
+		DbEntity dbEntity3 = new DbEntity("NEW_table");
+		DbAttribute e3col1 = new DbAttribute("Id", Types.INTEGER, dbEntity3);
+		e3col1.setMandatory(true);
+		e3col1.setPrimaryKey(true);
+		dbEntity3.addAttribute(e3col1);
+
+		DbAttribute e3col2 = new DbAttribute("FK", Types.INTEGER, dbEntity3);
+		dbEntity3.addAttribute(e3col2);
+
+		map.addDbEntity(dbEntity3);
+
+		// create db relationships
+		DbRelationship rel1To2 = new DbRelationship("rel1To2");
+		rel1To2.setSourceEntity(dbEntity1);
+		rel1To2.setTargetEntityName(dbEntity2);
+		rel1To2.setToMany(true);
+		rel1To2.addJoin(new DbJoin(rel1To2, e1col1.getName(), e2col2.getName()));
+		dbEntity1.addRelationship(rel1To2);
+		DbRelationship rel2To1 = new DbRelationship("rel2To1");
+		rel2To1.setSourceEntity(dbEntity2);
+		rel2To1.setTargetEntityName(dbEntity1);
+		rel2To1.setToMany(false);
+		rel2To1.addJoin(new DbJoin(rel2To1, e2col2.getName(), e1col1.getName()));
+		dbEntity2.addRelationship(rel2To1);
+		assertSame(rel1To2, rel2To1.getReverseRelationship());
+		assertSame(rel2To1, rel1To2.getReverseRelationship());
+
+		// create db relationships
+		DbRelationship rel3To2 = new DbRelationship("rel3To2");
+		rel3To2.setSourceEntity(dbEntity3);
+		rel3To2.setTargetEntityName(dbEntity2);
+		rel3To2.setToMany(true);
+		rel3To2.addJoin(new DbJoin(rel3To2, e1col1.getName(), e2col2.getName()));
+		dbEntity3.addRelationship(rel3To2);
+		DbRelationship rel2To3 = new DbRelationship("rel2To3");
+		rel2To3.setSourceEntity(dbEntity2);
+		rel2To3.setTargetEntityName(dbEntity3);
+		rel2To3.setToMany(false);
+		rel2To3.addJoin(new DbJoin(rel2To3, e2col2.getName(), e1col1.getName()));
+		dbEntity2.addRelationship(rel2To3);
+		assertSame(rel3To2, rel2To3.getReverseRelationship());
+		assertSame(rel2To3, rel3To2.getReverseRelationship());
+
+		ObjEntity objEntity1 = new ObjEntity("NewTable");
+		objEntity1.setDbEntity(dbEntity1);
+		map.addObjEntity(objEntity1);
+
+		ObjEntity objEntity2 = new ObjEntity("NewTable2");
+		objEntity2.setDbEntity(dbEntity2);
+		map.addObjEntity(objEntity2);
+
+
+		ObjEntity objEntity3 = new ObjEntity("NewTable3");
+		objEntity3.setDbEntity(dbEntity3);
+		map.addObjEntity(objEntity3);
+
+		EntityMergeSupport entityMergeSupport = new EntityMergeSupport(
+				new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
+				NamePatternMatcher.EXCLUDE_ALL,
+				true,
+				true,
+				false);
+		assertTrue(entityMergeSupport.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2, objEntity3)));
+		assertNotNull(objEntity1.getAttribute("name"));
+		assertNotNull(objEntity1.getRelationship("newTable2s"));
+		assertNotNull(objEntity2.getRelationship("newTable"));
+		assertNotNull(objEntity2.getRelationship("newTable1"));
+		assertNotNull(objEntity3.getAttribute("fk"));
+		assertNotNull(objEntity3.getRelationship("newTable2s"));
+
+		assertEquals(objEntity1.getRelationship("newTable2s").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
+		assertEquals(objEntity2.getRelationship("newTable").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+		assertEquals(objEntity3.getRelationship("newTable2s").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
+		assertEquals(objEntity2.getRelationship("newTable1").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+
+		map.removeObjEntity(objEntity2.getName());
+		map.removeObjEntity(objEntity1.getName());
+		map.removeObjEntity(objEntity3.getName());
+		map.removeDbEntity(dbEntity2.getName());
+		map.removeDbEntity(dbEntity1.getName());
+		map.removeDbEntity(dbEntity3.getName());
+	}
+
+	@Test
+	public void testMergingTableWithSameNameInDifferentCapitalization1() {
+		DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
+
+		DbAttribute e1col1 = new DbAttribute("ID", Types.INTEGER, dbEntity1);
+		e1col1.setMandatory(true);
+		e1col1.setPrimaryKey(true);
+		dbEntity1.addAttribute(e1col1);
+
+		DbAttribute e1col2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity1);
+		e1col2.setMaxLength(10);
+		e1col2.setMandatory(false);
+		dbEntity1.addAttribute(e1col2);
+
+		map.addDbEntity(dbEntity1);
+
+		DbEntity dbEntity2 = new DbEntity("NEW_table");
+		DbAttribute e2col1 = new DbAttribute("ID", Types.INTEGER, dbEntity2);
+		e2col1.setMandatory(true);
+		e2col1.setPrimaryKey(true);
+		dbEntity2.addAttribute(e2col1);
+		DbAttribute e2col2 = new DbAttribute("FK", Types.INTEGER, dbEntity2);
+		dbEntity2.addAttribute(e2col2);
+
+		map.addDbEntity(dbEntity2);
+
+		// create db relationships
+		DbRelationship rel1To2 = new DbRelationship("rel1To2");
+		rel1To2.setSourceEntity(dbEntity1);
+		rel1To2.setTargetEntityName(dbEntity2);
+		rel1To2.setToMany(true);
+		rel1To2.addJoin(new DbJoin(rel1To2, e1col1.getName(), e2col2.getName()));
+		dbEntity1.addRelationship(rel1To2);
+		DbRelationship rel2To1 = new DbRelationship("rel2To1");
+		rel2To1.setSourceEntity(dbEntity2);
+		rel2To1.setTargetEntityName(dbEntity1);
+		rel2To1.setToMany(false);
+		rel2To1.addJoin(new DbJoin(rel2To1, e2col2.getName(), e1col1.getName()));
+		dbEntity2.addRelationship(rel2To1);
+		assertSame(rel1To2, rel2To1.getReverseRelationship());
+		assertSame(rel2To1, rel1To2.getReverseRelationship());
+
+		ObjEntity objEntity1 = new ObjEntity("NewTable");
+		objEntity1.setDbEntity(dbEntity1);
+		map.addObjEntity(objEntity1);
+
+		ObjEntity objEntity2 = new ObjEntity("NewTable2");
+		objEntity2.setDbEntity(dbEntity2);
+		map.addObjEntity(objEntity2);
+
+		EntityMergeSupport entityMergeSupport = new EntityMergeSupport(
+				new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
+				NamePatternMatcher.EXCLUDE_ALL,
+				true,
+				true,
+				false);
+		assertTrue(entityMergeSupport.synchronizeWithDbEntities(Arrays.asList(objEntity1, objEntity2)));
+		assertNotNull(objEntity1.getAttribute("name"));
+		assertNotNull(objEntity1.getRelationship("newTables"));
+		assertNotNull(objEntity2.getRelationship("newTable"));
+
+		assertEquals(objEntity1.getRelationship("newTables").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_MANY);
+		assertEquals(objEntity2.getRelationship("newTable").getDeleteRule(), DeleteRule.DEFAULT_DELETE_RULE_TO_ONE);
+
+		map.removeObjEntity(objEntity2.getName());
+		map.removeObjEntity(objEntity1.getName());
+		map.removeDbEntity(dbEntity2.getName());
+		map.removeDbEntity(dbEntity1.getName());
+	}
 }

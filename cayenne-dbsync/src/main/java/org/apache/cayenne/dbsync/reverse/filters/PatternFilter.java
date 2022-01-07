@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  */
 public class PatternFilter {
 
-    public static final PatternFilter INCLUDE_EVERYTHING = new PatternFilter() {
+    public static final PatternFilter INCLUDE_EVERYTHING = new PatternFilter(true) {
 
         @Override
         public boolean isIncluded(String obj) {
@@ -43,7 +43,7 @@ public class PatternFilter {
         }
     };
 
-    public static final PatternFilter INCLUDE_NOTHING = new PatternFilter() {
+    public static final PatternFilter INCLUDE_NOTHING = new PatternFilter(true) {
         @Override
         public boolean isIncluded(String obj) {
             return false;
@@ -65,10 +65,12 @@ public class PatternFilter {
 
     private final SortedSet<Pattern> includes;
     private final SortedSet<Pattern> excludes;
+    private boolean useCaseSensitiveNaming;
 
-    public PatternFilter() {
+    public PatternFilter(boolean useCaseSensitiveNaming) {
         this.includes = new TreeSet<>(PATTERN_COMPARATOR);
         this.excludes = new TreeSet<>(PATTERN_COMPARATOR);
+        this.useCaseSensitiveNaming = useCaseSensitiveNaming;
     }
 
     public SortedSet<Pattern> getIncludes() {
@@ -87,19 +89,21 @@ public class PatternFilter {
         return this;
     }
 
-    public static Pattern pattern(String pattern) {
+    public static Pattern pattern(String pattern, boolean useCaseSensitiveNaming) {
         if (pattern == null) {
             return null;
         }
-        return Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+        return useCaseSensitiveNaming
+                ? Pattern.compile(pattern)
+                : Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
     }
 
     public PatternFilter include(String p) {
-        return include(pattern(p));
+        return include(pattern(p, useCaseSensitiveNaming));
     }
 
     public PatternFilter exclude(String p) {
-        return exclude(pattern(p));
+        return exclude(pattern(p, useCaseSensitiveNaming));
     }
 
     public boolean isIncluded(String obj) {

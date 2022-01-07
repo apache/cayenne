@@ -40,8 +40,8 @@ public class TableFilterTest {
     @Test
     public void testInclude() {
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
-        includes.add(new IncludeTableFilter("aaa"));
-        includes.add(new IncludeTableFilter("bb"));
+        includes.add(new IncludeTableFilter("aaa", false));
+        includes.add(new IncludeTableFilter("bb", false));
 
         TableFilter filter = new TableFilter(includes, new TreeSet<>(PatternFilter.PATTERN_COMPARATOR));
 
@@ -61,7 +61,7 @@ public class TableFilterTest {
         excludes.add(Pattern.compile("bb"));
 
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
-        includes.add(new IncludeTableFilter(null, PatternFilter.INCLUDE_EVERYTHING));
+        includes.add(new IncludeTableFilter(null, PatternFilter.INCLUDE_EVERYTHING, false));
 
         TableFilter filter = new TableFilter(includes, excludes);
 
@@ -81,7 +81,7 @@ public class TableFilterTest {
         excludes.add(Pattern.compile("bb"));
 
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
-        includes.add(new IncludeTableFilter("aa.*"));
+        includes.add(new IncludeTableFilter("aa.*", false));
 
         TableFilter filter = new TableFilter(includes, excludes);
 
@@ -97,8 +97,8 @@ public class TableFilterTest {
     @Test
     public void testGetTableFilter() {
         TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
-        includes.add(new IncludeTableFilter("aaa"));
-        includes.add(new IncludeTableFilter("bb"));
+        includes.add(new IncludeTableFilter("aaa", false));
+        includes.add(new IncludeTableFilter("bb", false));
 
         TreeSet<Pattern> excludes = new TreeSet<>();
 
@@ -111,5 +111,81 @@ public class TableFilterTest {
         assertNotNull(filter.getIncludeTableColumnFilter("bb"));
         assertNull(filter.getIncludeTableColumnFilter(""));
         assertNull(filter.getIncludeTableColumnFilter("bbbb"));
+    }
+
+    @Test
+    public void testIncludeCaseSensitive() {
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        includes.add(new IncludeTableFilter("aaa", true));
+        includes.add(new IncludeTableFilter("bb", true));
+
+        TableFilter filter = new TableFilter(includes, new TreeSet<>(PatternFilter.PATTERN_COMPARATOR));
+
+        assertTrue(filter.isIncludeTable("aaa"));
+        assertFalse(filter.isIncludeTable("aaA"));
+        assertFalse(filter.isIncludeTable("AAA"));
+
+        assertTrue(filter.isIncludeTable("bb"));
+        assertFalse(filter.isIncludeTable("Bb"));
+        assertFalse(filter.isIncludeTable("BB"));
+    }
+
+    @Test
+    public void testExcludeCaseSensitive() {
+        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+        excludes.add(Pattern.compile("aaa"));
+        excludes.add(Pattern.compile("bb"));
+
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        includes.add(new IncludeTableFilter(null, PatternFilter.INCLUDE_EVERYTHING, true));
+
+        TableFilter filter = new TableFilter(includes, excludes);
+
+        assertTrue(filter.isIncludeTable("aaA"));
+        assertTrue(filter.isIncludeTable("AAA"));
+        assertTrue(filter.isIncludeTable("aaaa"));
+
+        assertTrue(filter.isIncludeTable("bB"));
+        assertTrue(filter.isIncludeTable(""));
+        assertTrue(filter.isIncludeTable("bbbb"));
+    }
+
+    @Test
+    public void testIncludeExcludeCaseSensitive() {
+        TreeSet<Pattern> excludes = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+        excludes.add(Pattern.compile("aaa"));
+        excludes.add(Pattern.compile("bb"));
+
+        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        includes.add(new IncludeTableFilter("aa.*", true));
+
+        TableFilter filter = new TableFilter(includes, excludes);
+
+        assertFalse(filter.isIncludeTable("aaa"));
+        assertTrue(filter.isIncludeTable("aa"));
+        assertTrue(filter.isIncludeTable("aaA"));
+
+        assertFalse(filter.isIncludeTable("bb"));
+        assertFalse(filter.isIncludeTable(""));
+        assertFalse(filter.isIncludeTable("bB"));
+    }
+
+    @Test
+    public void testGetTableFilterCaseSensitive() {
+        TreeSet<IncludeTableFilter> includes = new TreeSet<IncludeTableFilter>();
+        includes.add(new IncludeTableFilter("aaa", true));
+        includes.add(new IncludeTableFilter("bb", true));
+
+        TreeSet<Pattern> excludes = new TreeSet<>();
+
+        TableFilter filter = new TableFilter(includes, excludes);
+
+        assertNotNull(filter.getIncludeTableColumnFilter("aaa"));
+        assertNull(filter.getIncludeTableColumnFilter("aa"));
+        assertNull(filter.getIncludeTableColumnFilter("aaA"));
+
+        assertNotNull(filter.getIncludeTableColumnFilter("bb"));
+        assertNull(filter.getIncludeTableColumnFilter(""));
+        assertNull(filter.getIncludeTableColumnFilter("bB"));
     }
 }

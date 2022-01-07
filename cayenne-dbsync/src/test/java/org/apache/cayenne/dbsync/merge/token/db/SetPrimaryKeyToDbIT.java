@@ -57,4 +57,42 @@ public class SetPrimaryKeyToDbIT extends MergeCase {
 		assertTokensAndExecute(1, 0);
 		assertTokensAndExecute(0, 0);
 	}
+
+	@Test
+	public void testCaseSensitiveNaming() throws Exception {
+		map.setQuotingSQLIdentifiers(true);
+		dropTableIfPresent("NEW_TABLE");
+		assertTokensAndExecute(0, 0, true);
+
+		DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
+
+		DbAttribute e1col1 = new DbAttribute("ID1", Types.INTEGER, dbEntity1);
+		e1col1.setMandatory(true);
+		e1col1.setPrimaryKey(true);
+		dbEntity1.addAttribute(e1col1);
+		map.addDbEntity(dbEntity1);
+
+		assertTokensAndExecute(1, 0, true);
+		assertTokensAndExecute(0, 0, true);
+
+		DbAttribute e1col2 = new DbAttribute("id1", Types.INTEGER, dbEntity1);
+		e1col2.setMandatory(true);
+		dbEntity1.addAttribute(e1col2);
+
+		assertTokensAndExecute(2, 0, true);
+		assertTokensAndExecute(0, 0, true);
+
+		e1col1.setPrimaryKey(false);
+		e1col2.setPrimaryKey(true);
+
+		assertTokensAndExecute(1, 0, true);
+		assertTokensAndExecute(0, 0, true);
+
+		//clear entity
+		map.removeDbEntity(dbEntity1.getName());
+		dropTableIfPresent("NEW_TABLE");
+
+		assertTokensAndExecute(0, 0, true);
+		map.setQuotingSQLIdentifiers(false);
+	}
 }

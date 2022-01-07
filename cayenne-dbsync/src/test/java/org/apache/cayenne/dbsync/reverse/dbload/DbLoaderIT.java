@@ -121,7 +121,7 @@ public class DbLoaderIT extends ServerCase {
     }
 
     private DbLoader createDbLoader(boolean meaningfulPK, boolean meaningfulFK) {
-        return new DbLoader(adapter, connection, CONFIG, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        return new DbLoader(adapter, connection, CONFIG, null, new DefaultObjectNameGenerator(NoStemStemmer.getInstance()), String::toUpperCase);
     }
 
     @After

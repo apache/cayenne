@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.map.DataMap;
 
 class ChainMerger<T, M> extends AbstractMerger<T, M> {
 
@@ -33,7 +32,7 @@ class ChainMerger<T, M> extends AbstractMerger<T, M> {
     private final AbstractMerger<?, T> parentMerger;
 
     ChainMerger(MergerTokenFactory tokenFactory, AbstractMerger<T, M> merger, AbstractMerger<?, T> parentMerger) {
-        super(tokenFactory);
+        super(tokenFactory, merger.getNameConverter());
         this.merger = merger;
         this.parentMerger = parentMerger;
     }

@@ -22,6 +22,7 @@ package org.apache.cayenne.dbsync.merge;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 abstract class MergerDictionary<T> {
 
@@ -30,9 +31,9 @@ abstract class MergerDictionary<T> {
     MergerDictionary() {
     }
 
-    void init() {
+    void init(Function<String, String> nameConverter) {
         for(T entity : getAll()) {
-            String name = getName(entity).toUpperCase();
+            String name = nameConverter.apply(getName(entity));
             dictionary.put(name, entity);
         }
     }

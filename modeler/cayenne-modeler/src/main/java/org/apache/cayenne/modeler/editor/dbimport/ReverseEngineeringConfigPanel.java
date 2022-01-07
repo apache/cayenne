@@ -53,6 +53,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
     private JCheckBox forceDataMapCatalog;
     private JCheckBox forceDataMapSchema;
     private JCheckBox usePrimitives;
+    private JCheckBox useCaseSensitiveNaming;
     private JCheckBox useJava7Types;
 
     private TextAdapter tableTypes;
@@ -81,6 +82,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         panelBuilder.append("Force datamap catalog:", forceDataMapCatalog);
         panelBuilder.append("Force datamap schema:", forceDataMapSchema);
         panelBuilder.append("Use Java primitive types:", usePrimitives);
+        panelBuilder.append("Use case sensitive naming:", useCaseSensitiveNaming);
         panelBuilder.append("Use java.util.Date type:", useJava7Types);
         panelBuilder.append("Naming strategy:", strategyCombo);
         panelBuilder.append("Table types:", tableTypes.getComponent());
@@ -94,6 +96,7 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         forceDataMapCatalog.setSelected(reverseEngineering.isForceDataMapCatalog());
         forceDataMapSchema.setSelected(reverseEngineering.isForceDataMapSchema());
         usePrimitives.setSelected(reverseEngineering.isUsePrimitives());
+        useCaseSensitiveNaming.setSelected(reverseEngineering.isUseCaseSensitiveNaming());
         useJava7Types.setSelected(reverseEngineering.isUseJava7Types());
     }
 
@@ -191,6 +194,8 @@ public class ReverseEngineeringConfigPanel extends JPanel {
                 "By default <b>java.time.*</b> types will be used.</html>");
         usePrimitives = new JCheckBox();
         usePrimitives.setToolTipText("<html>Use primitive types (e.g. int) or Object types (e.g. java.lang.Integer)</html>");
+        useCaseSensitiveNaming = new JCheckBox();
+        usePrimitives.setToolTipText("<html>Use case sensitive namespace</html>");
     }
 
     private void initListeners() {
@@ -220,6 +225,12 @@ public class ReverseEngineeringConfigPanel extends JPanel {
         });
         usePrimitives.addActionListener(e -> {
             getReverseEngineeringBySelectedMap().setUsePrimitives(usePrimitives.isSelected());
+            if(!dbImportView.isInitFromModel()) {
+                projectController.setDirty(true);
+            }
+        });
+        useCaseSensitiveNaming.addActionListener(e -> {
+            getReverseEngineeringBySelectedMap().setUseCaseSensitiveNaming(useCaseSensitiveNaming.isSelected());
             if(!dbImportView.isInitFromModel()) {
                 projectController.setDirty(true);
             }
@@ -283,6 +294,13 @@ public class ReverseEngineeringConfigPanel extends JPanel {
 
     JCheckBox getUsePrimitives() {
         return usePrimitives;
+    }
+
+    /**
+     * @since 4.2
+     */
+    JCheckBox getUseCaseSensitiveNaming() {
+        return useCaseSensitiveNaming;
     }
 
     JCheckBox getUseJava7Types() {

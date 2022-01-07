@@ -22,6 +22,7 @@ package org.apache.cayenne.dbsync.merge;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -40,8 +41,8 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
     private final boolean skipRelationshipsTokens;
     private final FiltersConfig filtersConfig;
 
-    DbRelationshipMerger(MergerTokenFactory tokenFactory, boolean skipRelationshipsTokens, FiltersConfig filtersConfig) {
-        super(tokenFactory);
+    DbRelationshipMerger(MergerTokenFactory tokenFactory, boolean skipRelationshipsTokens, FiltersConfig filtersConfig, Function<String, String> nameConverter) {
+        super(tokenFactory, nameConverter);
         this.skipRelationshipsTokens = skipRelationshipsTokens;
         this.filtersConfig = filtersConfig;
     }
@@ -51,15 +52,18 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
         return new MergerDictionaryDiff.Builder<DbRelationship>()
                 .originalDictionary(new DbRelationshipDictionary(original, filtersConfig))
                 .importedDictionary(new DbRelationshipDictionary(imported, filtersConfig))
+                .nameConverter(getNameConverter())
                 .build();
     }
 
     private DbEntity getOriginalSourceDbEntity(DbRelationship relationship) {
-        return getOriginalDictionary().getByName(relationship.getSourceEntity().getName().toUpperCase());
+        String name = getNameConverter().apply(relationship.getSourceEntity().getName());
+        return getOriginalDictionary().getByName(name);
     }
 
     private DbEntity getOriginalTargetDbEntity(DbRelationship relationship) {
-        return getOriginalDictionary().getByName(relationship.getTargetEntityName().toUpperCase());
+        String name = getNameConverter().apply(relationship.getTargetEntity().getName());
+        return getOriginalDictionary().getByName(name);
     }
 
     /**
@@ -121,17 +125,21 @@ public class DbRelationshipMerger extends AbstractMerger<DbEntity, DbRelationshi
      * case insensitive search for a {@link DbAttribute} in a {@link DbEntity}
      * by name
      */
-    private DbAttribute findDbAttribute(DbEntity entity, String caseInsensitiveName) {
+    private DbAttribute findDbAttribute(DbEntity entity, String name) {
         if (entity == null) {
             return null;
         }
 
         for (DbAttribute a : entity.getAttributes()) {
-            if (a.getName().equalsIgnoreCase(caseInsensitiveName)) {
+            if (equalsConvertedNames(a.getName(), name)) {
                 return a;
             }
         }
         return null;
+    }
+
+    private boolean equalsConvertedNames(String name1, String name2) {
+        return getNameConverter().apply(name1).equals(getNameConverter().apply(name2));
     }
 
     @Override

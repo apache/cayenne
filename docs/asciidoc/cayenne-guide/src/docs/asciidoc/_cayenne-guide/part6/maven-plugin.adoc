@@ -263,6 +263,10 @@ a|Regex that matches the part of the table name that needs to be stripped off wh
 .^|boolean
 .^|Whether numeric and boolean data types should be mapped as Java primitives or Java classes. Default is "true", i.e. primitives will be used.
 
+.^|useCaseSensitiveNaming
+.^|boolean
+.^|If the database uses case-sensitive naming, this option helps to convey the same names with different case-type letters. The default is "false", i.e. case-insensitive naming will be used. Note that if the database uses different case-type letters, merges are possible without this option.
+
 .^|useJava7Types
 .^|boolean
 .^|Whether _DATE_, _TIME_ and _TIMESTAMP_ data types should be mapped as `java.util.Date` or `java.time.* classes`. Default is "false", i.e. `java.time.*` will be used.
@@ -320,6 +324,7 @@ Example - loading a DB schema from a local HSQLDB database (essentially a revers
                 </dataSource>
                 <dbimport>
                     <defaultPackage>com.example.cayenne</defaultPackage>
+                    <useCaseSensitiveNaming>true</useCaseSensitiveNaming>
                 </dbimport>
             </configuration>
             <goals>

@@ -29,6 +29,7 @@ import org.apache.cayenne.map.event.AttributeEvent;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
 
@@ -36,18 +37,20 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
     private Collection<DbAttribute> primaryKeyNew;
     private String detectedPrimaryKeyName;
     private Set<String> primaryKeyNewAttributeNames = new HashSet<>();
+    private Function<String, String> nameConverter;
 
     public SetPrimaryKeyToModel(DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
+            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName, Function<String, String> nameConverter) {
         super("Set Primary Key", 105, entity);
         
         this.primaryKeyOriginal = primaryKeyOriginal;
         this.primaryKeyNew = primaryKeyNew;
         this.detectedPrimaryKeyName = detectedPrimaryKeyName;
+        this.nameConverter = nameConverter;
         
         for (DbAttribute attr : primaryKeyNew) {
-            primaryKeyNewAttributeNames.add(attr.getName().toUpperCase());
+            primaryKeyNewAttributeNames.add(this.nameConverter.apply(attr.getName()));
         }
     }
 
@@ -57,7 +60,8 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
                 getEntity(),
                 primaryKeyNew,
                 primaryKeyOriginal,
-                detectedPrimaryKeyName);
+                detectedPrimaryKeyName,
+                nameConverter);
     }
 
     @Override
@@ -67,9 +71,7 @@ public class SetPrimaryKeyToModel extends AbstractToModelToken.Entity {
         for (DbAttribute attr : e.getAttributes()) {
 
             boolean wasPrimaryKey = attr.isPrimaryKey();
-            boolean willBePrimaryKey = primaryKeyNewAttributeNames.contains(attr
-                    .getName()
-                    .toUpperCase());
+            boolean willBePrimaryKey = primaryKeyNewAttributeNames.contains(nameConverter.apply(attr.getName()));
 
             if (wasPrimaryKey != willBePrimaryKey) {
                 attr.setPrimaryKey(willBePrimaryKey);

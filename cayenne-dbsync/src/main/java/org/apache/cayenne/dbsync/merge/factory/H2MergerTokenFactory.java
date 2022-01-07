@@ -32,6 +32,7 @@ import org.apache.cayenne.map.DbEntity;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @since 3.0
@@ -69,8 +70,8 @@ public class H2MergerTokenFactory extends DefaultMergerTokenFactory {
 
     @Override
     public MergerToken createSetPrimaryKeyToDb(DbEntity entity, Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
-        return new SetPrimaryKeyToDb(entity, primaryKeyOriginal, primaryKeyNew, detectedPrimaryKeyName) {
+            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName, Function<String, String> nameConverter) {
+        return new SetPrimaryKeyToDb(entity, primaryKeyOriginal, primaryKeyNew, detectedPrimaryKeyName, nameConverter) {
 
             @Override
             protected void appendDropOriginalPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
