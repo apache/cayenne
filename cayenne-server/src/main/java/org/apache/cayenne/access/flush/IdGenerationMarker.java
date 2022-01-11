@@ -22,13 +22,14 @@ package org.apache.cayenne.access.flush;
 import java.io.Serializable;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 
 /**
  * Special value that denotes generated id attribute
  *
  * @since 4.2
  */
-class IdGenerationMarker implements Serializable {
+class IdGenerationMarker implements Serializable, InternalUnsupportedTypeFactory.Marker {
     private static final long serialVersionUID = -5339942931435878094L;
 
     private final int id;
@@ -48,5 +49,10 @@ class IdGenerationMarker implements Serializable {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public String errorMessage() {
+        return "PK is not generated. Check your PK generation strategy or presence of the mutually dependent entities.";
     }
 }

@@ -23,13 +23,14 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 
 /**
  * Deferred value extracted from ObjectId
  *
  * @since 4.2
  */
-class ObjectIdValueSupplier implements Supplier<Object> {
+class ObjectIdValueSupplier implements Supplier<Object>, InternalUnsupportedTypeFactory.Marker {
 
     private final ObjectId id;
     private final String attribute;
@@ -78,5 +79,10 @@ class ObjectIdValueSupplier implements Supplier<Object> {
     @Override
     public String toString() {
         return "{id=" + id + ", attr=" + attribute + '}';
+    }
+
+    @Override
+    public String errorMessage() {
+        return "Value supplier is not resolved before usage.";
     }
 }

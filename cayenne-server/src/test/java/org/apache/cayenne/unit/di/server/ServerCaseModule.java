@@ -42,6 +42,7 @@ import org.apache.cayenne.access.types.DoubleType;
 import org.apache.cayenne.access.types.DurationType;
 import org.apache.cayenne.access.types.FloatType;
 import org.apache.cayenne.access.types.IntegerType;
+import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 import org.apache.cayenne.access.types.LocalDateTimeValueType;
 import org.apache.cayenne.access.types.LocalDateValueType;
 import org.apache.cayenne.access.types.LocalTimeValueType;
@@ -223,7 +224,8 @@ public class ServerCaseModule implements Module {
                 .add(new CalendarType<>(Calendar.class))
                 .add(new DurationType());
         ServerModule.contributeUserTypes(binder);
-        ServerModule.contributeTypeFactories(binder);
+        ServerModule.contributeTypeFactories(binder)
+                .add(new InternalUnsupportedTypeFactory());
         ServerModule.contributeValueObjectTypes(binder)
                 .add(BigIntegerValueType.class)
                 .add(BigDecimalValueType.class)

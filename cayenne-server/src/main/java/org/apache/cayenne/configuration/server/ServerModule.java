@@ -61,7 +61,7 @@ import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.FloatType;
 import org.apache.cayenne.access.types.GeoJsonType;
 import org.apache.cayenne.access.types.IntegerType;
-import org.apache.cayenne.access.types.JsonType;
+import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 import org.apache.cayenne.access.types.LocalDateTimeValueType;
 import org.apache.cayenne.access.types.LocalDateValueType;
 import org.apache.cayenne.access.types.LocalTimeValueType;
@@ -434,7 +434,8 @@ public class ServerModule implements Module {
                 .add(GeoJsonType.class)
                 .add(WktType.class);
         contributeUserTypes(binder);
-        contributeTypeFactories(binder);
+        contributeTypeFactories(binder)
+                .add(new InternalUnsupportedTypeFactory());
 
         // Custom ValueObjects types contribution
         contributeValueObjectTypes(binder)

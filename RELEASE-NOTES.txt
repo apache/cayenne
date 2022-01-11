@@ -13,6 +13,8 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2728 Add ExtendedType to generate user-friendly exceptions for internally used values
+
 Bug Fixes:
 
 CAY-2697 Read-only cgen template creates mutator methods for to-many relationships
