@@ -316,11 +316,12 @@ public class ClassGenerationAction {
 			if (cgenConfiguration.getRootPath() != null) {
 				props.put("resource.loader.cayenne.path", cgenConfiguration.getRootPath().toString());
 			}
+			if (cgenConfiguration.getDataMap()!=null&&cgenConfiguration.getDataMap().getConfigurationSource()!=null) {
+				Velocity.setProperty("cayenne.cgen.rootpath", cgenConfiguration.getDataMap().getConfigurationSource());
+			}
 
 			VelocityEngine velocityEngine = new VelocityEngine();
 			velocityEngine.init(props);
-
-			Velocity.setProperty("cayenne.cgen.rootpath", cgenConfiguration.getDataMap().getConfigurationSource());
 
 			template = velocityEngine.getTemplate(templateName);
 			templateCache.put(templateName, template);
