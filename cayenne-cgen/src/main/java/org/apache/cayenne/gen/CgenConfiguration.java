@@ -396,8 +396,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
                 .simpleTag("template", this.template)
                 .simpleTag("superTemplate", this.superTemplate)
-                .simpleTag("template", this.template)
-                .simpleTag("superTemplate", this.superTemplate)
                 .simpleTag("embeddableTemplate", this.embeddableTemplate)
                 .simpleTag("embeddableSuperTemplate", this.embeddableSuperTemplate)
                 .simpleTag("queryTemplate", this.queryTemplate)
