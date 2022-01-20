@@ -39,6 +39,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 
@@ -289,6 +290,8 @@ public class ClassGenerationAction {
 
 			VelocityEngine velocityEngine = new VelocityEngine();
 			velocityEngine.init(props);
+
+			Velocity.setProperty("cayenne.cgen.rootpath", cgenConfiguration.getDataMap().getConfigurationSource());
 
 			template = velocityEngine.getTemplate(templateName);
 			templateCache.put(templateName, template);
