@@ -26,19 +26,24 @@ import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
 
 /**
  * Velocity template resource loader customized for Cayenne use. Supports loading
  * templates from the thread ClassLoader and from relative and absolute paths.
- * 
+ *
  * @since 1.2
  */
 // must be public top-level class as it is
 // instantiated via reflection by Velocity
 public class ClassGeneratorResourceLoader extends FileResourceLoader {
+
+    private static final String CGEN_ROOT_PATH = "cayenne.cgen.rootpath";
 
     /**
      * Returns resource as InputStream. First calls super implementation. If resource
@@ -48,15 +53,7 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
     public synchronized Reader getResourceReader(String name, String charset)
             throws ResourceNotFoundException {
 
-        Reader stream = loadFromRelativePath(name, charset);
-        if (stream != null) {
-            return stream;
-        }
-
-        stream = loadFromAbsPath(name);
-        if (stream != null) {
-            return stream;
-        }
+        Reader stream;
 
         stream = loadFromThreadClassLoader(name);
         if (stream != null) {
@@ -68,18 +65,29 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
             return stream;
         }
 
+        stream = loadFromRelativePath(name);
+        if (stream != null) {
+            return stream;
+        }
+
+        stream = loadFromAbsPath(name);
+        if (stream != null) {
+            return stream;
+        }
         throw new ResourceNotFoundException("Couldn't find resource '"
                 + name
                 + "'. Searched filesystem path and classpath");
     }
 
-    protected Reader loadFromRelativePath(String name, String charset) {
-        try {
-            return super.getResourceReader(name, charset);
+    protected Reader loadFromRelativePath(String name) {
+        String rootPath = (String) Velocity.getProperty(CGEN_ROOT_PATH);
+        Path datamapPath;
+        if (rootPath != null) {
+            datamapPath = Paths.get(rootPath);
+            Path absolutePath = datamapPath.resolve(name).normalize();
+            return loadFromAbsPath(absolutePath.toString());
         }
-        catch (ResourceNotFoundException rnfex) {
-            return null;
-        }
+        return null;
     }
 
     protected Reader loadFromAbsPath(String name) {
@@ -88,19 +96,18 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
             return (file.canRead()) ? new BufferedReader(new FileReader(file
                     .getAbsolutePath())) : null;
 
-        }
-        catch (FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             return null;
         }
     }
 
     protected Reader loadFromThreadClassLoader(String name) {
-    	InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
         return stream != null ? new InputStreamReader(stream) : null;
     }
 
     protected Reader loadFromThisClassLoader(String name) {
-    	InputStream stream = getClass().getClassLoader().getResourceAsStream(name);
+        InputStream stream = getClass().getClassLoader().getResourceAsStream(name);
         return stream != null ? new InputStreamReader(stream) : null;
     }
 }
