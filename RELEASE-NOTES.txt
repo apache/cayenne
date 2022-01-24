@@ -8,6 +8,19 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
+Release: 4.1.2
+Date:
+----------------------------------
+
+Changes/New Features:
+
+Bug Fixes:
+
+CAY-2727 Modeler: cgen destDir Unix platform path separator
+CAY-2729 Unable to use custom templates from a folder at upper level then datamap
+CAY-2730 Duplicating lines in a cgen config saved to datamap.xml
+
+----------------------------------
 Release: 4.1.1
 Date: December 17, 2021
 ----------------------------------
