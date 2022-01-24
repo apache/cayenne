@@ -392,23 +392,30 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .attribute("xmlns", CgenExtension.NAMESPACE)
                 .simpleTag("excludeEntities", getExcludeEntites())
                 .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
-                .simpleTag("destDir", buildRelPath())
+                .simpleTag("destDir", separatorsToUnix(buildRelPath()))
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
-                .simpleTag("template", this.template)
-                .simpleTag("superTemplate", this.superTemplate)
-                .simpleTag("embeddableTemplate", this.embeddableTemplate)
-                .simpleTag("embeddableSuperTemplate", this.embeddableSuperTemplate)
-                .simpleTag("queryTemplate", this.queryTemplate)
-                .simpleTag("querySuperTemplate", this.querySuperTemplate)
+                .simpleTag("template", separatorsToUnix(this.template))
+                .simpleTag("superTemplate", separatorsToUnix(this.superTemplate))
+                .simpleTag("embeddableTemplate", separatorsToUnix(this.embeddableTemplate))
+                .simpleTag("embeddableSuperTemplate", separatorsToUnix(this.embeddableSuperTemplate))
+                .simpleTag("queryTemplate", separatorsToUnix(this.queryTemplate))
+                .simpleTag("querySuperTemplate", separatorsToUnix(this.querySuperTemplate))
                 .simpleTag("outputPattern", this.outputPattern)
                 .simpleTag("makePairs", Boolean.toString(this.makePairs))
                 .simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
                 .simpleTag("overwrite", Boolean.toString(this.overwrite))
                 .simpleTag("createPropertyNames", Boolean.toString(this.createPropertyNames))
-                .simpleTag("superPkg", this.superPkg)
+                .simpleTag("superPkg", separatorsToUnix(this.superPkg))
                 .simpleTag("createPKProperties", Boolean.toString(this.createPKProperties))
                 .simpleTag("client", Boolean.toString(client))
                 .end();
+    }
+
+    private String separatorsToUnix (String path){
+        if (path!=null) {
+            return path.replace('\\', '/');
+        }
+        return null;
     }
 
 }
