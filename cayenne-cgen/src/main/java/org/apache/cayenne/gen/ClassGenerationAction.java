@@ -39,6 +39,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.slf4j.Logger;
 
@@ -60,7 +61,7 @@ public class ClassGenerationAction {
 
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
-
+	private static final String CGEN_ROOT_PATH = "cayenne.cgen.rootpath";
 	/**
 	 * @since 4.1
 	 */
@@ -285,6 +286,7 @@ public class ClassGenerationAction {
 			props.put("cayenne.resource.loader.cache", "false");
 			if (cgenConfiguration.getRootPath() != null) {
 				props.put("cayenne.resource.loader.path", cgenConfiguration.getRootPath().toString());
+				Velocity.setProperty(CGEN_ROOT_PATH, cgenConfiguration.getRootPath().toString());
 			}
 
 			VelocityEngine velocityEngine = new VelocityEngine();
