@@ -19,6 +19,9 @@ Bug Fixes:
 
 CAY-2697 Read-only cgen template creates mutator methods for to-many relationships
 CAY-2724 Duplicating relationship after editing its name
+CAY-2727 Modeler: cgen destDir Unix platform path separator
+CAY-2729 Unable to use custom templates from a folder at upper level then datamap
+CAY-2730 Duplicating lines in a cgen config saved to datamap.xml
 
 ----------------------------------
 Release: 4.2.B1
