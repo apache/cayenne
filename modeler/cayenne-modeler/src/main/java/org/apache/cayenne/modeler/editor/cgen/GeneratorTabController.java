@@ -23,43 +23,26 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.PreferenceDetail;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @since 4.1
  */
 public class GeneratorTabController extends CayenneController {
 
-    private static final String STANDARD_OBJECTS_MODE = "Standard Persistent Objects";
-    private static final String CLIENT_OBJECTS_MODE = "Client Persistent Objects";
-    private static final String ADVANCED_MODE = "Advanced";
-
     public static final String GENERATOR_PROPERTY = "generator";
 
-    private static final String[] GENERATION_MODES = new String[] {
-            STANDARD_OBJECTS_MODE, CLIENT_OBJECTS_MODE, ADVANCED_MODE
-    };
-
     protected GeneratorTabPanel view;
-    protected Map<String, GeneratorController> controllers;
     protected PreferenceDetail preferences;
+    private final StandardModeController standardModeController;
+    private final ClientModeController clientModeController;
+    private final CustomModeController customModeController;
 
     public GeneratorTabController(CodeGeneratorController parent) {
         super(parent);
-        this.controllers = new HashMap<>(3);
-        controllers.put(STANDARD_OBJECTS_MODE, new StandardModeController(parent));
-        controllers.put(CLIENT_OBJECTS_MODE, new ClientModeController(parent));
-        controllers.put(ADVANCED_MODE, new CustomModeController(parent));
-        Component[] modePanels = new Component[GENERATION_MODES.length];
-        for (int i = 0; i < GENERATION_MODES.length; i++) {
-            modePanels[i] = controllers.get(GENERATION_MODES[i]).getView();
-        }
-        this.view = new GeneratorTabPanel(GENERATION_MODES, modePanels);
+        this.standardModeController = new StandardModeController(parent);
+        this.clientModeController = new ClientModeController(parent);
+        this.customModeController = new CustomModeController(parent);
+        this.view = new GeneratorTabPanel(standardModeController.view, clientModeController.view, customModeController.view);
         initBindings();
-        view.setPreferredSize(new Dimension(550, 480));
     }
 
     public GeneratorTabPanel getView() {
@@ -75,38 +58,30 @@ public class GeneratorTabController extends CayenneController {
     }
 
     protected void initBindings() {
-        view.getGenerationMode().addActionListener(action -> {
-            String name = (String)view.getGenerationMode().getSelectedItem();
-            GeneratorController modeController = getGeneratorController();
-            CgenConfiguration cgenConfiguration = getParentController().getCgenConfiguration();
-            modeController.updateConfiguration(cgenConfiguration);
-            controllers.get(name).initForm(cgenConfiguration);
-            getParentController().getPrevGeneratorController().put(cgenConfiguration.getDataMap(), modeController);
-        });
+        view.getStandardModeRButton().addActionListener(e -> configureController(standardModeController));
+        view.getClientModeRButton().addActionListener(e -> configureController(clientModeController));
+        view.getCustomTemplateModeRButton().addActionListener(e -> configureController(customModeController));
     }
 
-    public void setSelectedController(GeneratorController generatorController) {
-        for(String key : controllers.keySet()) {
-            if(generatorController.equals(controllers.get(key))) {
-                getView().getGenerationMode().setSelectedItem(key);
-            }
-        }
+    void configureController(GeneratorController<? extends StandardModePanel> controller) {
+        CgenConfiguration cgenConfiguration = getParentController().getCgenConfiguration();
+        controller.updateConfiguration(cgenConfiguration);
+        controller.initForm(cgenConfiguration);
+        getParentController().getPrevGeneratorController().put(cgenConfiguration.getDataMap(), controller);
     }
 
-    GeneratorController getGeneratorController() {
-        String name = (String)view.getGenerationMode().getSelectedItem();
-        return controllers.get(name);
+
+    GeneratorController<StandardModePanel> getStandardController() {
+        return standardModeController;
     }
 
-    GeneratorController getStandartController() {
-        return controllers.get(STANDARD_OBJECTS_MODE);
+    GeneratorController<StandardModePanel> getClientModeController() {
+        return clientModeController;
     }
 
-    GeneratorController getCustomModeController() {
-        return controllers.get(ADVANCED_MODE);
+    GeneratorController<CustomModePanel> getCustomModeController() {
+        return customModeController;
     }
 
-    GeneratorController getClientGeneratorController() {
-        return controllers.get(CLIENT_OBJECTS_MODE);
-    }
+
 }

@@ -195,15 +195,19 @@ public class CodeTemplateManager {
 		return value != null ? value.toString() : null;
 	}
 
-	public String getNameByPath(String name, Path rootPath) {
-		String fullPath = rootPath.resolve(Paths.get(name)).normalize().toString();
-		if(reverseCustomTemplate.containsKey(fullPath)){
-			return reverseCustomTemplate.get(fullPath);
-		} else {
-			Object value = reverseStandartTemplates.get(name);
-			return value != null ? value.toString() : null;
-		}
-	}
+    public String getNameByPath(String name, Path rootPath) {
+
+       String path = (rootPath==null) ?
+               Paths.get(name).normalize().toString():
+               rootPath.resolve(Paths.get(name)).normalize().toString();
+
+        if (reverseCustomTemplate.containsKey(path)) {
+            return reverseCustomTemplate.get(path);
+        } else {
+            Object value = reverseStandartTemplates.get(name);
+            return value != null ? value.toString() : null;
+        }
+    }
 
 	public Map<String, String> getCustomTemplates() {
 		return customTemplates;
@@ -225,9 +229,9 @@ public class CodeTemplateManager {
 		return standardClientSuperclassTemplates;
 	}
 
-	public List<String> getStandartEmbeddableTemplates() {
-		return standardEmbeddableTemplates;
-	}
+    public List<String> getStandartEmbeddableTemplates() {
+        return standardEmbeddableTemplates;
+    }
 
 	public List<String> getStandartEmbeddableSuperclassTemplates() {
 		return standardEmbeddableSuperclassTemplates;

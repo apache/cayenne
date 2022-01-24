@@ -19,13 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.DefaultComboBoxModel;
-
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClientClassGenerationAction;
@@ -34,36 +27,44 @@ import org.apache.cayenne.modeler.dialog.cgen.TemplateDialog;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.swing.BindingBuilder;
 
+import javax.swing.DefaultComboBoxModel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
+
 /**
  * @since 4.1
  * A controller for the custom generation mode.
  */
-public class CustomModeController extends GeneratorController {
-
-    protected CustomModePanel view;
+public class CustomModeController extends GeneratorController<CustomModePanel> {
 
     public CustomModeController(CodeGeneratorController parent) {
         super(parent);
         bind();
-        initListeners();
+        initClientModeListener();
     }
 
     @Override
-    protected void createView() {
-        this.view = new CustomModePanel(getApplication().getFrameController().getProjectController(), getParentController());
+    protected CustomModePanel createView() {
+        return new CustomModePanel(getParentController());
     }
 
+
+    @Override
     public CustomModePanel getView() {
         return view;
     }
 
     private void bind() {
         BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-        builder.bindToAction(view.getManageTemplatesLink(), "popPreferencesAction()");
+        builder.bindToAction(view.getTemplateManagerButton(), "popPreferencesAction()");
 
     }
 
-    protected void updateTemplates() {
+    private void updateTemplates() {
         boolean isClient = cgenConfiguration.isClient();
         CodeTemplateManager templateManager = getApplication().getCodeTemplateManager();
 
@@ -110,14 +111,14 @@ public class CustomModeController extends GeneratorController {
         this.view.getEmbeddableSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(embeddableSuperTemplates.toArray(new String[0])));
     }
 
-    public void missTemplateDialog(CgenConfiguration cgenConfiguration, String template, String superTemplate) {
-        new TemplateDialog(this, cgenConfiguration, template, superTemplate).startupAction();
-        updateComboBoxes();
-    }
-
     public void popPreferencesAction() {
         new PreferenceDialog(getApplication().getFrameController()).startupAction(PreferenceDialog.TEMPLATES_KEY);
         updateTemplates();
+        updateComboBoxes();
+    }
+
+    private void missTemplateDialog(CgenConfiguration cgenConfiguration, String template, String superTemplate) {
+        new TemplateDialog(this, cgenConfiguration, template, superTemplate).startupAction();
         updateComboBoxes();
     }
 
@@ -126,35 +127,45 @@ public class CustomModeController extends GeneratorController {
         updateTemplates();
     }
 
+    private String getTemplateName(Supplier<String> supplier, Path path) {
+        return getApplication().getCodeTemplateManager().getNameByPath(
+                supplier.get(), path);
+    }
+
+    private String getPath(Supplier<String> supplier, Path rootPath) {
+        if (rootPath != null) {
+            return rootPath.resolve(Paths.get(supplier.get())).normalize().toString();
+        } else {
+            return (Paths.get(supplier.get()).normalize().toString());
+        }
+    }
+
+
     private void updateComboBoxes() {
-        String templateName = getApplication().getCodeTemplateManager().getNameByPath(
-                cgenConfiguration.getTemplate(), cgenConfiguration.getRootPath());
-        String superTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-                cgenConfiguration.getSuperTemplate(), cgenConfiguration.getRootPath());
-        String embeddableTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-        		cgenConfiguration.getEmbeddableTemplate(), cgenConfiguration.getRootPath());
-        String embeddableSuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-        		cgenConfiguration.getEmbeddableSuperTemplate(), cgenConfiguration.getRootPath());
-        String queryTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-        		cgenConfiguration.getQueryTemplate(), cgenConfiguration.getRootPath());
-        String querySuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-        		cgenConfiguration.getQuerySuperTemplate(), cgenConfiguration.getRootPath());
+        Path rootPath = cgenConfiguration.getRootPath();
 
-        String path = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getTemplate())).normalize().toString();
-        String superPath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getSuperTemplate())).normalize().toString();
-        String embeddableTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getEmbeddableTemplate())).normalize().toString();
-        String embeddableSuperTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getEmbeddableSuperTemplate())).normalize().toString();
-        String queryTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getQueryTemplate())).normalize().toString();
-        String querySuperTemplatePath = cgenConfiguration.getRootPath().resolve(Paths.get(cgenConfiguration.getQuerySuperTemplate())).normalize().toString();
+        String templateName = getTemplateName(cgenConfiguration::getTemplate, rootPath);
+        String superTemplateName = getTemplateName(cgenConfiguration::getSuperTemplate, rootPath);
+        String embeddableTemplateName = getTemplateName(cgenConfiguration::getEmbeddableTemplate, rootPath);
+        String embeddableSuperTemplateName = getTemplateName(cgenConfiguration::getEmbeddableSuperTemplate, rootPath);
+        String queryTemplateName = getTemplateName(cgenConfiguration::getQueryTemplate, rootPath);
+        String querySuperTemplateName = getTemplateName(cgenConfiguration::getQuerySuperTemplate, rootPath);
 
-        if(templateName == null && superTemplateName == null) {
+        String path = getPath(cgenConfiguration::getTemplate, rootPath);
+        String superPath = getPath(cgenConfiguration::getSuperTemplate, rootPath);
+        String embeddableTemplatePath = getPath(cgenConfiguration::getEmbeddableTemplate, rootPath);
+        String embeddableSuperTemplatePath = getPath(cgenConfiguration::getEmbeddableSuperTemplate, rootPath);
+        String queryTemplatePath = getPath(cgenConfiguration::getQueryTemplate, rootPath);
+        String querySuperTemplatePath = getPath(cgenConfiguration::getQuerySuperTemplate, rootPath);
+
+        if (templateName == null && superTemplateName == null) {
             view.getSubclassTemplate().setItem(null);
             view.getSuperclassTemplate().setItem(null);
             missTemplateDialog(cgenConfiguration, path, superPath);
-        } else if(templateName == null) {
+        } else if (templateName == null) {
             view.getSubclassTemplate().setItem(null);
             missTemplateDialog(cgenConfiguration, path, null);
-        } else if(superTemplateName == null) {
+        } else if (superTemplateName == null) {
             view.getSuperclassTemplate().setItem(null);
             missTemplateDialog(cgenConfiguration, null, superPath);
         } else {
@@ -185,46 +196,12 @@ public class CustomModeController extends GeneratorController {
         view.setDisableSuperComboBoxes(view.getPairs().isSelected());
     }
 
-    private void initListeners(){
-        view.getPairs().addActionListener(val -> {
-            cgenConfiguration.setMakePairs(view.getPairs().isSelected());
-            if(!view.getPairs().isSelected()) {
-                cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
-                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
-                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
-            } else {
-                cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
-                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
-                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
-            }
-            initForm(cgenConfiguration);
-            getParentController().checkCgenConfigDirty();
-        });
 
-        view.getOverwrite().addActionListener(val -> {
-            cgenConfiguration.setOverwrite(view.getOverwrite().isSelected());
-            getParentController().checkCgenConfigDirty();
-        });
-
-        view.getCreatePropertyNames().addActionListener(val -> {
-            cgenConfiguration.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
-            getParentController().checkCgenConfigDirty();
-        });
-
-        view.getUsePackagePath().addActionListener(val -> {
-            cgenConfiguration.setUsePkgPath(view.getUsePackagePath().isSelected());
-            getParentController().checkCgenConfigDirty();
-        });
-
-        view.getPkProperties().addActionListener(val -> {
-            cgenConfiguration.setCreatePKProperties(view.getPkProperties().isSelected());
-            getParentController().checkCgenConfigDirty();
-        });
-
+    private void initClientModeListener() {
         view.getClientMode().addActionListener(val -> {
             boolean isSelected = view.getClientMode().isSelected();
             cgenConfiguration.setClient(isSelected);
-            if(isSelected) {
+            if (isSelected) {
                 cgenConfiguration.setTemplate(ClientClassGenerationAction.SUBCLASS_TEMPLATE);
                 cgenConfiguration.setSuperTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
                 cgenConfiguration.setQueryTemplate(ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE);
@@ -264,17 +241,12 @@ public class CustomModeController extends GeneratorController {
         });
     }
 
-    public void initForm(CgenConfiguration cgenConfiguration){
+    @Override
+    public void initForm(CgenConfiguration cgenConfiguration) {
         super.initForm(cgenConfiguration);
         view.getClientMode().setSelected(cgenConfiguration.isClient());
         updateTemplates();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
-        view.getPairs().setSelected(cgenConfiguration.isMakePairs());
-        view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
-        view.getOverwrite().setSelected(cgenConfiguration.isOverwrite());
-        view.getCreatePropertyNames().setSelected(cgenConfiguration.isCreatePropertyNames());
-        view.getPkProperties().setSelected(cgenConfiguration.isCreatePKProperties());
-        view.getSuperPkg().setText(cgenConfiguration.getSuperPkg());
         updateComboBoxes();
     }
 

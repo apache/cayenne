@@ -17,34 +17,26 @@
  *  under the License.
  ****************************************************************/
 
+
 package org.apache.cayenne.modeler.editor.cgen;
 
-import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.gen.ClassGenerationAction;
-
 /**
- * @since 4.1
+ * @since 4.2
  */
-public class StandardModeController extends GeneratorController <StandardModePanel>{
+public enum GenerationModes {
 
-    public StandardModeController(CodeGeneratorController parent) {
-        super(parent);
+    STANDARD_MODE("STANDARD_MODE"),
+    CLIENT_MODE("CLIENT_MODE"),
+    CUSTOM_MODE("CUSTOM_MODE");
+
+    private final String mode;
+
+    GenerationModes(String mode) {
+        this.mode = mode;
     }
 
-    @Override
-    public StandardModePanel getView() {
-        return view;
-    }
-
-    @Override
-    protected StandardModePanel createView() {
-        return  new StandardModePanel(getParentController());
-    }
-
-    @Override
-    public void updateConfiguration(CgenConfiguration cgenConfiguration) {
-        cgenConfiguration.setClient(false);
-        cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
-        cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+    public String getMode() {
+        return mode;
     }
 }
+

@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.editor.cgen;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -34,18 +33,25 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 /**
  * @since 4.1
  */
-public class CodeGeneratorPane extends JPanel {
+public class CodeGeneratorPanel extends JPanel {
 
     private JButton generateButton;
-    private JCheckBox checkAll;
-    private JLabel checkAllLabel;
+    private final JCheckBox checkAll;
+    private final JLabel checkAllLabel;
 
-    public CodeGeneratorPane(Component generatorPanel, Component entitySelectorPanel) {
+    public CodeGeneratorPanel(Component generatorPanel, Component entitySelectorPanel) {
         super();
+        this.checkAll = new JCheckBox();
+        this.checkAllLabel = new JLabel("Check All Classes");
+        buildView(generatorPanel, entitySelectorPanel);
+    }
+
+    private void buildView(Component generatorPanel, Component entitySelectorPanel) {
         this.setLayout(new BorderLayout());
 
         JPanel toolBarPanel = new JPanel();
@@ -54,21 +60,14 @@ public class CodeGeneratorPane extends JPanel {
         FormLayout layout = new FormLayout(
                 "fill:110", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        this.generateButton = new JButton("Generate");
-        generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
-        generateButton.setEnabled(false);
+
+        createGenerateButton();
         builder.append(generateButton);
         toolBarPanel.add(builder.getPanel(), BorderLayout.EAST);
 
-        this.checkAll = new JCheckBox();
-        this.checkAllLabel = new JLabel("Check All Classes");
-        checkAll.addItemListener(event -> {
-            if (checkAll.isSelected()) {
-                checkAllLabel.setText("Uncheck All Classess");
-            } else {
-                checkAllLabel.setText("Check All Classes");
-            }
-        });
+        checkAll.addItemListener(event -> checkAllLabel.setText(checkAll.isSelected() ?
+                "Uncheck All Classes" :
+                "Check All Classes"));
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         topPanel.add(checkAll);
         topPanel.add(checkAllLabel);
@@ -88,6 +87,12 @@ public class CodeGeneratorPane extends JPanel {
         splitPane.setLeftComponent(entitySelectorPanel);
 
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void createGenerateButton() {
+        this.generateButton = new JButton("Generate");
+        this.generateButton.setFont(generateButton.getFont().deriveFont(Font.BOLD,14f));
+
     }
 
     public JButton getGenerateButton() {

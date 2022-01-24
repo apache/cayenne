@@ -40,9 +40,9 @@ class SelectionModel {
     private Set<String> selectedEmbeddables;
     private Set<String> selectedDataMaps;
 
-    private Map<DataMap, Set<String>> selectedEntitiesForDataMap;
-    private Map<DataMap, Set<String>> selectedEmbeddablesForDataMap;
-    private Map<DataMap, Set<String>> selectedDataMapsForDataMap;
+    private final Map<DataMap, Set<String>> selectedEntitiesForDataMap;
+    private final Map<DataMap, Set<String>> selectedEmbeddablesForDataMap;
+    private final Map<DataMap, Set<String>> selectedDataMapsForDataMap;
 
     SelectionModel() {
         selectedEntitiesForDataMap = new HashMap<>();

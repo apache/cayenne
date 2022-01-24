@@ -25,19 +25,20 @@ import org.apache.cayenne.gen.ClientClassGenerationAction;
 /**
  * @since 4.1
  */
-public class ClientModeController extends StandardModeController {
+public class ClientModeController extends GeneratorController<StandardModePanel> {
 
     public ClientModeController(CodeGeneratorController parent) {
         super(parent);
     }
 
-    protected void createView() {
-        this.view = new StandardModePanel(getParentController());
-    }
-
     @Override
     public StandardModePanel getView() {
         return view;
+    }
+
+    @Override
+    protected StandardModePanel createView() {
+        return  new StandardModePanel(getParentController());
     }
 
     @Override

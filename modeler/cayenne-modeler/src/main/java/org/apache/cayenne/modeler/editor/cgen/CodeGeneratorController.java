@@ -36,9 +36,6 @@ import java.util.stream.Collectors;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
@@ -71,10 +68,10 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     protected final ProjectController projectController;
     protected final List<Object> classes;
     protected final SelectionModel selectionModel;
-    protected final CodeGeneratorPane view;
+    protected final CodeGeneratorPanel view;
     protected final ClassesTabController classesSelector;
     protected final GeneratorTabController generatorSelector;
-    protected final ConcurrentMap<DataMap, GeneratorController> prevGeneratorController;
+    protected final ConcurrentMap<DataMap, GeneratorController<? extends StandardModePanel>> prevGeneratorController;
 
     private Object currentClass;
     private CgenConfiguration cgenConfiguration;
@@ -84,7 +81,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         super(projectController);
         this.classesSelector = new ClassesTabController(this);
         this.generatorSelector = new GeneratorTabController(this);
-        this.view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
+        this.view = new CodeGeneratorPanel(generatorSelector.getView(), classesSelector.getView());
         this.prevGeneratorController = new ConcurrentHashMap<>();
         this.projectController = projectController;
         this.classes = new ArrayList<>();
@@ -100,19 +97,18 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         prepareClasses(dataMap);
         createConfiguration(dataMap);
 
-        GeneratorController modeController = prevGeneratorController.get(dataMap);
+        GeneratorController<? extends StandardModePanel> modeController = prevGeneratorController.get(dataMap);
         if (modeController == null) {
             if (cgenConfiguration.isDefault()) {
                 modeController = cgenConfiguration.isClient()
-                        ? generatorSelector.getClientGeneratorController()
-                        : generatorSelector.getStandartController();
+                        ? generatorSelector.getClientModeController()
+                        : generatorSelector.getStandardController();
             } else {
                 modeController = generatorSelector.getCustomModeController();
             }
         }
-
+        generatorSelector.configureController(modeController);
         prevGeneratorController.put(dataMap, modeController);
-        generatorSelector.setSelectedController(modeController);
         classesSelector.startup();
         initFromModel = false;
         classesSelector.validate(classes);
@@ -125,7 +121,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     @Override
-    public CodeGeneratorPane getView() {
+    public CodeGeneratorPanel getView() {
         return view;
     }
 
@@ -135,12 +131,11 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         builder.bindToAction(view.getGenerateButton(), "generateAction()");
         builder.bindToAction(generatorSelector, "generatorSelectedAction()",
                 GeneratorTabController.GENERATOR_PROPERTY);
-
         generatorSelectedAction();
     }
 
+
     public void generatorSelectedAction() {
-        GeneratorController controller = generatorSelector.getGeneratorController();
         classesSelector.validate(classes);
 
         Predicate<Object> defaultPredicate = object -> {
@@ -153,12 +148,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
             }
             return false;
         };
-
-        Predicate<Object> predicate = controller != null
-                ? defaultPredicate
-                : o -> false;
-
-        updateSelection(predicate);
+        updateSelection(defaultPredicate);
         classesSelector.classSelectedAction();
     }
 
@@ -186,7 +176,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         }
     }
 
-    public ConcurrentMap<DataMap, GeneratorController> getPrevGeneratorController() {
+    public ConcurrentMap<DataMap, GeneratorController<? extends StandardModePanel>> getPrevGeneratorController() {
         return prevGeneratorController;
     }
 
@@ -378,7 +368,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     @Override
-    public void objEntityChanged(EntityEvent e) {
+    public void objEntityChanged(EntityEvent e) {//noop
     }
 
     @Override
@@ -396,7 +386,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     @Override
-    public void embeddableChanged(EmbeddableEvent e, DataMap map) {
+    public void embeddableChanged(EmbeddableEvent e, DataMap map) {//noop
     }
 
     @Override
@@ -434,11 +424,11 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     @Override
-    public void dataMapAdded(DataMapEvent e) {
+    public void dataMapAdded(DataMapEvent e) {//noop
     }
 
     @Override
-    public void dataMapRemoved(DataMapEvent e) {
+    public void dataMapRemoved(DataMapEvent e) {//noop
     }
 
     public CgenConfiguration getCgenConfiguration() {

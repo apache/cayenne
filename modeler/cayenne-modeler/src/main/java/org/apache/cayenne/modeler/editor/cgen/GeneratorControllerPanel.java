@@ -27,7 +27,6 @@ import org.apache.cayenne.validation.ValidationException;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**

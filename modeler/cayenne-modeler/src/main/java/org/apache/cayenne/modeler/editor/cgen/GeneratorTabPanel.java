@@ -22,50 +22,94 @@ package org.apache.cayenne.modeler.editor.cgen;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
 
-import javax.swing.JComboBox;
+import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Component;
-import java.util.Objects;
+import java.awt.Dimension;
+import java.awt.event.ItemEvent;
 
 /**
  * @since 4.1
  */
 public class GeneratorTabPanel extends JPanel {
 
-    private JComboBox<String> generationMode;
-    private CardLayout modeLayout;
-    private JPanel modesPanel;
+    private static final String LAYOUT_COLUMN_SPECS = "p, 2dlu, p, 2dlu, p, 2dlu, p";
+    private final JRadioButton standardModeRButton;
+    private final JRadioButton clientModeRButton;
+    private final JRadioButton customTemplateModeRButton;
+    private final CardLayout modeLayout;
+    private final JPanel modesPanel;
 
-    public GeneratorTabPanel(String[] modeNames, Component[] modePanels) {
-        setLayout(new BorderLayout());
-        JPanel panel = new JPanel();
-        this.generationMode = new JComboBox<>(modeNames);
+
+    public GeneratorTabPanel( StandardModePanel standardModePanel, StandardModePanel clientModePanel, CustomModePanel customModePanel) {
+
+        this.standardModeRButton = new JRadioButton("Standard Persistent Objects", true);
+        this.clientModeRButton = new JRadioButton("Client Persistent Objects");
+        this.customTemplateModeRButton = new JRadioButton("Custom template mode");
         this.modeLayout = new CardLayout();
         this.modesPanel = new JPanel(modeLayout);
 
-        generationMode.addItemListener(e -> modeLayout.show(modesPanel, Objects.requireNonNull(generationMode.getSelectedItem()).toString()));
+        initiateRadioButtons();
+        buildView(standardModePanel,clientModePanel,customModePanel);
+        this.setPreferredSize(new Dimension(550, 480));
+    }
 
-        // assemble
-        FormLayout layout = new FormLayout("right:77dlu, 3dlu, fill:240, fill:300dlu:grow", "");
+    private void buildView(StandardModePanel standardModePanel, StandardModePanel clientModePanel, CustomModePanel customModePanel) {
+        FormLayout layout = new FormLayout(LAYOUT_COLUMN_SPECS, "p");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
-        builder.append("Type:", generationMode, 1);
-        builder.appendSeparator();
+        builder.append(standardModeRButton);
+        builder.append(clientModeRButton);
+        builder.append(customTemplateModeRButton);
 
-        for (int i = 0; i < modeNames.length; i++) {
-            modesPanel.add(modePanels[i], modeNames[i]);
-        }
+        modesPanel.add(standardModePanel, GenerationModes.STANDARD_MODE.getMode());
+        modesPanel.add(clientModePanel, GenerationModes.CLIENT_MODE.getMode());
+        modesPanel.add(customModePanel, GenerationModes.CUSTOM_MODE.getMode());
 
+        JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(builder.getPanel(), BorderLayout.NORTH);
         panel.add(modesPanel, BorderLayout.CENTER);
-
+        setLayout(new BorderLayout());
         add(panel, BorderLayout.CENTER);
     }
 
-    public JComboBox getGenerationMode() {
-        return generationMode;
+    private void initiateRadioButtons() {
+        ButtonGroup radioButtonGroup = new ButtonGroup();
+        radioButtonGroup.add(standardModeRButton);
+        radioButtonGroup.add(clientModeRButton);
+        radioButtonGroup.add(customTemplateModeRButton);
+
+        standardModeRButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                modeLayout.show(modesPanel, GenerationModes.STANDARD_MODE.getMode());
+            }
+        });
+
+        clientModeRButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                modeLayout.show(modesPanel, GenerationModes.CLIENT_MODE.getMode());
+            }
+        });
+
+        customTemplateModeRButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                modeLayout.show(modesPanel, GenerationModes.CUSTOM_MODE.getMode());
+            }
+        });
+    }
+
+    public JRadioButton getStandardModeRButton() {
+        return standardModeRButton;
+    }
+
+    public JRadioButton getClientModeRButton() {
+        return clientModeRButton;
+    }
+
+    public JRadioButton getCustomTemplateModeRButton() {
+        return customTemplateModeRButton;
     }
 }

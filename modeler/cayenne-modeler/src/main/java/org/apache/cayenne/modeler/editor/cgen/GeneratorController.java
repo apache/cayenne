@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
@@ -35,27 +36,32 @@ import java.io.File;
  * @since 4.1
  * A mode-specific part of the code generation dialog.
  */
-public abstract class GeneratorController extends CayenneController {
+public abstract class GeneratorController <T extends StandardModePanel> extends CayenneController {
 
     protected CgenConfiguration cgenConfiguration;
+    protected T view;
 
-    public GeneratorController(CodeGeneratorController parent) {
+    protected GeneratorController(CodeGeneratorController parent) {
         super(parent);
-
-        createView();
+        initializeView();
         initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
-    }
-
-    protected void initBindings(BindingBuilder bindingBuilder) {
-        JButton outputSelect = getView().getSelectOutputFolder();
-        bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
+        initListeners();
     }
 
     protected CodeGeneratorController getParentController() {
         return (CodeGeneratorController) getParent();
     }
 
-    protected abstract void createView();
+    protected void initializeView() {
+        this.view = createView();
+    }
+
+    protected abstract T createView() ;
+
+    protected void initBindings(BindingBuilder bindingBuilder) {
+        JButton outputSelect = getView().getSelectOutputFolder();
+        bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
+    }
 
     @Override
     public abstract GeneratorControllerPanel getView();
@@ -70,6 +76,12 @@ public abstract class GeneratorController extends CayenneController {
             getParentController().setCurrentClass(cgenConfiguration.getDataMap());
             getParentController().setSelected(true);
         }
+        view.getPairs().setSelected(cgenConfiguration.isMakePairs());
+        view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
+        view.getOverwrite().setSelected(cgenConfiguration.isOverwrite());
+        view.getCreatePropertyNames().setSelected(cgenConfiguration.isCreatePropertyNames());
+        view.getPkProperties().setSelected(cgenConfiguration.isCreatePKProperties());
+        view.getSuperPkg().setText(cgenConfiguration.getSuperPkg());
     }
 
     public abstract void updateConfiguration(CgenConfiguration cgenConfiguration);
@@ -105,4 +117,43 @@ public abstract class GeneratorController extends CayenneController {
             getView().getOutputFolder().updateModel();
         }
     }
+
+    protected void initListeners() {
+        this.view.getPairs().addActionListener(val -> {
+            cgenConfiguration.setMakePairs(view.getPairs().isSelected());
+            if (!view.getPairs().isSelected()) {
+                cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+            } else {
+                cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
+                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+            }
+            initForm(cgenConfiguration);
+            getParentController().checkCgenConfigDirty();
+        });
+
+        view.getOverwrite().addActionListener(val -> {
+            cgenConfiguration.setOverwrite(view.getOverwrite().isSelected());
+            getParentController().checkCgenConfigDirty();
+        });
+
+        view.getCreatePropertyNames().addActionListener(val -> {
+            cgenConfiguration.setCreatePropertyNames(view.getCreatePropertyNames().isSelected());
+            getParentController().checkCgenConfigDirty();
+        });
+
+        view.getUsePackagePath().addActionListener(val -> {
+            cgenConfiguration.setUsePkgPath(view.getUsePackagePath().isSelected());
+            getParentController().checkCgenConfigDirty();
+        });
+
+        view.getPkProperties().addActionListener(val -> {
+            cgenConfiguration.setCreatePKProperties(view.getPkProperties().isSelected());
+            GeneratorController.this.getParentController().checkCgenConfigDirty();
+        });
+
+    }
+
 }
