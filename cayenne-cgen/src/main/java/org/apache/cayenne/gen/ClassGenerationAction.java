@@ -39,6 +39,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.ToolManager;
@@ -64,6 +65,7 @@ public class ClassGenerationAction {
 
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
+	private static final String CGEN_ROOT_PATH = "cayenne.cgen.rootpath";
 
 	/**
 	 * @since 4.1
@@ -134,23 +136,20 @@ public class ClassGenerationAction {
 	public String customTemplateName(TemplateType type) {
 		switch (type) {
 			case ENTITY_SINGLE_CLASS:
-				return cgenConfiguration.getTemplate();
 			case ENTITY_SUBCLASS:
 				return cgenConfiguration.getTemplate();
 			case ENTITY_SUPERCLASS:
 				return cgenConfiguration.getSuperTemplate();
 			case EMBEDDABLE_SINGLE_CLASS:
-				return cgenConfiguration.getEmbeddableTemplate();
 			case EMBEDDABLE_SUBCLASS:
 				return cgenConfiguration.getEmbeddableTemplate();
 			case EMBEDDABLE_SUPERCLASS:
 				return cgenConfiguration.getEmbeddableSuperTemplate();
 			case DATAMAP_SINGLE_CLASS:
+			case DATAMAP_SUBCLASS:
 				return cgenConfiguration.getQueryTemplate();
 			case DATAMAP_SUPERCLASS:
 				return cgenConfiguration.getQuerySuperTemplate();
-			case DATAMAP_SUBCLASS:
-				return cgenConfiguration.getQueryTemplate();
 			default:
 				throw new IllegalArgumentException("Invalid template type: " + type);
 		}
@@ -317,6 +316,7 @@ public class ClassGenerationAction {
 			props.put("resource.loader.cayenne.cache", "false");
 			if (cgenConfiguration.getRootPath() != null) {
 				props.put("resource.loader.cayenne.path", cgenConfiguration.getRootPath().toString());
+				Velocity.setProperty(CGEN_ROOT_PATH, cgenConfiguration.getRootPath().toString());
 			}
 
 			VelocityEngine velocityEngine = new VelocityEngine();
