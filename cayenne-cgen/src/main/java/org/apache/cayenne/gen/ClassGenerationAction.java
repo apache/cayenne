@@ -295,7 +295,7 @@ public class ClassGenerationAction {
 		}
 	}
 
-	private Template getTemplate(TemplateType type) {
+	 Template getTemplate(TemplateType type) {
 
 		String templateName = customTemplateName(type);
 		if (templateName == null) {
