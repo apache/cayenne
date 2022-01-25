@@ -29,9 +29,9 @@ import java.io.Reader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
+import org.apache.velocity.util.ExtProperties;
 
 /**
  * Velocity template resource loader customized for Cayenne use. Supports loading
@@ -43,11 +43,24 @@ import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
 // instantiated via reflection by Velocity
 public class ClassGeneratorResourceLoader extends FileResourceLoader {
 
-    private static final String CGEN_ROOT_PATH = "cayenne.cgen.rootpath";
+    private Path root;
+
+    @Override
+    public void init(ExtProperties configuration) {
+        String rootPathStr = configuration.getString("root");
+        if(rootPathStr != null) {
+            root = Paths.get(rootPathStr);
+        }
+    }
 
     /**
-     * Returns resource as InputStream. First calls super implementation. If resource
-     * wasn't found, it attempts to load it from current directory or as an absolute path.
+     * Returns resource as InputStream. Searches resource in a following places:
+     * <ol>
+     *     <li>thread class loader</li>
+     *     <li>this class's class loader</li>
+     *     <li>tries a path relative to a <i>root</i> path, if set</li>
+     *     <li>an absolute path</li>
+     * </ol>
      */
     @Override
     public synchronized Reader getResourceReader(String name, String charset)
@@ -80,11 +93,8 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
     }
 
     protected Reader loadFromRelativePath(String name) {
-        String rootPath = (String) Velocity.getProperty(CGEN_ROOT_PATH);
-        Path datamapPath;
-        if (rootPath != null) {
-            datamapPath = Paths.get(rootPath);
-            Path absolutePath = datamapPath.resolve(name).normalize();
+        if (root != null) {
+            Path absolutePath = root.resolve(name).normalize();
             return loadFromAbsPath(absolutePath.toString());
         }
         return null;
