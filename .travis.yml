@@ -38,7 +38,6 @@ env:
 jdk:
   - openjdk8
   - openjdk11
-  - openjdk-ea
 
 script:
   - travis_wait 25 mvn verify -fae -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
@@ -47,10 +46,20 @@ jobs:
   allow_failures:
     - jdk: openjdk-ea
   include:
+    - jdk: openjdk-ea
+      env: DB_PROFILE=postgres-tc
     - stage: deploy
       script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
       jdk: openjdk8
       if: type = push AND branch = master AND repo = apache/cayenne
+
+  exclude:
+    - jdk: openjdk11
+      env: DB_PROFILE=hsql
+    - jdk: openjdk11
+      env: DB_PROFILE=h2
+    - jdk: openjdk11
+      env: DB_PROFILE=derby
 
 # prevent Travis from unneeded "mvn install" run
 install: true
