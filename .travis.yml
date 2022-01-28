@@ -41,6 +41,7 @@ jdk:
 script:
   - travis_wait 25 mvn verify -fae -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
+
 jobs:
   allow_failures:
     - jdk: openjdk-ea
