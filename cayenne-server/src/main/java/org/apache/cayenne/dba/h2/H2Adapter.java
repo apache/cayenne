@@ -21,6 +21,7 @@ package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -64,6 +65,19 @@ public class H2Adapter extends JdbcAdapter {
         if (column.isGenerated()) {
             sqlBuffer.append(" AUTO_INCREMENT");
         }
+    }
+
+    /**
+     * Installs appropriate ExtendedTypes as converters for passing values
+     * between JDBC and Java layers.
+     * @since 4.1.2
+     */
+    @Override
+    protected void configureExtendedTypes(ExtendedTypeMap map) {
+        super.configureExtendedTypes(map);
+
+        // create specially configured CharType handler
+        map.registerType(new H2CharType());
     }
 
     @Override
