@@ -94,9 +94,9 @@ public abstract class MergeCase extends DbSyncCase {
         // container
         // on every test
         map = runtime.getDataDomain().getDataMap("testmap");
-//        map.setQuotingSQLIdentifiers(true);
+        map.setQuotingSQLIdentifiers(true);
         //to prevent postgresql from creating pk_table
-//        setPrimaryKeyGeneratorDBGenerateForMap(map);
+        setPrimaryKeyGeneratorDBGenerateForMap(map);
         filterDataMap();
 
         List<MergerToken> tokens = createMergeTokens();
@@ -104,7 +104,7 @@ public abstract class MergeCase extends DbSyncCase {
         execute(tokens);
 
         assertTokensAndExecute(0, 0);
-//        map.setQuotingSQLIdentifiers(false);
+        map.setQuotingSQLIdentifiers(false);
     }
 
     protected DataMapMerger.Builder merger() {
