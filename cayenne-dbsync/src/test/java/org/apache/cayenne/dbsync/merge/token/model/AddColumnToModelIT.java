@@ -34,6 +34,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class AddColumnToModelIT extends MergeCase {
@@ -101,7 +102,10 @@ public class AddColumnToModelIT extends MergeCase {
 
     @Test
     public void testAddColumnCaseSensitiveNaming() throws Exception {
+        // Mariadb don't support the same attributes name in different cases.
+        Assume.assumeTrue(accessStackAdapter.supportsCaseSensitiveLike());
         map.setQuotingSQLIdentifiers(true);
+        List<MergerToken> syncTokens = syncDBForCaseSensitiveTest();
         dropTableIfPresent("NEW_TABLE");
         assertTokensAndExecute(0, 0);
 
@@ -121,10 +125,13 @@ public class AddColumnToModelIT extends MergeCase {
         column3.setMaxLength(10);
         column3.setMandatory(false);
         dbEntity.addAttribute(column3);
+
+        //to prevent postgresql from creating pk_table
+        setPrimaryKeyGeneratorDBGenerate(dbEntity);
         map.addDbEntity(dbEntity);
 
-        assertTokensAndExecute(1, 0);
-        assertTokensAndExecute(0, 0);
+        assertTokensAndExecute(1, 0, true);
+        assertTokensAndExecute(0, 0, true);
 
         ObjEntity objEntity = new ObjEntity("NewTable");
         objEntity.setDbEntity(dbEntity);
@@ -165,8 +172,10 @@ public class AddColumnToModelIT extends MergeCase {
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
 
-        assertTokensAndExecute(1, 0);
-        assertTokensAndExecute(0, 0);
+        assertTokensAndExecute(1, 0, true);
+        assertTokensAndExecute(0, 0, true);
+
+        reverseSyncDBForCaseSensitiveTest(syncTokens);
         map.setQuotingSQLIdentifiers(false);
     }
 

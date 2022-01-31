@@ -37,6 +37,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class DropRelationshipToModelIT extends MergeCase {
@@ -192,7 +193,9 @@ public class DropRelationshipToModelIT extends MergeCase {
 
 	@Test
 	public void testForeignKeyCaseSensitiveNaming() throws Exception {
+		Assume.assumeTrue(accessStackAdapter.supportsCaseSensitiveLike());
 		map.setQuotingSQLIdentifiers(true);
+		List<MergerToken> syncTokens = syncDBForCaseSensitiveTest();
 		dropTableIfPresent("NEW_TABLE");
 		dropTableIfPresent("NEW_TABLE2");
 		dropTableIfPresent("NEW_table");
@@ -211,6 +214,8 @@ public class DropRelationshipToModelIT extends MergeCase {
 		e1col2.setMandatory(false);
 		dbEntity1.addAttribute(e1col2);
 
+		//to prevent postgresql from creating pk_table
+		setPrimaryKeyGeneratorDBGenerate(dbEntity1);
 		map.addDbEntity(dbEntity1);
 
 		DbEntity dbEntity2 = new DbEntity("NEW_TABLE2");
@@ -224,8 +229,9 @@ public class DropRelationshipToModelIT extends MergeCase {
 		e2col3.setMaxLength(10);
 		dbEntity2.addAttribute(e2col3);
 
+		//to prevent postgresql from creating pk_table
+		setPrimaryKeyGeneratorDBGenerate(dbEntity2);
 		map.addDbEntity(dbEntity2);
-
 
 		DbEntity dbEntity3 = new DbEntity("NEW_table");
 
@@ -239,6 +245,8 @@ public class DropRelationshipToModelIT extends MergeCase {
 		e3col2.setMandatory(false);
 		dbEntity3.addAttribute(e3col2);
 
+		//to prevent postgresql from creating pk_table
+		setPrimaryKeyGeneratorDBGenerate(dbEntity3);
 		map.addDbEntity(dbEntity3);
 
 		// create db relationships
@@ -344,8 +352,7 @@ public class DropRelationshipToModelIT extends MergeCase {
 		List<MergerToken> tokens = createMergeTokens(true);
 
 		/**
-		 * Drop Relationship NEW_TABLE2->NEW_TABLE To DB
-		 * Drop Column NEW_TABLE2.FK To DB
+		 * Drop Relationship NEW_TABLE2->NEW_table To DB
 		 * */
 		assertTokens(tokens, 1, 0);
 		for (MergerToken token : tokens) {
@@ -358,11 +365,9 @@ public class DropRelationshipToModelIT extends MergeCase {
 		dbEntity2.addRelationship(rel2To3);
 		dbEntity3.addRelationship(rel3To2);
 
-		// try do use the merger to remove the relationship in the model
+		// try do use the merger to remove the relationship NEW_TABLE2->NEW_table To DB in the model
 		tokens = createMergeTokens(true);
 		assertTokens(tokens, 1, 0);
-		// TODO: reversing the following two tokens should also reverse the
-		// order
 		MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
 		if (!(token0 instanceof DropRelationshipToModel)) {
 			fail();
@@ -411,6 +416,7 @@ public class DropRelationshipToModelIT extends MergeCase {
 		dropTableIfPresent("NEW_TABLE2");
 
 		assertTokensAndExecute(0, 0, true);
+		reverseSyncDBForCaseSensitiveTest(syncTokens);
 		map.setQuotingSQLIdentifiers(false);
 	}
 }

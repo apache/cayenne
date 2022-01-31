@@ -42,6 +42,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -93,16 +94,17 @@ public abstract class MergeCase extends DbSyncCase {
         // container
         // on every test
         map = runtime.getDataDomain().getDataMap("testmap");
-        map.setQuotingSQLIdentifiers(true);
-
+//        map.setQuotingSQLIdentifiers(true);
+        //to prevent postgresql from creating pk_table
+//        setPrimaryKeyGeneratorDBGenerateForMap(map);
         filterDataMap();
 
-        List<MergerToken> tokens = createMergeTokens(true);
+        List<MergerToken> tokens = createMergeTokens();
 
         execute(tokens);
 
-        assertTokensAndExecute(0, 0, true);
-        map.setQuotingSQLIdentifiers(false);
+        assertTokensAndExecute(0, 0);
+//        map.setQuotingSQLIdentifiers(false);
     }
 
     protected DataMapMerger.Builder merger() {
@@ -123,7 +125,6 @@ public abstract class MergeCase extends DbSyncCase {
     }
 
     private List<MergerToken> createMergeTokens(String tableFilterInclude, boolean useCaseSensitiveNaming) {
-
         FiltersConfig filters = FiltersConfig.create(null, null,
                 TableFilter.include(tableFilterInclude, useCaseSensitiveNaming), PatternFilter.INCLUDE_NOTHING);
 
@@ -289,9 +290,8 @@ public abstract class MergeCase extends DbSyncCase {
         // must have a dummy datamap for the dummy table for the downstream code
         // to work
         DataMap map = new DataMap("dummy");
-        map.setQuotingSQLIdentifiers(true);
+        map.setQuotingSQLIdentifiers(this.map.isQuotingSQLIdentifiers());
 
-        map.setQuotingSQLIdentifiers(map.isQuotingSQLIdentifiers());
         DbEntity entity = new DbEntity(tableName);
         map.addDbEntity(entity);
 
@@ -305,6 +305,37 @@ public abstract class MergeCase extends DbSyncCase {
                 logger.info("Exception dropping table " + tableName + ", probably abscent..");
             }
         }
-        map.setQuotingSQLIdentifiers(false);
+    }
+
+    //Methode sets the DBGenerate for the PrimaryKeyGenerator. pk_table are created with same name in postgres for tables with different case name
+    protected void setPrimaryKeyGeneratorDBGenerate(DbEntity dbEntity) {
+        dbEntity.setPrimaryKeyGenerator(new DbKeyGenerator());
+    }
+
+    private void setPrimaryKeyGeneratorDBGenerateForMap(DataMap dataMap) {
+        for (DbEntity dbEntity : dataMap.getDbEntities()) {
+            if ("ARTIST|GALLERY|PAINTING|NEW_table|NEW_TABLE2?".contains(dbEntity.getName())) {
+                //to prevent postgresql from creating pk_table
+                setPrimaryKeyGeneratorDBGenerate(dbEntity);
+            }
+        }
+    }
+
+    protected List<MergerToken> syncDBForCaseSensitiveTest() {
+        boolean isQuotingSQLIdentifiers = map.isQuotingSQLIdentifiers();
+        map.setQuotingSQLIdentifiers(true);
+        setPrimaryKeyGeneratorDBGenerateForMap(map);
+        filterDataMap();
+        List<MergerToken> tokens = createMergeTokens(true);
+        execute(tokens);
+        assertTokensAndExecute(0, 0, true);
+        map.setQuotingSQLIdentifiers(isQuotingSQLIdentifiers);
+        return tokens;
+    }
+
+    protected void reverseSyncDBForCaseSensitiveTest(List<MergerToken> tokens) throws Exception {
+        for (MergerToken token: tokens) {
+            execute(token.createReverse(mergerFactory()));
+        }
     }
 }

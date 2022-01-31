@@ -20,10 +20,13 @@
 package org.apache.cayenne.dbsync.merge.token.db;
 
 import java.sql.Types;
+import java.util.List;
 
 import org.apache.cayenne.dbsync.merge.MergeCase;
+import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class SetPrimaryKeyToDbIT extends MergeCase {
@@ -60,7 +63,10 @@ public class SetPrimaryKeyToDbIT extends MergeCase {
 
 	@Test
 	public void testCaseSensitiveNaming() throws Exception {
+		// Mariadb don't support the same attributes name in different cases.
+		Assume.assumeTrue(accessStackAdapter.supportsCaseSensitiveLike());
 		map.setQuotingSQLIdentifiers(true);
+		List<MergerToken> tokens = syncDBForCaseSensitiveTest();
 		dropTableIfPresent("NEW_TABLE");
 		assertTokensAndExecute(0, 0, true);
 
@@ -70,6 +76,9 @@ public class SetPrimaryKeyToDbIT extends MergeCase {
 		e1col1.setMandatory(true);
 		e1col1.setPrimaryKey(true);
 		dbEntity1.addAttribute(e1col1);
+
+		//to prevent postgresql from creating pk_table
+		setPrimaryKeyGeneratorDBGenerate(dbEntity1);
 		map.addDbEntity(dbEntity1);
 
 		assertTokensAndExecute(1, 0, true);
@@ -93,6 +102,7 @@ public class SetPrimaryKeyToDbIT extends MergeCase {
 		dropTableIfPresent("NEW_TABLE");
 
 		assertTokensAndExecute(0, 0, true);
+		reverseSyncDBForCaseSensitiveTest(tokens);
 		map.setQuotingSQLIdentifiers(false);
 	}
 }

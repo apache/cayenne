@@ -49,7 +49,6 @@ public class DbEntityMergerIT extends MergeCase {
 
     @Test
     public void testCreateTokensForMissingImported() throws Exception {
-        map.setQuotingSQLIdentifiers(true);
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");
         assertTokensAndExecute(0, 0);
@@ -67,6 +66,9 @@ public class DbEntityMergerIT extends MergeCase {
         column2.setPrimaryKey(false);
         dbEntity1.addAttribute(column2);
 
+        //to prevent postgresql from creating pk_table
+        setPrimaryKeyGeneratorDBGenerate(dbEntity1);
+        map.addDbEntity(dbEntity1);
 
         DbEntity dbEntity2 = new DbEntity("NEW_TABLE2");
 
@@ -75,11 +77,15 @@ public class DbEntityMergerIT extends MergeCase {
         column3.setPrimaryKey(false);
         dbEntity2.addAttribute(column3);
 
-        DbAttribute column4 = new DbAttribute("NUMBER", Types.INTEGER, dbEntity2);
-        column3.setMandatory(false);
-        column3.setPrimaryKey(false);
+        DbAttribute column4 = new DbAttribute("NUMBER_ID", Types.INTEGER, dbEntity2);
+        column4.setMandatory(false);
+        column4.setPrimaryKey(false);
         column4.setMaxLength(10);
         dbEntity2.addAttribute(column4);
+
+        //to prevent postgresql from creating pk_table
+        setPrimaryKeyGeneratorDBGenerate(dbEntity2);
+        map.addDbEntity(dbEntity2);
 
         // create db relationships
         DbRelationship rel1To2 = new DbRelationship("rel1To2");
@@ -97,8 +103,6 @@ public class DbEntityMergerIT extends MergeCase {
         dbEntity2.addRelationship(rel2To1);
 
         // for the new entity to the db
-        map.addDbEntity(dbEntity1);
-        map.addDbEntity(dbEntity2);
         execute(mergerFactory().createCreateTableToDb(dbEntity1));
         execute(mergerFactory().createCreateTableToDb(dbEntity2));
         execute(mergerFactory().createDropRelationshipToModel(dbEntity1, rel1To2).createReverse(mergerFactory()));
@@ -121,12 +125,15 @@ public class DbEntityMergerIT extends MergeCase {
         ObjEntity objEntity1 = null;
         ObjEntity objEntity2 = null;
         for (ObjEntity candidate : map.getObjEntities()) {
-            if (dbEntity1.getName().equals(candidate.getDbEntityName())) {
+            if (dbEntity1.getName().equalsIgnoreCase(candidate.getDbEntityName())) {
                 objEntity1 = candidate;
                 continue;
             }
-            if (dbEntity2.getName().equals(candidate.getDbEntityName())) {
+            if (dbEntity2.getName().equalsIgnoreCase(candidate.getDbEntityName())) {
                 objEntity2 = candidate;
+            }
+            if(objEntity1 != null && objEntity2 != null) {
+                break;
             }
         }
 
@@ -141,16 +148,15 @@ public class DbEntityMergerIT extends MergeCase {
         ObjRelationship objRelationship1 = iterator1.next();
         assertTrue(objRelationship1.isToMany());
 
+        dropTableIfPresent(objEntity2.getDbEntity().getName());
+        dropTableIfPresent(objEntity1.getDbEntity().getName());
         //clear entity
-        map.removeDbEntity(dbEntity1.getName());
-        map.removeDbEntity(dbEntity2.getName());
+        map.removeDbEntity(objEntity1.getDbEntity().getName());
+        map.removeDbEntity(objEntity2.getDbEntity().getName());
         map.removeObjEntity(objEntity1.getName(), true);
         map.removeObjEntity(objEntity2.getName(), true);
-        dropTableIfPresent("NEW_TABLE2");
-        dropTableIfPresent("NEW_TABLE");
 
-        assertTokensAndExecute(0, 0, true);
+        assertTokensAndExecute(0, 0);
 
-        map.setQuotingSQLIdentifiers(false);
     }
 }

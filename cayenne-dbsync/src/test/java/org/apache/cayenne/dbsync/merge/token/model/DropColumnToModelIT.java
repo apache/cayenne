@@ -126,7 +126,7 @@ public class DropColumnToModelIT extends MergeCase {
 		e2col1.setMandatory(true);
 		e2col1.setPrimaryKey(true);
 		dbEntity2.addAttribute(e2col1);
-		DbAttribute e2col2 = new DbAttribute("FK", Types.INTEGER, dbEntity2);
+		DbAttribute e2col2 = new DbAttribute("FK_ID", Types.INTEGER, dbEntity2);
 		dbEntity2.addAttribute(e2col2);
 		DbAttribute e2col3 = new DbAttribute("NAME", Types.VARCHAR, dbEntity2);
 		e2col3.setMaxLength(10);

@@ -36,6 +36,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class CreateTableToModelIT extends MergeCase {
@@ -103,7 +104,9 @@ public class CreateTableToModelIT extends MergeCase {
 
 	@Test
 	public void testAddTableCaseSensitive() throws Exception {
+		Assume.assumeTrue(accessStackAdapter.supportsCaseSensitiveLike());
 		map.setQuotingSQLIdentifiers(true);
+		List<MergerToken> syncTokens = syncDBForCaseSensitiveTest();
 		dropTableIfPresent("NEW_TABLE");
 		dropTableIfPresent("NEW_table");
 		assertTokensAndExecute(0, 0);
@@ -128,13 +131,17 @@ public class CreateTableToModelIT extends MergeCase {
 		column3.setPrimaryKey(true);
 		dbEntity1.addAttribute(column3);
 
-		DbAttribute column4 = new DbAttribute("NUMBER", Types.INTEGER, dbEntity1);
+		DbAttribute column4 = new DbAttribute("NUMBER_ID", Types.INTEGER, dbEntity1);
 		column4.setMaxLength(10);
 		column4.setMandatory(false);
 		dbEntity1.addAttribute(column4);
 
-		// for the new entity to the db
+		//to prevent postgresql from creating pk_table
+		setPrimaryKeyGeneratorDBGenerate(dbEntity);
 		map.addDbEntity(dbEntity);
+
+		//to prevent postgresql from creating pk_table
+		setPrimaryKeyGeneratorDBGenerate(dbEntity1);
 		map.addDbEntity(dbEntity1);
 		execute(mergerFactory().createCreateTableToDb(dbEntity));
 		execute(mergerFactory().createCreateTableToDb(dbEntity1));
@@ -165,10 +172,10 @@ public class CreateTableToModelIT extends MergeCase {
 		assertEquals(objEntity1.getClientSuperClassName(), map.getDefaultClientSuperclass());
 
 		assertEquals(1, objEntity1.getAttributes().size());
-		assertEquals("java.lang.Integer", objEntity1.getAttributes().iterator().next().getType());
+		assertTrue("java.lang.Integer".equals(objEntity1.getAttributes().iterator().next().getType()) ||
+				"java.math.BigDecimal".equals(objEntity1.getAttributes().iterator().next().getType()));
 
 		// clear up
-		// fix psql case issue
 		map.removeDbEntity(objEntity1.getDbEntity().getName(), true);
 		map.removeObjEntity(objEntity1.getName(), true);
 		map.removeDbEntity(dbEntity1.getName(), true);
@@ -193,18 +200,20 @@ public class CreateTableToModelIT extends MergeCase {
 
 		assertTokensAndExecute(2, 0, true);
 		assertTokensAndExecute(0, 0, true);
+		reverseSyncDBForCaseSensitiveTest(syncTokens);
 		map.setQuotingSQLIdentifiers(false);
 	}
 
 	@Test
-	public void testAddTableWithRelationship() throws Exception {
+	public void testAddTableCaseSensitiveWithRelationship() throws Exception {
+		Assume.assumeTrue(accessStackAdapter.supportsCaseSensitiveLike());
 		map.setQuotingSQLIdentifiers(true);
+		List<MergerToken> syncTokens = syncDBForCaseSensitiveTest();
 		dropTableIfPresent("NEW_TABLE");
 		dropTableIfPresent("NEW_table");
 		assertTokensAndExecute(0, 0);
 
 		DbEntity dbEntity1 = new DbEntity("NEW_TABLE");
-
 		DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity1);
 		column1.setMandatory(true);
 		column1.setPrimaryKey(true);
@@ -214,6 +223,9 @@ public class CreateTableToModelIT extends MergeCase {
 		column2.setMaxLength(10);
 		column2.setMandatory(false);
 		dbEntity1.addAttribute(column2);
+
+		setPrimaryKeyGeneratorDBGenerate(dbEntity1);
+		map.addDbEntity(dbEntity1);
 
 		DbEntity dbEntity2 = new DbEntity("NEW_table");
 
@@ -226,6 +238,9 @@ public class CreateTableToModelIT extends MergeCase {
 		column4.setMaxLength(10);
 		column4.setMandatory(false);
 		dbEntity2.addAttribute(column4);
+
+		setPrimaryKeyGeneratorDBGenerate(dbEntity2);
+		map.addDbEntity(dbEntity2);
 
 		// create db relationships
 		DbRelationship rel1To2 = new DbRelationship("rel1To2");
@@ -243,8 +258,6 @@ public class CreateTableToModelIT extends MergeCase {
 		dbEntity2.addRelationship(rel2To1);
 
 		// for the new entity to the db
-		map.addDbEntity(dbEntity1);
-		map.addDbEntity(dbEntity2);
 		execute(mergerFactory().createCreateTableToDb(dbEntity1));
 		execute(mergerFactory().createCreateTableToDb(dbEntity2));
 		map.removeDbEntity(dbEntity1.getName());
@@ -285,6 +298,7 @@ public class CreateTableToModelIT extends MergeCase {
 		dropTableIfPresent("NEW_TABLE");
 
 		assertTokensAndExecute(0, 0, true);
+		reverseSyncDBForCaseSensitiveTest(syncTokens);
 		map.setQuotingSQLIdentifiers(false);
 	}
 }
