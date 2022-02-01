@@ -251,7 +251,12 @@ public class MergerOptions extends CayenneController {
      * Performs configured schema operations via DbGenerator.
      */
     public void generateSchemaAction() {
-        refreshGeneratorAction();
+        try {
+            refreshGeneratorAction();
+        } catch (CayenneRuntimeException ex) {
+            reportError("SQL query creating Error", ex);
+            return;
+        }
 
         // sanity check...
         List<MergerToken> tokensToMigrate = tokens.getSelectedTokens();

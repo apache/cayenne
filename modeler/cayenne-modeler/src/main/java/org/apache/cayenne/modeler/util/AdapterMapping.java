@@ -88,7 +88,7 @@ public class AdapterMapping {
         adapterToJDBCURLMap.put(OpenBaseAdapter.class.getName(), "jdbc:openbase://localhost/database");
         adapterToJDBCURLMap.put(SQLServerAdapter.class.getName(),
                 "jdbc:sqlserver://localhost:1433;databaseName=database;SelectMethod=cursor");
-        adapterToJDBCURLMap.put(SQLiteAdapter.class.getName(), "jdbc:sqlite:testdb");
+        adapterToJDBCURLMap.put(SQLiteAdapter.class.getName(), "jdbc:sqlite:testdb?limit_compound_select=0");
         adapterToJDBCURLMap.put(FirebirdAdapter.class.getName(), "jdbc:firebirdsql:localhost/3050:database.fdb");
 
         // TODO: embedded Derby Mode... change to client-server once we figure

@@ -155,7 +155,7 @@ public class CreateTableToModelIT extends MergeCase {
 				reverseTokens.add(token.createReverse(mergerFactory()));
 			}
 		}
-		execute(filterEmpty(reverseTokens));
+		execute(filterNotValid(reverseTokens));
 
 		ObjEntity objEntity1 = null;
 		for (ObjEntity candidate : map.getObjEntities()) {
@@ -270,7 +270,7 @@ public class CreateTableToModelIT extends MergeCase {
 				reverseTokens.add(token.createReverse(mergerFactory()));
 			}
 		}
-		execute(filterEmpty(reverseTokens));
+		execute(filterNotValid(reverseTokens));
 
 		ObjEntity objEntity1 = null;
 		ObjEntity objEntity2 = null;

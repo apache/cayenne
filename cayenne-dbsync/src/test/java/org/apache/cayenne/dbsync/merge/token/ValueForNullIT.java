@@ -38,6 +38,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -53,6 +54,7 @@ public class ValueForNullIT extends MergeCase {
 
     @Test
     public void test() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
         ObjEntity objEntity = map.getObjEntity("Painting");

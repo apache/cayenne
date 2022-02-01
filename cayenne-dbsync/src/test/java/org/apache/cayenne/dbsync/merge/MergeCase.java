@@ -28,7 +28,14 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetValueForNullToDb;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
@@ -117,7 +124,7 @@ public abstract class MergeCase extends DbSyncCase {
     }
 
     protected List<MergerToken> createMergeTokens(boolean useCaseSensitiveNaming) {
-        return filterEmpty(createMergeTokensWithoutEmptyFilter(useCaseSensitiveNaming));
+        return filterNotValid(createMergeTokensWithoutEmptyFilter(useCaseSensitiveNaming));
     }
 
     protected List<MergerToken> createMergeTokensWithoutEmptyFilter(boolean useCaseSensitiveNaming) {
@@ -190,14 +197,32 @@ public abstract class MergeCase extends DbSyncCase {
         return type == Types.DATE || type == Types.TIME || type == Types.TIMESTAMP;
     }
 
-    protected List<MergerToken> filterEmpty(List<MergerToken> tokens) {
+    protected List<MergerToken> filterNotValid(List<MergerToken> tokens) {
         List<MergerToken> tokensOut = new ArrayList<>();
         for(MergerToken token : tokens) {
-            if(!token.isEmpty()) {
+            if(validateToken(token)) {
                 tokensOut.add(token);
             }
         }
         return tokensOut;
+    }
+    
+    private boolean validateToken(MergerToken token) {
+        if (token.isEmpty()) {
+            return false;
+        }
+        if (!accessStackAdapter.supportsFKConstraints()
+                && (token instanceof AddRelationshipToDb
+                    || token instanceof DropRelationshipToDb)) {
+            return false;
+        }
+        return accessStackAdapter.supportsColumnTypeReengineering()
+                || !(token instanceof SetColumnTypeToDb
+                    || token instanceof SetNotNullToDb
+                    || token instanceof SetAllowNullToDb
+                    || token instanceof SetGeneratedFlagToDb
+                    || token instanceof SetPrimaryKeyToDb
+                    || token instanceof SetValueForNullToDb);
     }
 
     /**
@@ -276,7 +301,7 @@ public abstract class MergeCase extends DbSyncCase {
 
     protected void assertTokensAndExecute(int expectedToDb, int expectedToModel, boolean useCaseSensitiveNaming) {
         List<MergerToken> tokens = createMergeTokens(useCaseSensitiveNaming);
-        tokens = filterEmpty(tokens);
+        tokens = filterNotValid(tokens);
         assertTokens(tokens, expectedToDb, expectedToModel);
         execute(tokens);
     }

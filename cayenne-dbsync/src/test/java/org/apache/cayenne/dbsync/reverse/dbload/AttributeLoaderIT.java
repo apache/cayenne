@@ -25,6 +25,7 @@ import java.sql.Types;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -36,6 +37,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
 
     @Test
     public void testAttributeLoad() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
         createDbEntities();
 
         AttributeLoader loader = new AttributeLoader(adapter, EMPTY_CONFIG, new DefaultDbLoaderDelegate());
@@ -79,6 +81,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
 
     @Test
     public void testAttributeLoadTypes() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
         DatabaseMetaData metaData = connection.getMetaData();
         DbLoaderDelegate delegate = new DefaultDbLoaderDelegate();
 

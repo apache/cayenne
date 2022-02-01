@@ -29,6 +29,7 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -49,6 +50,7 @@ public class DbEntityMergerIT extends MergeCase {
 
     @Test
     public void testCreateTokensForMissingImported() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsFKConstraints());
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");
         assertTokensAndExecute(0, 0);

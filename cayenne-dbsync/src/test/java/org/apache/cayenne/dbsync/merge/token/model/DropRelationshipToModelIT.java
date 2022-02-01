@@ -44,6 +44,7 @@ public class DropRelationshipToModelIT extends MergeCase {
 
 	@Test
 	public void testForeignKey() throws Exception {
+		Assume.assumeTrue(accessStackAdapter.supportsFKConstraints());
 		dropTableIfPresent("NEW_TABLE");
 		dropTableIfPresent("NEW_TABLE2");
 

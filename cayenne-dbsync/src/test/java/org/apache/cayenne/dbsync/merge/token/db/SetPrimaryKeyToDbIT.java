@@ -33,6 +33,7 @@ public class SetPrimaryKeyToDbIT extends MergeCase {
 
 	@Test
 	public void test() throws Exception {
+		Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
 		dropTableIfPresent("NEW_TABLE");
 		assertTokensAndExecute(0, 0);
 

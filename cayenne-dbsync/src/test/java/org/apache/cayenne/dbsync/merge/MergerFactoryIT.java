@@ -67,6 +67,7 @@ public class MergerFactoryIT extends MergeCase {
 
     @Test
     public void testChangeVarcharSizeToDb() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
 
@@ -119,6 +120,10 @@ public class MergerFactoryIT extends MergeCase {
         column1.setMaxLength(20);
         column2.setMaxLength(30);
 
+        if (!accessStackAdapter.supportsColumnTypeReengineering()) {
+            assertTokensAndExecute(0, 0);
+            return;
+        }
         // merge to db
         assertTokensAndExecute(2, 0);
 
@@ -184,6 +189,7 @@ public class MergerFactoryIT extends MergeCase {
 
     @Test
     public void testAddForeignKeyWithTable() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsFKConstraints());
         dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);
@@ -243,6 +249,7 @@ r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated an
 
     @Test
     public void testAddForeignKeyAfterTable() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsFKConstraints());
         dropTableIfPresent("NEW_TABLE");
 
         assertTokensAndExecute(0, 0);

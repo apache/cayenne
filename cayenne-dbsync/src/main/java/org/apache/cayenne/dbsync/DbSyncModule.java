@@ -30,6 +30,7 @@ import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
+import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
@@ -46,6 +47,7 @@ import org.apache.cayenne.dbsync.merge.factory.OpenBaseMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.OracleMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.PostgresMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.SQLServerMergerTokenFactory;
+import org.apache.cayenne.dbsync.merge.factory.SQLiteMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.SybaseMergerTokenFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
@@ -84,7 +86,8 @@ public class DbSyncModule implements Module {
                 .put(Oracle8Adapter.class.getName(), OracleMergerTokenFactory.class)
                 .put(PostgresAdapter.class.getName(), PostgresMergerTokenFactory.class)
                 .put(SQLServerAdapter.class.getName(), SQLServerMergerTokenFactory.class)
-                .put(SybaseAdapter.class.getName(), SybaseMergerTokenFactory.class);
+                .put(SybaseAdapter.class.getName(), SybaseMergerTokenFactory.class)
+                .put(SQLiteAdapter.class.getName(), SQLiteMergerTokenFactory.class);
 
         binder.bind(MergerTokenFactoryProvider.class).to(MergerTokenFactoryProvider.class);
 

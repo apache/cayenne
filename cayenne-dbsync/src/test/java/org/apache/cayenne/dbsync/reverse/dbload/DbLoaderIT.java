@@ -34,6 +34,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,6 +73,7 @@ public class DbLoaderIT extends ServerCase {
      */
     @Test
     public void testSimpleLoad() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsFKConstraints());
         DbLoader loader = createDbLoader(true, true);
         DataMap loaded = loader.load();
         assertNotNull(loaded);
