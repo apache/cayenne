@@ -20,8 +20,6 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import java.awt.Component;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,6 +45,7 @@ public class TemplateCreator extends CayenneController {
     protected Set<String> existingNames;
     protected CayennePreferenceEditor editor;
     protected Preferences preferences;
+    private static final String ERROR = "Error";
 
     public TemplateCreator(TemplatePreferences parent) {
         super(parent);
@@ -98,12 +97,9 @@ public class TemplateCreator extends CayenneController {
         view.getTemplateChooser().setCurrentDirectory(path.getExistingDirectory(false));
         view.getTemplateChooser().addPropertyChangeListener(
                 FileChooser.CURRENT_DIRECTORY_PROPERTY,
-                new PropertyChangeListener() {
-
-                    public void propertyChange(PropertyChangeEvent evt) {
-                        File directory = view.getTemplateChooser().getCurrentDirectory();
-                        path.setDirectory(directory);
-                    }
+                evt -> {
+                    File directory = view.getTemplateChooser().getCurrentDirectory();
+                    path.setDirectory(directory);
                 });
     }
 
@@ -114,22 +110,21 @@ public class TemplateCreator extends CayenneController {
             JOptionPane.showMessageDialog(
                     view,
                     "Enter Template Name",
-                    "Error",
+                    ERROR,
                     JOptionPane.WARNING_MESSAGE);
         } else if (existingNames.contains(templateName)) {
             JOptionPane.showMessageDialog(
                     view,
                     "'" + templateName + "' is already taken, enter a different name",
-                    "Error",
+                    ERROR,
                     JOptionPane.WARNING_MESSAGE);
         } else if (view.getTemplateChooser().getFile() == null) {
             JOptionPane.showMessageDialog(
                     view,
                     "Must select an existing template file",
-                    "Error",
+                    ERROR,
                     JOptionPane.WARNING_MESSAGE);
-        }
-        else {
+        } else {
             canceled = false;
             view.dispose();
         }
@@ -161,15 +156,11 @@ public class TemplateCreator extends CayenneController {
         if (canceled) {
             return null;
         }
-
-        String key = view.getTemplateName().getText();
+        String name = view.getTemplateName().getText();
         File file = view.getTemplateChooser().getFile();
-        Preferences newNode = preferences.node(key);
-        FSPath path = (FSPath) application
-                .getCayenneProjectPreferences()
-                .getProjectDetailObject(FSPath.class, newNode);
-        editor.getAddedNode().add(newNode);
-        path.setPath(file != null ? file.getAbsolutePath() : null);
-        return path;
+        String path = file != null ? file.getAbsolutePath() : null;
+        FSPath fsPath = application.getCodeTemplateManager().addTemplate(path, name);
+        editor.getAddedNode().add(fsPath.getCurrentPreference());
+        return fsPath;
     }
 }
