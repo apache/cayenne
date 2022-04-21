@@ -177,7 +177,7 @@ final class FlattenedArcKey {
 			// since the name of the column can potentially be quoted and
 			// use reserved keywords as name, let's specify generated column
 			// name parameters to ensure the query doesn't explode
-			sql.append("' '").append(TypesMapping.getJavaBySqlType(attribute.getType()));
+			sql.append("' '").append(TypesMapping.getJavaBySqlType(attribute));
 			sql.append("' '").append("pk").append(i);
 			sql.append("')");
 		}

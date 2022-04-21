@@ -68,6 +68,7 @@ public class ColumnDescriptor {
      * @since 3.1
      */
     public ColumnDescriptor(String columnName, int jdbcType) {
+        // TODO: check this
         this(columnName, jdbcType, TypesMapping.getJavaBySqlType(jdbcType));
     }
 
@@ -91,6 +92,7 @@ public class ColumnDescriptor {
 
         this.attribute = attribute;
         this.namePrefix = tableAlias;
+        this.javaClass = TypesMapping.getJavaBySqlType(attribute);
 
         if (attribute.getEntity() != null) {
             this.tableName = attribute.getEntity().getName();

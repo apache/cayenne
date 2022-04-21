@@ -283,7 +283,7 @@ public class BatchAction extends BaseSQLAction {
 				// use column name from result set, but type and Java class from DB attribute
 				columns[0] = new ColumnDescriptor(keysRS.getMetaData(), 1);
 				columns[0].setJdbcType(key.getType());
-				columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key.getType()));
+				columns[0].setJavaClass(TypesMapping.getJavaBySqlType(key));
 				builder.setColumns(columns);
 			} else {
 				builder.setResultSet(keysRS);

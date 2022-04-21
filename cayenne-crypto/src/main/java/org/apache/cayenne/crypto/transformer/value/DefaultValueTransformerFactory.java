@@ -164,7 +164,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         }
 
         if (javaTypes.size() != 1) {
-            String javaType = TypesMapping.getJavaBySqlType(a.getType());
+            String javaType = TypesMapping.getJavaBySqlType(a);
             String attributeName = dbEntity.getName() + "." + a.getName();
             String msg = javaTypes.size() > 1 ? "ObjAttributes with different java types" : "No ObjAttributes";
             // Warn user about this problem as there is nothing else we can do

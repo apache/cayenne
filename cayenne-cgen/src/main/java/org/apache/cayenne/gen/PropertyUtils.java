@@ -21,7 +21,6 @@ package org.apache.cayenne.gen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseIdProperty;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.DateProperty;
@@ -118,7 +116,7 @@ public class PropertyUtils {
 
         for(DbAttribute attribute : entity.getPrimaryKeys()) {
             if(!entityUtils.declaresDbAttribute(attribute)) {
-                String javaBySqlType = TypesMapping.getJavaBySqlType(attribute.getType());
+                String javaBySqlType = TypesMapping.getJavaBySqlType(attribute);
                 importUtils.addType(javaBySqlType);
                 importUtils.addType(getPkPropertyTypeForType(javaBySqlType));
                 needToCreatePK = true;
@@ -174,8 +172,8 @@ public class PropertyUtils {
     public String propertyDefinition(ObjEntity entity, DbAttribute attribute) throws ClassNotFoundException {
         StringUtils utils = StringUtils.getInstance();
 
-        String attributeType = TypesMapping.getJavaBySqlType(attribute.getType());
-        String propertyType = getPkPropertyTypeForType(TypesMapping.getJavaBySqlType(attribute.getType()));
+        String attributeType = TypesMapping.getJavaBySqlType(attribute);
+        String propertyType = getPkPropertyTypeForType(TypesMapping.getJavaBySqlType(attribute));
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
         attributeType = importUtils.formatJavaType(attributeType, false);
 

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.Util;
 
 import java.io.Serializable;
@@ -324,7 +325,7 @@ public class TypesMapping {
 	 */
 	public static String[] getDatabaseTypes() {
 		Collection<String> types = SQL_STRING_TYPE.keySet();
-		return types.toArray(new String[types.size()]);
+		return types.toArray(new String[0]);
 	}
 
 	/**
@@ -461,9 +462,9 @@ public class TypesMapping {
 				name = aClass.getName();
 			}
 
-			Object type = JAVA_SQL_ENUM.get(name);
+			Number type = JAVA_SQL_ENUM.get(name);
 			if (type != null) {
-				return ((Number) type).intValue();
+				return type.intValue();
 			}
 
 			aClass = aClass.getSuperclass();
@@ -510,6 +511,10 @@ public class TypesMapping {
 		return SQL_ENUM_JAVA.get(type);
 	}
 
+	public static String getJavaBySqlType(DbAttribute attribute) {
+		return SQL_ENUM_JAVA.get(attribute.getType());
+	}
+
 	Map<Integer, List<TypeInfo>> databaseTypes = new HashMap<>();
 
 	public TypesMapping(DatabaseMetaData metaData) throws SQLException {
@@ -523,12 +528,7 @@ public class TypesMapping {
 				info.precision = rs.getLong("PRECISION");
 
 				Integer key = info.jdbcType;
-				List<TypeInfo> infos = databaseTypes.get(key);
-
-				if (infos == null) {
-					infos = new ArrayList<>();
-					databaseTypes.put(key, infos);
-				}
+				List<TypeInfo> infos = databaseTypes.computeIfAbsent(key, k -> new ArrayList<>());
 
 				infos.add(info);
 			}
