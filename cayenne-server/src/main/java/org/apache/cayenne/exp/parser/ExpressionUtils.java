@@ -26,27 +26,30 @@ import java.util.Map;
  * @since 4.2
  */
 class ExpressionUtils {
-
-    static void parsePath(ASTPath pathExp, Object path) throws ParseException {
-        if (path != null && path.toString().contains("#")) {
-            String[] pathSegments = path.toString().split("\\.");
-            Map<String, String> aliasMap = new HashMap<>();
-            for (int i = 0; i < pathSegments.length; i++) {
-                if (pathSegments[i].contains("#")) {
-                    String[] splitedSegment = pathSegments[i].split("#");
-                    splitedSegment[0] += splitedSegment[1].endsWith("+") ? "+" : "";
-                    splitedSegment[1] = splitedSegment[1].endsWith("+") ? splitedSegment[1].substring(0, splitedSegment[1].length() - 1) : splitedSegment[1];
-                    if (aliasMap.putIfAbsent(splitedSegment[1], splitedSegment[0]) != null && !aliasMap.get(splitedSegment[1]).equals(splitedSegment[0])) {
-                        throw new ParseException("Can't add the same alias to different path segments.");
-                    }
-                    pathSegments[i] = splitedSegment[1];
-                }
-            }
-            pathExp.setPath(String.join(".", pathSegments));
-            pathExp.setPathAliases(aliasMap);
-        } else {
+    static void parsePath(ASTPath pathExp, String path) throws ParseException {
+        if(path == null || !path.contains("#")) {
             pathExp.setPath(path);
+            return;
         }
+
+        String[] pathSegments = path.split("\\.");
+        Map<String, String> aliasMap = new HashMap<>();
+        for (int i = 0; i < pathSegments.length; i++) {
+            if (pathSegments[i].contains("#")) {
+                String[] splitSegment = pathSegments[i].split("#");
+                if(splitSegment[1].endsWith("+")) {
+                    splitSegment[0] += '+';
+                    splitSegment[1] = splitSegment[1].substring(0, splitSegment[1].length() - 1);
+                }
+                String previousAlias = aliasMap.putIfAbsent(splitSegment[1], splitSegment[0]);
+                if (previousAlias != null && !previousAlias.equals(splitSegment[0])) {
+                    throw new ParseException("Can't add the same alias to different path segments.");
+                }
+                pathSegments[i] = splitSegment[1];
+            }
+        }
+        pathExp.setPath(String.join(".", pathSegments));
+        pathExp.setPathAliases(aliasMap);
     }
 
 }
