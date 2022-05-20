@@ -440,7 +440,7 @@ void dateTimeExtractingFunction() #Extract(1) : {
 
 void distinct() #Distinct : { }
 {
-	<DISTINCT> "(" ( pathExpression() ) ")"
+	<DISTINCT> "(" pathExpression() ")"
 }
 
 TOKEN_MGR_DECLS:
@@ -606,21 +606,64 @@ void pathExpression() : {
    Token t;
 }
 {
-   (
              t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #ObjPath(0)
    |
-     "obj:"  t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #ObjPath(0)
+     "obj:"  t = pathToken() { ExpressionUtils.parsePath(jjtThis, t.image); } #ObjPath(0)
    |
-     "db:"   t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #DbPath(0)
+     "db:"   t = pathToken() { ExpressionUtils.parsePath(jjtThis, t.image); } #DbPath(0)
    |
-     "enum:" t = <PROPERTY_PATH> { jjtThis.setEnumValue(t.image); } #Enum(0)
+     "enum:" t = pathToken() { jjtThis.setEnumValue(t.image); } #Enum(0)
    |
-     "dbid:" t = <PROPERTY_PATH> { ExpressionUtils.parsePath(jjtThis, t.image); } #DbIdPath(0)
-   )
+     "dbid:" t = pathToken() { ExpressionUtils.parsePath(jjtThis, t.image); } #DbIdPath(0)
 }
 
 TOKEN : {
     <ASTERISK: "*">
+}
+
+// this rule returns single token that could be used as a path definition
+Token pathToken() : {
+    Token t ;
+}
+{
+    (
+      t = <PROPERTY_PATH>
+
+    | t = <AVG>
+    | t = <MIN>
+    | t = <MAX>
+    | t = <SUM>
+    | t = <COUNT>
+    | t = <DISTINCT>
+
+    | t = <CONCAT>
+    | t = <SUBSTRING>
+    | t = <TRIM>
+    | t = <LOWER>
+    | t = <UPPER>
+
+    | t = <LENGTH>
+    | t = <LOCATE>
+    | t = <ABS>
+    | t = <SQRT>
+    | t = <MOD>
+
+    | t = <CURRENT_DATE>
+    | t = <CURRENT_TIME>
+    | t = <CURRENT_TIMESTAMP>
+
+    | t = <YEAR>
+    | t = <MONTH>
+    | t = <DAY>
+    | t = <HOUR>
+    | t = <MINUTE>
+    | t = <SECOND>
+    | t = <DAY_OF_MONTH>
+    | t = <DAY_OF_WEEK>
+    | t = <DAY_OF_YEAR>
+
+    )
+    {return t;}
 }
 
 TOKEN : {
