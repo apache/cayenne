@@ -19,6 +19,7 @@
 package org.apache.cayenne.exp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +27,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFalse;
+import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Test;
@@ -442,4 +445,23 @@ public class ExpressionTest {
 		assertEquals("true and true", transformed.toString());
 	}
 
+	@Test
+	public void testObjPathFunctionName() throws IOException {
+		Expression exp = ExpressionFactory.exp("obj:year.month.day.avg");
+		assertTrue(exp instanceof ASTObjPath);
+
+		StringBuilder buffer = new StringBuilder();
+		exp.appendAsString(buffer);
+		assertEquals("year.month.day.avg", buffer.toString());
+	}
+
+	@Test
+	public void testDbPathFunctionName() throws IOException {
+		Expression exp = ExpressionFactory.exp("db:year.month.day.avg");
+		assertTrue(exp instanceof ASTDbPath);
+
+		StringBuilder buffer = new StringBuilder();
+		exp.appendAsString(buffer);
+		assertEquals("db:year.month.day.avg", buffer.toString());
+	}
 }
