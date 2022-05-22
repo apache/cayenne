@@ -126,8 +126,8 @@ public class PKCustomSequenceGeneratorPanel extends PKGeneratorPanel {
         }
 
         DbKeyGenerator generator = mediator.getCurrentDbEntity().getPrimaryKeyGenerator();
-        if (!Util.nullSafeEquals(generator.getKeyCacheSize(), new Integer(cacheSize))) {
-            generator.setKeyCacheSize(new Integer(cacheSize));
+        if (!Util.nullSafeEquals(generator.getKeyCacheSize(), cacheSize)) {
+            generator.setKeyCacheSize(cacheSize);
             mediator.fireDbEntityEvent(new EntityEvent(this, generator.getDbEntity()));
         }
     }

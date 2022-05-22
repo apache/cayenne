@@ -65,7 +65,7 @@ public class UpgradeCayennePreference extends PreferenceDecorator {
                         Preferences prefEditor = Preferences.userRoot().node(CAYENNE_PREFERENCES_PATH).node(EDITOR);
 
                         prefEditor.putBoolean(ModelerPreferences.EDITOR_LOGFILE_ENABLED,
-                                Boolean.valueOf(ep.getProperty(EDITOR_LOGFILE_ENABLED_OLD)));
+                                Boolean.parseBoolean(ep.getProperty(EDITOR_LOGFILE_ENABLED_OLD)));
                         prefEditor.put(ModelerPreferences.EDITOR_LOGFILE,
                                 ep.getProperty(EDITOR_LOGFILE_OLD));
 

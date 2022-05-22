@@ -57,13 +57,13 @@ public class ListResponseTest {
     @Test
     public void testSerialization() throws Exception {
 
-        ListResponse r = new ListResponse(new Integer(67));
+        ListResponse r = new ListResponse(67);
 
         ListResponse sr = (ListResponse) Util.cloneViaSerialization(r);
         assertNotNull(sr);
         assertEquals(1, sr.size());
 
-        assertTrue(sr.firstList().contains(new Integer(67)));
+        assertTrue(sr.firstList().contains(67));
     }
 
 }

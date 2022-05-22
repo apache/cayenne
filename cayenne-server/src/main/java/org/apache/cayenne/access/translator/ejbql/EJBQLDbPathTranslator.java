@@ -260,7 +260,7 @@ public abstract class EJBQLDbPathTranslator extends EJBQLBaseVisitor {
 		} else {
 			DbRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
 
-			DbEntity targetEntity = null;
+			DbEntity targetEntity;
 			if (lastRelationship != null) {
 				targetEntity = lastRelationship.getTargetEntity();
 			} else {

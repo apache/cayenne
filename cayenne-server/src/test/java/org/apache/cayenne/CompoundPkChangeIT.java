@@ -46,7 +46,7 @@ public class CompoundPkChangeIT extends ServerCase {
     public void testCompoundPkChangeSingleElement() throws Exception {
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
-        CompoundPkTestEntity refreshedObject = null;
+        CompoundPkTestEntity refreshedObject;
 
         object.setKey1(key1v1);
         object.setKey2(key2v1);
@@ -102,7 +102,7 @@ public class CompoundPkChangeIT extends ServerCase {
     public void testCompoundPkChangeAllElements() throws Exception {
 
         CompoundPkTestEntity object = context.newObject(CompoundPkTestEntity.class);
-        CompoundPkTestEntity refreshedObject = null;
+        CompoundPkTestEntity refreshedObject;
 
         object.setKey1(key1v1);
         object.setKey2(key2v1);

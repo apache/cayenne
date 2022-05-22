@@ -119,7 +119,7 @@ public class Util {
 		StringBuilder buf = new StringBuilder();
 
 		try (BufferedReader in = new BufferedReader(new FileReader(file));) {
-			String line = null;
+			String line;
 			while ((line = in.readLine()) != null) {
 				buf.append(line).append(joinWith);
 			}

@@ -105,7 +105,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 	private void assertContents(File f, String content) throws Exception {
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(f)));) {
-			String s = null;
+			String s;
 			while ((s = in.readLine()) != null) {
 				if (s.contains(content))
 					return;
@@ -126,7 +126,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 
 	private void assertPackage(BufferedReader in, String packageName) throws Exception {
 
-		String s = null;
+		String s;
 		while ((s = in.readLine()) != null) {
 
 			if (Pattern.matches("^package\\s+([^\\s;]+);", s)) {
@@ -142,7 +142,7 @@ public class CayenneGeneratorTaskCrossMapRelationshipsTest {
 
 		Pattern classPattern = Pattern.compile("^public\\s+");
 
-		String s = null;
+		String s;
 		while ((s = in.readLine()) != null) {
 			if (classPattern.matcher(s).find()) {
 				assertTrue(s.contains(className));

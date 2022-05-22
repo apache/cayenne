@@ -35,14 +35,12 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
 
     @Override
     public List<String> createSql(DbAdapter adapter) {
-        List<String> sqls = new ArrayList<>();
         // TODO: fix. some adapters drop the complete AUTO_PK_SUPPORT here
         /*
         sqls.addAll(adapter.getPkGenerator().dropAutoPkStatements(
                 Collections.singletonList(entity)));
          */
-        sqls.addAll(adapter.dropTableStatements(getEntity()));
-        return sqls;
+        return new ArrayList<>(adapter.dropTableStatements(getEntity()));
     }
 
     @Override

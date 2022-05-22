@@ -136,7 +136,7 @@ public class DataDomainView extends JPanel implements DomainDisplayListener {
         }
 
         // no empty strings
-        if ("".equals(value)) {
+        if (value.isEmpty()) {
             value = null;
         }
 

@@ -314,7 +314,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	}
 
 	private void initComboBoxes() {
-		Collection<String> nameAttr = null;
+		Collection<String> nameAttr;
 		if (attributeSaved != null) {
 			DbEntity currentEnt = attributeSaved.getEntity().getDbEntity();
 

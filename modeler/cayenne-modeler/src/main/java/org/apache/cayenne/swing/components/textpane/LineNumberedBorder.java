@@ -43,8 +43,7 @@ public class LineNumberedBorder extends AbstractBorder {
 
 	public Insets getBorderInsets(Component c, Insets insets) {
 		if (c instanceof JTextPane) {
-			int width = lineNumberWidth((JTextPane) c);
-			insets.left = width;
+			insets.left = lineNumberWidth((JTextPane) c);
 		}
 		return insets;
 	}
@@ -81,13 +80,12 @@ public class LineNumberedBorder extends AbstractBorder {
 			yend = y + height;
 		}
 
-		int lnxstart = x;
 		int widhtBorder = getLineNumberWidth() - 2;
 
 		g.setColor(new Color(255, 255, 224));
-		g.fillRect(lnxstart, 0, lnxstart + widhtBorder, yend);
+		g.fillRect(x, 0, x + widhtBorder, yend);
 		g.setColor(new Color(214, 214, 214));
-		g.drawRect(lnxstart - 1, -1, lnxstart + widhtBorder, yend + 1);
+		g.drawRect(x - 1, -1, x + widhtBorder, yend + 1);
 
 		int end = pane.getEndPositionInDocument();
 		Document doc = pane.getDocument();
@@ -95,7 +93,7 @@ public class LineNumberedBorder extends AbstractBorder {
 			
 		while (startingLineNumber <= endline) {
 			g.setColor(Color.gray);
-			g.drawString(startingLineNumber + " ", lnxstart + 1, ybaseline);
+			g.drawString(startingLineNumber + " ", x + 1, ybaseline);
 			ybaseline += fontHeight;
 			startingLineNumber++;
 		}

@@ -640,18 +640,18 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         if (superEntity != null) {
             Map<String, ObjAttribute> attributeMap = new HashMap<>();
             superEntity.appendAttributes(attributeMap);
-            for (String attributeName : attributeMap.keySet()) {
+            for (Map.Entry<String, ObjAttribute> entry : attributeMap.entrySet()) {
 
-                String overridedDbPath = attributeOverrides.get(attributeName);
+                String overridedDbPath = attributeOverrides.get(entry.getKey());
 
-                ObjAttribute superAttribute = attributeMap.get(attributeName);
+                ObjAttribute superAttribute = attributeMap.get(entry.getKey());
                 ObjAttribute attribute;
 
                 if(superAttribute instanceof EmbeddedAttribute) {
                     EmbeddedAttribute embeddedAttribute = new EmbeddedAttribute((EmbeddedAttribute)superAttribute);
                     if(overridedDbPath != null) {
                         LOGGER.warn("'{}.{}': DB path override for an embedded attribute is not supported.",
-                                getName(), attributeName);
+                                getName(), entry.getKey());
                     }
                     attribute = embeddedAttribute;
                 } else {
@@ -661,7 +661,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                     }
                 }
                 attribute.setEntity(this);
-                map.put(attributeName, attribute);
+                map.put(entry.getKey(), attribute);
             }
         }
     }

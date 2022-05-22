@@ -145,7 +145,7 @@ public class JMSBridge extends EventBridge implements MessageListener {
         TopicConnectionFactory connectionFactory = (TopicConnectionFactory) jndiContext
                 .lookup(topicConnectionFactoryName);
 
-        Topic topic = null;
+        Topic topic;
 
         try {
             topic = (Topic) jndiContext.lookup(externalSubject);

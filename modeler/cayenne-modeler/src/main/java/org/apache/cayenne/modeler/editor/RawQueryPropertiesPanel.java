@@ -112,7 +112,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
     public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
 
-        boolean fetchingDO = !Boolean.valueOf(query.getProperties().get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY));
+        boolean fetchingDO = !Boolean.parseBoolean(query.getProperties().get(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY));
         dataObjects.setSelected(fetchingDO);
 
         // TODO: now we only allow ObjEntities from the current map,

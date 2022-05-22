@@ -144,16 +144,16 @@ public class CompactSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     private void buildBinding(StringBuilder buffer, String label, Map<String, List<String>> bindingsMap) {
         int j = 1;
         boolean hasIncluded = false;
-        for (String k : bindingsMap.keySet()) {
+        for (Map.Entry<String, List<String>> entry : bindingsMap.entrySet()) {
             if (!hasIncluded) {
                 hasIncluded = true;
                 buffer.append("[").append(label).append(": ");
             } else {
                 buffer.append(", ");
             }
-            buffer.append(j).append("->").append(k).append(": ");
+            buffer.append(j).append("->").append(entry.getKey()).append(": ");
 
-            List<String> bindingsList = bindingsMap.get(k);
+            List<String> bindingsList = bindingsMap.get(entry.getKey());
             if (bindingsList.size() == 1 ) {
                 buffer.append(bindingsList.get(0));
             } else {

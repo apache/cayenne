@@ -43,7 +43,7 @@ public class MockOperationObserver implements OperationObserver {
 
     public int countForQuery(Query q) {
         Integer count = (Integer) resultCounts.get(q);
-        return (count != null) ? count.intValue() : -1;
+        return (count != null) ? count : -1;
     }
 
     public int[] countsForQuery(Query q) {
@@ -51,7 +51,7 @@ public class MockOperationObserver implements OperationObserver {
     }
 
     public void nextCount(Query query, int resultCount) {
-        resultCounts.put(query, new Integer(resultCount));
+        resultCounts.put(query, resultCount);
     }
 
     public void nextRows(Query query, List<?> dataRows) {

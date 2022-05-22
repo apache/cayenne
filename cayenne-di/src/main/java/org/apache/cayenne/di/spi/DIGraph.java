@@ -115,8 +115,8 @@ class DIGraph<V> {
 			result.put(v, 0);
 		}
 
-		for (V from : neighbors.keySet()) {
-			for (V to : neighbors.get(from)) {
+		for (Map.Entry<V, List<V>> entry : neighbors.entrySet()) {
+			for (V to : neighbors.get(entry.getKey())) {
 				result.put(to, result.get(to) + 1);
 			}
 		}

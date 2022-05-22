@@ -99,7 +99,7 @@ public class ROPUtil {
     public static String base64(String value) {
         StringBuffer cb = new StringBuffer();
 
-        int i = 0;
+        int i;
         for (i = 0; i + 2 < value.length(); i += 3) {
             long chunk = (int) value.charAt(i);
             chunk = (chunk << 8) + (int) value.charAt(i + 1);

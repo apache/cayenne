@@ -161,15 +161,16 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
             return null;
         }
 
-        String version = property(CONNECTION_DB_VERSION);
-        JdbcDatabaseContainer<?> container = testContainerProvider.startContainer(version);
-
         DataSourceInfo sourceInfo = new DataSourceInfo();
         sourceInfo.setAdapterClassName(testContainerProvider.getAdapterClass().getName());
-        sourceInfo.setUserName(container.getUsername());
-        sourceInfo.setPassword(container.getPassword());
-        sourceInfo.setDataSourceUrl(container.getJdbcUrl());
-        sourceInfo.setJdbcDriver(container.getDriverClassName());
+
+        String version = property(CONNECTION_DB_VERSION);
+        try (JdbcDatabaseContainer<?> container = testContainerProvider.startContainer(version)) {
+            sourceInfo.setUserName(container.getUsername());
+            sourceInfo.setPassword(container.getPassword());
+            sourceInfo.setDataSourceUrl(container.getJdbcUrl());
+            sourceInfo.setJdbcDriver(container.getDriverClassName());
+        }
         sourceInfo.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
         sourceInfo.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         return sourceInfo;

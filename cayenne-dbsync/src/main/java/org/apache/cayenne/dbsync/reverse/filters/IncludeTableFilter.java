@@ -81,7 +81,7 @@ public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
     }
 
     protected StringBuilder toString(StringBuilder res, String prefix) {
-        res.append(prefix).append("Include: ").append(String.valueOf(pattern)).append(" Columns: ");
+        res.append(prefix).append("Include: ").append(pattern).append(" Columns: ");
         columnsFilter.toString(res);
         res.append("\n");
 

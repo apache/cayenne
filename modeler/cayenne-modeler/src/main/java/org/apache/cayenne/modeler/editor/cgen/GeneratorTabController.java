@@ -86,9 +86,9 @@ public class GeneratorTabController extends CayenneController {
     }
 
     public void setSelectedController(GeneratorController generatorController) {
-        for(String key : controllers.keySet()) {
-            if(generatorController.equals(controllers.get(key))) {
-                getView().getGenerationMode().setSelectedItem(key);
+        for(Map.Entry<String, GeneratorController> entry : controllers.entrySet()) {
+            if(generatorController.equals(entry.getKey())) { // TODO always false - controller compared with string
+                getView().getGenerationMode().setSelectedItem(entry.getKey());
             }
         }
     }

@@ -73,7 +73,7 @@ public class UnderlineHighlighterForText extends DefaultHighlighter {
                 View view) {
             g.setColor(color == null ? c.getSelectionColor() : color);
 
-            Rectangle alloc = null;
+            Rectangle alloc;
             if (offs0 == view.getStartOffset() && offs1 == view.getEndOffset()) {
                 if (bounds instanceof Rectangle) {
                     alloc = (Rectangle) bounds;

@@ -54,8 +54,7 @@ public class BaseTaskIT {
         prepareBuildScript(projectName);
         prepareDataMap(args);
 
-        List<String> gradleArguments = new ArrayList<>();
-        gradleArguments.addAll(Arrays.asList(args));
+        List<String> gradleArguments = new ArrayList<>(Arrays.asList(args));
         gradleArguments.add("--stacktrace");
 
         return GradleRunner.create()

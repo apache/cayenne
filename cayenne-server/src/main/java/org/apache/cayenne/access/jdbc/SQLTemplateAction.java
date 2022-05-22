@@ -162,8 +162,7 @@ public class SQLTemplateAction implements SQLAction {
 		// for now supporting deprecated batch parameters...
 		Iterator<Map<String, ?>> it;
 		if(size == 0) {
-			Iterator empty = Collections.singleton(Collections.emptyMap()).iterator();
-			it = empty;
+			it = (Iterator) Collections.singleton(Collections.emptyMap()).iterator();
 		} else {
 			it = query.parametersIterator();
 		}

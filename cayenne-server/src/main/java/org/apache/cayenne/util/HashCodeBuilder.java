@@ -34,7 +34,7 @@ public class HashCodeBuilder {
     /**
      * Running total of the hashCode.
      */
-    private int iTotal = 0;
+    private int iTotal;
 
     /**
      * <p>

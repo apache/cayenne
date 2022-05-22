@@ -55,7 +55,7 @@ public class CheckBoxBinding extends BindingBase {
 
         modelUpdateDisabled = true;
         try {
-            checkBox.setSelected(value.booleanValue());
+            checkBox.setSelected(value);
         }
         finally {
             modelUpdateDisabled = false;
@@ -63,6 +63,6 @@ public class CheckBoxBinding extends BindingBase {
     }
 
     protected void updateModel() {
-        setValue(Boolean.valueOf(checkBox.isSelected()));
+        setValue(checkBox.isSelected());
     }
 }

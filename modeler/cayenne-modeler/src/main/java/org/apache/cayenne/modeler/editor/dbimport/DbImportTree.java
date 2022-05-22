@@ -260,7 +260,7 @@ public class DbImportTree extends JTree {
     private void printIncludeTables(Collection<IncludeTable> collection, DbImportTreeNode parent) {
         for (IncludeTable includeTable : collection) {
             DbImportTreeNode node = !isTransferable ? new DbImportTreeNode(includeTable) : new TransferableNode(includeTable);
-            if (!node.getSimpleNodeName().equals("")) {
+            if (!node.getSimpleNodeName().isEmpty()) {
 
                 if (isTransferable && includeTable.getIncludeColumns().isEmpty() && includeTable.getExcludeColumns().isEmpty()) {
                     printParams(Collections.singletonList(new IncludeColumn("Loading...")), node);

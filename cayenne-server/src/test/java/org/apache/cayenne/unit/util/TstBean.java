@@ -56,11 +56,11 @@ public class TstBean {
 
     public TstBean(String string, int intValue) {
         this.string = string;
-        this.integer = new Integer(intValue);
+        this.integer = intValue;
     }
 
     public TstBean(int intValue) {
-        integer = new Integer(intValue);
+        integer = intValue;
     }
 
     public Integer getInteger() {

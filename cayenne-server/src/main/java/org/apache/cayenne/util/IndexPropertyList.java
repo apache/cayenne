@@ -245,7 +245,7 @@ public class IndexPropertyList extends AbstractList implements ValueHolder {
     }
 
     protected void setIndexValue(Object object, int index) {
-        PropertyUtils.setProperty(object, indexProperty, Integer.valueOf(index));
+        PropertyUtils.setProperty(object, indexProperty, index);
     }
 
     protected void shift(int startIndex, int afterIndexValue) {

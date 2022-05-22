@@ -56,7 +56,6 @@ public class FileChooser extends JPanel {
     protected JButton chooseButton;
 
     public FileChooser() {
-        this.allowFiles = false;
         this.allowFiles = true;
 
         this.fileName = new JTextField();

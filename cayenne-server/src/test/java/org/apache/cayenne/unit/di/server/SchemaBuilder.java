@@ -315,7 +315,6 @@ public class SchemaBuilder {
 				filtered.add(ent);
 			}
 
-			entities = filtered;
 		}
 	}
 

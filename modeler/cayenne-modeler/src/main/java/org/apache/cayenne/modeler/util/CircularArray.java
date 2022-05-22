@@ -28,11 +28,11 @@ package org.apache.cayenne.modeler.util;
  */
 public class CircularArray<T>  {
 
-    private Object[] array = null;
+    private Object[] array;
     private int head = 0;
     private int tail = 0;
     private int count = 0;
-    private int capacity = 0;
+    private int capacity;
 
     /**
      * Creates an array of capacity size.
@@ -182,7 +182,7 @@ public class CircularArray<T>  {
                 // create a brand new array and start it back out at zero
                 Object[] a = new Object[capacity];
                 int destPos = 0;
-                int len = 0;
+                int len;
 
                 if (head == tail) {
                     // most likeley scenario when it is full
@@ -204,7 +204,7 @@ public class CircularArray<T>  {
                         if (len > 0) {
                             System.arraycopy(array, 0, a, destPos, len);
                         }
-                    } else if (head > pos) {
+                    } else if (head > pos) { // condition is always true!
                         // copy from head to end of array
                         len = capacity - head;
                         if (len > 0) {
@@ -237,9 +237,8 @@ public class CircularArray<T>  {
                     len = tail - pos;
                     if (len > 0) {
                         System.arraycopy(array, pos + 1, a, destPos, len);
-                        destPos += len;
                     }
-                } else if (head > tail) {
+                } else if (head > tail) { // condition is always true!
                     if (head < pos) {
                         // copy from head to position
                         len = pos - head;
@@ -258,7 +257,7 @@ public class CircularArray<T>  {
                         if (len > 0) {
                             System.arraycopy(array, 0, a, destPos, len);
                         }
-                    } else if (head > pos) {
+                    } else if (head > pos) { // condition is always true!
                         // copy from head to end of array
                         len = capacity - head;
                         if (len > 0) {
@@ -306,7 +305,7 @@ public class CircularArray<T>  {
             i = count - newCapacity;
             offset = count - newCapacity;
         }
-        Object newArray[] = new Object[newCapacity];
+        Object[] newArray = new Object[newCapacity];
         for (; i < count; i++) {
             newArray[i - offset] = array[convert(i)];
         }

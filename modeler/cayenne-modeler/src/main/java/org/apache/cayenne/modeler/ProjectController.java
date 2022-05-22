@@ -1707,8 +1707,7 @@ public class ProjectController extends CayenneController {
                     .getInstance(ConfigurationNodeParentGetter.class);
             Object parent = parentGetter.getParent(paths[0]);
 
-            List<ConfigurationNode> result = new ArrayList<>();
-            result.addAll(Arrays.asList(paths));
+            List<ConfigurationNode> result = new ArrayList<>(Arrays.asList(paths));
 
             /*
              * Here we sort the list of objects to minimize the risk that
@@ -1716,7 +1715,7 @@ public class ProjectController extends CayenneController {
              * should go before Query, to increase chances that Query's root
              * would be set.
              */
-            Collections.sort(result, parent instanceof DataMap
+            result.sort(parent instanceof DataMap
                     ? Comparators.getDataMapChildrenComparator()
                     : Comparators.getDataDomainChildrenComparator());
 

@@ -146,7 +146,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 				counts = new ArrayList<>();
 			}
 
-			counts.add(Integer.valueOf(resultCount));
+			counts.add(resultCount);
 		}
 
 		@Override

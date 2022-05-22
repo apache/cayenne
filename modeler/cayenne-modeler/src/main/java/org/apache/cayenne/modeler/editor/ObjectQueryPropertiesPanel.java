@@ -91,6 +91,6 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel {
     public void initFromModel(QueryDescriptor query) {
         super.initFromModel(query);
 
-        dataRows.setSelected(Boolean.valueOf(query.getProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY)));
+        dataRows.setSelected(Boolean.parseBoolean(query.getProperty(QueryMetadata.FETCHING_DATA_ROWS_PROPERTY)));
     }
 }

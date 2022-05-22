@@ -28,12 +28,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class UtilTest {
 
@@ -124,7 +119,7 @@ public class UtilTest {
 		MockSerializable o1 = new MockSerializable();
 		Object o2 = Util.cloneViaSerialization(o1);
 		assertEquals(o1, o2);
-		assertTrue(o1 != o2);
+		assertNotSame(o1, o2);
 	}
 
 	@Test

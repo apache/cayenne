@@ -117,8 +117,7 @@ public class ModelerLogger implements Logger {
     private String getFormattedDate() {
         Date currentDate = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
-        String dateText = formatter.format(currentDate);
-        return dateText;
+        return formatter.format(currentDate);
     }
 
     private void write(StringBuilder buffer, Throwable throwable) {

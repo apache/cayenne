@@ -347,7 +347,7 @@ public class SelectQueryMetadataCacheKeyTest {
      * Test value object
      */
     static class TestValue {
-        int v = 0;
+        int v;
         TestValue(int v) {
             this.v = v;
         }
