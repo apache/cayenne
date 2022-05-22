@@ -55,7 +55,7 @@ public abstract class ValidationDisplayHandler {
     public static ValidationDisplayHandler getErrorMsg(ValidationFailure result) {
         Object validatedObj = result.getSource();
 
-        ValidationDisplayHandler msg = null;
+        ValidationDisplayHandler msg;
         if (validatedObj instanceof Embeddable) {
             msg = new EmbeddableErrorMsg(result);
         }
