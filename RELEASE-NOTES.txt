@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2711 JDK 17 compatibility
 CAY-2728 Add ExtendedType to generate user-friendly exceptions for internally used values
 
 Bug Fixes:
@@ -23,6 +24,7 @@ CAY-2727 Modeler: cgen destDir Unix platform path separator
 CAY-2729 Unable to use custom templates from a folder at upper level then datamap
 CAY-2730 Duplicating lines in a cgen config saved to datamap.xml
 CAY-2731 Exception when setting a CLOB on H2 v2.0.202
+CAY-2733 Modeler can't use custom templates set in a datamap
 CAY-2736 Can't use function names as a path in a string-based expression
 
 ----------------------------------
