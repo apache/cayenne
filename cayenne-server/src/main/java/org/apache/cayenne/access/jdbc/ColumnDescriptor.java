@@ -68,7 +68,6 @@ public class ColumnDescriptor {
      * @since 3.1
      */
     public ColumnDescriptor(String columnName, int jdbcType) {
-        // TODO: check this
         this(columnName, jdbcType, TypesMapping.getJavaBySqlType(jdbcType));
     }
 
