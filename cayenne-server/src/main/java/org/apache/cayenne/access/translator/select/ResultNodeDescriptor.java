@@ -105,7 +105,7 @@ class ResultNodeDescriptor {
             return property.getType().getCanonicalName();
         }
         if (getDbAttribute() != null) {
-            return TypesMapping.getJavaBySqlType(getDbAttribute().getType());
+            return TypesMapping.getJavaBySqlType(getDbAttribute());
         }
         return null;
     }

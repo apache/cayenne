@@ -70,7 +70,7 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
         DbAttributeBinding[] bindings = new DbAttributeBinding[slen + 1];
 
         DbAttribute deleteAttribute = Objects.requireNonNull(query.getDbEntity().getAttribute(deletedFieldName));
-        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute.getType());
+        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
         ExtendedType extendedType = adapter.getExtendedTypes().getRegisteredType(typeName);
 
         bindings[0] = new DbAttributeBinding(deleteAttribute);

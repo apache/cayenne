@@ -356,7 +356,7 @@ public class SQLTemplateAction implements SQLAction {
 		if (dbEntity != null && isResultColumnTypesEmpty()) {
 			for (DbAttribute attribute : dbEntity.getAttributes()) {
 				if (!builder.isOverriden(attribute.getName()) && TypesMapping.isNumeric(attribute.getType())) {
-					builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute.getType()));
+					builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute));
 				}
 			}
 		}

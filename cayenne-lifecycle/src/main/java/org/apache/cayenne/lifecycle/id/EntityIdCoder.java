@@ -80,7 +80,7 @@ public class EntityIdCoder {
 
         for (DbAttribute attribute : entity.getDbEntity().getPrimaryKeys()) {
             if (!converters.containsKey(attribute.getName())) {
-                String type = TypesMapping.getJavaBySqlType(attribute.getType());
+                String type = TypesMapping.getJavaBySqlType(attribute);
                 try {
                     converters.put(attribute.getName(), create(Util.getJavaClass(type)));
                 } catch (ClassNotFoundException e) {

@@ -224,7 +224,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
 
             if (context.isAppendingResultColumns()) {
                 if (javaType == null) {
-                    javaType = TypesMapping.getJavaBySqlType(column.getType());
+                    javaType = TypesMapping.getJavaBySqlType(column);
                 }
 
                 // TODO: andrus 6/27/2007 - the last parameter is an unofficial

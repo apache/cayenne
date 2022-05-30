@@ -55,7 +55,7 @@ public class SoftDeleteBatchTranslator extends DeleteBatchTranslator {
 
         String sql = doTranslate(updateBuilder);
 
-        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute.getType());
+        String typeName = TypesMapping.getJavaBySqlType(deleteAttribute);
         ExtendedType<?> extendedType = context.getAdapter().getExtendedTypes().getRegisteredType(typeName);
         bindings[0].include(1, true, extendedType);
 

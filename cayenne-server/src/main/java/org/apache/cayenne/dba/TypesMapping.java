@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.util.Util;
 
 import java.io.Serializable;
@@ -121,6 +122,7 @@ public class TypesMapping {
 	public static final String JAVA_SQLDATE = "java.sql.Date";
 	public static final String JAVA_UTILDATE = "java.util.Date";
 	public static final String JAVA_BIGDECIMAL = "java.math.BigDecimal";
+	public static final String JAVA_BIGINTEGER = "java.math.BigInteger";
 	public static final String JAVA_DOUBLE = "java.lang.Double";
 	public static final String JAVA_FLOAT = "java.lang.Float";
 	public static final String JAVA_INTEGER = "java.lang.Integer";
@@ -324,7 +326,7 @@ public class TypesMapping {
 	 */
 	public static String[] getDatabaseTypes() {
 		Collection<String> types = SQL_STRING_TYPE.keySet();
-		return types.toArray(new String[types.size()]);
+		return types.toArray(new String[0]);
 	}
 
 	/**
@@ -461,9 +463,9 @@ public class TypesMapping {
 				name = aClass.getName();
 			}
 
-			Object type = JAVA_SQL_ENUM.get(name);
+			Number type = JAVA_SQL_ENUM.get(name);
 			if (type != null) {
-				return ((Number) type).intValue();
+				return type.intValue();
 			}
 
 			aClass = aClass.getSuperclass();
@@ -499,15 +501,43 @@ public class TypesMapping {
 	}
 
 	/**
-	 * Get the corresponding Java type by its java.sql.Types counterpart. Note
+	 * Get the corresponding Java type by its {@link java.sql.Types} counterpart. Note
 	 * that this method should be used as a last resort, with explicit mapping
 	 * provided by user used as a first choice, as it can only guess how to map
 	 * certain types, such as NUMERIC, etc.
-	 * 
+	 *
+	 * @param type as defined in {@link java.sql.Types}
 	 * @return Fully qualified Java type name or null if not found.
 	 */
 	public static String getJavaBySqlType(int type) {
 		return SQL_ENUM_JAVA.get(type);
+	}
+
+	/**
+	 * @param attribute to get java type for
+	 * @return Fully qualified Java type name or null if not found.
+	 * @see #getJavaBySqlType(int)
+	 *
+	 * @since 4.2
+	 */
+	public static String getJavaBySqlType(DbAttribute attribute) {
+		if(attribute.getType() == DECIMAL) {
+			if(attribute.getScale() == 0) {
+				// integer value, could fold into a smaller type
+				if (attribute.getMaxLength() < 10) {
+					return JAVA_INTEGER;
+				} else if(attribute.getMaxLength() < 19) {
+					return JAVA_LONG;
+				} else {
+					return JAVA_BIGINTEGER;
+				}
+			} else {
+				// decimal, no optimizations here
+				return JAVA_BIGDECIMAL;
+			}
+		}
+
+		return SQL_ENUM_JAVA.get(attribute.getType());
 	}
 
 	Map<Integer, List<TypeInfo>> databaseTypes = new HashMap<>();
@@ -523,12 +553,7 @@ public class TypesMapping {
 				info.precision = rs.getLong("PRECISION");
 
 				Integer key = info.jdbcType;
-				List<TypeInfo> infos = databaseTypes.get(key);
-
-				if (infos == null) {
-					infos = new ArrayList<>();
-					databaseTypes.put(key, infos);
-				}
+				List<TypeInfo> infos = databaseTypes.computeIfAbsent(key, k -> new ArrayList<>());
 
 				infos.add(info);
 			}

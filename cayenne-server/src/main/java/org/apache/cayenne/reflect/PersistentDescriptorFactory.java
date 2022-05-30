@@ -248,7 +248,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                                 // assume that DbAttribute is rooted in the root
                                 // DbEntity, and no relationship is involved.
                                 objectAttribute.setDbAttributePath(attribute.getName());
-                                objectAttribute.setType(TypesMapping.getJavaBySqlType(attribute.getType()));
+                                objectAttribute.setType(TypesMapping.getJavaBySqlType(attribute));
                             }
 
                             attributes.put(objectAttribute.getName(), objectAttribute);

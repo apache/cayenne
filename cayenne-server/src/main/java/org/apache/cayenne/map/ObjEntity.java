@@ -558,7 +558,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
             if (attribute == null) {
                 attribute = new SyntheticPKObjAttribute(Util.underscoredToJava(pk.getName(), false));
                 attribute.setDbAttributePath(pk.getName());
-                attribute.setType(TypesMapping.getJavaBySqlType(pk.getType()));
+                attribute.setType(TypesMapping.getJavaBySqlType(pk));
             }
 
             attributes.add(attribute);

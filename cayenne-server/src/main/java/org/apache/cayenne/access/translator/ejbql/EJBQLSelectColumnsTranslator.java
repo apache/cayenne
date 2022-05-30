@@ -98,7 +98,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     context.append(!first ? ", " : " ");
 
                     DbAttribute dbAttribute = it.next();
-                    appendColumn(TypesMapping.getJavaBySqlType(dbAttribute.getType()), alias, dbAttribute,
+                    appendColumn(TypesMapping.getJavaBySqlType(dbAttribute), alias, dbAttribute,
                             fields != null ? fields.get(dbAttribute.getName()) : "");
 
                     first = false;
@@ -110,7 +110,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                 String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
                         .getQuotingStrategy().quotedFullyQualifiedName(currentEntity));
 
-                appendColumn(TypesMapping.getJavaBySqlType(attribute.getType()), alias, attribute,
+                appendColumn(TypesMapping.getJavaBySqlType(attribute), alias, attribute,
                         context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
             }
         };
@@ -159,7 +159,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
                     context.append(!first ? ", " : " ");
 
                     DbAttribute dbAttribute = it.next();
-                    appendColumn(TypesMapping.getJavaBySqlType(dbAttribute.getType()), alias, dbAttribute,
+                    appendColumn(TypesMapping.getJavaBySqlType(dbAttribute), alias, dbAttribute,
                             fields != null ? fields.get(dbAttribute.getName()) : "");
 
                     first = false;

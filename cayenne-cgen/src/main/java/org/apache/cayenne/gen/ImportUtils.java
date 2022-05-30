@@ -299,7 +299,7 @@ public class ImportUtils {
 	 * @since 4.1
 	 */
 	public String dbAttributeToJavaType(DbAttribute attribute) {
-		String javaTypeName = TypesMapping.getJavaBySqlType(attribute.getType());
+		String javaTypeName = TypesMapping.getJavaBySqlType(attribute);
 		return formatJavaType(javaTypeName);
 	}
 }
