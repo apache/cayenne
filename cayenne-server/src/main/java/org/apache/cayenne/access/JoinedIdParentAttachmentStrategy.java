@@ -32,16 +32,14 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * A ParentAttachmentStrategy that extracts parent ObjectId from the joined columns in the
  * child snapshot.
  */
-class JoinedIdParentAttachementStrategy implements ParentAttachmentStrategy {
+class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
 
-    private String relatedIdPrefix;
-    private Collection<ObjEntity> sourceEntities;
-    private PrefetchProcessorNode node;
-    private GraphManager graphManager;
+    private final String relatedIdPrefix;
+    private final Collection<ObjEntity> sourceEntities;
+    private final PrefetchProcessorNode node;
+    private final GraphManager graphManager;
 
-    JoinedIdParentAttachementStrategy(GraphManager graphManager,
-            PrefetchProcessorNode node) {
-
+    JoinedIdParentAttachmentStrategy(GraphManager graphManager, PrefetchProcessorNode node) {
         ClassDescriptor parentDescriptor = ((PrefetchProcessorNode) node.getParent())
                 .getResolver()
                 .getDescriptor();

@@ -24,7 +24,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.*;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.Fault;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.graph.ArcId;
+import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
@@ -70,29 +77,44 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
      */
     void linkToParent(Persistent object, Persistent parent) {
         if (parent != null && parent.getPersistenceState() != PersistenceState.HOLLOW) {
-
-            // if a relationship is to-one (i.e. flattened to-one), can connect right
-            // away.... write directly to prevent changing persistence state.
+            // if a relationship is to-one (i.e. flattened to-one), can connect right away....
+            // write directly to prevent changing persistence state.
             if (incoming instanceof ToOneProperty) {
-                incoming.writePropertyDirectly(parent, null, object);
+                if(relationshipNotModified(parent, incoming)) {
+                    incoming.writePropertyDirectly(parent, null, object);
+                }
             } else {
-                List<Persistent> peers = partitionByParent.get(parent);
-
-                // wrap in a list even if relationship is to-one... will unwrap at the end
-                // of the processing cycle.
-                if (peers == null) {
-                    peers = new ArrayList<>();
-                    partitionByParent.put(parent, peers);
-                } else if (peers.contains(object)) {
+                List<Persistent> peers = partitionByParent.computeIfAbsent(parent, p -> new ArrayList<>());
+                if (peers.contains(object)) {
                     // checking for duplicates is needed in case of nested joint prefetches
                     // when there is more than one row with the same combination of adjacent
                     // parent and child...
                     return;
                 }
-
                 peers.add(object);
             }
         }
+    }
+
+    boolean relationshipNotModified(Persistent object, ArcProperty property) {
+        if(object.getPersistenceState() != PersistenceState.MODIFIED) {
+            return true;
+        }
+
+        ObjectDiff diff = ((DataContext)object.getObjectContext())
+                .getObjectStore().getChangesByObjectId().get(object.getObjectId());
+        // check that there are no pending changes for that property
+        if(diff == null) {
+            return true;
+        }
+
+        if(diff.containsArcSnapshot(property.getName())) {
+            return false;
+        }
+
+        PropertyDiffTester tester = new PropertyDiffTester(property);
+        diff.apply(tester);
+        return !tester.hasArcDiff();
     }
 
     void connectToParents() {
@@ -112,8 +134,8 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
                     connectToFaultedParents();
                 }
             } else {
-                // optional to-one ... need to fill in unresolved relationships with
-                // null...
+                // optional to-one ...
+                // need to fill in unresolved relationships with null...
                 if (parentObjectsExist) {
                     clearNullRelationships(parent.getObjects());
                 }
@@ -143,12 +165,11 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     private void connect(Persistent object, List<Persistent> related) {
         if (incoming.getRelationship().isToMany()) {
-            @SuppressWarnings("unchecked")
-            ValueHolder<List<?>> toManyList = (ValueHolder<List<?>>) incoming.readProperty(object);
-
-            // TODO, Andrus 11/15/2005 - if list is modified, shouldn't we attempt to
-            // merge the changes instead of overwriting?
-            toManyList.setValueDirectly(related != null ? related : new ArrayList<>(1));
+            if(relationshipNotModified(object, incoming)) {
+                @SuppressWarnings("unchecked")
+                ValueHolder<List<?>> toManyList = (ValueHolder<List<?>>) incoming.readProperty(object);
+                toManyList.setValueDirectly(related != null ? related : new ArrayList<>(1));
+            }
         } else {
             // this should've been handled elsewhere
             throw new CayenneRuntimeException("To-one relationship wasn't handled properly: %s", incoming.getName());
@@ -222,5 +243,48 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     void setParentAttachmentStrategy(ParentAttachmentStrategy parentAttachmentStrategy) {
         this.parentAttachmentStrategy = parentAttachmentStrategy;
+    }
+
+    private static class PropertyDiffTester implements GraphChangeHandler {
+        private final ArcProperty property;
+        private boolean hasArcDiff;
+
+        public PropertyDiffTester(ArcProperty property) {
+            this.property = property;
+        }
+
+        boolean hasArcDiff() {
+            return hasArcDiff;
+        }
+
+        @Override
+        public void arcCreated(Object nodeId, Object targetNodeId, ArcId arcId) {
+            if(arcId.getForwardArc().equals(property.getName())) {
+                hasArcDiff = true;
+            }
+        }
+
+        @Override
+        public void arcDeleted(Object nodeId, Object targetNodeId, ArcId arcId) {
+            if(arcId.getForwardArc().equals(property.getName())) {
+                hasArcDiff = true;
+            }
+        }
+
+        @Override
+        public void nodeIdChanged(Object nodeId, Object newId) {
+        }
+
+        @Override
+        public void nodeCreated(Object nodeId) {
+        }
+
+        @Override
+        public void nodeRemoved(Object nodeId) {
+        }
+
+        @Override
+        public void nodePropertyChanged(Object nodeId, String property, Object oldValue, Object newValue) {
+        }
     }
 }
