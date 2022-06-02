@@ -39,7 +39,7 @@
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
         <jacoco.version>0.7.9</jacoco.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<ant.version>1.10.7</ant.version>
+		<ant.version>1.10.11</ant.version>
 		<testcontainers.version>1.16.0</testcontainers.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
