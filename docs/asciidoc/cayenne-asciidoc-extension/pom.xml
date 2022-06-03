@@ -22,7 +22,7 @@
     <parent>
         <artifactId>cayenne-asciidoc-parent</artifactId>
         <groupId>org.apache.cayenne.docs</groupId>
-        <version>4.2.RC1</version>
+        <version>4.2.RC2-SNAPSHOT</version>
     </parent>
 
     <artifactId>cayenne-asciidoc-extension</artifactId>
