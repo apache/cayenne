@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.2.RC1
-Date:
+Date: June 3, 2022
 ----------------------------------
 Changes/New Features:
 
