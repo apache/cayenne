@@ -19,7 +19,7 @@
 Apache Cayenne
 ==============
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server/4.1.svg)](https://cayenne.apache.org/download/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server/4.2.RC1.svg)](https://cayenne.apache.org/download/)
 [![Build Status](https://app.travis-ci.com/apache/cayenne.svg?branch=master)](https://app.travis-ci.com/apache/cayenne)
 
 
@@ -62,24 +62,24 @@ Binary distributions can be downloaded from https://cayenne.apache.org/download/
 
 [![Modeler](https://cayenne.apache.org/img/cayenne-modeler-40rc1-24b0368dc2.png)](https://cayenne.apache.org/download/)
 
-See tutorial https://cayenne.apache.org/docs/4.1/getting-started-guide/ 
+See tutorial https://cayenne.apache.org/docs/4.2/getting-started-guide/ 
 
 ##### Maven plugin
 
-Additionally you can use Cayenne Maven (or [Gradle](#gradle-plugin)) plugin to create model based on existing DB structure.
+Additionally, you can use Cayenne Maven (or [Gradle](#gradle-plugin)) plugin to create model based on existing DB structure.
 Here is example of Cayenne Maven plugin setup that will do it:
 
 ```xml
 <plugin>
     <groupId>org.apache.cayenne.plugins</groupId>
     <artifactId>cayenne-maven-plugin</artifactId>
-    <version>4.1</version>
+    <version>4.2.RC1</version>
 
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.13</version>
+            <version>8.0.29</version>
         </dependency>
     </dependencies>
 
@@ -104,7 +104,7 @@ Run it:
 mvn cayenne:cdbimport
 mvn cayenne:cgen
 ```
-See tutorial https://cayenne.apache.org/docs/4.1/getting-started-db-first/
+See tutorial https://cayenne.apache.org/docs/4.2/getting-started-db-first/
 
 ##### Gradle plugin
 
@@ -116,8 +116,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.1'
-        classpath 'mysql:mysql-connector-java:8.0.13'
+        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.2.RC1'
+        classpath 'mysql:mysql-connector-java:8.0.29'
     }
 }
 
@@ -157,7 +157,7 @@ gradlew build
     <dependency>
         <groupId>org.apache.cayenne</groupId>
         <artifactId>cayenne-server</artifactId>
-        <version>4.1</version>
+        <version>4.2.RC1</version>
     </dependency>
 </dependencies>
 ```
@@ -165,7 +165,7 @@ gradlew build
 ##### Gradle
 
 ```gradle
-compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.1'
+compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.2.RC1'
  
 // or, if Gradle plugin is used
 compile cayenne.dependency('server')
@@ -218,7 +218,7 @@ context.commitChanges();
 
 ```java
 List<Painting> paintings = ObjectSelect.query(Painting.class)
-        .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(LocalDate.of(1900, 1, 1)))
+        .where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).year().lt(1900))
         .prefetch(Painting.ARTIST.joint())
         .select(context);
 ```
@@ -274,19 +274,19 @@ Documentation
 
 #### Getting Started
 
-https://cayenne.apache.org/docs/4.1/getting-started-guide/
+https://cayenne.apache.org/docs/4.2/getting-started-guide/
 
 #### Getting Started Db-First
 
-https://cayenne.apache.org/docs/4.1/getting-started-db-first/
+https://cayenne.apache.org/docs/4.2/getting-started-db-first/
 
 #### Full documentation
 
-https://cayenne.apache.org/docs/4.1/cayenne-guide/
+https://cayenne.apache.org/docs/4.2/cayenne-guide/
 
 #### JavaDoc
 
-https://cayenne.apache.org/docs/4.1/api/
+https://cayenne.apache.org/docs/4.2/api/
 
 About
 -----
