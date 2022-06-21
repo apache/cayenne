@@ -1396,7 +1396,7 @@
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>8.0.24</version>
+					<version>8.0.28</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1413,7 +1413,7 @@
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>8.0.24</version>
+					<version>8.0.28</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
