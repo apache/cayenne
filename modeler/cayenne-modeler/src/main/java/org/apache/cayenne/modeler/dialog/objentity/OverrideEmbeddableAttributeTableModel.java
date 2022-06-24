@@ -128,9 +128,9 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
                     .getView()).getSaveButton().setEnabled(true);
 
             if (value != null) {
-                DbEntity currentEnt = ((ObjEntity) attr.getEntity()).getDbEntity();
+                DbEntity currentEnt = attr.getEntity().getDbEntity();
                 if (currentEnt != null) {
-                    DbAttribute dbAttr = (DbAttribute) currentEnt.getAttribute(value
+                    DbAttribute dbAttr = currentEnt.getAttribute(value
                             .toString());
                     if (dbAttr != null) {
                         fireTableCellUpdated(DB_ATTRIBUTE_TYPE, col);
@@ -232,14 +232,13 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
             EmbeddableAttribute embAt = getEmbeddableAttribute(i);
             if (!nameAttr.contains(embAt.getDbAttributeName())
                     && embAt.getDbAttributeName() != null) {
-                Collection<String> attributeComboForRow = new ArrayList<String>();
-                attributeComboForRow.addAll(nameAttr);
+                Collection<String> attributeComboForRow = new ArrayList<>(nameAttr);
                 attributeComboForRow.add(embAt.getDbAttributeName());
-                JComboBox comboBoxForRow = Application.getWidgetFactory().createComboBox(
+                JComboBox<String> comboBoxForRow = Application.getWidgetFactory().createComboBox(
                         attributeComboForRow,
                         true);
 
-                cellEditor.setEditorAt(new Integer(i), new DefaultCellEditor(
+                cellEditor.setEditorAt(i, new DefaultCellEditor(
                         comboBoxForRow));
                 BoxCellRenderer renderer = new BoxCellRenderer();
                 renderer.setNotActiveColumn(attributeComboForRow.size() - 1);
@@ -304,13 +303,13 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
     }
 
     private Integer compareObjAttributes(EmbeddableAttribute o1, EmbeddableAttribute o2) {
-        if ((o1 == null && o2 == null) || o1 == o2) {
+        if (o1 == o2) {
             return 0;
         }
-        else if (o1 == null && o2 != null) {
+        else if (o1 == null) {
             return -1;
         }
-        else if (o1 != null && o2 == null) {
+        else if (o2 == null) {
             return 1;
         }
         return null;

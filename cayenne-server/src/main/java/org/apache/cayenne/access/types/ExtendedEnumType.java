@@ -40,13 +40,13 @@ import java.util.Map;
  */
 public class ExtendedEnumType<T extends Enum<T>> implements ExtendedType<T> {
 
-    private Class<T> enumerationClass = null;
-    private T[] values = null;
+    private Class<T> enumerationClass;
+    private T[] values;
 
     // Contains a mapping of database values (Integer or String) and the
     // Enum for that value. This is to facilitate mapping database values
     // back to the Enum upon reading them from the database.
-    private Map<Object, Enum<T>> enumerationMappings = new HashMap<>();
+    private final Map<Object, Enum<T>> enumerationMappings = new HashMap<>();
 
     public ExtendedEnumType(Class<T> enumerationClass) {
         if (enumerationClass == null) {

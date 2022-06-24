@@ -429,8 +429,8 @@ public class EOQuery<T> extends SelectQuery<T> {
 
 			if ("EOKeyComparisonQualifier".equals(qualifierClass)) {
 				// Comparing two keys or key paths
-				key = (String) qualifierMap.get("leftValue");
-				comparisonValue = qualifierMap.get("rightValue");
+				//key = (String) qualifierMap.get("leftValue"); // unused
+				//comparisonValue = qualifierMap.get("rightValue"); // unused
 
 				// FIXME: I think EOKeyComparisonQualifier sytle Expressions are
 				// not

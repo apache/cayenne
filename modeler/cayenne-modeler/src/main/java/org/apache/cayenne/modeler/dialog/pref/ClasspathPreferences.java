@@ -102,7 +102,7 @@ public class ClasspathPreferences extends CayenneController {
             }
 
             String tempValue = preferences.get(cpKey, "");
-            if (!"".equals(tempValue)) {
+            if (!tempValue.isEmpty()) {
                 classPathEntries.add(tempValue);
                 classPathKeys.add(cpKey);
             }

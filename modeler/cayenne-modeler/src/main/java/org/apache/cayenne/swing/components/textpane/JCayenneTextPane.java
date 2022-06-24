@@ -238,7 +238,7 @@ public class JCayenneTextPane extends JPanel {
             this.endYPositionToolTip = start;
             this.startYPositionToolTip = start + height;
             setTooltipTextError(string);
-            imageError = !"".equals(string);
+            imageError = !string.isEmpty();
             setToolTipText("");
         } else {
             this.endYPositionToolTip = -1;

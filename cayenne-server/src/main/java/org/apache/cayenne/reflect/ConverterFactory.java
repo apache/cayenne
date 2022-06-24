@@ -79,7 +79,7 @@ public class ConverterFactory {
             @Override
             protected Long convert(Object object, Class<Long> type) {
                 if (object == null) {
-                    return type.isPrimitive() ? Long.valueOf(0) : null;
+                    return type.isPrimitive() ? 0L : null;
                 }
 
                 if (object instanceof Long) {
@@ -151,7 +151,7 @@ public class ConverterFactory {
                 }
 
                 String string = object.toString();
-                return Character.valueOf(string.length() > 0 ? string.charAt(0) : 0);
+                return string.length() > 0 ? string.charAt(0) : 0;
             }
         };
 

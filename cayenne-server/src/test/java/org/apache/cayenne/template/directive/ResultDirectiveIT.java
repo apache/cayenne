@@ -105,8 +105,7 @@ public class ResultDirectiveIT extends ServerCase {
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> data = observer.rowsForQuery(template);
 		assertEquals(1, data.size());
-		Map<String, Object> row = data.get(0);
-		return row;
+		return data.get(0);
 	}
 
 }

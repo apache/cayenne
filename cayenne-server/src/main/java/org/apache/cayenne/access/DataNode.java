@@ -247,7 +247,7 @@ public class DataNode implements QueryEngine {
 		// upper limit.
 		getAdapter().getExtendedTypes();
 
-		Connection connection = null;
+		Connection connection;
 
 		try {
 			connection = this.getDataSource().getConnection();

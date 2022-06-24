@@ -40,7 +40,7 @@ public class DocumentationAction extends CayenneAction {
     public void performAction(ActionEvent e) {
         String version = LocalizedStringsHandler.getString("cayenne.version");
         String url = "https://cayenne.apache.org";
-        if(!"".equals(version)) {
+        if(!version.isEmpty()) {
             String majorVersion = version.substring(0, version.lastIndexOf('.'));
             url = url + "/docs/" + majorVersion + "/cayenne-guide/";
         }

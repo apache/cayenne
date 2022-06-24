@@ -74,17 +74,17 @@ public class MavenDependencyDialog extends CayenneController {
         String artifactIdText = view.getArtifactId().getText().trim();
         String versionText = view.getVersion().getText().trim();
 
-        if("".equals(groupPath)) {
+        if(groupPath.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty group Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if("".equals(artifactIdText)) {
+        if(artifactIdText.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty artifact Id", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if("".equals(versionText)) {
+        if(versionText.isEmpty()) {
             JOptionPane.showMessageDialog(view, "Empty version", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }

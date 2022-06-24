@@ -99,7 +99,7 @@ public class DataMapUtils {
 
 		if (queryParameters == null) {
 			try {
-				queryParameters = getParameterNames(query.getQualifier(), query.getRoot());
+				queryParameters = getParameterNames(query.getQualifier(), query.getRoot()); // TODO unused assignment?
 			} catch (Exception e) {
 				// if we have wrong path in queryParameters return false.
 				return false;

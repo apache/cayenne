@@ -153,7 +153,7 @@ public class DbActionOptionsDialog extends CayenneDialog {
      */
     public String getSelectedCatalog() {
         String catalog = (String) catalogSelector.getSelectedItem();
-        return "".equals(catalog) ? null : catalog;
+        return catalog.isEmpty() ? null : catalog;
     }
 
     /**
@@ -161,6 +161,6 @@ public class DbActionOptionsDialog extends CayenneDialog {
      */
     public String getSelectedSchema() {
         String schema = (String) schemaSelector.getSelectedItem();
-        return "".equals(schema) ? null : schema;
+        return schema.isEmpty() ? null : schema;
     }
 }

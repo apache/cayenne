@@ -99,7 +99,7 @@ public class GradlePluginIT extends BaseTaskIT {
 
     // will fail on Java 1.1 or earlier :)
     private static int getJavaMajorVersion(String versionString) {
-        int index = 0, prevIndex = 0, version = 0;
+        int index, prevIndex = 0, version = 0;
         if((index = versionString.indexOf("-")) >= 0) {
             versionString = versionString.substring(0, index);
         }

@@ -25,7 +25,7 @@ import java.util.Random;
  */
 public abstract class DictionaryValueProvider<T> implements ValueProvider<T> {
 
-    private Random random = ValueProvider.RANDOM;
+    private Random random;
 
     public DictionaryValueProvider(Random random) {
         this.random = random;

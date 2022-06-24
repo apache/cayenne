@@ -68,8 +68,8 @@ public class DefaultOperationObserver implements OperationObserver {
                 out.println("Query Exceptions:");
             }
 
-            for (final Query query : queryExceptions.keySet()) {
-                Throwable th = queryExceptions.get(query);
+            for (Map.Entry<Query, Throwable> entry : queryExceptions.entrySet()) {
+                Throwable th = queryExceptions.get(entry.getKey());
                 th.printStackTrace(out);
             }
         }

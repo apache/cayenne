@@ -72,7 +72,6 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
                 if (entityResult == null) {
                     throw new CayenneRuntimeException("Can't process prefetch descriptor without root.");
                 }
-                newEntityResult = false;
             }
         } else {
             if(context.getQuery().needsResultSetMapping()) {

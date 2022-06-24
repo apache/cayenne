@@ -280,11 +280,11 @@ public class UnitDbAdapter {
         }
 
         BufferedReader in = new BufferedReader(new InputStreamReader(resource));
-        StringBuffer buf = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         try {
-            String line = null;
+            String line;
             while ((line = in.readLine()) != null) {
-                buf.append(line).append('\n');
+                stringBuilder.append(line).append('\n');
             }
         } catch (IOException e) {
             throw new CayenneRuntimeException("Error reading DDL file: " + location);
@@ -296,7 +296,7 @@ public class UnitDbAdapter {
 
             }
         }
-        return buf.toString();
+        return stringBuilder.toString();
     }
 
     public boolean handlesNullVsEmptyLOBs() {

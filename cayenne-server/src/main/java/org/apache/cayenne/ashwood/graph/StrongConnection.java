@@ -152,8 +152,7 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 					} else {
 						if (contractedArc.size() == 1) {
 							Collection<V> tmp = contractedArc;
-							contractedArc = new ArrayList<>();
-							contractedArc.addAll(tmp);
+							contractedArc = new ArrayList<>(tmp);
 							contractedDigraph.putArc(origin, destination, contractedArc);
 						}
 						contractedArc.add(arc);
@@ -211,21 +210,20 @@ public class StrongConnection<E, V> implements Iterator<Collection<E>> {
 			if (vertex != root) {
 				if (singleton) {
 					Collection<E> tmp = component;
-					component = new ArrayList<>();
-					component.addAll(tmp);
+					component = new ArrayList<>(tmp);
 					singleton = false;
 				}
 				component.add(vertex);
 				dfsStack.remove(vertex);
 			}
 		}
-		reverseDFSFilter.seenVertices.removeAll(component);
+		component.forEach(reverseDFSFilter.seenVertices::remove);
 		return component;
 	}
 
 	private class DFSSeenVerticesPredicate implements Predicate<E> {
 
-		private Set<E> seenVertices = new HashSet<>();
+		private final Set<E> seenVertices = new HashSet<>();
 
 		@Override
 		public boolean test(E vertex) {

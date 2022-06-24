@@ -49,8 +49,7 @@ class DefaultDecoratorBuilder<T> implements DecoratorBuilder<T> {
 
     private DecoratorProvider<T> decoratorProvider(Class<? extends T> decoratorType) {
         DecoratorProvider<T> provider0 = new ConstructorInjectingDecoratorProvider<T>(decoratorType, injector);
-        DecoratorProvider<T> provider1 = new FieldInjectingDecoratorProvider<T>(decoratorType, provider0, injector);
-        return provider1;
+        return new FieldInjectingDecoratorProvider<T>(decoratorType, provider0, injector);
     }
 
 }

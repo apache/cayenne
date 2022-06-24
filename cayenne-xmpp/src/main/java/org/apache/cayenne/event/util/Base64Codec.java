@@ -199,8 +199,8 @@ public class Base64Codec {
         int lengthDataBits = binaryData.length * EIGHTBIT;
         int fewerThan24bits = lengthDataBits % TWENTYFOURBITGROUP;
         int numberTriplets = lengthDataBits / TWENTYFOURBITGROUP;
-        byte encodedData[] = null;
-        int encodedDataLength = 0;
+        byte[] encodedData;
+        int encodedDataLength;
         int nbrChunks = 0;
 
         if (fewerThan24bits != 0) {

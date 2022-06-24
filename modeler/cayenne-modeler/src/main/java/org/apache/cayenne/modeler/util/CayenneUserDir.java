@@ -54,7 +54,7 @@ public class CayenneUserDir {
     protected CayenneUserDir() {
         super();
 
-        File tmpDir = null;
+        File tmpDir;
         String dirName = System.getProperty(ALT_USER_DIR_PROPERTY);
 
         if (dirName != null) {

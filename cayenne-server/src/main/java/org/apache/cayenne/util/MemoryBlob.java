@@ -279,7 +279,7 @@ public class MemoryBlob implements Blob {
         final byte[] ldata = data;
 
         if (len < 0 || len > ldata.length) {
-            throw new SQLException("Invalid length: " + Long.toString(len));
+            throw new SQLException("Invalid length: " + len);
         }
 
         if (len == ldata.length) {

@@ -344,7 +344,7 @@ public class ExpressionFactory {
 			// fix the path - replace split with dot if it's in the middle, or
 			// strip it if
 			// it's in the beginning
-			path = split == 0 ? path.substring(1) : path.replace(SPLIT_SEPARATOR, '.');
+			//path = split == 0 ? path.substring(1) : path.replace(SPLIT_SEPARATOR, '.'); // unused
 
 			int i = 0;
 			for (Object value : values) {

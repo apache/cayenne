@@ -87,7 +87,7 @@ public class ObjAttributeInfoDialogView extends JDialog {
 
         this.typeComboBox = Application.getWidgetFactory().createComboBox(ModelerUtil.getRegisteredTypeNames(), false);
         AutoCompletion.enable(typeComboBox, false, true);
-        typeComboBox.getRenderer();
+        typeComboBox.getRenderer(); // TODO Can remove this line? Result is ignored
 
         this.usedForLockingCheckBox = new JCheckBox();
         this.lazyCheckBox = new JCheckBox();

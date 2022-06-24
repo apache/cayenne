@@ -65,8 +65,6 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 	protected RowDescriptorBuilder configureRowDescriptorBuilder(SQLStatement compiled, ResultSet resultSet)
 			throws SQLException {
 
-		RowDescriptorBuilder builder = super.configureRowDescriptorBuilder(compiled, resultSet);
-
-		return builder;
+		return super.configureRowDescriptorBuilder(compiled, resultSet);
 	}
 }

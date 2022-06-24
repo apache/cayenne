@@ -158,7 +158,7 @@ public class LifecycleCallbackEventHandlerTest {
         protected List callbackTimes = new ArrayList();
 
         void callback(Object entity) {
-            callbackTimes.add(new Long(System.currentTimeMillis()));
+            callbackTimes.add(System.currentTimeMillis());
             try {
                 Thread.sleep(100);
             }

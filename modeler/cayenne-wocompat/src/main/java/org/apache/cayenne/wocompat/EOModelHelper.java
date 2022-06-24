@@ -352,7 +352,7 @@ public class EOModelHelper {
 	 * Loads EOFetchSpecification information and returns it as a map.
 	 */
 	protected Map loadQueryIndex(String entityName) throws Exception {
-		InputStream queryIn = null;
+		InputStream queryIn;
 
 		// catch file open exceptions since not all entities have query
 		// files....

@@ -136,13 +136,12 @@ public class PersistentObjectMap extends RelationshipFault implements Map, Value
                     List localList = resolveFromDB();
 
                     // map objects by property
-                    Map localMap = indexCollection(localList);
 
                     // TODO: andrus 8/20/2007 implement merging local changes like
                     // PersistentObjectList does
                     // mergeLocalChanges(localList);
 
-                    this.objectMap = localMap;
+                    this.objectMap = indexCollection(localList);
                 }
             }
         }

@@ -87,7 +87,7 @@ class GraphHandler extends NamespaceAwareNestedTagHandler {
                 }
 
                 graphType = GraphType.valueOf(type);
-                scale = Double.valueOf(attributes.getValue("scale"));
+                scale = Double.parseDouble(attributes.getValue("scale"));
                 propertiesMap = new HashMap<>();
                 return true;
         }

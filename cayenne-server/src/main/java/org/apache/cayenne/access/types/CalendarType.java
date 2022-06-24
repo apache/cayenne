@@ -59,7 +59,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType<Calendar> 
     @Override
     public Calendar materializeObject(ResultSet rs, int index, int type) throws Exception {
 
-        Date val = null;
+        Date val;
 
         switch (type) {
             case Types.TIMESTAMP:
@@ -97,7 +97,7 @@ public class CalendarType<T extends Calendar> implements ExtendedType<Calendar> 
     @Override
     public Calendar materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
-        Date val = null;
+        Date val;
 
         switch (type) {
             case Types.TIMESTAMP:

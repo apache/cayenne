@@ -104,12 +104,12 @@ public class FormattedSlf4jJdbcEventLogger extends Slf4jJdbcEventLogger {
     private Map<Integer, String> scanQuery(String sql) {
         Map<Integer, String> result = new TreeMap<>();
         String sql2Lower = sql.toLowerCase();
-        for (String keyWrd : KEYWORDS.keySet()) {
+        for (Map.Entry<String, String> entry : KEYWORDS.entrySet()) {
             int prevIdx = 0;
             while (true) {
-                int idx = sql2Lower.indexOf(keyWrd, prevIdx);
+                int idx = sql2Lower.indexOf(entry.getKey(), prevIdx);
                 if (idx >= 0) {
-                    result.put(idx, KEYWORDS.get(keyWrd));
+                    result.put(idx, KEYWORDS.get(entry.getKey()));
                     prevIdx = idx + 1;
                 } else {
                     break;

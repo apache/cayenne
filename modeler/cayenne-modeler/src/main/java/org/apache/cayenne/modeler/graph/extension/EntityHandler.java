@@ -50,10 +50,10 @@ class EntityHandler extends NamespaceAwareNestedTagHandler {
                 Map<String, Object> props = new Hashtable<>();
                 GraphConstants.setBounds(props,
                         new Rectangle2D.Double(
-                                Double.valueOf(attributes.getValue("x")),
-                                Double.valueOf(attributes.getValue("y")),
-                                Double.valueOf(attributes.getValue("width")),
-                                Double.valueOf(attributes.getValue("height"))
+                                Double.parseDouble(attributes.getValue("x")),
+                                Double.parseDouble(attributes.getValue("y")),
+                                Double.parseDouble(attributes.getValue("width")),
+                                Double.parseDouble(attributes.getValue("height"))
                         ));
                 graphHandler.propertiesMap.put(name, props);
                 return true;

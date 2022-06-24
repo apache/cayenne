@@ -81,7 +81,7 @@ public class DataContextEJBQLArrayResultIT extends ServerCase {
         assertEquals(1, objects.size());
 
         Object o1 = objects.get(0);
-        assertEquals(new Long(2), o1);
+        assertEquals(2L, o1);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class DataContextEJBQLArrayResultIT extends ServerCase {
         Object[] array1 = (Object[]) o1;
         assertEquals(2, array1.length);
 
-        assertEquals(new Long(2), array1[0]);
+        assertEquals(2L, array1[0]);
         assertEquals(0, new BigDecimal(8000).compareTo((BigDecimal) array1[1]));
     }
 
@@ -120,7 +120,7 @@ public class DataContextEJBQLArrayResultIT extends ServerCase {
         Object[] array1 = (Object[]) o1;
         assertEquals(3, array1.length);
 
-        assertEquals(new Long(1), array1[0]);
+        assertEquals(1L, array1[0]);
         assertTrue("Expected Artist, got: " + array1[1], array1[1] instanceof Artist);
         assertEquals(0, new BigDecimal(3000).compareTo((BigDecimal) array1[2]));
     }

@@ -86,7 +86,7 @@ public class DriverDataSource implements DataSource {
 		try {
 
 			logConnect(connectionUrl, userName, password);
-			Connection c = null;
+			Connection c;
 
 			if (driver == null) {
 				c = DriverManager.getConnection(connectionUrl, userName, password);

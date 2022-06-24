@@ -29,8 +29,7 @@ import org.apache.cayenne.util.XMLEncoder;
  */
 public class CallbackMap implements Serializable {
 
-    protected CallbackDescriptor[] callbacks = new CallbackDescriptor[LifecycleEvent
-            .values().length];
+    protected CallbackDescriptor[] callbacks;
 
     public CallbackMap() {
 

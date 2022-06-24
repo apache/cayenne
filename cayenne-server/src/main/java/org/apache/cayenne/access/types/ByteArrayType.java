@@ -100,7 +100,7 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 	@Override
 	public byte[] materializeObject(ResultSet rs, int index, int type) throws Exception {
 
-		byte[] bytes = null;
+		byte[] bytes;
 
 		if (type == Types.BLOB) {
 			bytes = (isUsingBlobs()) ? readBlob(rs.getBlob(index)) : readBinaryStream(rs, index);
@@ -119,7 +119,7 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 	@Override
 	public byte[] materializeObject(CallableStatement cs, int index, int type) throws Exception {
 
-		byte[] bytes = null;
+		byte[] bytes;
 
 		if (type == Types.BLOB) {
 			if (!isUsingBlobs()) {

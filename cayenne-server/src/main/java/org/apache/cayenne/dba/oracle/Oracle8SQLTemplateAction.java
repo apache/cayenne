@@ -75,7 +75,7 @@ class Oracle8SQLTemplateAction extends SQLTemplateAction {
                 }
             } else {
                 int updateCount = statement.executeUpdate();
-                updateCounts.add(Integer.valueOf(updateCount));
+                updateCounts.add(updateCount);
                 dataNode.getJdbcEventLogger().logUpdateCount(updateCount);
             }
 

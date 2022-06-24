@@ -463,7 +463,7 @@ public class EOModelProcessor {
 			String externalType = getStringValueFromMap( "externalType", attrMap, prototypeAttrMap );
 
 			String javaType = helper.javaTypeForEOModelerType(attrType, valueType);
-			EODbAttribute dbAttr = null;
+			EODbAttribute dbAttr;
 
 			if (dbAttrName != null && dbEntity != null) {
 

@@ -125,7 +125,7 @@ public class TypesHandler {
 		public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
 			if (JDBC_TYPE_TAG.equals(localName) && currentType != TypesMapping.NOT_DEFINED) {
 				String[] typesAsArray = new String[currentTypes.size()];
-				types.put(Integer.valueOf(currentType), currentTypes.toArray(typesAsArray));
+				types.put(currentType, currentTypes.toArray(typesAsArray));
 			}
 		}
 	}

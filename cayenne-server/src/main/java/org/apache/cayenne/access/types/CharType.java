@@ -131,7 +131,7 @@ public class CharType implements ExtendedType<String> {
 
 		// escape quotes
 		int curPos = 0;
-		int endPos = 0;
+		int endPos;
 
 		while ((endPos = literal.indexOf('\'', curPos)) >= 0) {
 			buffer.append(literal.substring(curPos, endPos + 1)).append('\'');

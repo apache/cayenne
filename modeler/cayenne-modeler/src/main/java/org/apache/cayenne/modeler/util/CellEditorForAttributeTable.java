@@ -48,7 +48,7 @@ public class CellEditorForAttributeTable implements TableCellEditor {
         }
 
         public void setEditorAt(int row, TableCellEditor editor) {
-            editors.put(new Integer(row), editor);
+            editors.put(row, editor);
         }
 
         public Component getTableCellEditorComponent(
@@ -104,7 +104,7 @@ public class CellEditorForAttributeTable implements TableCellEditor {
             else {
                 row = table.rowAtPoint(e.getPoint());
             }
-            editor = (TableCellEditor) editors.get(new Integer(row));
+            editor = (TableCellEditor) editors.get(row);
             if (editor == null) {
                 editor = defaultEditor;
             }
