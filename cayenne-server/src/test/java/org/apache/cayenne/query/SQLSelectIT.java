@@ -270,7 +270,7 @@ public class SQLSelectIT extends ServerCase {
 	public void testObjectArrayWithCustomTypeMappedToPojo() throws SQLException {
 		createArtistDataSet();
 
-		List<ArtistDataWrapper> result = SQLSelect.scalarQuery("SELECT * FROM ARTIST_CT",
+		List<ArtistDataWrapper> result = SQLSelect.columnQuery("SELECT * FROM ARTIST_CT",
 				Integer.class, String.class, LocalDateTime.class)
 				.map(ArtistDataWrapper::new)
 				.select(context);

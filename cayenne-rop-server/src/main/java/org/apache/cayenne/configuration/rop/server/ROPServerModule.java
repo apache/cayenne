@@ -55,20 +55,6 @@ public class ROPServerModule implements Module {
         return binder.bindList(String.class, ROPConstants.SERIALIZATION_WHITELIST);
     }
 
-
-    public ROPServerModule() {}
-
-    /**
-     * @deprecated since 4.2 ROPServerModule became autoloaded.
-     * You need to contribute eventBridgeProperties yourself.
-     * Use {@link #contributeROPBridgeProperties(Binder)} to
-     * contribute properties.
-     */
-    @Deprecated
-    public ROPServerModule(Map<String, String> eventBridgeProperties) {
-        this.eventBridgeProperties = eventBridgeProperties;
-    }
-
     public void configure(Binder binder) {
         contributeSerializationWhitelist(binder);
         MapBuilder<String> mapBuilder = contributeROPBridgeProperties(binder);

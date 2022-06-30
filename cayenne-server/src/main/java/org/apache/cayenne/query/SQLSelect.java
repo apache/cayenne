@@ -94,27 +94,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Creates a query that selects scalar values and uses default routing.
-	 * @deprecated since 4.2. Use {@link #scalarQuery(String, Class)} method.
-	 */
-	@Deprecated
-	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String sql) {
-		return scalarQuery(sql, type);
-	}
-
-	/**
-	 * Creates a query that selects scalar values and uses routing based on the
-	 * provided DataMap name.
-	 * @deprecated since 4.2. Use {@link #scalarQuery(String, String, Class)} method.
-	 */
-	@Deprecated
-	public static <T> SQLSelect<T> scalarQuery(Class<T> type, String dataMapName, String sql) {
-		SQLSelect<T> query = new SQLSelect<>(sql);
-		query.dataMapName = dataMapName;
-		return query.resultColumnsTypes(type).useScalar();
-	}
-
-	/**
 	 * Creates query that selects scalar value and uses default routing
 	 *
 	 * @since 4.1
@@ -136,37 +115,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Creates query that selects scalar value and uses default routing
-	 *
-	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #columnQuery(String)}
-	 */
-	@Deprecated
-	public static SQLSelect<Object[]> scalarQuery(String sql) {
-		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		return query.useScalar();
-	}
-
-	/**
 	 *  Creates query that selects scalar values (as Object[]) and uses default routing
 	 *
 	 *  @since 4.2
 	 */
 	public static SQLSelect<Object[]> columnQuery(String sql) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		return query.useScalar();
-	}
-
-	/**
-	 * Creates query that selects scalar values (as Object[]) and uses routing based on the
-	 * provided DataMap name.
-	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #columnQuery(String, String)}
-	 */
-	@Deprecated
-	public static SQLSelect<Object[]> scalarQuery(String sql, String dataMapName) {
-		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		query.dataMapName = dataMapName;
 		return query.useScalar();
 	}
 
@@ -185,38 +139,10 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	/**
 	 * Creates query that selects scalar values (as Object[]) and uses default routing
 	 *
-	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #columnQuery(String, Class...)}
-	 */
-	@Deprecated
-	public static SQLSelect<Object[]> scalarQuery(String sql, Class<?>... types) {
-		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		return query.resultColumnsTypes(types).useScalar();
-	}
-
-	/**
-	 * Creates query that selects scalar values (as Object[]) and uses default routing
-	 *
 	 * @since 4.2
 	 */
 	public static SQLSelect<Object[]> columnQuery(String sql, Class<?>... types) {
 		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		return query.resultColumnsTypes(types).useScalar();
-	}
-
-	/**
-	 * Creates query that selects scalar values (as Object[]) and uses routing based on the
-	 * provided DataMap name.
-	 *
-	 * @since 4.1
-	 * @deprecated since 4.2. Use {@link #columnQuery(String, String, Class...)}
-	 */
-	@Deprecated
-	public static SQLSelect<Object[]> scalarQuery(String sql,
-												  String dataMapName,
-												  Class<?>... types) {
-		SQLSelect<Object[]> query = new SQLSelect<>(sql);
-		query.dataMapName = dataMapName;
 		return query.resultColumnsTypes(types).useScalar();
 	}
 
@@ -318,16 +244,6 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	public SQLSelect<T> append(String sqlChunk) {
 		sqlBuffer.append(sqlChunk);
 		this.replacementQuery = null;
-		return this;
-	}
-
-	/**
-	 * @deprecated since 4.2
-	 * Use {@link #param(String, Object)}
-	 */
-	@Deprecated
-	public SQLSelect<T> params(String name, Object value) {
-		params(Collections.singletonMap(name, value));
 		return this;
 	}
 

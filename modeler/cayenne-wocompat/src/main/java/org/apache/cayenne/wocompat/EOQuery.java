@@ -109,14 +109,6 @@ public class EOQuery<T> extends SelectQuery<T> {
 		}
 	}
 
-	/**
-	 * Since 4.1 is unused.
-	 */
-	@Deprecated
-	public String getEOName() {
-		return null;
-	}
-
 	public Collection getBindingNames() {
 		if (bindings == null) {
 			initBindings();

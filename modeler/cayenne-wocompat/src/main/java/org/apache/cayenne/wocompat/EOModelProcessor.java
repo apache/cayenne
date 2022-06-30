@@ -32,6 +32,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.wocompat.parser.Parser;
@@ -271,7 +272,7 @@ public class EOModelProcessor {
 		if (prefetches != null && !prefetches.isEmpty()) {
 			Iterator it = prefetches.iterator();
 			while (it.hasNext()) {
-				descriptor.addPrefetch((String) it.next());
+				descriptor.addPrefetch((String) it.next(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 			}
 		}
 

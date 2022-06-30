@@ -36,7 +36,7 @@ public class CayenneRuntimeException extends RuntimeException {
     }
 
     /**
-     * @since 4.1 moved from deprecated {@link CayenneException}
+     * @since 4.1
      */
     public static String getExceptionLabel() {
         return exceptionLabel;

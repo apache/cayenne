@@ -140,18 +140,4 @@ public class CayenneDataObject extends BaseDataObject {
 		super.writeState(out);
 		out.writeObject(values);
 	}
-
-	/**
-	 * Convenience method to invoke {@link Cayenne#makePath(String...)} from
-	 * within a DataObject subclass to create a dotted path using the generated
-	 * string constants for attributes and relationships.
-	 *
-	 * @deprecated since 4.1, use {@link Cayenne#makePath(String...)} instead
-	 * @see Cayenne#makePath(String...)
-	 * @since 3.1
-	 */
-	@Deprecated
-	public static String makePath(String... pathParts) {
-		return Cayenne.makePath(pathParts);
-	}
 }

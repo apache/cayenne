@@ -47,50 +47,7 @@ public class TransactionDescriptor {
 
     private Supplier<Connection> connectionSupplier;
 
-    private TransactionDescriptor() {
-    }
-
-    /**
-     * @param isolation   one of the following <code>Connection</code> constants:
-     *                    <code>Connection.TRANSACTION_READ_UNCOMMITTED</code>,
-     *                    <code>Connection.TRANSACTION_READ_COMMITTED</code>,
-     *                    <code>Connection.TRANSACTION_REPEATABLE_READ</code>,
-     *                    <code>Connection.TRANSACTION_SERIALIZABLE</code>, or
-     *                    <code>TransactionDescriptor.ISOLATION_DEFAULT</code>
-     * @param propagation transaction propagation behaviour
-     * @see TransactionPropagation
-     * @deprecated since 4.2. Use {@link #builder()} method instead.
-     */
-    @Deprecated
-    public TransactionDescriptor(int isolation, TransactionPropagation propagation) {
-        this.isolation = isolation;
-        this.propagation = propagation;
-    }
-
-    /**
-     * Create transaction descriptor with desired isolation level and <code>NESTED</code> propagation
-     *
-     * @param isolation one of the following <code>Connection</code> constants:
-     *                  <code>Connection.TRANSACTION_READ_UNCOMMITTED</code>,
-     *                  <code>Connection.TRANSACTION_READ_COMMITTED</code>,
-     *                  <code>Connection.TRANSACTION_REPEATABLE_READ</code>,
-     *                  <code>Connection.TRANSACTION_SERIALIZABLE</code>, or
-     *                  <code>TransactionDescriptor.ISOLATION_DEFAULT</code>
-     * @deprecated since 4.2. Use {@link #builder()} method instead.
-     */
-    @Deprecated
-    public TransactionDescriptor(int isolation) {
-        this(isolation, TransactionPropagation.NESTED);
-    }
-
-    /**
-     * @param propagation transaction propagation behaviour
-     * @see TransactionPropagation
-     * @deprecated since 4.2. Use {@link #builder()} method instead.
-     */
-    @Deprecated
-    public TransactionDescriptor(TransactionPropagation propagation) {
-        this(ISOLATION_DEFAULT, propagation);
+    protected TransactionDescriptor() {
     }
 
     /**

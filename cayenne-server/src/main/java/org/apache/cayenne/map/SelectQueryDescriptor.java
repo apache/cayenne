@@ -111,16 +111,6 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     /**
-     * Returns list of prefetch paths for this query.
-     *
-     * @deprecated since 4.1 use {@link #getPrefetchesMap()}.
-     */
-    @Deprecated
-    public List<String> getPrefetches() {
-        return new ArrayList<>(prefetchesMap.keySet());
-    }
-
-    /**
      * Sets map of prefetch paths with semantics for this query.
      *
      * @since 4.1
@@ -130,34 +120,12 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     /**
-     * Sets list of prefetch paths for this query.
-     *
-     * @deprecated since 4.1 use {@link #setPrefetchesMap(HashMap)}.
-     */
-    @Deprecated
-    public void setPrefetches(List<String> prefetches) {
-        for(String prefetch : prefetches){
-            this.prefetchesMap.put(prefetch, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-        }
-    }
-
-    /**
      * Adds prefetch path with semantics to this query.
      *
      * @since 4.1
      */
     public void addPrefetch(String prefetchPath, int semantics){
         this.prefetchesMap.put(prefetchPath, semantics);
-    }
-
-    /**
-     * Adds single prefetch path to this query.
-     *
-     * @deprecated since 4.1 use {@link #addPrefetch(String, int)}
-     */
-    @Deprecated
-    public void addPrefetch(String prefetchPath) {
-        this.prefetchesMap.put(prefetchPath, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 
     /**

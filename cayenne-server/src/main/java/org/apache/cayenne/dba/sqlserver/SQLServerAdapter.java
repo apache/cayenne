@@ -82,12 +82,6 @@ public class SQLServerAdapter extends SybaseAdapter {
 	 */
 	private Integer version;
 
-	/**
-	 * @deprecated since 4.2 unused
-	 */
-	@Deprecated
-	public static final String TRIM_FUNCTION = "RTRIM";
-
 	private final List<String> SYSTEM_SCHEMAS = Arrays.asList(
 			"db_accessadmin", "db_backupoperator",
 			"db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",

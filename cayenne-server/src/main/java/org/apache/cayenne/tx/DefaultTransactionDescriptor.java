@@ -24,13 +24,14 @@ package org.apache.cayenne.tx;
  */
 public class DefaultTransactionDescriptor extends TransactionDescriptor {
 
-    private static final DefaultTransactionDescriptor instance = new DefaultTransactionDescriptor();
+    private static final TransactionDescriptor instance = TransactionDescriptor
+            .builder()
+            .isolation(TransactionDescriptor.ISOLATION_DEFAULT)
+            .propagation(TransactionPropagation.NESTED)
+            .build();
 
     public static TransactionDescriptor getInstance() {
         return instance;
     }
 
-    private DefaultTransactionDescriptor() {
-        super(TransactionDescriptor.ISOLATION_DEFAULT, TransactionPropagation.NESTED);
-    }
 }
