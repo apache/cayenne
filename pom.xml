@@ -56,12 +56,10 @@
 		<module>cayenne-client-jetty</module>
 		<module>cayenne-commitlog</module>
 		<module>cayenne-crypto</module>
-		<module>cayenne-dbcp2</module>
 		<module>cayenne-dbsync</module>
 		<module>cayenne-di</module>
 		<module>cayenne-gradle-plugin</module>
 		<module>cayenne-jcache</module>
-		<module>cayenne-joda</module>
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-project</module>
 		<module>cayenne-project-compatibility</module>
