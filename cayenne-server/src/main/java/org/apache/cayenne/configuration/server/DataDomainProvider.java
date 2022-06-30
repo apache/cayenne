@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.DataDomain;
@@ -70,13 +69,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
 	@Inject
 	protected DataChannelDescriptorLoader loader;
-
-	/**
-	 * @deprecated since 4.1, use query and sync filters instead
-	 */
-	@Deprecated
-	@Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
-	protected List<DataChannelFilter> filters;
 
 	/**
 	 * @since 4.1
@@ -181,11 +173,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
 			logger.info("setting DataNode '" + defaultNode.getName() + "' as default, used by all unlinked DataMaps");
 
 			dataDomain.setDefaultNode(defaultNode);
-		}
-
-		// filters are deprecated, used here for backward compatibility
-		for (DataChannelFilter filter : filters) {
-			dataDomain.addFilter(filter);
 		}
 
 		for (DataChannelQueryFilter filter : queryFilters) {

@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelQueryFilterChain;
 import org.apache.cayenne.DataChannelSyncFilter;
@@ -92,13 +91,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 * @since 3.1
 	 */
 	protected int maxIdQualifierSize;
-
-	/**
-	 * @since 3.1
-	 * @deprecated since 4.1 this field is unused
-	 */
-	@Deprecated
-	protected List<DataChannelFilter> filters;
 
 	/**
 	 * @since 4.1
@@ -683,17 +675,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 	}
 
 	/**
-	 * Since 4.1 returns empty list.
-	 *
-	 * @since 3.1
-	 * @deprecated since 4.1 use {@link #getQueryFilters()} and {@link #getSyncFilters()}
-	 */
-	@Deprecated
-	public List<DataChannelFilter> getFilters() {
-		return Collections.emptyList();
-	}
-
-	/**
 	 * Returns an unmodifiable list of query filters registered with this DataDomain.
 	 * <p>
 	 * Filter ordering note: filters are applied in reverse order of their
@@ -717,22 +698,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 */
 	public List<DataChannelSyncFilter> getSyncFilters() {
 		return Collections.unmodifiableList(syncFilters);
-	}
-
-	/**
-	 * Adds a new filter, immediately calling its 'init' method. Since 4.0 this
-	 * method also registers passed filter as an event listener, if any of its
-	 * methods have event annotations.
-	 *
-	 * @since 3.1
-	 * @deprecated since 4.1 use {@link #addQueryFilter(DataChannelQueryFilter)} and {@link #addSyncFilter(DataChannelSyncFilter)} instead
-	 */
-	@Deprecated
-	public void addFilter(DataChannelFilter filter) {
-		filter.init(this);
-		addListener(filter);
-		queryFilters.add(filter);
-		syncFilters.add(filter);
 	}
 
 	/**
@@ -761,18 +726,6 @@ public class DataDomain implements QueryEngine, DataChannel {
 			addListener(filter);
 		}
 		syncFilters.add(filter);
-	}
-
-	/**
-	 * Removes a filter from the filter chain.
-	 *
-	 * @since 3.1
-	 * @deprecated since 4.1 use {@link #removeQueryFilter(DataChannelQueryFilter)} and {@link #removeSyncFilter(DataChannelSyncFilter)} instead
-	 */
-	@Deprecated
-	public void removeFilter(DataChannelFilter filter) {
-		removeQueryFilter(filter);
-		removeSyncFilter(filter);
 	}
 
 	/**
