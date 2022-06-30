@@ -96,6 +96,7 @@ cdbimport {
     dbImport {
         // additional settings
         usePrimitives false
+        useCaseSensitiveNaming true
         defaultPackage 'org.apache.cayenne.test'
 
         // DB filter configuration

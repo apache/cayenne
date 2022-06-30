@@ -26,12 +26,14 @@ import java.sql.Types;
 import org.apache.cayenne.dbsync.merge.MergeCase;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class SetNotNullToDbIT extends MergeCase {
 
 	@Test
 	public void test() throws Exception {
+		Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
 		DbEntity dbEntity = map.getDbEntity("PAINTING");
 		assertNotNull(dbEntity);
 

@@ -47,10 +47,10 @@ public class FiltersConfigTest extends TestCase {
                         new SchemaFilter("schema_21", TableFilter.everything(), PatternFilter.INCLUDE_NOTHING),
                         new SchemaFilter("schema_22",
                                 new TableFilter(
-                                        includes(new IncludeTableFilter(null, PatternFilter.INCLUDE_NOTHING)),
+                                        includes(new IncludeTableFilter(null, PatternFilter.INCLUDE_NOTHING, false)),
                                         excludes("aaa")),
                                 PatternFilter.INCLUDE_NOTHING),
-                        new SchemaFilter("schema_23", TableFilter.include("include"), PatternFilter.INCLUDE_NOTHING)
+                        new SchemaFilter("schema_23", TableFilter.include("include", false), PatternFilter.INCLUDE_NOTHING)
                 )
         );
 
@@ -78,7 +78,7 @@ public class FiltersConfigTest extends TestCase {
     private SortedSet<Pattern> excludes(String ... p) {
         SortedSet<Pattern> patterns = new TreeSet<Pattern>(PatternFilter.PATTERN_COMPARATOR);
         for (String pattern : p) {
-            patterns.add(PatternFilter.pattern(pattern));
+            patterns.add(PatternFilter.pattern(pattern, false));
         }
         return patterns;
     }

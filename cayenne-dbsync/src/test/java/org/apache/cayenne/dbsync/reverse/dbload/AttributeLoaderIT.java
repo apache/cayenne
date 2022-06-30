@@ -25,6 +25,7 @@ import java.sql.Types;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -36,6 +37,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
 
     @Test
     public void testAttributeLoad() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
         createDbEntities();
 
         AttributeLoader loader = new AttributeLoader(adapter, EMPTY_CONFIG, new DefaultDbLoaderDelegate());
@@ -44,8 +46,9 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         DbEntity artist = getDbEntity("ARTIST");
         DbAttribute a = getDbAttribute(artist, "ARTIST_ID");
         assertNotNull(a);
+        //For oracle type numeric
         if(accessStackAdapter.onlyGenericNumberType()) {
-            assertEquals(Types.INTEGER, a.getType());
+            assertTrue(Types.INTEGER == a.getType() || Types.NUMERIC == a.getType());
         } else {
             assertEquals(Types.BIGINT, a.getType());
         }
@@ -78,6 +81,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
 
     @Test
     public void testAttributeLoadTypes() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
         DatabaseMetaData metaData = connection.getMetaData();
         DbLoaderDelegate delegate = new DefaultDbLoaderDelegate();
 
@@ -105,15 +109,15 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         // check varchar
         assertEquals(msgForTypeMismatch(Types.VARCHAR, varcharAttr), Types.VARCHAR, varcharAttr.getType());
         assertEquals(255, varcharAttr.getMaxLength());
-        // check integer
-        assertEquals(msgForTypeMismatch(Types.INTEGER, integerAttr), Types.INTEGER, integerAttr.getType());
+        // check integer. For oracle type numeric
+        assertTrue(msgForTypeMismatch(Types.INTEGER, integerAttr), Types.INTEGER == integerAttr.getType() || Types.NUMERIC == decimalAttr.getType());
         // check float
         assertTrue(msgForTypeMismatch(Types.FLOAT, floatAttr), Types.FLOAT == floatAttr.getType()
                 || Types.DOUBLE == floatAttr.getType() || Types.REAL == floatAttr.getType());
 
-        // check smallint
+        // check smallint. For oracle type numeric
         assertTrue(msgForTypeMismatch(Types.SMALLINT, smallintAttr), Types.SMALLINT == smallintAttr.getType()
-                || Types.INTEGER == smallintAttr.getType());
+                || Types.INTEGER == smallintAttr.getType() || Types.NUMERIC == decimalAttr.getType());
     }
 
     private void assertGenerated() {

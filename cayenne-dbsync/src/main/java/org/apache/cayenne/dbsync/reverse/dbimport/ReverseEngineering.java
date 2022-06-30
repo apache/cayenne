@@ -104,6 +104,12 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
     private boolean usePrimitives = true;
 
     /**
+     * <p>If true, would use case sensitive naming.</p>
+     * <p>Default is <b>"false"</b>, i.e. case insensitive naming will be used.</p>
+     */
+    private boolean useCaseSensitiveNaming = false;
+
+    /**
      * Use old Java 7 date types
      */
     private boolean useJava7Types = false;
@@ -138,6 +144,7 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         this.setForceDataMapCatalog(original.isForceDataMapCatalog());
         this.setUseJava7Types(original.isUseJava7Types());
         this.setUsePrimitives(original.isUsePrimitives());
+        this.setUseCaseSensitiveNaming(original.isUseCaseSensitiveNaming());
         this.setTableTypes(Arrays.asList(original.getTableTypes()));
         this.setName(original.getName());
         for (Catalog catalog : original.getCatalogs()) {
@@ -223,6 +230,9 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         if (usePrimitives) {
             res.append("\n  Use primitives");
         }
+        if (useCaseSensitiveNaming) {
+            res.append("\n  Use case sensitive naming");
+        }
         if (useJava7Types) {
             res.append("\n  Use Java 7 types");
         }
@@ -257,6 +267,13 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         return usePrimitives;
     }
 
+    /**
+     * @since 4.2
+     */
+    public boolean isUseCaseSensitiveNaming() {
+        return useCaseSensitiveNaming;
+    }
+
     public boolean isUseJava7Types() {
         return useJava7Types;
     }
@@ -287,6 +304,13 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
 
     public void setUsePrimitives(boolean usePrimitives) {
         this.usePrimitives = usePrimitives;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void setUseCaseSensitiveNaming(boolean useCaseSensitiveNaming) {
+        this.useCaseSensitiveNaming = useCaseSensitiveNaming;
     }
 
     public void setUseJava7Types(boolean useJava7Types) {
@@ -323,7 +347,7 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
                 .simpleTag("stripFromTableNames", this.getStripFromTableNames())
                 .simpleTag("useJava7Types", Boolean.toString(this.isUseJava7Types()))
                 .simpleTag("usePrimitives", Boolean.toString(this.isUsePrimitives()))
+                .simpleTag("useCaseSensitiveNaming", Boolean.toString(this.isUseCaseSensitiveNaming()))
                 .end();
     }
-
 }

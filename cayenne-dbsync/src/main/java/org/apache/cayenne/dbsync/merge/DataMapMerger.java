@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.EmptyValueForNullProvider;
@@ -48,6 +49,7 @@ public class DataMapMerger implements Merger<DataMap> {
     private FiltersConfig filters;
     private DbEntityMerger dbEntityMerger;
     private List<AbstractMerger<?, ?>> mergerList = new ArrayList<>();
+    private Function<String, String> nameConverter;
 
     private DataMapMerger() {
     }
@@ -81,14 +83,14 @@ public class DataMapMerger implements Merger<DataMap> {
     }
 
     private void createDbEntityMerger(DataMap original, DataMap imported) {
-        dbEntityMerger = new DbEntityMerger(tokenFactory, original, imported, filters, skipPKTokens);
+        dbEntityMerger = new DbEntityMerger(tokenFactory, original, imported, filters, skipPKTokens, nameConverter);
         mergerList.add(dbEntityMerger);
     }
 
     private void createAttributeMerger() {
         ChainMerger<DbEntity, DbAttribute> dbAttributeMerger = new ChainMerger<>(
                 tokenFactory,
-                new DbAttributeMerger(tokenFactory, valueForNull),
+                new DbAttributeMerger(tokenFactory, valueForNull, nameConverter),
                 dbEntityMerger
         );
         mergerList.add(dbAttributeMerger);
@@ -97,23 +99,19 @@ public class DataMapMerger implements Merger<DataMap> {
     private void createRelationshipMerger() {
         ChainMerger<DbEntity, DbRelationship> dbRelationshipMerger = new ChainMerger<>(
                 tokenFactory,
-                new DbRelationshipMerger(tokenFactory, skipRelationshipsTokens, filters),
+                new DbRelationshipMerger(tokenFactory, skipRelationshipsTokens, filters, nameConverter),
                 dbEntityMerger
         );
         mergerList.add(dbRelationshipMerger);
     }
 
     private void createProcedureMerger(DataMap original, DataMap imported) {
-        ProcedureMerger procedureMerger = new ProcedureMerger(tokenFactory, original, imported, filters);
+        ProcedureMerger procedureMerger = new ProcedureMerger(tokenFactory, original, imported, filters, nameConverter);
         mergerList.add(procedureMerger);
     }
 
     public static Builder builder(MergerTokenFactory tokenFactory) {
         return new Builder(tokenFactory);
-    }
-
-    public static DataMapMerger build(MergerTokenFactory tokenFactory) {
-        return builder(tokenFactory).build();
     }
 
     public static class Builder {
@@ -155,6 +153,14 @@ public class DataMapMerger implements Merger<DataMap> {
 
         public Builder filters(FiltersConfig filters) {
             merger.filters = Objects.requireNonNull(filters);
+            return this;
+        }
+
+        /**
+         * @since 4.2
+         */
+        public Builder nameConverter(Function<String, String> nameConverter) {
+            merger.nameConverter = Objects.requireNonNull(nameConverter);
             return this;
         }
     }

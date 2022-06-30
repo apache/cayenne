@@ -19,12 +19,14 @@
 
 package org.apache.cayenne.dbsync.merge;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -44,8 +46,8 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
     private DataMap importedDataMap;
 
     DbEntityMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported,
-                   FiltersConfig filtersConfig, boolean skipPKTokens) {
-        super(tokenFactory);
+                   FiltersConfig filtersConfig, boolean skipPKTokens, Function<String, String> nameConverter) {
+        super(tokenFactory, nameConverter);
         this.filtersConfig = filtersConfig;
         this.skipPKTokens = skipPKTokens;
         originalDataMap = original;
@@ -63,6 +65,7 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
         MergerDictionaryDiff<DbEntity> diff = new MergerDictionaryDiff.Builder<DbEntity>()
                 .originalDictionary(dictionary)
                 .importedDictionary(new DbEntityDictionary(imported, null))
+                .nameConverter(getNameConverter())
                 .build();
         setOriginalDictionary(dictionary);
         return diff;
@@ -70,11 +73,18 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
 
     /**
      * Generate Drop Table in DB token
+     * The creating entity divides into two parts because of the necessity for creating relationships after entity.
+     * This is caused by an unknown name the target objEntity for the relationship before all entities were created.
      * @param imported DbEntity not found in model but found in DB
      */
     @Override
     Collection<MergerToken> createTokensForMissingOriginal(DbEntity imported) {
-        return Collections.singleton(getTokenFactory().createDropTableToDb(imported));
+        Collection<MergerToken> tokens = new ArrayList<>();
+        tokens.add(getTokenFactory().createDropTableToDb(imported));
+        for (DbRelationship rel : imported.getRelationships()) {
+            tokens.add(getTokenFactory().createDropRelationshipToDb(imported, rel));
+        }
+        return tokens;
     }
 
     /**
@@ -118,21 +128,21 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
             primaryKeyName = ((DetectedDbEntity) imported).getPrimaryKeyName();
         }
 
-        if (upperCaseEntityNames(primaryKeyOriginal).equals(upperCaseEntityNames(primaryKeyNew))) {
+        if (convertNames(primaryKeyOriginal).equals(convertNames(primaryKeyNew))) {
             return null;
         }
 
         return Collections.singleton(
                 getTokenFactory().createSetPrimaryKeyToDb(
-                        original, primaryKeyOriginal, primaryKeyNew, primaryKeyName
+                        original, primaryKeyOriginal, primaryKeyNew, primaryKeyName, getNameConverter()
                 )
         );
     }
 
-    private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attributes) {
+    private Set<String> convertNames(Collection<? extends Attribute> attributes) {
         Set<String> names = new HashSet<>();
         for (Attribute attr : attributes) {
-            names.add(attr.getName().toUpperCase());
+            names.add(getNameConverter().apply(attr.getName()));
         }
         return names;
     }

@@ -269,4 +269,24 @@ public class NameBuilderTest {
         assertEquals("getUntitledAttr1", c3);
         entity.getCallbackMap().getPostAdd().addCallbackMethod(c3);
     }
+
+    @Test
+    public void testName_MixedCase_DataMapContext() {
+        ObjectNameGenerator nameGenerator = new DefaultObjectNameGenerator();
+
+        DataMap dataMap = new DataMap();
+        DbEntity dbEntity1 = new DbEntity();
+        dbEntity1.setName("Artist");
+        ObjEntity objEntity1 = new ObjEntity();
+        objEntity1.setName(NameBuilder.builder(objEntity1, dataMap).baseName(nameGenerator.objEntityName(dbEntity1)).name());
+        dataMap.addObjEntity(objEntity1);
+        assertEquals("Artist", objEntity1.getName());
+
+        DbEntity dbEntity2 = new DbEntity();
+        dbEntity2.setName("ARTIST");
+        ObjEntity objEntity2 = new ObjEntity();
+        objEntity2.setName(NameBuilder.builder(objEntity2, dataMap).baseName(nameGenerator.objEntityName(dbEntity2)).name());
+        dataMap.addObjEntity(objEntity2);
+        assertEquals("Artist1", objEntity2.getName());
+    }
 }

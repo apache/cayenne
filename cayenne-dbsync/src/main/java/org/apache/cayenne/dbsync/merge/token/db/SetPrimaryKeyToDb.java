@@ -30,20 +30,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
 
     private Collection<DbAttribute> primaryKeyOriginal;
     private Collection<DbAttribute> primaryKeyNew;
     private String detectedPrimaryKeyName;
+    private Function<String, String> nameConverter;
 
     public SetPrimaryKeyToDb(DbEntity entity, Collection<DbAttribute> primaryKeyOriginal,
-            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName) {
+            Collection<DbAttribute> primaryKeyNew, String detectedPrimaryKeyName, Function<String, String> nameConverter) {
         super("Set Primary Key", 100, entity);
 
         this.primaryKeyOriginal = primaryKeyOriginal;
         this.primaryKeyNew = primaryKeyNew;
         this.detectedPrimaryKeyName = detectedPrimaryKeyName;
+        this.nameConverter = nameConverter;
     }
 
     @Override
@@ -60,8 +63,10 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
         if (detectedPrimaryKeyName == null) {
             return;
         }
-        sqls.add("ALTER TABLE " + adapter.getQuotingStrategy().quotedFullyQualifiedName(getEntity())
-                + " DROP CONSTRAINT " + detectedPrimaryKeyName);
+
+        QuotingStrategy context = adapter.getQuotingStrategy();
+        sqls.add("ALTER TABLE " + context.quotedFullyQualifiedName(getEntity())
+                + " DROP CONSTRAINT " + context.quotedIdentifier(getEntity().getDataMap(), detectedPrimaryKeyName));
     }
 
     protected void appendAddNewPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {
@@ -84,6 +89,6 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
     @Override
     public MergerToken createReverse(MergerTokenFactory factory) {
         return factory.createSetPrimaryKeyToModel(getEntity(), primaryKeyNew, primaryKeyOriginal,
-                detectedPrimaryKeyName);
+                detectedPrimaryKeyName, nameConverter);
     }
 }

@@ -159,7 +159,7 @@ public final class FiltersConfigBuilder {
     private SortedSet<Pattern> transformExcludeTable(Collection<ExcludeTable> excludeTables) {
         SortedSet<Pattern> res = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
         for (ExcludeTable exclude : excludeTables) {
-            res.add(PatternFilter.pattern(exclude.getPattern()));
+            res.add(PatternFilter.pattern(exclude.getPattern(), engineering.isUseCaseSensitiveNaming()));
         }
         return res;
     }
@@ -170,6 +170,7 @@ public final class FiltersConfigBuilder {
             includeTableFilters.add(new IncludeTableFilter(includeTable.getPattern()
                     , transform(includeTable.getIncludeColumns(), includeTable.getExcludeColumns())
                     , transform(Collections.emptyList(), includeTable.getExcludeRelationship())
+                    , engineering.isUseCaseSensitiveNaming()
             ));
         }
 
@@ -177,7 +178,7 @@ public final class FiltersConfigBuilder {
     }
 
     private PatternFilter transform(Collection<? extends PatternParam> include, Collection<? extends PatternParam> exclude) {
-        PatternFilter filter = new PatternFilter();
+        PatternFilter filter = new PatternFilter(engineering.isUseCaseSensitiveNaming());
 
         for (PatternParam patternParam : include) {
             filter.include(patternParam.getPattern());

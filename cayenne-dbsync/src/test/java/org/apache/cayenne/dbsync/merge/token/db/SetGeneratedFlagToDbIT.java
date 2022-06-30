@@ -30,6 +30,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -67,6 +68,7 @@ public class SetGeneratedFlagToDbIT extends MergeCase {
 
     @Test
     public void setGeneratedFlag() throws Exception {
+        Assume.assumeTrue(accessStackAdapter.supportsColumnTypeReengineering());
         DbEntity dbEntity = createTestTable(false);
         assertNotNull(dbEntity);
 
@@ -111,7 +113,7 @@ public class SetGeneratedFlagToDbIT extends MergeCase {
         attribute.setGenerated(false);
 
         List<MergerToken> tokens = createMergeTokens();
-        if(!dbAdapter.supportsGeneratedKeys()) {
+        if(!dbAdapter.supportsGeneratedKeys() || !accessStackAdapter.supportsColumnTypeReengineering()) {
             assertEquals(0, tokens.size());
             return;
         }

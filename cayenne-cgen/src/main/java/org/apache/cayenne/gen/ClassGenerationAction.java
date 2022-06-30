@@ -363,14 +363,20 @@ public class ClassGenerationAction {
 	 * the "encoding" property.
 	 */
 	protected Writer openWriter(TemplateType templateType) throws Exception {
-
-		File outFile = (templateType.isSuperclass()) ? fileForSuperclass() : fileForClass();
+		boolean isSuperclass = templateType.isSuperclass();
+		File outFile = (isSuperclass) ? fileForSuperclass() : fileForClass();
 		if (outFile == null) {
 			return null;
 		}
 
+		if (isSuperclass && outFile.exists() && fileNeedUpdate(outFile, cgenConfiguration.getSuperTemplate())) {
+			if (!outFile.delete()) {
+				logger.warn("File " + outFile.getAbsolutePath() + " can't be deleted.");
+			}
+		}
+
 		if (logger != null) {
-			String label = templateType.isSuperclass() ? "superclass" : "class";
+			String label = isSuperclass ? "superclass" : "class";
 			logger.info("Generating " + label + " file: " + outFile.getCanonicalPath());
 		}
 

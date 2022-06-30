@@ -89,7 +89,7 @@ public class DefaultQuotingStrategy implements QuotingStrategy {
         StringBuilder buffer = new StringBuilder();
 
         for (String part : identifierParts) {
-            if (part == null) {
+            if (part == null || part.isEmpty()) {
                 continue;
             }
             if (buffer.length() > 0) {

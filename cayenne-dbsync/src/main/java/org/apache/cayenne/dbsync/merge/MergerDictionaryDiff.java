@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 class MergerDictionaryDiff<T> {
 
@@ -51,6 +52,7 @@ class MergerDictionaryDiff<T> {
         private MergerDictionary<T> originalDictionary;
         private MergerDictionary<T> importedDictionary;
         private Set<String> sameNames = new HashSet<>();
+        private Function<String,String> nameConverter;
 
         Builder() {
             diff = new MergerDictionaryDiff<>();
@@ -66,13 +68,21 @@ class MergerDictionaryDiff<T> {
             return this;
         }
 
+        /**
+         * @since 4.2
+         */
+        Builder<T> nameConverter(Function<String,String> nameConverter) {
+            this.nameConverter = nameConverter;
+            return this;
+        }
+
         MergerDictionaryDiff<T> build() {
             if(originalDictionary == null || importedDictionary == null) {
                 throw new IllegalArgumentException("Dictionaries not set");
             }
 
-            originalDictionary.init();
-            importedDictionary.init();
+            originalDictionary.init(nameConverter);
+            importedDictionary.init(nameConverter);
 
             diff.same = buildSame();
             diff.missing = buildMissing();

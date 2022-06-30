@@ -93,16 +93,19 @@ public class TableFilter {
         return includes;
     }
 
-    public static TableFilter include(String tablePattern) {
+    public static TableFilter include(String tablePattern, boolean useCaseSensitiveNaming) {
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
-        includes.add(new IncludeTableFilter(tablePattern == null ? null : tablePattern.replaceAll("%", ".*")));
+        includes.add(new IncludeTableFilter(tablePattern == null ? null : tablePattern.replaceAll("%", ".*"), useCaseSensitiveNaming));
 
         return new TableFilter(includes, new TreeSet<>());
     }
 
+    /**
+     * useCaseSensitiveNaming always is true because method creates filter that includes everything.
+     */
     public static TableFilter everything() {
         TreeSet<IncludeTableFilter> includes = new TreeSet<>();
-        includes.add(new IncludeTableFilter(null));
+        includes.add(new IncludeTableFilter(null, true));
 
         return new TableFilter(includes, new TreeSet<>());
     }

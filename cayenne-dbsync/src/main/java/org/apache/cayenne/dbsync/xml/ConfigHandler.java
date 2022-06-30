@@ -52,6 +52,7 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     private static final String STRIP_FROM_TABLE_NAMES_TAG = "stripFromTableNames";
     private static final String USE_JAVA7_TYPES_TAG = "useJava7Types";
     private static final String USE_PRIMITIVES_TAG = "usePrimitives";
+    private static final String USE_CASE_SENSITIVE_NAMING_TAG = "useCaseSensitiveNaming";
     private static final String INCLUDE_TABLE_TAG = "includeTable";
     private static final String EXCLUDE_TABLE_TAG = "excludeTable";
     private static final String INCLUDE_COLUMN_TAG = "includeColumn";
@@ -135,6 +136,9 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
             case USE_PRIMITIVES_TAG:
                 createUsePrimitives(data);
                 break;
+            case USE_CASE_SENSITIVE_NAMING_TAG:
+                createUseCaseSensitiveNaming(data);
+                break;
             case EXCLUDE_TABLE_TAG:
                 createExcludeTable(data);
                 break;
@@ -213,6 +217,20 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
                 configuration.setUsePrimitives(true);
             } else {
                 configuration.setUsePrimitives(false);
+            }
+        }
+    }
+
+    private void createUseCaseSensitiveNaming(String useCaseSesitiveNaming) {
+        if (useCaseSesitiveNaming.trim().length() == 0) {
+            return;
+        }
+
+        if (configuration != null) {
+            if (useCaseSesitiveNaming.equals(TRUE)) {
+                configuration.setUseCaseSensitiveNaming(true);
+            } else {
+                configuration.setUseCaseSensitiveNaming(false);
             }
         }
     }

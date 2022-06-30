@@ -36,6 +36,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -92,7 +93,15 @@ class DeduplicationVisitor implements ConfigurationNodeVisitor<String> {
 
     @Override
     public String visitObjEntity(ObjEntity entity) {
-        return resolve(name -> ((DataMap) parent).getObjEntity(name) != null);
+        return resolve(name -> {
+            Set<String> keys= ((DataMap) parent).getObjEntityMap().keySet();
+            for(String key: keys){
+                if (name.equalsIgnoreCase(key)){
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override

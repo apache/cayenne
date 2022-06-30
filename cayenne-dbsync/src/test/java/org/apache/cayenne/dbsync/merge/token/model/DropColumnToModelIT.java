@@ -38,6 +38,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class DropColumnToModelIT extends MergeCase {
@@ -102,6 +103,7 @@ public class DropColumnToModelIT extends MergeCase {
 
 	@Test
 	public void testRemoveFKColumnWithoutRelationshipInDb() throws Exception {
+		Assume.assumeTrue(accessStackAdapter.supportsFKConstraints());
 		dropTableIfPresent("NEW_TABLE");
 		dropTableIfPresent("NEW_TABLE2");
 
@@ -126,7 +128,7 @@ public class DropColumnToModelIT extends MergeCase {
 		e2col1.setMandatory(true);
 		e2col1.setPrimaryKey(true);
 		dbEntity2.addAttribute(e2col1);
-		DbAttribute e2col2 = new DbAttribute("FK", Types.INTEGER, dbEntity2);
+		DbAttribute e2col2 = new DbAttribute("FK_ID", Types.INTEGER, dbEntity2);
 		dbEntity2.addAttribute(e2col2);
 		DbAttribute e2col3 = new DbAttribute("NAME", Types.VARCHAR, dbEntity2);
 		e2col3.setMaxLength(10);

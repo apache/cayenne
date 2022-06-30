@@ -22,6 +22,7 @@ package org.apache.cayenne.dbsync.merge.token.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Types;
@@ -33,6 +34,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class AddColumnToModelIT extends MergeCase {
@@ -96,6 +98,85 @@ public class AddColumnToModelIT extends MergeCase {
 
         assertTokensAndExecute(1, 0);
         assertTokensAndExecute(0, 0);
+    }
+
+    @Test
+    public void testAddColumnCaseSensitiveNaming() throws Exception {
+        // Mariadb don't support the same attributes name in different cases.
+        Assume.assumeTrue(accessStackAdapter.supportsCaseSensitiveLike());
+        map.setQuotingSQLIdentifiers(true);
+        List<MergerToken> syncTokens = syncDBForCaseSensitiveTest();
+        dropTableIfPresent("NEW_TABLE");
+        assertTokensAndExecute(0, 0);
+
+        DbEntity dbEntity = new DbEntity("NEW_TABLE");
+
+        DbAttribute column1 = new DbAttribute("ID", Types.INTEGER, dbEntity);
+        column1.setMandatory(true);
+        column1.setPrimaryKey(true);
+        dbEntity.addAttribute(column1);
+
+        DbAttribute column2 = new DbAttribute("NAME", Types.VARCHAR, dbEntity);
+        column2.setMaxLength(10);
+        column2.setMandatory(false);
+        dbEntity.addAttribute(column2);
+
+        DbAttribute column3 = new DbAttribute("name", Types.VARCHAR, dbEntity);
+        column3.setMaxLength(10);
+        column3.setMandatory(false);
+        dbEntity.addAttribute(column3);
+
+        //to prevent postgresql from creating pk_table
+        setPrimaryKeyGeneratorDBGenerate(dbEntity);
+        map.addDbEntity(dbEntity);
+
+        assertTokensAndExecute(1, 0, true);
+        assertTokensAndExecute(0, 0, true);
+
+        ObjEntity objEntity = new ObjEntity("NewTable");
+        objEntity.setDbEntity(dbEntity);
+        ObjAttribute oatr1 = new ObjAttribute("name");
+        oatr1.setDbAttributePath(column2.getName());
+        oatr1.setType("java.lang.String");
+        objEntity.addAttribute(oatr1);
+
+        ObjAttribute oatr2 = new ObjAttribute("name1");
+        oatr2.setDbAttributePath(column3.getName());
+        oatr2.setType("java.lang.String");
+        objEntity.addAttribute(oatr2);
+        map.addObjEntity(objEntity);
+
+        // remove name column
+        objEntity.removeAttribute(oatr2.getName());
+        dbEntity.removeAttribute(column3.getName());
+        assertNull(objEntity.getAttribute(oatr2.getName()));
+        assertEquals(1, objEntity.getAttributes().size());
+        assertNull(dbEntity.getAttribute(column3.getName()));
+        assertSame(column2, dbEntity.getAttribute(column2.getName()));
+
+        List<MergerToken> tokens = createMergeTokens(true);
+        assertEquals(1, tokens.size());
+        MergerToken token = tokens.get(0);
+        if (token.getDirection().isToDb()) {
+            token = token.createReverse(mergerFactory());
+        }
+        assertTrue(token instanceof AddColumnToModel);
+        execute(token);
+        assertEquals(2, objEntity.getAttributes().size());
+
+        // clear up
+        map.removeObjEntity(objEntity.getName(), true);
+        map.removeDbEntity(dbEntity.getName(), true);
+        resolver.refreshMappingCache();
+        assertNull(map.getObjEntity(objEntity.getName()));
+        assertNull(map.getDbEntity(dbEntity.getName()));
+        assertFalse(map.getDbEntities().contains(dbEntity));
+
+        assertTokensAndExecute(1, 0, true);
+        assertTokensAndExecute(0, 0, true);
+
+        reverseSyncDBForCaseSensitiveTest(syncTokens);
+        map.setQuotingSQLIdentifiers(false);
     }
 
 }

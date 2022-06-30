@@ -245,6 +245,13 @@ public class DbImportView extends JPanel {
         return configPanel.getUsePrimitives().isSelected();
     }
 
+    /**
+     * @since 4.2
+     */
+    public boolean isUseCaseSensitiveNaming() {
+        return configPanel.getUseCaseSensitiveNaming().isSelected();
+    }
+
     public boolean isUseJava7Typed() {
         return configPanel.getUseJava7Types().isSelected();
     }

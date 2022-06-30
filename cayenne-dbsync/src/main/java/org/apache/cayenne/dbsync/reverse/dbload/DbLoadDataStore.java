@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -43,15 +44,17 @@ public class DbLoadDataStore extends DataMap {
 
     private Map<String, Set<ExportedKey>> exportedKeys = new HashMap<>();
 
-    private Map<String, DbEntity> upperCaseNames = new HashMap<>();
+    private Map<String, DbEntity> names = new HashMap<>();
+    private Function<String, String> nameConverter;
 
-    DbLoadDataStore() {
+    DbLoadDataStore(Function<String, String> nameConverter) {
         super("__generated_by_dbloader__");
+        this.nameConverter = nameConverter;
     }
 
     @Override
     public DbEntity getDbEntity(String dbEntityName) {
-        return upperCaseNames.get(dbEntityName.toUpperCase());
+        return names.get(nameConverter.apply(dbEntityName));
     }
 
     @Override
@@ -60,7 +63,7 @@ public class DbLoadDataStore extends DataMap {
             throw new IllegalArgumentException("Only DetectedDbEntity can be inserted in this map");
         }
         super.addDbEntity(entity);
-        upperCaseNames.put(entity.getName().toUpperCase(), entity);
+        names.put(nameConverter.apply(entity.getName()), entity);
     }
 
     DbEntity addDbEntitySafe(DbEntity entity) {

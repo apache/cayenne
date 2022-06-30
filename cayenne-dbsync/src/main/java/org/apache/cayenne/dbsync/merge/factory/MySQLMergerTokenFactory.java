@@ -35,6 +35,7 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
 
@@ -136,12 +137,14 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
             DbEntity entity,
             Collection<DbAttribute> primaryKeyOriginal,
             Collection<DbAttribute> primaryKeyNew,
-            String detectedPrimaryKeyName) {
+            String detectedPrimaryKeyName,
+            Function<String, String> nameConverter) {
         return new SetPrimaryKeyToDb(
                 entity,
                 primaryKeyOriginal,
                 primaryKeyNew,
-                detectedPrimaryKeyName) {
+                detectedPrimaryKeyName,
+                nameConverter) {
 
             @Override
             protected void appendDropOriginalPrimaryKeySQL(

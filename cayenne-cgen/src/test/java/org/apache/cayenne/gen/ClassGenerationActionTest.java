@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -332,5 +333,31 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		cgenConfiguration.setOverwrite(true);
 		assertNull(action.openWriter(templateType));
+	}
+
+	@Test
+	public void testDeleteFileIfChanged() throws Exception {
+
+		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
+		String rootFolder = tempFolder.getRoot().getAbsolutePath();
+
+		File outFile = new File(rootFolder + "/_TestCLASS2.java");
+		assertTrue(outFile.createNewFile());
+
+		cgenConfiguration.setSuperTemplate(outFile.getAbsolutePath());
+		cgenConfiguration.setRootPath(Paths.get(rootFolder));
+		cgenConfiguration.setRelPath(".");
+		action = new ClassGenerationAction(cgenConfiguration);
+		ObjEntity testEntity1 = new ObjEntity("TEST");
+		testEntity1.setSuperClassName("_TestClass2");
+
+		action.context.put(Artifact.SUPER_PACKAGE_KEY, "");
+		action.context.put(Artifact.SUPER_CLASS_KEY, "_TestClass2");
+		try (Writer out = action.openWriter(templateType);){
+			assertNotNull(out);
+		}
+		outFile = new File(rootFolder + "/_TestClass2.java");
+		assertTrue(outFile.exists());
+		assertEquals(outFile.getAbsolutePath(), rootFolder + File.separator + "_TestClass2.java");
 	}
 }

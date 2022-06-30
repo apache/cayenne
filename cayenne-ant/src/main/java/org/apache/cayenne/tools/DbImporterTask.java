@@ -60,6 +60,7 @@ public class DbImporterTask extends Task {
     public DbImporterTask() {
         this.config = new DbImportConfiguration();
         this.config.setUsePrimitives(true);
+        this.config.setUseCaseSensitiveNaming(false);
         this.config.setUseJava7Types(false);
         this.config.setNamingStrategy(DefaultObjectNameGenerator.class.getName());
 
@@ -245,6 +246,13 @@ public class DbImporterTask extends Task {
 
     public void setUsePrimitives(boolean flag) {
         config.setUsePrimitives(flag);
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void setUseCaseSensitiveNaming(boolean flag) {
+        config.setUseCaseSensitiveNaming(flag);
     }
 
     /**

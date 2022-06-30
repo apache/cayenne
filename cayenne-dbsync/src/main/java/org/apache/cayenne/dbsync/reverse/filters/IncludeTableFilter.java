@@ -28,26 +28,29 @@ public class IncludeTableFilter implements Comparable<IncludeTableFilter> {
 
     public final PatternFilter columnsFilter;
 
+    public final boolean useCaseSensitiveNaming;
+
     /**
      * @since 4.1
      */
     public final PatternFilter relationshipFilter;
 
-    public IncludeTableFilter(String pattern) {
-        this(pattern, PatternFilter.INCLUDE_EVERYTHING, PatternFilter.INCLUDE_EVERYTHING);
+    public IncludeTableFilter(String pattern, boolean useCaseSensitiveNaming) {
+        this(pattern, PatternFilter.INCLUDE_EVERYTHING, PatternFilter.INCLUDE_EVERYTHING, useCaseSensitiveNaming);
     }
 
-    public IncludeTableFilter(String pattern, PatternFilter columnsFilter) {
-        this(pattern, columnsFilter, PatternFilter.INCLUDE_EVERYTHING);
+    public IncludeTableFilter(String pattern, PatternFilter columnsFilter, boolean useCaseSensitiveNaming) {
+        this(pattern, columnsFilter, PatternFilter.INCLUDE_EVERYTHING, useCaseSensitiveNaming);
     }
 
     /**
      * @since 4.1
      */
-    public IncludeTableFilter(String pattern, PatternFilter columnsFilter, PatternFilter relationshipFilter) {
-        this.pattern = PatternFilter.pattern(pattern);
+    public IncludeTableFilter(String pattern, PatternFilter columnsFilter, PatternFilter relationshipFilter, boolean useCaseSensitiveNaming) {
+        this.pattern = PatternFilter.pattern(pattern, useCaseSensitiveNaming);
         this.columnsFilter = columnsFilter;
         this.relationshipFilter = relationshipFilter;
+        this.useCaseSensitiveNaming = useCaseSensitiveNaming;
     }
 
     public boolean isIncludeColumn (String name) {

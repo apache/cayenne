@@ -31,7 +31,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -133,12 +132,16 @@ public class EntityMergeSupport {
     }
 
     /**
-     * Updates ObjEntity attributes and relationships based on the current state
-     * of its DbEntity.
+     * @since 4.2
+     *
+     * Updates ObjEntity attributes and relationships(if @param synchronizeRelationship is true) based on the current
+     * state of its DbEntity.
+     *
+     * @param synchronizeRelationship is boolean. If it's true then relationship will be added.
      *
      * @return true if the ObjEntity has changed as a result of synchronization.
      */
-    public boolean synchronizeWithDbEntity(ObjEntity entity) {
+    public boolean synchronizeWithDbEntity(ObjEntity entity, boolean synchronizeRelationship) {
 
         if (entity == null) {
             return false;
@@ -156,9 +159,22 @@ public class EntityMergeSupport {
         }
 
         changed |= addMissingAttributes(entity);
-        changed |= addMissingRelationships(entity);
+        if (synchronizeRelationship) {
+            changed |= addMissingRelationships(entity);
+        }
 
         return changed;
+    }
+
+    /**
+     * Updates ObjEntity attributes based on the current state
+     * of its DbEntity.
+     * Method synchronizes objEntity entirely with relationships.
+     *
+     * @return true if the ObjEntity has changed as a result of synchronization.
+     */
+    public boolean synchronizeWithDbEntity(ObjEntity entity) {
+        return synchronizeWithDbEntity(entity, true);
     }
 
     /**
@@ -254,6 +270,8 @@ public class EntityMergeSupport {
         return changed;
     }
 
+    // When method creates relationships all entities already exist.
+    // Token for creating relationships execute after creating entity.
     private void addMissingRelationship(ObjEntity entity, DbRelationship dbRelationship) {
 
         // getting DataMap from DbRelationship's source entity. This is the only object in our arguments that
@@ -262,22 +280,13 @@ public class EntityMergeSupport {
 
         DbEntity targetEntity = dbRelationship.getTargetEntity();
         Collection<ObjEntity> mappedObjEntities = dataMap.getMappedEntities(targetEntity);
-        if (mappedObjEntities.isEmpty()) {
-            if (targetEntity == null) {
-                targetEntity = new DbEntity(dbRelationship.getTargetEntityName());
-            }
-
-            if (dbRelationship.getTargetEntityName() != null) {
-                boolean needGeneratedEntity = createObjRelationship(entity, dbRelationship, nameGenerator.objEntityName(targetEntity));
-                if (needGeneratedEntity) {
-                    LOGGER.warn("Can't find ObjEntity for " + dbRelationship.getTargetEntityName());
-                    LOGGER.warn("Db Relationship (" + dbRelationship + ") will have GUESSED Obj Relationship reflection. ");
-                }
-            }
-        } else {
-            for (Entity mappedTarget : mappedObjEntities) {
+        if (!mappedObjEntities.isEmpty()) {
+            for (ObjEntity mappedTarget : mappedObjEntities) {
                 createObjRelationship(entity, dbRelationship, mappedTarget.getName());
             }
+        } else {
+            LOGGER.warn("Can't find ObjEntity for " + dbRelationship.getTargetEntityName());
+            LOGGER.warn("Db Relationship (" + dbRelationship + ") can't be created. ");
         }
     }
 

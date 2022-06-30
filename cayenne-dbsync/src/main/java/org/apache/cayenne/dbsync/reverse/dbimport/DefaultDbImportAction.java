@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
@@ -222,6 +223,7 @@ public class DefaultDbImportAction implements DbImportAction {
            .filters(loaderConfig.getFiltersConfig())
            .skipPKTokens(loaderConfig.isSkipPrimaryKeyLoading())
            .skipRelationshipsTokens(loaderConfig.isSkipRelationshipsLoading())
+           .nameConverter(createNameConverter(config.isUseCaseSensitiveNaming()))
            .build()
            .createMergeTokens(targetDataMap, sourceDataMap);
         tokens = log(sort(reverse(mergerTokenFactory, tokens)));
@@ -250,6 +252,7 @@ public class DefaultDbImportAction implements DbImportAction {
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());
         config.setUsePrimitives(reverseEngineering.isUsePrimitives());
+        config.setUseCaseSensitiveNaming(reverseEngineering.isUseCaseSensitiveNaming());
         config.setUseJava7Types(reverseEngineering.isUseJava7Types());
     }
 
@@ -514,6 +517,13 @@ public class DefaultDbImportAction implements DbImportAction {
         return new DbLoader(adapter, connection,
                 config.getDbLoaderConfig(),
                 config.createLoaderDelegate(),
-                config.createNameGenerator());
+                config.createNameGenerator(),
+                createNameConverter(config.isUseCaseSensitiveNaming()));
+    }
+
+    private Function<String, String> createNameConverter(boolean useCaseSensitiveNaming) {
+        return useCaseSensitiveNaming
+                ? Function.identity()
+                : (String::toUpperCase);
     }
 }

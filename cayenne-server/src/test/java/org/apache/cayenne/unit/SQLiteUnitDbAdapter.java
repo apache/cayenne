@@ -49,4 +49,8 @@ public class SQLiteUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsEscapeInLike() {
         return false;
     }
+
+    public boolean onlyGenericNumberType() {
+        return true;
+    }
 }

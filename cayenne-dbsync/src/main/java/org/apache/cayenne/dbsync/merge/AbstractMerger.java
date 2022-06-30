@@ -21,20 +21,37 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
-import org.apache.cayenne.map.DataMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 abstract class AbstractMerger<T, M> implements Merger<T> {
 
     private MergerDictionaryDiff<M> diff;
     private MergerTokenFactory tokenFactory;
     private DbEntityDictionary originalDictionary;
+    private Function<String, String> nameConverter;
 
-    AbstractMerger(MergerTokenFactory tokenFactory) {
+    AbstractMerger(MergerTokenFactory tokenFactory, Function<String, String> nameConverter) {
         this.tokenFactory = tokenFactory;
+        this.nameConverter = nameConverter;
+    }
+
+    /**
+     * @since 4.2
+     * Sets function for converting string for naming.
+     */
+    public void setNameConverter(Function<String, String> nameConverter) {
+        this.nameConverter = nameConverter;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public Function<String, String> getNameConverter() {
+        return nameConverter;
     }
 
     @Override

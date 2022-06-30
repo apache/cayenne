@@ -28,7 +28,14 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.db.AbstractToDbToken;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.AddRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetNotNullToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetPrimaryKeyToDb;
+import org.apache.cayenne.dbsync.merge.token.db.SetValueForNullToDb;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoader;
@@ -42,6 +49,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -58,6 +66,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
@@ -92,49 +101,65 @@ public abstract class MergeCase extends DbSyncCase {
         // container
         // on every test
         map = runtime.getDataDomain().getDataMap("testmap");
-
+        map.setQuotingSQLIdentifiers(true);
+        //to prevent postgresql from creating pk_table
+        setPrimaryKeyGeneratorDBGenerateForMap(map);
         filterDataMap();
 
         List<MergerToken> tokens = createMergeTokens();
+
         execute(tokens);
 
         assertTokensAndExecute(0, 0);
+        map.setQuotingSQLIdentifiers(false);
     }
 
     protected DataMapMerger.Builder merger() {
-        return DataMapMerger.builder(mergerFactory());
+        return DataMapMerger.builder(mergerFactory()).nameConverter(String::toUpperCase);
     }
 
+    // useCaseSensitiveNaming is false by default
     protected List<MergerToken> createMergeTokens() {
-        return createMergeTokens("ARTIST|GALLERY|PAINTING|NEW_TABLE2?");
+        return createMergeTokens(false);
     }
 
-    protected List<MergerToken> createMergeTokens(String tableFilterInclude) {
+    protected List<MergerToken> createMergeTokens(boolean useCaseSensitiveNaming) {
+        return filterNotValid(createMergeTokensWithoutEmptyFilter(useCaseSensitiveNaming));
+    }
 
+    protected List<MergerToken> createMergeTokensWithoutEmptyFilter(boolean useCaseSensitiveNaming) {
+        return createMergeTokens("ARTIST|GALLERY|PAINTING|NEW_table|NEW_TABLE2?", useCaseSensitiveNaming);
+    }
+
+    private List<MergerToken> createMergeTokens(String tableFilterInclude, boolean useCaseSensitiveNaming) {
         FiltersConfig filters = FiltersConfig.create(null, null,
-                TableFilter.include(tableFilterInclude), PatternFilter.INCLUDE_NOTHING);
+                TableFilter.include(tableFilterInclude, useCaseSensitiveNaming), PatternFilter.INCLUDE_NOTHING);
 
         DbLoaderConfiguration loaderConfiguration = new DbLoaderConfiguration();
         loaderConfiguration.setFiltersConfig(filters);
 
+        Function<String, String> nameConverter = useCaseSensitiveNaming
+                                                    ? Function.identity()
+                                                    : String::toUpperCase;
         DataMap dbImport;
         try (Connection conn = node.getDataSource().getConnection();) {
             dbImport = new DbLoader(node.getAdapter(), conn,
                     loaderConfiguration,
                     new LoggingDbLoaderDelegate(LoggerFactory.getLogger(DbLoader.class)),
-                    new DefaultObjectNameGenerator(NoStemStemmer.getInstance()))
+                    new DefaultObjectNameGenerator(NoStemStemmer.getInstance()),
+                    nameConverter)
                     .load();
 
         } catch (SQLException e) {
             throw new CayenneRuntimeException("Can't doLoad dataMap from db.", e);
         }
 
-        List<MergerToken> tokens = merger().filters(filters).build().createMergeTokens(map, dbImport);
+        List<MergerToken> tokens = merger().filters(filters).nameConverter(nameConverter).build().createMergeTokens(map, dbImport);
         return filter(tokens);
     }
 
     private List<MergerToken> filter(List<MergerToken> tokens) {
-        return filterEmptyTypeChange(filterEmpty(tokens));
+        return filterEmptyTypeChange(tokens);
     }
 
     /**
@@ -172,14 +197,32 @@ public abstract class MergeCase extends DbSyncCase {
         return type == Types.DATE || type == Types.TIME || type == Types.TIMESTAMP;
     }
 
-    private List<MergerToken> filterEmpty(List<MergerToken> tokens) {
+    protected List<MergerToken> filterNotValid(List<MergerToken> tokens) {
         List<MergerToken> tokensOut = new ArrayList<>();
         for(MergerToken token : tokens) {
-            if(!token.isEmpty()) {
+            if(validateToken(token)) {
                 tokensOut.add(token);
             }
         }
         return tokensOut;
+    }
+    
+    private boolean validateToken(MergerToken token) {
+        if (token.isEmpty()) {
+            return false;
+        }
+        if (!accessStackAdapter.supportsFKConstraints()
+                && (token instanceof AddRelationshipToDb
+                    || token instanceof DropRelationshipToDb)) {
+            return false;
+        }
+        return accessStackAdapter.supportsColumnTypeReengineering()
+                || !(token instanceof SetColumnTypeToDb
+                    || token instanceof SetNotNullToDb
+                    || token instanceof SetAllowNullToDb
+                    || token instanceof SetGeneratedFlagToDb
+                    || token instanceof SetPrimaryKeyToDb
+                    || token instanceof SetValueForNullToDb);
     }
 
     /**
@@ -253,7 +296,12 @@ public abstract class MergeCase extends DbSyncCase {
     }
 
     protected void assertTokensAndExecute(int expectedToDb, int expectedToModel) {
-        List<MergerToken> tokens = createMergeTokens();
+        assertTokensAndExecute(expectedToDb, expectedToModel, false);
+    }
+
+    protected void assertTokensAndExecute(int expectedToDb, int expectedToModel, boolean useCaseSensitiveNaming) {
+        List<MergerToken> tokens = createMergeTokens(useCaseSensitiveNaming);
+        tokens = filterNotValid(tokens);
         assertTokens(tokens, expectedToDb, expectedToModel);
         execute(tokens);
     }
@@ -267,7 +315,8 @@ public abstract class MergeCase extends DbSyncCase {
         // must have a dummy datamap for the dummy table for the downstream code
         // to work
         DataMap map = new DataMap("dummy");
-        map.setQuotingSQLIdentifiers(map.isQuotingSQLIdentifiers());
+        map.setQuotingSQLIdentifiers(this.map.isQuotingSQLIdentifiers());
+
         DbEntity entity = new DbEntity(tableName);
         map.addDbEntity(entity);
 
@@ -280,6 +329,38 @@ public abstract class MergeCase extends DbSyncCase {
             } catch (Exception e) {
                 logger.info("Exception dropping table " + tableName + ", probably abscent..");
             }
+        }
+    }
+
+    //Methode sets the DBGenerate for the PrimaryKeyGenerator. pk_table are created with same name in postgres for tables with different case name
+    protected void setPrimaryKeyGeneratorDBGenerate(DbEntity dbEntity) {
+        dbEntity.setPrimaryKeyGenerator(new DbKeyGenerator());
+    }
+
+    private void setPrimaryKeyGeneratorDBGenerateForMap(DataMap dataMap) {
+        for (DbEntity dbEntity : dataMap.getDbEntities()) {
+            if ("ARTIST|GALLERY|PAINTING|NEW_table|NEW_TABLE2?".contains(dbEntity.getName())) {
+                //to prevent postgresql from creating pk_table
+                setPrimaryKeyGeneratorDBGenerate(dbEntity);
+            }
+        }
+    }
+
+    protected List<MergerToken> syncDBForCaseSensitiveTest() {
+        boolean isQuotingSQLIdentifiers = map.isQuotingSQLIdentifiers();
+        map.setQuotingSQLIdentifiers(true);
+        setPrimaryKeyGeneratorDBGenerateForMap(map);
+        filterDataMap();
+        List<MergerToken> tokens = createMergeTokens(true);
+        execute(tokens);
+        assertTokensAndExecute(0, 0, true);
+        map.setQuotingSQLIdentifiers(isQuotingSQLIdentifiers);
+        return tokens;
+    }
+
+    protected void reverseSyncDBForCaseSensitiveTest(List<MergerToken> tokens) throws Exception {
+        for (MergerToken token: tokens) {
+            execute(token.createReverse(mergerFactory()));
         }
     }
 }

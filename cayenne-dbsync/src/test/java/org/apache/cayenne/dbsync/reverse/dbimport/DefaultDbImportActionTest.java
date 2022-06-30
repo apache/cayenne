@@ -125,7 +125,7 @@ public class DefaultDbImportActionTest {
         when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
-        DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
+        DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator, String::toUpperCase) {
             @Override
             public DataMap load() throws SQLException {
                 DataMap map = new DataMap();
@@ -161,7 +161,7 @@ public class DefaultDbImportActionTest {
         when(config.createNameGenerator()).thenReturn(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
         when(config.createMeaningfulPKFilter()).thenReturn(NamePatternMatcher.EXCLUDE_ALL);
 
-        DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
+        DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator, String::toUpperCase) {
             @Override
             public DataMap load() throws SQLException {
                 DataMap dataMap = new DataMap();
@@ -227,7 +227,7 @@ public class DefaultDbImportActionTest {
         when(config.createMergeDelegate()).thenReturn(new DefaultModelMergeDelegate());
         when(config.getDbLoaderConfig()).thenReturn(new DbLoaderConfiguration());
 
-        DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
+        DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator, String::toUpperCase) {
             @Override
             public DataMap load() throws SQLException {
                 DataMap dataMap = new DataMap();

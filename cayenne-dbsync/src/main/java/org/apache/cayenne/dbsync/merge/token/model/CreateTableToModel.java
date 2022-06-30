@@ -28,7 +28,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}
+ * A {@link MergerToken} to add a {@link DbEntity} to a {@link DataMap}.
+ * Token creates a entity without relationships.
  */
 public class CreateTableToModel extends AbstractToModelToken.Entity {
 
@@ -88,7 +89,8 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         map.addObjEntity(objEntity);
 
         // presumably there are no other ObjEntities pointing to this DbEntity, so syncing just this one...
-        context.getEntityMergeSupport().synchronizeWithDbEntity(objEntity);
+        // ObjEntity is synchronized without relationships it will be created with token AddRelationshipToModel
+        context.getEntityMergeSupport().synchronizeWithDbEntity(objEntity, false);
 
         context.getDelegate().dbEntityAdded(getEntity());
         context.getDelegate().objEntityAdded(objEntity);

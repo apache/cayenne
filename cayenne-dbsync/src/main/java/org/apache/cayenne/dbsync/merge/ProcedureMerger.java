@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
@@ -41,8 +42,8 @@ public class ProcedureMerger extends AbstractMerger<DataMap, Procedure> {
     private DataMap importedDataMap;
 
     ProcedureMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported,
-                   FiltersConfig filtersConfig) {
-        super(tokenFactory);
+                   FiltersConfig filtersConfig, Function<String,String> nameConverter) {
+        super(tokenFactory, nameConverter);
         this.filtersConfig = filtersConfig;
         originalDataMap = original;
         importedDataMap = imported;
@@ -58,6 +59,7 @@ public class ProcedureMerger extends AbstractMerger<DataMap, Procedure> {
         return new MergerDictionaryDiff.Builder<Procedure>()
                 .originalDictionary(new ProcedureDictionary(original, filtersConfig))
                 .importedDictionary(new ProcedureDictionary(imported, filtersConfig))
+                .nameConverter(getNameConverter())
                 .build();
     }
 

@@ -55,6 +55,7 @@ public class DbImportConfiguration {
     private String meaningfulPkTables;
     private String adapter;
     private boolean usePrimitives;
+    private boolean useCaseSensitiveNaming;
     private boolean useJava7Types;
     private Logger logger;
     private String namingStrategy;
@@ -146,6 +147,20 @@ public class DbImportConfiguration {
 
     public void setUsePrimitives(boolean usePrimitives) {
         this.usePrimitives = usePrimitives;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public boolean isUseCaseSensitiveNaming() {
+        return useCaseSensitiveNaming;
+    }
+
+    /**
+     * @since 4.2
+     */
+    public void setUseCaseSensitiveNaming(boolean useCaseSensitiveNaming) {
+        this.useCaseSensitiveNaming = useCaseSensitiveNaming;
     }
 
     public boolean isUseJava7Types() {
