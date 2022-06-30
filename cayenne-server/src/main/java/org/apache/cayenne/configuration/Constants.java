@@ -45,17 +45,6 @@ public interface Constants {
     String SERVER_ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
 
     /**
-     * A DI container key for the List&lt;DataChannelFilter&gt; storing
-     * DataDomain filters.
-     *
-     * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainQueryFilters(Binder)
-     * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainSyncFilters(Binder)
-     * @deprecated since 4.1 domain filters replaced with query and sync filters
-     */
-    @Deprecated
-    String SERVER_DOMAIN_FILTERS_LIST = "cayenne.server.domain_filters";
-
-    /**
      * A DI container key for the List&lt;Object&gt; storing lifecycle events listeners.
      *
      * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainListeners(Binder).
