@@ -3,7 +3,8 @@ package org.apache.cayenne.lifecycle.db.auto;
 import java.util.List;
 
 import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.lifecycle.db.E3;
 
 /**
@@ -18,7 +19,7 @@ public abstract class _E4 extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final Property<List<E3>> E3S = Property.create("e3s", List.class);
+    public static final ListProperty<E3> E3S = PropertyFactory.createList("e3s", E3.class);
 
     public void addToE3s(E3 obj) {
         addToManyTarget("e3s", obj, true);

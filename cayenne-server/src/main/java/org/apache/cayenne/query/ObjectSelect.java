@@ -621,29 +621,9 @@ public class ObjectSelect<T> extends FluentSelect<T> implements ParameterizedQue
     /**
      * <p>Select average value of property</p>
      * @see ObjectSelect#column(Property)
-     * @deprecated since 4.2 use {@link #avg(NumericProperty)}
-     */
-    @Deprecated
-    public <E> ColumnSelect<E> avg(org.apache.cayenne.exp.Property<E> property) {
-        return column(property.avg());
-    }
-
-    /**
-     * <p>Select average value of property</p>
-     * @see ObjectSelect#column(Property)
      */
     public <E extends Number> ColumnSelect<E> avg(NumericProperty<E> property) {
         return column(property.avg());
-    }
-
-    /**
-     * <p>Select sum of values</p>
-     * @see ObjectSelect#column(Property)
-     * @deprecated since 4.2 use {@link #sum(NumericProperty)}
-     */
-    @Deprecated
-    public <E extends Number> ColumnSelect<E> sum(org.apache.cayenne.exp.Property<E> property) {
-        return column(property.sum());
     }
 
     /**

@@ -153,19 +153,6 @@ public class BaseProperty<E> implements Property<E> {
     }
 
     /**
-     * Converts this property to a path expression.
-     * This method is equivalent of getExpression() which is preferred as more generic.
-     *
-     * @return a newly created expression.
-     * @see BaseProperty#getExpression()
-     * @deprecated since 4.2, use {@link #getExpression()} method instead
-     */
-    @Deprecated
-    public Expression path() {
-        return getExpression();
-    }
-
-    /**
      * @return An expression representing null.
      */
     public Expression isNull() {

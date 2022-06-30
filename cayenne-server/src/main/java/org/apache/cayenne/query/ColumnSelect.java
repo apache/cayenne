@@ -473,29 +473,9 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     /**
      * <p>Select average value of property</p>
      * @see ColumnSelect#columns(Property[])
-     * @deprecated since 4.2 use {@link #avg(NumericProperty)}
-     */
-    @Deprecated
-    public ColumnSelect<Object[]> avg(org.apache.cayenne.exp.Property<?> property) {
-        return columns(property.avg());
-    }
-
-    /**
-     * <p>Select average value of property</p>
-     * @see ColumnSelect#columns(Property[])
      */
     public ColumnSelect<Object[]> avg(NumericProperty<?> property) {
         return columns(property.avg());
-    }
-
-    /**
-     * <p>Select sum of values</p>
-     * @see ColumnSelect#columns(Property[])
-     * @deprecated since 4.2 use {@link #sum(NumericProperty)}
-     */
-    @Deprecated
-    public <E extends Number> ColumnSelect<Object[]> sum(org.apache.cayenne.exp.Property<E> property) {
-        return columns(property.sum());
     }
 
     /**
