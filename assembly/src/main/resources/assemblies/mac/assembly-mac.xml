@@ -74,11 +74,9 @@
 				<include>org.apache.cayenne:cayenne-client-jetty</include>
 				<include>org.apache.cayenne:cayenne-commitlog</include>
 				<include>org.apache.cayenne:cayenne-crypto</include>
-				<include>org.apache.cayenne:cayenne-dbcp2</include>
 				<include>org.apache.cayenne:cayenne-dbsync</include>
 				<include>org.apache.cayenne:cayenne-di</include>
 				<include>org.apache.cayenne:cayenne-jcache</include>
-				<include>org.apache.cayenne:cayenne-joda</include>
 				<include>org.apache.cayenne:cayenne-lifecycle</include>
 				<include>org.apache.cayenne:cayenne-osgi</include>
 				<include>org.apache.cayenne:cayenne-project</include>

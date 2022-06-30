@@ -90,18 +90,6 @@
 
 		<dependency>
 			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-joda</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		 <dependency>
-            <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-dbcp2</artifactId>
-            <version>${project.version}</version>
-         </dependency>
-
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
 			<artifactId>cayenne-jcache</artifactId>
 			<version>${project.version}</version>
 		</dependency>
