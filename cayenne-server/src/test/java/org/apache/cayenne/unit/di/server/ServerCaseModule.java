@@ -92,8 +92,6 @@ import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.ingres.IngresPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
-import org.apache.cayenne.dba.openbase.OpenBasePkGenerator;
 import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
@@ -170,7 +168,6 @@ public class ServerCaseModule implements Module {
                 .put(SybaseAdapter.class.getName(), SybaseUnitDbAdapter.class.getName())
                 .put(MySQLAdapter.class.getName(), MySQLUnitDbAdapter.class.getName())
                 .put(PostgresAdapter.class.getName(), PostgresUnitDbAdapter.class.getName())
-                .put(OpenBaseAdapter.class.getName(), OpenBaseUnitDbAdapter.class.getName())
                 .put(SQLServerAdapter.class.getName(), SQLServerUnitDbAdapter.class.getName())
                 .put(DB2Adapter.class.getName(), DB2UnitDbAdapter.class.getName())
                 .put(HSQLDBAdapter.class.getName(), HSQLDBUnitDbAdapter.class.getName())
@@ -183,7 +180,6 @@ public class ServerCaseModule implements Module {
                 // Should remove problems with random-failing tests (those that are GC-sensitive).
                 .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
 
-        ServerModule.contributeDomainFilters(binder);
         ServerModule.contributeDomainSyncFilters(binder);
         ServerModule.contributeDomainQueryFilters(binder);
 
@@ -196,7 +192,6 @@ public class ServerCaseModule implements Module {
                 .put(H2Adapter.class.getName(), H2PkGenerator.class)
                 .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
                 .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
-                .put(OpenBaseAdapter.class.getName(), OpenBasePkGenerator.class)
                 .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
                 .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
                 .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)

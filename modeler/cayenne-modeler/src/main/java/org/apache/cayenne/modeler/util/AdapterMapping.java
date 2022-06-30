@@ -30,7 +30,6 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
@@ -69,7 +68,6 @@ public class AdapterMapping {
         jdbcDriverToAdapterMap.put("org.hsqldb.jdbcDriver", HSQLDBAdapter.class.getName());
         jdbcDriverToAdapterMap.put("org.h2.Driver", H2Adapter.class.getName());
         jdbcDriverToAdapterMap.put("org.postgresql.Driver", PostgresAdapter.class.getName());
-        jdbcDriverToAdapterMap.put("com.openbase.jdbc.ObDriver", OpenBaseAdapter.class.getName());
         jdbcDriverToAdapterMap.put("com.microsoft.sqlserver.jdbc.SQLServerDriver", SQLServerAdapter.class.getName());
         jdbcDriverToAdapterMap.put("org.apache.derby.jdbc.EmbeddedDriver", DerbyAdapter.class.getName());
         jdbcDriverToAdapterMap.put("jdbc.FrontBase.FBJDriver", FrontBaseAdapter.class.getName());
@@ -85,7 +83,6 @@ public class AdapterMapping {
         adapterToJDBCURLMap.put(HSQLDBAdapter.class.getName(), "jdbc:hsqldb:hsql://localhost/database");
         adapterToJDBCURLMap.put(H2Adapter.class.getName(), "jdbc:h2:mem:database;MVCC=TRUE");
         adapterToJDBCURLMap.put(PostgresAdapter.class.getName(), "jdbc:postgresql://localhost:5432/database");
-        adapterToJDBCURLMap.put(OpenBaseAdapter.class.getName(), "jdbc:openbase://localhost/database");
         adapterToJDBCURLMap.put(SQLServerAdapter.class.getName(),
                 "jdbc:sqlserver://localhost:1433;databaseName=database;SelectMethod=cursor");
         adapterToJDBCURLMap.put(SQLiteAdapter.class.getName(), "jdbc:sqlite:testdb");
@@ -106,7 +103,6 @@ public class AdapterMapping {
         adapterToJDBCDriverMap.put(HSQLDBAdapter.class.getName(), "org.hsqldb.jdbcDriver");
         adapterToJDBCDriverMap.put(H2Adapter.class.getName(), "org.h2.Driver");
         adapterToJDBCDriverMap.put(PostgresAdapter.class.getName(), "org.postgresql.Driver");
-        adapterToJDBCDriverMap.put(OpenBaseAdapter.class.getName(), "com.openbase.jdbc.ObDriver");
         adapterToJDBCDriverMap.put(SQLServerAdapter.class.getName(), "com.microsoft.sqlserver.jdbc.SQLServerDriver");
         adapterToJDBCDriverMap.put(DerbyAdapter.class.getName(), "org.apache.derby.jdbc.EmbeddedDriver");
 

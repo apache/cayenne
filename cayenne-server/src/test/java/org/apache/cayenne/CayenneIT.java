@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
@@ -113,7 +113,7 @@ public class CayenneIT extends ServerCase {
                 FrontBaseAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
         query.setTemplate(
-                OpenBaseAdapter.class.getName(),
+                MySQLAdapter.class.getName(),
                 "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 

@@ -24,7 +24,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
@@ -67,7 +67,7 @@ public class DataContextDecoratedStackIT extends ServerCase {
                 FrontBaseAdapter.class.getName(),
                 "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
         query.setTemplate(
-                OpenBaseAdapter.class.getName(),
+                MySQLAdapter.class.getName(),
                 "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
         Map<?, ?> count = (Map<?, ?>) Cayenne.objectForQuery(context, query);
         assertNotNull(count);

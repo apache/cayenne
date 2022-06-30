@@ -22,7 +22,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataChannelFilter;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.access.DataDomain;
@@ -121,9 +120,6 @@ import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
-import org.apache.cayenne.dba.openbase.OpenBasePkGenerator;
-import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
@@ -208,20 +204,6 @@ public class ServerModule implements Module {
      */
     public static ListBuilder<String> contributeProjectLocations(Binder binder) {
         return binder.bindList(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST);
-    }
-
-    /**
-     * Provides access to a DI collection builder for {@link DataChannelFilter}'s that allows downstream modules to
-     * "contribute" their own DataDomain filters
-     *
-     * @param binder DI binder passed to the module during injector startup.
-     * @return ListBuilder for DataChannelFilter.
-     * @since 4.0
-     * @deprecated since 4.1 use {@link #contributeDomainQueryFilters(Binder)} and {@link #contributeDomainSyncFilters(Binder)}
-     */
-    @Deprecated
-    public static ListBuilder<DataChannelFilter> contributeDomainFilters(Binder binder) {
-        return binder.bindList(DataChannelFilter.class, Constants.SERVER_DOMAIN_FILTERS_LIST);
     }
 
     /**
@@ -367,7 +349,6 @@ public class ServerModule implements Module {
 
         contributeAdapterDetectors(binder)
                 .add(FirebirdSniffer.class)
-                .add(OpenBaseSniffer.class)
                 .add(FrontBaseSniffer.class)
                 .add(IngresSniffer.class)
                 .add(SQLiteSniffer.class)
@@ -394,7 +375,6 @@ public class ServerModule implements Module {
                 .put(H2Adapter.class.getName(), H2PkGenerator.class)
                 .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
                 .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
-                .put(OpenBaseAdapter.class.getName(), OpenBasePkGenerator.class)
                 .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
                 .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
                 .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
@@ -402,7 +382,6 @@ public class ServerModule implements Module {
                 .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
 
         // configure a filter chain with only one TransactionFilter as default
-        contributeDomainFilters(binder);
         contributeDomainQueryFilters(binder);
         contributeDomainSyncFilters(binder).add(TransactionFilter.class);
 

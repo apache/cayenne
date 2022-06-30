@@ -80,9 +80,6 @@ import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.mysql.MySQLPkGenerator;
 import org.apache.cayenne.dba.mysql.MySQLSniffer;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
-import org.apache.cayenne.dba.openbase.OpenBasePkGenerator;
-import org.apache.cayenne.dba.openbase.OpenBaseSniffer;
 import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.oracle.OraclePkGenerator;
@@ -175,12 +172,11 @@ public class DataDomainProviderTest {
             ServerModule.contributeProperties(binder);
 
             ServerModule.contributeAdapterDetectors(binder).add(FirebirdSniffer.class)
-                    .add(OpenBaseSniffer.class).add(FrontBaseSniffer.class).add(IngresSniffer.class)
+                    .add(FrontBaseSniffer.class).add(IngresSniffer.class)
                     .add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)
                     .add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
                     .add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class)
                     .add(MariaDBSniffer.class);
-            ServerModule.contributeDomainFilters(binder);
             ServerModule.contributeDomainQueryFilters(binder);
             ServerModule.contributeDomainSyncFilters(binder);
             ServerModule.contributeDomainListeners(binder).add(mockListener);
@@ -195,7 +191,6 @@ public class DataDomainProviderTest {
                     .put(H2Adapter.class.getName(), H2PkGenerator.class)
                     .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
                     .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
-                    .put(OpenBaseAdapter.class.getName(), OpenBasePkGenerator.class)
                     .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
                     .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
                     .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)

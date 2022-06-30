@@ -24,7 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResult;
@@ -161,7 +161,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		DataMap map = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate query = new SQLTemplate(map, sql, false);
 		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
-		query.setTemplate(OpenBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
+		query.setTemplate(MySQLAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		SQLResult rsMap = new SQLResult();
@@ -185,7 +185,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		DataMap map = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate query = new SQLTemplate(map, sql, false);
 		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY Y");
-		query.setTemplate(OpenBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY 77");
+		query.setTemplate(MySQLAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY 77");
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		SQLResult rsMap = new SQLResult();

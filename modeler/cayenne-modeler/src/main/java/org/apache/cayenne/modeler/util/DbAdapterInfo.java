@@ -37,7 +37,6 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
@@ -51,7 +50,7 @@ public final class DbAdapterInfo {
             MySQLAdapter.class.getName(), OracleAdapter.class.getName(), SybaseAdapter.class.getName(),
             PostgresAdapter.class.getName(), H2Adapter.class.getName(), HSQLDBAdapter.class.getName(),
             DB2Adapter.class.getName(), SQLServerAdapter.class.getName(), FrontBaseAdapter.class.getName(),
-            FirebirdAdapter.class.getName(), OpenBaseAdapter.class.getName(), DerbyAdapter.class.getName(),
+            FirebirdAdapter.class.getName(), DerbyAdapter.class.getName(),
             IngresAdapter.class.getName(), SQLiteAdapter.class.getName() };
 
     private static final Map<String, String> IMMUTABLE_LABELS = Collections.unmodifiableMap(DEFAULT_ADAPTER_LABELS);
@@ -68,7 +67,6 @@ public final class DbAdapterInfo {
         DEFAULT_ADAPTER_LABELS.put(SQLServerAdapter.class.getName(), "MS SQLServer Adapter");
         DEFAULT_ADAPTER_LABELS.put(FrontBaseAdapter.class.getName(), "FrontBase Adapter");
         DEFAULT_ADAPTER_LABELS.put(FirebirdAdapter.class.getName(), "Firebird Adapter");
-        DEFAULT_ADAPTER_LABELS.put(OpenBaseAdapter.class.getName(), "OpenBase Adapter");
         DEFAULT_ADAPTER_LABELS.put(DerbyAdapter.class.getName(), "Derby Adapter");
         DEFAULT_ADAPTER_LABELS.put(IngresAdapter.class.getName(), "Ingres Adapter");
         DEFAULT_ADAPTER_LABELS.put(SQLiteAdapter.class.getName(), "SQLite Adapter");

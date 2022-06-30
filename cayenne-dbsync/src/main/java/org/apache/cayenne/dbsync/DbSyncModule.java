@@ -26,7 +26,6 @@ import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.ingres.IngresAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.dba.openbase.OpenBaseAdapter;
 import org.apache.cayenne.dba.oracle.Oracle8Adapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
@@ -42,7 +41,6 @@ import org.apache.cayenne.dbsync.merge.factory.HSQLMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.IngresMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.MySQLMergerTokenFactory;
-import org.apache.cayenne.dbsync.merge.factory.OpenBaseMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.OracleMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.PostgresMergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.factory.SQLServerMergerTokenFactory;
@@ -79,7 +77,6 @@ public class DbSyncModule implements Module {
                 .put(HSQLDBAdapter.class.getName(), HSQLMergerTokenFactory.class)
                 .put(IngresAdapter.class.getName(), IngresMergerTokenFactory.class)
                 .put(MySQLAdapter.class.getName(), MySQLMergerTokenFactory.class)
-                .put(OpenBaseAdapter.class.getName(), OpenBaseMergerTokenFactory.class)
                 .put(OracleAdapter.class.getName(), OracleMergerTokenFactory.class)
                 .put(Oracle8Adapter.class.getName(), OracleMergerTokenFactory.class)
                 .put(PostgresAdapter.class.getName(), PostgresMergerTokenFactory.class)
