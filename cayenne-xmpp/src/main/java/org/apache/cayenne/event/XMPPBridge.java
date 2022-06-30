@@ -20,7 +20,6 @@
 package org.apache.cayenne.event;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.event.util.Base64Codec;
 import org.apache.cayenne.util.Util;
 import org.jivesoftware.smack.GroupChat;
 import org.jivesoftware.smack.PacketListener;
@@ -34,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -287,7 +287,7 @@ public class XMPPBridge extends EventBridge {
             return null;
         }
 
-        byte[] bytes = Base64Codec.decodeBase64(string.getBytes());
+        byte[] bytes = Base64.getDecoder().decode(string);
         ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes));
         Object object = in.readObject();
         in.close();
@@ -303,6 +303,6 @@ public class XMPPBridge extends EventBridge {
         out.writeObject(object);
         out.close();
 
-        return new String(Base64Codec.encodeBase64(bytes.toByteArray()));
+        return Base64.getEncoder().encodeToString(bytes.toByteArray());
     }
 }
