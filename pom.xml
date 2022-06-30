@@ -1349,23 +1349,6 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>openbase</id>
-			<activation>
-				<property>
-					<name>cayenneTestConnection</name>
-					<value>openbase</value>
-				</property>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>com.openbase</groupId>
-					<artifactId>openbase-driver</artifactId>
-					<version>9</version>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
 			<id>h2</id>
 			<activation>
 				<property>
