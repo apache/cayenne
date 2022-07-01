@@ -31,9 +31,9 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.IncrementalListResponse;
 import org.apache.cayenne.util.Util;
@@ -107,13 +107,11 @@ public class RemoteIncrementalFaultList implements List {
         // client-generated (e.g. see CAY-1003 - client and server can be in different
         // timezones, so the key can be messed up)
 
-        // there are some serious pagination optimizations for SelectQuery on the
-        // server-side, so use a special wrapper that is itself a subclass of
-        // SelectQuery
-        if (query instanceof SelectQuery) {
-            query = new IncrementalSelectQuery<Object>((SelectQuery<Object>) paginatedQuery, cacheKey);
-        }
-        else {
+        // there are some serious pagination optimizations for ObjectSelect on the
+        // server-side, so use a special wrapper that is itself a subclass of ObjectSelect
+        if (query instanceof ObjectSelect) {
+            query = new IncrementalSelectQuery<>((ObjectSelect<Object>) paginatedQuery, cacheKey);
+        } else {
             query = new IncrementalQuery(paginatedQuery, cacheKey);
         }
 
