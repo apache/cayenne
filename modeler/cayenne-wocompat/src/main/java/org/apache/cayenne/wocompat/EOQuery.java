@@ -28,7 +28,8 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
 
 import java.util.ArrayList;
@@ -45,29 +46,34 @@ import java.util.Map;
  * of WebObjects EOFetchSpecification.
  * 
  * @since 1.1
+ * @since 4.3 this query extends {@link ObjectSelect}
  */
-public class EOQuery<T> extends SelectQuery<T> {
+public class EOQuery<T> extends ObjectSelect<T> {
 
 	protected Map<String, ?> plistMap;
 	protected Map bindings;
 
 	public EOQuery(ObjEntity root, Map<String, ?> plistMap) {
-		super(root);
+		super();
+		entityName(root.getName());
+		setRoot(root);
 		this.plistMap = plistMap;
 		initFromPlist(plistMap);
 	}
 
 	protected void initFromPlist(Map<String, ?> plistMap) {
 
-		setDistinct("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct")));
+		if("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct"))) {
+			distinct();
+		}
 
 		Object fetchLimit = plistMap.get("fetchLimit");
 		if (fetchLimit != null) {
 			try {
 				if (fetchLimit instanceof Number) {
-					setFetchLimit(((Number) fetchLimit).intValue());
+					limit(((Number) fetchLimit).intValue());
 				} else {
-					setFetchLimit(Integer.parseInt(fetchLimit.toString()));
+					limit(Integer.parseInt(fetchLimit.toString()));
 				}
 			} catch (NumberFormatException nfex) {
 				// ignoring...
@@ -81,7 +87,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 				boolean asc = !"compareDescending:".equals(ordering.get("selectorName"));
 				String key = ordering.get("key");
 				if (key != null) {
-					addOrdering(key, asc ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+					orderBy(key, asc ? SortOrder.ASCENDING : SortOrder.DESCENDING);
 				}
 			}
 		}
@@ -89,7 +95,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 		// qualifiers
 		Map<String, ?> qualifierMap = (Map<String, ?>) plistMap.get("qualifier");
 		if (qualifierMap != null && !qualifierMap.isEmpty()) {
-			this.setQualifier(makeQualifier(qualifierMap));
+			where(makeQualifier(qualifierMap));
 		}
 
 		// prefetches
@@ -97,7 +103,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 		if (prefetches != null && !prefetches.isEmpty()) {
 			Iterator it = prefetches.iterator();
 			while (it.hasNext()) {
-				addPrefetch((String) it.next());
+				prefetch((String) it.next(), PrefetchTreeNode.UNDEFINED_SEMANTICS);
 			}
 		}
 
@@ -105,7 +111,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 		// in the
 		// modeler...
 		if (plistMap.containsKey("rawRowKeyPaths")) {
-			setFetchingDataRows(true);
+			fetchDataRows();
 		}
 	}
 

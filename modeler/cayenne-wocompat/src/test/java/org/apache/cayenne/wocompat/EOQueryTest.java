@@ -53,19 +53,19 @@ public class EOQueryTest {
         @SuppressWarnings("unchecked")
         EOQuery query = new EOQuery(map.getObjEntity("Entity1"), (Map<String, ?>) fspecMap.get("E1FS1"));
 
-        assertNotNull(query.getQualifier());
+        assertNotNull(query.getWhere());
         assertEquals(
                 "(name = \"aa\") and (db:ID >= 7) and ((e2.name = \"bb\") or (db:e2.ID != 5))",
-                query.getQualifier().toString());
+                query.getWhere().toString());
         
-        assertNotNull(query.getPrefetchTree());
+        assertNotNull(query.getPrefetches());
         
-        Collection children= query.getPrefetchTree().getChildren();
+        Collection children= query.getPrefetches().getChildren();
         assertEquals(1, children.size());
         assertEquals("e2", ((PrefetchTreeNode) children.iterator().next()).getName());
         
         assertTrue(query.isFetchingDataRows());
-        assertEquals(500, query.getFetchLimit());
+        assertEquals(500, query.getLimit());
         assertEquals(0, query.getPageSize());
         assertTrue(query.isDistinct());
     }
