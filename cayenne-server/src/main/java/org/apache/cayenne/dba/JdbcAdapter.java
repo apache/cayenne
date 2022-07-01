@@ -103,7 +103,6 @@ public class JdbcAdapter implements DbAdapter {
         this.caseInsensitiveCollations = runtimeProperties.getBoolean(Constants.CI_PROPERTY, false);
         this.resourceLocator = resourceLocator;
 
-        this.pkGenerator = createPkGenerator();
         this.quotingStrategy = createQuotingStrategy();
 
         this.ejbqlTranslatorFactory = createEJBQLTranslatorFactory();
@@ -189,16 +188,6 @@ public class JdbcAdapter implements DbAdapter {
             extendedTypes.addFactory(typeFactory);
         }
         extendedTypes.addFactory(new ValueObjectTypeFactory(extendedTypes, valueObjectTypeRegistry));
-    }
-
-    /**
-     * Creates and returns a primary key generator. This factory method should
-     * be overriden by JdbcAdapter subclasses to provide custom implementations
-     * of PKGenerator.
-     */
-    @Deprecated
-    protected PkGenerator createPkGenerator() {
-        return new JdbcPkGenerator(this);
     }
 
     /**

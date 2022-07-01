@@ -250,16 +250,6 @@ public class MySQLAdapter extends JdbcAdapter {
 	}
 
 	/**
-	 * Creates and returns a primary key generator. Overrides superclass
-	 * implementation to return an instance of MySQLPkGenerator that does the
-	 * correct table locking.
-	 */
-	@Override
-	protected PkGenerator createPkGenerator() {
-		return new MySQLPkGenerator(this);
-	}
-
-	/**
 	 * @since 3.0
 	 */
 	@Override

@@ -259,14 +259,6 @@ public class PostgresAdapter extends JdbcAdapter {
 		return Collections.singleton("DROP TABLE " + context.quotedFullyQualifiedName(table) + " CASCADE");
 	}
 
-	/**
-	 * @see JdbcAdapter#createPkGenerator()
-	 */
-	@Override
-	protected PkGenerator createPkGenerator() {
-		return new PostgresPkGenerator(this);
-	}
-
 	@Override
 	public boolean supportsCatalogsOnReverseEngineering() {
 		return false;

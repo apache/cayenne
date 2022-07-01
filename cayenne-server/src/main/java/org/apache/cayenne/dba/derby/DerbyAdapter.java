@@ -95,11 +95,6 @@ public class DerbyAdapter extends JdbcAdapter {
 	public boolean supportsGeneratedKeysForBatchInserts() {
 		return false;
 	}
-	
-    @Override
-    protected PkGenerator createPkGenerator() {
-        return new DerbyPkGenerator(this);
-    }
 
     @Override
     public SQLAction getAction(Query query, DataNode node) {

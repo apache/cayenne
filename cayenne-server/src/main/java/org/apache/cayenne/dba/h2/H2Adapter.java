@@ -96,9 +96,4 @@ public class H2Adapter extends JdbcAdapter {
         // create specially configured CharType handler
         map.registerType(new H2CharType());
     }
-
-    @Override
-    protected PkGenerator createPkGenerator() {
-        return new H2PkGenerator(this);
-    }
 }

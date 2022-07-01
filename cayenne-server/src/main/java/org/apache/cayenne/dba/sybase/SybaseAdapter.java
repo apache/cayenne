@@ -111,15 +111,6 @@ public class SybaseAdapter extends JdbcAdapter {
         map.registerType(new ByteType(true));
     }
 
-    /**
-     * Creates and returns a primary key generator. Overrides superclass
-     * implementation to return an instance of SybasePkGenerator.
-     */
-    @Override
-    protected PkGenerator createPkGenerator() {
-        return new SybasePkGenerator(this);
-    }
-
     @Override
     public void bindParameter(PreparedStatement statement, ParameterBinding binding) throws Exception {
 

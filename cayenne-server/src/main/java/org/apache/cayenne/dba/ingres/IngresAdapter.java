@@ -92,14 +92,6 @@ public class IngresAdapter extends JdbcAdapter {
 		map.registerType(new IngresBooleanType());
 	}
 
-	/**
-	 * @see JdbcAdapter#createPkGenerator()
-	 */
-	@Override
-	protected PkGenerator createPkGenerator() {
-		return new IngresPkGenerator(this);
-	}
-
 	@Override
 	public void bindParameter(PreparedStatement statement, ParameterBinding binding)
 			throws SQLException, Exception {

@@ -214,11 +214,6 @@ public class FrontBaseAdapter extends JdbcAdapter {
 		return Collections.singleton("DROP TABLE " + getQuotingStrategy().quotedFullyQualifiedName(table) + " CASCADE");
 	}
 
-	@Override
-	protected PkGenerator createPkGenerator() {
-		return new FrontBasePkGenerator(this);
-	}
-
 	/**
 	 * Uses FrontBaseActionBuilder to create the right action.
 	 *

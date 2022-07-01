@@ -215,15 +215,6 @@ public class OracleAdapter extends JdbcAdapter {
 	}
 
 	/**
-	 * Creates and returns a primary key generator. Overrides superclass
-	 * implementation to return an instance of OraclePkGenerator.
-	 */
-	@Override
-	protected PkGenerator createPkGenerator() {
-		return new OraclePkGenerator(this);
-	}
-
-	/**
 	 * Returns a query string to drop a table corresponding to <code>ent</code>
 	 * DbEntity. Changes superclass behavior to drop all related foreign key
 	 * constraints.

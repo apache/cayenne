@@ -73,14 +73,6 @@ public class DB2Adapter extends JdbcAdapter {
         setSupportsGeneratedKeys(true);
     }
 
-    /**
-     * Creates a DB2 specific PK Generator.
-     */
-    @Override
-    protected PkGenerator createPkGenerator() {
-        return new DB2PkGenerator(this);
-    }
-
     @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {
         super.configureExtendedTypes(map);
