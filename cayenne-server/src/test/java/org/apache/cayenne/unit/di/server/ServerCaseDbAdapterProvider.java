@@ -19,9 +19,11 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -31,15 +33,22 @@ public class ServerCaseDbAdapterProvider implements Provider<JdbcAdapter> {
     private DataSourceInfo dataSourceInfo;
     private AdhocObjectFactory objectFactory;
 
-    public ServerCaseDbAdapterProvider(@Inject DataSourceInfo dataSourceInfo,
-            @Inject AdhocObjectFactory objectFactory) {
+    private PkGeneratorFactoryProvider pkGeneratorProvider;
+
+    public ServerCaseDbAdapterProvider(
+            @Inject DataSourceInfo dataSourceInfo,
+            @Inject AdhocObjectFactory objectFactory,
+            @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.dataSourceInfo = dataSourceInfo;
         this.objectFactory = objectFactory;
+        this.pkGeneratorProvider = pkGeneratorProvider;
     }
 
     public JdbcAdapter get() throws ConfigurationException {
-
-        return objectFactory.newInstance(DbAdapter.class, dataSourceInfo
-                .getAdapterClassName());
+        JdbcAdapter jdbcAdapter = objectFactory.newInstance(DbAdapter.class, dataSourceInfo.getAdapterClassName());
+        PkGenerator pkGenerator = pkGeneratorProvider.get(jdbcAdapter);
+        jdbcAdapter.setPkGenerator(pkGenerator);
+        pkGenerator.setAdapter(jdbcAdapter);
+        return jdbcAdapter;
     }
 }
