@@ -22,9 +22,14 @@ package org.apache.cayenne.tools;
 import groovy.lang.Closure;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
+import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -92,8 +97,10 @@ public class DbGenerateTask extends BaseCayenneTask {
         Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()));
 
         try {
-            DbGenerator generator = createGenerator(loadDataMap(injector));
-            generator.runGenerator(createDataSource());
+            DataSource realDataSource = createDataSource();
+            DataMap dataMap = loadDataMap(injector);
+            DbGenerator generator = createGenerator(dataMap, injector, realDataSource);
+            generator.runGenerator(realDataSource);
         } catch (Exception ex) {
             Throwable th = Util.unwindException(ex);
             String message = "Error generating database";
@@ -106,8 +113,10 @@ public class DbGenerateTask extends BaseCayenneTask {
         }
     }
 
-    DbGenerator createGenerator(DataMap dataMap) {
-        DbGenerator generator = new DbGenerator(createDbAdapter(), dataMap, NoopJdbcEventLogger.getInstance());
+    DbGenerator createGenerator(DataMap dataMap, Injector injector, DataSource realDataSource) throws Exception {
+        DbAdapter dbAdapter = createDbAdapter(injector, realDataSource);
+
+        DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopJdbcEventLogger.getInstance());
         generator.setShouldCreateFKConstraints(createFK);
         generator.setShouldCreatePKSupport(createPK);
         generator.setShouldCreateTables(createTables);
@@ -116,13 +125,12 @@ public class DbGenerateTask extends BaseCayenneTask {
         return generator;
     }
 
-    DbAdapter createDbAdapter() {
-        Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()));
-        AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
+    DbAdapter createDbAdapter(Injector injector, DataSource realDataSource) throws Exception {
+        DbAdapterFactory adapterFactory = injector.getInstance(DbAdapterFactory.class);
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setAdapterType(adapter);
 
-        return (adapter == null)
-                ? objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName())
-                : objectFactory.newInstance(DbAdapter.class, adapter);
+        return adapterFactory.createAdapter(nodeDescriptor, realDataSource);
     }
 
     DataSource createDataSource() {

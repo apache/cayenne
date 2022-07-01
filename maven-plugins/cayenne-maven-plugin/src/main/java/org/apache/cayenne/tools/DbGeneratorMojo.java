@@ -21,6 +21,8 @@ package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -46,6 +48,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.File;
 import java.sql.Driver;
+import javax.sql.DataSource;
 
 /**
  * Maven mojo that generates database schema based on Cayenne mapping.
@@ -126,7 +129,6 @@ public class DbGeneratorMojo extends AbstractMojo {
 
         Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(logger),
                 binder -> binder.bind(ClassLoaderManager.class).toInstance(new MavenPluginClassLoaderManager(project)));
-        AdhocObjectFactory objectFactory = injector.getInstance(AdhocObjectFactory.class);
 
         logger.info(String.format("connection settings - [driver: %s, url: %s, username: %s]",
                 dataSource.getDriver(), dataSource.getUrl(), dataSource.getUsername()));
@@ -136,22 +138,22 @@ public class DbGeneratorMojo extends AbstractMojo {
                 dropTables, dropPK, createTables, createPK, createFK));
 
         try {
-            final DbAdapter adapterInst = (adapter == null) ?
-                    objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName()) :
-                    objectFactory.newInstance(DbAdapter.class, adapter);
+            // load driver taking custom CLASSPATH into account...
+            DriverDataSource driverDataSource = new DriverDataSource(
+                    (Driver) Class.forName(dataSource.getDriver()).getDeclaredConstructor().newInstance(),
+                    dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword()
+            );
+
+            final DbAdapter dbAdapter = createDbAdapter(injector, driverDataSource);
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap(injector);
-            DbGenerator generator = new DbGenerator(adapterInst, dataMap, NoopJdbcEventLogger.getInstance());
+            DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopJdbcEventLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
             generator.setShouldCreateTables(createTables);
             generator.setShouldDropPKSupport(dropPK);
             generator.setShouldDropTables(dropTables);
-
-            // load driver taking custom CLASSPATH into account...
-            DriverDataSource driverDataSource = new DriverDataSource((Driver) Class.forName(dataSource.getDriver()).newInstance(),
-                    dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
 
             generator.runGenerator(driverDataSource);
         } catch (Exception ex) {
@@ -163,6 +165,15 @@ public class DbGeneratorMojo extends AbstractMojo {
             logger.error(message);
             throw new MojoExecutionException(message, th);
         }
+    }
+
+    private DbAdapter createDbAdapter(Injector injector, DataSource dataSource) throws Exception {
+        DbAdapterFactory adapterFactory = injector.getInstance(DbAdapterFactory.class);
+
+        DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
+        nodeDescriptor.setAdapterType(adapter);
+
+        return adapterFactory.createAdapter(nodeDescriptor, dataSource);
     }
 
     /**
