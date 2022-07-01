@@ -24,7 +24,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResult;
@@ -129,10 +128,10 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		Object[] array4 = (Object[]) objects.get(3);
 		assertEquals(2, array3.length);
 
-		assertEquals(new Integer(1), array1[1]);
-		assertEquals(new Integer(1), array2[1]);
-		assertEquals(new Integer(0), array3[1]);
-		assertEquals(new Integer(0), array4[1]);
+		assertEquals(1, array1[1]);
+		assertEquals(1, array2[1]);
+		assertEquals(0, array3[1]);
+		assertEquals(0, array4[1]);
 		assertTrue("Unexpected DataObject: " + array1[0], array1[0] instanceof Artist);
 	}
 
@@ -161,7 +160,6 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		DataMap map = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate query = new SQLTemplate(map, sql, false);
 		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
-		query.setTemplate(MySQLAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		SQLResult rsMap = new SQLResult();
@@ -185,7 +183,6 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		DataMap map = context.getEntityResolver().getDataMap("testmap");
 		SQLTemplate query = new SQLTemplate(map, sql, false);
 		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY Y");
-		query.setTemplate(MySQLAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY 77");
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		SQLResult rsMap = new SQLResult();
@@ -255,7 +252,7 @@ public class DataContextSQLTemplateIT extends ServerCase {
 		DataRow row2 = rows.get(1);
 		assertEquals(3, row2.size());
 		Object id = row2.get("ARTIST_ID");
-		assertEquals(new Integer(101), new Integer(id.toString()));
+		assertEquals(Integer.valueOf(101), Integer.valueOf(id.toString()));
 	}
 
 	@Test
