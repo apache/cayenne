@@ -40,7 +40,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * A DbAdapter that automatically detects the kind of database it is running on
@@ -96,15 +95,6 @@ public class AutoAdapter implements DbAdapter {
 	 */
 	protected DbAdapter loadAdapter() {
 		return adapterProvider.get();
-	}
-
-	/**
-	 * @since 4.0
-	 */
-	@Override
-	@Deprecated
-	public SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver) {
-		return getAdapter().getSelectTranslator(query, entityResolver);
 	}
 
 	/**

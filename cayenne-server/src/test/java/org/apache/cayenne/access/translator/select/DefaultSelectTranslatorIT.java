@@ -30,7 +30,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -237,11 +236,10 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 	 * Tests query creation with "distinct" specified.
 	 */
 	@Test
-	@Deprecated
 	public void testCreateSqlString2() throws Exception {
 		// query with "distinct" set
-		SelectQuery<Artist> q = new SelectQuery<>(Artist.class);
-		q.setDistinct(true);
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
+		q.distinct();
 
 		String generatedSql = new DefaultSelectTranslator(q, dataNode.getAdapter(), dataNode.getEntityResolver()).getSql();
 

@@ -24,7 +24,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
@@ -82,7 +81,6 @@ public class CAY_115IT extends ServerCase {
     }
 
     @Test
-    @Deprecated
     public void testDistinctClobFetch() throws Exception {
         if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;
@@ -90,12 +88,12 @@ public class CAY_115IT extends ServerCase {
 
         createDistinctClobFetchDataSet();
 
-        SelectQuery<ClobMaster> noDistinct = SelectQuery.query(ClobMaster.class);
-        noDistinct.addOrdering(ClobMaster.NAME.asc());
+        ObjectSelect<ClobMaster> noDistinct = ObjectSelect.query(ClobMaster.class);
+        noDistinct.orderBy(ClobMaster.NAME.asc());
 
-        SelectQuery<ClobMaster> distinct = SelectQuery.query(ClobMaster.class);
-        distinct.setDistinct(true);
-        distinct.addOrdering(ClobMaster.NAME.asc());
+        ObjectSelect<ClobMaster> distinct = ObjectSelect.query(ClobMaster.class);
+        distinct.distinct();
+        distinct.orderBy(ClobMaster.NAME.asc());
 
         List<?> noDistinctResult = context.performQuery(noDistinct);
         List<?> distinctResult = context.performQuery(distinct);

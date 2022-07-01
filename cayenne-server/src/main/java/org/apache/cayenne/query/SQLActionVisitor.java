@@ -38,11 +38,6 @@ public interface SQLActionVisitor {
     SQLAction batchAction(BatchQuery query);
 
     /**
-     * Creates an action to execute a SelectQuery.
-     */
-    <T> SQLAction objectSelectAction(SelectQuery<T> query);
-
-    /**
      * Creates an action to execute a FluentSelect.
      * @since 4.2
      */

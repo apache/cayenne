@@ -21,7 +21,10 @@ package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
-import org.apache.cayenne.query.*;
+import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.SQLAction;
 
 /**
  * @since 1.2
@@ -72,21 +75,8 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	 * @since 4.2
 	 */
 	@Override
-	public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-		return new SQLServerSelectAction(query, dataNode, needInMemoryOffset(query));
-	}
-
-	/**
-	 * @since 4.2
-	 */
-	@Override
 	public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
 		return new SQLServerSelectAction(query, dataNode, needInMemoryOffset(query));
-	}
-
-	private boolean needInMemoryOffset(SelectQuery<?> query) {
-		return query.getOrderings() == null || query.getOrderings().size() == 0
-				|| version == null || version < 12;
 	}
 
 	private boolean needInMemoryOffset(FluentSelect<?> query) {

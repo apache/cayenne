@@ -30,7 +30,6 @@ import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Preprocessor and router of SelectQuery prefetches.
- * Copy of {@link SelectQueryPrefetchRouterAction}.
  *
  * @since 4.2
  */

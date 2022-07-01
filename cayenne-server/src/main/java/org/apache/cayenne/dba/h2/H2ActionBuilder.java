@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 4.1
@@ -31,11 +30,6 @@ import org.apache.cayenne.query.SelectQuery;
 public class H2ActionBuilder extends JdbcActionBuilder {
     public H2ActionBuilder(DataNode node) {
         super(node);
-    }
-
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new H2SelectAction(query, dataNode);
     }
 
     /**

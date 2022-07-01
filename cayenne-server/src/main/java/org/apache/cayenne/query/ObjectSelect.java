@@ -40,9 +40,9 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
- * A selecting query providing chainable API. This is an alternative to
- * {@link SelectQuery} when you want to use a fluent API. For example, the following
- * is a convenient way to return a record:
+ * A selecting query providing chainable API.
+ * <p>
+ * For example, the following is a convenient way to return a record:
  * <pre>
  * {@code
  * Artist a = ObjectSelect

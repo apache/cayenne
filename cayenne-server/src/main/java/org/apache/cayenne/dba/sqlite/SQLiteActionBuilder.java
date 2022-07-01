@@ -23,7 +23,6 @@ import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 3.0
@@ -37,14 +36,6 @@ class SQLiteActionBuilder extends JdbcActionBuilder {
     @Override
     public SQLAction sqlAction(SQLTemplate query) {
         return new SQLiteSQLTemplateAction(query, dataNode);
-    }
-
-    /**
-     * @since 4.1
-     */
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new SQLiteSelectAction(query, dataNode);
     }
 
     /**

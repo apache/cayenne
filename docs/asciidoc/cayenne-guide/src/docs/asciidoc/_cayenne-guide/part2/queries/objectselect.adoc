@@ -14,7 +14,7 @@
 [[select]]
 ==== ObjectSelect
 
-NOTE: `ObjectSelect` supersedes older `SelectQuery`. `SelectQuery` is deprecated since 4.2.
+NOTE: `ObjectSelect` supersedes older `SelectQuery`. `SelectQuery` is deprecated since 4.2 and removed in 4.3.
 
 ===== Selecting objects
 

@@ -26,7 +26,6 @@ import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 1.2
@@ -57,11 +56,6 @@ class OracleActionBuilder extends JdbcActionBuilder {
     @Override
     public SQLAction procedureAction(ProcedureQuery query) {
         return new OracleProcedureAction(query, dataNode);
-    }
-
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new OracleSelectAction(query, dataNode);
     }
 
     /**

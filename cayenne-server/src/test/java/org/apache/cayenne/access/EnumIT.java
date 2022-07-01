@@ -26,7 +26,6 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.enum_test.Enum1;
@@ -64,19 +63,6 @@ public class EnumIT extends ServerCase {
         EnumEntity e = context.newObject(EnumEntity.class);
         e.setEnumAttribute(Enum1.one);
         context.commitChanges();
-    }
-
-    @Test
-    @Deprecated
-    public void testSelectQuery() throws Exception {
-        createDataSet();
-
-        SelectQuery<EnumEntity> q = new SelectQuery<>(EnumEntity.class);
-        q.andQualifier(EnumEntity.ENUM_ATTRIBUTE.eq(Enum1.one));
-
-        EnumEntity e = (EnumEntity) Cayenne.objectForQuery(context, q);
-        assertNotNull(e);
-        assertSame(Enum1.one, e.getEnumAttribute());
     }
 
     @Test

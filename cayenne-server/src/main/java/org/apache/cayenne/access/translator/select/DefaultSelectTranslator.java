@@ -29,10 +29,9 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
- * Default translator of select queries ({@link SelectQuery} or {@link FluentSelect}).
+ * Default translator of select queries {@link FluentSelect}.
  *
  * @since 4.2
  */
@@ -75,14 +74,6 @@ public class DefaultSelectTranslator implements SelectTranslator {
         Objects.requireNonNull(adapter, "DbAdapter is null");
         Objects.requireNonNull(entityResolver, "EntityResolver is null");
         this.context = new TranslatorContext(query, adapter, entityResolver, null);
-    }
-
-    /**
-     * @deprecated since 4.2 as {@link SelectQuery} is deprecated.
-     */
-    @Deprecated
-    public DefaultSelectTranslator(SelectQuery<?> query, DbAdapter adapter, EntityResolver entityResolver) {
-        this(new SelectQueryWrapper(query), adapter, entityResolver);
     }
 
     public DefaultSelectTranslator(FluentSelect<?> query, DbAdapter adapter, EntityResolver entityResolver) {

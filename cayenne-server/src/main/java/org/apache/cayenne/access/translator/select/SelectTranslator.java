@@ -24,10 +24,10 @@ import java.util.Map;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 
 /**
- * An abstraction of {@link SelectQuery} translator.
+ * An abstraction of {@link ObjectSelect} translator.
  * 
  * @since 4.0 this is an interface.
  */

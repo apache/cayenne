@@ -57,5 +57,5 @@ public class MyDelegatingQuery extends IndirectQuery {
 }
 ----
 
-In fact many internal Cayenne queries are `IndirectQueries`, delegating to `SelectQuery` or `SQLTemplate`
+In fact many internal Cayenne queries are `IndirectQueries`, delegating to `ObjectSelect` or `SQLTemplate`
 after some preprocessing.

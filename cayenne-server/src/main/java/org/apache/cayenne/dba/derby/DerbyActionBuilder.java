@@ -23,7 +23,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcActionBuilder;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @since 4.1
@@ -32,11 +31,6 @@ public class DerbyActionBuilder extends JdbcActionBuilder {
 
     public DerbyActionBuilder(DataNode dataNode) {
         super(dataNode);
-    }
-
-    @Override
-    public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
-        return new DerbySelectAction(query, dataNode);
     }
 
     /**

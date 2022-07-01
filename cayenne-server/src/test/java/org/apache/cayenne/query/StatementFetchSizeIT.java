@@ -35,18 +35,6 @@ public class StatementFetchSizeIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
-    @Deprecated
-    @Test
-    public void testSelectQuery() {
-        SelectQuery<Artist> query = new SelectQuery<>(Artist.class);
-        query.setStatementFetchSize(10);
-
-        assertEquals(10, query
-                .getMetaData(context.getEntityResolver())
-                .getStatementFetchSize());
-        context.performQuery(query);
-    }
-
     @Test
     public void testObjectSelect() {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).statementFetchSize(10);

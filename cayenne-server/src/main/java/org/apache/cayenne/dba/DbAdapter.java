@@ -36,7 +36,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SelectQuery;
 
 /**
  * A Cayenne extension point that abstracts the differences between specifics of
@@ -53,16 +52,6 @@ public interface DbAdapter {
 	 * @since 1.0.4
 	 */
 	String getBatchTerminator();
-
-    /**
-     * Returns a SelectTranslator that works with the adapter target database.
-     *
-     * @since 4.0
-     * @deprecated since 4.2 as {@link SelectQuery} is deprecated.
-     * {@link #getSelectTranslator(FluentSelect, EntityResolver)} replaces this method.
-     */
-    @Deprecated
-    SelectTranslator getSelectTranslator(SelectQuery<?> query, EntityResolver entityResolver);
 
 	/**
 	 * @since 4.2
