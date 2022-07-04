@@ -39,7 +39,9 @@ public interface SQLActionVisitor {
 
     /**
      * Creates an action to execute a SelectQuery.
+     * @deprecated since 4.2 as part of {@link SelectQuery} deprecation
      */
+    @Deprecated
     <T> SQLAction objectSelectAction(SelectQuery<T> query);
 
     /**

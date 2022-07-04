@@ -68,6 +68,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
     }
 
     @Override
+    @Deprecated
     public <T> SQLAction objectSelectAction(SelectQuery<T> query) {
         return new SelectAction(query, dataNode);
     }
