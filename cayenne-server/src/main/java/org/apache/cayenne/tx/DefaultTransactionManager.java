@@ -37,12 +37,12 @@ public class DefaultTransactionManager implements TransactionManager {
 
     @Override
     public <T> T performInTransaction(TransactionalOperation<T> op) {
-        return performInTransaction(op, DoNothingTransactionListener.getInstance(), DefaultTransactionDescriptor.getInstance());
+        return performInTransaction(op, DoNothingTransactionListener.getInstance(), TransactionDescriptor.defaultDescriptor());
     }
 
     @Override
     public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback) {
-        return performInTransaction(op, callback, DefaultTransactionDescriptor.getInstance());
+        return performInTransaction(op, callback, TransactionDescriptor.defaultDescriptor());
     }
 
     /**

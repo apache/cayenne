@@ -41,6 +41,11 @@ public class TransactionDescriptor {
      */
     public static final int ISOLATION_DEFAULT = -1;
 
+    private static final TransactionDescriptor DEFAULT_DESCRIPTOR = builder()
+            .propagation(TransactionPropagation.NESTED)
+            .isolation(TransactionDescriptor.ISOLATION_DEFAULT)
+            .build();
+
     private int isolation;
 
     private TransactionPropagation propagation;
@@ -109,17 +114,33 @@ public class TransactionDescriptor {
 
     /**
      * @return custom connection supplier, passed by user
+     * @since 4.2
      */
     public Supplier<Connection> getConnectionSupplier() {
         return connectionSupplier;
     }
 
+    /**
+     * @return TransactionDescriptor Builder
+     * @since 4.2
+     */
     public static Builder builder(){
         return new Builder();
     }
 
     /**
+     * Returns descriptor with the {@link TransactionPropagation#NESTED} propagation
+     * and the {@link #ISOLATION_DEFAULT} isolation level
+     * @return default descriptor
+     * @since 4.2
+     */
+    public static TransactionDescriptor defaultDescriptor() {
+        return DEFAULT_DESCRIPTOR;
+    }
+
+    /**
      * Builder class for the TransactionDescriptor.
+     * @since 4.2
      */
     public static class Builder {
         private final TransactionDescriptor transactionDescriptor = new TransactionDescriptor();
