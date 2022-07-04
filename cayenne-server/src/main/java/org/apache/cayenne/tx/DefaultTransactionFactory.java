@@ -39,7 +39,7 @@ public class DefaultTransactionFactory implements TransactionFactory {
 
     @Override
     public Transaction createTransaction() {
-        return createTransaction(DefaultTransactionDescriptor.getInstance());
+        return createTransaction(TransactionDescriptor.defaultDescriptor());
     }
 
     /**

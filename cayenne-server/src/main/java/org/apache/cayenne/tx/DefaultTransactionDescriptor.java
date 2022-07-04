@@ -21,17 +21,13 @@ package org.apache.cayenne.tx;
 
 /**
  * @since 4.1
+ * @deprecated since 4.2, use {@link TransactionDescriptor#defaultDescriptor()}
  */
+@Deprecated
 public class DefaultTransactionDescriptor extends TransactionDescriptor {
 
-    private static final TransactionDescriptor instance = TransactionDescriptor
-            .builder()
-            .isolation(TransactionDescriptor.ISOLATION_DEFAULT)
-            .propagation(TransactionPropagation.NESTED)
-            .build();
-
     public static TransactionDescriptor getInstance() {
-        return instance;
+        return TransactionDescriptor.defaultDescriptor();
     }
 
 }

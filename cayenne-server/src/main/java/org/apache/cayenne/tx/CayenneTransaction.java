@@ -35,7 +35,7 @@ public class CayenneTransaction extends BaseTransaction {
     protected JdbcEventLogger logger;
 
     public CayenneTransaction(JdbcEventLogger logger) {
-        this(logger, DefaultTransactionDescriptor.getInstance());
+        this(logger, TransactionDescriptor.defaultDescriptor());
     }
 
     /**
