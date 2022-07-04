@@ -13,6 +13,7 @@ Date:
 ----------------------------------
 Changes/New Features:
 
+CAY-2378 Switch usage of SelectQuery to ObjectSelect internally
 CAY-2737 Cayenne 4.3: cleanup deprecated code
 
 Bug Fixes:
