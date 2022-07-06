@@ -49,7 +49,7 @@ jobs:
       jdk: openjdk11
     - env: DB_PROFILE=derby
       jdk: openjdk11
-    - jdk: openjdk-18
+    - jdk: openjdk18
       env: DB_PROFILE=postgres-tc
     - stage: deploy
       script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
@@ -57,7 +57,7 @@ jobs:
       if: type = push AND branch = master AND repo = apache/cayenne
 
   allow_failures:
-    - jdk: openjdk-18
+    - jdk: openjdk18
 
 # prevent Travis from unnecessary checks with pull request
   exclude:
