@@ -42,6 +42,9 @@
 		<ant.version>1.10.11</ant.version>
 		<testcontainers.version>1.16.0</testcontainers.version>
 
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -772,8 +775,6 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.1</version>
 					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
 						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
@@ -861,10 +862,8 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>3.1.1</version>
 					<configuration>
-						<!-- Java 8 is too strict about Javadoc omissions --> 
-						<doclint>${javadoc.doclint}</doclint>
 						<additionalOptions>${javadoc.additionalOptions}</additionalOptions>
-						<source>1.8</source>
+						<source>11</source>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -1077,7 +1076,7 @@
 						<configuration>
 							<skip>false</skip>
 							<sourceEncoding>utf-8</sourceEncoding>
-							<targetJdk>1.8</targetJdk>
+							<targetJdk>11</targetJdk>
 							<verbose>true</verbose>
 							<failOnViolation>false</failOnViolation>
 							<!-- TODO make it 'true' when we will be ready -->
@@ -1639,19 +1638,9 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>java8-disable-strict-javadoc</id>
+			<id>java11-javadoc-html5-no-modules</id>
 			<activation>
-				<jdk>[1.8,)</jdk>
-			</activation>
-			<properties>
-				<javadoc.doclint>none</javadoc.doclint>
-				<javadoc.additionalOptions />
-			</properties>
-		</profile>
-		<profile>
-			<id>java9-javadoc-html5-no-modules</id>
-			<activation>
-				<jdk>[9,14)</jdk>
+				<jdk>[11,14)</jdk>
 			</activation>
 			<properties>
 				<javadoc.additionalOptions>-html5 --no-module-directories</javadoc.additionalOptions>

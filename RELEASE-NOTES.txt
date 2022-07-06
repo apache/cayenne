@@ -16,6 +16,7 @@ Changes/New Features:
 CAY-2378 Switch usage of SelectQuery to ObjectSelect internally
 CAY-2737 Cayenne 4.3: cleanup deprecated code
 CAY-2741 Cleanup TransactionDescriptor and deprecate DefaultTransactionDescriptor
+CAY-2742 Switch minimum required Java version to 11
 
 Bug Fixes:
 

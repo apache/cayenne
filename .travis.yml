@@ -33,7 +33,6 @@ env:
     - secure: "cysyR/fEtBHC26lYHGhfXYIPMaol1c1wP+r59idByE4iq71QiOffA4j1CQCAnN5Zo7QsNavz/GZoIxNif4SUcY7sW5M92a78VFVK3aYGTOBtN9jpqWDJoFc8jm5C75j3CoBe7dVFkxw3pCdMlZQ7HJj7L+GiyZ5USu6E2vD5X7A="
 
 jdk:
-  - openjdk8
   - openjdk11
   - openjdk17
 
@@ -41,24 +40,24 @@ script:
   - travis_wait 25 mvn verify -fae -q $EXCLUDE_MODULES -DcayenneTestConnection=$DB_PROFILE -DcayenneLogLevel=ERROR
 
 jobs:
-# add hsql, h2 and derby databases to tests on openjdk8
-# To reduce the test time, add only postgress db on openjdk-ea 
+# add hsql, h2 and derby databases to tests on JDK 11
+# To reduce the test time, add only postgres db on JDK 18
   include:
     - env: DB_PROFILE=hsql
-      jdk: openjdk8
+      jdk: openjdk11
     - env: DB_PROFILE=h2
-      jdk: openjdk8
+      jdk: openjdk11
     - env: DB_PROFILE=derby
-      jdk: openjdk8
-    - jdk: openjdk-ea
+      jdk: openjdk11
+    - jdk: openjdk-18
       env: DB_PROFILE=postgres-tc
     - stage: deploy
       script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
-      jdk: openjdk8
+      jdk: openjdk11
       if: type = push AND branch = master AND repo = apache/cayenne
 
   allow_failures:
-    - jdk: openjdk-ea
+    - jdk: openjdk-18
 
 # prevent Travis from unnecessary checks with pull request
   exclude:
@@ -67,7 +66,7 @@ jobs:
     - if: type = pull_request
       jdk: openjdk17
     - if: type = pull_request
-      jdk: openjdk-ea
+      jdk: openjdk18
 
 # prevent Travis from unneeded "mvn install" run
 install: true
