@@ -62,8 +62,6 @@ jobs:
 # prevent Travis from unnecessary checks with pull request
   exclude:
     - if: type = pull_request
-      jdk: openjdk11
-    - if: type = pull_request
       jdk: openjdk17
     - if: type = pull_request
       jdk: openjdk18
