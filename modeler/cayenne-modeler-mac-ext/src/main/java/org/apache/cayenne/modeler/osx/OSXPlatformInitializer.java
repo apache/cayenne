@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.osx;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Graphics;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,8 +43,6 @@ import org.apache.cayenne.modeler.action.ConfigurePreferencesAction;
 import org.apache.cayenne.modeler.action.ExitAction;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 
-import com.apple.eawt.Application;
-
 public class OSXPlatformInitializer implements PlatformInitializer {
 
     @Inject
@@ -54,15 +53,11 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         // override some default styles and colors, assuming that Aqua theme will be used
         overrideUIDefaults();
 
-        // configure special Mac menu handlers
-        OSXApplicationWrapper wrapper = new OSXApplicationWrapper(Application.getApplication());
-        wrapper.setAboutHandler(()
-                -> actionManager.getAction(AboutAction.class).showAboutDialog());
+        Desktop desktop = Desktop.getDesktop();
 
-        wrapper.setPreferencesHandler(()
-                -> actionManager.getAction(ConfigurePreferencesAction.class).showPreferencesDialog());
-
-        wrapper.setQuitHandler(r -> {
+        desktop.setAboutHandler(e -> actionManager.getAction(AboutAction.class).showAboutDialog());
+        desktop.setPreferencesHandler(e -> actionManager.getAction(ConfigurePreferencesAction.class).showPreferencesDialog());
+        desktop.setQuitHandler((e, r) -> {
             if(!actionManager.getAction(ExitAction.class).exit()) {
                 r.cancelQuit();
             } else {
