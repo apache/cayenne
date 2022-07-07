@@ -22,11 +22,17 @@ package org.apache.cayenne.event;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.0
+ * @deprecated since 4.2
  */
+@Deprecated
 public class JMSModule implements Module {
+
+    private static final Logger logger = LoggerFactory.getLogger(JMSModule.class);
 
     /**
      * A DI container key for the Map&lt;String, String&gt; storing
@@ -46,6 +52,8 @@ public class JMSModule implements Module {
 
     @Override
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-jms module was deprecated.");
+
         // init properties' defaults
         contributeTopicConnectionFactory(binder, JMSBridge.TOPIC_CONNECTION_FACTORY_DEFAULT);
 

@@ -22,11 +22,15 @@ package org.apache.cayenne.event;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.0
  */
 public class JGroupsModule implements Module {
+
+    private static final Logger logger = LoggerFactory.getLogger(JGroupsModule.class);
 
     /**
      * A DI container key for the Map&lt;String, String&gt; storing
@@ -54,6 +58,8 @@ public class JGroupsModule implements Module {
 
     @Override
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-jgroups module was deprecated.");
+
         // init properties' defaults
         contributeMulticastAddress(binder, JavaGroupsBridge.MCAST_ADDRESS_DEFAULT);
         contributeMulticastPort(binder, JavaGroupsBridge.MCAST_PORT_DEFAULT_INT);

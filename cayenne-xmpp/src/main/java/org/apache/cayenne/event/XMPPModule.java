@@ -22,11 +22,16 @@ package org.apache.cayenne.event;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 4.0
  */
+@Deprecated
 public class XMPPModule implements Module {
+
+    private static final Logger logger = LoggerFactory.getLogger(XMPPModule.class);
 
     /**
      * A DI container key for the Map&lt;String, String&gt; storing
@@ -63,6 +68,8 @@ public class XMPPModule implements Module {
 
     @Override
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-xmpp module was deprecated.");
+
         // init properties' defaults
         contributeChatService(binder, XMPPBridge.DEFAULT_CHAT_SERVICE);
 
