@@ -54,11 +54,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.caucho</groupId>
-            <artifactId>hessian</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>foundrylogic.vpp</groupId>
 			<artifactId>vpp</artifactId>
 		</dependency>

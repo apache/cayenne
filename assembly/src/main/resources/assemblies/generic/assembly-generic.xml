@@ -33,8 +33,6 @@
 			<outputDirectory>tutorials</outputDirectory>
 			<includes>
 				<include>tutorial/**</include>
-				<include>tutorial-rop-server/**</include>
-				<include>tutorial-rop-client/**</include>
 			</includes>
 			<excludes>
 				<exclude>**/.gradle/**</exclude>
@@ -72,8 +70,6 @@
 				<include>org.apache.cayenne:cayenne-ant</include>
 				<include>org.apache.cayenne:cayenne-cache-invalidation</include>
 				<include>org.apache.cayenne:cayenne-cgen</include>
-				<include>org.apache.cayenne:cayenne-client</include>
-				<include>org.apache.cayenne:cayenne-client-jetty</include>
 				<include>org.apache.cayenne:cayenne-commitlog</include>
 				<include>org.apache.cayenne:cayenne-crypto</include>
 				<include>org.apache.cayenne:cayenne-dbsync</include>
@@ -83,8 +79,6 @@
 				<include>org.apache.cayenne:cayenne-osgi</include>
 				<include>org.apache.cayenne:cayenne-project</include>
 				<include>org.apache.cayenne:cayenne-project-compatibility</include>
-				<include>org.apache.cayenne:cayenne-protostuff</include>
-				<include>org.apache.cayenne:cayenne-rop-server</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-velocity</include>
 				<include>org.apache.cayenne:cayenne-web</include>
