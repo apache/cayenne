@@ -35,6 +35,8 @@ import org.apache.cayenne.rop.HttpClientConnectionProvider;
 import org.apache.cayenne.rop.ProxyRemoteService;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.http.ClientHessianSerializationServiceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A DI module containing all Cayenne ROP client runtime configurations.
@@ -44,6 +46,8 @@ import org.apache.cayenne.rop.http.ClientHessianSerializationServiceProvider;
  */
 public class ClientModule implements Module {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClientModule.class);
+
     /**
      * @since 4.0
      */
@@ -52,6 +56,7 @@ public class ClientModule implements Module {
 
     @SuppressWarnings("deprecation")
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-client module was deprecated.");
 
         // Contribute always to create binding
         ServerModule.contributeProperties(binder);

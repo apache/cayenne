@@ -30,6 +30,8 @@ import org.apache.cayenne.rop.ROPConstants;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.ServerHessianSerializationServiceProvider;
 import org.apache.cayenne.rop.ServerHttpRemoteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A DI module that defines services for the server-side of an ROP application based on
@@ -38,6 +40,8 @@ import org.apache.cayenne.rop.ServerHttpRemoteService;
  * @since 3.1
  */
 public class ROPServerModule implements Module {
+
+    private static final Logger logger = LoggerFactory.getLogger(ROPServerModule.class);
 
     protected Map<String, String> eventBridgeProperties;
 
@@ -70,6 +74,8 @@ public class ROPServerModule implements Module {
     }
 
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-rop-server module was deprecated.");
+
         contributeSerializationWhitelist(binder);
         MapBuilder<String> mapBuilder = contributeROPBridgeProperties(binder);
         if(eventBridgeProperties != null) {

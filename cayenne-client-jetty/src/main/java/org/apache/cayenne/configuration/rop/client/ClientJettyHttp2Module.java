@@ -24,6 +24,8 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.rop.JettyHttp2ClientConnectionProvider;
 import org.apache.cayenne.rop.http.JettyHttpROPConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is HTTP/2 implementation of ROP Client.
@@ -36,8 +38,12 @@ import org.apache.cayenne.rop.http.JettyHttpROPConnector;
  */
 public class ClientJettyHttp2Module implements Module {
 
+    private static final Logger logger = LoggerFactory.getLogger(ClientJettyHttp2Module.class);
+
     @Override
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-client-jetty module was deprecated.");
+
         binder.bind(ClientConnection.class).toProvider(JettyHttp2ClientConnectionProvider.class);
     }
 

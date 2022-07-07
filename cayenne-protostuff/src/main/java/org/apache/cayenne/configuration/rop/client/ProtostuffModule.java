@@ -22,6 +22,8 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.rop.ROPSerializationService;
 import org.apache.cayenne.rop.protostuff.ProtostuffROPSerializationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A DI module that uses Protostuff Object Graph Serialization as Cayenne {@link ROPSerializationService}.
@@ -38,11 +40,15 @@ import org.apache.cayenne.rop.protostuff.ProtostuffROPSerializationService;
  */
 public class ProtostuffModule implements Module {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProtostuffModule.class);
+
     public ProtostuffModule() {
     }
 
     @Override
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-protostuff module was deprecated.");
+
         binder.bind(ROPSerializationService.class).to(ProtostuffROPSerializationService.class).inSingletonScope();
     }
 }
