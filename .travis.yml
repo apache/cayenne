@@ -42,7 +42,7 @@ script:
 
 jobs:
 # add hsql, h2 and derby databases to tests on openjdk8
-# To reduce the test time, add only postgress db on openjdk-ea 
+# To reduce the test time, add only postgress db on openjdk18
   include:
     - env: DB_PROFILE=hsql
       jdk: openjdk8
@@ -50,15 +50,15 @@ jobs:
       jdk: openjdk8
     - env: DB_PROFILE=derby
       jdk: openjdk8
-    - jdk: openjdk-ea
+    - jdk: openjdk18
       env: DB_PROFILE=postgres-tc
     - stage: deploy
       script: mvn deploy -DskipTests --settings .travis-mvn-settings.xml
       jdk: openjdk8
-      if: type = push AND branch = master AND repo = apache/cayenne
+      if: type = push AND branch = STABLE-4.2 AND repo = apache/cayenne
 
   allow_failures:
-    - jdk: openjdk-ea
+    - jdk: openjdk18
 
 # prevent Travis from unnecessary checks with pull request
   exclude:
@@ -67,7 +67,7 @@ jobs:
     - if: type = pull_request
       jdk: openjdk17
     - if: type = pull_request
-      jdk: openjdk-ea
+      jdk: openjdk18
 
 # prevent Travis from unneeded "mvn install" run
 install: true
