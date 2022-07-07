@@ -20,13 +20,19 @@ package org.apache.cayenne.configuration.web;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @since 3.1
  */
 public class WebModule implements Module {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebModule.class);
+
     public void configure(Binder binder) {
+        logger.warn("Since 4.2 cayenne-web module was deprecated.");
+
         binder
                 .bind(RequestHandler.class)
                 .to(SessionContextRequestHandler.class)
