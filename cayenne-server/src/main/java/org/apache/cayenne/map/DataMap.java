@@ -56,27 +56,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	private static final long serialVersionUID = 4851901426473991657L;
 
 	/**
-	 * Defines whether a DataMap supports client entities.
-	 * 
-	 * @since 1.2
-	 */
-	public static final String CLIENT_SUPPORTED_PROPERTY = "clientSupported";
-
-	/**
-	 * Defines the name of the property for default client Java class package.
-	 * 
-	 * @since 1.2
-	 */
-	public static final String DEFAULT_CLIENT_PACKAGE_PROPERTY = "defaultClientPackage";
-
-	/**
-	 * Defines the name of the property for default client Java superclass.
-	 * 
-	 * @since 3.0
-	 */
-	public static final String DEFAULT_CLIENT_SUPERCLASS_PROPERTY = "defaultClientSuperclass";
-
-	/**
 	 * Defines the name of the property for default DB catalog.
 	 * 
 	 * @since 4.0
@@ -132,10 +111,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
 	protected String defaultSuperclass;
 	protected int defaultLockType;
-
-	protected boolean clientSupported;
-	protected String defaultClientPackage;
-	protected String defaultClientSuperclass;
 
 	private Map<String, Embeddable> embeddablesMap;
     private Map<String, ObjEntity> objEntityMap;
@@ -247,9 +222,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		Object catalog = properties.get(DEFAULT_CATALOG_PROPERTY);
 		Object schema = properties.get(DEFAULT_SCHEMA_PROPERTY);
 		Object superclass = properties.get(DEFAULT_SUPERCLASS_PROPERTY);
-		Object clientEntities = properties.get(CLIENT_SUPPORTED_PROPERTY);
-		Object clientPackageName = properties.get(DEFAULT_CLIENT_PACKAGE_PROPERTY);
-		Object clientSuperclass = properties.get(DEFAULT_CLIENT_SUPERCLASS_PROPERTY);
 		Object quoteSqlIdentifier = properties.get(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY);
 
 		this.defaultLockType = "optimistic".equals(lockType) ? ObjEntity.LOCK_TYPE_OPTIMISTIC
@@ -260,39 +232,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		this.defaultSchema = (schema != null) ? schema.toString() : null;
 		this.defaultCatalog = (catalog != null) ? catalog.toString() : null;
 		this.defaultSuperclass = (superclass != null) ? superclass.toString() : null;
-		this.clientSupported = (clientEntities != null) && "true".equalsIgnoreCase(clientEntities.toString());
-		this.defaultClientPackage = (clientPackageName != null) ? clientPackageName.toString() : null;
-		this.defaultClientSuperclass = (clientSuperclass != null) ? clientSuperclass.toString() : null;
-	}
-
-	/**
-	 * Returns a DataMap stripped of any server-side information, such as
-	 * DbEntity mapping, or ObjEntities that are not allowed in the client tier.
-	 * Returns null if this DataMap as a whole does not support client tier
-	 * persistence.
-	 * 
-	 * @since 1.2
-	 */
-	public DataMap getClientDataMap(EntityResolver serverResolver) {
-		if (!isClientSupported()) {
-			return null;
-		}
-
-		DataMap clientMap = new DataMap(getName());
-
-		// create client entities for entities
-		for (ObjEntity entity : getObjEntities()) {
-			if (entity.isClientAllowed()) {
-				clientMap.addObjEntity(entity.getClientEntity());
-			}
-		}
-
-		// create proxies for named queries
-		for (QueryDescriptor q : getQueryDescriptors()) {
-			clientMap.addQueryDescriptor(q);
-		}
-
-		return clientMap;
 	}
 
 	/**
@@ -313,9 +252,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 				.property(DEFAULT_SCHEMA_PROPERTY, defaultSchema)
 				.property(DEFAULT_SUPERCLASS_PROPERTY, defaultSuperclass)
 				.property(DEFAULT_QUOTE_SQL_IDENTIFIERS_PROPERTY, quotingSQLIdentifiers)
-				.property(CLIENT_SUPPORTED_PROPERTY, clientSupported)
-				.property(DEFAULT_CLIENT_PACKAGE_PROPERTY, defaultClientPackage)
-				.property(DEFAULT_CLIENT_SUPERCLASS_PROPERTY, defaultClientSuperclass)
 				// elements
 				.nested(new TreeMap<>(getEmbeddableMap()), delegate)
 				.nested(new TreeMap<>(getProcedureMap()), delegate)
@@ -985,52 +921,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	/**
-	 * @since 1.2
-	 */
-	public boolean isClientSupported() {
-		return clientSupported;
-	}
-
-	/**
-	 * @since 1.2
-	 */
-	public void setClientSupported(boolean clientSupport) {
-		this.clientSupported = clientSupport;
-	}
-
-	/**
-	 * Returns default client package.
-	 * 
-	 * @since 1.2
-	 */
-	public String getDefaultClientPackage() {
-		return defaultClientPackage;
-	}
-
-	/**
-	 * @since 1.2
-	 */
-	public void setDefaultClientPackage(String defaultClientPackage) {
-		this.defaultClientPackage = defaultClientPackage;
-	}
-
-	/**
-	 * Returns default client superclass.
-	 * 
-	 * @since 3.0
-	 */
-	public String getDefaultClientSuperclass() {
-		return defaultClientSuperclass;
-	}
-
-	/**
-	 * @since 3.0
-	 */
-	public void setDefaultClientSuperclass(String defaultClientSuperclass) {
-		this.defaultClientSuperclass = defaultClientSuperclass;
-	}
-
-	/**
 	 * @since 1.1
 	 */
 	public String getDefaultPackage() {
@@ -1252,16 +1142,6 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
         } else {
             return pack + (pack.endsWith(".") ? ""  : ".") + name;
         }
-    }
-
-    /**
-     *
-     * @return package + "." + name when it is possible otherwise just name
-     *
-     * @since 4.0
-     */
-    public String getNameWithDefaultClientPackage(String name) {
-        return getNameWithPackage(defaultClientPackage, name);
     }
 
     public Map<String, ObjEntity> getSubclassesForObjEntity(ObjEntity superEntity) {

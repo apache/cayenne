@@ -29,7 +29,6 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -56,13 +55,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 */
     @Parameter
 	private File additionalMaps;
-
-	/**
-	 * Whether we are generating classes for the client tier in a Remote Object
-	 * Persistence application. Default is <code>false</code>.
-	 */
-	@Parameter
-	private Boolean client;
 
 	/**
 	 * Default destination directory for Java classes (ignoring their package names).
@@ -260,7 +252,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
 			CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
 			filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddables));
-			filterEntityAction.setClient(generator.getCgenConfiguration().isClient());
 			generator.setLogger(logger);
 
 			if(force) {
@@ -300,7 +291,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	}
 
 	private boolean hasConfig() {
-		return destDir != null || encoding != null || client != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
+		return destDir != null || encoding != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
 				makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
 				superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
 				usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
@@ -327,7 +318,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			return cgenConfiguration;
 		} else {
 			logger.info("Using default cgen config.");
-			cgenConfiguration = new CgenConfiguration(false);
+			cgenConfiguration = new CgenConfiguration();
 			cgenConfiguration.setDataMap(dataMap);
 			cgenConfiguration.setRelPath(defaultDir.getPath());
 			return cgenConfiguration;
@@ -335,7 +326,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	}
 
 	private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
-		CgenConfiguration cgenConfiguration = new CgenConfiguration(client != null ? client : false);
+		CgenConfiguration cgenConfiguration = new CgenConfiguration();
 		cgenConfiguration.setDataMap(dataMap);
 		cgenConfiguration.setRelPath(destDir != null ? destDir.getPath() : defaultDir.getPath());
 		cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
@@ -359,13 +350,13 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
 		if(!cgenConfiguration.isMakePairs()) {
 			if(template == null) {
-				cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+				cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
 			}
 			if(embeddableTemplate == null) {
 				cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
 			}
 			if(queryTemplate == null) {
-				cgenConfiguration.setQueryTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE : ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+				cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
 			}
 		}
 		return cgenConfiguration;

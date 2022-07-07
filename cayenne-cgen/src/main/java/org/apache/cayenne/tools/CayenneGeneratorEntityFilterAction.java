@@ -35,7 +35,6 @@ import java.util.Collection;
 class CayenneGeneratorEntityFilterAction {
 
     private NameFilter nameFilter;
-    private boolean client;
 
     Collection<ObjEntity> getFilteredEntities(DataMap mainDataMap)
             throws MalformedURLException {
@@ -43,13 +42,9 @@ class CayenneGeneratorEntityFilterAction {
         Collection<ObjEntity> entities = new ArrayList<>(mainDataMap.getObjEntities());
 
         // filter out excluded entities...
-        entities.removeIf(e -> e.isGeneric() || client && !e.isClientAllowed() || !nameFilter.isIncluded(e.getName()));
+        entities.removeIf(e -> e.isGeneric() || !nameFilter.isIncluded(e.getName()));
 
         return entities;
-    }
-
-    void setClient(boolean client) {
-        this.client = client;
     }
 
     public void setNameFilter(NameFilter nameFilter) {

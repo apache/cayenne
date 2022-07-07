@@ -37,28 +37,19 @@ public class ObjEntityHandlerTest extends BaseHandlerTest {
         final DataMap map = new DataMap();
         assertEquals(0, map.getObjEntities().size());
 
-        parse("obj-entity", new HandlerFactory() {
-            @Override
-            public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
-                return new ObjEntityHandler(parent, map);
-            }
-        });
+        parse("obj-entity", parent -> new ObjEntityHandler(parent, map));
 
         assertEquals(1, map.getObjEntities().size());
         ObjEntity entity = map.getObjEntity("ArtistCallback");
         assertNotNull(entity);
         assertTrue(entity.isAbstract());
         assertTrue(entity.isReadOnly());
-        assertTrue(entity.isServerOnly());
-        assertFalse(entity.isClientAllowed());
         assertEquals(3, entity.getAttributes().size());
         assertEquals(8, entity.getCallbackMethods().size());
         assertEquals(ObjEntity.LOCK_TYPE_OPTIMISTIC, entity.getDeclaredLockType());
         assertEquals("org.apache.cayenne.testdo.testmap.ArtistCallback", entity.getClassName());
         assertNull("super.class should be suppressed by super entity", entity.getSuperClassName());
         assertEquals("Artist", entity.getSuperEntityName());
-        assertEquals("client.class", entity.getClientClassName());
-        assertNull("client.super.class should be suppressed by super entity", entity.getClientSuperClassName());
         assertEquals("ARTIST_CT", entity.getDbEntityName());
 
         ObjAttribute attribute = entity.getAttribute("artistName");

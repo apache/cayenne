@@ -54,7 +54,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
     private TextAdapter outputPattern;
     private JCheckBox createPropertyNames;
     private JCheckBox pkProperties;
-    private JCheckBox clientMode;
     private TextAdapter superPkg;
 
     private JButton manageTemplatesLink;
@@ -63,7 +62,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         super(projectController, codeGeneratorControllerBase);
         
         JComboBox<String> superclassField = new JComboBox<>();
-        this.superclassTemplate = new ComboBoxAdapter<String>(superclassField) {
+        this.superclassTemplate = new ComboBoxAdapter<>(superclassField) {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 CgenConfiguration cgenConfiguration = getCgenConfig();
@@ -74,7 +73,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         };
 
         JComboBox<String> subclassField = new JComboBox<>();
-        this.subclassTemplate = new ComboBoxAdapter<String>(subclassField) {
+        this.subclassTemplate = new ComboBoxAdapter<>(subclassField) {
             @Override
             protected void updateModel(String item) throws ValidationException {
                 CgenConfiguration cgenConfiguration = getCgenConfig();
@@ -85,7 +84,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         };
         
         JComboBox<String> embeddableField = new JComboBox<>();
-        this.embeddableTemplate = new ComboBoxAdapter<String>(embeddableField) {
+        this.embeddableTemplate = new ComboBoxAdapter<>(embeddableField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
         		CgenConfiguration cgenConfiguration = getCgenConfig();
@@ -96,7 +95,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         };
         
         JComboBox<String> embeddableSuperField = new JComboBox<>();
-        this.embeddableSuperTemplate = new ComboBoxAdapter<String>(embeddableSuperField) {
+        this.embeddableSuperTemplate = new ComboBoxAdapter<>(embeddableSuperField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
         		CgenConfiguration cgenConfiguration = getCgenConfig();
@@ -107,7 +106,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         };
         
         JComboBox<String> queryField = new JComboBox<>();
-        this.queryTemplate = new ComboBoxAdapter<String>(queryField) {
+        this.queryTemplate = new ComboBoxAdapter<>(queryField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
         		CgenConfiguration cgenConfiguration = getCgenConfig();
@@ -118,7 +117,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         };
         
         JComboBox<String> querySuperField = new JComboBox<>();
-        this.querySuperTemplate = new ComboBoxAdapter<String>(querySuperField) {
+        this.querySuperTemplate = new ComboBoxAdapter<>(querySuperField) {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
         		CgenConfiguration cgenConfiguration = getCgenConfig();
@@ -151,7 +150,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
         this.createPropertyNames = new JCayenneCheckBox();
         this.pkProperties = new JCayenneCheckBox();
-        this.clientMode= new JCayenneCheckBox();
         this.manageTemplatesLink = new JButton("Customize Templates...");
         this.manageTemplatesLink.setFont(manageTemplatesLink.getFont().deriveFont(10f));
 
@@ -203,9 +201,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
         builder.nextLine();
 
         builder.append("Create PK properties:", pkProperties);
-        builder.nextLine();
-
-        builder.append("Client mode: ", clientMode);
         builder.nextLine();
 
         builder.append("Superclass package:", superPkg.getComponent());
@@ -274,10 +269,6 @@ public class CustomModePanel extends GeneratorControllerPanel {
 
     public JCheckBox getPkProperties() {
         return pkProperties;
-    }
-
-    public JCheckBox getClientMode() {
-        return clientMode;
     }
 
     public TextAdapter getSuperPkg() {

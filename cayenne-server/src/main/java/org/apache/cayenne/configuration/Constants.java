@@ -86,12 +86,6 @@ public interface Constants {
      */
     String SERVER_RESOURCE_LOCATOR = "cayenne.server.resource_locator";
 
-    /**
-     * A server-side DI container key for the Map&lt;String, String&gt; storing
-     * event bridge properties passed to the ROP client on bootstrap.
-     */
-    String SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP = "cayenne.server.rop_event_bridge_properties";
-
     // Runtime properties
 
     String JDBC_DRIVER_PROPERTY = "cayenne.jdbc.driver";
@@ -155,15 +149,6 @@ public interface Constants {
      * transactions. Possible values are "true" or "false".
      */
     String SERVER_EXTERNAL_TX_PROPERTY = "cayenne.server.external_tx";
-
-    /**
-     * The name of the {@link org.apache.cayenne.event.EventBridgeFactory} that
-     * is passed from the ROP server to the client. Client would instantiate the
-     * factory to receive events from the server. Note that this property is
-     * stored in {@link #SERVER_ROP_EVENT_BRIDGE_PROPERTIES_MAP}, not
-     * {@link #PROPERTIES_MAP}.
-     */
-    String SERVER_ROP_EVENT_BRIDGE_FACTORY_PROPERTY = "cayenne.server.rop_event_bridge_factory";
 
     /**
      * A property that defines a maximum number of ID qualifiers in where clause

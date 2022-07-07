@@ -103,11 +103,6 @@ public class CreateObjEntityAction extends CayenneAction {
 
         entity.setClassName(dataMap.getNameWithDefaultPackage(entity.getName()));
 
-        if (dataMap.isClientSupported()) {
-            entity.setClientClassName(dataMap.getNameWithDefaultClientPackage(entity.getName()));
-            entity.setClientSuperClassName(dataMap.getDefaultClientSuperclass());
-        }
-
         dataMap.addObjEntity(entity);
 
         // TODO: Modeler-controlled defaults for all the hardcoded boolean flags here.

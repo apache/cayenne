@@ -92,8 +92,6 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
         } else {
             ValueObjectType<Object, ?> valueObjectType;
             if (registry == null || (valueObjectType = registry.getValueType(leaf.getClass())) == null) {
-                // Registry will be null in cayenne-client context.
-                // Maybe we shouldn't create cache key at all in that case...
                 out.append(leaf);
             } else {
                 out.append(valueObjectType.toCacheKey(leaf));

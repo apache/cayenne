@@ -30,7 +30,6 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
@@ -44,8 +43,6 @@ public class CodeTemplateManager {
 	public static final String STANDARD_SERVER_SUPERCLASS = "Standard Server Superclass";
 	public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
 	public static final String SINGLE_SERVER_CLASS = "Single Server Class";
-	static final String STANDARD_CLIENT_SUPERCLASS = "Standard Client Superclass";
-	static final String STANDARD_CLIENT_SUBCLASS = "Standard Client Subclass";
 
 	private static final String STANDARD_EMBEDDABLE_SUPERCLASS = "Standard Embeddable Superclass";
 	private static final String STANDARD_EMBEDDABLE_SUBCLASS = "Standard Embeddable Subclass";
@@ -53,16 +50,12 @@ public class CodeTemplateManager {
 
 	private static final String STANDARD_SERVER_DATAMAP_SUPERCLASS = "Standard Server DataMap Superclass";
 	private static final String STANDARD_SERVER_DATAMAP_SUBCLASS = "Standard Server DataMap Subclass";
-	private static final String STANDARD_CLIENT_DATAMAP_SUPERCLASS = "Standard Client DataMap Superclass";
-	private static final String STANDARD_CLIENT_DATAMAP_SUBCLASS = "Standard Client DataMap Subclass";
 	private static final String SINGLE_DATAMAP_CLASS = "Single DataMap Class";
 
 	public static final String NODE_NAME = "codeTemplateManager";
 
 	private List<String> defaultSubclassTemplates;
 	private List<String> defaultSuperclassTemplates;
-	private List<String> defaultClientSubclassTemplates;
-	private List<String> defaultClientSuperclassTemplates;
 	private Map<String, String> customTemplates;
 	private Map<String, String> reverseCustomTemplate;
 	private Map<String, String> defaultTemplates;
@@ -72,8 +65,6 @@ public class CodeTemplateManager {
 
 	private List<String> defaultServerDataMapTemplates;
 	private List<String> defaultServerDataMapSuperclassTemplates;
-	private List<String> defaultClientDataMapTemplates;
-	private List<String> defaultClientDataMapSuperclassTemplates;
 
 	private Map<String, String> reverseDefaultsTemplates;
 
@@ -92,15 +83,9 @@ public class CodeTemplateManager {
 		defaultSuperclassTemplates = new ArrayList<>(2);
 		defaultSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
 
-		defaultClientSuperclassTemplates = new ArrayList<>();
-		defaultClientSuperclassTemplates.add(STANDARD_CLIENT_SUPERCLASS);
-
 		defaultSubclassTemplates = new ArrayList<>(2);
 		defaultSubclassTemplates.add(SINGLE_SERVER_CLASS);
 		defaultSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
-
-		defaultClientSubclassTemplates = new ArrayList<>();
-		defaultClientSubclassTemplates.add(STANDARD_CLIENT_SUBCLASS);
 
 		defaultEmbeddableTemplates = new ArrayList<>();
 		defaultEmbeddableTemplates.add(STANDARD_EMBEDDABLE_SUBCLASS);
@@ -115,12 +100,6 @@ public class CodeTemplateManager {
 
 		defaultServerDataMapSuperclassTemplates = new ArrayList<>();
 		defaultServerDataMapSuperclassTemplates.add(STANDARD_SERVER_DATAMAP_SUPERCLASS);
-		
-		defaultClientDataMapTemplates = new ArrayList<>();
-		defaultClientDataMapTemplates.add(STANDARD_CLIENT_DATAMAP_SUBCLASS);
-		
-		defaultClientDataMapSuperclassTemplates = new ArrayList<>();
-		defaultClientDataMapSuperclassTemplates.add(STANDARD_CLIENT_DATAMAP_SUPERCLASS);
 
 		updateCustomTemplates(getTemplatePreferences(application));
 		reverseCustomTemplate = new HashMap<>();
@@ -130,9 +109,7 @@ public class CodeTemplateManager {
 
 		defaultTemplates = new HashMap<>();
 		defaultTemplates.put(STANDARD_SERVER_SUPERCLASS, ClassGenerationAction.SUPERCLASS_TEMPLATE);
-		defaultTemplates.put(STANDARD_CLIENT_SUPERCLASS, ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
 		defaultTemplates.put(STANDARD_SERVER_SUBCLASS, ClassGenerationAction.SUBCLASS_TEMPLATE);
-		defaultTemplates.put(STANDARD_CLIENT_SUBCLASS, ClientClassGenerationAction.SUBCLASS_TEMPLATE);
 		defaultTemplates.put(SINGLE_SERVER_CLASS, ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
 
 		defaultTemplates.put(STANDARD_EMBEDDABLE_SUPERCLASS, ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE);
@@ -140,10 +117,8 @@ public class CodeTemplateManager {
 		defaultTemplates.put(SINGLE_EMBEDDABLE_CLASS, ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
 
 		defaultTemplates.put(STANDARD_SERVER_DATAMAP_SUBCLASS, ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
-		defaultTemplates.put(STANDARD_CLIENT_DATAMAP_SUBCLASS, ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE);
 		defaultTemplates.put(SINGLE_DATAMAP_CLASS, ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
 		defaultTemplates.put(STANDARD_SERVER_DATAMAP_SUPERCLASS, ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
-		defaultTemplates.put(STANDARD_CLIENT_DATAMAP_SUPERCLASS, ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE);
 
 		reverseDefaultsTemplates = new HashMap<>();
 		for(Map.Entry<String, String> entry : defaultTemplates.entrySet()){
@@ -242,16 +217,8 @@ public class CodeTemplateManager {
 		return defaultSubclassTemplates;
 	}
 
-	public List<String> getDefaultClientSubclassTemplates() {
-		return defaultClientSubclassTemplates;
-	}
-
 	public List<String> getDefaultSuperclassTemplates() {
 		return defaultSuperclassTemplates;
-	}
-
-	public List<String> getDefaultClientSuperclassTemplates() {
-		return defaultClientSuperclassTemplates;
 	}
 
 	public List<String> getDefaultEmbeddableTemplates() {
@@ -268,13 +235,5 @@ public class CodeTemplateManager {
 
 	public List<String> getDefaultDataMapSuperclassTemplates() {
 		return defaultServerDataMapSuperclassTemplates;
-	}
-	
-	public List<String> getDefaultClientDataMapTemplates() {
-		return defaultClientDataMapTemplates;
-	}
-	
-	public List<String> getDefaultClientDataMapSuperclassTemplates() {
-		return defaultClientDataMapSuperclassTemplates;
 	}
 }

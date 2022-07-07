@@ -34,7 +34,7 @@ public class CgenSaverDelegateTest {
 
     @Test
     public void testExistingRootOverride() throws Exception {
-        CgenConfiguration config = new CgenConfiguration(false);
+        CgenConfiguration config = new CgenConfiguration();
 
         config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
         URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
@@ -47,7 +47,7 @@ public class CgenSaverDelegateTest {
 
     @Test
     public void testExistingRootAndRelPath() throws Exception {
-        CgenConfiguration config = new CgenConfiguration(false);
+        CgenConfiguration config = new CgenConfiguration();
 
         config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
         config.setRelPath(Paths.get(""));
@@ -62,7 +62,7 @@ public class CgenSaverDelegateTest {
 
     @Test
     public void testEmptyRoot() throws Exception {
-        CgenConfiguration config = new CgenConfiguration(false);
+        CgenConfiguration config = new CgenConfiguration();
 
         URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
 

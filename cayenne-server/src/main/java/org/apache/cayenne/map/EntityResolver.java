@@ -84,7 +84,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     protected Collection<DataMap> maps;
     protected transient MappingNamespace mappingCache;
-    protected EntityResolver clientEntityResolver;
 
     // must be transient, as resolver may get deserialized in another VM, and
     // descriptor recompilation will be desired.
@@ -222,39 +221,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public void setCallbackRegistry(LifecycleCallbackRegistry callbackRegistry) {
         this.callbackRegistry = callbackRegistry;
-    }
-
-    /**
-     * Returns ClientEntityResolver with mapping information that only includes
-     * entities available on CWS Client Tier.
-     *
-     * @since 1.2
-     */
-    public EntityResolver getClientEntityResolver() {
-
-        if (clientEntityResolver == null) {
-
-            synchronized (this) {
-
-                if (clientEntityResolver == null) {
-
-                    EntityResolver resolver = new ClientEntityResolver();
-
-                    // translate to client DataMaps
-                    for (DataMap map : getDataMaps()) {
-                        DataMap clientMap = map.getClientDataMap(this);
-
-                        if (clientMap != null) {
-                            resolver.addDataMap(clientMap);
-                        }
-                    }
-
-                    clientEntityResolver = resolver;
-                }
-            }
-        }
-
-        return clientEntityResolver;
     }
 
     /**
@@ -430,8 +396,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
                 return new MappingCache(maps);
             }
         };
-
-        clientEntityResolver = null;
     }
 
     /**
@@ -506,37 +470,6 @@ public class EntityResolver implements MappingNamespace, Serializable {
         }
 
         return result;
-    }
-
-    /**
-     * <p>
-     * Looks in the DataMap's that this object was created with for the
-     * ObjEntity that maps to the services the specified class, with option to
-     * fallback to search by name with client resolver in case entity not found.
-     * </p>
-     * <p>
-     * This method can be used where entity class can be received from client.
-     * </p>
-     *
-     * @param entityClass entity class to search
-     * @param lookupClientResolver flag to fallback to client resolver
-     * @return the required ObjEntity or null if there is none that matches the
-     *         specifier
-     *
-     * @since 4.0
-     */
-    public ObjEntity getObjEntity(Class<?> entityClass, boolean lookupClientResolver) {
-        ObjEntity entity = getObjEntity(entityClass);
-        if(entity != null || !lookupClientResolver) {
-            return entity;
-        }
-
-        EntityResolver clientResolver = getClientEntityResolver();
-        if (clientResolver != this) {
-            ObjEntity clientEntity = clientResolver.getObjEntity(entityClass);
-            entity = clientEntity == null ? null : getObjEntity(clientEntity.getName());
-        }
-        return entity;
     }
 
     public ObjEntity getObjEntity(Persistent object) {

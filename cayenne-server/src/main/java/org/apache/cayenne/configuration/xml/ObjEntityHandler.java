@@ -124,10 +124,8 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     private void createObjEntity(Attributes attributes) {
         entity = new ObjEntity(attributes.getValue("name"));
         entity.setClassName(attributes.getValue("className"));
-        entity.setClientClassName(attributes.getValue("clientClassName"));
         entity.setAbstract(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("abstract")));
         entity.setReadOnly(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("readOnly")));
-        entity.setServerOnly(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("serverOnly")));
         if ("optimistic".equals(attributes.getValue("", "lock-type"))) {
             entity.setDeclaredLockType(ObjEntity.LOCK_TYPE_OPTIMISTIC);
         }
@@ -137,7 +135,6 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
             entity.setSuperEntityName(superEntityName);
         } else {
             entity.setSuperClassName(attributes.getValue("superClassName"));
-            entity.setClientSuperClassName(attributes.getValue("clientSuperClassName"));
         }
         entity.setDbEntityName(attributes.getValue("dbEntityName"));
 

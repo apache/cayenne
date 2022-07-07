@@ -465,7 +465,7 @@ public class SelectById<T> extends IndirectQuery implements Select<T> {
 
 		@Override
 		public ObjEntity resolve(EntityResolver resolver) {
-			return resolver.getObjEntity(entityType, true);
+			return resolver.getObjEntity(entityType);
 		}
 	}
 

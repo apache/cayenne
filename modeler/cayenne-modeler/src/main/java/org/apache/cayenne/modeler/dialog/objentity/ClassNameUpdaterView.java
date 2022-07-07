@@ -33,7 +33,6 @@ import java.awt.FlowLayout;
 
 public class ClassNameUpdaterView extends JDialog {
 
-    protected JCheckBox clientClass;
     protected JCheckBox serverClass;
 
     protected JButton updateButton;
@@ -42,11 +41,9 @@ public class ClassNameUpdaterView extends JDialog {
     public ClassNameUpdaterView() {
 
         serverClass = new JCheckBox();
-        clientClass = new JCheckBox();
 
         // make invisible by default
         serverClass.setVisible(false);
-        clientClass.setVisible(false);
 
         updateButton = new JButton("Update");
         cancelButton = new JButton("Cancel");
@@ -60,7 +57,6 @@ public class ClassNameUpdaterView extends JDialog {
 
         builder.append("Update class name to match current entity name?");
         builder.append(serverClass);
-        builder.append(clientClass);
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttons.add(cancelButton);
@@ -72,10 +68,6 @@ public class ClassNameUpdaterView extends JDialog {
         contentPane.add(buttons, BorderLayout.SOUTH);
 
         setTitle("Update Entity Class Name");
-    }
-
-    public JCheckBox getClientClass() {
-        return clientClass;
     }
 
     public JCheckBox getServerClass() {

@@ -58,21 +58,6 @@ public class DataMapTest {
     }
 
     @Test
-    public void testInitWithProperties() {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(DataMap.CLIENT_SUPPORTED_PROPERTY, "true");
-        properties.put(DataMap.DEFAULT_CLIENT_PACKAGE_PROPERTY, "aaaaa");
-
-        DataMap map = new DataMap();
-        map.initWithProperties(properties);
-
-        assertTrue(map.isClientSupported());
-        assertEquals("aaaaa", map.getDefaultClientPackage());
-
-        // TODO: test other defaults
-    }
-
-    @Test
     public void testDefaultSchema() {
         DataMap map = new DataMap();
         String tstSchema = "tst_schema";
@@ -82,30 +67,6 @@ public class DataMapTest {
 
         map.setDefaultSchema(null);
         assertNull(map.getDefaultSchema());
-    }
-
-    @Test
-    public void testDefaultClientPackage() {
-        DataMap map = new DataMap();
-        String tstPackage = "tst.pkg";
-        assertNull(map.getDefaultClientPackage());
-        map.setDefaultClientPackage(tstPackage);
-        assertEquals(tstPackage, map.getDefaultClientPackage());
-
-        map.setDefaultClientPackage(null);
-        assertNull(map.getDefaultClientPackage());
-    }
-
-    @Test
-    public void testDefaultClientSuperclass() {
-        DataMap map = new DataMap();
-        String tstSuperclass = "tst_superclass";
-        assertNull(map.getDefaultClientSuperclass());
-        map.setDefaultClientSuperclass(tstSuperclass);
-        assertEquals(tstSuperclass, map.getDefaultClientSuperclass());
-
-        map.setDefaultClientSuperclass(null);
-        assertNull(map.getDefaultClientSuperclass());
     }
 
     @Test

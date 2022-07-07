@@ -42,7 +42,7 @@ public class CgenConfigurationTest {
 
         @Before
         public void setUp() {
-            configuration = new CgenConfiguration(false);
+            configuration = new CgenConfiguration();
         }
 
         @Before
@@ -157,7 +157,7 @@ public class CgenConfigurationTest {
 
         @Before
         public void setUp() {
-            configuration = new CgenConfiguration(false);
+            configuration = new CgenConfiguration();
         }
 
         @Before

@@ -102,7 +102,7 @@ class BaseQueryMetadata implements QueryMetadata, Serializable {
 
 			if (root != null) {
 				if (root instanceof Class<?>) {
-					entity = resolver.getObjEntity((Class<?>) root, true);
+					entity = resolver.getObjEntity((Class<?>) root);
 					if (entity != null) {
 						this.dbEntity = entity.getDbEntity();
 						this.dataMap = entity.getDataMap();

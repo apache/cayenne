@@ -79,16 +79,6 @@ public class DataMapView extends JPanel {
     protected JButton updateDefaultSuperclass;
     protected JButton updateDefaultLockType;
 
-    // client stuff
-    protected JCheckBox clientSupport;
-
-    protected JLabel defaultClientPackageLabel;
-    protected JLabel defaultClientSuperclassLabel;
-    protected TextAdapter defaultClientPackage;
-    protected TextAdapter defaultClientSuperclass;
-    protected JButton updateDefaultClientPackage;
-    protected JButton updateDefaultClientSuperclass;
-
     public DataMapView(ProjectController eventController) {
         this.eventController = eventController;
 
@@ -153,23 +143,6 @@ public class DataMapView extends JPanel {
         updateDefaultLockType = new JButton("Update...");
         defaultLockType = new JCayenneCheckBox();
 
-        clientSupport = new JCayenneCheckBox();
-        updateDefaultClientPackage = new JButton("Update...");
-        defaultClientPackage = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDefaultClientPackage(text);
-            }
-        };
-
-        updateDefaultClientSuperclass = new JButton("Update...");
-        defaultClientSuperclass = new TextAdapter(new JTextField()) {
-
-            protected void updateModel(String text) {
-                setDefaultClientSuperclass(text);
-            }
-        };
-
         // assemble
         FormLayout layout = new FormLayout(
                 "right:70dlu, 3dlu, fill:180dlu, 3dlu, fill:120",
@@ -197,17 +170,6 @@ public class DataMapView extends JPanel {
                 updateDefaultSuperclass);
         builder.append("Optimistic Locking:", defaultLockType, updateDefaultLockType);
 
-        builder.appendSeparator("Client Class Defaults");
-        builder.append("Allow Client Entities:", clientSupport, new JPanel());
-        defaultClientPackageLabel = builder.append(
-                "Client Java Package:",
-                defaultClientPackage.getComponent(),
-                updateDefaultClientPackage);
-        defaultClientSuperclassLabel = builder.append(
-                "Custom Superclass:",
-                defaultClientSuperclass.getComponent(),
-                updateDefaultClientSuperclass);
-
         this.setLayout(new BorderLayout());
         add(builder.getPanel(), BorderLayout.CENTER);
     }
@@ -225,9 +187,6 @@ public class DataMapView extends JPanel {
         defaultLockType.addItemListener(e -> setDefaultLockType(defaultLockType.isSelected()
                 ? ObjEntity.LOCK_TYPE_OPTIMISTIC
                 : ObjEntity.LOCK_TYPE_NONE));
-        clientSupport.addItemListener(e -> setClientSupport(clientSupport.isSelected()));
-        updateDefaultClientPackage.addActionListener(e -> updateDefaultClientPackage());
-        updateDefaultClientSuperclass.addActionListener(e -> updateDefaultClientSuperclass());
         updateDefaultCatalog.addActionListener(e -> updateDefaultCatalog());
         updateDefaultSchema.addActionListener(e -> updateDefaultSchema());
         updateDefaultPackage.addActionListener(e -> updateDefaultPackage());
@@ -277,22 +236,6 @@ public class DataMapView extends JPanel {
         defaultCatalog.setText(map.getDefaultCatalog());
         defaultSchema.setText(map.getDefaultSchema());
         defaultSuperclass.setText(map.getDefaultSuperclass());
-
-        // client defaults
-        clientSupport.setSelected(map.isClientSupported());
-        defaultClientPackage.setText(map.getDefaultClientPackage());
-        defaultClientSuperclass.setText(map.getDefaultClientSuperclass());
-        toggleClientProperties(map.isClientSupported());
-    }
-
-    private void toggleClientProperties(boolean enabled) {
-        defaultClientPackage.getComponent().setEnabled(enabled);
-        updateDefaultClientPackage.setEnabled(enabled);
-        defaultClientPackageLabel.setEnabled(enabled);
-
-        defaultClientSuperclassLabel.setEnabled(enabled);
-        defaultClientSuperclass.getComponent().setEnabled(enabled);
-        updateDefaultClientSuperclass.setEnabled(enabled);
     }
 
     void setDefaultLockType(int lockType) {
@@ -309,21 +252,6 @@ public class DataMapView extends JPanel {
 
         dataMap.setDefaultLockType(lockType);
         eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
-    }
-
-    void setClientSupport(boolean flag) {
-        DataMap dataMap = eventController.getCurrentDataMap();
-
-        if (dataMap == null) {
-            return;
-        }
-
-        if (dataMap.isClientSupported() != flag) {
-            dataMap.setClientSupported(flag);
-
-            toggleClientProperties(flag);
-            eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
-        }
     }
 
     void setQuoteSQLIdentifiers(boolean flag) {
@@ -363,53 +291,6 @@ public class DataMapView extends JPanel {
                 newDefaultPackage,
                 DataMapDefaults.DEFAULT_SUPERCLASS_PACKAGE_SUFFIX);
 
-        eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
-    }
-
-    void setDefaultClientPackage(String newDefaultPackage) {
-        DataMap dataMap = eventController.getCurrentDataMap();
-
-        if (dataMap == null) {
-            return;
-        }
-
-        if (newDefaultPackage != null && newDefaultPackage.trim().length() == 0) {
-            newDefaultPackage = null;
-        }
-
-        String oldPackage = dataMap.getDefaultClientPackage();
-        if (Util.nullSafeEquals(newDefaultPackage, oldPackage)) {
-            return;
-        }
-
-        dataMap.setDefaultClientPackage(newDefaultPackage);
-
-        // TODO: (andrus, 09/10/2005) - add the same logic for the client package
-        // update class generation preferences
-        // eventController.getDataMapPreferences().setSuperclassPackage(
-        // newDefaultPackage,
-        // DataMapDefaults.DEFAULT_SUPERCLASS_PACKAGE);
-
-        eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
-    }
-
-    void setDefaultClientSuperclass(String newSuperclass) {
-        DataMap dataMap = eventController.getCurrentDataMap();
-
-        if (dataMap == null) {
-            return;
-        }
-
-        if (newSuperclass != null && newSuperclass.trim().length() == 0) {
-            newSuperclass = null;
-        }
-
-        String oldSuperclass = dataMap.getDefaultClientSuperclass();
-        if (Util.nullSafeEquals(newSuperclass, oldSuperclass)) {
-            return;
-        }
-
-        dataMap.setDefaultClientSuperclass(newSuperclass);
         eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
     }
 
@@ -549,7 +430,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getObjEntities().size() > 0) {
-            new SuperclassUpdateController(eventController, dataMap, false).startupAction();
+            new SuperclassUpdateController(eventController, dataMap).startupAction();
         }
     }
 
@@ -561,31 +442,7 @@ public class DataMapView extends JPanel {
         }
 
         if (dataMap.getObjEntities().size() > 0 || dataMap.getEmbeddables().size() > 0) {
-            new PackageUpdateController(eventController, dataMap, false).startupAction();
-        }
-    }
-
-    void updateDefaultClientPackage() {
-        DataMap dataMap = eventController.getCurrentDataMap();
-
-        if (dataMap == null) {
-            return;
-        }
-
-        if (dataMap.getObjEntities().size() > 0) {
-            new PackageUpdateController(eventController, dataMap, true).startupAction();
-        }
-    }
-
-    void updateDefaultClientSuperclass() {
-        DataMap dataMap = eventController.getCurrentDataMap();
-
-        if (dataMap == null) {
-            return;
-        }
-
-        if (dataMap.getObjEntities().size() > 0) {
-            new SuperclassUpdateController(eventController, dataMap, true).startupAction();
+            new PackageUpdateController(eventController, dataMap).startupAction();
         }
     }
 

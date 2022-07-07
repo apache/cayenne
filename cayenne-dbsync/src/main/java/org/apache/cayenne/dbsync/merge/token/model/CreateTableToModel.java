@@ -80,11 +80,6 @@ public class CreateTableToModel extends AbstractToModelToken.Entity {
         objEntity.setClassName(className);
         objEntity.setSuperClassName(map.getDefaultSuperclass());
 
-        if (map.isClientSupported()) {
-            objEntity.setClientClassName(map.getNameWithDefaultClientPackage(objEntity.getName()));
-            objEntity.setClientSuperClassName(map.getDefaultClientSuperclass());
-        }
-
         map.addObjEntity(objEntity);
 
         // presumably there are no other ObjEntities pointing to this DbEntity, so syncing just this one...

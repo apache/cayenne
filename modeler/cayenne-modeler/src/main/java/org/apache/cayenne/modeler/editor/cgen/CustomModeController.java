@@ -27,7 +27,6 @@ import javax.swing.DefaultComboBoxModel;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -62,33 +61,24 @@ public class CustomModeController extends GeneratorController {
     }
 
     protected void updateTemplates() {
-        boolean isClient = cgenConfiguration.isClient();
         CodeTemplateManager templateManager = getApplication().getCodeTemplateManager();
 
         List<String> customTemplates = new ArrayList<>(templateManager.getCustomTemplates().keySet());
         Collections.sort(customTemplates);
 
-        List<String> superTemplates = isClient ?
-                new ArrayList<>(templateManager.getDefaultClientSuperclassTemplates()) :
-                new ArrayList<>(templateManager.getDefaultSuperclassTemplates());
+        List<String> superTemplates = new ArrayList<>(templateManager.getDefaultSuperclassTemplates());
         Collections.sort(superTemplates);
         superTemplates.addAll(customTemplates);
 
-        List<String> subTemplates = isClient ?
-                new ArrayList<>(templateManager.getDefaultClientSubclassTemplates()) :
-                new ArrayList<>(templateManager.getDefaultSubclassTemplates());
+        List<String> subTemplates = new ArrayList<>(templateManager.getDefaultSubclassTemplates());
         Collections.sort(subTemplates);
         subTemplates.addAll(customTemplates);
 
-        List<String> querySuperTemplates = isClient ?
-                new ArrayList<>(templateManager.getDefaultClientDataMapSuperclassTemplates()) :
-                new ArrayList<>(templateManager.getDefaultDataMapSuperclassTemplates());
+        List<String> querySuperTemplates = new ArrayList<>(templateManager.getDefaultDataMapSuperclassTemplates());
         Collections.sort(querySuperTemplates);
         querySuperTemplates.addAll(customTemplates);
 
-        List<String> queryTemplates = isClient ?
-                new ArrayList<>(templateManager.getDefaultClientDataMapTemplates()) :
-                new ArrayList<>(templateManager.getDefaultDataMapTemplates());
+        List<String> queryTemplates = new ArrayList<>(templateManager.getDefaultDataMapTemplates());
         Collections.sort(queryTemplates);
         queryTemplates.addAll(customTemplates);
 
@@ -180,54 +170,11 @@ public class CustomModeController extends GeneratorController {
             cgenConfiguration.setCreatePKProperties(view.getPkProperties().isSelected());
             getParentController().checkCgenConfigDirty();
         });
-
-        view.getClientMode().addActionListener(val -> {
-            boolean isSelected = view.getClientMode().isSelected();
-            cgenConfiguration.setClient(isSelected);
-            if (isSelected) {
-                cgenConfiguration.setTemplate(ClientClassGenerationAction.SUBCLASS_TEMPLATE);
-                cgenConfiguration.setSuperTemplate(ClientClassGenerationAction.SUPERCLASS_TEMPLATE);
-                cgenConfiguration.setQueryTemplate(ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE);
-                cgenConfiguration.setQuerySuperTemplate(ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE);
-            } else {
-                cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
-                cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
-                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
-                cgenConfiguration.setQuerySuperTemplate(ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
-            }
-            updateTemplates();
-            String templateName = getApplication().getCodeTemplateManager().getNameByPath(
-                    isSelected ?
-                            ClientClassGenerationAction.SUBCLASS_TEMPLATE :
-                            ClassGenerationAction.SUBCLASS_TEMPLATE,
-                    cgenConfiguration.getRootPath());
-            String superTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-                    isSelected ?
-                            ClientClassGenerationAction.SUBCLASS_TEMPLATE :
-                            ClassGenerationAction.SUBCLASS_TEMPLATE,
-                    cgenConfiguration.getRootPath());
-            String queryTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-                    isSelected ?
-                            ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE :
-                            ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE,
-                    cgenConfiguration.getRootPath());
-            String querySuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-                    isSelected ?
-                            ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE :
-                            ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE,
-                    cgenConfiguration.getRootPath());
-            view.getSubclassTemplate().setItem(templateName);
-            view.getSuperclassTemplate().setItem(superTemplateName);
-            view.getQueryTemplate().setItem(queryTemplateName);
-            view.getQuerySuperTemplate().setItem(querySuperTemplateName);
-            getParentController().checkCgenConfigDirty();
-        });
     }
 
     @Override
     public void initForm(CgenConfiguration cgenConfiguration) {
         super.initForm(cgenConfiguration);
-        view.getClientMode().setSelected(cgenConfiguration.isClient());
         updateTemplates();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
         view.getPairs().setSelected(cgenConfiguration.isMakePairs());

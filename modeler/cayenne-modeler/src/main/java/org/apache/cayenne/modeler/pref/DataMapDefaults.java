@@ -49,13 +49,12 @@ public class DataMapDefaults extends RenamedPreferences {
     /**
      * Returns a superclass package tailored for a given DataMap.
      */
-    public void updateSuperclassPackage(DataMap dataMap, boolean isClient) {
+    public void updateSuperclassPackage(DataMap dataMap) {
 
         String storedPackage = getSuperclassPackage();
         if (Util.isEmptyString(storedPackage)
                 || DEFAULT_SUPERCLASS_PACKAGE_SUFFIX.equals(storedPackage)) {
-            String mapPackage = (isClient) ? dataMap.getDefaultClientPackage() : dataMap
-                    .getDefaultPackage();
+            String mapPackage = dataMap.getDefaultPackage();
             if (!Util.isEmptyString(mapPackage)) {
 
                 if (mapPackage.endsWith(".")) {

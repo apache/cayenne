@@ -34,13 +34,12 @@ import java.util.Map;
 public class GeneratorTabController extends CayenneController {
 
     private static final String STANDARD_OBJECTS_MODE = "Standard Persistent Objects";
-    private static final String CLIENT_OBJECTS_MODE = "Client Persistent Objects";
     private static final String ADVANCED_MODE = "Advanced";
 
     public static final String GENERATOR_PROPERTY = "generator";
 
     private static final String[] GENERATION_MODES = new String[] {
-            STANDARD_OBJECTS_MODE, CLIENT_OBJECTS_MODE, ADVANCED_MODE
+            STANDARD_OBJECTS_MODE, ADVANCED_MODE
     };
 
     protected GeneratorTabPanel view;
@@ -51,7 +50,6 @@ public class GeneratorTabController extends CayenneController {
         super(parent);
         this.controllers = new HashMap<>(3);
         controllers.put(STANDARD_OBJECTS_MODE, new StandardModeController(parent));
-        controllers.put(CLIENT_OBJECTS_MODE, new ClientModeController(parent));
         controllers.put(ADVANCED_MODE, new CustomModeController(parent));
         Component[] modePanels = new Component[GENERATION_MODES.length];
         for (int i = 0; i < GENERATION_MODES.length; i++) {
@@ -104,9 +102,5 @@ public class GeneratorTabController extends CayenneController {
 
     GeneratorController getCustomModeController() {
         return controllers.get(ADVANCED_MODE);
-    }
-
-    GeneratorController getClientGeneratorController() {
-        return controllers.get(CLIENT_OBJECTS_MODE);
     }
 }

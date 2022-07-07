@@ -107,16 +107,6 @@ public class CayenneGeneratorIntegrationTest {
     }
 
     @Test
-    public void testPairs1_client() throws Exception {
-        startTest("pairs1-client");
-
-        assertContents("org/apache/cayenne/testdo/testmap/client/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap.client",
-                "_Artist");
-        assertContents("org/apache/cayenne/testdo/testmap/client/superart/_Artist.java", "_Artist",
-                "org.apache.cayenne.testdo.testmap.client.superart", "PersistentObject");
-    }
-
-    @Test
     public void testPairsEmbeddable3() throws Exception {
         startTest("pairs-embeddables3");
 

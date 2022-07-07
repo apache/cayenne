@@ -114,27 +114,6 @@ public class ObjRelationshipIT extends ServerCase {
     }
 
     @Test
-    public void testGetClientRelationship() {
-        final ObjEntity target = new ObjEntity("te1");
-        ObjRelationship r1 = new ObjRelationship("r1") {
-
-            @Override
-            public ObjEntity getTargetEntity() {
-                return target;
-            }
-        };
-
-        r1.setDeleteRule(DeleteRule.DENY);
-        r1.setTargetEntityName("te1");
-
-        ObjRelationship r2 = r1.getClientRelationship();
-        assertNotNull(r2);
-        assertEquals(r1.getName(), r2.getName());
-        assertEquals(r1.getTargetEntityName(), r2.getTargetEntityName());
-        assertEquals(r1.getDeleteRule(), r2.getDeleteRule());
-    }
-
-    @Test
     public void testGetReverseDbRelationshipPath() {
         ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");

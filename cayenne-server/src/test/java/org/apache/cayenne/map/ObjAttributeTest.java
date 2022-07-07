@@ -68,17 +68,6 @@ public class ObjAttributeTest {
     }
 
     @Test
-    public void testGetClientAttribute() {
-        ObjAttribute a1 = new ObjAttribute("a1");
-        a1.setType("x.y.z");
-
-        ObjAttribute a2 = a1.getClientAttribute();
-        assertNotNull(a2);
-        assertEquals(a1.getName(), a2.getName());
-        assertEquals(a1.getType(), a2.getType());
-    }
-
-    @Test
     public void testGetJavaClass() throws Exception {
 
         ObjAttribute a1 = new ObjAttribute("test");

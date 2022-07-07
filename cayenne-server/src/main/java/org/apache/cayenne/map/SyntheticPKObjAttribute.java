@@ -29,25 +29,6 @@ class SyntheticPKObjAttribute extends ObjAttribute {
     SyntheticPKObjAttribute(String name) {
         super(name);
     }
-
-    @Override
-    public ObjAttribute getClientAttribute() {
-        ClientObjAttribute attribute = new ClientObjAttribute(getName());
-        attribute.setType(getType());
-
-        // unconditionally expose DbAttribute path and configure as mandatory.
-        attribute.setDbAttributePath(dbAttributePath);
-        attribute.setMandatory(true);
-
-        DbAttribute dbAttribute = getDbAttribute();
-        if (dbAttribute != null) {
-            attribute.setMaxLength(dbAttribute.getMaxLength());
-        }
-
-        // TODO: will likely need "userForLocking" property as well.
-
-        return attribute;
-    }
     
     @Override
     public boolean isPrimaryKey() {

@@ -22,7 +22,11 @@ package org.apache.cayenne.gen;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -77,15 +81,13 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      */
     private boolean createPKProperties;
 
-    private boolean client;
-
     /**
      * @since 4.2
      */
     private String externalToolConfig;
 
-    public CgenConfiguration(boolean client) {
-        /**
+    public CgenConfiguration() {
+        /*
          * {@link #isDefault()} method should be in sync with the following values
          */
         this.outputPattern = "*.java";
@@ -101,19 +103,11 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.excludeEmbeddableArtifacts = new ArrayList<>();
         this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
-        this.client = client;
+        this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
+        this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
+        this.queryTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
+        this.querySuperTemplate = ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
 
-        if (!client) {
-            this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
-            this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
-            this.queryTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
-            this.querySuperTemplate = ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
-        } else {
-            this.template = ClientClassGenerationAction.SUBCLASS_TEMPLATE;
-            this.superTemplate = ClientClassGenerationAction.SUPERCLASS_TEMPLATE;
-            this.queryTemplate = ClientClassGenerationAction.DMAP_SUBCLASS_TEMPLATE;
-            this.querySuperTemplate = ClientClassGenerationAction.DMAP_SUPERCLASS_TEMPLATE;
-        }
         this.embeddableTemplate = ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
         this.embeddableSuperTemplate = ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
     }
@@ -178,7 +172,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         if (rootPath != null) {
 
             if (!rootPath.isAbsolute()) {
-                throw new ValidationException("Root path : " + '"' + rootPath.toString() + '"' + "should be absolute");
+                throw new ValidationException("Root path : " + '"' + rootPath + '"' + "should be absolute");
             }
 
             if (path.isAbsolute() && rootPath.getRoot().equals(path.getRoot())) {
@@ -324,14 +318,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         return embeddableArtifacts;
     }
 
-    public boolean isClient() {
-        return client;
-    }
-
-    public void setClient(boolean client) {
-        this.client = client;
-    }
-
     public String getExternalToolConfig() {
         return externalToolConfig;
     }
@@ -429,7 +415,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("createPropertyNames", Boolean.toString(this.createPropertyNames))
                 .simpleTag("superPkg", separatorsToUnix(this.superPkg))
                 .simpleTag("createPKProperties", Boolean.toString(this.createPKProperties))
-                .simpleTag("client", Boolean.toString(client))
                 .simpleTag("externalToolConfig", this.externalToolConfig)
                 .end();
     }
@@ -445,14 +430,10 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 && !createPKProperties
                 && !createPropertyNames
                 && "*.java".equals(outputPattern)
-                && (template.equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
-                || template.equals(ClientClassGenerationAction.SUBCLASS_TEMPLATE))
-                && (superTemplate.equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
-                || superTemplate.equals(ClientClassGenerationAction.SUPERCLASS_TEMPLATE))
-                && (superPkg == null
-                || superPkg.isEmpty())
-                && (externalToolConfig == null
-                || externalToolConfig.isEmpty());
+                && template.equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
+                && superTemplate.equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
+                && (superPkg == null || superPkg.isEmpty())
+                && (externalToolConfig == null || externalToolConfig.isEmpty());
     }
 
     private String separatorsToUnix (String path){

@@ -722,27 +722,6 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
     }
 
     /**
-     * Returns an ObjAttribute stripped of any server-side information, such as
-     * DbAttribute mapping.
-     * 
-     * @since 1.2
-     */
-    public ObjRelationship getClientRelationship() {
-        ObjRelationship reverse = getReverseRelationship();
-        String reverseName = reverse != null ? reverse.getName() : null;
-
-        ObjRelationship relationship = new ClientObjRelationship(getName(), reverseName, isToMany(), isReadOnly());
-
-        relationship.setTargetEntityName(getTargetEntityName());
-        relationship.setDeleteRule(getDeleteRule());
-        relationship.setCollectionType(getCollectionType());
-
-        // TODO: copy locking flag...
-
-        return relationship;
-    }
-
-    /**
      * Returns the interface of collection mapped by a to-many relationship.
      * Returns null for to-one relationships. Default for to-many is
      * "java.util.List". Other possible values are "java.util.Set",

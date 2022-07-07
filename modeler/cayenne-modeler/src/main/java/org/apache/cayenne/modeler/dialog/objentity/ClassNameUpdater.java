@@ -43,15 +43,13 @@ public class ClassNameUpdater extends CayenneController {
     }
 
     /**
-     * Executes entity class and client class name update. Returns true if entity was
-     * changed, false otherwise.
+     * Executes entity class name update. Returns true if entity was changed, false otherwise.
      */
     public boolean doNameUpdate() {
         this.view = null;
         this.updatePerformed = false;
 
         boolean askForServerUpdate = true;
-        boolean askForClientUpdate = true;
 
         String oldServerName = entity.getClassName();
         String suggestedServerName = suggestedServerClassName();
@@ -59,54 +57,23 @@ public class ClassNameUpdater extends CayenneController {
         if (oldServerName == null || oldServerName.length() == 0) {
             // generic entity...
             askForServerUpdate = false;
-        }
-        else if (suggestedServerName == null || suggestedServerName.equals(oldServerName)) {
+        } else if (suggestedServerName == null || suggestedServerName.equals(oldServerName)) {
             askForServerUpdate = false;
-        }
-        else if (oldServerName.contains("UntitledObjEntity")) {
-
+        } else if (oldServerName.contains("UntitledObjEntity")) {
             // update without user interaction
             entity.setClassName(suggestedServerName);
-
             updatePerformed = true;
             askForServerUpdate = false;
         }
 
-        String suggestedClientName = suggestedClientClassName();
-        String oldClientName = entity.getClientClassName();
-        if (suggestedClientName == null || suggestedClientName.equals(oldClientName)) {
-            askForClientUpdate = false;
-        }
-        else if (oldClientName == null
-                || oldClientName.length() == 0
-                || oldClientName.contains("UntitledObjEntity")) {
-
-            // update without user interaction
-            entity.setClientClassName(suggestedClientName);
-
-            updatePerformed = true;
-            askForClientUpdate = false;
-        }
-
-        if (askForClientUpdate || askForServerUpdate) {
+        if (askForServerUpdate) {
             // start dialog
             view = new ClassNameUpdaterView();
+            view.getServerClass().setVisible(true);
+            view.getServerClass().setSelected(true);
+            view.getServerClass().setText("Change Class Name to '" + suggestedServerName + "'");
 
-            if (askForServerUpdate) {
-                view.getServerClass().setVisible(true);
-                view.getServerClass().setSelected(true);
-                view.getServerClass().setText(
-                        "Change Class Name to '" + suggestedServerName + "'");
-            }
-
-            if (askForClientUpdate) {
-                view.getClientClass().setVisible(true);
-                view.getClientClass().setSelected(true);
-                view.getClientClass().setText(
-                        "Change Client Class Name to '" + suggestedClientName + "'");
-            }
-
-            initBindings(suggestedServerName, suggestedClientName);
+            initBindings(suggestedServerName);
 
             view.pack();
             view.setModal(true);
@@ -121,16 +88,6 @@ public class ClassNameUpdater extends CayenneController {
     private String suggestedServerClassName() {
         String pkg = entity.getDataMap() == null ? null : entity.getDataMap().getDefaultPackage();
         return suggestedClassName(entity.getName(), pkg, entity.getClassName());
-    }
-
-    private String suggestedClientClassName() {
-        // do not updated client class name if it is not allowed
-        if (!entity.isClientAllowed()) {
-            return null;
-        }
-
-        String pkg = entity.getDataMap() == null ? null : entity.getDataMap().getDefaultClientPackage();
-        return suggestedClassName(entity.getName(), pkg, entity.getClientClassName());
     }
 
     /**
@@ -157,16 +114,9 @@ public class ClassNameUpdater extends CayenneController {
         return DataMap.getNameWithPackage(pkg, entityName);
     }
 
-    protected void initBindings(
-            final String suggestedServerName,
-            final String suggestedClientName) {
+    protected void initBindings(final String suggestedServerName) {
 
         view.getUpdateButton().addActionListener(e -> {
-            if (view.getClientClass().isSelected()) {
-                entity.setClientClassName(suggestedClientName);
-                updatePerformed = true;
-            }
-
             if (view.getServerClass().isSelected()) {
                 entity.setClassName(suggestedServerName);
                 updatePerformed = true;

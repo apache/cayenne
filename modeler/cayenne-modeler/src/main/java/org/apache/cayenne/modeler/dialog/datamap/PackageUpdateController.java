@@ -48,15 +48,11 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     public static final String ALL_CONTROL = 
             "Set/update package for all ObjEntities and Embeddables (create default class names if missing)";
     public static final String UNINIT_CONTROL = "Do not override class names with packages";
-
-    protected boolean clientUpdate;
     
     protected DefaultsPreferencesView view;
 
-    public PackageUpdateController(ProjectController mediator, DataMap dataMap,
-            boolean clientUpdate) {
+    public PackageUpdateController(ProjectController mediator, DataMap dataMap) {
         super(mediator, dataMap);
-        this.clientUpdate = clientUpdate;
     }
 
     /**
@@ -140,27 +136,16 @@ public class PackageUpdateController extends DefaultsPreferencesController {
     }
 
     protected String getNameWithDefaultPackage(String name) {
-        if (clientUpdate) {
-            return dataMap.getNameWithDefaultClientPackage(name);
-        } else {
-            return dataMap.getNameWithDefaultPackage(name);
-        }
+        return dataMap.getNameWithDefaultPackage(name);
     }
 
     protected String getClassName(ObjEntity entity) {
-        return clientUpdate ? entity.getClientClassName() : entity.getClassName();
+        return entity.getClassName();
     }
 
     protected void setClassName(ObjEntity entity, String newName) {
         if (!Util.nullSafeEquals(newName, getClassName(entity))) {
-
-            if (clientUpdate) {
-                entity.setClientClassName(newName);
-            }
-            else {
-                entity.setClassName(newName);
-            }
-
+            entity.setClassName(newName);
             mediator.fireObjEntityEvent(new EntityEvent(this, entity));
         }
     }

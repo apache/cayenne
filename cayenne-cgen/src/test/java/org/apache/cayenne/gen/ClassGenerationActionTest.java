@@ -54,7 +54,7 @@ public class ClassGenerationActionTest extends CgenCase {
 	@Before
 	public void setUp() throws Exception {
 		writers = new ArrayList<>(3);
-		cgenConfiguration = new CgenConfiguration(false);
+		cgenConfiguration = new CgenConfiguration();
 		action = new TestClassGenerationAction(getUnitTestInjector().getInstance(ClassGenerationActionFactory.class)
 				.createAction(cgenConfiguration), writers);
 	}
@@ -163,15 +163,10 @@ public class ClassGenerationActionTest extends CgenCase {
 
 	@Test
 	public void testExecuteDataMapQueryNames() throws Exception {
-		runDataMapTest(false);
+		runDataMapTest();
 	}
 
-	@Test
-	public void testExecuteClientDataMapQueryNames() throws Exception {
-		runDataMapTest(true);
-	}
-
-	private void runDataMapTest(boolean client) throws Exception {
+	private void runDataMapTest() throws Exception {
 		QueryDescriptor descriptor = QueryDescriptor.selectQueryDescriptor();
 		descriptor.setName("TestQuery");
 
@@ -179,40 +174,23 @@ public class ClassGenerationActionTest extends CgenCase {
 		map.addQueryDescriptor(descriptor);
 		map.setName("testmap");
 		List<String> generated;
-		if (client) {
-			map.setDefaultClientPackage("testpackage");
-			generated = execute(new ClientDataMapArtifact(map, map.getQueryDescriptors()));
-		} else {
-			map.setDefaultPackage("testpackage");
-			generated = execute(new DataMapArtifact(map, map.getQueryDescriptors()));
-		}
+		map.setDefaultPackage("testpackage");
+		generated = execute(new DataMapArtifact(map, map.getQueryDescriptors()));
 		assertEquals(2, generated.size());
 		assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
 	}
 
 	@Test
 	public void testCallbackMethodGeneration() throws Exception {
-		assertCallbacks(false);
+		assertCallbacks();
 	}
 
-	@Test
-	public void testClientCallbackMethodGeneration() throws Exception {
-		assertCallbacks(true);
-	}
-
-	private void assertCallbacks(boolean isClient) throws Exception {
+	private void assertCallbacks() throws Exception {
 		ObjEntity testEntity1 = new ObjEntity("TE1");
 		testEntity1.setClassName("org.example.TestClass1");
 		int i = 0;
 		for (CallbackDescriptor cb : testEntity1.getCallbackMap().getCallbacks()) {
 			cb.addCallbackMethod("cb" + i++);
-		}
-
-		if (isClient) {
-
-			cgenConfiguration.setClient(true);
-			action = new TestClassGenerationAction(getUnitTestInjector().getInstance(ClassGenerationActionFactory.class)
-					.createAction(cgenConfiguration), writers);
 		}
 
 		cgenConfiguration.setMakePairs(true);

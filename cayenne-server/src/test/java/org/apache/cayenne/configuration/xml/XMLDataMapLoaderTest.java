@@ -89,7 +89,6 @@ public class XMLDataMapLoaderTest {
         assertNull(map.getDefaultCatalog());
         assertNull(map.getDefaultSchema());
         assertNull(map.getDefaultPackage());
-        assertFalse(map.isClientSupported());
     }
 
     @Test
@@ -109,7 +108,6 @@ public class XMLDataMapLoaderTest {
         assertEquals("TEST_CATALOG", map.getDefaultCatalog());
         assertNull(map.getDefaultSchema());
         assertEquals("org.apache.cayenne.testdo.testmap", map.getDefaultPackage());
-        assertTrue(map.isClientSupported());
 
         // check some loaded content
         assertEquals("org.apache.cayenne.testdo.testmap.Artist",

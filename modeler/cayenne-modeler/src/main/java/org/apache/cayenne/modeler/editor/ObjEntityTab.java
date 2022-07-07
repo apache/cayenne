@@ -33,7 +33,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -67,7 +66,6 @@ import org.apache.cayenne.modeler.util.ExpressionConvertor;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -94,17 +92,10 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
     protected JCheckBox readOnly;
     protected JCheckBox optimisticLocking;
 
-    protected JComponent clientSeparator;
     protected JLabel isAbstractLabel;
-    protected JLabel serverOnlyLabel;
-    protected JLabel clientClassNameLabel;
-    protected JLabel clientSuperClassNameLabel;
 
-    protected JCheckBox serverOnly;
     protected JCheckBox isAbstract;
     protected TextAdapter comment;
-    protected TextAdapter clientClassName;
-    protected TextAdapter clientSuperClassName;
 
     public ObjEntityTab(ProjectController mediator) {
         this.mediator = mediator;
@@ -176,24 +167,11 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
 
         isAbstract = new JCayenneCheckBox();
-        serverOnly = new JCayenneCheckBox();
 
         comment = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) throws ValidationException {
                 setComment(text);
-            }
-        };
-        clientClassName = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setClientClassName(text);
-            }
-        };
-        clientSuperClassName = new TextAdapter(new JTextField()) {
-            @Override
-            protected void updateModel(String text) {
-                setClientSuperClassName(text);
             }
         };
 
@@ -216,11 +194,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         builder.append("Qualifier:", qualifier.getComponent());
         builder.append("Read-Only:", readOnly);
         builder.append("Optimistic Locking:", optimisticLocking);
-
-        clientSeparator = builder.appendSeparator("Java Client");
-        serverOnlyLabel = builder.append("Not for Client Use:", serverOnly);
-        clientClassNameLabel = builder.append("Client Java Class:", clientClassName.getComponent());
-        clientSuperClassNameLabel = builder.append("Client Superclass:", clientSuperClassName.getComponent());
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }
@@ -286,7 +259,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
                 // if a super-entity selected, disable table selection
                 // and also update parent DbEntity selection...
-                toggleEnabled(name == null, !serverOnly.isSelected());
+                toggleEnabled(name == null);
                 dbEntityCombo.getModel().setSelectedItem(entity.getDbEntity());
                 superClassName.setText(entity.getSuperClassName());
 
@@ -328,15 +301,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
             }
         });
 
-        serverOnly.addItemListener(e -> {
-            ObjEntity entity = mediator.getCurrentObjEntity();
-            if (entity != null) {
-                entity.setServerOnly(serverOnly.isSelected());
-                toggleEnabled(dbEntityCombo.isEnabled(), !serverOnly.isSelected());
-                mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-            }
-        });
-
         isAbstract.addItemListener(e -> {
             ObjEntity entity = mediator.getCurrentObjEntity();
             if (entity != null) {
@@ -363,9 +327,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         isAbstract.setSelected(entity.isAbstract());
         comment.setText(getComment(entity));
-        serverOnly.setSelected(entity.isServerOnly());
-        clientClassName.setText(entity.getClientClassName());
-        clientSuperClassName.setText(entity.getClientSuperClassName());
 
         qualifier.setText(new ExpressionConvertor().valueAsString(entity.getDeclaredQualifier()));
 
@@ -389,8 +350,7 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         dbEntityCombo.setEnabled(!isUsedInheritance);
 
         // toggle visibility and editability rules
-        toggleClientFieldsVisible(map.isClientSupported());
-        toggleEnabled(entity.getSuperEntityName() == null, !entity.isServerOnly());
+        toggleEnabled(entity.getSuperEntityName() == null);
 
         // do not show this entity or any of the subentities
         List<ObjEntity> objEntities = map.getObjEntities().stream()
@@ -429,34 +389,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
         if (ent != null && !Util.nullSafeEquals(ent.getSuperClassName(), text)) {
             ent.setSuperClassName(text);
-            mediator.fireObjEntityEvent(new EntityEvent(this, ent));
-        }
-    }
-
-    void setClientClassName(String className) {
-        if (className != null && className.trim().length() == 0) {
-            className = null;
-        }
-
-        ObjEntity entity = mediator.getCurrentObjEntity();
-
-        // "ent" may be null if we quit editing by changing tree selection
-        if (entity != null && !Util.nullSafeEquals(entity.getClientClassName(), className)) {
-            entity.setClientClassName(className);
-            mediator.fireObjEntityEvent(new EntityEvent(this, entity));
-        }
-    }
-
-    void setClientSuperClassName(String text) {
-
-        if (text != null && text.trim().length() == 0) {
-            text = null;
-        }
-
-        ObjEntity ent = mediator.getCurrentObjEntity();
-
-        if (ent != null && !Util.nullSafeEquals(ent.getClientSuperClassName(), text)) {
-            ent.setClientSuperClassName(text);
             mediator.fireObjEntityEvent(new EntityEvent(this, ent));
         }
     }
@@ -511,7 +443,6 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
 
             if (nameUpdater.doNameUpdate()) {
                 className.setText(entity.getClassName());
-                clientClassName.setText(entity.getClientClassName());
             }
         } else {
             // there is an entity with the same name
@@ -519,27 +450,9 @@ public class ObjEntityTab extends JPanel implements ObjEntityDisplayListener, Ex
         }
     }
 
-    void toggleClientFieldsVisible(boolean visible) {
-
-        clientSeparator.setVisible(visible);
-        clientSuperClassNameLabel.setVisible(visible);
-        clientClassNameLabel.setVisible(visible);
-        serverOnlyLabel.setVisible(visible);
-
-        clientClassName.getComponent().setVisible(visible);
-        clientSuperClassName.getComponent().setVisible(visible);
-        serverOnly.setVisible(visible);
-    }
-
-    void toggleEnabled(boolean directTableMapping, boolean clientFieldsEnabled) {
+    void toggleEnabled(boolean directTableMapping) {
         superClassName.getComponent().setEnabled(directTableMapping);
         superclassLabel.setEnabled(directTableMapping);
-
-        clientSuperClassName.getComponent().setEnabled(directTableMapping && clientFieldsEnabled);
-        clientSuperClassNameLabel.setEnabled(directTableMapping && clientFieldsEnabled);
-
-        clientClassNameLabel.setEnabled(clientFieldsEnabled);
-        clientClassName.getComponent().setEnabled(clientFieldsEnabled);
     }
 
     public void processExistingSelection(EventObject e) {

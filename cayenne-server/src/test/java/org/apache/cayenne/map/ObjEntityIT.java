@@ -102,30 +102,12 @@ public class ObjEntityIT extends ServerCase {
         assertNull(pk.getEntity());
         assertFalse(artistE.getAttributes().contains(pk));
 
-        ObjEntity clientArtistE = artistE.getClientEntity();
-        Collection<ObjAttribute> clientpks = clientArtistE.getPrimaryKeys();
-        assertEquals(1, clientpks.size());
-        ObjAttribute clientPk = clientpks.iterator().next();
-        assertEquals("java.lang.Long", clientPk.getType());
-        assertEquals("ARTIST_ID", clientPk.getDbAttributePath());
-        assertEquals("artistId", clientPk.getName());
-        assertNull(clientPk.getEntity());
-        assertFalse(clientArtistE.getAttributes().contains(pk));
-
         ObjEntity meaningfulPKE = runtime.getDataDomain().getEntityResolver().getObjEntity("MeaningfulGeneratedColumnTestEntity");
         Collection<ObjAttribute> mpks = meaningfulPKE.getPrimaryKeys();
         assertEquals(1, mpks.size());
 
         ObjAttribute mpk = mpks.iterator().next();
         assertTrue(meaningfulPKE.getAttributes().contains(mpk));
-
-        ObjEntity clientMeaningfulPKE = meaningfulPKE.getClientEntity();
-        Collection<ObjAttribute> clientmpks = clientMeaningfulPKE.getPrimaryKeys();
-        assertEquals(1, clientmpks.size());
-
-        ObjAttribute clientmpk = clientmpks.iterator().next();
-        assertEquals("java.lang.Integer", clientmpk.getType());
-        assertTrue(clientMeaningfulPKE.getAttributes().contains(clientmpk));
     }
 
     @Test
@@ -187,33 +169,6 @@ public class ObjEntityIT extends ServerCase {
     }
 
     @Test
-    public void testServerOnly() {
-        ObjEntity e1 = new ObjEntity("e1");
-
-        assertFalse(e1.isServerOnly());
-        e1.setServerOnly(true);
-        assertTrue(e1.isServerOnly());
-    }
-
-    @Test
-    public void testClientAllowed() {
-        ObjEntity e1 = new ObjEntity("e1");
-
-        assertFalse("No parent DataMap should have automatically disabled client.", e1.isClientAllowed());
-
-        DataMap map = new DataMap("m1");
-        e1.setDataMap(map);
-
-        assertFalse(e1.isClientAllowed());
-
-        map.setClientSupported(true);
-        assertTrue(e1.isClientAllowed());
-
-        e1.setServerOnly(true);
-        assertFalse(e1.isClientAllowed());
-    }
-
-    @Test
     public void testGetPrimaryKeyNames() {
         ObjEntity entity = new ObjEntity("entity");
         DbEntity dbentity = new DbEntity("dbe");
@@ -247,44 +202,6 @@ public class ObjEntityIT extends ServerCase {
         assertEquals(2, entity.getPrimaryKeyNames().size());
         assertTrue(entity.getPrimaryKeyNames().contains(pk.getName()));
         assertTrue(entity.getPrimaryKeyNames().contains(pk2.getName()));
-    }
-
-    @Test
-    public void testGetClientEntity() {
-
-        DataMap map = new DataMap();
-        map.setClientSupported(true);
-
-        final ObjEntity target = new ObjEntity("te1");
-        map.addObjEntity(target);
-
-        ObjEntity e1 = new ObjEntity("entity");
-        e1.setClassName("x.y.z");
-        e1.setClientClassName("a.b.c");
-        e1.addAttribute(new ObjAttribute("A1"));
-        e1.addAttribute(new ObjAttribute("A2"));
-        map.addObjEntity(e1);
-
-        DbEntity dbentity = new DbEntity("dbe");
-        map.addDbEntity(dbentity);
-        e1.setDbEntity(dbentity);
-
-        ObjRelationship r1 = new ObjRelationship("r1") {
-
-            @Override
-            public ObjEntity getTargetEntity() {
-                return target;
-            }
-        };
-
-        e1.addRelationship(r1);
-
-        ObjEntity e2 = e1.getClientEntity();
-        assertNotNull(e2);
-        assertEquals(e1.getName(), e2.getName());
-        assertEquals(e1.getClientClassName(), e2.getClassName());
-        assertEquals(e1.getAttributes().size(), e2.getAttributes().size());
-        assertEquals(e1.getRelationships().size(), e2.getRelationships().size());
     }
 
     @Test

@@ -58,7 +58,7 @@ public class BaseTemplatesGenerationTest {
 
     @Before
     public void setUp() {
-        cgenConfiguration = new CgenConfiguration(false);
+        cgenConfiguration = new CgenConfiguration();
         action = new ClassGenerationAction(cgenConfiguration);
         dataMap = new DataMap();
         dataMap.setDefaultPackage("test");

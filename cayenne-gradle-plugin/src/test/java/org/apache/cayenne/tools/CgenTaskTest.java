@@ -46,7 +46,6 @@ public class CgenTaskTest {
     private CgenTask createCgenTaskMock() {
         CgenTask mock = mock(CgenTask.class);
 
-        doCallRealMethod().when(mock).setClient(anyBoolean());
         doCallRealMethod().when(mock).setAdditionalMaps(any(File.class));
         doCallRealMethod().when(mock).setCreatePropertyNames(anyBoolean());
         doCallRealMethod().when(mock).setEmbeddableSuperTemplate(anyString());

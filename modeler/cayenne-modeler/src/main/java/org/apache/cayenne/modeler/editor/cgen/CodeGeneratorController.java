@@ -103,9 +103,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         GeneratorController modeController = prevGeneratorController.get(dataMap);
         if (modeController == null) {
             if (cgenConfiguration.isDefault()) {
-                modeController = cgenConfiguration.isClient()
-                        ? generatorSelector.getClientGeneratorController()
-                        : generatorSelector.getStandartController();
+                modeController = generatorSelector.getStandartController();
             } else {
                 modeController = generatorSelector.getCustomModeController();
             }
@@ -214,7 +212,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
             return;
         }
 
-        cgenConfiguration = new CgenConfiguration(false);
+        cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setForce(true);
         cgenConfiguration.setDataMap(map);
 

@@ -39,7 +39,7 @@ public class TemplateLocationTest {
 
     @Before
     public void setUp() {
-        cgenConfiguration = new CgenConfiguration(false);
+        cgenConfiguration = new CgenConfiguration();
         action = new ClassGenerationAction(cgenConfiguration);
         templateType = TemplateType.ENTITY_SUBCLASS;
     }

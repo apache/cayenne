@@ -150,16 +150,9 @@ public class PropertyUtils {
     }
 
     public void addImport(ObjRelationship relationship) {
-        addImport(relationship, false);
-    }
-
-    public void addImport(ObjRelationship relationship, boolean client) {
         importUtils.addType(PropertyFactory.class.getName());
         if (relationship.getTargetEntity() != null) {
-            importUtils.addType(client
-                    ? relationship.getTargetEntity().getClientClassName()
-                    : relationship.getTargetEntity().getClassName())
-            ;
+            importUtils.addType(relationship.getTargetEntity().getClassName());
         } else {
             importUtils.addType(Persistent.class.getName());
         }
@@ -188,7 +181,7 @@ public class PropertyUtils {
         );
     }
 
-    public String propertyDefinition(ObjAttribute attribute, boolean client) throws ClassNotFoundException {
+    public String propertyDefinition(ObjAttribute attribute) throws ClassNotFoundException {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
@@ -211,10 +204,6 @@ public class PropertyUtils {
             name = name + DUPLICATE_NAME_SUFFIX;
         }
         return name;
-    }
-
-    public String propertyDefinition(ObjAttribute attribute) throws ClassNotFoundException {
-        return propertyDefinition(attribute, false);
     }
 
     public String propertyDefinition(EmbeddedAttribute attribute) throws ClassNotFoundException {
@@ -256,33 +245,29 @@ public class PropertyUtils {
         return name;
     }
 
-    public String propertyDefinition(ObjRelationship relationship, boolean client) {
-        if (relationship.isToMany()) {
-            return toManyRelationshipDefinition(relationship, client);
-        } else {
-            return toOneRelationshipDefinition(relationship, client);
-        }
-    }
-
     public String propertyDefinition(ObjRelationship relationship) {
-        return propertyDefinition(relationship, false);
-    }
-
-    private String toManyRelationshipDefinition(ObjRelationship relationship, boolean client) {
-        if (Map.class.getName().equals(relationship.getCollectionType())) {
-            return mapRelationshipDefinition(relationship, client);
+        if (relationship.isToMany()) {
+            return toManyRelationshipDefinition(relationship);
         } else {
-            return collectionRelationshipDefinition(relationship, client);
+            return toOneRelationshipDefinition(relationship);
         }
     }
 
-    private String mapRelationshipDefinition(ObjRelationship relationship, boolean client) {
+    private String toManyRelationshipDefinition(ObjRelationship relationship) {
+        if (Map.class.getName().equals(relationship.getCollectionType())) {
+            return mapRelationshipDefinition(relationship);
+        } else {
+            return collectionRelationshipDefinition(relationship);
+        }
+    }
+
+    private String mapRelationshipDefinition(ObjRelationship relationship) {
         StringUtils utils = StringUtils.getInstance();
 
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
         String mapKeyType = importUtils.formatJavaType(EntityUtils.getMapKeyTypeInternal(relationship));
-        String attributeType = getRelatedTypeName(relationship, client);
+        String attributeType = getRelatedTypeName(relationship);
 
         return String.format("public static final %s<%s, %s> %s = PropertyFactory.%s(\"%s\", %s.class, %s.class);",
                 importUtils.formatJavaType(propertyType),
@@ -296,12 +281,12 @@ public class PropertyUtils {
         );
     }
 
-    private String collectionRelationshipDefinition(ObjRelationship relationship, boolean client) {
+    private String collectionRelationshipDefinition(ObjRelationship relationship) {
         StringUtils utils = StringUtils.getInstance();
 
         String propertyType = getPropertyTypeForJavaClass(relationship);
         String propertyFactoryMethod = factoryMethodForPropertyType(propertyType);
-        String entityType = getRelatedTypeName(relationship, client);
+        String entityType = getRelatedTypeName(relationship);
 
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),
@@ -313,22 +298,20 @@ public class PropertyUtils {
         );
     }
 
-    private String getRelatedTypeName(ObjRelationship relationship, boolean client) {
+    private String getRelatedTypeName(ObjRelationship relationship) {
         if(relationship.getTargetEntity() == null) {
             return Persistent.class.getSimpleName();
         }
 
-        return importUtils.formatJavaType(client
-                ? relationship.getTargetEntity().getClientClassName()
-                : relationship.getTargetEntity().getClassName());
+        return importUtils.formatJavaType(relationship.getTargetEntity().getClassName());
     }
 
-    private String toOneRelationshipDefinition(ObjRelationship relationship, boolean client) {
+    private String toOneRelationshipDefinition(ObjRelationship relationship) {
         StringUtils utils = StringUtils.getInstance();
 
         String propertyType = EntityProperty.class.getName();
         String propertyFactoryMethod = "createEntity";
-        String attributeType = getRelatedTypeName(relationship, client);
+        String attributeType = getRelatedTypeName(relationship);
 
         return String.format("public static final %s<%s> %s = PropertyFactory.%s(\"%s\", %s.class);",
                 importUtils.formatJavaType(propertyType),

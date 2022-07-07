@@ -28,7 +28,6 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -48,10 +47,6 @@ public class CgenTask extends BaseCayenneTask {
     private static final File[] NO_FILES = new File[0];
 
     private File additionalMaps;
-
-    @Input
-    @Optional
-    private Boolean client;
 
     private File destDir;
 
@@ -180,7 +175,6 @@ public class CgenTask extends BaseCayenneTask {
 
             CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
             filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(getLogger(), null, excludeEmbeddables));
-            filterEntityAction.setClient(generator.getCgenConfiguration().isClient());
             generator.setLogger(getLogger());
 
             if(this.force || getProject().hasProperty("force")) {
@@ -232,7 +226,7 @@ public class CgenTask extends BaseCayenneTask {
             return cgenConfiguration;
         } else {
             getLogger().info("Using default cgen config.");
-            cgenConfiguration = new CgenConfiguration(false);
+            cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setRelPath(getDestDirFile().getPath());
             cgenConfiguration.setDataMap(dataMap);
             return cgenConfiguration;
@@ -240,7 +234,7 @@ public class CgenTask extends BaseCayenneTask {
     }
 
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
-        CgenConfiguration cgenConfiguration = new CgenConfiguration(client != null ? client : false);
+        CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.setRelPath(getDestDirFile() != null ? getDestDirFile().toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
@@ -264,13 +258,13 @@ public class CgenTask extends BaseCayenneTask {
         cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
-                cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
             }
             if(embeddableTemplate == null) {
                 cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
             }
             if(queryTemplate == null) {
-                cgenConfiguration.setQueryTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE : ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
             }
         }
         return cgenConfiguration;
@@ -284,7 +278,7 @@ public class CgenTask extends BaseCayenneTask {
     }
 
     private boolean hasConfig() {
-        return destDir != null || destDirName != null || encoding != null || client != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
+        return destDir != null || destDirName != null || encoding != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
                 makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
                 superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
                 usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
@@ -373,18 +367,6 @@ public class CgenTask extends BaseCayenneTask {
 
     public void additionalMaps(File additionalMaps) {
         setAdditionalMaps(additionalMaps);
-    }
-
-    public Boolean isClient() {
-        return client;
-    }
-
-    public void setClient(Boolean client) {
-        this.client = client;
-    }
-
-    public void client(boolean client) {
-        setClient(client);
     }
 
     public String getEncoding() {

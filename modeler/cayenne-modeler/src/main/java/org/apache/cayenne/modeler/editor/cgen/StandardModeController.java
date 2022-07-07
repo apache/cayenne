@@ -45,7 +45,6 @@ public class StandardModeController extends GeneratorController {
 
     @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
-        cgenConfiguration.setClient(false);
         cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
         cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
     }

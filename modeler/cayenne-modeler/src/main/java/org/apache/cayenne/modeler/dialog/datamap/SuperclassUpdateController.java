@@ -35,14 +35,11 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
 
     public static final String ALL_CONTROL = "Set/update superclass for all ObjEntities";
     public static final String UNINIT_CONTROL = "Do not override existing non-empty superclasses";
-
-    protected boolean clientUpdate;
     
     protected DefaultsPreferencesView view;
 
-    public SuperclassUpdateController(ProjectController mediator, DataMap dataMap, boolean clientUpdate) {
+    public SuperclassUpdateController(ProjectController mediator, DataMap dataMap) {
         super(mediator, dataMap);
-        this.clientUpdate = clientUpdate;
     }
 
     /**
@@ -91,19 +88,14 @@ public class SuperclassUpdateController extends DefaultsPreferencesController {
     }
 
     protected String getSuperclass() {
-        return clientUpdate ? dataMap.getDefaultClientSuperclass() : dataMap.getDefaultSuperclass();
+        return dataMap.getDefaultSuperclass();
     }
 
     protected String getSuperClassName(ObjEntity entity) {
-        return clientUpdate ? entity.getClientSuperClassName() : entity.getSuperClassName();
+        return entity.getSuperClassName();
     }
 
     protected void setSuperClassName(ObjEntity entity, String superClassName) {
-        if (clientUpdate) {
-            entity.setClientSuperClassName(superClassName);
-        }
-        else {
-            entity.setSuperClassName(superClassName);
-        }
+        entity.setSuperClassName(superClassName);
     }
 }

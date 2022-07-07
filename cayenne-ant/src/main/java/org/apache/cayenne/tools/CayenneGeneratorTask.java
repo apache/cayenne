@@ -29,7 +29,6 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.ClientClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.Path;
@@ -55,7 +54,6 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     protected File map;
     protected File additionalMaps[];
-    protected Boolean client;
     protected File destDir;
     protected String encoding;
     protected Boolean makepairs;
@@ -131,7 +129,6 @@ public class CayenneGeneratorTask extends CayenneTask {
 
             CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
             filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddablesPattern));
-            filterEntityAction.setClient(generatorAction.getCgenConfiguration().isClient());
             generatorAction.setLogger(logger);
             if(force) {
                 // will (re-)generate all files
@@ -160,7 +157,7 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     private boolean hasConfig() {
-        return destDir != null || encoding != null || client != null || excludeEntitiesPattern != null || excludeEmbeddablesPattern != null || includeEntitiesPattern != null ||
+        return destDir != null || encoding != null || excludeEntitiesPattern != null || excludeEmbeddablesPattern != null || includeEntitiesPattern != null ||
                 makepairs != null || mode != null || outputPattern != null || overwrite != null || superpkg != null ||
                 supertemplate != null || template != null || embeddabletemplate != null || embeddablesupertemplate != null ||
                 usepkgpath != null || createpropertynames != null || querytemplate != null ||
@@ -178,14 +175,14 @@ public class CayenneGeneratorTask extends CayenneTask {
             return cgenConfiguration;
         } else {
             logger.info("Using default cgen config.");
-            cgenConfiguration = new CgenConfiguration(false);
+            cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setDataMap(dataMap);
             return cgenConfiguration;
         }
     }
 
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
-        CgenConfiguration cgenConfiguration = new CgenConfiguration(client != null ? client : false);
+        CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.setRelPath(destDir != null ? destDir.toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
@@ -209,13 +206,13 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setExternalToolConfig(externaltoolconfig != null ? externaltoolconfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
-                cgenConfiguration.setTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.SINGLE_CLASS_TEMPLATE : ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
             }
             if(embeddabletemplate == null) {
                 cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
             }
             if(querytemplate == null) {
-                cgenConfiguration.setQueryTemplate(cgenConfiguration.isClient() ? ClientClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE : ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
             }
         }
         return cgenConfiguration;
@@ -322,13 +319,6 @@ public class CayenneGeneratorTask extends CayenneTask {
      */
     public void setSuperpkg(String superpkg) {
         this.superpkg = superpkg;
-    }
-
-    /**
-     * Sets <code>client</code> property.
-     */
-    public void setClient(boolean client) {
-        this.client = client;
     }
 
     /**

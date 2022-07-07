@@ -55,7 +55,6 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String EXCLUDE_ENTITIES_TAG = "excludeEntities";
     private static final String EXCLUDE_EMBEDDABLES_TAG = "excludeEmbeddables";
     private static final String CREATE_PK_PROPERTIES = "createPKProperties";
-    private static final String CLIENT_TAG = "client";
     private static final String SUPER_PKG_TAG = "superPkg";
 
     public static final String TRUE = "true";
@@ -67,7 +66,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         super(parentHandler);
         this.metaData = metaData;
         this.targetNamespace = CgenExtension.NAMESPACE;
-        this.configuration = new CgenConfiguration(false);
+        this.configuration = new CgenConfiguration();
     }
 
     @Override
@@ -129,9 +128,6 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
                 break;
             case CREATE_PK_PROPERTIES:
                 createPkPropertiesTag(data);
-                break;
-            case CLIENT_TAG:
-                createClient(data);
                 break;
             case SUPER_PKG_TAG:
                 createSuperPkg(data);
@@ -249,13 +245,6 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             return;
         }
         configuration.setCreatePKProperties(data.equals(TRUE));
-    }
-
-    private void createClient(String data) {
-        if(data.trim().length() == 0) {
-            return;
-        }
-        configuration.setClient(data.equals(TRUE));
     }
 
     private void createSuperPkg(String data) {

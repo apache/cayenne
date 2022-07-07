@@ -43,7 +43,7 @@ class ClassGenerationValidator {
         ValidationResult validationResult = new ValidationResult();
         for (Object classObj : classes) {
             if (classObj instanceof ObjEntity) {
-                validateEntity(validationResult, (ObjEntity) classObj, false);
+                validateEntity(validationResult, (ObjEntity) classObj);
             } else if (classObj instanceof Embeddable) {
                 validateEmbeddable(validationResult, (Embeddable) classObj);
             }
@@ -90,9 +90,9 @@ class ClassGenerationValidator {
         return BeanValidationFailure.validateJavaClassName(name, "className", embeddable.getClassName());
     }
 
-    private void validateEntity(ValidationResult validationBuffer, ObjEntity entity, boolean clientValidation) {
+    private void validateEntity(ValidationResult validationBuffer, ObjEntity entity) {
 
-        ValidationFailure entityFailure = validateEntity(clientValidation ? entity.getClientEntity() : entity);
+        ValidationFailure entityFailure = validateEntity(entity);
         if (entityFailure != null) {
             validationBuffer.addFailure(entityFailure);
             return;
@@ -119,7 +119,7 @@ class ClassGenerationValidator {
         }
 
         for (ObjRelationship rel : entity.getRelationships()) {
-            ValidationFailure failure = validateRelationship(rel, clientValidation);
+            ValidationFailure failure = validateRelationship(rel);
             if (failure != null) {
                 validationBuffer.addFailure(failure);
                 return;
@@ -184,7 +184,7 @@ class ClassGenerationValidator {
         return validateAttribute(name, attr, attribute.getType());
     }
 
-    private ValidationFailure validateRelationship(ObjRelationship relationship, boolean clientValidation) {
+    private ValidationFailure validateRelationship(ObjRelationship relationship) {
 
         String name = relationship.getSourceEntity().getName();
 
@@ -203,11 +203,6 @@ class ClassGenerationValidator {
         if (!relationship.isToMany()) {
 
             ObjEntity targetEntity = relationship.getTargetEntity();
-
-            if (clientValidation && targetEntity != null) {
-                targetEntity = targetEntity.getClientEntity();
-            }
-
             if (targetEntity == null) {
 
                 return new BeanValidationFailure(name, "relationship.targetEntity", "No target entity");

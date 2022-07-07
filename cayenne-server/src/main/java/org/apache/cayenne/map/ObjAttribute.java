@@ -330,35 +330,6 @@ public class ObjAttribute extends Attribute implements ConfigurationNode {
     }
 
     /**
-     * Returns an ObjAttribute stripped of any server-side information, such as
-     * DbAttribute mapping.
-     * 
-     * @since 1.2
-     */
-    public ObjAttribute getClientAttribute() {
-        ClientObjAttribute attribute = new ClientObjAttribute(getName());
-        attribute.setType(getType());
-
-        DbAttribute dbAttribute = getDbAttribute();
-        if (dbAttribute != null) {
-
-            // expose PK attribute names - the client may need those to build
-            // ObjectIds
-            if (dbAttribute.isPrimaryKey()) {
-                attribute.setDbAttributePath(dbAttribute.getName());
-                attribute.setPrimaryKey(true);
-            }
-
-            attribute.setMandatory(isMandatory());
-            attribute.setMaxLength(getMaxLength());
-        }
-
-        // TODO: will likely need "userForLocking" property as well.
-
-        return attribute;
-    }
-
-    /**
      * Updates DbAttributePath for this ObjAttribute
      */
     public void updateDbAttributePath() {

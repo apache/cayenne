@@ -78,8 +78,6 @@ public class CreateTableToModelIT extends MergeCase {
 
 		assertEquals(objEntity.getClassName(), map.getDefaultPackage() + "." + objEntity.getName());
 		assertEquals(objEntity.getSuperClassName(), map.getDefaultSuperclass());
-		assertEquals(objEntity.getClientClassName(), map.getDefaultClientPackage() + "." + objEntity.getName());
-		assertEquals(objEntity.getClientSuperClassName(), map.getDefaultClientSuperclass());
 
 		assertEquals(1, objEntity.getAttributes().size());
 		assertEquals("java.lang.String", objEntity.getAttributes().iterator().next().getType());

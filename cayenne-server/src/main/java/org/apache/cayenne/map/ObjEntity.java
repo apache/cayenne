@@ -78,9 +78,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     protected int lockType;
 
     protected boolean _abstract;
-    protected boolean serverOnly;
-    protected String clientClassName;
-    protected String clientSuperClassName;
 
     protected CallbackMap callbacks;
 
@@ -120,9 +117,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
 
         encoder.attribute("abstract", isAbstract())
-                .attribute("serverOnly", isServerOnly())
                 .attribute("className", getClassName())
-                .attribute("clientClassName", getClientClassName())
                 .attribute("readOnly", isReadOnly());
 
         if (getDeclaredLockType() == LOCK_TYPE_OPTIMISTIC) {
@@ -139,10 +134,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
         if (getSuperEntityName() == null && getSuperClassName() != null) {
             encoder.attribute("superClassName", getSuperClassName());
-        }
-
-        if (getSuperEntityName() == null && getClientSuperClassName() != null) {
-            encoder.attribute("clientSuperClassName", getClientSuperClassName());
         }
 
         if (qualifier != null) {
@@ -164,67 +155,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
 
         delegate.visitObjEntity(this);
         encoder.end();
-    }
-
-    /**
-     * Returns an ObjEntity stripped of any server-side information, such as
-     * DbEntity mapping. "clientClassName" property of this entity is used to
-     * initialize "className" property of returned entity.
-     * 
-     * @since 1.2
-     */
-    public ObjEntity getClientEntity() {
-
-        ClientObjEntity entity = new ClientObjEntity(getName());
-        entity.setClassName(getClientClassName());
-        entity.setSuperClassName(getClientSuperClassName());
-        entity.setSuperEntityName(getSuperEntityName());
-        entity.setDeclaredQualifier(getDeclaredQualifier());
-
-        // TODO: should we also copy lock type?
-
-        Collection<ObjAttribute> primaryKeys = getMutablePrimaryKeys();
-        Collection<ObjAttribute> clientPK = new ArrayList<>(primaryKeys.size());
-
-        for (ObjAttribute attribute : getDeclaredAttributes()) {
-            ObjAttribute clientAttribute = attribute.getClientAttribute();
-            entity.addAttribute(clientAttribute);
-
-            if (primaryKeys.remove(attribute)) {
-                clientPK.add(clientAttribute);
-            }
-        }
-
-        // after all meaningful pks got removed, here we only have synthetic pks
-        // left...
-        for (ObjAttribute attribute : primaryKeys) {
-            ObjAttribute clientAttribute = attribute.getClientAttribute();
-            clientPK.add(clientAttribute);
-        }
-
-        entity.setPrimaryKeys(clientPK);
-
-        // copy relationships; skip runtime generated relationships
-        for (ObjRelationship relationship : getDeclaredRelationships()) {
-            if (relationship.isRuntime()) {
-                continue;
-            }
-
-            ObjEntity targetEntity = relationship.getTargetEntity();
-            // note that 'isClientAllowed' also checks parent DataMap client
-            // policy
-            // that can be handy in case of cross-map relationships
-            if (targetEntity == null || !targetEntity.isClientAllowed()) {
-                continue;
-            }
-
-            entity.addRelationship(relationship.getClientRelationship());
-        }
-
-        // TODO: andrus 2/5/2007 - copy embeddables
-        // TODO: andrus 2/5/2007 - copy callback methods
-
-        return entity;
     }
 
     /**
@@ -331,17 +261,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
                 || (getDataMap() != null && className.equals(getDataMap().getDefaultSuperclass()));
     }
 
-    /**
-     * Returns true if this entity is allowed to be used on the client. Checks
-     * that parent DataMap allows client entities and also that this entity is
-     * not explicitly disabled for the client use.
-     * 
-     * @since 1.2
-     */
-    public boolean isClientAllowed() {
-        return getDataMap() != null && !isServerOnly() && getDataMap().isClientSupported();
-    }
-
     public boolean isAbstract() {
         return _abstract;
     }
@@ -351,24 +270,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      */
     public void setAbstract(boolean isAbstract) {
         this._abstract = isAbstract;
-    }
-
-    /**
-     * Returns true if this entity is not available on the client.
-     * 
-     * @since 1.2
-     */
-    public boolean isServerOnly() {
-        return serverOnly;
-    }
-
-    /**
-     * Sets whether this entity is available on the client.
-     * 
-     * @since 1.2
-     */
-    public void setServerOnly(boolean serverOnly) {
-        this.serverOnly = serverOnly;
     }
 
     /**
@@ -425,24 +326,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * Returns the name of ClientDataObject class described by this entity.
-     * 
-     * @since 1.2
-     */
-    public String getClientClassName() {
-        return clientClassName;
-    }
-
-    /**
-     * Sets the name of the ClientDataObject class described by this entity.
-     * 
-     * @since 1.2
-     */
-    public void setClientClassName(String clientClassName) {
-        this.clientClassName = clientClassName;
-    }
-
-    /**
      * Returns a fully-qualified name of the super class of the DataObject
      * class. This value is used as a hint for class generation. If the entity
      * inherits from another entity, a superclass is the class of that entity.
@@ -462,34 +345,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      */
     public void setSuperClassName(String superClassName) {
         this.superClassName = superClassName;
-    }
-
-    /**
-     * Returns a fully-qualified name of the client-side super class of the
-     * DataObject class. This value is used as a hint for class generation. If
-     * the entity inherits from another entity, a superclass is the class of
-     * that entity.
-     * 
-     * @since 1.2
-     */
-    public String getClientSuperClassName() {
-        ObjEntity superEntity = getSuperEntity();
-        return (superEntity != null) ? superEntity.getClientClassName() : clientSuperClassName;
-    }
-
-    /**
-     * Sets a fully-qualified name of the client-side super class of the
-     * ClientDataObject class. This value is used as a hint for class
-     * generation.
-     * <p>
-     * <i>An attempt to set superclass on an inherited entity has no effect,
-     * since a class of the super entity is always used as a superclass. </i>
-     * </p>
-     * 
-     * @since 1.2
-     */
-    public void setClientSuperClassName(String clientSuperClassName) {
-        this.clientSuperClassName = clientSuperClassName;
     }
 
     /**
@@ -916,7 +771,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
             return true;
         }
 
-        return (superEntity != null) ? superEntity.isSubentityOf(entity) : false;
+        return superEntity != null && superEntity.isSubentityOf(entity);
     }
 
     /**

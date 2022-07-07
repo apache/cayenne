@@ -328,7 +328,6 @@ public class EOModelProcessor {
 		// create ObjEntity
 		EOObjEntity objEntity = new EOObjEntity(name);
 		objEntity.setEoMap(entityPlist);
-		objEntity.setServerOnly(!generateClientClass);
 		String parent = (String) entityPlist.get("parent");
 		objEntity.setClassName(helper.entityClass(name, generateClientClass));
 
@@ -407,11 +406,7 @@ public class EOModelProcessor {
 		List primaryKeys = (List) entityPlistMap.get("primaryKeyAttributes");
 
 		List classProperties;
-		if (objEntity.isServerOnly()) {
-			classProperties = (List) entityPlistMap.get("classProperties");
-		} else {
-			classProperties = (List) entityPlistMap.get("clientClassProperties");
-		}
+		classProperties = (List) entityPlistMap.get("classProperties");
 
 		List attributes = (List) entityPlistMap.get("attributes");
 		DbEntity dbEntity = objEntity.getDbEntity();
