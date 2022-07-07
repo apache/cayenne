@@ -55,8 +55,6 @@
 		<module>cayenne-ant</module>
 		<module>cayenne-cache-invalidation</module>
 		<module>cayenne-cgen</module>
-		<module>cayenne-client</module>
-		<module>cayenne-client-jetty</module>
 		<module>cayenne-commitlog</module>
 		<module>cayenne-crypto</module>
 		<module>cayenne-dbsync</module>
@@ -66,12 +64,10 @@
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-project</module>
 		<module>cayenne-project-compatibility</module>
-		<module>cayenne-protostuff</module>
 		<module>cayenne-server</module>
 		<module>cayenne-velocity</module>
 		<module>cayenne-web</module>
 		<module>cayenne-osgi</module>
-		<module>cayenne-rop-server</module>
 		<module>cayenne-jgroups</module>
 		<module>cayenne-jms</module>
 		<module>cayenne-xmpp</module>
