@@ -32,10 +32,6 @@
 
 	<modules>
 		<module>tutorial</module>
-		<module>tutorial-rop-client</module>
-		<module>tutorial-rop-client-http2</module>
-		<module>tutorial-rop-server</module>
-		<module>tutorial-rop-server-http2</module>
 	</modules>
 
 	<properties>
