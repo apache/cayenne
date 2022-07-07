@@ -36,7 +36,6 @@
         <module>cayenne-guide</module>
         <module>getting-started-guide</module>
         <module>getting-started-db-first</module>
-        <module>getting-started-rop</module>
         <module>upgrade-guide</module>
     </modules>
 
