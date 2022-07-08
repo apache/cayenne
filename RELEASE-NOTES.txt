@@ -20,3 +20,4 @@ CAY-2742 Switch minimum required Java version to 11
 
 Bug Fixes:
 
+CAY-2748 Mutating the list returned from the local query cache changes the cache

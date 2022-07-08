@@ -32,8 +32,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class NestedDataContextLocalCacheIT extends ServerCase {
@@ -59,7 +59,7 @@ public class NestedDataContextLocalCacheIT extends ServerCase {
                 query.getMetaData(context.getEntityResolver())));
 
         List<?> results = child1.performQuery(query);
-        assertSame(results, ((BaseContext) child1).getQueryCache().get(
+        assertEquals(results, ((BaseContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
         assertNull(context.getQueryCache().get(

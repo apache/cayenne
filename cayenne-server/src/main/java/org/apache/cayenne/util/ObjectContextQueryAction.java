@@ -20,6 +20,7 @@
 package org.apache.cayenne.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -369,7 +370,21 @@ public abstract class ObjectContextQueryAction {
             // response may already be initialized by the factory above ... it is null if
             // there was a preexisting cache entry
             if (response == null) {
-                response = new ListResponse(cachedResults);
+                response = new ListResponse(cachedResults != null ? Collections.unmodifiableList(cachedResults) : null); // make a defensive copy avoid leaking cache internal data
+            } else if (response instanceof GenericResponse) {
+            	GenericResponse resp = (GenericResponse)response;
+            	List firstList = resp.firstList();
+            	if (firstList != null) { 
+            		resp.replaceResult(firstList, Collections.unmodifiableList(firstList)); // make a defensive copy avoid leaking cache internal data
+            	}
+            	resp.reset();
+            } else if (response instanceof ListResponse) {
+            	ListResponse resp = (ListResponse)response;
+            	List firstList = resp.firstList();
+            	if (firstList != null) { 
+            		response = new ListResponse(Collections.unmodifiableList(firstList)); // make a defensive copy avoid leaking cache internal data
+            	}
+            	resp.reset();
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
@@ -394,7 +409,7 @@ public abstract class ObjectContextQueryAction {
 
             public List createObject() {
                 executePostCache();
-                return response.firstList();
+                return response.firstList() != null ? Collections.unmodifiableList(response.firstList()) : null; // make a defensive copy avoid leaking cache internal data
             }
         };
     }

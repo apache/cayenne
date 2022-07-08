@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.di.Inject;
@@ -32,8 +33,8 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextPaginatedQueryIT extends ServerCase {
@@ -78,18 +79,20 @@ public class DataContextPaginatedQueryIT extends ServerCase {
         List<Artist> results1 = query.select(context);
         assertNotNull(results1);
 
+        tArtist.insert(33011, "artist11"); // this direct DB modification should be ignored since the cache is already populated
+
         List<Artist> results2 = query.select(context);
         assertNotNull(results2);
-        assertSame(results1, results2);
+        assertEquals(new ArrayList<>(results1), results2);
 
         results1.get(1);
         List<Artist> results3 = query.select(context);
         assertNotNull(results3);
-        assertSame(results1, results3);
+        assertEquals(new ArrayList<>(results1), results3);
 
         results1.get(7);
         List<Artist> results4 = query.select(context);
         assertNotNull(results4);
-        assertSame(results1, results4);
+        assertEquals(new ArrayList<>(results1), results4);
     }
 }
