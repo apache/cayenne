@@ -37,10 +37,6 @@ There is three default types of code generation
 
 Default type of generation suitable for almost all cases. Use this type unless you now what exactly you need to customize.
 
-- *Client Persistent Objects*
-
-This type is for generating code for client part of a ROP setup.
-
 - *Advanced*
 
 In advanced mode you can control almost all aspects of code generation including custom templates for java code. See default Cayenne templates on GitHub as an example.

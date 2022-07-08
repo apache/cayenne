@@ -151,20 +151,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>pairs1-client</id>
-                        <goals>
-                            <goal>cgen</goal>
-                        </goals>
-                        <configuration>
-                          <map>${testResourceDir}/testmap-client.map.xml</map>
-                          <destDir>${generatedClassesDir}/pairs1-client</destDir>
-                          <client>true</client>
-                          <makePairs>true</makePairs>
-                          <usePkgPath>true</usePkgPath>
-                          <superPkg>org.apache.cayenne.testdo.testmap.client.superart</superPkg>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>pairs-embeddables3</id>
                         <goals>
                             <goal>cgen</goal>

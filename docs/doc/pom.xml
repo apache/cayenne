@@ -130,12 +130,6 @@
 											<version>${project.version}</version>
 											<classifier>sources</classifier>
 										</artifactItem>
-										<artifactItem>
-											<groupId>org.apache.cayenne</groupId>
-											<artifactId>cayenne-client</artifactId>
-											<version>${project.version}</version>
-											<classifier>sources</classifier>
-										</artifactItem>
 									</artifactItems>
 								</configuration>
 							</execution>

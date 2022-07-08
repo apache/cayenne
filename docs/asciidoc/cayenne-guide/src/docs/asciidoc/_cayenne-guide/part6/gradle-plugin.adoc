@@ -55,20 +55,9 @@ Here is how you can change settings of the default `cgen` task:
 [source, Groovy]
 ----
 cgen {
-    client = false
     mode = 'all'
     overwrite = true
     createPropertyNames = true
-}
-----
-
-And here is example of how to define additional cgen task (e.g. for client classes if you are using ROP):
-
-
-[source, Groovy]
-----
-task clientCgen(type: cayenne.cgen) {
-    client = true
 }
 ----
 

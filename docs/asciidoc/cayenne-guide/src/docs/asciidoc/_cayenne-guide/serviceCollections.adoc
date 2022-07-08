@@ -17,14 +17,14 @@
 Note that the collection keys below are defined as constants in `org.apache.cayenne.configuration.Constants` interface.
 
 [#serviceCollections.table.table-bordered]
-.Service Collection Keys Present in ServerRuntime and/or ClientRuntime
+.Service Collection Keys Present in ServerRuntime
 [cols="3,2,3"]
 |===
 |Collection Property |Type |Description
 
 .^|`cayenne.properties`
 .^|`Map<String,String>`
-.^|Properties used by built-in Cayenne services. The keys in this map are the property names from the table in Appendix A. Separate copies of this map exist on the server and ROP client.
+.^|Properties used by built-in Cayenne services. The keys in this map are the property names from the table in Appendix A.
 
 .^|`cayenne.server.adapter_detectors`
 .^|`List<DbAdapterDetector>`
@@ -49,9 +49,5 @@ Note that the collection keys below are defined as constants in `org.apache.caye
 .^|`cayenne.server.type_factories`
 .^|`List<ExtendedTypeFactory>`
 .^|Stores default and user-provided ExtendedTypeFactories. ExtendedTypeFactory allows to define ExtendedTypes dynamically for the whole group of Java classes. E.g. Cayenne supplies a factory to map all Enums regardless of their type.
-
-.^|`cayenne.server.rop_event_bridge_properties`
-.^|`Map<String, String>`
-.^|Stores event bridge properties passed to the ROP client on bootstrap. This means that the map is configured by server DI, and passed to the client via the wire. The properties in this map are specific to EventBridgeFactory implementation (e.g JMS or XMPP connection prameters). One common property is `"cayenne.server.rop_event_bridge_factory"` that defines the type of the factory.
 
 |===

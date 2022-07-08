@@ -23,7 +23,6 @@
           project-version="10">
 
     <property name="defaultPackage" value="org.example.cayenne.persistent"/>
-    <property name="defaultClientPackage" value="tmp"/>
     <db-entity name="City">
         <db-attribute name="id" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
         <db-attribute name="name" type="VARCHAR" length="255"/>
@@ -36,7 +35,7 @@
     <obj-entity name="City" className="org.example.cayenne.persistent.City" dbEntityName="City">
         <obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
     </obj-entity>
-    <obj-entity name="Artist" className="org.example.cayenne.persistent.Artist" clientClassName="tmp.Artist" dbEntityName="artist">
+    <obj-entity name="Artist" className="org.example.cayenne.persistent.Artist" dbEntityName="artist">
         <obj-attribute name="birthDate" type="java.util.Date" db-attribute-path="birth_date"/>
         <obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
     </obj-entity>

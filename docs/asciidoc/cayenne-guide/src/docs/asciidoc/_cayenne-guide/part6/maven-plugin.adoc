@@ -55,10 +55,6 @@ ${project.basedir}/src/main/resources/my.map.xml
 .^|File
 .^|A directory that contains additional DataMap XML files that may be needed to resolve cross-DataMap relationships for the the main DataMap, for which class generation occurs.
 
-.^|client
-.^|boolean
-.^|Whether we are generating classes for the client tier in a Remote Object Persistence application. "False" by default.
-
 .^|destDir
 .^|File
 .^|Root destination directory for Java classes (ignoring their package names). The default is "src/main/java".
