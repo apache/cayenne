@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
-	 project-version="10">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.commitlog.db"/>
 	<db-entity name="AUDITABLE1">
 		<db-attribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
@@ -137,7 +137,7 @@
 	<obj-relationship name="parent" source="AuditableChild3" target="Auditable2" deleteRule="Nullify" db-relationship-path="parent"/>
 	<obj-relationship name="e4s" source="E3" target="E4" deleteRule="Deny" db-relationship-path="e34s.e4"/>
 	<obj-relationship name="e3s" source="E4" target="E3" deleteRule="Deny" db-relationship-path="e34s.e3"/>
-	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+	<cgen xmlns="http://cayenne.apache.org/schema/11/cgen">
 		<destDir>../java</destDir>
 		<mode>entity</mode>
 		<template>templates/v4_1/subclass.vm</template>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
-	 project-version="10">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.compound"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
 	<db-entity name="CHAR_FK_TEST">
@@ -89,12 +89,12 @@
 	<db-relationship name="lines" source="compound_order" target="compound_order_line" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 	</db-relationship>
-	<db-relationship name="order" source="compound_order_line" target="compound_order">
-		<db-attribute-pair source="order_number" target="order_number"/>
-	</db-relationship>
 	<db-relationship name="info" source="compound_order_line" target="compound_order_line_info" toDependentPK="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 		<db-attribute-pair source="order_line_number" target="order_line_number"/>
+	</db-relationship>
+	<db-relationship name="order" source="compound_order_line" target="compound_order">
+		<db-attribute-pair source="order_number" target="order_number"/>
 	</db-relationship>
 	<db-relationship name="line" source="compound_order_line_info" target="compound_order_line">
 		<db-attribute-pair source="order_number" target="order_number"/>
@@ -104,29 +104,8 @@
 	<obj-relationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" db-relationship-path="charFKs"/>
 	<obj-relationship name="toCompoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" db-relationship-path="toCompoundPk"/>
 	<obj-relationship name="lines" source="CompoundOrder" target="CompoundOrderLine" deleteRule="Deny" db-relationship-path="lines"/>
-	<obj-relationship name="order" source="CompoundOrderLine" target="CompoundOrder" deleteRule="Nullify" db-relationship-path="order"/>
 	<obj-relationship name="info" source="CompoundOrderLine" target="CompoundOrderLineInfo" deleteRule="Nullify" db-relationship-path="info"/>
+	<obj-relationship name="order" source="CompoundOrderLine" target="CompoundOrder" deleteRule="Nullify" db-relationship-path="order"/>
 	<obj-relationship name="line" source="CompoundOrderLineInfo" target="CompoundOrderLine" deleteRule="Nullify" db-relationship-path="line"/>
 	<obj-relationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" db-relationship-path="compoundFkArray"/>
-	<dbImport xmlns="http://cayenne.apache.org/schema/10/dbimport">
-		<forceDataMapCatalog>false</forceDataMapCatalog>
-		<forceDataMapSchema>false</forceDataMapSchema>
-		<namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
-		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
-		<skipRelationshipsLoading>false</skipRelationshipsLoading>
-		<useJava7Types>false</useJava7Types>
-		<usePrimitives>true</usePrimitives>
-	</dbImport>
-	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
-		<destDir>../java</destDir>
-		<mode>entity</mode>
-		<template>templates/v4_1/subclass.vm</template>
-		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
-		<outputPattern>*.java</outputPattern>
-		<makePairs>true</makePairs>
-		<usePkgPath>true</usePkgPath>
-		<overwrite>false</overwrite>
-		<createPropertyNames>false</createPropertyNames>
-		<createPKProperties>false</createPKProperties>
-	</cgen>
 </data-map>

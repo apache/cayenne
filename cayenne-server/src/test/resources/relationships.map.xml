@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
-	 project-version="10">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships"/>
+	<db-entity name="CYCLE_E1">
+		<db-attribute name="e2_id" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="text" type="VARCHAR" length="128"/>
+	</db-entity>
+	<db-entity name="CYCLE_E2">
+		<db-attribute name="e1_id" type="INTEGER"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
+		<db-attribute name="text" type="VARCHAR" length="128"/>
+	</db-entity>
 	<db-entity name="FK_OF_DIFFERENT_TYPE">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="RELATIONSHIP_HELPER_FK" type="SMALLINT"/>
@@ -22,16 +32,6 @@
 		<db-attribute name="NAME" type="VARCHAR" length="100"/>
 		<db-attribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
-	<db-entity name="CYCLE_E1">
-		<db-attribute name="e2_id" type="INTEGER"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="text" type="VARCHAR" length="128"/>
-	</db-entity>
-	<db-entity name="CYCLE_E2">
-		<db-attribute name="e1_id" type="INTEGER"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
-		<db-attribute name="text" type="VARCHAR" length="128"/>
-	</db-entity>
 	<obj-entity name="CYCLE_E1" className="org.apache.cayenne.testdo.relationships.E1" dbEntityName="CYCLE_E1">
 		<obj-attribute name="text" type="java.lang.String" db-attribute-path="text"/>
 	</obj-entity>
@@ -48,6 +48,18 @@
 	<obj-entity name="RelationshipHelper" className="org.apache.cayenne.testdo.relationships.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
+	<db-relationship name="e2" source="CYCLE_E1" target="CYCLE_E2">
+		<db-attribute-pair source="e2_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" toMany="true">
+		<db-attribute-pair source="id" target="e1_id"/>
+	</db-relationship>
+	<db-relationship name="e1" source="CYCLE_E2" target="CYCLE_E1">
+		<db-attribute-pair source="e1_id" target="id"/>
+	</db-relationship>
+	<db-relationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" toMany="true">
+		<db-attribute-pair source="id" target="e2_id"/>
+	</db-relationship>
 	<db-relationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
@@ -72,18 +84,6 @@
 	<db-relationship name="reflexiveAndToOneArray" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
 		<db-attribute-pair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</db-relationship>
-	<db-relationship name="e2" source="CYCLE_E1" target="CYCLE_E2">
-		<db-attribute-pair source="e2_id" target="id"/>
-	</db-relationship>
-	<db-relationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" toMany="true">
-		<db-attribute-pair source="id" target="e1_id"/>
-	</db-relationship>
-	<db-relationship name="e1" source="CYCLE_E2" target="CYCLE_E1">
-		<db-attribute-pair source="e1_id" target="id"/>
-	</db-relationship>
-	<db-relationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" toMany="true">
-		<db-attribute-pair source="id" target="e2_id"/>
-	</db-relationship>
 	<obj-relationship name="e2" source="CYCLE_E1" target="CYCLE_E2" deleteRule="Nullify" db-relationship-path="e2"/>
 	<obj-relationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" deleteRule="Deny" db-relationship-path="e2s"/>
 	<obj-relationship name="e1" source="CYCLE_E2" target="CYCLE_E1" deleteRule="Nullify" db-relationship-path="e1"/>
@@ -96,16 +96,4 @@
 	<obj-relationship name="fksOfDifferentType" source="RelationshipHelper" target="FkOfDifferentType" db-relationship-path="fksOfDifferentType"/>
 	<obj-relationship name="meanigfulFKs" source="RelationshipHelper" target="MeaningfulFK" db-relationship-path="meanigfulFKs"/>
 	<obj-relationship name="reflexiveAndToOneArray" source="RelationshipHelper" target="ReflexiveAndToOne" db-relationship-path="reflexiveAndToOneArray"/>
-	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
-		<destDir>..\java</destDir>
-		<mode>entity</mode>
-		<template>templates/v4_1/subclass.vm</template>
-		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
-		<outputPattern>*.java</outputPattern>
-		<makePairs>true</makePairs>
-		<usePkgPath>true</usePkgPath>
-		<overwrite>false</overwrite>
-		<createPropertyNames>false</createPropertyNames>
-		<createPKProperties>false</createPKProperties>
-	</cgen>
 </data-map>

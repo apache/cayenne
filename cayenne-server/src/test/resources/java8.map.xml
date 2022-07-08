@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
-	 project-version="10">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.java8"/>
 	<db-entity name="DURATION_TEST">
 		<db-attribute name="DURATION_BIG_INT" type="BIGINT"/>
@@ -30,12 +30,12 @@
 		<db-attribute name="PeriodField" type="VARCHAR" length="100"/>
 	</db-entity>
 	<obj-entity name="DurationTest" className="org.apache.cayenne.testdo.java8.DurationTestEntity" dbEntityName="DURATION_TEST">
-		<obj-attribute name="durationVarchar" type="java.time.Duration" db-attribute-path="DURATION_VARCHAR"/>
 		<obj-attribute name="durationBigInt" type="java.time.Duration" db-attribute-path="DURATION_BIG_INT"/>
-		<obj-attribute name="durationNumeric" type="java.time.Duration" db-attribute-path="DURATION_NUMERIC"/>
 		<obj-attribute name="durationDecimal" type="java.time.Duration" db-attribute-path="DURATION_DECIMAL"/>
-		<obj-attribute name="durationLongVarchar" type="java.time.Duration" db-attribute-path="DURATION_LONG_VARCHAR"/>
 		<obj-attribute name="durationInt" type="java.time.Duration" db-attribute-path="DURATION_INT"/>
+		<obj-attribute name="durationLongVarchar" type="java.time.Duration" db-attribute-path="DURATION_LONG_VARCHAR"/>
+		<obj-attribute name="durationNumeric" type="java.time.Duration" db-attribute-path="DURATION_NUMERIC"/>
+		<obj-attribute name="durationVarchar" type="java.time.Duration" db-attribute-path="DURATION_VARCHAR"/>
 	</obj-entity>
 	<obj-entity name="LocalDateTest" className="org.apache.cayenne.testdo.java8.LocalDateTestEntity" dbEntityName="LOCAL_DATE_TEST">
 		<obj-attribute name="date" type="java.time.LocalDate" db-attribute-path="DateField"/>

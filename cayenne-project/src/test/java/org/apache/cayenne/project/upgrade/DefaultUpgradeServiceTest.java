@@ -65,9 +65,12 @@ public class DefaultUpgradeServiceTest {
         assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
 
         metaData = upgradeService.getUpgradeType(getResourceForVersion("10"));
-        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
+        assertEquals(UpgradeType.UPGRADE_NEEDED, metaData.getUpgradeType());
 
         metaData = upgradeService.getUpgradeType(getResourceForVersion("11"));
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, metaData.getUpgradeType());
+
+        metaData = upgradeService.getUpgradeType(getResourceForVersion("12"));
         assertEquals(UpgradeType.DOWNGRADE_NEEDED, metaData.getUpgradeType());
     }
 
@@ -75,11 +78,12 @@ public class DefaultUpgradeServiceTest {
     public void getHandlersForVersion() throws Exception {
 
         List<UpgradeHandler> handlers = upgradeService.getHandlersForVersion("6");
-        assertEquals(4, handlers.size());
+        assertEquals(5, handlers.size());
 
         handlers = upgradeService.getHandlersForVersion("9");
-        assertEquals(1, handlers.size());
+        assertEquals(2, handlers.size());
         assertEquals("10", handlers.get(0).getVersion());
+        assertEquals("11", handlers.get(1).getVersion());
     }
 
     @Test
@@ -134,7 +138,7 @@ public class DefaultUpgradeServiceTest {
     @Test
     public void readDocument() throws Exception {
         Document document = Util.readDocument(getClass().getResource("../cayenne-PROJECT1.xml"));
-        assertEquals("10", document.getDocumentElement().getAttribute("project-version"));
+        assertEquals("11", document.getDocumentElement().getAttribute("project-version"));
     }
 
     private Document readDocument(URL url) throws Exception {
@@ -144,7 +148,7 @@ public class DefaultUpgradeServiceTest {
 
     private void createHandlers() {
         handlers = new ArrayList<>();
-        String[] versions = {"7", "8", "9", "10"};
+        String[] versions = {"7", "8", "9", "10", "11"};
         for(String version : versions) {
             handlers.add(createHandler(version));
         }

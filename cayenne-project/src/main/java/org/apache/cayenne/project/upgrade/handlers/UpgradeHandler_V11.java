@@ -65,6 +65,12 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
 
         dropRopProperties(upgradeUnit);
         cleanupObjEntityClientInfo(upgradeUnit);
+
+        upgradeXmlExtensionsSchemas(upgradeUnit);
+    }
+
+    private void upgradeXmlExtensionsSchemas(UpgradeUnit upgradeUnit) {
+        
     }
 
     private void dropRopProperties(UpgradeUnit upgradeUnit) {

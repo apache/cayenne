@@ -18,10 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
@@ -50,7 +48,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.project.FileProjectSaver;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
@@ -61,7 +58,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.io.File;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -74,19 +71,9 @@ import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.dbEntity;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objAttr;
 import static org.apache.cayenne.dbsync.merge.builders.ObjectMother.objEntity;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class DefaultDbImportActionTest {
 
@@ -127,7 +114,7 @@ public class DefaultDbImportActionTest {
 
         DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
             @Override
-            public DataMap load() throws SQLException {
+            public DataMap load() {
                 DataMap map = new DataMap();
                 new DataMapBuilder(map).withDbEntities(2).build();
                 return map;
@@ -163,7 +150,7 @@ public class DefaultDbImportActionTest {
 
         DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
             @Override
-            public DataMap load() throws SQLException {
+            public DataMap load() {
                 DataMap dataMap = new DataMap();
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
@@ -181,7 +168,7 @@ public class DefaultDbImportActionTest {
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(
-            new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
+            new FileProjectSaver(Collections.emptyList()) {
                 @Override
                 public void save(Project project) {
                     haveWeTriedToSave[0] = true;
@@ -198,21 +185,19 @@ public class DefaultDbImportActionTest {
                 }
             },
 
-            new DataMapLoader() {
-                @Override
-                public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
-                    return new DataMapBuilder().with(
-                            dbEntity("ARTGROUP").attributes(
-                                    dbAttr("GROUP_ID").typeInt().primaryKey(),
-                                    dbAttr("NAME").typeVarchar(100).mandatory(),
-                                    dbAttr("PARENT_GROUP_ID").typeInt()
-                            )).with(
-                            objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
-                                    objAttr("name").type(String.class).dbPath("NAME")
-                            )).build();
-                }
-            },
-            dbLoader
+            configurationResource -> new DataMapBuilder()
+                    .with(
+                        dbEntity("ARTGROUP").attributes(
+                                dbAttr("GROUP_ID").typeInt().primaryKey(),
+                                dbAttr("NAME").typeVarchar(100).mandatory(),
+                                dbAttr("PARENT_GROUP_ID").typeInt()
+                        ))
+                    .with(
+                        objEntity("org.apache.cayenne.testdo.testmap", "ArtGroup", "ARTGROUP").attributes(
+                                objAttr("name").type(String.class).dbPath("NAME")
+                        ))
+                    .build()
+                , dbLoader
         );
 
         action.execute(config);
@@ -229,7 +214,7 @@ public class DefaultDbImportActionTest {
 
         DbLoader dbLoader = new DbLoader(mockAdapter, mockConnection, config.getDbLoaderConfig(), mockDelegate, mockNameGenerator) {
             @Override
-            public DataMap load() throws SQLException {
+            public DataMap load() {
                 DataMap dataMap = new DataMap();
                 new DataMapBuilder(dataMap).with(
                         dbEntity("ARTGROUP").attributes(
@@ -293,14 +278,14 @@ public class DefaultDbImportActionTest {
         DbAdapter dbAdapter = mock(DbAdapter.class);
 
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
-        when(adapterFactory.createAdapter((DataNodeDescriptor)any(), (DataSource)any())).thenReturn(dbAdapter);
+        when(adapterFactory.createAdapter(any(), any())).thenReturn(dbAdapter);
 
         DataSourceFactory dataSourceFactory = mock(DataSourceFactory.class);
         DataSource mock = mock(DataSource.class);
-        when(dataSourceFactory.getDataSource((DataNodeDescriptor)any())).thenReturn(mock);
+        when(dataSourceFactory.getDataSource(any())).thenReturn(mock);
         DataChannelMetaData metaData = mock(DataChannelMetaData.class);
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
-        when(mergerTokenFactoryProvider.get((DbAdapter)any())).thenReturn(new DefaultMergerTokenFactory());
+        when(mergerTokenFactoryProvider.get(any())).thenReturn(new DefaultMergerTokenFactory());
 
         DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
 
@@ -395,11 +380,11 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/10/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/11/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain https://cayenne.apache.org/schema/10/domain.xsd\"\n" +
-                "\t project-version=\"10\">\n" +
-                "</domain>").getBytes(Charset.forName("UTF-8")));
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/11/domain https://cayenne.apache.org/schema/11/domain.xsd\"\n" +
+                "\t project-version=\"11\">\n" +
+                "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
         when(params.getCayenneProject()).thenReturn(projectFile);
@@ -440,12 +425,12 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<domain xmlns=\"http://cayenne.apache.org/schema/10/domain\"\n" +
+                "<domain xmlns=\"http://cayenne.apache.org/schema/11/domain\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/domain https://cayenne.apache.org/schema/10/domain.xsd\"\n" +
-                "\t project-version=\"10\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/11/domain https://cayenne.apache.org/schema/11/domain.xsd\"\n" +
+                "\t project-version=\"11\">\n" +
                 "\t<map name=\"testSaveLoaded4\"/>\n" +
-                "</domain>").getBytes(Charset.forName("UTF-8")));
+                "</domain>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
         when(params.getCayenneProject()).thenReturn(projectFile);
@@ -459,14 +444,14 @@ public class DefaultDbImportActionTest {
         assertFalse(dataMapFile.exists());
 
         Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<data-map xmlns=\"http://cayenne.apache.org/schema/10/modelMap\"\n" +
+                "<data-map xmlns=\"http://cayenne.apache.org/schema/11/modelMap\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd\"\n" +
-                "\t project-version=\"10\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd\"\n" +
+                "\t project-version=\"11\">\n" +
                 "\t<db-entity name=\"test\">\n" +
                 "\t\t<db-attribute name=\"test\" type=\"INT\"/>\n" +
                 "\t</db-entity>\n" +
-                "</data-map>").getBytes(Charset.forName("UTF-8")));
+                "</data-map>").getBytes(StandardCharsets.UTF_8));
         assertTrue(dataMapFile.isFile());
 
         DataMap map = new DataMap("testSaveLoaded4");
@@ -488,7 +473,7 @@ public class DefaultDbImportActionTest {
 
     @Test
     public void testMergeTokensSorting() {
-        LinkedList<MergerToken> tokens = new LinkedList<MergerToken>();
+        LinkedList<MergerToken> tokens = new LinkedList<>();
         tokens.add(new AddColumnToModel(null, null));
         tokens.add(new AddRelationshipToModel(null, null));
         tokens.add(new CreateTableToDb(null));
@@ -499,7 +484,7 @@ public class DefaultDbImportActionTest {
     }
 
     private List<String> toClasses(List<MergerToken> sort) {
-        LinkedList<String> res = new LinkedList<String>();
+        LinkedList<String> res = new LinkedList<>();
         for (MergerToken mergerToken : sort) {
             res.add(mergerToken.getClass().getSimpleName());
         }

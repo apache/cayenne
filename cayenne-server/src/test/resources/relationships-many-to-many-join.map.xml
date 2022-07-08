@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
-	 project-version="10">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_many_to_many_join"/>
 	<db-entity name="X_AUTHOR">
 		<db-attribute name="AUTHOR_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -28,11 +28,11 @@
 	<db-relationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
 	</db-relationship>
-	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG">
-		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
-	</db-relationship>
 	<db-relationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR">
 		<db-attribute-pair source="AUTHOR_ID" target="AUTHOR_ID"/>
+	</db-relationship>
+	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG">
+		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
 	</db-relationship>
 	<obj-relationship name="authors" source="Song" target="Author" collection-type="java.util.Set" deleteRule="Cascade" db-relationship-path="songAuthor.author"/>
 </data-map>

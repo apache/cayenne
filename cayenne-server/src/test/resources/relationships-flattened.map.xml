@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+<data-map xmlns="http://cayenne.apache.org/schema/11/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
-	 project-version="10">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
+	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.relationships_flattened"/>
 	<db-entity name="COMPLEX_JOIN">
 		<db-attribute name="EXTRA_COLUMN" type="VARCHAR" length="50"/>
@@ -90,11 +90,11 @@
 	<db-relationship name="toEntity2" source="ENTITY1" target="ENTITY2">
 		<db-attribute-pair source="ID" target="ENTITY1_ID"/>
 	</db-relationship>
-	<db-relationship name="toEntity3" source="ENTITY2" target="ENTITY3">
-		<db-attribute-pair source="ID" target="ENTITY2_ID"/>
-	</db-relationship>
 	<db-relationship name="toEntity1" source="ENTITY2" target="ENTITY1">
 		<db-attribute-pair source="ENTITY1_ID" target="ID"/>
+	</db-relationship>
+	<db-relationship name="toEntity3" source="ENTITY2" target="ENTITY3">
+		<db-attribute-pair source="ID" target="ENTITY2_ID"/>
 	</db-relationship>
 	<db-relationship name="toEntity2" source="ENTITY3" target="ENTITY2">
 		<db-attribute-pair source="ENTITY2_ID" target="ID"/>
