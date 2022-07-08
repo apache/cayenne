@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.numeric_types"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="BIGDECIMAL_ENTITY">
 		<db-attribute name="BIG_DECIMAL_DECIMAL" type="DECIMAL" length="12" scale="6"/>
 		<db-attribute name="BIG_DECIMAL_NUMERIC" type="NUMERIC" length="12" scale="2"/>

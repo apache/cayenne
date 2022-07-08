@@ -207,10 +207,6 @@ In theory Cayenne supports any number of nesting levels, however applications sh
 as deep hierarchies will most certainly degrade the performance of the deeply nested child contexts.
 This is due to the fact that each context in a nesting chain has to update its own objects during most operations.
 
-Cayenne ROP is an extreme case of nesting when a child context is located in a separate JVM and communicates
-with its parent via a web service. ROP is discussed in details in the following chapters.
-Here we concentrate on the same-VM nesting.
-
 To create a nested context, use an instance of ServerRuntime, passing it the desired parent:
 
 [source, java]

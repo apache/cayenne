@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.extended_type"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="EXTENDED_TYPE_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>

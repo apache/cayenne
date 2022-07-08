@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.binary_pk"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="BINARY_PK_TEST1">
 		<db-attribute name="BIN_ID" type="VARBINARY" isPrimaryKey="true" isMandatory="true" length="32"/>
 		<db-attribute name="NAME" type="VARCHAR" length="10"/>

@@ -4,8 +4,6 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.mt"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.mt"/>
 	<db-entity name="MT_JOIN45">
 		<db-attribute name="TABLE4_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="TABLE5_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -34,28 +32,28 @@
 	<db-entity name="MT_TABLE5">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
-	<obj-entity name="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1" dbEntityName="MT_TABLE1">
+	<obj-entity name="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1" dbEntityName="MT_TABLE1">
 		<obj-attribute name="globalAttribute1" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE1"/>
 		<obj-attribute name="serverAttribute1" type="java.lang.String" db-attribute-path="SERVER_ATTRIBUTE1"/>
 	</obj-entity>
-	<obj-entity name="MtTable1Subclass1" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass1" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1">
+	<obj-entity name="MtTable1Subclass1" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass1">
 		<qualifier><![CDATA[globalAttribute1 = "sub1"]]></qualifier>
 		<obj-attribute name="subclass1Attribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
 	</obj-entity>
-	<obj-entity name="MtTable1Subclass2" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass2" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable1Subclass2">
+	<obj-entity name="MtTable1Subclass2" superEntityName="MtTable1" className="org.apache.cayenne.testdo.mt.MtTable1Subclass2">
 		<qualifier><![CDATA[globalAttribute1 = "sub2"]]></qualifier>
 		<obj-attribute name="subclass2Attribute1" type="java.lang.String" db-attribute-path="SUBCLASS_ATTRIBUTE1"/>
 	</obj-entity>
-	<obj-entity name="MtTable2" className="org.apache.cayenne.testdo.mt.MtTable2" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable2" dbEntityName="MT_TABLE2">
+	<obj-entity name="MtTable2" className="org.apache.cayenne.testdo.mt.MtTable2" dbEntityName="MT_TABLE2">
 		<obj-attribute name="globalAttribute" type="java.lang.String" db-attribute-path="GLOBAL_ATTRIBUTE"/>
 	</obj-entity>
-	<obj-entity name="MtTable3" className="org.apache.cayenne.testdo.mt.MtTable3" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable3" dbEntityName="MT_TABLE3">
+	<obj-entity name="MtTable3" className="org.apache.cayenne.testdo.mt.MtTable3" dbEntityName="MT_TABLE3">
 		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
 		<obj-attribute name="charColumn" type="java.lang.String" db-attribute-path="CHAR_COLUMN"/>
 		<obj-attribute name="intColumn" type="java.lang.Integer" db-attribute-path="INT_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable4" dbEntityName="MT_TABLE4"/>
-	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" clientClassName="org.apache.cayenne.testdo.mt.ClientMtTable5" dbEntityName="MT_TABLE5"/>
+	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" dbEntityName="MT_TABLE4"/>
+	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" dbEntityName="MT_TABLE5"/>
 	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4">
 		<db-attribute-pair source="TABLE4_ID" target="ID"/>
 	</db-relationship>

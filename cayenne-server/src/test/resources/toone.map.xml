@@ -4,16 +4,14 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.toone"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.toone"/>
 	<db-entity name="TOONE_DEP">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="TOONE_MASTER">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
-	<obj-entity name="TooneDep" className="org.apache.cayenne.testdo.toone.TooneDep" clientClassName="org.apache.cayenne.testdo.toone.ClientTooneDep" dbEntityName="TOONE_DEP"/>
-	<obj-entity name="TooneMaster" className="org.apache.cayenne.testdo.toone.TooneMaster" clientClassName="org.apache.cayenne.testdo.toone.ClientTooneMaster" dbEntityName="TOONE_MASTER"/>
+	<obj-entity name="TooneDep" className="org.apache.cayenne.testdo.toone.TooneDep" dbEntityName="TOONE_DEP"/>
+	<obj-entity name="TooneMaster" className="org.apache.cayenne.testdo.toone.TooneMaster" dbEntityName="TOONE_MASTER"/>
 	<db-relationship name="toMaster" source="TOONE_DEP" target="TOONE_MASTER">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>

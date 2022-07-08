@@ -29,5 +29,3 @@ include::part5/apacheVelocity.adoc[]
 include::part5/cayenneWeb.adoc[]
 
 include::part5/cayenneOsgi.adoc[]
-
-include::part5/cayenneRopServer.adoc[]

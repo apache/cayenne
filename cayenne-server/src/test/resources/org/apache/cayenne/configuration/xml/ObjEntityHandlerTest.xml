@@ -18,7 +18,7 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 <obj-entity name="ArtistCallback" className="org.apache.cayenne.testdo.testmap.ArtistCallback" dbEntityName="ARTIST_CT"
-            abstract="true" superEntityName="Artist" superClassName="super.class" clientClassName="client.class" clientSuperClassName="client.super.class"
+            abstract="true" superEntityName="Artist" superClassName="super.class"
             lock-type="optimistic" readOnly="true" serverOnly="true">
     <embedded-attribute type="org.apache.cayenne.testdo.embeddable.Embeddable1" name="embeddable1">
         <embeddable-attribute-override db-attribute-path="test.path" name="test"/>

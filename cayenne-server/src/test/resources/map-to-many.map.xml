@@ -4,8 +4,6 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.map_to_many"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.map_to_many"/>
 	<db-entity name="ID_MAP_TO_MANY">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
@@ -21,8 +19,8 @@
 		<db-attribute name="MAP_TO_MANY_ID" type="INTEGER"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="100"/>
 	</db-entity>
-	<obj-entity name="IdMapToMany" className="org.apache.cayenne.testdo.map_to_many.IdMapToMany" clientClassName="org.apache.cayenne.testdo.map_to_many.ClientIdMapToMany" dbEntityName="ID_MAP_TO_MANY"/>
-	<obj-entity name="IdMapToManyTarget" className="org.apache.cayenne.testdo.map_to_many.IdMapToManyTarget" clientClassName="org.apache.cayenne.testdo.map_to_many.ClientIdMapToManyTarget" dbEntityName="ID_MAP_TO_MANY_TARGET"/>
+	<obj-entity name="IdMapToMany" className="org.apache.cayenne.testdo.map_to_many.IdMapToMany" dbEntityName="ID_MAP_TO_MANY"/>
+	<obj-entity name="IdMapToManyTarget" className="org.apache.cayenne.testdo.map_to_many.IdMapToManyTarget" dbEntityName="ID_MAP_TO_MANY_TARGET"/>
 	<obj-entity name="MapToMany" className="org.apache.cayenne.testdo.map_to_many.MapToMany" dbEntityName="MAP_TO_MANY"/>
 	<obj-entity name="MapToManyTarget" className="org.apache.cayenne.testdo.map_to_many.MapToManyTarget" dbEntityName="MAP_TO_MANY_TARGET">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>

@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.primitive"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="PRIMITIVES_TEST">
 		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
 		<db-attribute name="CHAR_COLUMN" type="CHAR" length="1"/>

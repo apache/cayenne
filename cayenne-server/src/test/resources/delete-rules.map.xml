@@ -4,8 +4,6 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.deleterules"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.deleterules"/>
 	<db-entity name="DELETE_CASCADE">
 		<db-attribute name="DELETE_CASCADE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="DELETE_RULE_ID" type="INTEGER"/>
@@ -25,16 +23,16 @@
 		<db-attribute name="DELETE_RULE_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
 	</db-entity>
-	<obj-entity name="DeleteCascade" className="org.apache.cayenne.testdo.deleterules.DeleteCascade" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteCascade" dbEntityName="DELETE_CASCADE">
+	<obj-entity name="DeleteCascade" className="org.apache.cayenne.testdo.deleterules.DeleteCascade" dbEntityName="DELETE_CASCADE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="DeleteDeny" className="org.apache.cayenne.testdo.deleterules.DeleteDeny" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteDeny" dbEntityName="DELETE_DENY">
+	<obj-entity name="DeleteDeny" className="org.apache.cayenne.testdo.deleterules.DeleteDeny" dbEntityName="DELETE_DENY">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="DeleteNullify" className="org.apache.cayenne.testdo.deleterules.DeleteNullify" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteNullify" dbEntityName="DELETE_NULLIFY">
+	<obj-entity name="DeleteNullify" className="org.apache.cayenne.testdo.deleterules.DeleteNullify" dbEntityName="DELETE_NULLIFY">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="DeleteRule" className="org.apache.cayenne.testdo.deleterules.DeleteRule" clientClassName="org.apache.cayenne.testdo.deleterules.ClientDeleteRule" dbEntityName="DELETE_RULE">
+	<obj-entity name="DeleteRule" className="org.apache.cayenne.testdo.deleterules.DeleteRule" dbEntityName="DELETE_RULE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<db-relationship name="cascade" source="DELETE_CASCADE" target="DELETE_RULE">

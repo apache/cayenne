@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<procedure name="cayenne_tst_out_proc">
 		<procedure-parameter name="in_param" type="INTEGER" direction="in"/>
 		<procedure-parameter name="out_param" type="INTEGER" direction="out"/>
@@ -108,7 +105,7 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" clientClassName="test.client.CompoundPaintingLongNames" dbEntityName="PAINTING" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" dbEntityName="PAINTING">
 		<obj-attribute name="artistLongName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="galleryLongName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>
@@ -308,6 +305,5 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<overwrite>false</overwrite>
 		<createPropertyNames>false</createPropertyNames>
 		<createPKProperties>true</createPKProperties>
-		<client>false</client>
 	</cgen>
 </data-map>

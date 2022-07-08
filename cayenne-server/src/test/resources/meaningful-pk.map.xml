@@ -4,8 +4,6 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.meaningful_pk"/>
 	<db-entity name="MEANINGFUL_PK">
 		<db-attribute name="PK" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="100"/>
 	</db-entity>
@@ -39,14 +37,14 @@
 		<obj-attribute name="intNullableAttribute" type="int" db-attribute-path="INT_NULLABLE_ATTRIBUTE"/>
 		<obj-attribute name="pkAttribute" type="int" db-attribute-path="PK_ATTRIBUTE"/>
 	</obj-entity>
-	<obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" clientClassName="org.apache.cayenne.testdo.meaningful_pk.ClientMeaningfulPk" dbEntityName="MEANINGFUL_PK">
+	<obj-entity name="MeaningfulPk" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk" dbEntityName="MEANINGFUL_PK">
 		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
 	</obj-entity>
-	<obj-entity name="MeaningfulPkDep2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2" clientClassName="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2" dbEntityName="MEANINGFUL_PK_DEP2">
+	<obj-entity name="MeaningfulPkDep2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2" dbEntityName="MEANINGFUL_PK_DEP2">
 		<obj-attribute name="descr" type="java.lang.String" db-attribute-path="DESCR"/>
 		<obj-attribute name="pk" type="java.lang.String" db-attribute-path="PK"/>
 	</obj-entity>
-	<obj-entity name="MeaningfulPkTest2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2" clientClassName="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2" dbEntityName="MEANINGFUL_PK_TEST2">
+	<obj-entity name="MeaningfulPkTest2" className="org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2" dbEntityName="MEANINGFUL_PK_TEST2">
 		<obj-attribute name="integerAttribute" type="java.lang.Integer" db-attribute-path="INTEGER_ATTRIBUTE"/>
 		<obj-attribute name="integerNullableAttribute" type="java.lang.Integer" db-attribute-path="INTEGER_NULLABLE_ATTRIBUTE"/>
 		<obj-attribute name="pkAttribute" type="java.lang.Integer" db-attribute-path="PK_ATTRIBUTE"/>

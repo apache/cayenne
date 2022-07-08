@@ -4,14 +4,12 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.reflexive"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.reflexive"/>
 	<db-entity name="REFLEXIVE">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="200"/>
 		<db-attribute name="PARENT_ID" type="INTEGER"/>
 	</db-entity>
-	<obj-entity name="Reflexive" className="org.apache.cayenne.testdo.reflexive.Reflexive" clientClassName="org.apache.cayenne.testdo.reflexive.ClientReflexive" dbEntityName="REFLEXIVE">
+	<obj-entity name="Reflexive" className="org.apache.cayenne.testdo.reflexive.Reflexive" dbEntityName="REFLEXIVE">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<db-relationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">

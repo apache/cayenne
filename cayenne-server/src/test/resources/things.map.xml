@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.things"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="BAG">
 		<db-attribute name="ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="NAME" type="VARCHAR" length="200"/>
@@ -38,20 +35,20 @@
 		<db-attribute name="VOLUME" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="WEIGHT" type="INTEGER" isMandatory="true"/>
 	</db-entity>
-	<obj-entity name="Bag" className="org.apache.cayenne.testdo.things.Bag" clientClassName="test.client.Bag" dbEntityName="BAG" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="Bag" className="org.apache.cayenne.testdo.things.Bag" dbEntityName="BAG" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="Ball" className="org.apache.cayenne.testdo.things.Ball" clientClassName="test.client.Ball" dbEntityName="BALL" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="Ball" className="org.apache.cayenne.testdo.things.Ball" dbEntityName="BALL" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="thingVolume" type="java.lang.Integer" db-attribute-path="THING_VOLUME"/>
 		<obj-attribute name="thingWeight" type="java.lang.Integer" db-attribute-path="THING_WEIGHT"/>
 	</obj-entity>
-	<obj-entity name="Box" className="org.apache.cayenne.testdo.things.Box" clientClassName="test.client.Box" dbEntityName="BOX" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="Box" className="org.apache.cayenne.testdo.things.Box" dbEntityName="BOX" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="BoxInfo" className="org.apache.cayenne.testdo.things.BoxInfo" clientClassName="test.client.BoxInfo" dbEntityName="BOX_INFO" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="BoxInfo" className="org.apache.cayenne.testdo.things.BoxInfo" dbEntityName="BOX_INFO" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="color" type="java.lang.String" db-attribute-path="COLOR"/>
 	</obj-entity>
-	<obj-entity name="Thing" className="org.apache.cayenne.testdo.things.Thing" clientClassName="test.client.Thing" dbEntityName="THING" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="Thing" className="org.apache.cayenne.testdo.things.Thing" dbEntityName="THING" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="volume" type="java.lang.Integer" db-attribute-path="VOLUME"/>
 		<obj-attribute name="weight" type="java.lang.Integer" db-attribute-path="WEIGHT"/>
 	</obj-entity>

@@ -4,8 +4,6 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.cay_2641"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.cay_2641.client"/>
 	<db-entity name="ArtistLazy">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="5"/>
 		<db-attribute name="NAME" type="VARCHAR" length="10"/>
@@ -16,11 +14,11 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
 		<db-attribute name="NAME" type="VARCHAR" length="10"/>
 	</db-entity>
-	<obj-entity name="ArtistLazy" className="org.apache.cayenne.testdo.cay_2641.ArtistLazy" clientClassName="org.apache.cayenne.testdo.cay_2641.client.ArtistLazy" dbEntityName="ArtistLazy">
+	<obj-entity name="ArtistLazy" className="org.apache.cayenne.testdo.cay_2641.ArtistLazy" dbEntityName="ArtistLazy">
 		<obj-attribute name="name" type="java.lang.String" lazy="true" db-attribute-path="NAME"/>
 		<obj-attribute name="surname" type="java.lang.String" db-attribute-path="SURNAME"/>
 	</obj-entity>
-	<obj-entity name="PaintingLazy" className="org.apache.cayenne.testdo.cay_2641.PaintingLazy" clientClassName="org.apache.cayenne.testdo.cay_2641.client.PaintingLazy" lock-type="optimistic" dbEntityName="PaintingLazy">
+	<obj-entity name="PaintingLazy" className="org.apache.cayenne.testdo.cay_2641.PaintingLazy" lock-type="optimistic" dbEntityName="PaintingLazy">
 		<obj-attribute name="name" type="java.lang.String" lazy="true" db-attribute-path="NAME"/>
 	</obj-entity>
 	<db-relationship name="paintings" source="ArtistLazy" target="PaintingLazy" toMany="true">
@@ -47,6 +45,5 @@
 		<overwrite>false</overwrite>
 		<createPropertyNames>false</createPropertyNames>
 		<createPKProperties>false</createPKProperties>
-		<client>false</client>
 	</cgen>
 </data-map>

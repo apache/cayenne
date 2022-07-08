@@ -4,14 +4,12 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.table_primitives"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="org.apache.cayenne.testdo.table_primitives"/>
 	<db-entity name="TABLE_PRIMITIVES">
 		<db-attribute name="BOOLEAN_COLUMN" type="BOOLEAN"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="INT_COLUMN" type="INTEGER"/>
 	</db-entity>
-	<obj-entity name="TablePrimitives" className="org.apache.cayenne.testdo.table_primitives.TablePrimitives" clientClassName="org.apache.cayenne.testdo.table_primitives.ClientTablePrimitives" dbEntityName="TABLE_PRIMITIVES">
+	<obj-entity name="TablePrimitives" className="org.apache.cayenne.testdo.table_primitives.TablePrimitives" dbEntityName="TABLE_PRIMITIVES">
 		<obj-attribute name="booleanColumn" type="boolean" db-attribute-path="BOOLEAN_COLUMN"/>
 		<obj-attribute name="intColumn" type="int" db-attribute-path="INT_COLUMN"/>
 	</obj-entity>

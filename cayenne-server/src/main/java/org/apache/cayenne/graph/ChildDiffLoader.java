@@ -48,7 +48,6 @@ import org.apache.cayenne.reflect.ToOneProperty;
  */
 public class ChildDiffLoader implements GraphChangeHandler {
 
-	// TODO: andrus 04/05/2009 - replace with PropertyChangeProcessingStrategy enum used in ROP?
 	static final ThreadLocal<Boolean> childDiffProcessing = ThreadLocal.withInitial(() -> false);
 
 	protected ObjectContext context;

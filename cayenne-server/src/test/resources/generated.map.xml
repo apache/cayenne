@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.generated"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="GENERATED_COLUMN_COMP_KEY">
 		<db-attribute name="AUTO_PK" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="GENERATED_COLUMN" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true"/>
@@ -61,9 +58,9 @@
 	<obj-entity name="GeneratedColumnTestEntity" className="org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity" dbEntityName="GENERATED_COLUMN_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" clientClassName="test.client.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject"/>
-	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" clientClassName="test.client.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject"/>
-	<obj-entity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" clientClassName="test.client.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="GeneratedF1" className="org.apache.cayenne.testdo.generated.GeneratedF1" dbEntityName="GENERATED_F1" superClassName="org.apache.cayenne.CayenneDataObject"/>
+	<obj-entity name="GeneratedF2" className="org.apache.cayenne.testdo.generated.GeneratedF2" dbEntityName="GENERATED_F2" superClassName="org.apache.cayenne.CayenneDataObject"/>
+	<obj-entity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M">

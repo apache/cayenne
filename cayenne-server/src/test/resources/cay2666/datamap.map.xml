@@ -36,6 +36,5 @@
 		<overwrite>false</overwrite>
 		<createPropertyNames>false</createPropertyNames>
 		<createPKProperties>false</createPKProperties>
-		<client>false</client>
 	</cgen>
 </data-map>

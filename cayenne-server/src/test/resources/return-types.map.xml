@@ -5,9 +5,6 @@
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.return_types"/>
 	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
-	<property name="clientSupported" value="true"/>
-	<property name="defaultClientPackage" value="test.client"/>
-	<property name="defaultClientSuperclass" value="org.apache.cayenne.PersistentObject"/>
 	<db-entity name="TYPES_MAPPING_LOBS_TEST1">
 		<db-attribute name="AAAID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="CLOB_COLUMN" type="CLOB"/>
@@ -43,7 +40,7 @@
 		<db-attribute name="LONGVARBINARY_COLUMN" type="LONGVARBINARY"/>
 		<db-attribute name="VARBINARY_COLUMN" type="VARBINARY" length="1000"/>
 	</db-entity>
-	<obj-entity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap1" clientClassName="test.client.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="ReturnTypesMap1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap1" dbEntityName="TYPES_MAPPING_TEST1" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="bigintColumn" type="java.lang.Long" db-attribute-path="BIGINT_COLUMN"/>
 		<obj-attribute name="bitColumn" type="java.lang.Boolean" db-attribute-path="BIT_COLUMN"/>
 		<obj-attribute name="booleanColumn" type="java.lang.Boolean" db-attribute-path="BOOLEAN_COLUMN"/>
@@ -65,13 +62,13 @@
 		<obj-attribute name="tinyintColumn" type="java.lang.Byte" db-attribute-path="TINYINT_COLUMN"/>
 		<obj-attribute name="varcharColumn" type="java.lang.String" db-attribute-path="VARCHAR_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap2" clientClassName="test.client.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="ReturnTypesMap2" className="org.apache.cayenne.testdo.return_types.ReturnTypesMap2" dbEntityName="TYPES_MAPPING_TEST2" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="binaryColumn" type="byte[]" db-attribute-path="BINARY_COLUMN"/>
 		<obj-attribute name="blobColumn" type="byte[]" db-attribute-path="BLOB_COLUMN"/>
 		<obj-attribute name="longvarbinaryColumn" type="byte[]" db-attribute-path="LONGVARBINARY_COLUMN"/>
 		<obj-attribute name="varbinaryColumn" type="byte[]" db-attribute-path="VARBINARY_COLUMN"/>
 	</obj-entity>
-	<obj-entity name="ReturnTypesMapLobs1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1" clientClassName="test.client.ReturnTypesMapLobs1" dbEntityName="TYPES_MAPPING_LOBS_TEST1" superClassName="org.apache.cayenne.CayenneDataObject" clientSuperClassName="org.apache.cayenne.PersistentObject">
+	<obj-entity name="ReturnTypesMapLobs1" className="org.apache.cayenne.testdo.return_types.ReturnTypesMapLobs1" dbEntityName="TYPES_MAPPING_LOBS_TEST1" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="clobColumn" type="java.lang.String" db-attribute-path="CLOB_COLUMN"/>
 		<obj-attribute name="nclobColumn" type="java.lang.String" db-attribute-path="NCLOB_COLUMN"/>
 	</obj-entity>
