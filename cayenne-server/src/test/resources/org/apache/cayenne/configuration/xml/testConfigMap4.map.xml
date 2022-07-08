@@ -226,7 +226,7 @@
 		<db-attribute-pair source="PAINTING_ID" target="PAINTING_ID"/>
 	</db-relationship>
 	<obj-relationship name="artistArray" source="ArtGroup" target="Artist" collection-type="java.util.Map" lock="true" deleteRule="Cascade" db-relationship-path="artistGroupArray.toArtist">
-		<info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="artistGroupArray.toArtist"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/11/info" name="comment" value="artistGroupArray.toArtist"/>
 	</obj-relationship>
 	<obj-relationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toChildGroups"/>
 	<obj-relationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentGroup"/>
