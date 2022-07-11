@@ -79,7 +79,6 @@
 				<include>org.apache.cayenne:cayenne-project-compatibility</include>
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-velocity</include>
-				<include>org.apache.cayenne:cayenne-web</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>

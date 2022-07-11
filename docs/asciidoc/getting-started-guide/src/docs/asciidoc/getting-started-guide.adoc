@@ -42,5 +42,3 @@ include::_getting-started-guide/setup.adoc[]
 include::_getting-started-guide/part2.adoc[]
 
 include::_getting-started-guide/part3.adoc[]
-
-include::_getting-started-guide/webapp.adoc[]
