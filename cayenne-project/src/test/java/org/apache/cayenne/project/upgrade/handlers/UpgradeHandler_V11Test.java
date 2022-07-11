@@ -24,9 +24,11 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -63,12 +65,26 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
 
         NodeList objEntities = root.getElementsByTagName("obj-entity");
         assertEquals(1, objEntities.getLength());
-        NamedNodeMap attributes = objEntities.item(0).getAttributes();
+        Node objEntity = objEntities.item(0);
+        NamedNodeMap attributes = objEntity.getAttributes();
         assertEquals(2, attributes.getLength());
         assertEquals("Artist", attributes.getNamedItem("name").getNodeValue());
         assertEquals("Artist", attributes.getNamedItem("dbEntityName").getNodeValue());
+        assertEquals(3, objEntity.getChildNodes().getLength());
+        assertEquals("http://cayenne.apache.org/schema/11/info", objEntity.getFirstChild().getNextSibling().getAttributes().getNamedItem("xmlns:info").getNodeValue());
 
         assertEquals(2, root.getElementsByTagName("db-attribute").getLength());
+
+        NodeList cgens = root.getElementsByTagName("cgen");
+        assertEquals(1, objEntities.getLength());
+        Node cgenConfig = cgens.item(0);
+        assertEquals("http://cayenne.apache.org/schema/11/cgen", cgenConfig.getAttributes().getNamedItem("xmlns").getNodeValue());
+        for(int i=0; i<cgenConfig.getChildNodes().getLength(); i++) {
+            Node node = cgenConfig.getChildNodes().item(i);
+            if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("client")) {
+                fail("<client> tag is still present in the <cgen> config");
+            }
+        }
     }
 
     @Test

@@ -30,6 +30,7 @@ import org.w3c.dom.NodeList;
 /**
  * Upgrade handler for the project version "11" introduced by 4.3.M1 release.
  * Changes highlight:
+ *      - schemas version update
  *      - ROP removal
  *
  * @since 4.3
@@ -43,37 +44,41 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
 
     @Override
     public void processProjectDom(UpgradeUnit upgradeUnit) {
-        Element domain = upgradeUnit.getDocument().getDocumentElement();
-        // introduce xml namespace and schema for domain
-        domain.setAttribute("xmlns","http://cayenne.apache.org/schema/11/domain");
-        domain.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
-        domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/11/domain " +
-                "https://cayenne.apache.org/schema/11/domain.xsd");
-        // update version
-        domain.setAttribute("project-version", getVersion());
+        updateDomainSchemaAndVersion(upgradeUnit);
     }
 
     @Override
     public void processDataMapDom(UpgradeUnit upgradeUnit) {
-        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
-        // update schema
-        dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/11/modelMap");
-        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/11/modelMap " +
-                "https://cayenne.apache.org/schema/11/modelMap.xsd");
-        // update version
-        dataMap.setAttribute("project-version", getVersion());
+        updateDataMapSchemaAndVersion(upgradeUnit);
+        updateExtensionSchema(upgradeUnit, "cgen");
+        updateExtensionSchema(upgradeUnit, "dbimport");
+        updateExtensionSchema(upgradeUnit, "graph");
+        upgradeComments(upgradeUnit);
 
-        dropRopProperties(upgradeUnit);
-        cleanupObjEntityClientInfo(upgradeUnit);
-
-        upgradeXmlExtensionsSchemas(upgradeUnit);
+        dropROPProperties(upgradeUnit);
+        dropObjEntityClientInfo(upgradeUnit);
+        dropCgenClientConfig(upgradeUnit);
     }
 
-    private void upgradeXmlExtensionsSchemas(UpgradeUnit upgradeUnit) {
-        
+    private void upgradeComments(UpgradeUnit upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList infoNodes;
+        try {
+            infoNodes = (NodeList) xpath.evaluate("//*[local-name()='property']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        for (int j = 0; j < infoNodes.getLength(); j++) {
+            Element infoElement = (Element) infoNodes.item(j);
+            if(infoElement.hasAttribute("xmlns:info")) {
+                infoElement.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/11/info");
+            }
+        }
     }
 
-    private void dropRopProperties(UpgradeUnit upgradeUnit) {
+    private void dropROPProperties(UpgradeUnit upgradeUnit) {
         Element dataMap = upgradeUnit.getDocument().getDocumentElement();
         NodeList propertyNodes;
         try {
@@ -97,7 +102,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         }
     }
 
-    private void cleanupObjEntityClientInfo(UpgradeUnit upgradeUnit) {
+    private void dropObjEntityClientInfo(UpgradeUnit upgradeUnit) {
         NodeList objEntityNodes;
         try {
             XPath xpath = XPathFactory.newInstance().newXPath();
@@ -111,6 +116,21 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             objEntityElement.removeAttribute("serverOnly");
             objEntityElement.removeAttribute("clientClassName");
             objEntityElement.removeAttribute("clientSuperClassName");
+        }
+    }
+
+    private void dropCgenClientConfig(UpgradeUnit upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='client']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            element.getParentNode().removeChild(element);
         }
     }
 }

@@ -3,7 +3,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
           project-version="10">
-    <property name="defaultPackage" value=""/>
+    <property name="defaultPackage" value="tmp"/>
     <property name="clientSupported" value="true"/>
     <property name="defaultClientPackage" value="tmp"/>
     <property name="defaultClientSuperclass" value="tmp.ClientSuperClass"/>
@@ -12,5 +12,14 @@
         <db-attribute name="untitledAttr1" type="DATE"/>
     </db-entity>
     <obj-entity name="Artist" dbEntityName="Artist" clientClassName="tmp.Artist" clientSuperClassName="tmp.ClientSuperClass" serverOnly="false">
+        <info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="test"/>
     </obj-entity>
+    <cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+        <destDir>../../../../target/cgenClasses</destDir>
+        <mode>entity</mode>
+        <client>true</client>
+    </cgen>
+    <dbimport xmlns="http://cayenne.apache.org/schema/10/dbimport">
+        <defaultPackage>org.example</defaultPackage>
+    </dbimport>
 </data-map>

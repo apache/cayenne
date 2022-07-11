@@ -47,11 +47,7 @@ public class UpgradeHandler_V8 implements UpgradeHandler {
 
     @Override
     public void processDataMapDom(UpgradeUnit upgradeUnit) {
-        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
-        dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/8/modelMap");
-        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/8/modelMap " +
-                "https://cayenne.apache.org/schema/8/modelMap.xsd");
-        dataMap.setAttribute("project-version", getVersion());
+        updateDataMapSchemaAndVersion(upgradeUnit);
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         NodeList queryNodes;

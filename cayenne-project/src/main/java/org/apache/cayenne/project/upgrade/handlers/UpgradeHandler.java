@@ -19,8 +19,15 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Interface that upgrade handlers should implement.
@@ -53,4 +60,52 @@ public interface UpgradeHandler {
     default void processModel(DataChannelDescriptor dataChannelDescriptor) {
     }
 
+    /**
+     * Upgrade Domain schema and version info
+     * @param upgradeUnit for the datamap
+     */
+    default void updateDomainSchemaAndVersion(UpgradeUnit upgradeUnit) {
+        Element domain = upgradeUnit.getDocument().getDocumentElement();
+        // update schema
+        domain.setAttribute("xmlns","http://cayenne.apache.org/schema/"+getVersion()+"/domain");
+        domain.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
+        domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/"+getVersion()+"/domain " +
+                "https://cayenne.apache.org/schema/"+getVersion()+"/domain.xsd");
+        // update version
+        domain.setAttribute("project-version", getVersion());
+    }
+
+    /**
+     * Upgrade DataMap schema and version info
+     * @param upgradeUnit for the datamap
+     */
+    default void updateDataMapSchemaAndVersion(UpgradeUnit upgradeUnit) {
+        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
+        // update schema
+        dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/"+getVersion()+"/modelMap");
+        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/"+getVersion()+"/modelMap " +
+                "https://cayenne.apache.org/schema/"+getVersion()+"/modelMap.xsd");
+        // update version
+        dataMap.setAttribute("project-version", getVersion());
+    }
+
+    /**
+     * Update schema for the given extension
+     * @param upgradeUnit a unit to work with
+     * @param extension name of the extension (cgen, dbimport, graph )
+     */
+    default void updateExtensionSchema(UpgradeUnit upgradeUnit, String extension) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='"+extension+"']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/"+getVersion()+"/"+extension);
+        }
+    }
 }

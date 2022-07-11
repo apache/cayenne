@@ -20,7 +20,6 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
-import org.w3c.dom.Element;
 
 /**
  * Upgrade handler for the project version "10" introduced by 4.1.M1 release.
@@ -39,24 +38,12 @@ public class UpgradeHandler_V10 implements UpgradeHandler {
 
     @Override
     public void processProjectDom(UpgradeUnit upgradeUnit) {
-        Element domain = upgradeUnit.getDocument().getDocumentElement();
         // introduce xml namespace and schema for domain
-        domain.setAttribute("xmlns","http://cayenne.apache.org/schema/10/domain");
-        domain.setAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
-        domain.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/10/domain " +
-                "https://cayenne.apache.org/schema/10/domain.xsd");
-        // update version
-        domain.setAttribute("project-version", getVersion());
+        updateDomainSchemaAndVersion(upgradeUnit);
     }
 
     @Override
     public void processDataMapDom(UpgradeUnit upgradeUnit) {
-        Element dataMap = upgradeUnit.getDocument().getDocumentElement();
-        // update schema
-        dataMap.setAttribute("xmlns","http://cayenne.apache.org/schema/10/modelMap");
-        dataMap.setAttribute("xsi:schemaLocation", "http://cayenne.apache.org/schema/10/modelMap " +
-                "https://cayenne.apache.org/schema/10/modelMap.xsd");
-        // update version
-        dataMap.setAttribute("project-version", getVersion());
+        updateDataMapSchemaAndVersion(upgradeUnit);
     }
 }
