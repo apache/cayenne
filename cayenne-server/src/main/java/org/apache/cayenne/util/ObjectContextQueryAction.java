@@ -20,6 +20,7 @@
 package org.apache.cayenne.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -364,11 +365,12 @@ public abstract class ObjectContextQueryAction {
         QueryCacheEntryFactory factory = getCacheObjectFactory();
 
         if (cache) {
+            boolean wasResponseNull = (response == null);
             List cachedResults = queryCache.get(metadata, factory);
 
             // response may already be initialized by the factory above ... it is null if
             // there was a preexisting cache entry
-            if (response == null) {
+            if (response == null || wasResponseNull) {
                 response = new ListResponse(cachedResults);
             }
         } else {
@@ -394,7 +396,9 @@ public abstract class ObjectContextQueryAction {
 
             public List createObject() {
                 executePostCache();
-                return response.firstList();
+                List result = response.firstList();
+                // make an immutable list to make sure callers don't mess it up
+                return result != null ? Collections.unmodifiableList(result) : null;
             }
         };
     }
