@@ -68,9 +68,6 @@
 		<module>cayenne-velocity</module>
 		<module>cayenne-web</module>
 		<module>cayenne-osgi</module>
-		<module>cayenne-jgroups</module>
-		<module>cayenne-jms</module>
-		<module>cayenne-xmpp</module>
 		<module>maven-plugins</module>
 		<module>modeler</module>
 		<module>tutorials</module>

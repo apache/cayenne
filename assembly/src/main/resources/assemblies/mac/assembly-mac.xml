@@ -80,9 +80,6 @@
 				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-velocity</include>
 				<include>org.apache.cayenne:cayenne-web</include>
-				<include>org.apache.cayenne:cayenne-jgroups</include>
-				<include>org.apache.cayenne:cayenne-jms</include>
-				<include>org.apache.cayenne:cayenne-xmpp</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
