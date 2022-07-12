@@ -15,6 +15,8 @@ Changes/New Features:
 
 CAY-2741 Cleanup TransactionDescriptor and deprecate DefaultTransactionDescriptor
 CAY-2743 Deprecate ROP
+CAY-2749 Deprecate object clustering transports
+CAY-2750 Deprecate web module
 
 Bug Fixes:
 
