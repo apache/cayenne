@@ -7,9 +7,24 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
 
 UPGRADING TO 4.3.M1
 
-* Per CAY-2737 All code deprecated in Cayenne 4.1 and 4.2 was removed, please review your code before upgrading.
+* Per CAY-2737 All code deprecated in Cayenne 4.1 and 4.2 was deleted, please review your code before upgrading.
+Most notable removals are SelectQuery and these Cayenne modules:
+ - cayenne-dbcp2
+ - cayenne-joda
+ - cayenne-client
+ - cayenne-client-jetty
+ - cayenne-protostuff
+ - cayenne-rop-server
+ - cayenne-web
+ - cayenne-jgroups
+ - cayenne-jms
+ - cayenne-xmpp
 
 * Per CAY-2742 Minimum required Java version for Apache Cayenne is 11
+
+* Per CAY-2747 Cayenne XML schemas are updated, so you need to update you projects (just open them in the Modeler
+or use cayenne-project-compatibility module)
+
 
 UPGRADING TO 4.2.M2
 
