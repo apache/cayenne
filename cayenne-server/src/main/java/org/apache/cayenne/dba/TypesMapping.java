@@ -272,17 +272,6 @@ public class TypesMapping {
 		JAVA_SQL_ENUM.put("boolean", BIT);
 	}
 
-	/**
-	 * @deprecated
-	 * 
-	 *             Returns true if supplied type can have a length attribute as
-	 *             a part of column definition.
-	 */
-	public static boolean supportsLength(int type) {
-		return JdbcAdapter.supportsLength(type);
-	}
-
-
 	// TODO: redo all isXyz as an internal enum over types, where each enum object knows whether it is this or that kind
 
 	/**

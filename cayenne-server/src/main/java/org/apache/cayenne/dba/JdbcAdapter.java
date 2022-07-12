@@ -77,13 +77,6 @@ public class JdbcAdapter implements DbAdapter {
     protected ResourceLocator resourceLocator;
     protected boolean caseInsensitiveCollations;
 
-    /**
-     * @since 3.1
-     * @deprecated since 4.0 BatchQueryBuilderfactory is attached to the DataNode.
-     */
-    @Inject
-    protected BatchTranslatorFactory batchQueryBuilderFactory;
-
     @Inject
     protected JdbcEventLogger logger;
 
@@ -255,20 +248,6 @@ public class JdbcAdapter implements DbAdapter {
      * @since 4.0
      */
     public boolean typeSupportsLength(int type) {
-        return JdbcAdapter.supportsLength(type);
-    }
-
-    /**
-     * Returns true if supplied type can have a length attribute as a part of
-     * column definition
-     * <p/>
-     * TODO: this is a static method only to support the deprecated method
-     * {@link TypesMapping#supportsLength(int)} When the deprecated method is
-     * removed this body should be moved in to {@link #typeSupportsLength(int)}
-     *
-     * @deprecated
-     */
-    static boolean supportsLength(int type) {
         return type == Types.BINARY || type == Types.CHAR || type == Types.NCHAR || type == Types.NVARCHAR
                 || type == Types.LONGNVARCHAR || type == Types.DECIMAL || type == Types.DOUBLE || type == Types.FLOAT
                 || type == Types.NUMERIC || type == Types.REAL || type == Types.VARBINARY || type == Types.VARCHAR;
