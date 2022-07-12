@@ -23,9 +23,9 @@ import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.modeler.Application;
@@ -87,9 +87,7 @@ public class CreateNodeAction extends CayenneAction {
         DataChannelDescriptor domain = (DataChannelDescriptor) mediator.getProject().getRootNode();
 
         DataNodeDescriptor node = buildDataNode(domain);
-
-        DataSourceInfo src = new DataSourceInfo();
-        node.setDataSourceDescriptor(src);
+        node.setDataSourceDescriptor(new DataSourceDescriptor());
 
         // by default create JDBC Node
         node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());

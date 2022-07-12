@@ -100,6 +100,7 @@ public class ServerRuntimeBuilder {
      * DataNodes, and the DataSource is set with this method, the builder would
      * create a single default DataNode.
      */
+    @Deprecated
     public ServerRuntimeBuilder jndiDataSource(String location) {
         this.dataSourceFactory = new FixedJNDIDataSourceFactory(location);
         return this;

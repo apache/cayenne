@@ -29,6 +29,7 @@ public class ServerCaseSharedDataSourceFactory implements DataSourceFactory {
     private ServerCaseDataSourceFactory factory;
 
     public ServerCaseSharedDataSourceFactory(@Inject ServerCaseDataSourceFactory factory) {
+        this.factory = factory;
     }
 
     public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {

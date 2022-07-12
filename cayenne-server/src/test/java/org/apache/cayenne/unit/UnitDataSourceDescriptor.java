@@ -17,36 +17,34 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.datanode;
+package org.apache.cayenne.unit;
 
-import java.awt.Component;
-
-import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.BindingDelegate;
-import org.apache.cayenne.swing.ObjectBinding;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 
 /**
+ * Extension of the {@link DataSourceDescriptor} for tests that adds adapterClassName field to it.
  */
-public class JNDIDataSourceEditor extends DataSourceEditor {
+public class UnitDataSourceDescriptor extends DataSourceDescriptor {
 
-    protected JNDIDataSourceView view;
+    protected String adapterClassName;
 
-    public JNDIDataSourceEditor(ProjectController parent,
-            BindingDelegate nodeChangeProcessor) {
-        super(parent, nodeChangeProcessor);
+    public String getAdapterClassName() {
+        return adapterClassName;
     }
 
-    public Component getView() {
-        return view;
+    public void setAdapterClassName(String adapterClassName) {
+        this.adapterClassName = adapterClassName;
     }
 
-    protected void prepareBindings(BindingBuilder builder) {
-        this.view = new JNDIDataSourceView();
-
-        fieldAdapters = new ObjectBinding[1];
-        fieldAdapters[0] = builder.bindToTextField(
-                view.getJndiPath(),
-                "node.parameters");
+    public UnitDataSourceDescriptor copy() {
+        UnitDataSourceDescriptor copy = new UnitDataSourceDescriptor();
+        copy.setDataSourceUrl(getDataSourceUrl());
+        copy.setJdbcDriver(getJdbcDriver());
+        copy.setUserName(getUserName());
+        copy.setPassword(getPassword());
+        copy.setAdapterClassName(getAdapterClassName());
+        copy.setMinConnections(getMinConnections());
+        copy.setMaxConnections(getMaxConnections());
+        return copy;
     }
 }

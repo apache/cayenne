@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -47,9 +46,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
     protected String dataSourceFactoryType;
     protected String schemaUpdateStrategyType;
 
-    // TODO: andrus, 12.13.2009: replace funky DataSourceInfo with a cleaner new class
-    // (DataSourceDescriptor?)
-    protected DataSourceInfo dataSourceDescriptor;
+    protected DataSourceDescriptor dataSourceDescriptor;
 
     protected transient Resource configurationSource;
 
@@ -181,11 +178,11 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
         this.schemaUpdateStrategyType = schemaUpdateStrategyClass;
     }
 
-    public DataSourceInfo getDataSourceDescriptor() {
+    public DataSourceDescriptor getDataSourceDescriptor() {
         return dataSourceDescriptor;
     }
 
-    public void setDataSourceDescriptor(DataSourceInfo dataSourceDescriptor) {
+    public void setDataSourceDescriptor(DataSourceDescriptor dataSourceDescriptor) {
         this.dataSourceDescriptor = dataSourceDescriptor;
     }
 

@@ -26,17 +26,12 @@ import org.apache.cayenne.modeler.util.JTextFieldUndoable;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-
-import static org.apache.cayenne.modeler.editor.datanode.MainDataNodeEditor.DBCP_DATA_SOURCE_FACTORY;
 
 /**
  * A view for the main DataNode editor tab.
@@ -48,6 +43,7 @@ public class MainDataNodeView extends JPanel {
     protected JComboBox<String> factories;
     protected JPanel dataSourceDetail;
     protected CardLayout dataSourceDetailLayout;
+    protected JTextFieldUndoable customAdapter;
     protected JComboBox<String> localDataSources;
     protected JButton configLocalDataSources;
     protected JComboBox<String> schemaUpdateStrategy;
@@ -59,13 +55,13 @@ public class MainDataNodeView extends JPanel {
 
         this.factories = Application.getWidgetFactory().createUndoableComboBox();
 
-        factories.addActionListener(this::showWarningMessage);
-
         this.localDataSources = Application.getWidgetFactory().createUndoableComboBox();
 
         this.schemaUpdateStrategy = Application.getWidgetFactory().createUndoableComboBox();
         this.dataSourceDetailLayout = new CardLayout();
         this.dataSourceDetail = new JPanel(dataSourceDetailLayout);
+
+        this.customAdapter = new JTextFieldUndoable();
 
         this.configLocalDataSources = new JButton("...");
         this.configLocalDataSources.setToolTipText("configure local DataSource");
@@ -88,8 +84,10 @@ public class MainDataNodeView extends JPanel {
         Font font = new Font(getFont().getName(), Font.PLAIN, getFont().getSize() - 2);
         label.setFont(font);
         builderForLabel.append(label);
-
         topPanelBuilder.append("", builderForLabel.getPanel(), 3);
+
+        topPanelBuilder.append("Custom Adapter (optional):", customAdapter, 3);
+
         topPanelBuilder.append(
                 "Local DataSource (opt.):",
                 localDataSources,
@@ -129,12 +127,7 @@ public class MainDataNodeView extends JPanel {
         return configLocalDataSources;
     }
 
-    private void showWarningMessage(ActionEvent e){
-        if(DBCP_DATA_SOURCE_FACTORY.equals(factories.getSelectedItem())) {
-            JDialog dialog = new JOptionPane("DPCPDataSourceFactory is deprecated since 4.1", JOptionPane.WARNING_MESSAGE)
-                    .createDialog("Warning");
-            dialog.setAlwaysOnTop(true);
-            dialog.setVisible(true);
-        }
+    public JTextFieldUndoable getCustomAdapter() {
+        return customAdapter;
     }
 }

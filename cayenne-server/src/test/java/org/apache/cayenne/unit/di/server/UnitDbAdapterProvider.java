@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
@@ -37,12 +37,12 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
 
     private Injector injector;
     private DbAdapter adapter;
-    private DataSourceInfo dataSourceInfo;
+    private DataSourceDescriptor dataSourceInfo;
     private Map<String, String> adapterTypesMap;
 
     public UnitDbAdapterProvider(
             @Inject(TEST_ADAPTERS_MAP) Map<String, String> adapterTypesMap,
-            @Inject DataSourceInfo dataSourceInfo, @Inject DbAdapter adapter,
+            @Inject DataSourceDescriptor dataSourceInfo, @Inject DbAdapter adapter,
             @Inject Injector injector) {
         this.dataSourceInfo = dataSourceInfo;
         this.adapterTypesMap = adapterTypesMap;
@@ -53,17 +53,15 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
     public UnitDbAdapter get() throws ConfigurationException {
 
         String testAdapterType = adapterTypesMap
-                .get(dataSourceInfo.getAdapterClassName());
+                .get(adapter.getClass().getName());
         if (testAdapterType == null) {
-            throw new IllegalStateException("Unmapped adapter type: "
-                    + dataSourceInfo.getAdapterClassName());
+            throw new IllegalStateException("Unmapped adapter type: " + adapter.getClass().getName());
         }
 
         Class<UnitDbAdapter> type;
         try {
             type = (Class<UnitDbAdapter>) Util.getJavaClass(testAdapterType);
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             throw new CayenneRuntimeException(
                     "Invalid class %s of type AccessStackAdapter",
                     e,
@@ -81,8 +79,7 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
             UnitDbAdapter unitAdapter = c.newInstance(adapter);
             injector.injectMembers(unitAdapter);
             return unitAdapter;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ConfigurationException("Error instantiating " + testAdapterType, e);
         }
     }

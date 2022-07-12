@@ -25,8 +25,8 @@ import javax.sql.DataSource;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -56,23 +56,26 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 	@Override
 	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
 
-		DataSourceInfo descriptor = nodeDescriptor.getDataSourceDescriptor();
-
+		DataSourceDescriptor descriptor = nodeDescriptor.getDataSourceDescriptor();
 		if (descriptor == null) {
 			String message = "Null dataSourceDescriptor for nodeDescriptor '" + nodeDescriptor.getName() + "'";
 			logger.info(message);
 			throw new ConfigurationException(message);
 		}
 
-		long maxQueueWaitTime = properties.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME,
-				UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
+		long maxQueueWaitTime = properties
+				.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME, UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
-		Driver driver = (Driver)objectFactory.getJavaClass(descriptor.getJdbcDriver()).getDeclaredConstructor().newInstance();
+		Driver driver = (Driver)objectFactory.getJavaClass(descriptor.getJdbcDriver())
+				.getDeclaredConstructor().newInstance();
 
-		return DataSourceBuilder.url(descriptor.getDataSourceUrl()).driver(driver).userName(descriptor.getUserName())
+		return DataSourceBuilder.url(descriptor.getDataSourceUrl())
+				.driver(driver)
+				.userName(descriptor.getUserName())
 				.password(descriptor.getPassword())
 				.pool(descriptor.getMinConnections(), descriptor.getMaxConnections())
-				.maxQueueWaitTime(maxQueueWaitTime).build();
+				.maxQueueWaitTime(maxQueueWaitTime)
+				.build();
 	}
 
 }

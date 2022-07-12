@@ -25,8 +25,8 @@ import java.util.prefs.Preferences;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
@@ -274,7 +274,7 @@ public class DBConnectionInfo extends CayennePreference {
 	 * an adapter update here. </i>
 	 * </p>
 	 */
-	public boolean copyTo(final DataSourceInfo dataSourceInfo) {
+	public boolean copyTo(final DataSourceDescriptor dataSourceInfo) {
 		boolean updated = false;
 
 		if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {
@@ -300,7 +300,7 @@ public class DBConnectionInfo extends CayennePreference {
 		return updated;
 	}
 
-	public boolean copyFrom(final DataSourceInfo dataSourceInfo) {
+	public boolean copyFrom(final DataSourceDescriptor dataSourceInfo) {
 		boolean updated = false;
 
 		if (!Util.nullSafeEquals(dataSourceInfo.getDataSourceUrl(), getUrl())) {

@@ -21,7 +21,7 @@ package org.apache.cayenne.datasource;
 import java.sql.Driver;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -33,7 +33,7 @@ import org.junit.Test;
 public class PoolingDataSource_FailingValidationQueryIT extends ServerCase {
 
 	@Inject
-	private DataSourceInfo dataSourceInfo;
+	private DataSourceDescriptor dataSourceInfo;
 
 	@Inject
 	private AdhocObjectFactory objectFactory;

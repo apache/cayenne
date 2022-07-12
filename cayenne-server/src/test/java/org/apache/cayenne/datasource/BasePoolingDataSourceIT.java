@@ -21,7 +21,7 @@ package org.apache.cayenne.datasource;
 import java.sql.Driver;
 import java.sql.SQLException;
 
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -36,7 +36,7 @@ public class BasePoolingDataSourceIT extends ServerCase {
 	protected static final long QUEUE_WAIT_TIME = 1000L;
 
 	@Inject
-	private DataSourceInfo dataSourceInfo;
+	private DataSourceDescriptor dataSourceInfo;
 
 	@Inject
 	private AdhocObjectFactory objectFactory;

@@ -21,9 +21,9 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.mock.MockDataSourceFactory1;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
@@ -65,11 +65,11 @@ public class DefaultDataSourceFactoryLoaderTest {
     }
 
     @Test
-    public void testGetDataSourceFactory_Implicit() throws Exception {
+    public void testGetDataSourceFactory_Implicit() {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
         nodeDescriptor.setName("node1");
-        nodeDescriptor.setDataSourceDescriptor(new DataSourceInfo());
+        nodeDescriptor.setDataSourceDescriptor(new DataSourceDescriptor());
 
         DelegatingDataSourceFactory factoryLoader = new DelegatingDataSourceFactory();
         injector.injectMembers(factoryLoader);

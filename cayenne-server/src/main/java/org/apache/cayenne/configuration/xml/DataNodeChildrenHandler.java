@@ -20,7 +20,7 @@
 package org.apache.cayenne.configuration.xml;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
@@ -35,7 +35,7 @@ final class DataNodeChildrenHandler extends NamespaceAwareNestedTagHandler {
     private XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader;
     private DataNodeDescriptor nodeDescriptor;
 
-    private DataSourceInfo dataSourceDescriptor;
+    private DataSourceDescriptor dataSourceDescriptor;
 
     DataNodeChildrenHandler(XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader, NamespaceAwareNestedTagHandler parentHandler, DataNodeDescriptor nodeDescriptor) {
         super(parentHandler);
@@ -62,7 +62,7 @@ final class DataNodeChildrenHandler extends NamespaceAwareNestedTagHandler {
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String name, Attributes attributes) {
         if (DATA_SOURCE_TAG.equals(localName)) {
-            dataSourceDescriptor = new DataSourceInfo();
+            dataSourceDescriptor = new DataSourceDescriptor();
             return new DataSourceChildrenHandler(xmlDataChannelDescriptorLoader, this, dataSourceDescriptor);
         }
 

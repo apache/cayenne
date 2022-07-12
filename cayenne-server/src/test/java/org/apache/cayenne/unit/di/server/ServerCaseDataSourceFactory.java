@@ -27,7 +27,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -35,12 +35,12 @@ import org.apache.cayenne.di.Inject;
 public class ServerCaseDataSourceFactory {
 
 	private DataSource sharedDataSource;
-	private DataSourceInfo dataSourceInfo;
+	private DataSourceDescriptor dataSourceInfo;
 	private Map<String, DataSource> dataSources;
 	private Set<String> mapsWithDedicatedDataSource;
 	private AdhocObjectFactory objectFactory;
 
-	public ServerCaseDataSourceFactory(@Inject DataSourceInfo dataSourceInfo, @Inject AdhocObjectFactory objectFactory) {
+	public ServerCaseDataSourceFactory(@Inject DataSourceDescriptor dataSourceInfo, @Inject AdhocObjectFactory objectFactory) {
 
 		this.objectFactory = objectFactory;
 		this.dataSourceInfo = dataSourceInfo;

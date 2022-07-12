@@ -19,13 +19,13 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,26 +38,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo> {
+public class ServerCaseDataSourceDescriptorProvider implements Provider<UnitDataSourceDescriptor> {
 
-    private static Logger logger = LoggerFactory.getLogger(ServerCaseDataSourceInfoProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServerCaseDataSourceDescriptorProvider.class);
 
     private static final String PROPERTIES_FILE = "connection.properties";
     private static final String CONNECTION_NAME_KEY = "cayenneTestConnection";
     private static final String CONNECTION_DB_VERSION = "cayenneTestDbVersion";
-
     private static final String ADAPTER_KEY_MAVEN = "cayenneAdapter";
     private static final String USER_NAME_KEY_MAVEN = "cayenneJdbcUsername";
     private static final String PASSWORD_KEY_MAVEN = "cayenneJdbcPassword";
     private static final String URL_KEY_MAVEN = "cayenneJdbcUrl";
     private static final String DRIVER_KEY_MAVEN = "cayenneJdbcDriver";
 
-    private Map<String, DataSourceInfo> inMemoryDataSources;
+    private Map<String, UnitDataSourceDescriptor> inMemoryDataSources;
     private ConnectionProperties connectionProperties;
 
     private final Map<String, TestContainerProvider> testContainerProviders;
 
-    public ServerCaseDataSourceInfoProvider(@Inject Map<String, TestContainerProvider> testContainerProviders)
+    public ServerCaseDataSourceDescriptorProvider(@Inject Map<String, TestContainerProvider> testContainerProviders)
             throws IOException {
 
         this.testContainerProviders = testContainerProviders;
@@ -77,7 +76,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
 
         // preload default in-memory DataSources. Will use them as defaults if
         // nothing is configured in ~/.cayenne/connection.properties
-        DataSourceInfo hsqldb = new DataSourceInfo();
+        UnitDataSourceDescriptor hsqldb = new UnitDataSourceDescriptor();
         hsqldb.setAdapterClassName(HSQLDBAdapter.class.getName());
         hsqldb.setUserName("sa");
         hsqldb.setPassword("");
@@ -87,7 +86,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         hsqldb.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         inMemoryDataSources.put("hsql", hsqldb);
 
-        DataSourceInfo h2 = new DataSourceInfo();
+        UnitDataSourceDescriptor h2 = new UnitDataSourceDescriptor();
         h2.setAdapterClassName(H2Adapter.class.getName());
         h2.setUserName("sa");
         h2.setPassword("");
@@ -97,7 +96,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         h2.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         inMemoryDataSources.put("h2", h2);
 
-        DataSourceInfo derby = new DataSourceInfo();
+        UnitDataSourceDescriptor derby = new UnitDataSourceDescriptor();
         derby.setAdapterClassName(DerbyAdapter.class.getName());
         derby.setUserName("sa");
         derby.setPassword("");
@@ -107,7 +106,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         derby.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         inMemoryDataSources.put("derby", derby);
 
-        DataSourceInfo sqlite = new DataSourceInfo();
+        UnitDataSourceDescriptor sqlite = new UnitDataSourceDescriptor();
         sqlite.setAdapterClassName(SQLiteAdapter.class.getName());
         sqlite.setUserName("sa");
         sqlite.setPassword("");
@@ -119,7 +118,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
     }
 
     @Override
-    public DataSourceInfo get() throws ConfigurationException {
+    public UnitDataSourceDescriptor get() throws ConfigurationException {
 
         String connectionKey = property(CONNECTION_NAME_KEY);
         if (connectionKey == null) {
@@ -127,7 +126,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         }
 
         logger.info("Connection key: " + connectionKey);
-        DataSourceInfo connectionInfo = connectionProperties.getConnection(connectionKey);
+        UnitDataSourceDescriptor connectionInfo = connectionProperties.getConnection(connectionKey);
 
         // attempt default if invalid key is specified
         if (connectionInfo == null) {
@@ -148,7 +147,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         return connectionInfo;
     }
 
-    private DataSourceInfo checkTestContainersDataSource(String connectionKey) {
+    private UnitDataSourceDescriptor checkTestContainersDataSource(String connectionKey) {
         // special case for the testcontainers profile
         if (!connectionKey.endsWith("-tc")) {
             return null;
@@ -164,7 +163,7 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         String version = property(CONNECTION_DB_VERSION);
         JdbcDatabaseContainer<?> container = testContainerProvider.startContainer(version);
 
-        DataSourceInfo sourceInfo = new DataSourceInfo();
+        UnitDataSourceDescriptor sourceInfo = new UnitDataSourceDescriptor();
         sourceInfo.setAdapterClassName(testContainerProvider.getAdapterClass().getName());
         sourceInfo.setUserName(container.getUsername());
         sourceInfo.setPassword(container.getPassword());
@@ -184,12 +183,16 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
         return new File(homeDir, ".cayenne");
     }
 
-    private DataSourceInfo applyOverrides(DataSourceInfo connectionInfo) {
+    private UnitDataSourceDescriptor applyOverrides(UnitDataSourceDescriptor connectionInfo) {
         String adapter = property(ADAPTER_KEY_MAVEN);
         String user = property(USER_NAME_KEY_MAVEN);
         String pass = property(PASSWORD_KEY_MAVEN);
         String url = property(URL_KEY_MAVEN);
         String driver = property(DRIVER_KEY_MAVEN);
+        // no overrides, do nothing
+        if(adapter == null && user == null && pass == null && url == null && driver == null) {
+            return connectionInfo;
+        }
 
         if (connectionInfo == null) {
             // only create a brand new DSI if overrides contains a DB url...
@@ -197,12 +200,12 @@ public class ServerCaseDataSourceInfoProvider implements Provider<DataSourceInfo
                 return null;
             }
 
-            connectionInfo = new DataSourceInfo();
+            connectionInfo = new UnitDataSourceDescriptor();
             connectionInfo.setMinConnections(ConnectionProperties.MIN_CONNECTIONS);
             connectionInfo.setMaxConnections(ConnectionProperties.MAX_CONNECTIONS);
         }
 
-        connectionInfo = connectionInfo.cloneInfo();
+        connectionInfo = connectionInfo.copy();
         if (adapter != null) {
             connectionInfo.setAdapterClassName(adapter);
         }

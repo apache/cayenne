@@ -29,7 +29,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLSelect;
@@ -53,7 +53,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	private ServerRuntime runtime;
 
 	@Inject
-	private DataSourceInfo dsi;
+	private DataSourceDescriptor dsi;
 
 	private ServerRuntime localRuntime;
 	private DataSource dataSource;

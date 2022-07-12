@@ -20,8 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
-import org.apache.cayenne.conn.DataSourceInfo;
-import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
@@ -40,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -58,7 +55,7 @@ import java.util.Map;
  */
 public class DbGenerator {
 
-	private static final Logger logObj = LoggerFactory.getLogger(DbGenerator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DbGenerator.class);
 
 	protected DbAdapter adapter;
 	protected DataMap map;
@@ -95,7 +92,7 @@ public class DbGenerator {
 	 * @since 3.1
 	 */
 	public DbGenerator(DbAdapter adapter, DataMap map, JdbcEventLogger logger) {
-		this(adapter, map, logger, Collections.<DbEntity> emptyList());
+		this(adapter, map, logger, Collections.emptyList());
 	}
 
 	/**
@@ -241,26 +238,6 @@ public class DbGenerator {
 	}
 
 	/**
-	 * Creates a temporary DataSource out of DataSourceInfo and invokes
-	 * <code>public void runGenerator(DataSource ds)</code>.
-	 */
-	public void runGenerator(DataSourceInfo dsi) throws Exception {
-		this.failures = null;
-
-		// do a pre-check. Maybe there is no need to run anything
-		// and therefore no need to create a connection
-		if (isEmpty(true)) {
-			return;
-		}
-
-		Driver driver = (Driver) Class.forName(dsi.getJdbcDriver()).getDeclaredConstructor().newInstance();
-		DataSource dataSource = new DriverDataSource(driver, dsi.getDataSourceUrl(), dsi.getUserName(),
-				dsi.getPassword());
-
-		runGenerator(dataSource);
-	}
-
-	/**
 	 * Executes a set of commands to drop/create database objects. This is the
 	 * main worker method of DbGenerator. Command set is built based on
 	 * pre-configured generator settings.
@@ -341,7 +318,7 @@ public class DbGenerator {
 	 * 
 	 * @since 1.1
 	 */
-	protected boolean safeExecute(Connection connection, String sql) throws SQLException {
+	protected boolean safeExecute(Connection connection, String sql) {
 
 		try (Statement statement = connection.createStatement()) {
 			jdbcEventLogger.log(sql);
@@ -395,7 +372,7 @@ public class DbGenerator {
 					DbRelationship reverse = rel.getReverseRelationship();
 					if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
 
-						String unique = getAdapter().createUniqueConstraint((DbEntity) rel.getSourceEntity(),
+						String unique = getAdapter().createUniqueConstraint(rel.getSourceEntity(),
 								rel.getSourceAttributes());
 						if (unique != null) {
 							list.add(unique);
@@ -501,7 +478,7 @@ public class DbGenerator {
 
 			// tables with no columns are not included
 			if (nextEntity.getAttributes().size() == 0) {
-				logObj.info("Skipping entity with no attributes: " + nextEntity.getName());
+				LOGGER.info("Skipping entity with no attributes: " + nextEntity.getName());
 				continue;
 			}
 
@@ -514,7 +491,7 @@ public class DbGenerator {
 			boolean invalidAttributes = false;
 			for (final DbAttribute attr : nextEntity.getAttributes()) {
 				if (attr.getType() == TypesMapping.NOT_DEFINED) {
-					logObj.info("Skipping entity, attribute type is undefined: " + nextEntity.getName() + "."
+					LOGGER.info("Skipping entity, attribute type is undefined: " + nextEntity.getName() + "."
 							+ attr.getName());
 					invalidAttributes = true;
 					break;

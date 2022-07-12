@@ -20,23 +20,21 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 
 public class ServerCaseDbAdapterProvider implements Provider<JdbcAdapter> {
-
-    private DataSourceInfo dataSourceInfo;
+    private UnitDataSourceDescriptor dataSourceInfo;
     private AdhocObjectFactory objectFactory;
-
     private PkGeneratorFactoryProvider pkGeneratorProvider;
 
     public ServerCaseDbAdapterProvider(
-            @Inject DataSourceInfo dataSourceInfo,
+            @Inject UnitDataSourceDescriptor dataSourceInfo,
             @Inject AdhocObjectFactory objectFactory,
             @Inject PkGeneratorFactoryProvider pkGeneratorProvider) {
         this.dataSourceInfo = dataSourceInfo;

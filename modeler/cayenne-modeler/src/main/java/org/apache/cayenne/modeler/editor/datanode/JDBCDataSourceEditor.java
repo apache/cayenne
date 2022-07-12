@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.editor.datanode;
 import java.awt.Component;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.modeler.CayenneModelerController;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.pref.DBConnectionInfo;
@@ -35,10 +35,8 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
 
     protected JDBCDataSourceView view;
 
-    public JDBCDataSourceEditor(ProjectController parent,
-            BindingDelegate nodeChangeProcessor) {
+    public JDBCDataSourceEditor(ProjectController parent, BindingDelegate nodeChangeProcessor) {
         super(parent, nodeChangeProcessor);
-
     }
 
     public Component getView() {
@@ -49,7 +47,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
     public void setNode(DataNodeDescriptor node) {
         if (!Util.nullSafeEquals(getNode(), node)) {
             if (node.getDataSourceDescriptor() == null) {
-                node.setDataSourceDescriptor(new DataSourceInfo());
+                node.setDataSourceDescriptor(new DataSourceDescriptor());
             }
             super.setNode(node);
         }
@@ -91,7 +89,7 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
             return;
         }
 
-        DataSourceInfo projectDSI = getNode().getDataSourceDescriptor();
+        DataSourceDescriptor projectDataSourceDescriptor = getNode().getDataSourceDescriptor();
 
         ProjectController parent = (ProjectController) getParent();
         String key = parent.getDataNodePreferences().getLocalDataSource();
@@ -106,16 +104,14 @@ public class JDBCDataSourceEditor extends DataSourceEditor {
             .getObject(key);
 
         if (dataSource != null) {
-            if (dataSource.copyTo(projectDSI)) {
+            if (dataSource.copyTo(projectDataSourceDescriptor)) {
                 refreshView();
                 super.nodeChangeProcessor.modelUpdated(null, null, null);
                 mainController.updateStatus(null);
-            }
-            else {
+            } else {
                 mainController.updateStatus("DataNode is up to date...");
             }
-        }
-        else {
+        } else {
             mainController.updateStatus("Invalid Local DataSource selected for node...");
         }
     }

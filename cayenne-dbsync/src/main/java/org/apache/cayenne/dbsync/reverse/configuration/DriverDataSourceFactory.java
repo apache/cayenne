@@ -24,8 +24,8 @@ import java.sql.Driver;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -42,13 +42,13 @@ public class DriverDataSourceFactory implements DataSourceFactory {
 	}
 
 	public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
-		DataSourceInfo properties = nodeDescriptor.getDataSourceDescriptor();
-		if (properties == null) {
+		DataSourceDescriptor dataSourceDescriptor = nodeDescriptor.getDataSourceDescriptor();
+		if (dataSourceDescriptor == null) {
 			throw new IllegalArgumentException("'nodeDescriptor' contains no datasource descriptor");
 		}
 
-		Driver driver = (Driver)objectFactory.getJavaClass(properties.getJdbcDriver()).getDeclaredConstructor().newInstance();
-		return new DriverDataSource(driver, properties.getDataSourceUrl(), properties.getUserName(),
-				properties.getPassword());
+		Driver driver = (Driver)objectFactory.getJavaClass(dataSourceDescriptor.getJdbcDriver()).getDeclaredConstructor().newInstance();
+		return new DriverDataSource(driver, dataSourceDescriptor.getDataSourceUrl(), dataSourceDescriptor.getUserName(),
+				dataSourceDescriptor.getPassword());
 	}
 }

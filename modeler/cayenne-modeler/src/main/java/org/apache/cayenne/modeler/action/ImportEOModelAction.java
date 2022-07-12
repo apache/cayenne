@@ -22,11 +22,11 @@ package org.apache.cayenne.modeler.action;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
 import org.apache.cayenne.configuration.event.QueryEvent;
 import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -153,8 +153,7 @@ public class ImportEOModelAction extends CayenneAction {
             if ("JNDI".equalsIgnoreCase(adapter)) {
                 node.setDataSourceFactoryType(JNDIDataSourceFactory.class.getName());
                 node.setParameters((String) connection.get("serverUrl"));
-            }
-            else {
+            } else {
                 // guess adapter from plugin or driver
                 AdapterMapping adapterDefaults = getApplication().getAdapterMapping();
                 String cayenneAdapter = adapterDefaults.adapterForEOFPluginOrDriver(
@@ -166,18 +165,14 @@ public class ImportEOModelAction extends CayenneAction {
                                 .getClassLoadingService()
                                 .loadClass(DbAdapter.class, cayenneAdapter);
                         node.setAdapterType(adapterClass.toString());
-                    }
-                    catch (Throwable ex) {
+                    } catch (Throwable ex) {
                         // ignore...
                     }
                 }
 
-                node
-                        .setDataSourceFactoryType(XMLPoolingDataSourceFactory.class
-                                .getName());
+                node.setDataSourceFactoryType(XMLPoolingDataSourceFactory.class.getName());
 
-                DataSourceInfo dsi = node.getDataSourceDescriptor();
-
+                DataSourceDescriptor dsi = node.getDataSourceDescriptor();
                 dsi.setDataSourceUrl(keyAsString(connection, "URL"));
                 dsi.setJdbcDriver(keyAsString(connection, "driver"));
                 dsi.setPassword(keyAsString(connection, "password"));

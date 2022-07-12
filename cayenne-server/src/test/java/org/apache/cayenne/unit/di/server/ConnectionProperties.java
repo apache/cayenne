@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,15 +45,15 @@ class ConnectionProperties {
 	private static final String URL_KEY = "jdbc.url";
 	private static final String DRIVER_KEY = "jdbc.driver";
 
-	private Map<String, DataSourceInfo> connectionInfos;
+	private Map<String, UnitDataSourceDescriptor> connectionDescriptors;
 
 	/**
 	 * Constructor for ConnectionProperties.
 	 */
 	ConnectionProperties(Map<String, String> props) {
-		connectionInfos = new HashMap<>();
+		connectionDescriptors = new HashMap<>();
 		for (String name : extractNames(props)) {
-			DataSourceInfo dsi = buildDataSourceInfo(
+			UnitDataSourceDescriptor dsi = buildDataSourceDescriptor(
 					props.entrySet().stream()
 							.filter(e -> e.getKey().startsWith(name + '.'))
 							.collect(Collectors.toMap(
@@ -64,27 +64,27 @@ class ConnectionProperties {
 									Map.Entry::getValue
 							))
 			);
-			connectionInfos.put(name, dsi);
+			connectionDescriptors.put(name, dsi);
 		}
 	}
 
 	int size() {
-		return connectionInfos.size();
+		return connectionDescriptors.size();
 	}
 
 	/**
 	 * Returns DataSourceInfo object for a symbolic name. If name does not match
 	 * an existing object, returns null.
 	 */
-	DataSourceInfo getConnection(String name) {
-		return connectionInfos.get(name);
+	UnitDataSourceDescriptor getConnection(String name) {
+		return connectionDescriptors.get(name);
 	}
 
 	/**
 	 * Creates a DataSourceInfo object from a set of properties.
 	 */
-	private DataSourceInfo buildDataSourceInfo(Map<String, String> props) {
-		DataSourceInfo dsi = new DataSourceInfo();
+	private UnitDataSourceDescriptor buildDataSourceDescriptor(Map<String, String> props) {
+		UnitDataSourceDescriptor dsi = new UnitDataSourceDescriptor();
 
 		String adapter = props.get(ADAPTER_KEY);
 

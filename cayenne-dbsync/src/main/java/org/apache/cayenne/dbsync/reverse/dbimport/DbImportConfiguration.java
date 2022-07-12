@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.filter.NameFilter;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -48,7 +48,7 @@ public class DbImportConfiguration {
 
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
 
-    private final DataSourceInfo dataSourceInfo;
+    private final DataSourceDescriptor dataSourceInfo;
     private final DbLoaderConfiguration dbLoaderConfiguration;
     private File targetDataMap;
     private String defaultPackage;
@@ -65,7 +65,7 @@ public class DbImportConfiguration {
     private File cayenneProject;
 
     public DbImportConfiguration() {
-        this.dataSourceInfo = new DataSourceInfo();
+        this.dataSourceInfo = new DataSourceDescriptor();
         this.dbLoaderConfiguration = new DbLoaderConfiguration();
     }
 
@@ -288,7 +288,7 @@ public class DbImportConfiguration {
         return res.toString();
     }
 
-    public DataSourceInfo getDataSourceInfo() {
+    public DataSourceDescriptor getDataSourceInfo() {
         return dataSourceInfo;
     }
 

@@ -58,6 +58,7 @@ import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
@@ -73,7 +74,6 @@ import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
@@ -104,8 +104,11 @@ import org.apache.cayenne.dba.sybase.SybasePkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
+import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.di.spi.DefaultScope;
@@ -125,12 +128,12 @@ import org.apache.cayenne.unit.H2UnitDbAdapter;
 import org.apache.cayenne.unit.HSQLDBUnitDbAdapter;
 import org.apache.cayenne.unit.IngresUnitDbAdapter;
 import org.apache.cayenne.unit.MySQLUnitDbAdapter;
-import org.apache.cayenne.unit.OpenBaseUnitDbAdapter;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
 import org.apache.cayenne.unit.SQLiteUnitDbAdapter;
 import org.apache.cayenne.unit.SybaseUnitDbAdapter;
+import org.apache.cayenne.unit.UnitDataSourceDescriptor;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
@@ -249,7 +252,15 @@ public class ServerCaseModule implements Module {
                 .put("oracle", OracleContainerProvider.class)
                 .put("db2", Db2ContainerProvider.class);
 
-        binder.bind(DataSourceInfo.class).toProvider(ServerCaseDataSourceInfoProvider.class);
+        binder.bind(UnitDataSourceDescriptor.class).toProvider(ServerCaseDataSourceDescriptorProvider.class);
+        binder.bind(DataSourceDescriptor.class).toProviderInstance(new Provider<>() {
+            @Inject
+            UnitDataSourceDescriptor unitDataSourceDescriptor;
+            @Override
+            public DataSourceDescriptor get() throws DIRuntimeException {
+                return unitDataSourceDescriptor;
+            }
+        });
         binder.bind(DataSourceFactory.class).to(ServerCaseSharedDataSourceFactory.class);
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(JdbcAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);

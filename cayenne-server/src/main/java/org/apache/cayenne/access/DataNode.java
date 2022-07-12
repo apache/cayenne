@@ -66,7 +66,6 @@ public class DataNode implements QueryEngine {
 	protected String name;
 	protected DataSource dataSource;
 	protected DbAdapter adapter;
-	protected String dataSourceLocation;
 	protected String dataSourceFactory;
 	protected EntityResolver entityResolver;
 	protected SchemaUpdateStrategy schemaUpdateStrategy;

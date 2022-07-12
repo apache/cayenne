@@ -38,8 +38,6 @@ public class DataNodeEditor extends CayenneController {
         
         this.view = new JTabbedPane();
         view.addTab("Main", new JScrollPane(new MainDataNodeEditor(parent,this).getView()));
-        view.addTab("Adapter", new AdapterEditor(parent).getView());
-        view.addTab("Password Encoder", new PasswordEncoderEditor(parent).getView()) ;
     }
 
     public Component getView() {

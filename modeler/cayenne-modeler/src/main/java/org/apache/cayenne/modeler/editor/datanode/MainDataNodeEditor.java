@@ -35,7 +35,6 @@ import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.event.DataNodeEvent;
-import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
@@ -55,12 +54,9 @@ import org.apache.cayenne.validation.ValidationException;
 public class MainDataNodeEditor extends CayenneController {
 
 	protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
-	public static final String DBCP_DATA_SOURCE_FACTORY = "org.apache.cayenne.configuration.server.DBCPDataSourceFactory";
 
 	private final static String[] STANDARD_DATA_SOURCE_FACTORIES = new String[] {
-	        XMLPoolingDataSourceFactory.class.getName(),
-			JNDIDataSourceFactory.class.getName(),
-            DBCP_DATA_SOURCE_FACTORY
+	        XMLPoolingDataSourceFactory.class.getName()
 	};
 
 	private final static String[] STANDARD_SCHEMA_UPDATE_STRATEGY = new String[] {
@@ -192,10 +188,11 @@ public class MainDataNodeEditor extends CayenneController {
 
 		builder.setDelegate(nodeChangeProcessor);
 
-		bindings = new ObjectBinding[3];
+		bindings = new ObjectBinding[4];
 		bindings[0] = builder.bindToTextField(view.getDataNodeName(), "nodeName");
 		bindings[1] = builder.bindToComboSelection(view.getFactories(), "factoryName");
 		bindings[2] = builder.bindToComboSelection(view.getSchemaUpdateStrategy(), "schemaUpdateStrategy");
+		bindings[3] = builder.bindToTextField(view.getCustomAdapter(), "adapterName");
 
 		// one way bindings
 		builder.bindToAction(view.getConfigLocalDataSources(), "dataSourceConfigAction()");
@@ -252,20 +249,13 @@ public class MainDataNodeEditor extends CayenneController {
 	protected void showDataSourceSubview(String factoryName) {
 
 		DataSourceEditor c = datasourceEditors.get(factoryName);
-
 		// create subview dynamically...
 		if (c == null) {
-
 			if (XMLPoolingDataSourceFactory.class.getName().equals(factoryName)) {
 				c = new JDBCDataSourceEditor((ProjectController) getParent(), nodeChangeProcessor);
-			} else if (JNDIDataSourceFactory.class.getName().equals(factoryName)) {
-				c = new JNDIDataSourceEditor((ProjectController) getParent(), nodeChangeProcessor);
-			} else if (DBCP_DATA_SOURCE_FACTORY.equals(factoryName)) {
-				c = new DBCP2DataSourceEditor((ProjectController) getParent(), nodeChangeProcessor);
 			} else {
 				// special case - no detail view, just show it and bail..
 				defaultSubeditor.setNode(node);
-				disabledTab("default");
 				view.getDataSourceDetailLayout().show(view.getDataSourceDetail(), "default");
 				return;
 			}
@@ -279,19 +269,15 @@ public class MainDataNodeEditor extends CayenneController {
 
 		// this will refresh subview...
 		c.setNode(node);
-		disabledTab(factoryName);
 		// display the right subview...
 		view.getDataSourceDetailLayout().show(view.getDataSourceDetail(), factoryName);
-
 	}
 
-	protected void disabledTab(String name) {
-
-		if (name.equals(STANDARD_DATA_SOURCE_FACTORIES[0])) {
-			tabbedPaneController.getTabComponent().setEnabledAt(2, true);
-		} else {
-			tabbedPaneController.getTabComponent().setEnabledAt(2, false);
-		}
+	public String getAdapterName() {
+		return node.getAdapterType();
 	}
 
+	public void setAdapterName(String name) {
+		node.setAdapterType(name);
+	}
 }

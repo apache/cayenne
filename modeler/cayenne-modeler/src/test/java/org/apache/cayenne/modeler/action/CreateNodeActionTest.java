@@ -19,10 +19,9 @@
 
 package org.apache.cayenne.modeler.action;
 
-
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.conn.DataSourceInfo;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -36,8 +35,7 @@ public class CreateNodeActionTest {
 
         try {
             action = new CreateNodeAction(null);
-        }
-        catch (InternalError e) {
+        } catch (InternalError e) {
             // caused by headless server running the tests ...
             // TODO: setup test environment DISPLAY variable
             return;
@@ -50,10 +48,9 @@ public class CreateNodeActionTest {
         assertNotNull(node);
         assertNotNull(node.getName());
 
-        DataSourceInfo ds1 = new DataSourceInfo();
+        DataSourceDescriptor ds1 = new DataSourceDescriptor();
         node.setDataSourceDescriptor(ds1);
 
-        assertSame("Project DataNode must not wrap the DataSource", ds1, node
-                .getDataSourceDescriptor());
+        assertSame("Project DataNode must not wrap the DataSource", ds1, node.getDataSourceDescriptor());
     }
 }

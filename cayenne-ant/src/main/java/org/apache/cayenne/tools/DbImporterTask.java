@@ -22,9 +22,9 @@ import javax.sql.DataSource;
 import java.io.File;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
-import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
@@ -184,7 +184,7 @@ public class DbImporterTask extends Task {
             error.append("The 'map' attribute must be set.\n");
         }
 
-        DataSourceInfo dataSourceInfo = config.getDataSourceInfo();
+        DataSourceDescriptor dataSourceInfo = config.getDataSourceInfo();
         if (dataSourceInfo.getJdbcDriver() == null) {
             error.append("The 'driver' attribute must be set.\n");
         }
