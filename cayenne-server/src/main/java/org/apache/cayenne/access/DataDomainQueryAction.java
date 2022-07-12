@@ -724,8 +724,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             mainRows.forEach(dataRow -> {
                 EmbeddableObject eo;
                 try {
-                    eo = (EmbeddableObject)embeddableClass.newInstance();
-                } catch (InstantiationException | IllegalAccessException e) {
+                    eo = (EmbeddableObject)embeddableClass.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
                     throw new CayenneRuntimeException("Unable to materialize embeddable '%s'", e, embeddable.getClassName());
                 }
                 dataRow.forEach(eo::writePropertyDirectly);
@@ -803,7 +803,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     try {
                         for(Object[] row : mainRows) {
                             DataRow dataRow = (DataRow)row[i];
-                            EmbeddableObject eo = (EmbeddableObject)embeddableClass.newInstance();
+                            EmbeddableObject eo = (EmbeddableObject)embeddableClass.getDeclaredConstructor().newInstance();
                             dataRow.forEach(eo::writePropertyDirectly);
                             row[i] = eo;
                         }
@@ -843,7 +843,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         private final Function<Object, ?> mapper;
         private final ObjectConversionStrategy<Object> parentStrategy;
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         MapperConversionStrategy(ObjectConversionStrategy<?> parentStrategy) {
             this.mapper = (Function)metadata.getResultMapper();
             this.parentStrategy = (ObjectConversionStrategy)parentStrategy;

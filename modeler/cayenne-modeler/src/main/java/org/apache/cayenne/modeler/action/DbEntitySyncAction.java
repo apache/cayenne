@@ -57,9 +57,7 @@ public class DbEntitySyncAction extends CayenneAction {
 
 	@Override
 	public KeyStroke getAcceleratorKey() {
-		return KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit
-				.getDefaultToolkit()
-				.getMenuShortcutKeyMask());
+		return KeyStroke.getKeyStroke(KeyEvent.VK_U, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
 	}
 
 	public String getIconName() {

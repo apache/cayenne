@@ -41,7 +41,7 @@ public class PropertyListParserTest {
     public void testListPlist() throws Exception {
         List list = new ArrayList();
         list.add("str");
-        list.add(new Integer(5));
+        list.add(5);
 
         Object plist = parser("(str, 5)").object("");
         assertTrue(list.equals(plist));
@@ -51,7 +51,7 @@ public class PropertyListParserTest {
     public void testMapPlist() throws Exception {
         Map map = new HashMap();
         map.put("key1", "val");
-        map.put("key2", new Integer(5));
+        map.put("key2", 5);
 
         Object plist = parser("{key1 = val; key2 = 5}").object("");
         assertTrue(map.equals(plist));
@@ -61,7 +61,7 @@ public class PropertyListParserTest {
     public void testStringWithQuotes() throws Exception {
         List list = new ArrayList();
         list.add("s\"tr");
-        list.add(new Integer(5));
+        list.add(5);
 
         Object plist = parser("(\"s\\\"tr\", 5)").object("");
         assertTrue(list.equals(plist));
@@ -71,11 +71,11 @@ public class PropertyListParserTest {
     public void testNestedPlist() throws Exception {
         Map map = new HashMap();
         map.put("key1", "val");
-        map.put("key2", new Integer(5));
+        map.put("key2", 5);
 
         List list = new ArrayList();
         list.add("str");
-        list.add(new Integer(5));
+        list.add(5);
         map.put("key3", list);
 
         assertEquals(map, parser("{key1 = val; key2 = 5; key3 = (str, 5)}").object(""));
@@ -85,7 +85,7 @@ public class PropertyListParserTest {
     public void testStringWithSpaces() throws Exception {
         List list = new ArrayList();
         list.add("s tr");
-        list.add(new Integer(5));
+        list.add(5);
 
         Object plist = parser("(\"s tr\", 5)").object("");
         assertTrue(list.equals(plist));
@@ -95,7 +95,7 @@ public class PropertyListParserTest {
     public void testStringWithBraces() throws Exception {
         List list = new ArrayList();
         list.add("s{t)r");
-        list.add(new Integer(5));
+        list.add(5);
 
         assertEquals(list, parser("(\"s{t)r\", 5)").object(""));
     }
@@ -104,7 +104,7 @@ public class PropertyListParserTest {
     public void testStringWithSlashes() throws Exception {
         List list = new ArrayList();
         list.add("s/t\\r");
-        list.add(new Integer(5));
+        list.add(5);
 
         assertEquals(list, parser("(\"s/t\\\\r\", 5)").object(""));
     }
@@ -113,7 +113,7 @@ public class PropertyListParserTest {
     public void testMapWithLastSemicolon() throws Exception {
         Map map = new HashMap();
         map.put("key1", "val");
-        map.put("key2", new Integer(5));
+        map.put("key2", 5);
 
         // last semicolon is optional
         assertEquals(map, parser("{key1 = val; key2 = 5; }").object(""));
@@ -144,7 +144,7 @@ public class PropertyListParserTest {
 
     @Test
     public void testInsideKVComments() throws Exception {
-        Map map = Collections.singletonMap("str", new Integer(5));
+        Map map = Collections.singletonMap("str", 5);
         assertEquals(map, parser("{\n str = // comment\n 5; }").object(""));
     }
 

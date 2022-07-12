@@ -27,12 +27,12 @@ public class ShortConverterTest {
 
     @Test
     public void testFromBytes_InByteRange() {
-        assertEquals(new Short((short) 6), ShortConverter.INSTANCE.fromBytes(new byte[]{6}));
+        assertEquals(Short.valueOf((short) 6), ShortConverter.INSTANCE.fromBytes(new byte[]{6}));
     }
 
     @Test
     public void testFromBytes_InShortRange() {
-        assertEquals(new Short((short) 1287), ShortConverter.INSTANCE.fromBytes(new byte[]{5, 7}));
+        assertEquals(Short.valueOf((short) 1287), ShortConverter.INSTANCE.fromBytes(new byte[]{5, 7}));
     }
 
     @Test(expected = IllegalArgumentException.class)

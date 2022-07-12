@@ -134,8 +134,8 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
         Object[] aggregates = (Object[]) data.get(0);
-        assertEquals(new Long(2), aggregates[0]);
-        assertEquals(new Long(2), aggregates[1]);
+        assertEquals(2L, aggregates[0]);
+        assertEquals(2L, aggregates[1]);
         assertEquals(5000d, ((BigDecimal) aggregates[2]).doubleValue(), 0.00001);
         assertEquals(8000d, ((BigDecimal) aggregates[3]).doubleValue(), 0.00001);
     }
@@ -155,7 +155,7 @@ public class DataContextEJBQLQueryIT extends ServerCase {
         assertEquals(1, data.size());
         assertTrue(data.get(0) instanceof Object[]);
         Object[] aggregates = (Object[]) data.get(0);
-        assertEquals(new Long(0), aggregates[0]);
+        assertEquals(0L, aggregates[0]);
         assertEquals(null, aggregates[1]);
         assertEquals(null, aggregates[2]);
     }

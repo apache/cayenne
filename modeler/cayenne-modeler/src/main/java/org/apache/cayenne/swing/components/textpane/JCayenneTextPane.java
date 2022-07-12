@@ -44,6 +44,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 
 public class JCayenneTextPane extends JPanel {
 
@@ -83,11 +84,11 @@ public class JCayenneTextPane extends JPanel {
     }
 
     public int getStartPositionInDocument() {
-        return pane.viewToModel(scrollPane.getViewport().getViewPosition());
+        return pane.viewToModel2D(scrollPane.getViewport().getViewPosition());
     }
 
     public int getEndPositionInDocument() {
-        return pane.viewToModel(new Point(scrollPane.getViewport().getViewPosition().x + pane.getWidth(),
+        return pane.viewToModel2D(new Point(scrollPane.getViewport().getViewPosition().x + pane.getWidth(),
                 scrollPane.getViewport().getViewPosition().y + pane.getHeight()));
     }
 
@@ -106,7 +107,7 @@ public class JCayenneTextPane extends JPanel {
         int y = 0;
 
         try {
-            Rectangle caretCoords = pane.modelToView(pos);
+            Rectangle2D caretCoords = pane.modelToView2D(pos);
             y = (int) caretCoords.getY();
         } catch (BadLocationException ex) {
             logObj.warn("Error: ", ex);
@@ -297,10 +298,10 @@ public class JCayenneTextPane extends JPanel {
         int starting_y = -1;
 
         try {
-            if (pane.modelToView(start) == null) {
+            if (pane.modelToView2D(start) == null) {
                 starting_y = -1;
             } else {
-                starting_y = pane.modelToView(start).y
+                starting_y = (int)pane.modelToView2D(start).getY()
                         - scrollPane.getViewport().getViewPosition().y
                         + fontHeight
                         - fontDesc;

@@ -25,8 +25,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- */
 public class DbKeyGeneratorTest {
 
     @Test
@@ -37,12 +35,12 @@ public class DbKeyGeneratorTest {
     }
 
     @Test
-    public void testSize() throws Exception {
+    public void testSize() {
         DbKeyGenerator generator = new DbKeyGenerator();
-        generator.setKeyCacheSize(new Integer(3));
-        assertEquals(new Integer(3), generator.getKeyCacheSize());
+        generator.setKeyCacheSize(3);
+        assertEquals(Integer.valueOf(3), generator.getKeyCacheSize());
 
-        generator.setKeyCacheSize(new Integer(-1));
+        generator.setKeyCacheSize(-1);
         assertNull(generator.getKeyCacheSize());
     }
 }

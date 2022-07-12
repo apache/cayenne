@@ -100,14 +100,13 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        Set<Object> ids = new HashSet<Object>();
-        Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            Object id = Cayenne.pkForObject((Persistent) it.next());
+        Set<Object> ids = new HashSet<>();
+        for (Object object : objects) {
+            Object id = Cayenne.pkForObject((Persistent) object);
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33004)));
+        assertTrue(ids.contains(33004));
     }
 
     @Test
@@ -124,14 +123,13 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         List<?> objects = context.performQuery(query);
         assertEquals(1, objects.size());
 
-        Set<Object> ids = new HashSet<Object>();
-        Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            Object id = Cayenne.pkForObject((Persistent) it.next());
+        Set<Object> ids = new HashSet<>();
+        for (Object object : objects) {
+            Object id = Cayenne.pkForObject((Persistent) object);
             ids.add(id);
         }
 
-        assertTrue(ids.contains(33001l));
+        assertTrue(ids.contains(33001L));
 
         assertTrue("" + objects.get(0), objects.get(0) instanceof Artist);
     }
@@ -151,15 +149,14 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
-        Set<Object> ids = new HashSet<Object>();
-        Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            Object id = Cayenne.pkForObject((Persistent) it.next());
+        Set<Object> ids = new HashSet<>();
+        for (Object object : objects) {
+            Object id = Cayenne.pkForObject((Persistent) object);
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33001)));
-        assertTrue(ids.contains(new Integer(33003)));
+        assertTrue(ids.contains(33001));
+        assertTrue(ids.contains(33003));
     }
 
     @Test
@@ -180,15 +177,14 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         List<?> objects = context.performQuery(query);
         assertEquals(2, objects.size());
 
-        Set<Object> ids = new HashSet<Object>();
-        Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            Object id = Cayenne.pkForObject((Persistent) it.next());
+        Set<Object> ids = new HashSet<>();
+        for (Object object : objects) {
+            Object id = Cayenne.pkForObject((Persistent) object);
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33003)));
-        assertTrue(ids.contains(new Integer(33004)));
+        assertTrue(ids.contains(33003));
+        assertTrue(ids.contains(33004));
     }
 
     @Test
@@ -209,16 +205,15 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         List<?> objects = context.performQuery(query);
         assertEquals(3, objects.size());
 
-        Set<Object> ids = new HashSet<Object>();
-        Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            Object id = Cayenne.pkForObject((Persistent) it.next());
+        Set<Object> ids = new HashSet<>();
+        for (Object object : objects) {
+            Object id = Cayenne.pkForObject((Persistent) object);
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33002)));
-        assertTrue(ids.contains(new Integer(33003)));
-        assertTrue(ids.contains(new Integer(33004)));
+        assertTrue(ids.contains(33002));
+        assertTrue(ids.contains(33003));
+        assertTrue(ids.contains(33004));
     }
 
     @Test
@@ -239,15 +234,14 @@ public class DataContextEJBQLSubqueryIT extends ServerCase {
         List<?> objects = context.performQuery(query);
         assertEquals(3, objects.size());
 
-        Set<Object> ids = new HashSet<Object>();
-        Iterator<?> it = objects.iterator();
-        while (it.hasNext()) {
-            Object id = Cayenne.pkForObject((Persistent) it.next());
+        Set<Object> ids = new HashSet<>();
+        for (Object object : objects) {
+            Object id = Cayenne.pkForObject((Persistent) object);
             ids.add(id);
         }
 
-        assertTrue(ids.contains(new Integer(33002)));
-        assertTrue(ids.contains(new Integer(33003)));
-        assertTrue(ids.contains(new Integer(33004)));
+        assertTrue(ids.contains(33002));
+        assertTrue(ids.contains(33003));
+        assertTrue(ids.contains(33004));
     }
 }

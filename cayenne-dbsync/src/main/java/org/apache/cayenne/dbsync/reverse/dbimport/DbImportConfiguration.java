@@ -191,7 +191,7 @@ public class DbImportConfiguration {
         if (namingStrategy != null && !namingStrategy.equals(DefaultObjectNameGenerator.class.getName())) {
             try {
                 Class<?> generatorClass = Thread.currentThread().getContextClassLoader().loadClass(namingStrategy);
-                return (ObjectNameGenerator) generatorClass.newInstance();
+                return (ObjectNameGenerator) generatorClass.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 throw new CayenneRuntimeException("Error creating name generator: " + namingStrategy, e);
             }

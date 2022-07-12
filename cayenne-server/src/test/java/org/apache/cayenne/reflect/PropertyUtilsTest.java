@@ -218,7 +218,7 @@ public class PropertyUtilsTest {
 
 		// String to number
 		PropertyUtils.setProperty(o1, "integerField", "25");
-		assertEquals(new Integer(25), o1.getIntegerField());
+		assertEquals(Integer.valueOf(25), o1.getIntegerField());
 
 		// string to byte primitive
 		PropertyUtils.setProperty(o1, "byteField", "2");
@@ -281,7 +281,7 @@ public class PropertyUtilsTest {
 		Converter<Date> oldConverter = ConverterFactory.factory.getConverter(Date.class);
 
 		try {
-			ConverterFactory.addConverter(Date.class, new Converter<Date>() {
+			ConverterFactory.addConverter(Date.class, new Converter<>() {
 				@Override
 				protected Date convert(Object value, Class<Date> type) {
 					if (value == null)
@@ -306,7 +306,7 @@ public class PropertyUtilsTest {
 			// String to date
 			PropertyUtils.setProperty(o1, "dateField", "2013-08-01");
 
-			Calendar cal = new GregorianCalendar(2013, 7, 1, 0, 0, 0);
+			Calendar cal = new GregorianCalendar(2013, Calendar.AUGUST, 1, 0, 0, 0);
 			assertEquals(cal.getTime(), o1.getDateField());
 		} finally {
 
@@ -325,7 +325,7 @@ public class PropertyUtilsTest {
 
 		o1.setBooleanField(true);
 		PropertyUtils.setProperty(o1, "booleanField", null);
-		assertEquals(false, o1.isBooleanField());
+		assertFalse(o1.isBooleanField());
 
 		o1.setByteField((byte) 2);
 		PropertyUtils.setProperty(o1, "byteField", null);

@@ -99,7 +99,7 @@ public class DataContextObjectTrackingIT extends ServerCase {
     public void testUnregisterObject() {
 
         DataRow row = new DataRow(10);
-        row.put("ARTIST_ID", new Integer(1));
+        row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
         DataObject obj = context.objectFromDataRow(Artist.class, row);
@@ -122,7 +122,7 @@ public class DataContextObjectTrackingIT extends ServerCase {
     public void testInvalidateObjects_Vararg() {
 
         DataRow row = new DataRow(10);
-        row.put("ARTIST_ID", new Integer(1));
+        row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
         DataObject obj = context.objectFromDataRow(Artist.class, row);

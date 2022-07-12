@@ -94,7 +94,7 @@ public class EJBQLQueryCountIT extends ServerCase {
 
 		EJBQLQuery query = new EJBQLQuery("SELECT COUNT(DISTINCT p.toArtist) FROM Painting p");
 		// this should be a count of artists that have paintings
-		assertEquals(Collections.singletonList(2l), context.performQuery(query));
+		assertEquals(Collections.singletonList(2L), context.performQuery(query));
 	}
 	
 	@Test

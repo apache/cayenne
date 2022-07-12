@@ -416,7 +416,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
         // TODO: with in-memory Derby, it is easier to just stop and delete the database.. again see bootique-jdbc-test
 
-        Class.forName(dataSource.getDriver()).newInstance();
+        Class.forName(dataSource.getDriver()).getDeclaredConstructor().newInstance();
 
         try (Connection connection = DriverManager.getConnection(dataSource.getUrl())) {
 
@@ -497,7 +497,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
 
         // TODO: refactor to common DB management code... E.g. bootique-jdbc-test?
 
-        Class.forName(dataSource.getDriver()).newInstance();
+        Class.forName(dataSource.getDriver()).getDeclaredConstructor().newInstance();
 
         try (Connection connection = DriverManager.getConnection(dataSource.getUrl())) {
             try (Statement stmt = connection.createStatement();) {

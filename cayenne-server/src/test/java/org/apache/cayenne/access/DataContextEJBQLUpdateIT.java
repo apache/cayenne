@@ -83,7 +83,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(2l), notUpdated);
+        assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX' WHERE p.paintingTitle = 'P1'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -96,7 +96,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(1, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(1l), notUpdated);
+        assertEquals(1L, notUpdated);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
                 + "WHERE p.paintingTitle is NULL or p.paintingTitle <> 'XX'");
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(2l), notUpdated);
+        assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX'";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -120,7 +120,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(2, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(0l), notUpdated);
+        assertEquals(0L, notUpdated);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
                 + "WHERE p.estimatedPrice is not null");
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(2l), notUpdated);
+        assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = NULL";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -144,7 +144,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(2, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(0l), notUpdated);
+        assertEquals(0L, notUpdated);
     }
 
     // This fails until we implement arithmetic exps
@@ -157,7 +157,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
     // + "WHERE p.paintingTitle is NULL or p.estimatedPrice <= 5000");
     //
     // Object notUpdated = Cayenne.objectForQuery(context, check);
-    // assertEquals(new Long(2l), notUpdated);
+    // assertEquals(2L, notUpdated);
     //
     // String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = p.estimatedPrice * 2";
     // EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -170,7 +170,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
     // assertEquals(2, count[0]);
     //
     // notUpdated = Cayenne.objectForQuery(context, check);
-    // assertEquals(new Long(0l), notUpdated);
+    // assertEquals(0L, notUpdated);
     // }
 
     @Test
@@ -181,7 +181,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1");
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(2l), notUpdated);
+        assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.paintingTitle = 'XX', p.estimatedPrice = 1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -194,7 +194,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(2, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(0l), notUpdated);
+        assertEquals(0L, notUpdated);
     }
 
     @Test
@@ -205,7 +205,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
                 + "WHERE p.estimatedPrice is NULL or p.estimatedPrice <> 1.1");
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(2l), notUpdated);
+        assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.estimatedPrice = 1.1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -218,7 +218,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(2, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(0l), notUpdated);
+        assertEquals(0L, notUpdated);
     }
 
     @Test
@@ -232,7 +232,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         check.setParameter("artist", object);
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(2l), notUpdated);
+        assertEquals(2L, notUpdated);
 
         String ejbql = "UPDATE Painting AS p SET p.toArtist = :artist";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -246,7 +246,7 @@ public class DataContextEJBQLUpdateIT extends ServerCase {
         assertEquals(2, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(0l), notUpdated);
+        assertEquals(0L, notUpdated);
     }
 
 }

@@ -140,15 +140,15 @@ public class DataContextEJBQLJoinsIT extends ServerCase {
 
 		List<?> artists = context.performQuery(new EJBQLQuery(ejbql));
 		assertEquals(2, artists.size());
-		Set<Object> ids = new HashSet<Object>(2);
+		Set<Object> ids = new HashSet<>(2);
 		Iterator<?> it = artists.iterator();
 		while (it.hasNext()) {
 			Artist a = (Artist) it.next();
 			ids.add(Cayenne.pkForObject(a));
 		}
 
-		assertTrue(ids.contains(33001l));
-		assertTrue(ids.contains(33005l));
+		assertTrue(ids.contains(33001L));
+		assertTrue(ids.contains(33005L));
 	}
 
 	@Test

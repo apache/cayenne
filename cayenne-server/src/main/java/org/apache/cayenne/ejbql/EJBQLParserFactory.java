@@ -44,7 +44,7 @@ public class EJBQLParserFactory {
 
     public static EJBQLParser getParser() throws EJBQLException {
         try {
-            return (EJBQLParser) getParserClass().newInstance();
+            return (EJBQLParser) getParserClass().getDeclaredConstructor().newInstance();
         }
         catch (Exception e) {
             throw new EJBQLException("Error creating EJBQL parser", e);

@@ -32,7 +32,7 @@ public class ExpressionEqualsTest {
     public void testEquals3() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("aa", "3");
         Expression e2 = ExpressionFactory.matchExp("aa", "3");
-        Expression e3 = ExpressionFactory.matchExp("aa", new Integer(3));
+        Expression e3 = ExpressionFactory.matchExp("aa", 3);
         assertEquals(e1, e2);
         assertFalse(e2.equals(e3));
     }
@@ -43,7 +43,7 @@ public class ExpressionEqualsTest {
                 ExpressionFactory.matchExp("aa", "4"));
         Expression e2 = ExpressionFactory.matchExp("aa", "3").andExp(
                 ExpressionFactory.matchExp("aa", "4"));
-        Expression e3 = ExpressionFactory.matchExp("aa", new Integer(3));
+        Expression e3 = ExpressionFactory.matchExp("aa", 3);
 
         assertEquals(e1, e2);
         assertFalse(e2.equals(e3));

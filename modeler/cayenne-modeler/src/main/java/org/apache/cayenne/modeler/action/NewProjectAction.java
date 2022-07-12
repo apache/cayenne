@@ -47,9 +47,7 @@ public class NewProjectAction extends ProjectAction {
     }
 
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit
-                .getDefaultToolkit()
-                .getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
     }
 
     public void performAction(ActionEvent e) {

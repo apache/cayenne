@@ -239,8 +239,7 @@ public class OverrideEmbeddableAttributeTableModel extends CayenneTableModel {
                         attributeComboForRow,
                         true);
 
-                cellEditor.setEditorAt(new Integer(i), new DefaultCellEditor(
-                        comboBoxForRow));
+                cellEditor.setEditorAt(i, new DefaultCellEditor(comboBoxForRow));
                 BoxCellRenderer renderer = new BoxCellRenderer();
                 renderer.setNotActiveColumn(attributeComboForRow.size() - 1);
                 comboBoxForRow.setRenderer(renderer);

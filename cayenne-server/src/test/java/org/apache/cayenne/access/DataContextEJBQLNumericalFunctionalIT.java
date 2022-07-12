@@ -132,7 +132,7 @@ public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
                 + "WHERE p.booleanColumn = true");
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(1l), notUpdated);
+        assertEquals(1L, notUpdated);
 
         String ejbql = "UPDATE BooleanTestEntity AS p SET p.booleanColumn = true";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -145,6 +145,6 @@ public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
         assertEquals(3, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(3l), notUpdated);
+        assertEquals(3L, notUpdated);
     }
 }

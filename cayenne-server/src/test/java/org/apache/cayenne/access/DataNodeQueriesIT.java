@@ -90,7 +90,7 @@ public class DataNodeQueriesIT extends ServerCase {
         SQLTemplate query = new SQLTemplate(Object.class, template);
 
         Map<String, Object> bindings = new HashMap<>();
-        bindings.put("id", 1l);
+        bindings.put("id", 1L);
         bindings.put("name", "a1");
         bindings.put("dob", new Date(System.currentTimeMillis()));
         query.setParameters(bindings);
@@ -103,7 +103,7 @@ public class DataNodeQueriesIT extends ServerCase {
         // check the data
 
         assertEquals(1, tArtist.getRowCount());
-        assertEquals(1l, tArtist.getLong("ARTIST_ID"));
+        assertEquals(1L, tArtist.getLong("ARTIST_ID"));
         assertEquals("a1", tArtist.getString("ARTIST_NAME").trim());
     }
 

@@ -54,7 +54,7 @@ public class ResultDirectiveIT extends ServerCase {
 
 	@Before
 	public void before() throws SQLException {
-		new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME").insert(1l, "ArtistToTestResult");
+		new TableHelper(dbHelper, "ARTIST").setColumns("ARTIST_ID", "ARTIST_NAME").insert(1L, "ArtistToTestResult");
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ResultDirectiveIT extends ServerCase {
 		String sql = "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
 
-		assertEquals(1l, selectResult.get("ARTIST_ID"));
+		assertEquals(1L, selectResult.get("ARTIST_ID"));
 		assertEquals("ArtistToTestResult", selectResult.get("ARTIST_NAME"));
 	}
 
@@ -74,7 +74,7 @@ public class ResultDirectiveIT extends ServerCase {
 
 		// TODO: is that correct to use Long (coming from DbAttribute) type for
 		// ARTIST_ID instead of Integer (coming from #result(..))?
-		assertEquals(1l, selectResult.get("ARTIST_ID"));
+		assertEquals(1L, selectResult.get("ARTIST_ID"));
 		assertEquals("ArtistToTestResult", selectResult.get("ARTIST_NAME").toString().trim());
 	}
 
@@ -83,7 +83,7 @@ public class ResultDirectiveIT extends ServerCase {
 		String sql = "SELECT ARTIST_ID, #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
 
-		assertEquals(1l, selectResult.get("ARTIST_ID"));
+		assertEquals(1L, selectResult.get("ARTIST_ID"));
 		assertEquals("ArtistToTestResult", selectResult.get("ARTIST_NAME").toString().trim());
 	}
 
@@ -92,7 +92,7 @@ public class ResultDirectiveIT extends ServerCase {
 		String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer'), ARTIST_NAME FROM ARTIST";
 		Map<String, Object> selectResult = selectForQuery(sql);
 
-		assertEquals(1l, selectResult.get("ARTIST_ID"));
+		assertEquals(1L, selectResult.get("ARTIST_ID"));
 		assertEquals("ArtistToTestResult", selectResult.get("ARTIST_NAME"));
 	}
 

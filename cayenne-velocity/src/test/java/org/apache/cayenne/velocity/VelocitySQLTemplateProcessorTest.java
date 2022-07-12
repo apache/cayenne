@@ -162,7 +162,7 @@ public class VelocitySQLTemplateProcessorTest {
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 = ?", compiled.getSql());
 		assertEquals(1, compiled.getBindings().length);
-		assertBindingValue(new Integer(5), compiled.getBindings()[0]);
+		assertBindingValue(5, compiled.getBindings()[0]);
 	}
 
 	@Test
@@ -184,7 +184,7 @@ public class VelocitySQLTemplateProcessorTest {
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 <> ? AND COLUMN2 <> ?", compiled.getSql());
 		assertEquals(2, compiled.getBindings().length);
-		assertBindingValue(new Integer(3), compiled.getBindings()[0]);
+		assertBindingValue(3, compiled.getBindings()[0]);
 		assertBindingValue("aaa", compiled.getBindings()[1]);
 	}
 

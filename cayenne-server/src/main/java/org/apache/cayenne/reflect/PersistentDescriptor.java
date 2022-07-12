@@ -337,7 +337,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 		}
 
 		try {
-			return objectClass.newInstance();
+			return objectClass.getDeclaredConstructor().newInstance();
 		} catch (Throwable e) {
 			throw new CayenneRuntimeException("Error creating object of class '" + objectClass.getName() + "'", e);
 		}

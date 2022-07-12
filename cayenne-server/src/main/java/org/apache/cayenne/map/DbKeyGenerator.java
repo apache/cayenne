@@ -121,7 +121,7 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable, Seriali
 
     public void setKeyCacheSize(Integer keyCacheSize) {
         this.keyCacheSize = keyCacheSize;
-        if (this.keyCacheSize != null && this.keyCacheSize.intValue() < 1) {
+        if (this.keyCacheSize != null && this.keyCacheSize < 1) {
             this.keyCacheSize = null;
         }
     }

@@ -52,7 +52,7 @@ public class EJBQLQueryNumericIT extends ServerCase {
     }
 
     protected void createBigIntegerEntitiesDataSet() throws Exception {
-        tBigIntegerEntity.insert(44001, new Long(744073709551715l));
+        tBigIntegerEntity.insert(44001, 744073709551715L);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class EJBQLQueryNumericIT extends ServerCase {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
         EJBQLQuery query = new EJBQLQuery(ejbql);
-        query.setParameter(1,744073709551615l);
+        query.setParameter(1,744073709551615L);
         List<BigIntegerEntity> result = context.performQuery(query);
         assertEquals(1, result.size());
     }

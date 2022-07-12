@@ -75,7 +75,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
         Object[] data = table1.select();
         assertEquals(59, data[3]);
-        assertEquals(new Integer(61), IntegerConverter.INSTANCE.fromBytes(CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[4], runtime)));
+        assertEquals(Integer.valueOf(61), IntegerConverter.INSTANCE.fromBytes(CryptoUnitUtils.decrypt_AES_CBC((byte[]) data[4], runtime)));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
     }
 
     @Test
-    public void test_SelectQuery() throws SQLException {
+    public void test_SelectQuery() {
 
         ObjectContext context = runtime.newContext();
 
@@ -142,7 +142,7 @@ public class Runtime_AES128_IT extends Runtime_AES128_Base {
 
 
     @Test
-    public void test_SelectNumeric() throws SQLException {
+    public void test_SelectNumeric() {
 
         ObjectContext context = runtime.newContext();
 

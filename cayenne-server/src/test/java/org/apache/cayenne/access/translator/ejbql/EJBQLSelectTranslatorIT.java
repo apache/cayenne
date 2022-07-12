@@ -258,8 +258,8 @@ public class EJBQLSelectTranslatorIT extends ServerCase {
     @Test
     public void testSelectPositionalParameters() {
         Map<Integer, Object> params = new HashMap<Integer, Object>();
-        params.put(new Integer(1), "X");
-        params.put(new Integer(2), "Y");
+        params.put(1, "X");
+        params.put(2, "Y");
         SQLTemplate query = translateSelect("select a from Artist a where a.artistName = ?1 or a.artistName = ?2",
                 params);
         String sql = query.getDefaultTemplate();

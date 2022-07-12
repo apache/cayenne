@@ -76,7 +76,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         createArtist(1000.0);
 
         ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE);
-        q.addParameter("paintingPrice", new Integer(3000));
+        q.addParameter("paintingPrice", 3000);
 
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
@@ -205,7 +205,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         Procedure proc = context.getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
         ProcedureQuery q = new ProcedureQuery(proc);
         q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", new Integer(3000));
+        q.addParameter("paintingPrice", 3000);
 
         List<?> artists = runProcedureSelect(q);
 
@@ -234,7 +234,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
 
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", new Integer(3000));
+        q.addParameter("paintingPrice", 3000);
         q.setFetchLimit(2);
         List<?> artists = runProcedureSelect(q);
 
@@ -254,7 +254,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
 
         ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", new Integer(3000));
+        q.addParameter("paintingPrice", 3000);
         q.setFetchOffset(2);
         List<?> artists = runProcedureSelect(q);
 
@@ -296,7 +296,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         }
 
         ProcedureQuery q = new ProcedureQuery(OUT_STORED_PROCEDURE);
-        q.addParameter("in_param", new Integer(20));
+        q.addParameter("in_param", 20);
 
         List<?> rows = runProcedureSelect(q);
 
@@ -354,7 +354,7 @@ public class DataContextProcedureQueryIT extends ServerCase {
         ProcedureQuery q = new ProcedureQuery(proc);
         q.setFetchingDataRows(true);
         q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", new Integer(3000));
+        q.addParameter("paintingPrice", 3000);
 
         // TESTING THIS ***
         // A.ARTIST_ID, A.DATE_OF_BIRTH, A.ARTIST_NAME

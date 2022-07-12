@@ -61,7 +61,7 @@ public class AbstractQueryTest {
         AbstractQuery query = new MockAbstractQuery();
         assertNull(query.getRoot());
         try {
-            query.setRoot(new Integer(1));
+            query.setRoot(1);
             fail("Should not be able to set the root to an Integer");
         }
         catch (IllegalArgumentException e) {

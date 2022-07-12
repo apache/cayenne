@@ -105,7 +105,7 @@ public class EJBQLQueryIT extends ServerCase {
         Map<Integer, Object> parameters1 = query.getPositionalParameters();
         assertEquals(1, parameters.size());
         assertEquals(1, parameters1.size());
-        assertEquals("X", parameters1.get(new Integer(1)));
+        assertEquals("X", parameters1.get(1));
         assertEquals("Y", parameters.get("name"));
     }
 

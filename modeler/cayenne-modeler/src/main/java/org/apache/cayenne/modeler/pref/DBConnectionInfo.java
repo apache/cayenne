@@ -223,7 +223,7 @@ public class DBConnectionInfo extends CayennePreference {
 		Driver driver;
 
 		try {
-			driver = classLoader.loadClass(Driver.class, getJdbcDriver()).newInstance();
+			driver = classLoader.loadClass(Driver.class, getJdbcDriver()).getDeclaredConstructor().newInstance();
 		} catch (Throwable th) {
 			th = Util.unwindException(th);
 			throw new SQLException("Driver load error: " + th.getLocalizedMessage());

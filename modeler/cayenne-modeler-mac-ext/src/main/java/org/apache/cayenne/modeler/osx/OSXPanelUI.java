@@ -44,7 +44,7 @@ public class OSXPanelUI extends BasicPanelUI {
             @SuppressWarnings("unchecked")
             Class<? extends  BasicPanelUI> delegateClass = (Class<? extends  BasicPanelUI>)
                     Class.forName("com.apple.laf.AquaPanelUI");
-            delegate = delegateClass.newInstance();
+            delegate = delegateClass.getDeclaredConstructor().newInstance();
         } catch (Exception ex) {
             delegate = new BasicPanelUI();
         }

@@ -78,7 +78,7 @@ public class FieldAccessorTest {
         // primitive int .. write non-null
         new FieldAccessor(TstFields.class, "intField", Integer.TYPE).setValue(
                 object,
-                new Integer(6));
+                6);
         assertEquals(6, object.intField);
 
         // primitive int .. write null

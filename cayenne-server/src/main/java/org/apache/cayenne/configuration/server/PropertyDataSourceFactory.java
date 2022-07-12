@@ -71,7 +71,7 @@ public class PropertyDataSourceFactory implements DataSourceFactory {
 				UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 		String validationQuery = properties.get(Constants.JDBC_VALIDATION_QUERY_PROPERTY);
 
-		Driver driver = (Driver)objectFactory.getJavaClass(driverClass).newInstance();
+		Driver driver = (Driver)objectFactory.getJavaClass(driverClass).getDeclaredConstructor().newInstance();
 		return DataSourceBuilder.url(url).driver(driver).userName(username).password(password)
 				.pool(minConnections, maxConnections).maxQueueWaitTime(maxQueueWaitTime)
 				.validationQuery(validationQuery).build();

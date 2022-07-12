@@ -91,11 +91,10 @@ public class NameGeneratorPreferences {
         getPreference().put(STRATEGIES_PREFERENCE, res.toString());
     }
 
-    public ObjectNameGenerator createNamingStrategy(Application application)
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public ObjectNameGenerator createNamingStrategy(Application application) throws Exception {
 
         return application.getClassLoadingService()
-                .loadClass(ObjectNameGenerator.class, getLastUsedStrategies().get(0)).newInstance();
+                .loadClass(ObjectNameGenerator.class, getLastUsedStrategies().get(0)).getDeclaredConstructor().newInstance();
     }
 
     public static ObjectNameGenerator defaultNameGenerator() {

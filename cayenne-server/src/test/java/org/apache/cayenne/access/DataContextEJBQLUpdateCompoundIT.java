@@ -85,7 +85,7 @@ public class DataContextEJBQLUpdateCompoundIT extends ServerCase {
         check.setParameter("param", object);
 
         Object notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(1l), notUpdated);
+        assertEquals(1L, notUpdated);
 
         String ejbql = "UPDATE CompoundFkTestEntity e SET e.toCompoundPk = :param";
         EJBQLQuery query = new EJBQLQuery(ejbql);
@@ -99,7 +99,7 @@ public class DataContextEJBQLUpdateCompoundIT extends ServerCase {
         assertEquals(2, count[0]);
 
         notUpdated = Cayenne.objectForQuery(context, check);
-        assertEquals(new Long(0l), notUpdated);
+        assertEquals(0L, notUpdated);
     }
 
 }

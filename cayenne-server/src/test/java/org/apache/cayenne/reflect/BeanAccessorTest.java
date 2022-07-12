@@ -73,9 +73,9 @@ public class BeanAccessorTest {
         TstJavaBean o1 = new TstJavaBean();
 
         assertEquals(0, o1.getIntField());
-        accessor.setValue(o1, new Integer(5));
+        accessor.setValue(o1, 5);
         assertEquals(5, o1.getIntField());
-        assertEquals(new Integer(5), accessor.getValue(o1));
+        assertEquals(5, accessor.getValue(o1));
 
         accessor.setValue(o1, null);
         assertEquals("Incorrectly set null default", 0, o1.getIntField());

@@ -40,7 +40,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -154,9 +153,8 @@ public class DbImporterTaskTest {
         }
     }
 
-    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws ClassNotFoundException,
-            IllegalAccessException, InstantiationException, SQLException {
-        Class.forName(dbImportConfiguration.getDriver()).newInstance();
+    private void cleanDb(DbImportConfiguration dbImportConfiguration) throws Exception {
+        Class.forName(dbImportConfiguration.getDriver()).getDeclaredConstructor().newInstance();
         // Get a connection
         Connection connection = DriverManager.getConnection(dbImportConfiguration.getUrl());
         Statement stmt = connection.createStatement();
@@ -204,14 +202,14 @@ public class DbImporterTaskTest {
         URL sqlUrl = ResourceUtil.getResource(getClass(), sqlFile + ".sql");
         assertNotNull(sqlUrl);
 
-        Class.forName(dbImportConfiguration.getDriver()).newInstance();
+        Class.forName(dbImportConfiguration.getDriver()).getDeclaredConstructor().newInstance();
 
-        try (Connection c = DriverManager.getConnection(dbImportConfiguration.getUrl());) {
+        try (Connection c = DriverManager.getConnection(dbImportConfiguration.getUrl())) {
 
             // TODO: move parsing SQL files to a common utility (DBHelper?) .
             // Also see UnitDbApater.executeDDL - this should use the same utility
 
-            try (Statement stmt = c.createStatement();) {
+            try (Statement stmt = c.createStatement()) {
                 for (String sql : SQLReader.statements(sqlUrl, ";")) {
 
                     // skip comments

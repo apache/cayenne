@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.parser;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -60,7 +61,7 @@ public class ASTDivide extends EvaluatedMathNode {
 
 	@Override
 	protected BigDecimal op(BigDecimal result, BigDecimal arg) {
-		return result.divide(arg, BigDecimal.ROUND_HALF_EVEN);
+		return result.divide(arg, RoundingMode.HALF_EVEN);
 	}
 
 	/**

@@ -253,7 +253,7 @@ public class DbGenerator {
 			return;
 		}
 
-		Driver driver = (Driver) Class.forName(dsi.getJdbcDriver()).newInstance();
+		Driver driver = (Driver) Class.forName(dsi.getJdbcDriver()).getDeclaredConstructor().newInstance();
 		DataSource dataSource = new DriverDataSource(driver, dsi.getDataSourceUrl(), dsi.getUserName(),
 				dsi.getPassword());
 

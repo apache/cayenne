@@ -128,11 +128,11 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
 
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
-        assertEquals(new Long(3), row0[1]);
+        assertEquals(3L, row0[1]);
 
         Object[] row1 = (Object[]) data.get(1);
         assertEquals(2d, ((BigDecimal) row1[0]).doubleValue(), 0.00001d);
-        assertEquals(new Long(2l), row1[1]);
+        assertEquals(2L, row1[1]);
     }
 
     @Test
@@ -151,17 +151,17 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
         assertEquals("PX", row0[1]);
-        assertEquals(new Long(1), row0[2]);
+        assertEquals(1L, row0[2]);
 
         Object[] row1 = (Object[]) data.get(1);
         assertEquals(1d, ((BigDecimal) row1[0]).doubleValue(), 0.00001d);
         assertEquals("PZ", row1[1]);
-        assertEquals(new Long(2), row1[2]);
+        assertEquals(2L, row1[2]);
 
         Object[] row2 = (Object[]) data.get(2);
         assertEquals(2d, ((BigDecimal) row2[0]).doubleValue(), 0.00001d);
         assertEquals("PY", row2[1]);
-        assertEquals(new Long(2), row2[2]);
+        assertEquals(2L, row2[2]);
     }
 
     @Test
@@ -180,7 +180,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         assertTrue(data.get(0) instanceof Object[]);
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(3, row0.length);
-        assertEquals(new Long(1), row0[0]);
+        assertEquals(1L, row0[0]);
         assertEquals("AA1", row0[2]);
         assertTrue(row0[1] instanceof Artist);
     }
@@ -202,7 +202,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
         //
         // for(int i = 0; i < data.size(); i++) {
         // Object[] row = (Object[]) data.get(i);
-        // assertEquals(new Long(1), row[0]);
+        // assertEquals(1L, row[0]);
         // }
     }
 
@@ -221,7 +221,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
 
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(2d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
-        assertEquals(new Long(2), row0[1]);
+        assertEquals(2L, row0[1]);
     }
 
     @Test
@@ -239,7 +239,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
 
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
-        assertEquals(new Long(3l), row0[1]);
+        assertEquals(3L, row0[1]);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class DataContextEJBQLGroupByHavingIT extends ServerCase {
 
         Object[] row0 = (Object[]) data.get(0);
         assertEquals(1d, ((BigDecimal) row0[0]).doubleValue(), 0.00001d);
-        assertEquals(new Long(3l), row0[1]);
+        assertEquals(3L, row0[1]);
     }
 
     @Test

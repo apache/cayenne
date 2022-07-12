@@ -82,7 +82,7 @@ public class EnumTypeTest {
         
         MockResultSet rs = new MockResultSet("Test");
         rs.addColumn("Enum");
-        rs.addRow(new Object[] {new Integer(2)});
+        rs.addRow(new Object[] {2});
         rs.next();
         
         Object o = type.materializeObject(rs, 1, Types.NUMERIC);
@@ -108,7 +108,7 @@ public class EnumTypeTest {
         
         MockResultSet rs = new MockResultSet("Test");
         rs.addColumn("Enum");
-        rs.addRow(new Object[] {new Integer(2)});
+        rs.addRow(new Object[] {2});
         rs.next();
         
         Object o = type.materializeObject(rs, 1, Types.NUMERIC);

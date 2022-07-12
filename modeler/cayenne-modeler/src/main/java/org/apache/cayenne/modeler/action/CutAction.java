@@ -58,9 +58,7 @@ public class CutAction extends CayenneAction {
 
     @Override
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit
-                .getDefaultToolkit()
-                .getMenuShortcutKeyMask());
+        return KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
     }
 
     /**

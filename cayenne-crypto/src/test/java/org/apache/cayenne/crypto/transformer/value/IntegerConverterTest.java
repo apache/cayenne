@@ -28,18 +28,18 @@ public class IntegerConverterTest {
 
     @Test
     public void testFromBytes_InByteRange() {
-        assertEquals(new Integer(6), new IntegerConverter().fromBytes(new byte[]{6}));
+        assertEquals(Integer.valueOf(6), new IntegerConverter().fromBytes(new byte[]{6}));
     }
 
     @Test
     public void testFromBytes_InShortRange() {
-        assertEquals(new Integer(1542), new IntegerConverter().fromBytes(new byte[]{6, 6}));
+        assertEquals(Integer.valueOf(1542), new IntegerConverter().fromBytes(new byte[]{6, 6}));
     }
 
     @Test
     public void testFromBytes_InIntRange() {
         // 16 + 256*7 + 256*256* 6
-        assertEquals(new Integer(395024), new IntegerConverter().fromBytes(new byte[]{0, 6, 7, 16}));
+        assertEquals(Integer.valueOf(395024), new IntegerConverter().fromBytes(new byte[]{0, 6, 7, 16}));
     }
 
     @Test(expected = IllegalArgumentException.class)

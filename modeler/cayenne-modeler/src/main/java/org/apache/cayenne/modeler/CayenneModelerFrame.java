@@ -560,7 +560,7 @@ public class CayenneModelerFrame extends JFrame implements DataNodeDisplayListen
 
             Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
                 if (event instanceof KeyEvent) {
-                    if (((KeyEvent) event).getModifiers() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()
+                    if (((KeyEvent) event).getModifiersEx() == Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()
                             && ((KeyEvent) event).getKeyCode() == KeyEvent.VK_F) {
                         findField.requestFocus();
                     }

@@ -98,7 +98,7 @@ public class DataContextObjectIdQueryIT extends ServerCase {
 
         context.performGenericQuery(insert);
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 44l);
+        Artist a = Cayenne.objectForPK(context, Artist.class, 44L);
         assertNotNull(a.getDateOfBirth());
         assertEquals("X", a.getArtistName());
 
@@ -109,7 +109,7 @@ public class DataContextObjectIdQueryIT extends ServerCase {
         ObjectIdQuery query = new ObjectIdQuery(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
-                44l), false, ObjectIdQuery.CACHE_REFRESH);
+                44L), false, ObjectIdQuery.CACHE_REFRESH);
 
         Artist a1 = (Artist) Cayenne.objectForQuery(context, query);
         assertNull(a1.getDateOfBirth());

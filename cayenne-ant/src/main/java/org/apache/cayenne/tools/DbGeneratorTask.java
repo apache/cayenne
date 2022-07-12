@@ -78,7 +78,7 @@ public class DbGeneratorTask extends CayenneTask {
 			DataMap dataMap = loadDataMap(injector);
 
 			// load driver taking custom CLASSPATH into account...
-			DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).newInstance(), url,
+			DriverDataSource dataSource = new DriverDataSource((Driver) Class.forName(driver).getDeclaredConstructor().newInstance(), url,
 					userName, password);
 
 			DbAdapter adapter = getAdapter(injector, dataSource);

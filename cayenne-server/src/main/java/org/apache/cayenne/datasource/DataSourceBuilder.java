@@ -102,7 +102,7 @@ public class DataSourceBuilder {
 		}
 
 		try {
-			return (Driver) driverClass.newInstance();
+			return (Driver) driverClass.getDeclaredConstructor().newInstance();
 		} catch (Exception ex) {
 			throw new CayenneRuntimeException("Error instantiating driver '%s': %s"
 					, driverClassName, ex.getMessage());

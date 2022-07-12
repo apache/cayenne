@@ -33,7 +33,7 @@ import org.junit.Before;
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class BasePoolingDataSourceIT extends ServerCase {
 
-	protected static final long QUEUE_WAIT_TIME = 1000l;
+	protected static final long QUEUE_WAIT_TIME = 1000L;
 
 	@Inject
 	private DataSourceInfo dataSourceInfo;

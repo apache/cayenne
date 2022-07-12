@@ -67,7 +67,7 @@ public class GraphMap extends HashMap<GraphType, GraphBuilder> {
     
     public GraphBuilder createGraphBuilder(GraphType type, boolean doLayout) {
         try {
-            GraphBuilder builder = type.getBuilderClass().newInstance();
+            GraphBuilder builder = type.getBuilderClass().getDeclaredConstructor().newInstance();
             builder.buildGraph(getProjectController(), domain, doLayout);
             put(type, builder);
             

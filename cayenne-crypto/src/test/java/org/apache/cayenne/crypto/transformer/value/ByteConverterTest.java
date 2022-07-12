@@ -28,8 +28,8 @@ public class ByteConverterTest {
 
     @Test
     public void testFromBytes() {
-        assertEquals(new Byte((byte) 6), ByteConverter.INSTANCE.fromBytes(new byte[]{6}));
-        assertEquals(new Byte((byte) -7), ByteConverter.INSTANCE.fromBytes(new byte[]{-7}));
+        assertEquals(Byte.valueOf((byte) 6), ByteConverter.INSTANCE.fromBytes(new byte[]{6}));
+        assertEquals(Byte.valueOf((byte) -7), ByteConverter.INSTANCE.fromBytes(new byte[]{-7}));
     }
 
     @Test(expected = IllegalArgumentException.class)

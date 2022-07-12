@@ -36,7 +36,7 @@ public class DurationType implements ExtendedType<Duration> {
 
     protected Object convertToJdbcObject(Duration val, int type) {
         if(type == Types.INTEGER) {
-            return new Long(val.toMillis()).intValue();
+            return Long.valueOf(val.toMillis()).intValue();
         } else if(type == Types.NUMERIC) {
             return val.toMillis();
         } else if(type == Types.DECIMAL) {

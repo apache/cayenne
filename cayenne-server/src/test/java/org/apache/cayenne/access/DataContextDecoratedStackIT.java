@@ -71,7 +71,7 @@ public class DataContextDecoratedStackIT extends ServerCase {
                 "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
         Map<?, ?> count = (Map<?, ?>) Cayenne.objectForQuery(context, query);
         assertNotNull(count);
-        assertEquals(new Integer(1), count.get("x"));
+        assertEquals(1, count.get("x"));
     }
 
     @Test

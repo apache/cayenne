@@ -65,7 +65,7 @@ public class ReturnTypesMappingIT extends ServerCase {
         String columnName = "BIGINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
-        Long bigintValue = 5326457654783454355l;
+        Long bigintValue = 5326457654783454355L;
         test.setBigintColumn(bigintValue);
         context.commitChanges();
 
@@ -85,7 +85,7 @@ public class ReturnTypesMappingIT extends ServerCase {
     public void testBIGINT2() throws Exception {
        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
-        Long bigintValue = 5326457654783454355l;
+        Long bigintValue = 5326457654783454355L;
         test.setBigintColumn(bigintValue);
         context.commitChanges();
 

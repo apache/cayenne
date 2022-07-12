@@ -51,7 +51,7 @@ public class MockOperationObserver implements OperationObserver {
     }
 
     public void nextCount(Query query, int resultCount) {
-        resultCounts.put(query, new Integer(resultCount));
+        resultCounts.put(query, resultCount);
     }
 
     public void nextRows(Query query, List<?> dataRows) {

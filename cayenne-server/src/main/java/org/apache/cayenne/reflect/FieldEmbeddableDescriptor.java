@@ -58,7 +58,7 @@ public class FieldEmbeddableDescriptor implements EmbeddableDescriptor {
     public Object createObject(Object owner, String embeddedProperty) {
         Object embeddable;
         try {
-            embeddable = embeddableClass.newInstance();
+            embeddable = embeddableClass.getDeclaredConstructor().newInstance();
         }
         catch (Throwable e) {
             throw new PropertyException("Error creating embeddable object of class '"

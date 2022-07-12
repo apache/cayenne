@@ -91,11 +91,11 @@ public class CayenneDataObjectIT extends ServerCase {
 	public void testReadNestedPropertyNonDataObjectPath() {
 		CayenneDataObject o1 = new CayenneDataObject();
 		TstBean o2 = new TstBean();
-		o2.setInteger(new Integer(55));
+		o2.setInteger(55);
 		o1.writePropertyDirectly("o2", o2);
 
 		assertSame(o2, o1.readNestedProperty("o2"));
-		assertEquals(new Integer(55), o1.readNestedProperty("o2.integer"));
+		assertEquals(55, o1.readNestedProperty("o2.integer"));
 		assertEquals(TstBean.class, o1.readNestedProperty("o2.class"));
 		assertEquals(TstBean.class.getName(), o1.readNestedProperty("o2.class.name"));
 	}

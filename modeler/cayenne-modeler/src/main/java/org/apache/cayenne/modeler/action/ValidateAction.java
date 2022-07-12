@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.action;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.KeyStroke;
@@ -46,10 +47,8 @@ public class ValidateAction extends CayenneAction {
     }
 
     public KeyStroke getAcceleratorKey() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit
-                .getDefaultToolkit()
-                .getMenuShortcutKeyMask()
-                | ActionEvent.SHIFT_MASK);
+        return KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx() | InputEvent.SHIFT_DOWN_MASK);
     }
 
     /**

@@ -246,7 +246,7 @@ public class CayenneIT extends ServerCase {
 
         Map<String, Integer> pk = Collections.singletonMap(
                 Artist.ARTIST_ID_PK_COLUMN,
-                new Integer(33002));
+                33002);
         Object object = Cayenne.objectForPK(context, Artist.class, pk);
 
         assertNotNull(object);

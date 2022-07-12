@@ -48,7 +48,7 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 	protected DbAdapter adapter;
 
 	@Override
-	public void cleanUpDB() throws Exception {
+	public void cleanUpDB() {
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
 		for (String name : existingTables()) {
 
@@ -59,11 +59,11 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 	}
 
 	protected void setStrategy(Class<? extends SchemaUpdateStrategy> type) throws Exception {
-		node.setSchemaUpdateStrategy(type.newInstance());
+		node.setSchemaUpdateStrategy(type.getDeclaredConstructor().newInstance());
 	}
 
 	protected Collection<String> existingTables() {
-		Collection<String> present = new ArrayList<String>();
+		Collection<String> present = new ArrayList<>();
 		for (Entry<String, Boolean> e : tablesMap().entrySet()) {
 			if (e.getValue()) {
 				present.add(e.getKey());
@@ -95,9 +95,9 @@ public class SchemaUpdateStrategyBase extends ServerCase {
 		}
 
 		String tableLabel = node.getAdapter().tableTypeForTable();
-		try (Connection con = node.getDataSource().getConnection();) {
+		try (Connection con = node.getDataSource().getConnection()) {
 
-			try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] { tableLabel });) {
+			try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] { tableLabel })) {
 				while (rs.next()) {
 					String dbName = rs.getString("TABLE_NAME");
 

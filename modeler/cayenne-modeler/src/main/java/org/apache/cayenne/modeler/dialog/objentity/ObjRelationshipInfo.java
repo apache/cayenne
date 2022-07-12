@@ -350,7 +350,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     public ObjectNameGenerator createNamingStrategy(String strategyClass) {
         try {
             ClassLoadingService classLoader = application.getClassLoadingService();
-            return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).newInstance();
+            return classLoader.loadClass(ObjectNameGenerator.class, strategyClass).getDeclaredConstructor().newInstance();
         } catch (Throwable th) {
             JOptionPane.showMessageDialog(
                     view,
