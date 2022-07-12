@@ -329,11 +329,6 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>2.2.0</version>
-            </dependency>
-			<dependency>
 				<groupId>com.jgoodies</groupId>
 				<artifactId>forms</artifactId>
 				<version>1.2.1</version>
@@ -350,21 +345,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>com.mockrunner</groupId>
-				<artifactId>mockrunner-servlet</artifactId>
-				<version>1.1.2</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>ognl</groupId>
 				<artifactId>ognl</artifactId>
 				<version>2.6.7</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>2.5</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -459,30 +442,6 @@
     			<artifactId>slf4j-simple</artifactId>
     			<version>${slf4j.version}</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>jgroups</groupId>
-				<artifactId>jgroups-all</artifactId>
-				<version>2.2.7</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>jivesoftware</groupId>
-				<artifactId>smack</artifactId>
-				<version>2.2.1</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>jivesoftware</groupId>
-				<artifactId>smackx</artifactId>
-				<version>2.2.1</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jms_1.1_spec</artifactId>
-				<version>1.1.1</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.testcontainers</groupId>
@@ -848,6 +807,8 @@
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>3.1.1</version>
 					<configuration>
+						<!-- Suppress errors in the JavaDocs (it should be cleaned one day...)  -->
+						<doclint>none</doclint>
 						<additionalOptions>${javadoc.additionalOptions}</additionalOptions>
 						<source>11</source>
 					</configuration>
