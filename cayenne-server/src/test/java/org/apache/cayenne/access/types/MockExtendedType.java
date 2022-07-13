@@ -51,13 +51,13 @@ public class MockExtendedType implements ExtendedType<Object> {
 
     @Override
     public Object materializeObject(ResultSet rs, int index, int type) throws Exception {
-        return objectClass.newInstance();
+        return objectClass.getDeclaredConstructor().newInstance();
     }
 
     @Override
     public Object materializeObject(CallableStatement rs, int index, int type)
             throws Exception {
-        return objectClass.newInstance();
+        return objectClass.getDeclaredConstructor().newInstance();
     }
 
     @Override

@@ -26,11 +26,11 @@ import org.apache.cayenne.util.Util;
 /**
  * @since 1.2
  */
-class EnumConverter<T extends Enum & ExtendedEnumeration> extends Converter<T> {
+class EnumConverter<T extends Enum<T> & ExtendedEnumeration> implements Converter<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected T convert(Object object, Class<T> type) {
+    public T convert(Object object, Class<T> type) {
 
         if (ExtendedEnumeration.class.isAssignableFrom(type)) {
             ExtendedEnumeration[] values;

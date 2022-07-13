@@ -26,9 +26,10 @@ import org.apache.cayenne.CayenneRuntimeException;
  * Can convert to any class that has a constructor that takes a 
  * single Object or a single String parameter.
  */
-public class ToAnyConverter<T> extends Converter<T> {
-	@Override
-	protected T convert(Object value, Class<T> type) {
+public class ToAnyConverter<T> implements Converter<T> {
+	@SuppressWarnings("unchecked")
+    @Override
+	public T convert(Object value, Class<T> type) {
 		if (value == null) {
             return null;
         }
@@ -37,14 +38,14 @@ public class ToAnyConverter<T> extends Converter<T> {
         }
 		
         try {
-            Constructor<?> constructor;
+            Constructor<T> constructor;
             try {
             	constructor = type.getConstructor(Object.class);
             } catch (NoSuchMethodException e) {
                 constructor = type.getConstructor(String.class);
             	value = value.toString();
             }
-            return (T) constructor.newInstance(value);
+            return constructor.newInstance(value);
         } catch (Exception e) {
             throw new CayenneRuntimeException(e);
         }

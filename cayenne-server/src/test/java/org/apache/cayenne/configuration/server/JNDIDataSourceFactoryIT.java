@@ -34,6 +34,7 @@ import javax.naming.NameNotFoundException;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
+@Deprecated
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class JNDIDataSourceFactoryIT extends ServerCase {
     

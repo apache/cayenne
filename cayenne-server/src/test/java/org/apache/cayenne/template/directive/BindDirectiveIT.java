@@ -137,7 +137,7 @@ public class BindDirectiveIT extends ServerCase {
 
 		// insert 3 artists
 		for (int i = 1; i < 4; i++) {
-			tArtist.insert(new Long(i), "Artist" + i);
+			tArtist.insert((long) i, "Artist" + i);
 		}
 
 		// now select only with names: Artist1 and Artist3

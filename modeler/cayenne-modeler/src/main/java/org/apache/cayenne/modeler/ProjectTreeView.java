@@ -976,7 +976,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
         return list.toArray();
     }
 
-    private void positionNode(Object[] path, Comparator comparator) {
+    private void positionNode(Object[] path, Comparator<ConfigurationNode> comparator) {
         if (path == null) {
             return;
         }
@@ -992,7 +992,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
     private void positionNode(
             MutableTreeNode parent,
             DefaultMutableTreeNode treeNode,
-            Comparator comparator) {
+            Comparator<ConfigurationNode> comparator) {
 
         removeTreeSelectionListener(treeSelectionListener);
         try {

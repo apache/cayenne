@@ -192,8 +192,9 @@ public class ResultDirective extends Directive {
 	 */
 	protected void bindResult(InternalContextAdapter context, ColumnDescriptor columnDescriptor) {
 
-		Collection<Object> resultColumns = (Collection<Object>) context.getInternalUserContext().get(
-				VelocitySQLTemplateProcessor.RESULT_COLUMNS_LIST_KEY);
+		@SuppressWarnings("unchecked")
+		Collection<Object> resultColumns = (Collection<Object>) context
+				.getInternalUserContext().get(VelocitySQLTemplateProcessor.RESULT_COLUMNS_LIST_KEY);
 
 		if (resultColumns != null) {
 			resultColumns.add(columnDescriptor);

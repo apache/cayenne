@@ -281,24 +281,21 @@ public class PropertyUtilsTest {
 		Converter<Date> oldConverter = ConverterFactory.factory.getConverter(Date.class);
 
 		try {
-			ConverterFactory.addConverter(Date.class, new Converter<>() {
-				@Override
-				protected Date convert(Object value, Class<Date> type) {
-					if (value == null)
-						return null;
-					if (value instanceof Date) {
-						return (Date) value;
-					}
-					if (value instanceof String) {
-						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-						try {
-							return format.parse((String) value);
-						} catch (ParseException e) {
-							throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date", e);
-						}
-					}
-					throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date");
+			ConverterFactory.addConverter(Date.class, (value, type) -> {
+				if (value == null)
+					return null;
+				if (value instanceof Date) {
+					return (Date) value;
 				}
+				if (value instanceof String) {
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+					try {
+						return format.parse((String) value);
+					} catch (ParseException e) {
+						throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date", e);
+					}
+				}
+				throw new CayenneRuntimeException("Unable to convert '" + value + "' to a Date");
 			});
 
 			TstJavaBean o1 = new TstJavaBean();
