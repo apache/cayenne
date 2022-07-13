@@ -34,6 +34,7 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 

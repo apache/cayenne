@@ -42,6 +42,7 @@ import org.junit.Test;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)

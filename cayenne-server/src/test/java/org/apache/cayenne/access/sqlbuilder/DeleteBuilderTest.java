@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class DeleteBuilderTest extends BaseSqlBuilderTest {
 

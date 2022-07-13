@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;
@@ -50,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 public class DefaultInjectorInjectionTest {

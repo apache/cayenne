@@ -23,7 +23,6 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.WhereNode;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -31,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 /**

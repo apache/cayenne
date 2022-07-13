@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 

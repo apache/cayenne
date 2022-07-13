@@ -26,6 +26,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 /**

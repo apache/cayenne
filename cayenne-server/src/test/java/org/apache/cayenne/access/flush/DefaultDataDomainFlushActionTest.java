@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.flush.DefaultDataDomainFlushAction;
 import org.apache.cayenne.access.flush.operation.BaseDbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
@@ -41,6 +40,7 @@ import org.apache.cayenne.query.Query;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

@@ -29,6 +29,7 @@ import org.junit.Test;
 import java.sql.Types;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {

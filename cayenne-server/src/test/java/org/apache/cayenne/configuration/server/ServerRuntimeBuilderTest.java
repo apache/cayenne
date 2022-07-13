@@ -29,10 +29,10 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-@SuppressWarnings("deprecation")
 public class ServerRuntimeBuilderTest {
 
 	private ServerRuntime runtime;

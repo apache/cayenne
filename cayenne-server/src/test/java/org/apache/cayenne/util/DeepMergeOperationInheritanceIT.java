@@ -31,6 +31,7 @@ import org.apache.cayenne.unit.di.server.PeopleProjectCase;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 public class DeepMergeOperationInheritanceIT extends PeopleProjectCase {
