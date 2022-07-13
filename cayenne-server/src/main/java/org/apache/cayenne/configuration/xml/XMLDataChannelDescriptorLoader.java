@@ -27,18 +27,13 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
-import org.apache.cayenne.util.Util;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -56,53 +51,6 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 	static final String[] SUPPORTED_PROJECT_VERSIONS = {"11"};
 	static {
 		Arrays.sort(SUPPORTED_PROJECT_VERSIONS);
-	}
-
-	/**
-	 * @deprecated the caller should use password resolving strategy instead of
-	 *             resolving the password on the spot. For one thing this can be
-	 *             used in the Modeler and no password may be available.
-	 */
-	@Deprecated
-	static String passwordFromURL(URL url) {
-		InputStream inputStream;
-		String password = null;
-
-		try {
-			inputStream = url.openStream();
-			password = passwordFromInputStream(inputStream);
-		} catch (IOException exception) {
-			// Log the error while trying to open the stream. A null
-			// password will be returned as a result.
-			logger.warn(exception.getMessage(), exception);
-		}
-
-		return password;
-	}
-
-	/**
-	 * @deprecated the caller should use password resolving strategy instead of
-	 *             resolving the password on the spot. For one thing this can be
-	 *             used in the Modeler and no password may be available.
-	 */
-	@Deprecated
-	static String passwordFromInputStream(InputStream inputStream) {
-		String password = null;
-
-		try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));) {
-
-			password = bufferedReader.readLine();
-		} catch (IOException exception) {
-			logger.warn(exception.getMessage(), exception);
-		} finally {
-
-			try {
-				inputStream.close();
-			} catch (IOException ignored) {
-			}
-		}
-
-		return password;
 	}
 
 	@Inject

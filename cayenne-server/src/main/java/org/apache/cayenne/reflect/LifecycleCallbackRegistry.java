@@ -403,13 +403,7 @@ public class LifecycleCallbackRegistry {
 			entities = new HashSet<>();
 
 			for (ObjEntity entity : entityResolver.getObjEntities()) {
-				Class<?> entityType;
-				try {
-					entityType = Util.getJavaClass(entity.getClassName());
-				} catch (ClassNotFoundException e) {
-					throw new CayenneRuntimeException("Class not found: " + entity.getClassName(), e);
-				}
-
+				Class<?> entityType = entityResolver.getObjectFactory().getJavaClass(entity.getJavaClassName());
 				// ensure that we don't register the same callback for multiple
 				// classes in the same hierarchy, so find the topmost type using
 				// a given annotation and register it once

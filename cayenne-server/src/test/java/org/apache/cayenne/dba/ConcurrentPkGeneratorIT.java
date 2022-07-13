@@ -23,6 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.qualified.Qualified1;
@@ -96,8 +97,9 @@ public class ConcurrentPkGeneratorIT extends ServerCase {
 		Runnable task = () -> {
             try {
                 ObjectContext context1 = runtime.newContext();
-                for (ObjEntity entity : dataMap.getObjEntities()) {
-                    context1.newObject(entity.getJavaClass());
+				EntityResolver entityResolver = context1.getEntityResolver();
+				for (ObjEntity entity : dataMap.getObjEntities()) {
+                    context1.newObject(entityResolver.getObjectFactory().getJavaClass(entity.getJavaClassName()));
                 }
                 context1.commitChanges();
             } catch (Exception e) {

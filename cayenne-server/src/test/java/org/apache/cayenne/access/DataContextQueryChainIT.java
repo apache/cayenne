@@ -41,7 +41,6 @@ public class DataContextQueryChainIT extends ServerCase {
     private DataContext context;
 
     @Test
-    @Deprecated
     public void testSelectQuery() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("X");

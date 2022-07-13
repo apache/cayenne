@@ -43,6 +43,7 @@ import org.apache.cayenne.annotation.PostUpdate;
 import org.apache.cayenne.annotation.PrePersist;
 import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
@@ -103,6 +104,11 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @since 4.2
      */
     protected transient EntitySorter entitySorter;
+
+    /**
+     * @since 4.3
+     */
+    protected transient AdhocObjectFactory objectFactory;
 
 
     /**
@@ -174,7 +180,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
             // load entity callbacks
             for (ObjEntity entity : getObjEntities()) {
-                Class<?> entityClass = entity.getJavaClass();
+                Class<?> entityClass = objectFactory.getJavaClass(entity.getJavaClassName());
 
                 // load annotated methods
                 for (Method m : entityClass.getDeclaredMethods()) {
@@ -538,7 +544,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 4.2
      */
-    public void setValueComparisionStrategyFactory(ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
+    public void setValueComparisonStrategyFactory(ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
         this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
     }
 
@@ -554,5 +560,19 @@ public class EntityResolver implements MappingNamespace, Serializable {
      */
     public EntitySorter getEntitySorter() {
         return entitySorter;
+    }
+
+    /**
+     * @since 4.3
+     */
+    public void setObjectFactory(AdhocObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
+    }
+
+    /**
+     * @since 4.3
+     */
+    public AdhocObjectFactory getObjectFactory() {
+        return objectFactory;
     }
 }

@@ -56,7 +56,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             throw new CayenneRuntimeException("Unmapped entity: %s", entityName);
         }
 
-        Class<?> entityClass = entity.getJavaClass();
+        Class<?> entityClass = descriptorMap.getResolver().getObjectFactory().getJavaClass(entity.getJavaClassName());
         return getDescriptor(entity, entityClass);
     }
 

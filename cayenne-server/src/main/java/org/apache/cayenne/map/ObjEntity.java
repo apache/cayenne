@@ -179,29 +179,6 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * Returns Java class of persistent objects described by this entity. For
-     * generic entities with no class specified explicitly, default DataMap
-     * superclass is used, and if it is not set - CayenneDataObject is used.
-     * Casts any thrown exceptions into CayenneRuntimeException.
-     * 
-     * @since 1.2
-     * @deprecated since 4.0 this method based on statically defined class
-     *             loading algorithm is not going to work in environments like
-     *             OSGi. {@link AdhocObjectFactory} should be used as it can
-     *             provide the environment-specific class loading policy. 
-     */
-    @Deprecated
-    public Class<?> getJavaClass() {
-        String name = getJavaClassName();
-
-        try {
-            return Util.getJavaClass(name);
-        } catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException("Failed to doLoad class " + name + ": " + e.getMessage(), e);
-        }
-    }
-
-    /**
      * Returns an object that stores callback methods of this entity.
      * 
      * @since 3.0

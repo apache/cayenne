@@ -35,6 +35,7 @@ import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
@@ -100,15 +101,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
 	@Inject
 	protected DataNodeFactory dataNodeFactory;
 
-	@Inject
-	protected ValueObjectTypeRegistry valueObjectTypeRegistry;
-
-	/**
-	 * @since 4.2
-	 */
-	@Inject
-	protected ValueComparisonStrategyFactory valueComparisonStrategyFactory;
-
 	@Override
 	public DataDomain get() throws ConfigurationException {
 
@@ -148,8 +140,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
 		}
 
 		dataDomain.getEntityResolver().applyDBLayerDefaults();
-		dataDomain.getEntityResolver().setValueObjectTypeRegistry(valueObjectTypeRegistry);
-		dataDomain.getEntityResolver().setValueComparisionStrategyFactory(valueComparisonStrategyFactory);
+		dataDomain.getEntityResolver().setValueObjectTypeRegistry(injector.getInstance(ValueObjectTypeRegistry.class));
+		dataDomain.getEntityResolver().setValueComparisonStrategyFactory(injector.getInstance(ValueComparisonStrategyFactory.class));
+		dataDomain.getEntityResolver().setObjectFactory(injector.getInstance(AdhocObjectFactory.class));
 
 		for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
 			addDataNode(dataDomain, nodeDescriptor);

@@ -113,7 +113,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
 
             ObjEntity entity = descriptorMap.getResolver().getObjEntity(entityName);
             if (entity != null) {
-                return entity.getJavaClass();
+                return descriptorMap.getResolver().getObjectFactory().getJavaClass(entity.getJavaClassName());
             }
         }
 

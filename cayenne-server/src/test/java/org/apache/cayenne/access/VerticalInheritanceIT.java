@@ -526,7 +526,6 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
     @Test
-	@Deprecated
 	public void testSelectQuery_AttributeOverrides() throws Exception {
 
 		TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");
