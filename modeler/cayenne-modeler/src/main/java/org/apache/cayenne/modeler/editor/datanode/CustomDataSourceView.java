@@ -31,10 +31,12 @@ import com.jgoodies.forms.layout.FormLayout;
 
 public class CustomDataSourceView extends JPanel {
 
+    protected JTextField factoryName;
     protected JTextField locationHint;
 
     public CustomDataSourceView() {
 
+        factoryName = new JTextFieldUndoable();
         locationHint = new JTextFieldUndoable();
 
         // assemble
@@ -42,9 +44,10 @@ public class CustomDataSourceView extends JPanel {
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.appendSeparator("Custom Configuration");
+        builder.appendSeparator("Custom Data Source Factory");
 
-        builder.append("Location Hint:", locationHint);
+        builder.append("Factory Class:", factoryName);
+        builder.append("Location Hint (optional):", locationHint);
 
         this.setLayout(new BorderLayout());
         this.add(builder.getPanel(), BorderLayout.CENTER);
@@ -52,5 +55,9 @@ public class CustomDataSourceView extends JPanel {
 
     public JTextField getLocationHint() {
         return locationHint;
+    }
+
+    public JTextField getFactoryName() {
+        return factoryName;
     }
 }

@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.datanode;
 
-import java.awt.Component;
-
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.BindingDelegate;
@@ -32,21 +31,37 @@ public class CustomDataSourceEditor extends DataSourceEditor {
 
     protected CustomDataSourceView view;
 
-    public CustomDataSourceEditor(ProjectController controller,
-            BindingDelegate nodeChangeProcessor) {
+    protected String factoryName;
+
+    public CustomDataSourceEditor(ProjectController controller, BindingDelegate nodeChangeProcessor) {
         super(controller, nodeChangeProcessor);
     }
 
+    @Override
+    public void setNode(DataNodeDescriptor node) {
+        setFactoryName(node.getDataSourceFactoryType());
+        super.setNode(node);
+    }
+
+    @Override
     protected void prepareBindings(BindingBuilder builder) {
         this.view = new CustomDataSourceView();
 
-        fieldAdapters = new ObjectBinding[1];
-        fieldAdapters[0] = builder.bindToTextField(
-                view.getLocationHint(),
-                "node.parameters");
+        fieldAdapters = new ObjectBinding[2];
+        fieldAdapters[0] = builder.bindToTextField(view.getFactoryName(), "factoryName");
+        fieldAdapters[1] = builder.bindToTextField(view.getLocationHint(), "node.parameters");
     }
 
-    public Component getView() {
+    @Override
+    public CustomDataSourceView getView() {
         return view;
+    }
+
+    public String getFactoryName() {
+        return factoryName;
+    }
+
+    public void setFactoryName(String factoryName) {
+        this.factoryName = factoryName;
     }
 }

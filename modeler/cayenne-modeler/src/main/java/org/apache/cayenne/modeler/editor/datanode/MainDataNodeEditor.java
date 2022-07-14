@@ -54,9 +54,11 @@ import org.apache.cayenne.validation.ValidationException;
 public class MainDataNodeEditor extends CayenneController {
 
 	protected static final String NO_LOCAL_DATA_SOURCE = "Select DataSource for Local Work...";
+	private final static String XML_POOLING_DATA_SOURCE_FACTORY = XMLPoolingDataSourceFactory.class.getName();
 
 	private final static String[] STANDARD_DATA_SOURCE_FACTORIES = new String[] {
-	        XMLPoolingDataSourceFactory.class.getName()
+			DataSourceFactoryType.CAYENNE.getLabel(),
+			DataSourceFactoryType.CUSTOM.getLabel()
 	};
 
 	private final static String[] STANDARD_SCHEMA_UPDATE_STRATEGY = new String[] {
@@ -71,7 +73,7 @@ public class MainDataNodeEditor extends CayenneController {
 	protected DataNodeDescriptor node;
 	protected Map<String, DataSourceEditor> datasourceEditors;
 
-	protected DataSourceEditor defaultSubeditor;
+	protected CustomDataSourceEditor defaultSubeditor;
 	protected BindingDelegate nodeChangeProcessor;
 	protected ObjectBinding[] bindings;
 	protected ObjectBinding localDataSourceBinding;
@@ -106,12 +108,18 @@ public class MainDataNodeEditor extends CayenneController {
 	}
 
 	public String getFactoryName() {
-		return (node != null) ? node.getDataSourceFactoryType() : null;
+		return XML_POOLING_DATA_SOURCE_FACTORY.equals(node.getDataSourceFactoryType())
+				? DataSourceFactoryType.CAYENNE.getLabel()
+				: DataSourceFactoryType.CUSTOM.getLabel();
 	}
 
 	public void setFactoryName(String factoryName) {
 		if (node != null) {
-			node.setDataSourceFactoryType(factoryName);
+			if(DataSourceFactoryType.CAYENNE.getLabel().equals(factoryName)) {
+				node.setDataSourceFactoryType(XML_POOLING_DATA_SOURCE_FACTORY);
+			} else {
+				node.setDataSourceFactoryType(defaultSubeditor.getFactoryName());
+			}
 			showDataSourceSubview(factoryName);
 		}
 	}
@@ -162,7 +170,7 @@ public class MainDataNodeEditor extends CayenneController {
 
 	protected void initController() {
 		view.getDataSourceDetail().add(defaultSubeditor.getView(), "default");
-		view.getFactories().setEditable(true);
+		view.getFactories().setEditable(false);
 		// init combo box choices
 		view.getFactories().setModel(new DefaultComboBoxModel<>(STANDARD_DATA_SOURCE_FACTORIES));
 
@@ -251,7 +259,7 @@ public class MainDataNodeEditor extends CayenneController {
 		DataSourceEditor c = datasourceEditors.get(factoryName);
 		// create subview dynamically...
 		if (c == null) {
-			if (XMLPoolingDataSourceFactory.class.getName().equals(factoryName)) {
+			if (DataSourceFactoryType.CAYENNE.getLabel().equals(factoryName)) {
 				c = new JDBCDataSourceEditor((ProjectController) getParent(), nodeChangeProcessor);
 			} else {
 				// special case - no detail view, just show it and bail..
@@ -279,5 +287,19 @@ public class MainDataNodeEditor extends CayenneController {
 
 	public void setAdapterName(String name) {
 		node.setAdapterType(name);
+	}
+
+	enum DataSourceFactoryType {
+		CAYENNE("Cayenne Data Source Factory"),
+		CUSTOM("Custom Data Source Factory");
+		private final String label;
+
+		DataSourceFactoryType(String label) {
+			this.label = label;
+		}
+
+		public String getLabel() {
+			return label;
+		}
 	}
 }
