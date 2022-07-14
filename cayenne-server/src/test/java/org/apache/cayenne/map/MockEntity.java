@@ -25,11 +25,12 @@ import java.util.Map;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
  */
-public class MockEntity extends Entity {
+public class MockEntity extends Entity<MockEntity, MockAttribute, MockRelationship> {
 
     public MockEntity() {
         super();
@@ -47,13 +48,12 @@ public class MockEntity extends Entity {
     }
 
     @Override
-    public Iterator resolvePathComponents(Expression pathExp) throws ExpressionException {
+    public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
         return null;
     }
     
     @Override
-    public <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> resolvePath(
-            Expression pathExp, Map joinAliases) {
+    public Iterable<PathComponent<MockAttribute, MockRelationship>> resolvePath(Expression pathExp, Map<String, String> joinAliases) {
         return null;
     }
 

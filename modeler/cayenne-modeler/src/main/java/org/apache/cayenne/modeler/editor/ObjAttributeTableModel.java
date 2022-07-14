@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -68,7 +67,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     public static final int COMMENT = 6;
     public static final int COLUMN_COUNT = 7;
 
-    private ObjEntity entity;
+    private final ObjEntity entity;
     private DbEntity dbEntity;
     private CellEditorForAttributeTable cellEditor;
     private CayenneTable table;
@@ -80,19 +79,15 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         this.dbEntity = entity.getDbEntity();
 
         // order using local comparator
-        Collections.sort(objectList, new AttributeComparator());
+        objectList.sort(new AttributeComparator());
     }
 
     private static List<ObjAttributeWrapper> wrapObjAttributes(Collection<ObjAttribute> attributes) {
-        List<ObjAttributeWrapper>  wrappedAttributes = new ArrayList<ObjAttributeWrapper>();
+        List<ObjAttributeWrapper>  wrappedAttributes = new ArrayList<>();
         for(ObjAttribute attr : attributes) {
             wrappedAttributes.add(new ObjAttributeWrapper(attr));
         }
         return wrappedAttributes;
-    }
-    
-    protected void orderList() {
-        // NOOP
     }
 
     public CayenneTable getTable() {
@@ -415,19 +410,19 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         return entity;
     }
 
-    final class AttributeComparator implements Comparator {
+    final class AttributeComparator implements Comparator<ObjAttributeWrapper> {
 
-        public int compare(Object o1, Object o2) {
-            Attribute a1 = ((ObjAttributeWrapper) o1).getValue();
-            Attribute a2 = ((ObjAttributeWrapper) o2).getValue();
+        public int compare(ObjAttributeWrapper o1, ObjAttributeWrapper o2) {
+            ObjAttribute a1 = o1.getValue();
+            ObjAttribute a2 = o2.getValue();
 
             int delta = getWeight(a1) - getWeight(a2);
-
-            return (delta != 0) ? delta : Util.nullSafeCompare(true, a1.getName(), a2
-                    .getName());
+            return (delta != 0)
+                    ? delta
+                    : Util.nullSafeCompare(true, a1.getName(), a2.getName());
         }
 
-        private int getWeight(Attribute a) {
+        private int getWeight(ObjAttribute a) {
             return a.getEntity() == entity ? 1 : -1;
         }
     }
@@ -449,7 +444,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 break;
             case DB_ATTRIBUTE:
             case DB_ATTRIBUTE_TYPE:
-                Collections.sort(objectList, new ObjAttributeTableComparator(sortCol));
+                objectList.sort(new ObjAttributeTableComparator(sortCol));
                 if (!isAscent) {
                     Collections.reverse(objectList);
                 }
@@ -459,7 +454,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
     private class ObjAttributeTableComparator implements Comparator<ObjAttributeWrapper>{
 
-        private int sortCol;
+        private final int sortCol;
 
         public ObjAttributeTableComparator(int sortCol) {
             this.sortCol = sortCol;
@@ -479,27 +474,23 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                     valToCompare2 = getDBAttribute(o2, o2.getDbAttribute());
                     break;
                 case DB_ATTRIBUTE_TYPE:
-                    valToCompare1 = getDBAttributeType(o1, o1
-                            .getDbAttribute());
-                    valToCompare2 = getDBAttributeType(o2, o2
-                            .getDbAttribute());
-                    break;
-                default:
+                    valToCompare1 = getDBAttributeType(o1, o1.getDbAttribute());
+                    valToCompare2 = getDBAttributeType(o2, o2.getDbAttribute());
                     break;
             }
-            return (valToCompare1 == null) ? -1 : (valToCompare2 == null)
-                    ? 1
-                    : valToCompare1.compareTo(valToCompare2);
+            return (valToCompare1 == null)
+                    ? -1
+                    : (valToCompare2 == null)
+                        ? 1
+                        : valToCompare1.compareTo(valToCompare2);
         }
 
         private Integer compareObjAttributes(ObjAttributeWrapper o1, ObjAttributeWrapper o2) {
-            if ((o1 == null && o2 == null) || o1 == o2) {
+            if (o1 == o2) {
                 return 0;
-            }
-            else if (o1 == null && o2 != null) {
+            } else if (o1 == null) {
                 return -1;
-            }
-            else if (o1 != null && o2 == null) {
+            } else if (o2 == null) {
                 return 1;
             }
             return null;

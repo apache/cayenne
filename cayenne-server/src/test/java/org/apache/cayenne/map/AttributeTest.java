@@ -28,7 +28,7 @@ public class AttributeTest {
 
     @Test
     public void testName() throws Exception {
-        Attribute a = new MockAttribute();
+        MockAttribute a = new MockAttribute();
 
         String tstName = "tst_name";
         a.setName(tstName);
@@ -37,9 +37,9 @@ public class AttributeTest {
 
     @Test
     public void testEntity() throws Exception {
-        Attribute a = new MockAttribute();
+        MockAttribute a = new MockAttribute();
 
-        Entity tstEntity = new MockEntity();
+        MockEntity tstEntity = new MockEntity();
         a.setEntity(tstEntity);
         assertSame(tstEntity, a.getEntity());
     }

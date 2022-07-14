@@ -29,7 +29,7 @@ import org.apache.cayenne.util.XMLEncoder;
 /**
  * A DbAttribute defines a descriptor for a single database table column.
  */
-public class DbAttribute extends Attribute implements ConfigurationNode {
+public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship> implements ConfigurationNode {
 
     /**
      * Defines JDBC type of the column.

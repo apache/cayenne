@@ -39,7 +39,7 @@ import org.apache.cayenne.util.XMLEncoder;
  * Describes an association between two Java classes mapped as source and target
  * ObjEntity. Maps to a path of DbRelationships.
  */
-public class ObjRelationship extends Relationship implements ConfigurationNode {
+public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRelationship> implements ConfigurationNode {
 
     /**
      * Denotes a default type of to-many relationship collection which is a Java
@@ -60,7 +60,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      * Db-relationships path that is set but not yet parsed (turned into
      * List&lt;DbRelationship&gt;) Used during map loading
      */
-    String deferredPath;
+    volatile String deferredPath;
 
     /**
      * Stores the type of collection mapped by a to-many relationship. Null for
@@ -193,7 +193,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
             return null;
         }
 
-        Entity source = getSourceEntity();
+        ObjEntity source = getSourceEntity();
 
         for (ObjRelationship relationship : target.getRelationships()) {
 
@@ -309,7 +309,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
         // entities with qualifiers may result in filtering even existing target
         // rows, so
         // such relationships are optional
-        if (isQualifiedEntity((ObjEntity) getTargetEntity())) {
+        if (isQualifiedEntity(getTargetEntity())) {
             return true;
         }
 
@@ -320,11 +320,8 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
             if (!dbRelationship.isFromPK()) {
                 return false;
             }
-
             DbRelationship reverseRelationship = dbRelationship.getReverseRelationship();
-            if (reverseRelationship.isToDependentPK()) {
-                return false;
-            }
+            return !reverseRelationship.isToDependentPK();
         }
 
         return true;
@@ -565,9 +562,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
      */
     void refreshFromDeferredPath() {
         if (deferredPath != null) {
-            
             synchronized(this) {
-                
                 // check if another thread just 
                 // loaded path from deferredPath
                 if (deferredPath != null){
@@ -609,8 +604,7 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
                 }
                 validPath.append(pathComponent.getName());
             }
-        } catch (ExpressionException ex) {
-
+        } catch (ExpressionException ignored) {
         }
 
         return validPath.toString();

@@ -49,14 +49,14 @@ public class EntityIT extends ServerCase {
 
     @Test
     public void testSerializability() throws Exception {
-        Entity entity = new MockEntity("entity");
+        MockEntity entity = new MockEntity("entity");
 
-        Entity d1 = Util.cloneViaSerialization(entity);
+        MockEntity d1 = Util.cloneViaSerialization(entity);
         assertEquals(entity.getName(), d1.getName());
 
         entity.addAttribute(new MockAttribute("abc"));
         entity.addRelationship(new MockRelationship("xyz"));
-        Entity d2 = Util.cloneViaSerialization(entity);
+        MockEntity d2 = Util.cloneViaSerialization(entity);
         assertNotNull(d2.getAttribute("abc"));
 
         // test that ref collection wrappers are still working
@@ -79,7 +79,7 @@ public class EntityIT extends ServerCase {
 
     @Test
     public void testName() {
-        Entity entity = new MockEntity();
+        MockEntity entity = new MockEntity();
         String tstName = "tst_name";
         entity.setName(tstName);
         assertEquals(tstName, entity.getName());
@@ -87,8 +87,8 @@ public class EntityIT extends ServerCase {
 
     @Test
     public void testAttribute() {
-        Entity entity = new MockEntity();
-        Attribute attribute = new MockAttribute("tst_name");
+        MockEntity entity = new MockEntity();
+        MockAttribute attribute = new MockAttribute("tst_name");
 
         entity.addAttribute(attribute);
         assertSame(attribute, entity.getAttribute(attribute.getName()));
@@ -103,8 +103,8 @@ public class EntityIT extends ServerCase {
 
     @Test
     public void testRelationship() {
-        Entity entity = new MockEntity();
-        Relationship rel = new MockRelationship("tst_name");
+        MockEntity entity = new MockEntity();
+        MockRelationship rel = new MockRelationship("tst_name");
 
         entity.addRelationship(rel);
         assertSame(rel, entity.getRelationship(rel.getName()));
@@ -119,13 +119,13 @@ public class EntityIT extends ServerCase {
 
     @Test
     public void testAttributeClashWithRelationship() {
-        Entity entity = new MockEntity();
-        Relationship rel = new MockRelationship("tst_name");
+        MockEntity entity = new MockEntity();
+        MockRelationship rel = new MockRelationship("tst_name");
 
         entity.addRelationship(rel);
 
         try {
-            Attribute attribute = new MockAttribute("tst_name");
+            MockAttribute attribute = new MockAttribute("tst_name");
             entity.addAttribute(attribute);
 
             fail("Exception should have been thrown due to clashing attribute and relationship names.");
@@ -136,13 +136,13 @@ public class EntityIT extends ServerCase {
 
     @Test
     public void testRelationshipClashWithAttribute() {
-        Entity entity = new MockEntity();
-        Attribute attribute = new MockAttribute("tst_name");
+        MockEntity entity = new MockEntity();
+        MockAttribute attribute = new MockAttribute("tst_name");
 
         entity.addAttribute(attribute);
 
         try {
-            Relationship rel = new MockRelationship("tst_name");
+            MockRelationship rel = new MockRelationship("tst_name");
             entity.addRelationship(rel);
 
             fail("Exception should have been thrown due to clashing attribute and relationship names.");
@@ -205,16 +205,16 @@ public class EntityIT extends ServerCase {
 
     @Test
     public void testRemoveAttribute() {
-        Entity entity = new MockEntity();
+        MockEntity entity = new MockEntity();
 
         entity.setName("test");
-        ObjAttribute attribute1 = new ObjAttribute("a1");
-        ObjAttribute attribute2 = new ObjAttribute("a2");
+        MockAttribute attribute1 = new MockAttribute("a1");
+        MockAttribute attribute2 = new MockAttribute("a2");
 
         entity.addAttribute(attribute1);
         entity.addAttribute(attribute2);
 
-        Collection<? extends Attribute> attributes = entity.getAttributes();
+        Collection<MockAttribute> attributes = entity.getAttributes();
         assertEquals(2, attributes.size());
 
         entity.removeAttribute("a1");

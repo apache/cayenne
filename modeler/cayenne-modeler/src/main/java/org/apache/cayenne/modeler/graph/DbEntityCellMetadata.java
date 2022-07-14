@@ -18,27 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph;
 
-import java.util.Iterator;
-
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 
 /**
  * Descriptor of DbEntity Cell
  */
-class DbEntityCellMetadata extends EntityCellMetadata {
+class DbEntityCellMetadata extends EntityCellMetadata<DbEntity, DbAttribute, DbRelationship> {
     DbEntityCellMetadata(GraphBuilder builder, String entityName) {
         super(builder, entityName);
     }
     
     @Override
-    public Entity fetchEntity() {
-        Iterator<DataMap> it = builder.getDataDomain().getDataMaps().iterator();
-        while(it.hasNext()){
-            DataMap dm = (DataMap)it.next();
-            if(dm.getDbEntity(entityName)!=null){
+    public DbEntity fetchEntity() {
+        for (DataMap dm : builder.getDataDomain().getDataMaps()) {
+            if (dm.getDbEntity(entityName) != null) {
                 return dm.getDbEntity(entityName);
             }
         }
@@ -46,7 +42,7 @@ class DbEntityCellMetadata extends EntityCellMetadata {
     }
 
     @Override
-    protected boolean isPrimary(Attribute attr) {
-        return ((DbAttribute) attr).isPrimaryKey();
+    protected boolean isPrimary(DbAttribute attr) {
+        return attr.isPrimaryKey();
     }
 }

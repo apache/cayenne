@@ -32,7 +32,7 @@ import org.apache.cayenne.util.XMLEncoder;
 /**
  * An ObjAttribute is a mapping descriptor of a Java class property.
  */
-public class ObjAttribute extends Attribute implements ConfigurationNode {
+public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelationship> implements ConfigurationNode {
 
     protected String type;
     protected boolean usedForLocking;

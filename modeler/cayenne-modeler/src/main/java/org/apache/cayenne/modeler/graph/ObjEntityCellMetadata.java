@@ -18,26 +18,23 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph;
 
-import java.util.Iterator;
-
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 
 /**
  * Descriptor of ObjEntity Cell
  */
-class ObjEntityCellMetadata extends EntityCellMetadata {
+class ObjEntityCellMetadata extends EntityCellMetadata<ObjEntity, ObjAttribute, ObjRelationship> {
     ObjEntityCellMetadata(GraphBuilder builder, String entityName) {
         super(builder, entityName);
     }
     
     @Override
-    public Entity fetchEntity() {
-        Iterator<DataMap> it = builder.getDataDomain().getDataMaps().iterator();
-        while(it.hasNext()){
-            DataMap dm = (DataMap)it.next();
-            if(dm.getObjEntity(entityName)!=null){
+    public ObjEntity fetchEntity() {
+        for (DataMap dm : builder.getDataDomain().getDataMaps()) {
+            if (dm.getObjEntity(entityName) != null) {
                 return dm.getObjEntity(entityName);
             }
         }
@@ -45,7 +42,7 @@ class ObjEntityCellMetadata extends EntityCellMetadata {
     }
 
     @Override
-    protected boolean isPrimary(Attribute attr) {
+    protected boolean isPrimary(ObjAttribute attr) {
         return false;
     }
 

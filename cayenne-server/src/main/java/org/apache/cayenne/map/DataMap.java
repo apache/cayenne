@@ -271,7 +271,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 
 	// stores relationships for the map of entities
 	private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-		for (Entity entity : new TreeMap<>(getDbEntityMap()).values()) {
+		for (DbEntity entity : new TreeMap<>(getDbEntityMap()).values()) {
 			entity.getRelationships().stream()
 					.filter(r -> !r.isRuntime())
 					.sorted(Comparator.comparing(Relationship::getName))
@@ -759,7 +759,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 		if (dbEntityToDelete != null && clearDependencies) {
 			for (DbEntity dbEnt : this.getDbEntities()) {
 				// take a copy since we're going to modify the entity
-				for (Relationship rel : new ArrayList<>(dbEnt.getRelationships())) {
+				for (DbRelationship rel : new ArrayList<>(dbEnt.getRelationships())) {
 					if (dbEntityName.equals(rel.getTargetEntityName())) {
 						dbEnt.removeRelationship(rel.getName());
 					}
@@ -810,7 +810,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 			// remove relationships that point to this entity
 			for (ObjEntity ent : getObjEntities()) {
 				// take a copy since we're going to modify the entity
-				for (Relationship relationship : new ArrayList<>(ent.getRelationships())) {
+				for (ObjRelationship relationship : new ArrayList<>(ent.getRelationships())) {
 					if (objEntityName.equals(relationship.getSourceEntity().getName())
 							|| objEntityName.equals(relationship.getTargetEntityName())) {
 						ent.removeRelationship(relationship.getName());
@@ -970,7 +970,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * @since 1.2
 	 */
 	public void dbEntityChanged(EntityEvent e) {
-		Entity entity = e.getEntity();
+		Entity<?,?,?> entity = e.getEntity();
 		if (entity instanceof DbEntity) {
 
 			DbEntity dbEntity = (DbEntity) entity;
@@ -1013,7 +1013,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	 * @since 1.2
 	 */
 	public void objEntityChanged(EntityEvent e) {
-		Entity entity = e.getEntity();
+		Entity<?,?,?> entity = e.getEntity();
 		if (entity instanceof ObjEntity) {
 
 			ObjEntity objEntity = (ObjEntity) entity;

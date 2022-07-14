@@ -24,7 +24,7 @@ import org.apache.cayenne.util.XMLEncoder;
 
 /**
  */
-public class MockAttribute extends Attribute {
+public class MockAttribute extends Attribute<MockEntity, MockAttribute, MockRelationship> {
 
     public MockAttribute() {
         super();

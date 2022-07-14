@@ -36,13 +36,13 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
 
-    private ObjAttribute objAttribute;
-    private ValidationResult validationResult;
+    private final ObjAttribute objAttribute;
+    private final ValidationResult validationResult;
 
-    private ObjAttributeWrapperValidator validator = new ObjAttributeWrapperValidator();
+    private final ObjAttributeWrapperValidator validator = new ObjAttributeWrapperValidator();
 
     // TODO: for now name is only wrapped attribute we validating but this
-    // can be extended to other ObjAttribute fields as well
+    //       can be extended to other ObjAttribute fields as well
     private String name;
 
     public ObjAttributeWrapper(ObjAttribute objAttribute) {
@@ -98,7 +98,7 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
         return objAttribute.getEntity();
     }
 
-    public void setEntity(Entity entity) {
+    public void setEntity(ObjEntity entity) {
         objAttribute.setEntity(entity);
     }
 
@@ -120,7 +120,7 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
     }
 
     public Class<?> getJavaClass() {
-        return objAttribute.getClass();
+        return objAttribute.getJavaClass();
     }
 
     public String getType() {

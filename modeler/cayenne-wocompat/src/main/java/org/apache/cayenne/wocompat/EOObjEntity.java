@@ -25,6 +25,7 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Relationship;
 
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ public class EOObjEntity extends ObjEntity {
 
                     buffer.append(chunk);
 
-                    Relationship r = entity.getRelationship(chunk);
+                    ObjRelationship r = entity.getRelationship(chunk);
                     if (r == null) {
                         throw new ExpressionException("Invalid path component: " + chunk);
                     }

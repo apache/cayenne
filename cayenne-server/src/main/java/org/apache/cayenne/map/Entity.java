@@ -27,12 +27,10 @@ import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -41,7 +39,8 @@ import java.util.StringTokenizer;
  * either a descriptor of database table or a persistent object.
  * 
  */
-public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serializable {
+public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>, U extends Relationship<E,T,U>>
+        implements CayenneMapEntry, XMLSerializable, Serializable {
 
     public static final String PATH_SEPARATOR = ".";
 
@@ -56,8 +55,8 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     protected String name;
     protected DataMap dataMap;
 
-    protected final Map<String, Attribute> attributes = new LinkedHashMap<>();
-    protected final Map<String, Relationship> relationships = new LinkedHashMap<>();
+    protected final Map<String, T> attributes = new LinkedHashMap<>();
+    protected final Map<String, U> relationships = new LinkedHashMap<>();
 
     /**
      * Creates an unnamed Entity.
@@ -119,7 +118,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * Returns attribute with name <code>attributeName</code> or null if no attribute
      * with this name exists.
      */
-    public Attribute getAttribute(String attributeName) {
+    public T getAttribute(String attributeName) {
         return attributes.get(attributeName);
     }
 
@@ -127,7 +126,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * Adds new attribute to the entity, setting its parent entity to be this object. If
      * attribute has no name, IllegalArgumentException is thrown.
      */
-    public void addAttribute(Attribute attribute) {
+    public void addAttribute(T attribute) {
         if (attribute.getName() == null) {
             throw new IllegalArgumentException("Attempt to insert unnamed attribute.");
         }
@@ -135,7 +134,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
         // block overrides
 
         // TODO: change method signature to return replaced attribute and make sure the Modeler handles it...
-        Object existingAttribute = attributes.get(attribute.getName());
+        T existingAttribute = attributes.get(attribute.getName());
         if (existingAttribute != null) {
             if (existingAttribute == attribute) {
                 return;
@@ -167,7 +166,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      *
      * @since 4.0
      */
-    public void updateAttribute(Attribute attribute) {
+    public void updateAttribute(T attribute) {
         removeAttribute(attribute.getName());
         addAttribute(attribute);
     }
@@ -180,14 +179,14 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * Returns relationship with name <code>relName</code>. Will return null if no
      * relationship with this name exists in the entity.
      */
-    public Relationship getRelationship(String relName) {
+    public U getRelationship(String relName) {
         return relationships.get(relName);
     }
 
     /**
      * Adds new relationship to the entity.
      */
-    public void addRelationship(Relationship relationship) {
+    public void addRelationship(U relationship) {
         if (relationship.getName() == null) {
             throw new IllegalArgumentException("Attempt to insert unnamed relationship.");
         }
@@ -232,7 +231,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable map of relationships sorted by name.
      */
-    public Map<String, ? extends Relationship> getRelationshipMap() {
+    public Map<String, U> getRelationshipMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableMap(relationships);
@@ -245,12 +244,12 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * 
      * @since 1.1
      */
-    public Relationship getAnyRelationship(Entity targetEntity) {
+    public U getAnyRelationship(E targetEntity) {
         if (getRelationships().isEmpty()) {
             return null;
         }
 
-        for (Relationship r : getRelationships()) {
+        for (U r : getRelationships()) {
             if (r.getTargetEntity() == targetEntity) {
                 return r;
             }
@@ -261,7 +260,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable collection of Relationships that exist in this entity.
      */
-    public Collection<? extends Relationship> getRelationships() {
+    public Collection<U> getRelationships() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(relationships.values());
@@ -270,7 +269,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable sorted map of entity attributes.
      */
-    public Map<String, ? extends Attribute> getAttributeMap() {
+    public Map<String, T> getAttributeMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableMap(attributes);
@@ -279,7 +278,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
     /**
      * Returns an unmodifiable collection of entity attributes.
      */
-    public Collection<? extends Attribute> getAttributes() {
+    public Collection<T> getAttributes() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(attributes.values());
@@ -299,12 +298,11 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * 
      * @since 3.0
      */
-    @SuppressWarnings("unchecked")
-    public <T extends Attribute, U extends Relationship> PathComponent<T, U> lastPathComponent(
+    public PathComponent<T, U> lastPathComponent(
             Expression path,
-            Map aliasMap) {
+            Map<String, String> aliasMap) {
 
-        for (PathComponent component : resolvePath(path, aliasMap)) {
+        for (PathComponent<T, U> component : resolvePath(path, aliasMap)) {
             if (component.isLast()) {
                 // resolve aliases if needed
                 return lastPathComponent(component);
@@ -314,14 +312,13 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    private PathComponent lastPathComponent(PathComponent<Attribute, Relationship> component) {
+    private PathComponent<T, U> lastPathComponent(PathComponent<T, U> component) {
         
         if (!component.isAlias()) {
             return component;
         }
 
-        for (PathComponent subcomponent : component.getAliasedPath()) {
+        for (PathComponent<T, U> subcomponent : component.getAliasedPath()) {
             if (subcomponent.isLast()) {
                 return lastPathComponent(subcomponent);
             }
@@ -343,10 +340,9 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
      * 
      * @since 3.0
      */
-    @SuppressWarnings("unchecked")
-    public abstract <T extends Attribute, U extends Relationship> Iterable<PathComponent<T, U>> resolvePath(
+    public abstract Iterable<PathComponent<T, U>> resolvePath(
             Expression pathExp,
-            Map aliasMap);
+            Map<String, String> aliasMap);
 
     /**
      * Processes expression <code>pathExp</code> and returns an Iterator of path
@@ -375,7 +371,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
 
         private final StringTokenizer tokens;
         private final String path;
-        private Entity currentEntity;
+        private Entity<E,T,U> currentEntity;
 
         PathIterator(String path) {
             currentEntity = Entity.this;
@@ -394,7 +390,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
             }
             
             // see if this is an attribute
-            Attribute attr = currentEntity.getAttribute(pathComp);
+            T attr = currentEntity.getAttribute(pathComp);
             if (attr != null) {
                 // do a sanity check...
                 if (tokens.hasMoreTokens()) {
@@ -404,7 +400,7 @@ public abstract class Entity implements CayenneMapEntry, XMLSerializable, Serial
                 return attr;
             }
 
-            Relationship rel = currentEntity.getRelationship(pathComp);
+            U rel = currentEntity.getRelationship(pathComp);
             if (rel != null) {
                 currentEntity = rel.getTargetEntity();
                 if (currentEntity != null || !tokens.hasMoreTokens()) { //otherwise an exception will be thrown

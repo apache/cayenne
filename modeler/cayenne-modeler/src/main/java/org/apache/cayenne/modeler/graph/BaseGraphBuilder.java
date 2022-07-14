@@ -289,7 +289,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     /**
      * Post (i.e. after creation on entity cell) process of the entity
      */
-    protected void postProcessEntity(Entity entity, DefaultGraphCell cell) {
+    protected void postProcessEntity(Entity<?,?,?> entity, DefaultGraphCell cell) {
         for (Relationship rel : entity.getRelationships()) {
             if (rel.getSourceEntity() != null && rel.getTargetEntity() != null) {
                 DefaultEdge edge = createRelationshipCell(rel);

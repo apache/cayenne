@@ -22,7 +22,7 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 
-public class MockRelationship extends Relationship {
+public class MockRelationship extends Relationship<MockEntity, MockAttribute, MockRelationship> {
 
     public MockRelationship() {
 

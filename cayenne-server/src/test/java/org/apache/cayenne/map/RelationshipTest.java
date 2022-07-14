@@ -28,7 +28,7 @@ public class RelationshipTest {
 
     @Test
     public void testName() throws Exception {
-        Relationship rel = new MockRelationship();
+        MockRelationship rel = new MockRelationship();
 
         String tstName = "tst_name";
         rel.setName(tstName);
@@ -37,16 +37,16 @@ public class RelationshipTest {
 
     @Test
     public void testSourceEntity() {
-        Relationship rel = new MockRelationship();
-        Entity tstEntity = new MockEntity();
+        MockRelationship rel = new MockRelationship();
+        MockEntity tstEntity = new MockEntity();
         rel.setSourceEntity(tstEntity);
         assertSame(tstEntity, rel.getSourceEntity());
     }
 
     @Test
     public void testTargetEntity() {
-        Relationship rel = new MockRelationship();
-        Entity tstEntity = new MockEntity();
+        MockRelationship rel = new MockRelationship();
+        MockEntity tstEntity = new MockEntity();
         tstEntity.setName("abc");
         rel.setTargetEntityName(tstEntity);
         assertSame("abc", rel.getTargetEntityName());
@@ -54,7 +54,7 @@ public class RelationshipTest {
 
     @Test
     public void testTargetEntityName() {
-        Relationship rel = new MockRelationship();
+        MockRelationship rel = new MockRelationship();
         rel.setTargetEntityName("abc");
         assertSame("abc", rel.getTargetEntityName());
     }

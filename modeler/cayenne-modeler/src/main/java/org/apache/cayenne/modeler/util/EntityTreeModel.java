@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * Swing TreeModel for Entity attributes and relationships
@@ -41,7 +40,7 @@ import java.util.Vector;
  * @since 1.1
  */
 public class EntityTreeModel implements TreeModel {
-    protected Entity root;
+    protected Entity<?,?,?> root;
     protected Map<Object, ConfigurationNode[]> sortedChildren;
 
     /**
@@ -49,7 +48,7 @@ public class EntityTreeModel implements TreeModel {
      */
     protected EntityTreeFilter filter;
 
-    public EntityTreeModel(Entity root) {
+    public EntityTreeModel(Entity<?,?,?> root) {
         this.root = root;
         sortedChildren = new HashMap<>();
     }
@@ -92,6 +91,7 @@ public class EntityTreeModel implements TreeModel {
         // do nothing...
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private ConfigurationNode[] sortedChildren(Object node) {
         Entity entity = entityForNonLeafNode(node);
 
@@ -103,19 +103,19 @@ public class EntityTreeModel implements TreeModel {
         ConfigurationNode[] sortedForNode = sortedChildren.get(node);
 
         if (sortedForNode == null) {
-            Collection<? extends Attribute> attributes = entity.getAttributes();
-            Collection<? extends Relationship> relationships = entity.getRelationships();
+            Collection<Attribute<?,?,?>> attributes = entity.getAttributes();
+            Collection<Relationship<?,?,?>> relationships = entity.getRelationships();
 
             List<ConfigurationNode> nodes = new ArrayList<>();
 
             // combine two collections in an array
-            for (Attribute attr : attributes) {
+            for (Attribute<?,?,?> attr : attributes) {
                 if (filter == null || filter.attributeMatch(node, attr)) {
                     nodes.add((ConfigurationNode)attr);
                 }
             }
 
-            for (Relationship rel : relationships) {
+            for (Relationship<?,?,?> rel : relationships) {
                 if (filter == null || filter.relationshipMatch(node, rel)) {
                     nodes.add((ConfigurationNode)rel);
                 }
@@ -140,19 +140,19 @@ public class EntityTreeModel implements TreeModel {
     /**
      * Removes children cache for specified entity.
      */
-    public void invalidateChildren(Entity entity) {
+    public void invalidateChildren(Entity<?,?,?> entity) {
         sortedChildren.remove(entity);
 
-        for (Relationship rel : entity.getRelationships()) {
+        for (Relationship<?,?,?> rel : entity.getRelationships()) {
             sortedChildren.remove(rel);
         }
     }
 
-    private Entity entityForNonLeafNode(Object node) {
+    private Entity<?,?,?> entityForNonLeafNode(Object node) {
         if (node instanceof Entity) {
-            return (Entity) node;
+            return (Entity<?,?,?>) node;
         } else if (node instanceof Relationship) {
-            return ((Relationship) node).getTargetEntity();
+            return ((Relationship<?,?,?>) node).getTargetEntity();
         }
 
         String className = (node != null) ? node.getClass().getName() : "null";

@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -52,7 +51,8 @@ import java.util.function.Function;
  * the information about the Java class itself, as well as its mapping to the
  * DbEntity layer.
  */
-public class ObjEntity extends Entity implements ObjEntityListener, ConfigurationNode {
+public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
+        implements ObjEntityListener, ConfigurationNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntity.class);
 
@@ -406,7 +406,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      */
     @Override
     public ObjAttribute getAttribute(String name) {
-        ObjAttribute attribute = (ObjAttribute) super.getAttribute(name);
+        ObjAttribute attribute = super.getAttribute(name);
         if (attribute != null) {
             return attribute;
         }
@@ -498,9 +498,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         }
     }
 
-    @SuppressWarnings("unchecked")
     final Map<String, ObjAttribute> getAttributeMapInternal() {
-        return (Map<String, ObjAttribute>) super.getAttributeMap();
+        return super.getAttributeMap();
     }
 
     /**
@@ -539,9 +538,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * 
      * @since 1.1
      */
-    @SuppressWarnings("unchecked")
     public Collection<ObjAttribute> getDeclaredAttributes() {
-        return (Collection<ObjAttribute>) super.getAttributes();
+        return super.getAttributes();
     }
 
     /**
@@ -556,7 +554,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * @since 4.0
      */
     public ObjAttribute getDeclaredAttribute(String name) {
-        return (ObjAttribute) super.getAttribute(name);
+        return super.getAttribute(name);
     }
 
     /**
@@ -565,7 +563,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      */
     @Override
     public ObjRelationship getRelationship(String name) {
-        ObjRelationship relationship = (ObjRelationship) super.getRelationship(name);
+        ObjRelationship relationship = super.getRelationship(name);
         if (relationship != null) {
             return relationship;
         }
@@ -581,7 +579,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     @Override
     public Map<String, ObjRelationship> getRelationshipMap() {
         if (superEntityName == null) {
-            return getRelationshipMapInternal();
+            return super.getRelationshipMap();
         }
 
         Map<String, ObjRelationship> relationshipMap = new HashMap<>();
@@ -594,7 +592,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
      * hierarchy.
      */
     final void appendRelationships(Map<String, ObjRelationship> map) {
-        map.putAll(getRelationshipMapInternal());
+        map.putAll(super.getRelationshipMap());
 
         ObjEntity superEntity = getSuperEntity();
         if (superEntity != null) {
@@ -607,20 +605,14 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         return getRelationshipMap().values();
     }
 
-    @SuppressWarnings("unchecked")
-    final Map<String, ObjRelationship> getRelationshipMapInternal() {
-        return (Map<String, ObjRelationship>) super.getRelationshipMap();
-    }
-
     /**
      * Returns a Collection of all relationships that belong to this ObjEntity,
      * excluding inherited attributes.
      * 
      * @since 1.1
      */
-    @SuppressWarnings("unchecked")
     public Collection<ObjRelationship> getDeclaredRelationships() {
-        return (Collection<ObjRelationship>) super.getRelationships();
+        return super.getRelationships();
     }
 
     /**
@@ -752,35 +744,16 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
     }
 
     /**
-     * @since 3.0
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public PathComponent<ObjAttribute, ObjRelationship> lastPathComponent(Expression path, Map aliasMap) {
-        return super.lastPathComponent(path, aliasMap);
-    }
-
-    /**
      * Returns an Iterable instance over expression path components based on
      * this entity.
      * 
      * @since 3.0
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public Iterable<PathComponent<ObjAttribute, ObjRelationship>> resolvePath(final Expression pathExp,
-            final Map aliasMap) {
-
+    public Iterable<PathComponent<ObjAttribute, ObjRelationship>> resolvePath(Expression pathExp, Map<String, String> aliasMap) {
         if (pathExp.getType() == Expression.OBJ_PATH) {
-
-            return new Iterable<PathComponent<ObjAttribute, ObjRelationship>>() {
-
-                public Iterator iterator() {
-                    return new PathComponentIterator(ObjEntity.this, (String) pathExp.getOperand(0), aliasMap);
-                }
-            };
+            return () -> new PathComponentIterator<>(ObjEntity.this, (String) pathExp.getOperand(0), aliasMap);
         }
-
         throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  OBJ_PATH is expected.");
     }
 
@@ -856,8 +829,8 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         return getDbEntity().translateToRelatedEntity(dbClone, dbPath);
     }
 
-    private PathComponentIterator createPathIterator(String path, Map<String, String> aliasMap) {
-        return new PathComponentIterator(ObjEntity.this, path, aliasMap);
+    private PathComponentIterator<ObjEntity, ObjAttribute, ObjRelationship> createPathIterator(String path, Map<String, String> aliasMap) {
+        return new PathComponentIterator<>(this, path, aliasMap);
     }
 
     /**
@@ -877,22 +850,22 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
         // something...
         // seems generally useful
 
-        String toDbPath(PathComponentIterator objectPathComponents) {
+        String toDbPath(PathComponentIterator<ObjEntity, ObjAttribute, ObjRelationship> objectPathComponents) {
             StringBuilder buf = new StringBuilder();
             while (objectPathComponents.hasNext()) {
-                PathComponent<Attribute, Relationship> component = objectPathComponents.next();
+                PathComponent<ObjAttribute, ObjRelationship> component = objectPathComponents.next();
 
-                Iterator<?> dbSubpath;
+                Iterator<? extends CayenneMapEntry> dbSubpath;
                 if(component.getAttribute() != null) {
-                    dbSubpath = ((ObjAttribute) component.getAttribute()).getDbPathIterator();
+                    dbSubpath = component.getAttribute().getDbPathIterator();
                     buildPath(dbSubpath, component, buf);
                 } else if(component.getRelationship() != null) {
-                    dbSubpath = ((ObjRelationship) component.getRelationship()).getDbRelationships().iterator();
+                    dbSubpath = component.getRelationship().getDbRelationships().iterator();
                     buildPath(dbSubpath, component, buf);
                 } else if(component.getAliasedPath() != null) {
-                    for(PathComponent<Attribute, Relationship> pathComponent : component.getAliasedPath()) {
+                    for(PathComponent<ObjAttribute, ObjRelationship> pathComponent : component.getAliasedPath()) {
                        if(pathComponent.getRelationship() != null) {
-                           dbSubpath = ((ObjRelationship) pathComponent.getRelationship()).getDbRelationships().iterator();
+                           dbSubpath = pathComponent.getRelationship().getDbRelationships().iterator();
                            buildPath(dbSubpath, pathComponent, buf);
                        }
                     }
@@ -904,7 +877,7 @@ public class ObjEntity extends Entity implements ObjEntityListener, Configuratio
             return buf.toString();
         }
 
-        private void buildPath(Iterator<?> dbSubpath, PathComponent<Attribute, Relationship> component, StringBuilder buf) {
+        private void buildPath(Iterator<?> dbSubpath, PathComponent<ObjAttribute, ObjRelationship> component, StringBuilder buf) {
             while (dbSubpath.hasNext()) {
                 CayenneMapEntry subComponent = (CayenneMapEntry) dbSubpath.next();
                 if (buf.length() > 0) {

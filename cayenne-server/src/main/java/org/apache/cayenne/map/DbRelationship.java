@@ -37,7 +37,7 @@ import java.util.function.Function;
  * A DbRelationship is a descriptor of a database inter-table relationship based
  * on one or more primary key/foreign key pairs.
  */
-public class DbRelationship extends Relationship implements ConfigurationNode {
+public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelationship> implements ConfigurationNode {
 
     // The columns through which the join is implemented.
     protected List<DbJoin> joins = new ArrayList<>(2);
