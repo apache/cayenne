@@ -120,7 +120,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
     }
 
     public void currentObjEntityChanged(EntityDisplayEvent e) {
-        Entity entity = e.getEntity();
+        Entity<?,?,?> entity = e.getEntity();
 
         if (e.isMainTabFocus() && entity instanceof ObjEntity) {
             if (getSelectedComponent() != entityPanel) {
@@ -145,7 +145,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
         }
 
         // update relationship selection
-        Relationship[] rels = e.getRelationships();
+        Relationship<?,?,?>[] rels = e.getRelationships();
         ObjRelationship[] objRels = new ObjRelationship[rels.length];
 
         System.arraycopy(rels, 0, objRels, 0, rels.length);
@@ -164,7 +164,7 @@ public class ObjEntityTabbedView extends JTabbedPane implements ObjEntityDisplay
             return;
 
         // update attribute selection
-        Attribute[] attrs = e.getAttributes();
+        Attribute<?,?,?>[] attrs = e.getAttributes();
         ObjAttribute[] objAttrs = new ObjAttribute[attrs.length];
 
         System.arraycopy(attrs, 0, objAttrs, 0, attrs.length);

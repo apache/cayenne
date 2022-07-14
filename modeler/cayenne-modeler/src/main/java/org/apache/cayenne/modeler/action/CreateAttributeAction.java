@@ -182,7 +182,7 @@ public class CreateAttributeAction extends CayenneAction {
         }
 
         if (object instanceof Attribute) {
-            return ((Attribute) object).getParent() != null && ((Attribute) object).getParent() instanceof Entity;
+            return ((Attribute<?,?,?>) object).getParent() instanceof Entity;
         }
 
         return false;

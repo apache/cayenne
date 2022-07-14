@@ -35,7 +35,7 @@ import java.awt.event.FocusListener;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor implements  FocusListener {
+public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjRelationshipTableModel> implements  FocusListener {
 
     private static final int REL_TARGET_PATH_COLUMN = 2;
     private static int enterPressedCount = 0;
@@ -66,9 +66,9 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
     }
 
     @Override
-    protected void initializeCombo(CayenneTableModel model, int row, final JTable table) {
+    protected void initializeCombo(ObjRelationshipTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        comboBoxPathChooser.setSelectedItem(((ObjRelationshipTableModel) model).getRelationship(row).getDbRelationshipPath());
+        comboBoxPathChooser.setSelectedItem(model.getRelationship(row).getDbRelationshipPath());
 
         enterPressedCount = 0;
         comboBoxPathChooser.setToolTipText("To choose relationship press enter two times.To choose next relationship press dot.");
@@ -143,13 +143,13 @@ public class DbRelationshipPathComboBoxEditor extends PathChooserComboBoxCellEdi
     }
 
     @Override
-    protected Object getCurrentNodeToInitializeCombo(CayenneTableModel model, int row) {
+    protected Object getCurrentNodeToInitializeCombo(ObjRelationshipTableModel model, int row) {
         return getCurrentNode(getPathToInitializeCombo(model, row));
     }
 
     @Override
-    protected String getPathToInitializeCombo(CayenneTableModel model, int row) {
-        String pathString = ((ObjRelationshipTableModel) model).getRelationship(row).getDbRelationshipPath();
+    protected String getPathToInitializeCombo(ObjRelationshipTableModel model, int row) {
+        String pathString = model.getRelationship(row).getDbRelationshipPath();
         if (pathString == null) {
             return "";
         }

@@ -35,7 +35,7 @@ import java.awt.event.ActionEvent;
  */
 public abstract class BaseViewEntityAction extends CayenneAction {
 
-    abstract protected Entity getEntity();
+    abstract protected Entity<?,?,?> getEntity();
 
     public BaseViewEntityAction(String name, Application application) {
         super(name, application);
@@ -50,13 +50,13 @@ public abstract class BaseViewEntityAction extends CayenneAction {
     }
 
     protected void viewEntity() {
-        Entity entity = getEntity();
+        Entity<?,?,?> entity = getEntity();
         if(entity != null) {
             navigateToEntity(entity);
         }
     }
 
-    public void navigateToEntity(Entity entity) {
+    public void navigateToEntity(Entity<?,?,?> entity) {
         TreePath path = buildTreePath(entity);
         editor().getProjectTreeView().getSelectionModel().setSelectionPath(path);
 

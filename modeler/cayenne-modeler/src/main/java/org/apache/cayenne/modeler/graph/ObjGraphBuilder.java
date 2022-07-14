@@ -20,10 +20,11 @@ package org.apache.cayenne.modeler.graph;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjAttributeListener;
@@ -35,7 +36,6 @@ import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
-import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.util.Collection;
@@ -45,30 +45,30 @@ import java.util.Map;
 /**
  * Builder of ObjEntity information-based graph (relative to UML class diagram)
  */
-class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
+class ObjGraphBuilder extends BaseGraphBuilder<ObjEntity, ObjAttribute, ObjRelationship> implements ObjEntityListener,
         ObjAttributeListener, ObjRelationshipListener {
 
     static final Color ENTITY_COLOR = new Color(255, 255, 185);
 
-    Map<Entity, DefaultEdge> inheritanceEdges;
+    Map<ObjEntity, DefaultEdge> inheritanceEdges;
 
     public ObjGraphBuilder() {
         inheritanceEdges = new HashMap<>();
     }
 
     @Override
-    protected Collection<? extends Entity> getEntities(DataMap map) {
+    protected Collection<ObjEntity> getEntities(DataMap map) {
         return map.getObjEntities();
     }
 
     @Override
-    protected boolean isIsolated(DataChannelDescriptor domain, Entity entity) {
+    protected boolean isIsolated(DataChannelDescriptor domain, ObjEntity entity) {
 
         if (!super.isIsolated(domain, entity)) {
             return false;
         }
 
-        if (((ObjEntity) entity).getSuperEntity() != null) {
+        if (entity.getSuperEntity() != null) {
             return false;
         }
 
@@ -79,13 +79,13 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
     }
 
     @Override
-    protected void postProcessEntity(Entity entity, DefaultGraphCell cell) {
+    protected void postProcessEntity(ObjEntity entity, DefaultGraphCell cell) {
         super.postProcessEntity(entity, cell);
 
         GraphConstants.setBackground(cell.getAttributes(), ENTITY_COLOR);
         GraphConstants.setOpaque(cell.getAttributes(), true);
 
-        DefaultEdge edge = createInheritanceEdge((ObjEntity) entity);
+        DefaultEdge edge = createInheritanceEdge(entity);
         if (edge != null) {
             createdObjects.add(edge);
         }
@@ -119,7 +119,7 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
     }
 
     @Override
-    protected EntityCellMetadata getCellMetadata(Entity e) {
+    protected ObjEntityCellMetadata getCellMetadata(ObjEntity e) {
         return new ObjEntityCellMetadata(this, e.getName());
     }
 
@@ -141,13 +141,13 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
     }
 
     public void objEntityAdded(EntityEvent e) {
-        insertEntityCell(e.getEntity());
+        insertEntityCell((ObjEntity) e.getEntity());
     }
 
     public void objEntityChanged(EntityEvent e) {
         remapEntity(e);
 
-        updateEntityCell(e.getEntity());
+        updateEntityCell((ObjEntity)e.getEntity());
 
         // maybe super entity was changed
         ObjEntity entity = (ObjEntity) e.getEntity();
@@ -178,19 +178,19 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
     }
 
     public void objEntityRemoved(EntityEvent e) {
-        removeEntityCell(e.getEntity());
+        removeEntityCell((ObjEntity)e.getEntity());
     }
 
     public void objAttributeAdded(AttributeEvent e) {
-        updateEntityCell(e.getEntity());
+        updateEntityCell((ObjEntity)e.getEntity());
     }
 
     public void objAttributeChanged(AttributeEvent e) {
-        updateEntityCell(e.getEntity());
+        updateEntityCell((ObjEntity)e.getEntity());
     }
 
     public void objAttributeRemoved(AttributeEvent e) {
-        updateEntityCell(e.getEntity());
+        updateEntityCell((ObjEntity)e.getEntity());
     }
 
     public void objRelationshipAdded(RelationshipEvent e) {
@@ -199,15 +199,15 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
 
     public void objRelationshipChanged(RelationshipEvent e) {
         remapRelationship(e);
-        updateRelationshipCell(e.getRelationship());
+        updateRelationshipCell((ObjRelationship) e.getRelationship());
     }
 
     public void objRelationshipRemoved(RelationshipEvent e) {
-        removeRelationshipCell(e.getRelationship());
+        removeRelationshipCell((ObjRelationship)e.getRelationship());
     }
 
     @Override
-    protected void removeEntityCell(Entity e) {
+    protected void removeEntityCell(ObjEntity e) {
         super.removeEntityCell(e);
         inheritanceEdges.remove(e);
     }

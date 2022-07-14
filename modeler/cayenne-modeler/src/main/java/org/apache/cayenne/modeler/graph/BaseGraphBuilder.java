@@ -41,6 +41,7 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
@@ -70,7 +71,8 @@ import com.jgraph.layout.organic.JGraphOrganicLayout;
 /**
  * Base class for building graphs of entities
  */
-abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
+abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
+        implements GraphBuilder<E, A, R>, DataMapListener {
 
     static final Font EDGE_FONT = new Font("Verdana", Font.PLAIN, 10);
 
@@ -106,7 +108,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
      */
     protected transient ProjectController mediator;
 
-    protected transient Entity selectedEntity;
+    protected transient Entity<E, A, R> selectedEntity;
 
     transient JPopupMenu popup;
 
@@ -148,7 +150,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             DefaultGraphCell mapCell = new DefaultGraphCell();
             createdObjects.add(mapCell);
 
-            for (Entity entity : getEntities(map)) {
+            for (E entity : getEntities(map)) {
                 DefaultGraphCell cell = createEntityCell(entity);
 
                 // mapCell.add(cell);
@@ -164,7 +166,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
          * 2. Add all relationships
          */
         for (DataMap map : domain.getDataMaps()) {
-            for (Entity entity : getEntities(map)) {
+            for (E entity : getEntities(map)) {
                 DefaultGraphCell sourceCell = entityCells.get(entity.getName());
 
                 postProcessEntity(entity, sourceCell);
@@ -207,7 +209,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             // JGraphSimpleLayout layout = new JGraphSimpleLayout(JGraphSimpleLayout.TYPE_TILT, 4000, 2000);
             layout.run(facade);
             // Obtain a map of the resulting attribute changes from the facade
-            Map nested = facade.createNestedMap(true, true);
+            Map<?,?> nested = facade.createNestedMap(true, true);
 
             // Apply the results to the actual graph
             edit(nested);
@@ -216,14 +218,15 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
 
 	private void addMouseListeners() {
 		graph.addMouseListener(new MouseAdapter() {
+            @SuppressWarnings("unchecked")
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     Object selected = graph.getSelectionCell();
-                    if (selected != null && selected instanceof DefaultGraphCell) {
+                    if (selected instanceof DefaultGraphCell) {
                         Object userObject = ((DefaultGraphCell) selected).getUserObject();
                         if (userObject instanceof EntityCellMetadata) {
-                            showPopup(e.getPoint(), ((EntityCellMetadata) userObject).fetchEntity());
+                            showPopup(e.getPoint(), ((EntityCellMetadata<E,A,R>) userObject).fetchEntity());
                         }
                     }
                 }
@@ -257,7 +260,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             for (int isolatedIndex = 0; isolatedIndex < isolatedObjects.size();) {
                 for (int i = 0; isolatedIndex < isolatedObjects.size() && i < x - row; i++) {
                     GraphConstants.setBounds(isolatedObjects.get(isolatedIndex).getAttributes(),
-                            new Rectangle2D.Double(pref.width - posX, pref.height - 3 * posY / 2, 10, 10));
+                            new Rectangle2D.Double(pref.width - posX, pref.height - (3.0 * posY) / 2, 10, 10));
                     isolatedIndex += 2; // because every 2nd object is port
                     posX += dx;
                 }
@@ -268,7 +271,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         }
 	}
 
-    protected DefaultGraphCell createEntityCell(Entity entity) {
+    protected DefaultGraphCell createEntityCell(E entity) {
         DefaultGraphCell cell = new DefaultGraphCell(getCellMetadata(entity));
 
         GraphConstants.setResize(cell.getAttributes(), true);
@@ -289,8 +292,8 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     /**
      * Post (i.e. after creation on entity cell) process of the entity
      */
-    protected void postProcessEntity(Entity<?,?,?> entity, DefaultGraphCell cell) {
-        for (Relationship rel : entity.getRelationships()) {
+    protected void postProcessEntity(E entity, DefaultGraphCell cell) {
+        for (R rel : entity.getRelationships()) {
             if (rel.getSourceEntity() != null && rel.getTargetEntity() != null) {
                 DefaultEdge edge = createRelationshipCell(rel);
                 if (edge != null) {
@@ -304,12 +307,12 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
      * Returns whether an entity is not connected to any other TODO: not fine
      * algorithm, it iterates through all entities and all rels
      */
-    protected boolean isIsolated(DataChannelDescriptor domain, Entity entity) {
+    protected boolean isIsolated(DataChannelDescriptor domain, E entity) {
         if (entity.getRelationships().size() == 0) {
             // searching for rels that have a target="entity"
 
             for (DataMap map : domain.getDataMaps()) {
-                for (Entity source : getEntities(map)) {
+                for (E source : getEntities(map)) {
                     if (source.getAnyRelationship(entity) != null) {
                         return false;
                     }
@@ -320,13 +323,14 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         return false;
     }
 
-    protected abstract Collection<? extends Entity> getEntities(DataMap map);
+    protected abstract Collection<E> getEntities(DataMap map);
 
     /**
      * Returns label for relationship on the graph, considering its "mandatory"
      * and "to-many" properties
      */
-    private static String getRelationshipLabel(Relationship rel) {
+    private static <E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
+    String getRelationshipLabel(Relationship<E, A, R> rel) {
         if (rel == null) {
             return null;
         }
@@ -340,9 +344,9 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     /**
      * Returns metadata (user object) for this cell
      */
-    protected abstract EntityCellMetadata getCellMetadata(Entity e);
+    protected abstract EntityCellMetadata<E, A, R> getCellMetadata(E e);
 
-    protected void showPopup(Point p, Entity entity) {
+    protected void showPopup(Point p, Entity<E, A, R> entity) {
         selectedEntity = entity;
         if (popup == null) {
             popup = createPopupMenu();
@@ -351,7 +355,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     }
 
     @Override
-    public Entity getSelectedEntity() {
+    public Entity<E, A, R> getSelectedEntity() {
         return selectedEntity;
     }
 
@@ -375,7 +379,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     /**
      * Updates specified entity on the graph
      */
-    protected void updateEntityCell(Entity e) {
+    protected void updateEntityCell(E e) {
         DefaultGraphCell cell = entityCells.get(e.getName());
         if (cell != null) {
             GraphConstants.setValue(cell.getAttributes(), getCellMetadata(e));
@@ -388,7 +392,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         }
     }
 
-    protected void updateRelationshipCell(Relationship rel) {
+    protected void updateRelationshipCell(R rel) {
         if (rel.getSourceEntity() != null && rel.getTargetEntity() != null) {
             DefaultEdge edge = relCells.get(getQualifiedName(rel));
             if (edge != null) {
@@ -403,7 +407,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         }
     }
 
-    protected void removeEntityCell(Entity e) {
+    protected void removeEntityCell(E e) {
         final DefaultGraphCell cell = entityCells.get(e.getName());
         if (cell != null) {
             runWithUndoDisabled(() -> graph.getGraphLayoutCache().remove(new Object[] { cell }, true, true));
@@ -411,7 +415,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         }
     }
 
-    protected void removeRelationshipCell(Relationship rel) {
+    protected void removeRelationshipCell(R rel) {
         final DefaultEdge edge = relCells.get(getQualifiedName(rel));
         if (edge != null) {
             runWithUndoDisabled(() -> graph.getGraphLayoutCache().remove(new Object[] { edge }));
@@ -419,9 +423,9 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         }
     }
 
-    protected DefaultEdge createRelationshipCell(Relationship rel) {
+    protected DefaultEdge createRelationshipCell(R rel) {
         if (!relCells.containsKey(getQualifiedName(rel))) {
-            Relationship reverse = rel.getReverseRelationship();
+            Relationship<E, A, R> reverse = rel.getReverseRelationship();
 
             DefaultEdge edge = new DefaultEdge();
 
@@ -448,12 +452,12 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         return null;
     }
 
-    protected void insertRelationshipCell(Relationship rel) {
+    protected void insertRelationshipCell(R rel) {
         DefaultEdge edge = createRelationshipCell(rel);
         insert(edge);
     }
 
-    protected void insertEntityCell(Entity entity) {
+    protected void insertEntityCell(E entity) {
         DefaultGraphCell cell = createEntityCell(entity);
 
         // putting cell to a random posistion..
@@ -469,7 +473,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     /**
      * Updates relationship labels for specified relationship edge.
      */
-    protected void updateRelationshipLabels(DefaultEdge edge, Relationship rel, Relationship reverse) {
+    protected void updateRelationshipLabels(DefaultEdge edge, Relationship<E, A, R> rel, Relationship<E, A, R> reverse) {
         DefaultGraphCell sourceCell = entityCells.get(rel.getSourceEntity().getName());
         DefaultGraphCell targetCell = entityCells.get(rel.getTargetEntity().getName());
 
@@ -502,7 +506,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
 
     @Override
     public void dataMapRemoved(DataMapEvent e) {
-        for (Entity entity : getEntities(e.getDataMap())) {
+        for (E entity : getEntities(e.getDataMap())) {
             removeEntityCell(entity);
         }
     }
@@ -539,9 +543,10 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     /**
      * Checks if entity name has changed, then changes map key
      */
+    @SuppressWarnings("unchecked")
     protected void remapRelationship(RelationshipEvent e) {
         if (e.isNameChange()) {
-            relCells.put(getQualifiedName(e.getRelationship()),
+            relCells.put(getQualifiedName((Relationship<E, A, R>)e.getRelationship()),
                     relCells.remove(e.getEntity().getName() + "." + e.getOldName()));
         }
     }
@@ -550,7 +555,8 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
      * Returns qualified name (entity name + relationship name) for a
      * relationship
      */
-    static String getQualifiedName(Relationship rel) {
+    static <E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
+    String getQualifiedName(Relationship<E, A, R> rel) {
         return rel.getSourceEntity().getName() + "." + rel.getName();
     }
 
@@ -575,7 +581,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         encoder.end();
     }
 
-    private void edit(final Map map) {
+    private void edit(final Map<?,?> map) {
         runWithUndoDisabled(() -> graph.getGraphLayoutCache().edit(map));
     }
 

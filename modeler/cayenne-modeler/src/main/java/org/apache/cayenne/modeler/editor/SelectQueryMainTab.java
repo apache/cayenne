@@ -232,7 +232,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
                  * Advanced checking. See CAY-888 #1
                  */
                 if (query.getRoot() instanceof Entity) {
-                    checkExpression((Entity) query.getRoot(), exp);
+                    checkExpression((Entity<?,?,?>) query.getRoot(), exp);
                 }
 
                 return exp;
@@ -256,7 +256,7 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      * @param ex Expression to check
      * @throws ValidationException when something's wrong
      */
-    static void checkExpression(Entity root, Expression ex) throws ValidationException {
+    static void checkExpression(Entity<?,?,?> root, Expression ex) throws ValidationException {
         try {
             if (ex instanceof ASTPath) {
                 /*

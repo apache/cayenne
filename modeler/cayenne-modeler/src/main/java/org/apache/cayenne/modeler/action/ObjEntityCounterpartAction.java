@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.action;
 
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
 
@@ -38,7 +38,7 @@ public class ObjEntityCounterpartAction extends BaseViewEntityAction {
     }
 
     @Override
-    protected Entity getEntity() {
+    protected DbEntity getEntity() {
         ObjEntity objEntity = getProjectController().getCurrentObjEntity();
         if (objEntity == null) {
             return null;

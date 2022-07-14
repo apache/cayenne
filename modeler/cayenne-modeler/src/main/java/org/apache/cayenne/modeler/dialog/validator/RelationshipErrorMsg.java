@@ -39,18 +39,16 @@ import org.apache.cayenne.validation.ValidationFailure;
 public class RelationshipErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
-    protected Entity entity;
-    protected Relationship rel;
+    protected Entity<?,?,?> entity;
+    protected Relationship<?,?,?> rel;
 
     /**
      * Constructor for RelationshipErrorMsg.
-     * 
-     * @param result
      */
     public RelationshipErrorMsg(ValidationFailure result) {
         super(result);
         Object object = result.getSource();
-        rel = (Relationship) object;
+        rel = (Relationship<?,?,?>) object;
         entity = rel.getSourceEntity();
         map = entity.getDataMap();
         domain = (DataChannelDescriptor) Application

@@ -56,11 +56,6 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
         super(name);
     }
 
-    @Override
-    public DbEntity getSourceEntity() {
-        return (DbEntity) super.getSourceEntity();
-    }
-
     /**
      * @since 3.1
      */
@@ -111,7 +106,6 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      * 
      * @since 1.1
      */
-    @SuppressWarnings("unchecked")
     public Collection<DbAttribute> getTargetAttributes() {
         return mapJoinsToAttributes(DbJoin::getTarget);
     }
@@ -121,7 +115,6 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      * 
      * @since 1.1
      */
-    @SuppressWarnings("unchecked")
     public Collection<DbAttribute> getSourceAttributes() {
         return mapJoinsToAttributes(DbJoin::getSource);
     }
@@ -187,7 +180,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
             return null;
         }
 
-        Entity src = this.getSourceEntity();
+        DbEntity src = this.getSourceEntity();
 
         // special case - relationship to self with no joins...
         if (target == src && joins.size() == 0) {

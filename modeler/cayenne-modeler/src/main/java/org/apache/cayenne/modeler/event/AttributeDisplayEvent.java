@@ -25,12 +25,12 @@ import org.apache.cayenne.map.Entity;
 
 public class AttributeDisplayEvent extends EntityDisplayEvent {
    
-    protected final Attribute[] attributes;
+    protected final Attribute<?,?,?>[] attributes;
     
     public AttributeDisplayEvent(
             Object src,
-            Attribute attribute,
-            Entity entity,
+            Attribute<?,?,?> attribute,
+            Entity<?,?,?> entity,
             DataMap dataMap,
             DataChannelDescriptor domain) {
         this(src, new Attribute[]{attribute}, entity, dataMap, domain);
@@ -38,15 +38,15 @@ public class AttributeDisplayEvent extends EntityDisplayEvent {
 
     public AttributeDisplayEvent(
             Object src,
-            Attribute[] attributes,
-            Entity entity,
+            Attribute<?,?,?>[] attributes,
+            Entity<?,?,?> entity,
             DataMap dataMap,
             DataChannelDescriptor domain) {
         super(src, entity, dataMap, domain);
         this.attributes = attributes;
     }
     
-    public Attribute[] getAttributes() {
+    public Attribute<?,?,?>[] getAttributes() {
         return attributes;
     }
 }

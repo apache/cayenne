@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,10 +47,11 @@ import java.util.Map;
  * @since 1.1
  * @since 4.3 this query extends {@link ObjectSelect}
  */
+@SuppressWarnings("unchecked")
 public class EOQuery<T> extends ObjectSelect<T> {
 
 	protected Map<String, ?> plistMap;
-	protected Map bindings;
+	protected Map<String, String> bindings;
 
 	public EOQuery(ObjEntity root, Map<String, ?> plistMap) {
 		super();
@@ -99,11 +99,10 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		}
 
 		// prefetches
-		List prefetches = (List) plistMap.get("prefetchingRelationshipKeyPaths");
+		List<?> prefetches = (List<?>) plistMap.get("prefetchingRelationshipKeyPaths");
 		if (prefetches != null && !prefetches.isEmpty()) {
-			Iterator it = prefetches.iterator();
-			while (it.hasNext()) {
-				prefetch((String) it.next(), PrefetchTreeNode.UNDEFINED_SEMANTICS);
+			for (Object prefetch : prefetches) {
+				prefetch((String) prefetch, PrefetchTreeNode.UNDEFINED_SEMANTICS);
 			}
 		}
 
@@ -115,7 +114,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		}
 	}
 
-	public Collection getBindingNames() {
+	public Collection<String> getBindingNames() {
 		if (bindings == null) {
 			initBindings();
 		}
@@ -128,7 +127,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 			initBindings();
 		}
 
-		return (String) bindings.get(name);
+		return bindings.get(name);
 	}
 
 	private synchronized void initBindings() {
@@ -136,17 +135,17 @@ public class EOQuery<T> extends ObjectSelect<T> {
 			return;
 		}
 
-		bindings = new HashMap();
+		bindings = new HashMap<>();
 
 		if (!(root instanceof Entity)) {
 			return;
 		}
 
-		Map qualifier = (Map) plistMap.get("qualifier");
-		initBindings(bindings, (Entity) root, qualifier);
+		Map<String, ?> qualifier = (Map<String, ?>) plistMap.get("qualifier");
+		initBindings(bindings, (Entity<?,?,?>) root, qualifier);
 	}
 
-	private void initBindings(Map bindings, Entity entity, Map qualifier) {
+	private void initBindings(Map<String,String> bindings, Entity<?,?,?> entity, Map<String, ?> qualifier) {
 		if (qualifier == null) {
 			return;
 		}
@@ -162,7 +161,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 				return;
 			}
 
-			Map valueMap = (Map) value;
+			Map<String, ?> valueMap = (Map<String, ?>) value;
 			if (!"EOQualifierVariable".equals(valueMap.get("class")) || !valueMap.containsKey("_key")) {
 				return;
 			}
@@ -200,11 +199,10 @@ public class EOQuery<T> extends ObjectSelect<T> {
 			return;
 		}
 
-		List children = (List) qualifier.get("qualifiers");
+		List<Map<String, ?>> children = (List<Map<String, ?>>) qualifier.get("qualifiers");
 		if (children != null) {
-			Iterator it = children.iterator();
-			while (it.hasNext()) {
-				initBindings(bindings, entity, (Map) it.next());
+			for (Map<String, ?> child : children) {
+				initBindings(bindings, entity, child);
 			}
 		}
 	}
@@ -300,7 +298,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		 * @return boolean indicating whether the qualifier is "aggregate"
 		 *         qualifier
 		 */
-		static boolean isAggregate(Map qualifier) {
+		static boolean isAggregate(Map<String, ?> qualifier) {
 			boolean result = true;
 
 			String theClass = (String) qualifier.get("class");
@@ -324,7 +322,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		 *            - a Map containing the qualifier settings to examine.
 		 * @return int Expression type
 		 */
-		static int expressionTypeForQualifier(Map qualifierMap) {
+		static int expressionTypeForQualifier(Map<String, ?> qualifierMap) {
 			// get selector
 			String selector = (String) qualifierMap.get("selectorName");
 			return expressionTypeForSelector(selector);
@@ -341,7 +339,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		 */
 		static int expressionTypeForSelector(String selector) {
 			Integer expType = selectorToExpressionBridge().get(selector);
-			return (expType != null ? expType.intValue() : -1);
+			return (expType != null ? expType : -1);
 		}
 
 		/**
@@ -353,7 +351,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		 *            - containing the qualifier to examine
 		 * @return int aggregate Expression type
 		 */
-		static int aggregateExpressionClassForQualifier(Map qualifierMap) {
+		static int aggregateExpressionClassForQualifier(Map<String, ?> qualifierMap) {
 			String qualifierClass = (String) qualifierMap.get("class");
 			if (qualifierClass != null) {
 				if (qualifierClass.equalsIgnoreCase("EOAndQualifier")) {
@@ -377,7 +375,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 		 *            - Map representation of EOFetchSpecification
 		 * @return Expression translation of the EOFetchSpecification
 		 */
-		static Expression makeQualifier(EOObjEntity entity, Map qualifierMap) {
+		static Expression makeQualifier(EOObjEntity entity, Map<String, ?> qualifierMap) {
 			if (isAggregate(qualifierMap)) {
 				// the fetch specification has more than one qualifier
 				int aggregateClass = aggregateExpressionClassForQualifier(qualifierMap); // AND,
@@ -387,7 +385,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 				if (aggregateClass == Expression.NOT) {
 					// NOT qualifiers only have one child, keyed with
 					// "qualifier"
-					Map child = (Map) qualifierMap.get("qualifier");
+					Map<String, ?> child = (Map<String, ?>) qualifierMap.get("qualifier");
 					// build the child expression
 					Expression childExp = makeQualifier(entity, child);
 
@@ -398,13 +396,12 @@ public class EOQuery<T> extends ObjectSelect<T> {
 					// AND, OR qualifiers can have multiple children, keyed with
 					// "qualifiers"
 					// get the list of children
-					List children = (List) qualifierMap.get("qualifiers");
+					List<Map<String, ?>> children = (List<Map<String, ?>>) qualifierMap.get("qualifiers");
 					if (children != null) {
 						ArrayList<Expression> childExpressions = new ArrayList<>();
 						// build an Expression for each child
-						Iterator<Map> it = children.iterator();
-						while (it.hasNext()) {
-							Expression childExp = makeQualifier(entity, it.next());
+						for (Map<String, ?> child : children) {
+							Expression childExp = makeQualifier(entity, child);
 							childExpressions.add(childExp);
 						}
 						// join the child expressions and return the result
@@ -429,10 +426,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 				// Comparing two keys or key paths
 				key = (String) qualifierMap.get("leftValue");
 				comparisonValue = qualifierMap.get("rightValue");
-
-				// FIXME: I think EOKeyComparisonQualifier sytle Expressions are
-				// not
-				// supported...
+				// FIXME: I think EOKeyComparisonQualifier style Expressions are not supported...
 				return null;
 			} else if ("EOKeyValueQualifier".equals(qualifierClass)) {
 				// Comparing key with a value or parameterized value
@@ -442,9 +436,7 @@ public class EOQuery<T> extends ObjectSelect<T> {
 				if (value instanceof Map) {
 					Map<String, String> valueMap = (Map<String, String>) value;
 					String objClass = valueMap.get("class"); // can be a
-					// qualifier class
-					// or java type
-
+					// qualifier class or java type
 					if ("EOQualifierVariable".equals(objClass) && valueMap.containsKey("_key")) {
 						// make a parameterized expression
 						String paramName = valueMap.get("_key");

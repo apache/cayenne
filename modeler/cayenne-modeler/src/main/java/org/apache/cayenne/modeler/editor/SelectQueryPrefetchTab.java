@@ -128,15 +128,15 @@ public class SelectQueryPrefetchTab extends SelectQueryOrderingTab {
         return toolBar;
     }
 
-    protected TreeModel createBrowserModel(Entity entity) {
+    protected TreeModel createBrowserModel(Entity<?,?,?> entity) {
         EntityTreeModel treeModel = new EntityTreeModel(entity);
         treeModel.setFilter(
                 new EntityTreeFilter() {
-                    public boolean attributeMatch(Object node, Attribute attr) {
+                    public boolean attributeMatch(Object node, Attribute<?,?,?> attr) {
                         return false;
                     }
 
-                    public boolean relationshipMatch(Object node, Relationship rel) {
+                    public boolean relationshipMatch(Object node, Relationship<?,?,?> rel) {
                         return true;
                     }
                 });

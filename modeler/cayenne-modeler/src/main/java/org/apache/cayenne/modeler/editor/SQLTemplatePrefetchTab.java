@@ -138,7 +138,7 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         }
 
         this.sqlTemplate = (SQLTemplateDescriptor) query;
-        browser.setModel(createBrowserModel((Entity) sqlTemplate.getRoot()));
+        browser.setModel(createBrowserModel((Entity<?,?,?>) sqlTemplate.getRoot()));
 
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));
@@ -273,16 +273,16 @@ public class SQLTemplatePrefetchTab extends JPanel implements PropertyChangeList
         return buffer.toString();
     }
 
-    protected TreeModel createBrowserModel(Entity entity) {
+    protected TreeModel createBrowserModel(Entity<?,?,?> entity) {
 
         EntityTreeModel treeModel = new EntityTreeModel(entity);
         treeModel.setFilter(
                 new EntityTreeFilter() {
-                    public boolean attributeMatch(Object node, Attribute attr) {
+                    public boolean attributeMatch(Object node, Attribute<?,?,?> attr) {
                         return false;
                     }
 
-                    public boolean relationshipMatch(Object node, Relationship rel) {
+                    public boolean relationshipMatch(Object node, Relationship<?,?,?> rel) {
                         return true;
                     }
                 });

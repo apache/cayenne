@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.util;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.editor.ObjAttributeTableModel;
@@ -40,7 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor {
+public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAttributeTableModel> {
 
     private static final int DB_ATTRIBUTE_PATH_COLUMN = ObjAttributeTableModel.DB_ATTRIBUTE;
 
@@ -68,21 +67,21 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     }
 
     @Override
-    protected void initializeCombo(CayenneTableModel model, int row, final JTable table) {
+    protected void initializeCombo(ObjAttributeTableModel model, int row, final JTable table) {
         super.initializeCombo(model, row, table);
-        comboBoxPathChooser.setSelectedItem(((ObjAttributeTableModel) model).getAttribute(row).getValue().getDbAttributePath());
+        comboBoxPathChooser.setSelectedItem(model.getAttribute(row).getValue().getDbAttributePath());
         savePath = this.model.getAttribute(row).getValue().getDbAttributePath();
     }
 
 
     @Override
-    protected Object getCurrentNodeToInitializeCombo(CayenneTableModel model, int row) {
+    protected Object getCurrentNodeToInitializeCombo(ObjAttributeTableModel model, int row) {
         return getCurrentNode(getPathToInitializeCombo(model, row));
     }
 
     @Override
-    protected String getPathToInitializeCombo(CayenneTableModel model, int row) {
-        String pathString = ((ObjAttributeTableModel) model).getAttribute(row).getValue().getDbAttributePath();
+    protected String getPathToInitializeCombo(ObjAttributeTableModel model, int row) {
+        String pathString = model.getAttribute(row).getValue().getDbAttributePath();
         if (pathString == null) {
             return "";
         }
@@ -121,7 +120,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
                         getEditor().getEditorComponent()).setText(dbAttributePath);
             }
             List<String> currentNodeChildren = new ArrayList<>(getChildren(getCurrentNode(dbAttributePath), dbAttributePath));
-            comboBoxPathChooser.setModel(new DefaultComboBoxModel(currentNodeChildren.toArray()));
+            comboBoxPathChooser.setModel(new DefaultComboBoxModel<>(currentNodeChildren.toArray(new String[0])));
             comboBoxPathChooser.setSelectedItem(dbAttributePath);
             comboBoxPathChooser.showPopup();
             comboBoxPathChooser.setPopupVisible(true);
@@ -131,7 +130,7 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
     @Override
     protected EntityTreeModel createTreeModelForComboBox(int attributeIndexInTable) {
         ObjAttribute attribute = model.getAttribute(attributeIndexInTable).getValue();
-        Entity firstEntity = null;
+        DbEntity firstEntity = null;
         if (attribute.getDbAttribute() == null) {
 
             if (attribute.getParent() instanceof ObjEntity) {
@@ -162,9 +161,9 @@ public class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor
         return null;
     }
 
-    private Entity getFirstEntity(ObjAttribute attribute) {
+    private DbEntity getFirstEntity(ObjAttribute attribute) {
         Iterator<CayenneMapEntry> it = attribute.getDbPathIterator();
-        Entity firstEnt = attribute.getDbAttribute().getEntity();
+        DbEntity firstEnt = attribute.getDbAttribute().getEntity();
         boolean setEnt = false;
 
         while (it.hasNext()) {

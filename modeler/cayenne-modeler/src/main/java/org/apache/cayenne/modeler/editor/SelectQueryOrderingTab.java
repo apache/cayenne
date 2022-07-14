@@ -52,8 +52,6 @@ import javax.swing.tree.TreeModel;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
@@ -143,7 +141,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         }
 
         this.selectQuery = (SelectQueryDescriptor) query;
-        browser.setModel(createBrowserModel((Entity) selectQuery.getRoot()));
+        browser.setModel(createBrowserModel((Entity<?,?,?>) selectQuery.getRoot()));
         table.setModel(createTableModel());
 
         // init column sizes
@@ -207,13 +205,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         Icon removeIcon = ModelerUtil.buildIcon("icon-trash.png");
         remove.setIcon(removeIcon);
         remove.setDisabledIcon(FilteredIconFactory.createDisabledIcon(removeIcon));
-        remove.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                removeOrdering();
-            }
-
-        });
+        remove.addActionListener(e -> removeOrdering());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setBorder(BorderFactory.createEmptyBorder());
@@ -223,7 +215,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         return toolBar;
     }
 
-    protected TreeModel createBrowserModel(Entity entity) {
+    protected TreeModel createBrowserModel(Entity<?,?,?> entity) {
         return new EntityTreeModel(entity);
     }
 
@@ -322,7 +314,7 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
         }
 
         @Override
-        public Class getColumnClass(int column) {
+        public Class<?> getColumnClass(int column) {
             switch (column) {
                 case 0:
                     return String.class;
@@ -359,29 +351,24 @@ public class SelectQueryOrderingTab extends JPanel implements PropertyChangeList
 
             switch (column) {
                 case 1:
-                    if (((Boolean) value).booleanValue()) {
+                    if ((Boolean) value) {
                         ordering.setAscending();
-                    }
-                    else {
+                    } else {
                         ordering.setDescending();
                     }
                     break;
                 case 2:
-                    if (((Boolean) value).booleanValue()) {
+                    if ((Boolean) value) {
                         ordering.setCaseInsensitive();
-                    }
-                    else {
+                    } else {
                         ordering.setCaseSensitive();
                     }
                     break;
                 default:
-                    throw new IndexOutOfBoundsException("Invalid editable column: "
-                            + column);
+                    throw new IndexOutOfBoundsException("Invalid editable column: " + column);
             }
 
-            mediator.fireQueryEvent(new QueryEvent(
-                    SelectQueryOrderingTab.this,
-                    selectQuery));
+            mediator.fireQueryEvent(new QueryEvent(SelectQueryOrderingTab.this, selectQuery));
         }
     }
 

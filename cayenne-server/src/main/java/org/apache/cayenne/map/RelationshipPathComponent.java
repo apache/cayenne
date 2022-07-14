@@ -21,24 +21,24 @@ package org.apache.cayenne.map;
 /**
  * @since 3.0
  */
-class RelationshipPathComponent<T extends Attribute, U extends Relationship> implements
-        PathComponent<T, U> {
+class RelationshipPathComponent<A extends Attribute<?, A, R>, R extends Relationship<?, A, R>>
+        implements PathComponent<A, R> {
 
-    private U relationship;
-    private JoinType joinType;
-    private boolean last;
+    private final R relationship;
+    private final JoinType joinType;
+    private final boolean last;
 
-    RelationshipPathComponent(U relationship, JoinType joinType, boolean last) {
+    RelationshipPathComponent(R relationship, JoinType joinType, boolean last) {
         this.relationship = relationship;
         this.joinType = joinType;
         this.last = last;
     }
 
-    public T getAttribute() {
+    public A getAttribute() {
         return null;
     }
 
-    public U getRelationship() {
+    public R getRelationship() {
         return relationship;
     }
 
@@ -58,7 +58,7 @@ class RelationshipPathComponent<T extends Attribute, U extends Relationship> imp
         return false;
     }
 
-    public Iterable<PathComponent<T, U>> getAliasedPath() {
+    public Iterable<PathComponent<A, R>> getAliasedPath() {
         return null;
     }
 }

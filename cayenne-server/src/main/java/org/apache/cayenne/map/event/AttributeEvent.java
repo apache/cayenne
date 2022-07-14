@@ -29,29 +29,29 @@ import org.apache.cayenne.map.Entity;
  * 
  */
 public class AttributeEvent extends EntityEvent {
-    protected Attribute attribute;
+    protected Attribute<?,?,?> attribute;
 
     /** Creates a Attribute change event. */
-    public AttributeEvent(Object src, Attribute attr, Entity entity) {
+    public AttributeEvent(Object src, Attribute<?,?,?> attr, Entity<?,?,?> entity) {
         super(src, entity);
         setAttribute(attr);
     }
 
     /** Creates a Attribute event of a specified type. */
-    public AttributeEvent(Object src, Attribute attr, Entity entity, int id) {
+    public AttributeEvent(Object src, Attribute<?,?,?> attr, Entity<?,?,?> entity, int id) {
         this(src, attr, entity);
         setId(id);
     }
 
     /** Creates a Attribute name change event.*/
-    public AttributeEvent(Object src, Attribute attr, Entity entity, String oldName) {
+    public AttributeEvent(Object src, Attribute<?,?,?> attr, Entity<?,?,?> entity, String oldName) {
 
         this(src, attr, entity);
         setOldName(oldName);
     }
 
     /** Get attribute (obj or db). */
-    public Attribute getAttribute() {
+    public Attribute<?,?,?> getAttribute() {
         return attribute;
     }
 
@@ -59,7 +59,7 @@ public class AttributeEvent extends EntityEvent {
      * Sets the attribute.
      * @param attribute The attribute to set
      */
-    public void setAttribute(Attribute attribute) {
+    public void setAttribute(Attribute<?,?,?> attribute) {
         this.attribute = attribute;
     }
 

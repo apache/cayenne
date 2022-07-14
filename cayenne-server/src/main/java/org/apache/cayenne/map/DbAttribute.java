@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.event.AttributeEvent;
-import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
@@ -194,9 +193,9 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
         if (this.primaryKey != primaryKey) {
             this.primaryKey = primaryKey;
 
-            Entity e = this.getEntity();
-            if (e instanceof DbAttributeListener) {
-                ((DbAttributeListener) e).dbAttributeChanged(new AttributeEvent(this, this, e));
+            DbEntity e = this.getEntity();
+            if (e != null) {
+                e.dbAttributeChanged(new AttributeEvent(this, this, e));
             }
         }
     }
@@ -243,9 +242,9 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
         if (this.generated != generated) {
             this.generated = generated;
 
-            Entity e = this.getEntity();
-            if (e instanceof DbAttributeListener) {
-                ((DbAttributeListener) e).dbAttributeChanged(new AttributeEvent(this, this, e));
+            DbEntity e = this.getEntity();
+            if (e != null) {
+                e.dbAttributeChanged(new AttributeEvent(this, this, e));
             }
         }
     }

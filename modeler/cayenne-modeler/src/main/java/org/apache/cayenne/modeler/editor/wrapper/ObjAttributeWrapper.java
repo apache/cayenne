@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.editor.validation.ObjAttributeWrapperValidator;

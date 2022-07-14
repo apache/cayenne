@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -34,7 +33,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjAttribute;
@@ -43,7 +41,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.Util;
 
@@ -73,7 +70,7 @@ public class ProjectUtil {
         String oldName = map.getName();
 
         // must fully relink renamed map
-        List<DataNodeDescriptor> nodes = new ArrayList<DataNodeDescriptor>();
+        List<DataNodeDescriptor> nodes = new ArrayList<>();
         for (DataNodeDescriptor node : domain.getNodeDescriptors())
             if (node.getDataMapNames().contains(map.getName()))
                 nodes.add(node);
@@ -180,11 +177,11 @@ public class ProjectUtil {
     /**
      * Changes the name of the attribute and all references to this attribute.
      */
-    public static void setAttributeName(Attribute attribute, String newName) {
+    public static void setAttributeName(ObjAttribute attribute, String newName) {
         String oldName = attribute.getName();
 
         attribute.setName(newName);
-        Entity entity = attribute.getEntity();
+        ObjEntity entity = attribute.getEntity();
 
         if (entity != null) {
             entity.removeAttribute(oldName);
@@ -211,8 +208,8 @@ public class ProjectUtil {
     /**
      * Adds or changes the name of the attribute in all places in DataMap.
      */
-    public static void setRelationshipName(Entity entity, Relationship rel, String newName) {
-        Relationship existingRelationship = entity.getRelationship(newName);
+    public static void setRelationshipName(ObjEntity entity, ObjRelationship rel, String newName) {
+        ObjRelationship existingRelationship = entity.getRelationship(newName);
         if (existingRelationship != null && existingRelationship != rel) {
             throw new IllegalArgumentException("An attempt to override relationship '" + rel.getName() + "'");
         }
@@ -269,10 +266,10 @@ public class ProjectUtil {
             // check individual relationships
             for (ObjRelationship rel : entity.getRelationships()) {
 
-                List<DbRelationship> dbRelList = new ArrayList<DbRelationship>(rel
+                List<DbRelationship> dbRelList = new ArrayList<>(rel
                         .getDbRelationships());
                 for (DbRelationship dbRel : dbRelList) {
-                    Entity srcEnt = dbRel.getSourceEntity();
+                    DbEntity srcEnt = dbRel.getSourceEntity();
                     if (srcEnt == null
                             || map.getDbEntity(srcEnt.getName()) != srcEnt
                             || srcEnt.getRelationship(dbRel.getName()) != dbRel) {
@@ -375,18 +372,15 @@ public class ProjectUtil {
     /**
      * Returns a collection of DbRelationships that use this attribute as a source.
      */
-    public static Collection<DbRelationship> getRelationshipsUsingAttributeAsSource(
-            DbAttribute attribute) {
-        Entity parent = attribute.getEntity();
+    public static Collection<DbRelationship> getRelationshipsUsingAttributeAsSource(DbAttribute attribute) {
+        DbEntity parent = attribute.getEntity();
 
         if (parent == null) {
             return Collections.emptyList();
         }
 
-        Collection<DbRelationship> parentRelationships = (Collection<DbRelationship>) parent
-                .getRelationships();
-        Collection<DbRelationship> relationships = new ArrayList<DbRelationship>(
-                parentRelationships.size());
+        Collection<DbRelationship> parentRelationships = parent.getRelationships();
+        Collection<DbRelationship> relationships = new ArrayList<>(parentRelationships.size());
         // Iterator it = parentRelationships.iterator();
         // while (it.hasNext()) {
         // DbRelationship relationship = (DbRelationship) it.next();
@@ -403,7 +397,7 @@ public class ProjectUtil {
      */
     public static Collection<DbRelationship> getRelationshipsUsingAttributeAsTarget(
             DbAttribute attribute) {
-        Entity parent = attribute.getEntity();
+        DbEntity parent = attribute.getEntity();
 
         if (parent == null) {
             return Collections.emptyList();
@@ -414,16 +408,13 @@ public class ProjectUtil {
             return Collections.emptyList();
         }
 
-        Collection<DbRelationship> relationships = new ArrayList<DbRelationship>();
-
-        for (Entity entity : map.getDbEntities()) {
+        Collection<DbRelationship> relationships = new ArrayList<>();
+        for (DbEntity entity : map.getDbEntities()) {
             if (entity == parent) {
                 continue;
             }
 
-            Collection<DbRelationship> entityRelationships = (Collection<DbRelationship>) entity
-                    .getRelationships();
-
+            Collection<DbRelationship> entityRelationships = entity.getRelationships();
             for (DbRelationship relationship : entityRelationships) {
                 if (ProjectUtil.containsTargetAttribute(relationship, attribute)) {
                     relationships.add(relationship);

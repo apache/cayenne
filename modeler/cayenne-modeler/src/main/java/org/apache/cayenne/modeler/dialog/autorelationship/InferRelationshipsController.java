@@ -24,9 +24,9 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
@@ -139,20 +139,15 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
             this.strategy = createNamingStrategy(strategyClass);
 
-            /**
+            /*
              * Be user-friendly and update preferences with specified strategy
              */
             if (strategy == null) {
                 return;
             }
-            NameGeneratorPreferences
-                    .getInstance()
-                    .addToLastUsedStrategies(strategyClass);
+            NameGeneratorPreferences.getInstance().addToLastUsedStrategies(strategyClass);
             view.getStrategyCombo().setModel(
-                    new DefaultComboBoxModel(NameGeneratorPreferences
-                            .getInstance()
-                            .getLastUsedStrategies()));
-
+                    new DefaultComboBoxModel<>(NameGeneratorPreferences.getInstance().getLastUsedStrategies()));
         }
         catch (Throwable th) {
             logObj.error("Error in " + getClass().getName(), th);
@@ -176,10 +171,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
 
     public void generateAction() {
         
-        ProjectController mediator = application
-                .getFrameController()
-                .getProjectController();
-        
+        ProjectController mediator = application.getFrameController().getProjectController();
         InferRelationshipsUndoableEdit undoableEdit = new InferRelationshipsUndoableEdit();
         
         for (InferredRelationship temp : selectedEntities) {
@@ -206,7 +198,7 @@ public class InferRelationshipsController extends InferRelationshipsControllerBa
         view.dispose();
     }
 
-    private String uniqueRelName(Entity entity, String preferredName) {
+    private String uniqueRelName(DbEntity entity, String preferredName) {
         int currentSuffix = 1;
         String relName = preferredName;
 

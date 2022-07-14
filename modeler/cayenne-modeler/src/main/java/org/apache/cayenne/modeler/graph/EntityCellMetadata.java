@@ -27,7 +27,8 @@ import org.apache.cayenne.map.Relationship;
 /**
  * Abstract class to describe entity's cell 
  */
-abstract class EntityCellMetadata<E extends Entity<E, T, U>, T extends Attribute<E,T,U>, U extends Relationship<E,T,U>> implements Serializable {
+abstract class EntityCellMetadata<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
+        implements Serializable {
     GraphBuilder builder;
     
     String entityName;
@@ -46,7 +47,7 @@ abstract class EntityCellMetadata<E extends Entity<E, T, U>, T extends Attribute
     /**
      * Resolves entity
      */
-    public abstract Entity<E,T,U> fetchEntity();
+    public abstract Entity<E, A, R> fetchEntity();
     
     final void rebuildLabel() {
         label = createLabel();
@@ -64,15 +65,15 @@ abstract class EntityCellMetadata<E extends Entity<E, T, U>, T extends Attribute
      * Creates label for this cell
      */
     String createLabel() {
-        Entity<E,T,U> entity = fetchEntity();
+        Entity<E, A, R> entity = fetchEntity();
         StringBuilder label = new StringBuilder("<html><center><u><b>").
                 append(entity.getName()).append("</b></u></center>");
-        for (T attr : entity.getAttributes()) {
+        for (A attr : entity.getAttributes()) {
             if (isPrimary(attr)) {
                 label.append("<br><i>").append(attr.getName()).append("</i>");
             }
         }
-        for (T attr : entity.getAttributes()) {
+        for (A attr : entity.getAttributes()) {
             if (!isPrimary(attr)) {
                 label.append("<br>").append(attr.getName());
             }
@@ -83,5 +84,5 @@ abstract class EntityCellMetadata<E extends Entity<E, T, U>, T extends Attribute
     /**
      * Returns whether attribute is "primary" and should therefore be written in italic
      */
-    protected abstract boolean isPrimary(T attr);
+    protected abstract boolean isPrimary(A attr);
 }

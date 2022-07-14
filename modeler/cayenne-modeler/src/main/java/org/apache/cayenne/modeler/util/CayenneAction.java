@@ -321,7 +321,7 @@ public abstract class CayenneAction extends AbstractAction {
      * @param entity to build path for
      * @return tree path
      */
-    protected static TreePath buildTreePath(Entity entity) {
+    protected static TreePath buildTreePath(Entity<?,?,?> entity) {
         DataChannelDescriptor domain = (DataChannelDescriptor) Application
                 .getInstance()
                 .getProject()

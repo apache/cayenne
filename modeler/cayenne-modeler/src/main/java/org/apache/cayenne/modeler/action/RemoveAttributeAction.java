@@ -72,7 +72,7 @@ public class RemoveAttributeAction extends RemoveAction implements MultipleObjec
      */
     @Override
     public boolean enableForPath(ConfigurationNode object) {
-        return object != null && object instanceof Attribute;
+        return object instanceof Attribute;
     }
 
     @Override

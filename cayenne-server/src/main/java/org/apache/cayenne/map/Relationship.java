@@ -31,11 +31,11 @@ import org.apache.cayenne.util.XMLSerializable;
  * "arcs" connecting entity "nodes". Relationships are directional, i.e. they have a
  * notion of source and target entity. This makes DataMap a "digraph".
  */
-public abstract class Relationship<E extends Entity<E,T,U>, T extends Attribute<E,T,U>, U extends Relationship<E,T,U>>
+public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
         implements CayenneMapEntry, XMLSerializable, Serializable {
 
     protected String name;
-    protected Entity<E,T,U> sourceEntity;
+    protected E sourceEntity;
 
     protected String targetEntityName;
     protected boolean toMany;
@@ -72,26 +72,26 @@ public abstract class Relationship<E extends Entity<E,T,U>, T extends Attribute<
     /**
      * Returns relationship source entity.
      */
-    public Entity<E,T,U> getSourceEntity() {
+    public E getSourceEntity() {
         return sourceEntity;
     }
 
     /**
      * Sets relationship source entity.
      */
-    public void setSourceEntity(Entity<E,T,U> sourceEntity) {
+    public void setSourceEntity(E sourceEntity) {
         this.sourceEntity = sourceEntity;
     }
 
     /**
      * Returns a target entity of the relationship.
      */
-    public abstract Entity<E,T,U> getTargetEntity();
+    public abstract E getTargetEntity();
 
     /**
      * Sets relationship target entity. Internally calls <code>setTargetEntityName</code>.
      */
-    public void setTargetEntityName(Entity<E,?,?> targetEntity) {
+    public void setTargetEntityName(Entity<E, A, R> targetEntity) {
         if (targetEntity != null) {
             setTargetEntityName(targetEntity.getName());
         } else {
@@ -128,12 +128,13 @@ public abstract class Relationship<E extends Entity<E,T,U>, T extends Attribute<
         return getSourceEntity();
     }
 
+    @SuppressWarnings("unchecked")
     public void setParent(Object parent) {
         if (parent != null && !(parent instanceof Entity)) {
             throw new IllegalArgumentException("Expected null or Entity, got: " + parent);
         }
 
-        setSourceEntity((Entity<E,T,U>) parent);
+        setSourceEntity((E) parent);
     }
 
     /**
@@ -142,7 +143,7 @@ public abstract class Relationship<E extends Entity<E,T,U>, T extends Attribute<
      * Relationship class.
      */
     final MappingNamespace getNonNullNamespace() {
-        Entity<E,?,?> entity = getSourceEntity();
+        E entity = getSourceEntity();
 
         if (entity == null) {
             throw new CayenneRuntimeException("Relationship '%s' has no parent Entity.", getName());
@@ -180,7 +181,7 @@ public abstract class Relationship<E extends Entity<E,T,U>, T extends Attribute<
      * null if no such relationship is found.
      * @since 3.1
      */
-    public abstract Relationship<E,T,U> getReverseRelationship();
+    public abstract Relationship<E, A, R> getReverseRelationship();
     
     /**
      * Returns if relationship is mandatory

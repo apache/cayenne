@@ -147,7 +147,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
                     if (relationship.getReverseRelationship() == null) {
                         DbRelationship reverse = relationship.createReverseRelationship();
 
-                        Entity targetEntity = reverse.getSourceEntity();
+                        DbEntity targetEntity = reverse.getSourceEntity();
                         reverse.setName(getUniqueRelationshipName(targetEntity));
                         reverse.setRuntime(true);
                         targetEntity.addRelationship(reverse);
@@ -161,7 +161,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
 
     }
 
-    private String getUniqueRelationshipName(Entity entity) {
+    private String getUniqueRelationshipName(DbEntity entity) {
         String name;
 
         do {

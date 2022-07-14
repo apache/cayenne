@@ -69,7 +69,6 @@ public final class CellRenderers {
     protected static Icon embeddableIcon   = ModelerUtil.buildIcon("icon-embeddable.png");
     protected static Icon relationshipIcon = ModelerUtil.buildIcon("icon-relationship.png");
     protected static Icon attributeIcon    = ModelerUtil.buildIcon("icon-attribute.png");
-
     protected static Font defaultFont      = UIManager.getFont("Label.font");
 
     public static Icon iconForObject(Object object) {
@@ -160,7 +159,7 @@ public final class CellRenderers {
             String label = mapObject.getName();
 
             if (mapObject instanceof Entity) {
-                Entity entity = (Entity) mapObject;
+                Entity<?,?,?> entity = (Entity<?,?,?>) mapObject;
 
                 // for different namespace display its name
                 DataMap dataMap = entity.getDataMap();

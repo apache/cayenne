@@ -58,7 +58,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
     /**
      * Diagram selection combo
      */
-    JComboBox diagramCombo;
+    JComboBox<String> diagramCombo;
 
     /**
      * Scrollpane that the graph will be added to
@@ -125,7 +125,7 @@ public class DataDomainGraphTab extends JPanel implements DomainDisplayListener,
             // selecting an event
 
             // choose type of diagram
-            Entity entity = ((EntityDisplayEvent) e).getEntity();
+            Entity<?,?,?> entity = ((EntityDisplayEvent) e).getEntity();
             diagramCombo.setSelectedIndex(entity instanceof ObjEntity ? 1 : 0);
             refresh();
 

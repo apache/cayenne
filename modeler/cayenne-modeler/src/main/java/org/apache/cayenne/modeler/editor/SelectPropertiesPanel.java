@@ -21,8 +21,6 @@ package org.apache.cayenne.modeler.editor;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -55,7 +53,7 @@ import static org.apache.cayenne.util.Util.isNumeric;
  */
 public abstract class SelectPropertiesPanel extends JPanel {
 
-    private static Logger logObj = LoggerFactory.getLogger(SelectPropertiesPanel.class);
+    private static final Logger logObj = LoggerFactory.getLogger(SelectPropertiesPanel.class);
 
     private static final Integer ZERO = 0;
 
@@ -63,7 +61,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
     private static final String LOCAL_CACHE_LABEL = "Local Cache (per ObjectContext)";
     private static final String SHARED_CACHE_LABEL = "Shared Cache";
 
-    protected static final Object[] CACHE_POLICIES = new Object[] {
+    protected static final QueryCacheStrategy[] CACHE_POLICIES = new QueryCacheStrategy[] {
             QueryCacheStrategy.NO_CACHE,
             QueryCacheStrategy.LOCAL_CACHE,
             QueryCacheStrategy.SHARED_CACHE
@@ -80,7 +78,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
     protected TextAdapter fetchOffset;
     protected TextAdapter fetchLimit;
     protected TextAdapter pageSize;
-    protected JComboBox cacheStrategy;
+    protected JComboBox<QueryCacheStrategy> cacheStrategy;
     protected TextAdapter cacheGroups;
     protected JComponent cacheGroupsLabel;
 
@@ -121,12 +119,10 @@ public abstract class SelectPropertiesPanel extends JPanel {
     }
 
     protected void initController() {
-        cacheStrategy.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy.getModel().getSelectedItem();
-                setQueryProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, strategy.name());
-                setCacheGroupsEnabled(strategy != QueryCacheStrategy.NO_CACHE);
-            }
+        cacheStrategy.addActionListener(event -> {
+            QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy.getModel().getSelectedItem();
+            setQueryProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY, strategy.name());
+            setCacheGroupsEnabled(strategy != QueryCacheStrategy.NO_CACHE);
         });
     }
 
@@ -135,7 +131,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
      * query is changed.
      */
     public void initFromModel(QueryDescriptor query) {
-        DefaultComboBoxModel cacheModel = new DefaultComboBoxModel(CACHE_POLICIES);
+        DefaultComboBoxModel<QueryCacheStrategy> cacheModel = new DefaultComboBoxModel<>(CACHE_POLICIES);
 
         String selectedStrategyString = query.getProperty(QueryMetadata.CACHE_STRATEGY_PROPERTY);
 
@@ -240,7 +236,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
         }
     }
 
-    final class CacheStrategyRenderer extends DefaultListCellRenderer {
+    static final class CacheStrategyRenderer extends DefaultListCellRenderer {
 
         public Component getListCellRendererComponent(
                 JList list,
@@ -250,7 +246,7 @@ public abstract class SelectPropertiesPanel extends JPanel {
                 boolean arg4) {
 
             if (object != null) {
-                object = cachePolicyLabels.get(object);
+                object = cachePolicyLabels.get((QueryCacheStrategy)object);
             }
 
             if (object == null) {

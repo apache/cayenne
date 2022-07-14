@@ -67,7 +67,7 @@ public class CallbackDescriptorTableModel extends CayenneTableModel<String> {
     /**
      * Returns Java class of the internal list elements.
      */
-    public Class getElementsClass() {
+    public Class<String> getElementsClass() {
         return String.class;
     }
 

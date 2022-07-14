@@ -23,11 +23,11 @@ package org.apache.cayenne.map;
  * 
  * @since 3.0
  */
-public interface PathComponent<T extends Attribute, U extends Relationship> {
+public interface PathComponent<A extends Attribute, R extends Relationship> {
 
-    T getAttribute();
+    A getAttribute();
 
-    U getRelationship();
+    R getRelationship();
 
     String getName();
 
@@ -49,5 +49,5 @@ public interface PathComponent<T extends Attribute, U extends Relationship> {
     /**
      * Returns an aliased path or null if this component is not an alias.
      */
-    Iterable<PathComponent<T, U>> getAliasedPath();
+    Iterable<PathComponent<A, R>> getAliasedPath();
 }

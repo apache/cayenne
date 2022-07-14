@@ -29,10 +29,10 @@ public interface EntityTreeFilter {
     /**
      * Checks if attribute should appear in the tree 
      */
-    boolean attributeMatch(Object node, Attribute attr);
+    boolean attributeMatch(Object node, Attribute<?,?,?> attr);
     
     /**
      * Checks if relationship should appear in the tree 
      */
-    boolean relationshipMatch(Object node, Relationship rel);
+    boolean relationshipMatch(Object node, Relationship<?,?,?> rel);
 }

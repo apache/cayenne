@@ -52,13 +52,12 @@ public class ShowGraphEntityAction extends CayenneAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        Entity entity = null;
+        Entity<?,?,?> entity = null;
 
         ProjectController mediator = getProjectController();
         if (mediator.getCurrentDbEntity() != null) {
             entity = mediator.getCurrentDbEntity();
-        }
-        else if (mediator.getCurrentObjEntity() != null) {
+        } else if (mediator.getCurrentObjEntity() != null) {
             entity = mediator.getCurrentObjEntity();
         }
 
@@ -72,7 +71,7 @@ public class ShowGraphEntityAction extends CayenneAction {
         return object instanceof Entity;
     }
 
-    void showEntity(Entity entity) {
+    void showEntity(Entity<?,?,?> entity) {
         // we're always in same domain
         EditorView editor = ((CayenneModelerFrame) Application
                 .getInstance()

@@ -23,8 +23,9 @@ import java.util.Collection;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.map.event.DbEntityListener;
@@ -39,18 +40,18 @@ import org.jgraph.graph.GraphConstants;
 /**
  * Class for building ER-graph, based on DbEntity information
  */
-class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener,
+class DbGraphBuilder extends BaseGraphBuilder<DbEntity, DbAttribute, DbRelationship> implements DbEntityListener,
         DbAttributeListener, DbRelationshipListener {
 
     static final Color ENTITY_COLOR = new Color(197, 253, 252);
 
     @Override
-    protected Collection<? extends Entity> getEntities(DataMap map) {
+    protected Collection<DbEntity> getEntities(DataMap map) {
         return map.getDbEntities();
     }
 
     @Override
-    protected void postProcessEntity(Entity entity, DefaultGraphCell cell) {
+    protected void postProcessEntity(DbEntity entity, DefaultGraphCell cell) {
         super.postProcessEntity(entity, cell);
 
         GraphConstants.setBackground(cell.getAttributes(), ENTITY_COLOR);
@@ -58,12 +59,12 @@ class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener,
     }
 
     @Override
-    protected EntityCellMetadata getCellMetadata(Entity e) {
+    protected DbEntityCellMetadata getCellMetadata(DbEntity e) {
         return new DbEntityCellMetadata(this, e.getName());
     }
 
     @Override
-    protected DefaultEdge createRelationshipCell(Relationship rel) {
+    protected DefaultEdge createRelationshipCell(DbRelationship rel) {
         DefaultEdge edge = super.createRelationshipCell(rel);
         if (edge != null) {
             GraphConstants.setDashPattern(edge.getAttributes(), new float[] {
@@ -95,29 +96,29 @@ class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener,
         if(e.getEntity() instanceof DetectedDbEntity) {
             return;
         }
-        insertEntityCell(e.getEntity());
+        insertEntityCell((DbEntity) e.getEntity());
     }
 
     public void dbEntityChanged(EntityEvent e) {
         remapEntity(e);
 
-        updateEntityCell(e.getEntity());
+        updateEntityCell((DbEntity)e.getEntity());
     }
 
     public void dbEntityRemoved(EntityEvent e) {
-        removeEntityCell(e.getEntity());
+        removeEntityCell((DbEntity) e.getEntity());
     }
 
     public void dbAttributeAdded(AttributeEvent e) {
-        updateEntityCell(e.getEntity());
+        updateEntityCell((DbEntity)e.getEntity());
     }
 
     public void dbAttributeChanged(AttributeEvent e) {
-        updateEntityCell(e.getEntity());
+        updateEntityCell((DbEntity)e.getEntity());
     }
 
     public void dbAttributeRemoved(AttributeEvent e) {
-        updateEntityCell(e.getEntity());
+        updateEntityCell((DbEntity)e.getEntity());
     }
 
     public void dbRelationshipAdded(RelationshipEvent e) {
@@ -125,12 +126,12 @@ class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener,
     }
 
     public void dbRelationshipChanged(RelationshipEvent e) {
-        updateRelationshipCell(e.getRelationship());
+        updateRelationshipCell((DbRelationship) e.getRelationship());
     }
 
     public void dbRelationshipRemoved(RelationshipEvent e) {
         remapRelationship(e);
-        removeRelationshipCell(e.getRelationship());
+        removeRelationshipCell((DbRelationship) e.getRelationship());
     }
 
     public GraphType getType() {

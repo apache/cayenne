@@ -68,7 +68,7 @@ public class ASTDbPath extends ASTPath {
 	protected Object evaluateNode(Object o) throws Exception {
 
 		if (o instanceof Entity) {
-			return evaluateEntityNode((Entity) o);
+			return evaluateEntityNode((Entity<?,?,?>) o);
 		}
 
 		Map<?, ?> map = toMap(o);
@@ -199,7 +199,8 @@ public class ASTDbPath extends ASTPath {
 	/**
 	 * Helper method to evaluate path expression with Cayenne Entity.
 	 */
-	protected CayenneMapEntry evaluateEntityNode(Entity entity) {
+	@Override
+	protected CayenneMapEntry evaluateEntityNode(Entity<?,?,?> entity) {
 		if(entity instanceof ObjEntity) {
 			entity = ((ObjEntity) entity).getDbEntity();
 		}

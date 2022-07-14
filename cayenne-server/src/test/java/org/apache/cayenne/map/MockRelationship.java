@@ -25,7 +25,6 @@ import org.apache.cayenne.util.XMLEncoder;
 public class MockRelationship extends Relationship<MockEntity, MockAttribute, MockRelationship> {
 
     public MockRelationship() {
-
     }
 
     public MockRelationship(String name) {
@@ -33,7 +32,7 @@ public class MockRelationship extends Relationship<MockEntity, MockAttribute, Mo
     }
 
     @Override
-    public Entity getTargetEntity() {
+    public MockEntity getTargetEntity() {
         return null;
     }
 
@@ -42,7 +41,7 @@ public class MockRelationship extends Relationship<MockEntity, MockAttribute, Mo
     }
 
     @Override
-    public Relationship getReverseRelationship() {
+    public MockRelationship getReverseRelationship() {
         return null;
     }
 

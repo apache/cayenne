@@ -47,7 +47,7 @@ class EntityDisplayEventType extends DisplayEventType {
             return;
         }
 
-        Entity entity = getLastEntity(dataMap);
+        Entity<?,?,?> entity = getLastEntity(dataMap);
         if (entity == null) {
             return;
         }
@@ -76,7 +76,7 @@ class EntityDisplayEventType extends DisplayEventType {
         }
     }
 
-    Entity getLastEntity(DataMap dataMap) {
+    Entity<?,?,?> getLastEntity(DataMap dataMap) {
         return !preferences.getObjEntity().isEmpty()
                 ? dataMap.getObjEntity(preferences.getObjEntity())
                 : dataMap.getDbEntity(preferences.getDbEntity());

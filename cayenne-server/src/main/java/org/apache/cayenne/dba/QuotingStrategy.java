@@ -58,7 +58,7 @@ public interface QuotingStrategy {
     /**
      * @since 4.0
      */
-    default String quotedIdentifier(Entity entity, String... identifierParts) {
+    default String quotedIdentifier(DbEntity entity, String... identifierParts) {
         return quotedIdentifier(entity.getDataMap(), identifierParts);
     }
     
@@ -71,7 +71,7 @@ public interface QuotingStrategy {
      * Append quoted identifier to provided appender
      * @since 4.2
      */
-    default void quotedIdentifier(Entity entity, CharSequence identifier, Appendable appender) {
+    default void quotedIdentifier(DbEntity entity, CharSequence identifier, Appendable appender) {
         quotedIdentifier(entity.getDataMap(), identifier, appender);
     }
 

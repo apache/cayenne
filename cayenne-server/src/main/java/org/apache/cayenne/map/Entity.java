@@ -39,7 +39,7 @@ import java.util.StringTokenizer;
  * either a descriptor of database table or a persistent object.
  * 
  */
-public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>, U extends Relationship<E,T,U>>
+public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
         implements CayenneMapEntry, XMLSerializable, Serializable {
 
     public static final String PATH_SEPARATOR = ".";
@@ -55,8 +55,8 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
     protected String name;
     protected DataMap dataMap;
 
-    protected final Map<String, T> attributes = new LinkedHashMap<>();
-    protected final Map<String, U> relationships = new LinkedHashMap<>();
+    protected final Map<String, A> attributes = new LinkedHashMap<>();
+    protected final Map<String, R> relationships = new LinkedHashMap<>();
 
     /**
      * Creates an unnamed Entity.
@@ -118,7 +118,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
      * Returns attribute with name <code>attributeName</code> or null if no attribute
      * with this name exists.
      */
-    public T getAttribute(String attributeName) {
+    public A getAttribute(String attributeName) {
         return attributes.get(attributeName);
     }
 
@@ -126,7 +126,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
      * Adds new attribute to the entity, setting its parent entity to be this object. If
      * attribute has no name, IllegalArgumentException is thrown.
      */
-    public void addAttribute(T attribute) {
+    public void addAttribute(A attribute) {
         if (attribute.getName() == null) {
             throw new IllegalArgumentException("Attempt to insert unnamed attribute.");
         }
@@ -134,7 +134,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
         // block overrides
 
         // TODO: change method signature to return replaced attribute and make sure the Modeler handles it...
-        T existingAttribute = attributes.get(attribute.getName());
+        A existingAttribute = attributes.get(attribute.getName());
         if (existingAttribute != null) {
             if (existingAttribute == attribute) {
                 return;
@@ -166,7 +166,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
      *
      * @since 4.0
      */
-    public void updateAttribute(T attribute) {
+    public void updateAttribute(A attribute) {
         removeAttribute(attribute.getName());
         addAttribute(attribute);
     }
@@ -179,14 +179,14 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
      * Returns relationship with name <code>relName</code>. Will return null if no
      * relationship with this name exists in the entity.
      */
-    public U getRelationship(String relName) {
+    public R getRelationship(String relName) {
         return relationships.get(relName);
     }
 
     /**
      * Adds new relationship to the entity.
      */
-    public void addRelationship(U relationship) {
+    public void addRelationship(R relationship) {
         if (relationship.getName() == null) {
             throw new IllegalArgumentException("Attempt to insert unnamed relationship.");
         }
@@ -214,7 +214,9 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
         }
 
         relationships.put(relationship.getName(), relationship);
-        relationship.setSourceEntity(this);
+        @SuppressWarnings("unchecked")
+        E sourceEntity = (E) this;
+        relationship.setSourceEntity(sourceEntity);
     }
 
     /**
@@ -231,7 +233,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
     /**
      * Returns an unmodifiable map of relationships sorted by name.
      */
-    public Map<String, U> getRelationshipMap() {
+    public Map<String, R> getRelationshipMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableMap(relationships);
@@ -244,12 +246,12 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
      * 
      * @since 1.1
      */
-    public U getAnyRelationship(E targetEntity) {
+    public R getAnyRelationship(E targetEntity) {
         if (getRelationships().isEmpty()) {
             return null;
         }
 
-        for (U r : getRelationships()) {
+        for (R r : getRelationships()) {
             if (r.getTargetEntity() == targetEntity) {
                 return r;
             }
@@ -260,7 +262,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
     /**
      * Returns an unmodifiable collection of Relationships that exist in this entity.
      */
-    public Collection<U> getRelationships() {
+    public Collection<R> getRelationships() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(relationships.values());
@@ -269,7 +271,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
     /**
      * Returns an unmodifiable sorted map of entity attributes.
      */
-    public Map<String, T> getAttributeMap() {
+    public Map<String, A> getAttributeMap() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableMap(attributes);
@@ -278,7 +280,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
     /**
      * Returns an unmodifiable collection of entity attributes.
      */
-    public Collection<T> getAttributes() {
+    public Collection<A> getAttributes() {
         // create a new instance ... earlier attempts to cache it in the entity caused
         // serialization issues (esp. with Hessian).
         return Collections.unmodifiableCollection(attributes.values());
@@ -298,11 +300,11 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
      * 
      * @since 3.0
      */
-    public PathComponent<T, U> lastPathComponent(
+    public PathComponent<A, R> lastPathComponent(
             Expression path,
             Map<String, String> aliasMap) {
 
-        for (PathComponent<T, U> component : resolvePath(path, aliasMap)) {
+        for (PathComponent<A, R> component : resolvePath(path, aliasMap)) {
             if (component.isLast()) {
                 // resolve aliases if needed
                 return lastPathComponent(component);
@@ -312,13 +314,13 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
         return null;
     }
 
-    private PathComponent<T, U> lastPathComponent(PathComponent<T, U> component) {
+    private PathComponent<A, R> lastPathComponent(PathComponent<A, R> component) {
         
         if (!component.isAlias()) {
             return component;
         }
 
-        for (PathComponent<T, U> subcomponent : component.getAliasedPath()) {
+        for (PathComponent<A, R> subcomponent : component.getAliasedPath()) {
             if (subcomponent.isLast()) {
                 return lastPathComponent(subcomponent);
             }
@@ -340,7 +342,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
      * 
      * @since 3.0
      */
-    public abstract Iterable<PathComponent<T, U>> resolvePath(
+    public abstract Iterable<PathComponent<A, R>> resolvePath(
             Expression pathExp,
             Map<String, String> aliasMap);
 
@@ -371,7 +373,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
 
         private final StringTokenizer tokens;
         private final String path;
-        private Entity<E,T,U> currentEntity;
+        private Entity<E, A, R> currentEntity;
 
         PathIterator(String path) {
             currentEntity = Entity.this;
@@ -390,7 +392,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
             }
             
             // see if this is an attribute
-            T attr = currentEntity.getAttribute(pathComp);
+            A attr = currentEntity.getAttribute(pathComp);
             if (attr != null) {
                 // do a sanity check...
                 if (tokens.hasMoreTokens()) {
@@ -400,7 +402,7 @@ public abstract class Entity<E extends Entity<E,T,U>, T extends Attribute<E,T,U>
                 return attr;
             }
 
-            U rel = currentEntity.getRelationship(pathComp);
+            R rel = currentEntity.getRelationship(pathComp);
             if (rel != null) {
                 currentEntity = rel.getTargetEntity();
                 if (currentEntity != null || !tokens.hasMoreTokens()) { //otherwise an exception will be thrown

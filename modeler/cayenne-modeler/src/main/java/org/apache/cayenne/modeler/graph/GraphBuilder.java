@@ -21,7 +21,9 @@ package org.apache.cayenne.modeler.graph;
 import javax.swing.event.UndoableEditListener;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.util.XMLSerializable;
 import org.jgraph.JGraph;
@@ -30,7 +32,7 @@ import org.jgraph.graph.DefaultGraphCell;
 /**
  * Interface for building graphs which represent some perspective of a domain
  */
-public interface GraphBuilder extends XMLSerializable, UndoableEditListener {
+public interface GraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>> extends XMLSerializable, UndoableEditListener {
 
     double ZOOM_FACTOR = 1.3;
     
@@ -62,7 +64,7 @@ public interface GraphBuilder extends XMLSerializable, UndoableEditListener {
     /**
      * Returns selected entity, <code>null</code> if none is selected
      */
-    Entity getSelectedEntity();
+    Entity<E,A,R> getSelectedEntity();
     
     /**
      * Returns cell of an entity

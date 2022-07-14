@@ -19,14 +19,21 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,7 +73,7 @@ public class DataMapUtilsTest {
         map.put(param, "java.lang.String");
 
         dataMapUtils.queriesMap.put("name", map);
-        Collection collection = dataMapUtils.getParameterNames(selectQueryDescriptor);
+        Collection<String> collection = dataMapUtils.getParameterNames(selectQueryDescriptor);
 
         result.add(param);
 
@@ -93,7 +100,7 @@ public class DataMapUtilsTest {
         selectQueryDescriptor.setName("name");
         selectQueryDescriptor.setRoot(objEntity);
 
-        Collection collection = dataMapUtils.getParameterNames(selectQueryDescriptor);
+        Collection<String> collection = dataMapUtils.getParameterNames(selectQueryDescriptor);
 
         Map<String, Map<String, String>> queriesMap = new HashMap<>();
         Map<String, String> map = new HashMap<>();

@@ -43,12 +43,11 @@ import org.slf4j.LoggerFactory;
  * Superclass of CayenneModeler table model classes.
  */
 public abstract class CayenneTableModel<T> extends AbstractTableModel {
+    private static final Logger logObj = LoggerFactory.getLogger(CayenneTableModel.class);
 
     protected ProjectController mediator;
     protected Object eventSource;
     protected List<T> objectList;
-
-    private static Logger logObj = LoggerFactory.getLogger(CayenneTableModel.class);
 
     /**
      * Constructor for CayenneTableModel.
@@ -188,11 +187,11 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
 		return true;
 	}
 
-    protected class PropertyComparator<C> implements Comparator<C> {
+    protected static class PropertyComparator<C> implements Comparator<C> {
 
         Method getter;
 
-        PropertyComparator(String propertyName, Class beanClass) {
+        PropertyComparator(String propertyName, Class<?> beanClass) {
             try {
                 getter = findGetter(beanClass, propertyName);
             } catch (IntrospectionException e) {
@@ -200,7 +199,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
             }
         }
 
-        Method findGetter(Class beanClass, String propertyName) throws IntrospectionException {
+        Method findGetter(Class<?> beanClass, String propertyName) throws IntrospectionException {
             BeanInfo info = Introspector.getBeanInfo(beanClass);
             PropertyDescriptor[] descriptors = info.getPropertyDescriptors();
 
@@ -216,7 +215,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
         @SuppressWarnings("unchecked")
         public int compare(C o1, C o2) {
 
-            if ((o1 == null && o2 == null) || o1 == o2) {
+            if (o1 == o2) {
                 return 0;
             } else if (o1 == null) {
                 return -1;
@@ -239,7 +238,7 @@ public abstract class CayenneTableModel<T> extends AbstractTableModel {
     public abstract boolean isColumnSortable(int sortCol);
     
     public void sortByElementProperty(String string, boolean isAscent) {
-        Collections.sort(objectList, new PropertyComparator<>(string, getElementsClass()));
+        objectList.sort(new PropertyComparator<>(string, getElementsClass()));
         if(!isAscent){
             Collections.reverse(objectList);
         }

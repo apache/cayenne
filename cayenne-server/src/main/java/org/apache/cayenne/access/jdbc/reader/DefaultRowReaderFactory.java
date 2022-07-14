@@ -33,8 +33,8 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryMetadata;
@@ -129,12 +129,12 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 		}
 	}
 
-	protected class PostprocessorFactory {
+	protected static class PostprocessorFactory {
 
-		private QueryMetadata queryMetadata;
-		private ExtendedTypeMap extendedTypes;
-		private Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
-		private RowDescriptor rowDescriptor;
+		private final QueryMetadata queryMetadata;
+		private final ExtendedTypeMap extendedTypes;
+		private final Map<ObjAttribute, ColumnDescriptor> attributeOverrides;
+		private final RowDescriptor rowDescriptor;
 
 		private boolean created;
 		private DataRowPostProcessor postProcessor;
@@ -170,7 +170,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 			for (Entry<ObjAttribute, ColumnDescriptor> entry : attributeOverrides.entrySet()) {
 
 				ObjAttribute attribute = entry.getKey();
-				Entity entity = attribute.getEntity();
+				ObjEntity entity = attribute.getEntity();
 
 				String key = null;
 				int jdbcType = TypesMapping.NOT_DEFINED;
@@ -195,9 +195,9 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 					continue;
 				}
 
-				ExtendedType converter = extendedTypes.getRegisteredType(attribute.getType());
-
-				Collection<ColumnOverride> overrides = columnOverrides.computeIfAbsent(entity.getName(), k -> new ArrayList<>(3));
+				ExtendedType<?> converter = extendedTypes.getRegisteredType(attribute.getType());
+				Collection<ColumnOverride> overrides = columnOverrides
+						.computeIfAbsent(entity.getName(), k -> new ArrayList<>(3));
 				overrides.add(new ColumnOverride(index, key, converter, jdbcType));
 			}
 

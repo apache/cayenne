@@ -43,7 +43,7 @@ public class InferRelationshipsDialog extends JDialog {
     protected JLabel entityCount;
     protected JLabel strategyLabel;
 
-    protected JComboBox strategyCombo;
+    protected JComboBox<String> strategyCombo;
 
     public InferRelationshipsDialog(Component entitySelectorPanel) {
         super(Application.getFrame());
@@ -54,7 +54,7 @@ public class InferRelationshipsDialog extends JDialog {
 
         getRootPane().setDefaultButton(generateButton);
 
-        this.strategyCombo = new JComboBox();
+        this.strategyCombo = new JComboBox<>();
         strategyCombo.setEditable(true);
         this.strategyLabel = new JLabel("Naming Strategy:  ");
 
@@ -106,7 +106,7 @@ public class InferRelationshipsDialog extends JDialog {
         return entityCount;
     }
 
-    public JComboBox getStrategyCombo() {
+    public JComboBox<String> getStrategyCombo() {
         return strategyCombo;
     }
 }

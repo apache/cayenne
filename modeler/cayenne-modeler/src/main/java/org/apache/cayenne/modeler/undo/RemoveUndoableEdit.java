@@ -29,7 +29,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.action.CreateDataMapAction;
@@ -64,23 +63,21 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     private Embeddable embeddable;
 
-    private Map<DbEntity, List<DbRelationship>> dbRelationshipMap = new HashMap<>();
-    private Map<ObjEntity, List<ObjRelationship>> objRelationshipMap = new HashMap<>();
+    private final Map<DbEntity, List<DbRelationship>> dbRelationshipMap = new HashMap<>();
+    private final Map<ObjEntity, List<ObjRelationship>> objRelationshipMap = new HashMap<>();
 
-    private static enum REMOVE_MODE {
+    private enum REMOVE_MODE {
         OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_NODE, MAP_FROM_DOMAIN, NODE, DOMAIN, EMBEDDABLE
-    };
+    }
 
-    private REMOVE_MODE mode;
+    private final REMOVE_MODE mode;
 
     public RemoveUndoableEdit(Application application) {
         this.domain = (DataChannelDescriptor) application.getProject().getRootNode();
-        ;
         this.mode = REMOVE_MODE.DOMAIN;
     }
 
-    public RemoveUndoableEdit(Application application, DataNodeDescriptor node,
-            DataMap map) {
+    public RemoveUndoableEdit(Application application, DataNodeDescriptor node, DataMap map) {
         this.map = map;
         this.dataNode = node;
         this.mode = REMOVE_MODE.MAP_FROM_NODE;
@@ -88,14 +85,12 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
     public RemoveUndoableEdit(Application application, DataMap map) {
         this.domain = (DataChannelDescriptor) application.getProject().getRootNode();
-        ;
         this.map = map;
         this.mode = REMOVE_MODE.MAP_FROM_DOMAIN;
     }
 
     public RemoveUndoableEdit(Application application, DataNodeDescriptor node) {
         this.domain = (DataChannelDescriptor) application.getProject().getRootNode();
-        ;
         this.dataNode = node;
         this.mode = REMOVE_MODE.NODE;
     }
@@ -107,20 +102,10 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
 
         for (ObjEntity ent : map.getObjEntities()) {
             // take a copy since we're going to modify the entity
-            for (Relationship relationship : new ArrayList<Relationship>(ent
-                    .getRelationships())) {
-
+            for (ObjRelationship relationship : new ArrayList<>(ent.getRelationships())) {
                 if (this.objEntity.getName().equals(relationship.getTargetEntityName())) {
-
-                    ObjRelationship rel = (ObjRelationship) relationship;
-
-                    if (objRelationshipMap.get(rel.getSourceEntity()) == null) {
-                        objRelationshipMap.put(
-                                (ObjEntity) rel.getSourceEntity(),
-                                new LinkedList<ObjRelationship>());
-                    }
-
-                    objRelationshipMap.get(rel.getSourceEntity()).add(rel);
+                    objRelationshipMap.computeIfAbsent(relationship.getSourceEntity(), k -> new LinkedList<>());
+                    objRelationshipMap.get(relationship.getSourceEntity()).add(relationship);
                 }
             }
         }
@@ -132,17 +117,11 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
         this.mode = REMOVE_MODE.DB_ENTITY;
 
         for (ObjEntity objEnt : map.getObjEntities()) {
-            for (Relationship rel : objEnt.getRelationships()) {
-                for (DbRelationship dbRel : ((ObjRelationship) rel).getDbRelationships()) {
+            for (ObjRelationship rel : objEnt.getRelationships()) {
+                for (DbRelationship dbRel : rel.getDbRelationships()) {
                     if (dbRel.getTargetEntity() == dbEntity) {
-
-                        if (dbRelationshipMap.get(dbRel.getSourceEntity()) == null) {
-                            dbRelationshipMap.put(
-                                    (DbEntity) dbRel.getSourceEntity(),
-                                    new LinkedList<DbRelationship>());
-                        }
+                        dbRelationshipMap.computeIfAbsent(dbRel.getSourceEntity(), k -> new LinkedList<>());
                         dbRelationshipMap.get(dbRel.getSourceEntity()).add(dbRel);
-
                         break;
                     }
                 }
@@ -230,103 +209,68 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void undo() throws CannotUndoException {
 
-        CreateRelationshipAction relationshipAction = actionManager
-                .getAction(CreateRelationshipAction.class);
+        CreateRelationshipAction relationshipAction = actionManager.getAction(CreateRelationshipAction.class);
 
         switch (this.mode) {
             case OBJECT_ENTITY: {
-                for (Entry<ObjEntity, List<ObjRelationship>> entry : objRelationshipMap
-                        .entrySet()) {
-
+                for (Entry<ObjEntity, List<ObjRelationship>> entry : objRelationshipMap.entrySet()) {
                     ObjEntity objEntity = entry.getKey();
                     for (ObjRelationship rel : entry.getValue()) {
                         relationshipAction.createObjRelationship(objEntity, rel);
                     }
                 }
-
-                CreateObjEntityAction action = actionManager
-                        .getAction(CreateObjEntityAction.class);
+                CreateObjEntityAction action = actionManager.getAction(CreateObjEntityAction.class);
                 action.createObjEntity(map, objEntity);
-
                 break;
             }
             case DB_ENTITY: {
-
-                for (Entry<DbEntity, List<DbRelationship>> entry : dbRelationshipMap
-                        .entrySet()) {
+                for (Entry<DbEntity, List<DbRelationship>> entry : dbRelationshipMap.entrySet()) {
                     DbEntity dbEntity = entry.getKey();
                     for (DbRelationship rel : entry.getValue()) {
                         relationshipAction.createDbRelationship(dbEntity, rel);
                     }
                 }
-
-                CreateDbEntityAction action = actionManager
-                        .getAction(CreateDbEntityAction.class);
-
+                CreateDbEntityAction action = actionManager.getAction(CreateDbEntityAction.class);
                 action.createEntity(map, dbEntity);
-
                 break;
             }
             case QUERY: {
-
                 this.domain = (DataChannelDescriptor) Application
                         .getInstance()
                         .getFrameController()
                         .getProjectController()
                         .getProject()
                         .getRootNode();
-
-                CreateQueryAction action = actionManager
-                        .getAction(CreateQueryAction.class);
-
+                CreateQueryAction action = actionManager.getAction(CreateQueryAction.class);
                 action.createQuery(domain, map, query);
-
                 break;
             }
             case PROCEDURE: {
-                CreateProcedureAction action = actionManager
-                        .getAction(CreateProcedureAction.class);
+                CreateProcedureAction action = actionManager.getAction(CreateProcedureAction.class);
                 action.createProcedure(map, procedure);
                 break;
             }
             case MAP_FROM_NODE: {
                 this.dataNode.getDataMapNames().add(map.getName());
-
+                ProjectController controller = Application.getInstance().getFrameController().getProjectController();
                 DataNodeEvent e = new DataNodeEvent(Application.getFrame(), this.dataNode);
-
-                ProjectController controller = Application
-                        .getInstance()
-                        .getFrameController()
-                        .getProjectController();
-
-                e
-                        .setDomain((DataChannelDescriptor) controller
-                                .getProject()
-                                .getRootNode());
-
+                e.setDomain((DataChannelDescriptor) controller.getProject().getRootNode());
                 controller.fireDataNodeEvent(e);
-
                 break;
             }
             case MAP_FROM_DOMAIN: {
-                CreateDataMapAction action = actionManager
-                        .getAction(CreateDataMapAction.class);
+                CreateDataMapAction action = actionManager.getAction(CreateDataMapAction.class);
                 action.createDataMap(map);
-
                 break;
             }
             case NODE: {
                 CreateNodeAction action = actionManager.getAction(CreateNodeAction.class);
                 action.createDataNode(dataNode);
-
                 break;
             }
-
             case EMBEDDABLE: {
-                CreateEmbeddableAction action = actionManager
-                        .getAction(CreateEmbeddableAction.class);
+                CreateEmbeddableAction action = actionManager.getAction(CreateEmbeddableAction.class);
                 action.createEmbeddable(map, embeddable);
-
                 break;
             }
         }

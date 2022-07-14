@@ -39,7 +39,7 @@ class SelectQueryValidator extends BaseQueryValidator {
         validateCacheGroup(query, validationResult);
 
         // Resolve root to Entity for further validation
-        Entity root = validateRoot(query, validationResult);
+        Entity<?,?,?> root = validateRoot(query, validationResult);
 
         // validate path-based parts
         if (root != null) {
@@ -58,13 +58,13 @@ class SelectQueryValidator extends BaseQueryValidator {
         }
     }
 
-    void validatePrefetch(Entity root, String path, ValidationResult validationResult) {
+    void validatePrefetch(Entity<?,?,?> root, String path, ValidationResult validationResult) {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
     void validateOrdering(
             QueryDescriptor query,
-            Entity root,
+            Entity<?,?,?> root,
             Ordering ordering,
             ValidationResult validationResult) {
        
@@ -81,13 +81,13 @@ class SelectQueryValidator extends BaseQueryValidator {
     }
 
     void validateQualifier(
-            Entity root,
+            Entity<?,?,?> root,
             Expression qualifier,
             ValidationResult validationResult) {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    Entity validateRoot(QueryDescriptor query, ValidationResult validationResult) {
+    Entity<?,?,?> validateRoot(QueryDescriptor query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             addFailure(validationResult, query, "Query '%s' has no root", query.getName());
@@ -101,11 +101,11 @@ class SelectQueryValidator extends BaseQueryValidator {
 
         if (map == null) {
             // maybe standalone entity, otherwise bail...
-            return (query.getRoot() instanceof Entity) ? (Entity) query.getRoot() : null;
+            return (query.getRoot() instanceof Entity) ? (Entity<?,?,?>) query.getRoot() : null;
         }
 
         if (query.getRoot() instanceof Entity) {
-            return (Entity) query.getRoot();
+            return (Entity<?,?,?>) query.getRoot();
         }
 
         // can't validate Class root - it is likely not accessible from here...

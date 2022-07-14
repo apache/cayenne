@@ -29,7 +29,6 @@ import java.util.Set;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
-import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -40,8 +39,8 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
 
     private final FiltersConfig filtersConfig;
     private final boolean skipPKTokens;
-    private DataMap originalDataMap;
-    private DataMap importedDataMap;
+    private final DataMap originalDataMap;
+    private final DataMap importedDataMap;
 
     DbEntityMerger(MergerTokenFactory tokenFactory, DataMap original, DataMap imported,
                    FiltersConfig filtersConfig, boolean skipPKTokens) {
@@ -129,9 +128,9 @@ class DbEntityMerger extends AbstractMerger<DataMap, DbEntity> {
         );
     }
 
-    private Set<String> upperCaseEntityNames(Collection<? extends Attribute> attributes) {
+    private Set<String> upperCaseEntityNames(Collection<DbAttribute> attributes) {
         Set<String> names = new HashSet<>();
-        for (Attribute attr : attributes) {
+        for (DbAttribute attr : attributes) {
             names.add(attr.getName().toUpperCase());
         }
         return names;

@@ -30,7 +30,6 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
 
 /**
  * Attributes and Methods for working with ObjEntities.
@@ -133,7 +132,7 @@ public class EntityUtils {
             return false;
         }
 
-        for (Relationship r : anObjEntity.getRelationships()) {
+        for (ObjRelationship r : anObjEntity.getRelationships()) {
             if (r.isToMany()) {
                 return true;
             }
@@ -163,7 +162,7 @@ public class EntityUtils {
             return false;
         }
 
-        for (Relationship r : anObjEntity.getDeclaredRelationships()) {
+        for (ObjRelationship r : anObjEntity.getDeclaredRelationships()) {
             if (r.isToMany()) {
                 return true;
             }
@@ -188,7 +187,7 @@ public class EntityUtils {
             return false;
         }
 
-        for (Relationship r : anObjEntity.getRelationships()) {
+        for (ObjRelationship r : anObjEntity.getRelationships()) {
             if (!r.isToMany()) {
                 return true;
             }
@@ -214,7 +213,7 @@ public class EntityUtils {
             return false;
         }
 
-        for (Relationship r : anObjEntity.getDeclaredRelationships()) {
+        for (ObjRelationship r : anObjEntity.getDeclaredRelationships()) {
             if (!r.isToMany()) {
                 return true;
             }

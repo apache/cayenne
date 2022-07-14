@@ -44,7 +44,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
     public void actionPerformed(ActionEvent ae) {
         QueryDescriptor query = queryTab.getQuery();
         if (query != null) {
-            Entity root = (Entity) queryTab.getQueryRoot().getModel().getSelectedItem();
+            Entity<?,?,?> root = (Entity<?,?,?>) queryTab.getQueryRoot().getModel().getSelectedItem();
 
             if (root != null) {
                 query.setRoot(root);

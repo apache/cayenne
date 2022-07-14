@@ -31,17 +31,17 @@ import java.util.StringTokenizer;
 /**
  * @since 3.0
  */
-class PathComponentIterator<E extends Entity<E,T,U>, T extends Attribute<E,T,U>, U extends Relationship<E,T,U>>
-        implements Iterator<PathComponent<T, U>> {
+class PathComponentIterator<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
+        implements Iterator<PathComponent<A, R>> {
 
     private final StringTokenizer toks;
     private final String path;
     private final Map<String, String> aliasMap;
 
     private EmbeddedAttribute embeddedAttribute;
-    private Entity<E,T,U> currentEntity;
+    private Entity<E, A, R> currentEntity;
 
-    PathComponentIterator(Entity<E,T,U> root, String path, Map<String, String> aliasMap) {
+    PathComponentIterator(Entity<E, A, R> root, String path, Map<String, String> aliasMap) {
         this.currentEntity = Objects.requireNonNull(root);
         this.path = Objects.requireNonNull(path);
         this.aliasMap = Objects.requireNonNull(aliasMap);
@@ -53,7 +53,7 @@ class PathComponentIterator<E extends Entity<E,T,U>, T extends Attribute<E,T,U>,
         return toks.hasMoreTokens();
     }
 
-    public PathComponent<T, U> next() {
+    public PathComponent<A, R> next() {
         String pathComp = toks.nextToken();
 
         JoinType relationshipJoinType = JoinType.INNER;
@@ -65,10 +65,10 @@ class PathComponentIterator<E extends Entity<E,T,U>, T extends Attribute<E,T,U>,
         }
 
         // see if this is an attribute
-        T attr;
+        A attr;
         if(embeddedAttribute != null) {
             // TODO: assert that this iterator is for ObjEntity
-            attr = (T)embeddedAttribute.getAttribute(pathComp);
+            attr = (A)embeddedAttribute.getAttribute(pathComp);
             embeddedAttribute = null;
         } else {
             attr = currentEntity.getAttribute(pathComp);
@@ -86,13 +86,13 @@ class PathComponentIterator<E extends Entity<E,T,U>, T extends Attribute<E,T,U>,
             return new AttributePathComponent<>(attr);
         }
 
-        U rel = currentEntity.getRelationship(pathComp);
+        R rel = currentEntity.getRelationship(pathComp);
         if (rel != null) {
             currentEntity = rel.getTargetEntity();
             return new RelationshipPathComponent<>(rel, relationshipJoinType, !hasNext());
         }
 
-        PathComponent<T, U> aliasedPathComponent = getAliasedPathComponent(pathComp);
+        PathComponent<A, R> aliasedPathComponent = getAliasedPathComponent(pathComp);
         if (aliasedPathComponent != null) {
             return aliasedPathComponent;
         }
@@ -100,7 +100,7 @@ class PathComponentIterator<E extends Entity<E,T,U>, T extends Attribute<E,T,U>,
         throw invalidPathException("Can't resolve path component", pathComp);
     }
 
-    private PathComponent<T, U> getAliasedPathComponent(String pathComp) {
+    private PathComponent<A, R> getAliasedPathComponent(String pathComp) {
         String aliasedPath = aliasMap.get(pathComp);
         if(aliasedPath == null) {
             return null;
@@ -117,15 +117,15 @@ class PathComponentIterator<E extends Entity<E,T,U>, T extends Attribute<E,T,U>,
         // the subpath, we have to fully traverse it, hence instead of lazy iterator
         // we might as well reuse obtained information in the AliasPathComponent
 
-        Iterator<PathComponent<T, U>> subpathIt =
+        Iterator<PathComponent<A, R>> subpathIt =
                 new PathComponentIterator<>(currentEntity, aliasedPath, Collections.emptyMap());
 
-        Collection<PathComponent<T, U>> parsedSubpath = new ArrayList<>(4);
+        Collection<PathComponent<A, R>> parsedSubpath = new ArrayList<>(4);
 
         while (subpathIt.hasNext()) {
-            PathComponent<T, U> subpathComponent = subpathIt.next();
+            PathComponent<A, R> subpathComponent = subpathIt.next();
 
-            U subpathRelationship = subpathComponent.getRelationship();
+            R subpathRelationship = subpathComponent.getRelationship();
             if (subpathRelationship == null) {
                 throw invalidPathException(
                         "Expected a relationship in the aliased subpath. Alias [" + pathComp + "]",

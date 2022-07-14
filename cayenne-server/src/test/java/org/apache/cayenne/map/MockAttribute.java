@@ -22,8 +22,6 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 
-/**
- */
 public class MockAttribute extends Attribute<MockEntity, MockAttribute, MockRelationship> {
 
     public MockAttribute() {

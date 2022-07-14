@@ -54,8 +54,7 @@ import java.util.regex.Pattern;
  * This class used as cell editor, when you need to
  * choose path in comboBox and use autocompletion.
  */
-@SuppressWarnings("WeakerAccess")
-public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
+public abstract class PathChooserComboBoxCellEditor<T extends CayenneTableModel<?>> extends AbstractCellEditor implements TableCellEditor, ActionListener, PopupMenuListener {
 
     protected JComboBox<String> comboBoxPathChooser;
     protected int previousEmbeddedLevel = 0;
@@ -67,11 +66,11 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
 
     protected abstract EntityTreeModel createTreeModelForComboBox(int indexInTable);
 
-    protected abstract Object getCurrentNodeToInitializeCombo(CayenneTableModel model, int row);
+    protected abstract Object getCurrentNodeToInitializeCombo(T model, int row);
 
-    protected abstract String getPathToInitializeCombo(CayenneTableModel model, int row);
+    protected abstract String getPathToInitializeCombo(T model, int row);
 
-    protected void initializeCombo(CayenneTableModel model, int row, final JTable table) {
+    protected void initializeCombo(T model, int row, final JTable table) {
         Object currentNode = getCurrentNodeToInitializeCombo(model, row);
         String dbAttributePath = getPathToInitializeCombo(model, row);
         List<String> nodeChildren = getChildren(currentNode, dbAttributePath);
@@ -240,7 +239,6 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
 
         private  final ImageIcon rightArrow = ModelerUtil.buildIcon("icon-arrow-closed.png");
 
-        @SuppressWarnings("unchecked")
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index,
                                                       boolean isSelected, boolean cellHasFocus) {
@@ -251,7 +249,7 @@ public abstract class PathChooserComboBoxCellEditor extends AbstractCellEditor i
 
             Object currentNode = getCurrentNode((String) value);
             if (treeModel.isLeaf(currentNode)) {
-                ListCellRenderer leafRenderer = CellRenderers.listRenderer();
+                ListCellRenderer<Object> leafRenderer = CellRenderers.listRenderer();
                 return leafRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             } else {
                 DefaultListCellRenderer nonLeafTextRenderer = new DefaultListCellRenderer();

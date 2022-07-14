@@ -34,9 +34,9 @@ import static org.junit.Assert.assertTrue;
 public class EntityEventTest {
 
     @Test
-    public void testConstructor1() throws Exception {
+    public void testConstructor1() {
         Object src = new Object();
-        Entity d = new DbEntity("abc");
+        DbEntity d = new DbEntity("abc");
         EntityEvent e = new EntityEvent(src, d);
 
         assertSame(src, e.getSource());
@@ -44,9 +44,9 @@ public class EntityEventTest {
     }
 
     @Test
-    public void testConstructor2() throws Exception {
+    public void testConstructor2() {
         Object src = new Object();
-        Entity d = new DbEntity("abc");
+        DbEntity d = new DbEntity("abc");
         EntityEvent e = new EntityEvent(src, d, "oldname");
 
         assertSame(src, e.getSource());
@@ -55,9 +55,9 @@ public class EntityEventTest {
     }
 
     @Test
-    public void testEntity() throws Exception {
+    public void testEntity() {
         Object src = new Object();
-        Entity d = new DbEntity("abc");
+        DbEntity d = new DbEntity("abc");
         EntityEvent e = new EntityEvent(src, null);
 
         e.setEntity(d);
@@ -65,16 +65,16 @@ public class EntityEventTest {
     }
 
     @Test
-    public void testNameChange1() throws Exception {
-        Entity d = new DbEntity("abc");
+    public void testNameChange1() {
+        DbEntity d = new DbEntity("abc");
         EntityEvent e = new EntityEvent(new Object(), d, "xyz");
         assertEquals(d.getName(), e.getNewName());
         assertTrue(e.isNameChange());
     }
 
     @Test
-	public void testNameChange2() throws Exception {
-		Entity d = new DbEntity("abc");
+	public void testNameChange2() {
+        DbEntity d = new DbEntity("abc");
 		EntityEvent e = new EntityEvent(new Object(), d, "abc");
 		assertEquals(d.getName(), e.getNewName());
 		assertFalse(e.isNameChange());

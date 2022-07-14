@@ -30,10 +30,10 @@ import org.apache.cayenne.map.Relationship;
  * 
  */
 public class RelationshipEvent extends EntityEvent {
-	protected Relationship relationship;
+	protected Relationship<?,?,?> relationship;
 
 	/** Creates a Relationship change event. */
-	public RelationshipEvent(Object src, Relationship rel, Entity entity) {
+	public RelationshipEvent(Object src, Relationship<?,?,?> rel, Entity<?,?,?> entity) {
 		super(src, entity);
 		setRelationship(rel);
 	}
@@ -41,8 +41,8 @@ public class RelationshipEvent extends EntityEvent {
 	/** Creates a Relationship event of a specified type. */
 	public RelationshipEvent(
 		Object src,
-		Relationship rel,
-		Entity entity,
+		Relationship<?,?,?> rel,
+		Entity<?,?,?> entity,
 		int id) {
 
 		this(src, rel, entity);
@@ -52,8 +52,8 @@ public class RelationshipEvent extends EntityEvent {
 	/** Creates a Relationship name change event. */
 	public RelationshipEvent(
 		Object src,
-		Relationship rel,
-		Entity entity,
+		Relationship<?,?,?> rel,
+		Entity<?,?,?> entity,
 		String oldName) {
 			
 		this(src, rel, entity);
@@ -61,7 +61,7 @@ public class RelationshipEvent extends EntityEvent {
 	}
 
 	/** Returns relationship associated with this event. */
-	public Relationship getRelationship() {
+	public Relationship<?,?,?> getRelationship() {
 		return relationship;
 	}
 
@@ -70,7 +70,7 @@ public class RelationshipEvent extends EntityEvent {
 	 * 
 	 * @param relationship The relationship to set
 	 */
-	public void setRelationship(Relationship relationship) {
+	public void setRelationship(Relationship<?,?,?> relationship) {
 		this.relationship = relationship;
 	}
 	

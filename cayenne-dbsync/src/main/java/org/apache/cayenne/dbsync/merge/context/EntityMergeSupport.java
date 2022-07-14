@@ -31,11 +31,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 import org.apache.cayenne.util.EntityMergeListener;
 import org.slf4j.Logger;
@@ -213,11 +211,7 @@ public class EntityMergeSupport {
         Map<String, ObjEntity> objEntities = entity.getDataMap().getSubclassesForObjEntity(entity);
 
         boolean hasFlattingAttributes = false;
-        boolean needGeneratedEntity = true;
-
-        if (objEntities.containsKey(targetEntityName)) {
-            needGeneratedEntity = false;
-        }
+        boolean needGeneratedEntity = !objEntities.containsKey(targetEntityName);
 
         for (ObjEntity subObjEntity : objEntities.values()) {
             for (ObjAttribute objAttribute : subObjEntity.getAttributes()) {
@@ -275,7 +269,7 @@ public class EntityMergeSupport {
                 }
             }
         } else {
-            for (Entity mappedTarget : mappedObjEntities) {
+            for (ObjEntity mappedTarget : mappedObjEntities) {
                 createObjRelationship(entity, dbRelationship, mappedTarget.getName());
             }
         }
@@ -406,8 +400,7 @@ public class EntityMergeSupport {
             return false;
         }
 
-        for(Relationship relationship : entity.getRelationships()) {
-            ObjRelationship objRelationship = (ObjRelationship)relationship;
+        for(ObjRelationship objRelationship : entity.getRelationships()) {
             if(objRelationshipHasDbRelationship(objRelationship, dbRelationship)) {
                 return false;
             }

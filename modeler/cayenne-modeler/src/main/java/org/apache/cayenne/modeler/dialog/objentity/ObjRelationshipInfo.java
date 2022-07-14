@@ -38,11 +38,9 @@ import org.apache.cayenne.dbsync.naming.ObjectNameGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.MapEvent;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.Application;
@@ -442,7 +440,6 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     /**
      * Places in objectTargets list all ObjEntities for specified DbEntity
      */
-    @SuppressWarnings("unchecked")
     protected void updateTargetCombo(DbEntity dbTarget) {
         // copy those that have DbEntities mapped to dbTarget, and then sort
 
@@ -642,22 +639,22 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
     // Connects last selected DbRelationship in the path to the
     // last DbEntity, creating a dummy relationship if needed.
     private void connectEnds() {
-        Relationship last = null;
+        DbRelationship last = null;
 
         int size = dbRelationships.size();
         if (size > 0) {
             last = dbRelationships.get(size - 1);
         }
 
-        Entity target = getEndEntity();
+        DbEntity target = getEndEntity();
 
         if (target != null && (last == null || last.getTargetEntity() != target)) {
             // try to connect automatically, if we can't use dummy connector
-            Entity source = (last == null) ? getStartEntity() : last.getTargetEntity();
+            DbEntity source = (last == null) ? getStartEntity() : last.getTargetEntity();
             if (source != null) {
-                Relationship anyConnector = source.getAnyRelationship(target);
+                DbRelationship anyConnector = source.getAnyRelationship(target);
                 if (anyConnector != null) {
-                    dbRelationships.add((DbRelationship) anyConnector);
+                    dbRelationships.add(anyConnector);
                 }
             }
         }
@@ -715,7 +712,7 @@ public class ObjRelationshipInfo extends CayenneController implements TreeSelect
         this.targetCollection = targetCollection;
     }
 
-    public List getMapKeys() {
+    public List<String> getMapKeys() {
         return mapKeys;
     }
 

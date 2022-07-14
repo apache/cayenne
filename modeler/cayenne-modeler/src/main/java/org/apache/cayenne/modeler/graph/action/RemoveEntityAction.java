@@ -33,9 +33,9 @@ import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
  * Action for removing entities from the graph
  */
 public class RemoveEntityAction extends RemoveAction {
-    GraphBuilder builder;
+    GraphBuilder<?,?,?> builder;
     
-    public RemoveEntityAction(GraphBuilder builder) {
+    public RemoveEntityAction(GraphBuilder<?,?,?> builder) {
         super(Application.getInstance());
         this.builder = builder;
         setEnabled(true);
@@ -45,7 +45,7 @@ public class RemoveEntityAction extends RemoveAction {
     public void performAction(ActionEvent e, boolean allowAsking) {
         ConfirmRemoveDialog dialog = getConfirmDeleteDialog(allowAsking);
 
-        Entity entity = builder.getSelectedEntity();
+        Entity<?,?,?> entity = builder.getSelectedEntity();
         if (entity == null) {
             return;
         }

@@ -99,13 +99,13 @@ public class ASTDbIdPath extends ASTDbPath {
     @Override
     protected Object evaluateNode(Object o) {
         if (o instanceof Entity) {
-            return evaluateEntityNode((Entity) o);
+            return evaluateEntityNode((Entity<?,?,?>) o);
         }
         return evaluateNode(o, path);
     }
 
     @Override
-    protected CayenneMapEntry evaluateEntityNode(Entity entity) {
+    protected CayenneMapEntry evaluateEntityNode(Entity<?,?,?> entity) {
         int lastDot = path.lastIndexOf('.');
         String objPath = null;
         String id = path;

@@ -52,12 +52,12 @@ class RelationshipDisplayEventType extends EntityDisplayEventType {
             return;
         }
 
-        Entity entity = getLastEntity(dataMap);
+        Entity<?,?,?> entity = getLastEntity(dataMap);
         if (entity == null) {
             return;
         }
 
-        Relationship[] relationships = getLastEntityRelationships(entity);
+        Relationship<?,?,?>[] relationships = getLastEntityRelationships(entity);
 
         EntityDisplayEvent entityDisplayEvent = new EntityDisplayEvent(this, entity, dataMap, dataNode, dataChannel);
         RelationshipDisplayEvent displayEvent = new RelationshipDisplayEvent(this, relationships, entity, dataMap, dataChannel);
@@ -89,12 +89,12 @@ class RelationshipDisplayEventType extends EntityDisplayEventType {
         }
     }
 
-    private Relationship[] getLastEntityRelationships(Entity entity) {
-        List<Relationship> relationshipList = new ArrayList<>();
+    private Relationship<?,?,?>[] getLastEntityRelationships(Entity<?,?,?> entity) {
+        List<Relationship<?,?,?>> relationshipList = new ArrayList<>();
 
         String rels = (entity instanceof ObjEntity) ? preferences.getObjRels() : preferences.getDbRels();
         for (String objRelName : rels.split(",")) {
-            Relationship rel = entity.getRelationship(objRelName);
+            Relationship<?,?,?> rel = entity.getRelationship(objRelName);
             if(rel != null) {
                 relationshipList.add(rel);
             }

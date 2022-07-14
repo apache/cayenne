@@ -40,7 +40,7 @@ public class EntityDisplayAction extends CayenneAction {
      */
     private CayenneAction delegate;
 
-    private GraphBuilder builder;
+    private final GraphBuilder builder;
 
     public EntityDisplayAction(GraphBuilder builder) {
         super("Show", Application.getInstance());
@@ -75,7 +75,7 @@ public class EntityDisplayAction extends CayenneAction {
     }
 
     private boolean display() {
-        Entity entity = builder.getSelectedEntity();
+        Entity<?,?,?> entity = builder.getSelectedEntity();
         if (entity == null) {
             return false;
         }

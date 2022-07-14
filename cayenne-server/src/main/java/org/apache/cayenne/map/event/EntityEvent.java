@@ -27,28 +27,28 @@ import org.apache.cayenne.map.Entity;
  * and DbEntities.
  */
 public class EntityEvent extends MapEvent {
-	protected Entity entity;
+	protected Entity<?,?,?> entity;
 
 	/** Creates a Entity change event. */
-	public EntityEvent(Object src, Entity entity) {
+	public EntityEvent(Object src, Entity<?,?,?> entity) {
 		super(src);
 		setEntity(entity);
 	}
 
 	/** Creates a Entity event of a specified type. */
-	public EntityEvent(Object src, Entity entity, int id) {
+	public EntityEvent(Object src, Entity<?,?,?> entity, int id) {
 		this(src, entity);
 		setId(id);
 	}
 
 	/** Creates a Entity name change event.*/
-	public EntityEvent(Object src, Entity entity, String oldName) {
+	public EntityEvent(Object src, Entity<?,?,?> entity, String oldName) {
 		this(src, entity);
 		setOldName(oldName);
 	}
 
 	/** Returns entity object associated with this event. */
-	public Entity getEntity() {
+	public Entity<?,?,?> getEntity() {
 		return entity;
 	}
 	
@@ -57,7 +57,7 @@ public class EntityEvent extends MapEvent {
 	 * 
 	 * @param entity The entity to set
 	 */
-	public void setEntity(Entity entity) {
+	public void setEntity(Entity<?,?,?> entity) {
 		this.entity = entity;
 	}
 	

@@ -38,18 +38,16 @@ import org.apache.cayenne.validation.ValidationFailure;
 public class EntityErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
-    protected Entity entity;
+    protected Entity<?,?,?> entity;
 
     /**
      * Constructor for EntityErrorMsg.
-     * 
-     * @param result
      */
     public EntityErrorMsg(ValidationFailure result) {
         super(result);
 
         Object object = result.getSource();
-        entity = (Entity) object;
+        entity = (Entity<?,?,?>) object;
         map = entity.getDataMap();
         domain = (DataChannelDescriptor) Application
                 .getInstance()

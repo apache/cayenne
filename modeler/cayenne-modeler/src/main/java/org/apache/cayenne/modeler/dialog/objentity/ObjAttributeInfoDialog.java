@@ -25,7 +25,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.event.AttributeEvent;
@@ -70,9 +69,9 @@ import static org.apache.cayenne.modeler.dialog.objentity.ObjAttributeInfoDialog
 
 public class ObjAttributeInfoDialog extends CayenneController implements TreeSelectionListener {
 
-	private ObjAttributeTableModel model;
+	private final ObjAttributeTableModel model;
 	private OverrideEmbeddableAttributeTableModel embeddableModel;
-	private int row;
+	private final int row;
 	protected ObjAttributeInfoDialogView view;
 	protected ObjAttribute attribute;
 	protected ObjAttribute attributeSaved;
@@ -189,7 +188,7 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		 * set filter for ObjAttributePathBrowser
 		 */
 		if (view.getPathBrowser().getModel() == null) {
-			Entity firstEntity = null;
+			DbEntity firstEntity = null;
 			if (attribute.getDbAttribute() == null) {
 
 				if (attribute.getParent() instanceof ObjEntity) {
@@ -226,13 +225,10 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 		view.getTypeComboBox().addItemListener(e -> {
             if (lastObjectType != null) {
                 if (!lastObjectType.equals(e.getItemSelectable())) {
-
                     if (embeddableNames.contains(e.getItemSelectable().getSelectedObjects()[0].toString())) {
-                        if (attributeSaved instanceof ObjAttribute) {
-                            EmbeddedAttribute copyAttrSaved = new EmbeddedAttribute();
-                            copyObjAttribute(copyAttrSaved, attributeSaved);
-                            attributeSaved = copyAttrSaved;
-                        }
+						EmbeddedAttribute copyAttrSaved = new EmbeddedAttribute();
+						copyObjAttribute(copyAttrSaved, attributeSaved);
+						attributeSaved = copyAttrSaved;
                     } else {
                         if (attributeSaved instanceof EmbeddedAttribute) {
                             ObjAttribute copyAttrSaved = new ObjAttribute();
@@ -314,12 +310,10 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	}
 
 	private void initComboBoxes() {
-		Collection<String> nameAttr = null;
 		if (attributeSaved != null) {
 			DbEntity currentEnt = attributeSaved.getEntity().getDbEntity();
-
 			if (currentEnt != null) {
-				nameAttr = ModelerUtil.getDbAttributeNames(currentEnt);
+				Collection<String> nameAttr = ModelerUtil.getDbAttributeNames(currentEnt);
 				embeddableModel.setCellEditor(nameAttr, view.getOverrideAttributeTable());
 				embeddableModel.setComboBoxes(
 						nameAttr,
@@ -565,9 +559,9 @@ public class ObjAttributeInfoDialog extends CayenneController implements TreeSel
 	public void valueChanged(TreeSelectionEvent e) {
 	}
 
-	private Entity getFirstEntity() {
+	private DbEntity getFirstEntity() {
 		Iterator<CayenneMapEntry> it = attribute.getDbPathIterator();
-		Entity firstEnt = attribute.getDbAttribute().getEntity();
+		DbEntity firstEnt = attribute.getDbAttribute().getEntity();
 		boolean setEnt = false;
 
 		while (it.hasNext()) {

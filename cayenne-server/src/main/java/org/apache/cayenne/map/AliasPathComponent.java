@@ -25,24 +25,23 @@ import java.util.Collection;
  * 
  * @since 3.0
  */
-class AliasPathComponent<T extends Attribute, U extends Relationship> implements
-        PathComponent<T, U> {
+class AliasPathComponent<A extends Attribute<?, A, R>, R extends Relationship<?, A, R>> implements PathComponent<A, R> {
 
-    private String alias;
-    private Collection<PathComponent<T, U>> path;
-    private boolean last;
+    private final String alias;
+    private final Collection<PathComponent<A, R>> path;
+    private final boolean last;
 
-    AliasPathComponent(String alias, Collection<PathComponent<T, U>> path, boolean last) {
+    AliasPathComponent(String alias, Collection<PathComponent<A, R>> path, boolean last) {
         this.alias = alias;
         this.path = path;
         this.last = last;
     }
 
-    public Iterable<PathComponent<T, U>> getAliasedPath() {
+    public Iterable<PathComponent<A, R>> getAliasedPath() {
         return path;
     }
 
-    public T getAttribute() {
+    public A getAttribute() {
         return null;
     }
 
@@ -54,7 +53,7 @@ class AliasPathComponent<T extends Attribute, U extends Relationship> implements
         return alias;
     }
 
-    public U getRelationship() {
+    public R getRelationship() {
         return null;
     }
 

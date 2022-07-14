@@ -141,7 +141,7 @@ public class FindAction extends CayenneAction {
         DataChannelDescriptor domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
 
         if (searchResultEntry.getObject() instanceof Entity) {
-            jumpToEntityResult((Entity) searchResultEntry.getObject(), editor, domain);
+            jumpToEntityResult((Entity<?,?,?>) searchResultEntry.getObject(), editor, domain);
         } else if (searchResultEntry.getObject() instanceof QueryDescriptor) {
             jumpToQueryResult((QueryDescriptor)searchResultEntry.getObject(), editor, domain);
         } else if (searchResultEntry.getObject() instanceof Embeddable) {
@@ -262,19 +262,19 @@ public class FindAction extends CayenneAction {
 
     private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, EditorView editor, DataChannelDescriptor domain) {
         DataMap map;
-        Entity entity;
+        Entity<?,?,?> entity;
         if (searchResultEntry.getObject() instanceof Attribute) {
-            map = ((Attribute) searchResultEntry.getObject()).getEntity().getDataMap();
-            entity = ((Attribute) searchResultEntry.getObject()).getEntity();
+            map = ((Attribute<?,?,?>) searchResultEntry.getObject()).getEntity().getDataMap();
+            entity = ((Attribute<?,?,?>) searchResultEntry.getObject()).getEntity();
         } else {
-            map = ((Relationship) searchResultEntry.getObject()).getSourceEntity().getDataMap();
-            entity = ((Relationship) searchResultEntry.getObject()).getSourceEntity();
+            map = ((Relationship<?,?,?>) searchResultEntry.getObject()).getSourceEntity().getDataMap();
+            entity = ((Relationship<?,?,?>) searchResultEntry.getObject()).getSourceEntity();
         }
         buildAndSelectTreePath(map, entity, editor);
 
         if (searchResultEntry.getObject() instanceof Attribute) {
             AttributeDisplayEvent event = new AttributeDisplayEvent(editor.getProjectTreeView(),
-                    (Attribute) searchResultEntry.getObject(), entity, map, domain);
+                    (Attribute<?,?,?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
             if(searchResultEntry.getObject() instanceof DbAttribute) {
                 editor.getDbDetailView().currentDbAttributeChanged(event);
@@ -285,7 +285,7 @@ public class FindAction extends CayenneAction {
             }
         } else if (searchResultEntry.getObject() instanceof Relationship) {
             RelationshipDisplayEvent event = new RelationshipDisplayEvent(editor.getProjectTreeView(),
-                    (Relationship) searchResultEntry.getObject(), entity, map, domain);
+                    (Relationship<?,?,?>) searchResultEntry.getObject(), entity, map, domain);
             event.setMainTabFocus(true);
             if(searchResultEntry.getObject() instanceof DbRelationship) {
                 editor.getDbDetailView().currentDbRelationshipChanged(event);
@@ -323,7 +323,7 @@ public class FindAction extends CayenneAction {
         editor.currentQueryChanged(event);
     }
 
-    private static void jumpToEntityResult(Entity entity, EditorView editor, DataChannelDescriptor domain) {
+    private static void jumpToEntityResult(Entity<?,?,?> entity, EditorView editor, DataChannelDescriptor domain) {
         DataMap map = entity.getDataMap();
         buildAndSelectTreePath(map, entity, editor);
         EntityDisplayEvent event = new EntityDisplayEvent(editor.getProjectTreeView(), entity, map, domain);

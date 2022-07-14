@@ -134,7 +134,7 @@ public class CreateRelationshipAction extends CayenneAction {
         }
 
         if (object instanceof Relationship) {
-            return ((Relationship) object).getParent() != null && ((Relationship) object).getParent() instanceof Entity;
+            return ((Relationship<?,?,?>) object).getParent() instanceof Entity;
         }
 
         return false;

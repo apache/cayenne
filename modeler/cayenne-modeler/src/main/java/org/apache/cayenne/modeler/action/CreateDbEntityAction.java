@@ -97,6 +97,6 @@ public class CreateDbEntityAction extends CayenneAction {
             return false;
         }
 
-        return ((Entity) object).getDataMap() != null;
+        return ((Entity<?,?,?>) object).getDataMap() != null;
     }
 }

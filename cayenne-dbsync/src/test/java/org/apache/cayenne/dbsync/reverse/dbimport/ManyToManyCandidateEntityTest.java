@@ -42,7 +42,6 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,14 +83,14 @@ public class ManyToManyCandidateEntityTest {
     }
 
     @Test
-    public void testMatchingForManyToManyEntity() throws Exception {
+    public void testMatchingForManyToManyEntity() {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
         assertNotNull(ManyToManyCandidateEntity.build(manyToManyEntity));
     }
 
     @Test
-    public void testMatchingForNotManyToManyEntity() throws Exception {
+    public void testMatchingForNotManyToManyEntity() {
         ObjEntity entity = map.getObjEntity("Table1");
 
         assertNull(ManyToManyCandidateEntity.build(entity));
@@ -101,19 +100,17 @@ public class ManyToManyCandidateEntityTest {
     public void testOptimisationForManyToManyEntity() {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
-        ManyToManyCandidateEntity.build(manyToManyEntity).optimizeRelationships(
-                new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
+        ManyToManyCandidateEntity.build(manyToManyEntity)
+                .optimizeRelationships(new DefaultObjectNameGenerator(NoStemStemmer.getInstance()));
 
         ObjEntity table1Entity = map.getObjEntity("Table1");
         ObjEntity table2Entity = map.getObjEntity("Table2");
 
         assertEquals(1, table1Entity.getRelationships().size());
-        assertEquals(table2Entity, new ArrayList<Relationship>(table1Entity.getRelationships()).get(0)
-                .getTargetEntity());
+        assertEquals(table2Entity, new ArrayList<>(table1Entity.getRelationships()).get(0).getTargetEntity());
 
         assertEquals(1, table2Entity.getRelationships().size());
-        assertEquals(table1Entity, new ArrayList<Relationship>(table2Entity.getRelationships()).get(0)
-                .getTargetEntity());
+        assertEquals(table1Entity, new ArrayList<>(table2Entity.getRelationships()).get(0).getTargetEntity());
     }
 
 }

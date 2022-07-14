@@ -29,7 +29,7 @@ import org.apache.cayenne.map.Entity;
  */
 public class EntityDisplayEvent extends DataMapDisplayEvent {
 
-    protected Entity entity;
+    protected Entity<?,?,?> entity;
 
     /**
      * If true, the event causes entity editor to switch to the main entity tab.
@@ -42,16 +42,16 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
     protected boolean entityChanged = true;
     protected boolean unselectAttributes;
 
-    public EntityDisplayEvent(Object src, Entity entity) {
+    public EntityDisplayEvent(Object src, Entity<?,?,?> entity) {
         this(src, entity, null, null, null);
     }
 
-    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
+    public EntityDisplayEvent(Object src, Entity<?,?,?> entity, DataMap map, DataChannelDescriptor dataChannelDescriptor) {
 
         this(src, entity, map, null, dataChannelDescriptor);
     }
 
-    public EntityDisplayEvent(Object src, Entity entity, DataMap map, DataNodeDescriptor node,
+    public EntityDisplayEvent(Object src, Entity<?,?,?> entity, DataMap map, DataNodeDescriptor node,
             DataChannelDescriptor dataChannelDescriptor) {
 
         super(src, map, dataChannelDescriptor, node);
@@ -62,7 +62,7 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
     /**
      * Returns entity associated with this event.
      */
-    public Entity getEntity() {
+    public Entity<?,?,?> getEntity() {
         return entity;
     }
 
@@ -83,7 +83,7 @@ public class EntityDisplayEvent extends DataMapDisplayEvent {
         this.unselectAttributes = unselectAttributes;
     }
 
-    public void setEntity(Entity entity) {
+    public void setEntity(Entity<?,?,?> entity) {
         this.entity = entity;
     }
 

@@ -45,7 +45,7 @@ public class ObjRelationshipInfoView extends JDialog{
     
     private static final Dimension BROWSER_CELL_DIM = new Dimension(130, 200);
 
-    private static final Object[] DELETE_RULES = new Object[]{
+    private static final String[] DELETE_RULES = new String[]{
             DeleteRule.deleteRuleName(DeleteRule.NO_ACTION),
             DeleteRule.deleteRuleName(DeleteRule.NULLIFY),
             DeleteRule.deleteRuleName(DeleteRule.CASCADE),
@@ -68,7 +68,7 @@ public class ObjRelationshipInfoView extends JDialog{
     private JLabel sourceEntityLabel;
     private JComboBox<String> targetCombo;
 
-    private JComboBox deleteRule;
+    private JComboBox<String> deleteRule;
     private JCheckBox usedForLocking;
     private JTextField comment;
 
@@ -101,9 +101,7 @@ public class ObjRelationshipInfoView extends JDialog{
         pathBrowser.setPreferredColumnSize(BROWSER_CELL_DIM);
         pathBrowser.setDefaultRenderer();
 
-        this.deleteRule = Application.getWidgetFactory().createComboBox(
-                DELETE_RULES,
-                false);
+        this.deleteRule = Application.getWidgetFactory().createComboBox(DELETE_RULES, false);
         this.usedForLocking = new JCheckBox();
         this.comment = new JTextField();
         
@@ -190,7 +188,7 @@ public class ObjRelationshipInfoView extends JDialog{
         return sourceEntityLabel;
     }
     
-    public JComboBox getTargetCombo()
+    public JComboBox<String> getTargetCombo()
     {
         return targetCombo;
     }
@@ -203,7 +201,7 @@ public class ObjRelationshipInfoView extends JDialog{
         return mapKeysCombo;
     }
 
-    public JComboBox getDeleteRule() {
+    public JComboBox<String> getDeleteRule() {
         return deleteRule;
     }
 

@@ -25,13 +25,13 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 
 public class RelationshipDisplayEvent extends EntityDisplayEvent {
-    protected Relationship[] relationships;
+    protected Relationship<?,?,?>[] relationships;
     protected boolean relationshipChanged = true;
     
     public RelationshipDisplayEvent(
             Object src,
-            Relationship relationship,
-            Entity entity,
+            Relationship<?,?,?> relationship,
+            Entity<?,?,?> entity,
             DataMap map,
             DataChannelDescriptor domain) {
 
@@ -41,8 +41,8 @@ public class RelationshipDisplayEvent extends EntityDisplayEvent {
 
     public RelationshipDisplayEvent(
         Object src,
-        Relationship[] relationships,
-        Entity entity,
+        Relationship<?,?,?>[] relationships,
+        Entity<?,?,?> entity,
         DataMap map,
         DataChannelDescriptor domain) {
 
@@ -50,7 +50,7 @@ public class RelationshipDisplayEvent extends EntityDisplayEvent {
         this.relationships = relationships;
     }
     
-    public Relationship[] getRelationships() {
+    public Relationship<?,?,?>[] getRelationships() {
         return relationships;
     }
 

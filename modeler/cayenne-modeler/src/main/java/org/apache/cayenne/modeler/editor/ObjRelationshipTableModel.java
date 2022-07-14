@@ -19,7 +19,11 @@
 
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DeleteRule;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.CayenneTableModel;
@@ -47,7 +51,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
     public static final int REL_COMMENT = 6;
     public static final int COLUMN_COUNT = 7;
 
-    private ObjEntity entity;
+    private final ObjEntity entity;
 
     public ObjRelationshipTableModel(ObjEntity entity, ProjectController mediator, Object eventSource) {
         super(mediator, eventSource, new ArrayList<>(entity.getRelationships()));
@@ -65,7 +69,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
      * Returns ObjRelationship class.
      */
     @Override
-    public Class getElementsClass() {
+    public Class<ObjRelationship> getElementsClass() {
         return ObjRelationship.class;
     }
 
@@ -96,7 +100,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
     }
 
     @Override
-    public Class getColumnClass(int col) {
+    public Class<?> getColumnClass(int col) {
         switch (col) {
             case REL_TARGET:
                 return ObjEntity.class;
@@ -176,13 +180,12 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
 
                 // now try to connect DbEntities if we can do it in one step
                 if (target != null) {
-                    DbEntity srcDB = relationship.getSourceEntity()
-                            .getDbEntity();
+                    DbEntity srcDB = relationship.getSourceEntity().getDbEntity();
                     DbEntity targetDB = target.getDbEntity();
                     if (srcDB != null && targetDB != null) {
-                        Relationship anyConnector = srcDB.getAnyRelationship(targetDB);
+                        DbRelationship anyConnector = srcDB.getAnyRelationship(targetDB);
                         if (anyConnector != null) {
-                            relationship.addDbRelationship((DbRelationship) anyConnector);
+                            relationship.addDbRelationship(anyConnector);
                         }
                     }
                 }
@@ -214,7 +217,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
         if (row < 0) {
             return;
         }
-        Relationship rel = getRelationship(row);
+        ObjRelationship rel = getRelationship(row);
         RelationshipEvent e;
         e = new RelationshipEvent(eventSource, rel, entity, RelationshipEvent.REMOVE);
         mediator.fireObjRelationshipEvent(e);
@@ -276,7 +279,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
 
     private static class ObjRelationshipTableComparator implements Comparator<ObjRelationship>{
 
-        private int sortCol;
+        private final int sortCol;
 
         ObjRelationshipTableComparator(int sortCol) {
             this.sortCol = sortCol;

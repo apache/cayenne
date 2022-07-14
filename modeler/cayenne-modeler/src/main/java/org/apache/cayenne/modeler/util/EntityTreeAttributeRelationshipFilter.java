@@ -25,19 +25,16 @@ import org.apache.cayenne.map.Relationship;
 
 public class EntityTreeAttributeRelationshipFilter implements EntityTreeFilter {
 
-    public boolean attributeMatch(Object node, Attribute attr) {
-        if (!(node instanceof Attribute)) {
-            return true;
-        }
-        return false;
+    public boolean attributeMatch(Object node, Attribute<?,?,?> attr) {
+        return !(node instanceof Attribute);
     }
 
-    public boolean relationshipMatch(Object node, Relationship rel) {
+    public boolean relationshipMatch(Object node, Relationship<?,?,?> rel) {
         if (!(node instanceof Relationship)) {
             return true;
         }
 
-        /**
+        /*
          * We do not allow A->B->A chains, where relationships
          * are to-one
          */

@@ -24,7 +24,6 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionParameter;
 import org.apache.cayenne.exp.parser.ASTList;
 import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -73,10 +72,10 @@ public class DataMapUtils {
 	 * @param query select query descriptor
 	 * @return Parameter names.
 	 */
-	public Collection getParameterNames(SelectQueryDescriptor query) {
+	public Collection<String> getParameterNames(SelectQueryDescriptor query) {
 
 		if (query.getQualifier() == null) {
-			return Collections.EMPTY_SET;
+			return Collections.emptySet();
 		}
 
 		Map<String, String> queryParameters = queriesMap.get(query.getName());
@@ -130,7 +129,7 @@ public class DataMapUtils {
 	 *            to be parsed
 	 * @return List of parameter names.
 	 */
-	private Set parseQualifier(String qualifierString) {
+	private Set<String> parseQualifier(String qualifierString) {
 		Set<String> result = new LinkedHashSet<>();
 		Pattern pattern = Pattern.compile("\\$[\\w]+");
 		Matcher matcher = pattern.matcher(qualifierString);
@@ -143,7 +142,7 @@ public class DataMapUtils {
 	}
 
 	public boolean hasParameters(SelectQueryDescriptor query) {
-		Map queryParameters = queriesMap.get(query.getName());
+		Map<String, String> queryParameters = queriesMap.get(query.getName());
 
 		if (queryParameters == null) {
 			return false;
@@ -178,8 +177,8 @@ public class DataMapUtils {
 				}
 
 				if (operand instanceof ASTObjPath) {
-					PathComponent<ObjAttribute, ObjRelationship> component = ((Entity) root).lastPathComponent(
-							(ASTObjPath) operand, Collections.emptyMap());
+					PathComponent<ObjAttribute, ObjRelationship> component = ((ObjEntity) root)
+							.lastPathComponent((ASTObjPath) operand, Collections.emptyMap());
 					ObjAttribute attribute = component.getAttribute();
 					if (attribute != null) {
 						typeName = attribute.getType();

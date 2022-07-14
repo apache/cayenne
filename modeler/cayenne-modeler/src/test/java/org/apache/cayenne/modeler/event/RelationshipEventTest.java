@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.event;
 
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.RelationshipEvent;
 import org.junit.Test;
 
@@ -31,9 +30,9 @@ import static org.junit.Assert.assertSame;
 public class RelationshipEventTest {
 
     @Test
-	public void testRelationship() throws Exception {
+	public void testRelationship() {
 		Object src = new Object();
-		Relationship r = new DbRelationship();
+		DbRelationship r = new DbRelationship();
 		r.setName("xyz");
 		RelationshipEvent e = new RelationshipEvent(src, null, null);
 

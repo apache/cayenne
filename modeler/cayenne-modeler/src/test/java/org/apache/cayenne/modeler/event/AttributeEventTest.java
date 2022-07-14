@@ -31,9 +31,9 @@ import static org.junit.Assert.assertSame;
 public class AttributeEventTest {
 
     @Test
-	public void testAttribute() throws Exception {
+	public void testAttribute() {
 		Object src = new Object();
-		Attribute a = new DbAttribute();
+		DbAttribute a = new DbAttribute();
 		a.setName("xyz");
 		AttributeEvent e = new AttributeEvent(src, null, null);
 

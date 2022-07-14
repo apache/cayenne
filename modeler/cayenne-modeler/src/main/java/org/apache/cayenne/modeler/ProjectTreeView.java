@@ -730,7 +730,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
      */
     protected void entityAdded(EntityEvent e) {
 
-        Entity entity = e.getEntity();
+        Entity<?,?,?> entity = e.getEntity();
 
         DefaultMutableTreeNode mapNode = getProjectModel().getNodeForObjectPath(
                 new Object[] {
@@ -921,7 +921,7 @@ public class ProjectTreeView extends JTree implements DomainDisplayListener,
                         (DataNodeDescriptor) obj));
             }
         } else if (obj instanceof Entity) {
-            EntityDisplayEvent e = new EntityDisplayEvent(this, (Entity) obj);
+            EntityDisplayEvent e = new EntityDisplayEvent(this, (Entity<?,?,?>) obj);
             e.setUnselectAttributes(true);
             if (data.length == 3) {
                 e.setDataMap((DataMap) data[data.length - 2]);

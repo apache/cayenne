@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -31,6 +32,7 @@ import org.apache.cayenne.project.Project;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Map;
@@ -40,7 +42,7 @@ import java.util.Map;
  */
 public class ProjectTreeModel extends DefaultTreeModel {
 
-	private Filter filter = new Filter();
+	private final Filter filter = new Filter();
 
 	/**
 	 * Constructor for ProjectTreeModel.
@@ -53,7 +55,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 	 * Re-inserts a tree node to preserve the correct ordering of items. Assumes
 	 * that the tree is already ordered, except for one node.
 	 */
-	public void positionNode(MutableTreeNode parent, DefaultMutableTreeNode treeNode, Comparator comparator) {
+	public void positionNode(MutableTreeNode parent, DefaultMutableTreeNode treeNode, Comparator<ConfigurationNode> comparator) {
 
 		if (treeNode == null) {
 			return;
@@ -66,7 +68,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 			}
 		}
 
-		Object object = treeNode.getUserObject();
+		ConfigurationNode object = (ConfigurationNode)treeNode.getUserObject();
 
 		if (parent != null) {
 			int len = parent.getChildCount();
@@ -87,7 +89,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 				}
 
 				// ObjEntities go before DbEntities
-				if (comparator.compare(object, node.getUserObject()) <= 0) {
+				if (comparator.compare(object, (ConfigurationNode)node.getUserObject()) <= 0) {
 					ins = i;
 				}
 			}
@@ -149,7 +151,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 
 		for (int i = start; i < path.length; i++) {
 			DefaultMutableTreeNode foundNode = null;
-			Enumeration children = currentNode.children();
+			Enumeration<TreeNode> children = currentNode.children();
 			while (children.hasMoreElements()) {
 				DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
 				if (child.getUserObject() == path[i]) {
@@ -226,7 +228,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 		nodesWereRemoved(parent, childIndex, removedArray);
 	}
 
-	class Filter {
+	static class Filter {
 		private Map<String, Boolean> filterMap;
 		boolean pass = true;
 

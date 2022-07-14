@@ -142,7 +142,7 @@ public class DbEntityTabbedView extends JTabbedPane implements ChangeListener,
             return;
 
         // update attribute selection
-        Attribute[] attrs = e.getAttributes();
+        Attribute<?,?,?>[] attrs = e.getAttributes();
         DbAttribute[] dbAttrs = new DbAttribute[attrs.length];
 
         System.arraycopy(attrs, 0, dbAttrs, 0, attrs.length);

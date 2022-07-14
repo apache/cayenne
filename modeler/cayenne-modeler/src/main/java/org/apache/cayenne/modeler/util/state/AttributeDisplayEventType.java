@@ -52,12 +52,12 @@ class AttributeDisplayEventType extends EntityDisplayEventType {
             return;
         }
 
-        Entity entity = getLastEntity(dataMap);
+        Entity<?,?,?> entity = getLastEntity(dataMap);
         if (entity == null) {
             return;
         }
 
-        Attribute[] attributes = getLastEntityAttributes(entity);
+        Attribute<?,?,?>[] attributes = getLastEntityAttributes(entity);
 
         EntityDisplayEvent entityDisplayEvent = new EntityDisplayEvent(this, entity, dataMap, dataNode, dataChannel);
         AttributeDisplayEvent attributeDisplayEvent = new AttributeDisplayEvent(this, attributes, entity, dataMap, dataChannel);
@@ -89,12 +89,12 @@ class AttributeDisplayEventType extends EntityDisplayEventType {
         }
     }
 
-    protected Attribute[] getLastEntityAttributes(Entity entity) {
-        List<Attribute> attributeList = new ArrayList<>();
+    protected Attribute<?,?,?>[] getLastEntityAttributes(Entity<?,?,?> entity) {
+        List<Attribute<?,?,?>> attributeList = new ArrayList<>();
 
         String attrs = (entity instanceof ObjEntity) ? preferences.getObjAttrs() : preferences.getDbAttrs();
         for (String attrName : attrs.split(",")) {
-            Attribute attr = entity.getAttribute(attrName);
+            Attribute<?,?,?> attr = entity.getAttribute(attrName);
             if(attr != null) {
                 attributeList.add(attr);
             }

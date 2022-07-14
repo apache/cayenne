@@ -32,11 +32,11 @@ import org.apache.cayenne.util.XMLSerializable;
  * are described by attributes are Java class properties and database table columns.
  * 
  */
-public abstract class Attribute<E extends Entity<E,T,U>, T extends Attribute<E,T,U>, U extends Relationship<E,T,U>>
+public abstract class Attribute<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
         implements CayenneMapEntry, XMLSerializable, Serializable {
 
     protected String name;
-    protected Entity<E,T,U> entity;
+    protected Entity<E, A, R> entity;
 
     /**
      * Creates an unnamed Attribute.
@@ -62,14 +62,14 @@ public abstract class Attribute<E extends Entity<E,T,U>, T extends Attribute<E,T
     /**
      * Returns parent entity that holds this attribute.
      */
-    public Entity<E,T,U> getEntity() {
+    public Entity<E, A, R> getEntity() {
         return entity;
     }
 
     /**
      * Sets parent entity that holds this attribute.
      */
-    public void setEntity(Entity<E,T,U> entity) {
+    public void setEntity(Entity<E, A, R> entity) {
         this.entity = entity;
     }
 
@@ -91,6 +91,6 @@ public abstract class Attribute<E extends Entity<E,T,U>, T extends Attribute<E,T
             throw new IllegalArgumentException("Expected null or Entity, got: " + parent);
         }
 
-        setEntity((Entity<E,T,U>) parent);
+        setEntity((Entity<E, A, R>) parent);
     }
 }

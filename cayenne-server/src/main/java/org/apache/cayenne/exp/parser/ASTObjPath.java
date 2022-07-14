@@ -61,8 +61,11 @@ public class ASTObjPath extends ASTPath {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		return (o instanceof DataObject) ? ((DataObject) o).readNestedProperty(path)
-				: (o instanceof Entity) ? evaluateEntityNode((Entity) o) : PropertyUtils.getProperty(o, path);
+		return (o instanceof DataObject)
+				? ((DataObject) o).readNestedProperty(path)
+				: (o instanceof Entity)
+					? evaluateEntityNode((Entity<?,?,?>) o)
+					: PropertyUtils.getProperty(o, path);
 	}
 
 	/**

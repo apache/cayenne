@@ -39,42 +39,31 @@ import org.apache.cayenne.validation.ValidationFailure;
 public class AttributeErrorMsg extends ValidationDisplayHandler {
 
     protected DataMap map;
-    protected Entity entity;
-    protected Attribute attribute;
+    protected Entity<?,?,?> entity;
+    protected Attribute<?,?,?> attribute;
 
     /**
      * Constructor for AttributeErrorMsg.
-     * 
-     * @param result
      */
     public AttributeErrorMsg(ValidationFailure result) {
         super(result);
 
         Object object = result.getSource();
-        attribute = (Attribute) object;
+        attribute = (Attribute<?,?,?>) object;
         entity = attribute.getEntity();
         map = entity.getDataMap();
-        domain = (DataChannelDescriptor) Application
-                .getInstance()
-                .getProject()
-                .getRootNode();
+        domain = (DataChannelDescriptor) Application.getInstance().getProject().getRootNode();
     }
 
     public void displayField(ProjectController mediator, JFrame frame) {
-        AttributeDisplayEvent event = new AttributeDisplayEvent(
-                frame,
-                attribute,
-                entity,
-                map,
-                domain);
+        AttributeDisplayEvent event = new AttributeDisplayEvent(frame, attribute, entity, map, domain);
 
-        // must first display entity, and then switch to relationship display .. so fire
-        // twice
+        // must first display entity, and then switch to relationship display ..
+        // so fire twice
         if (entity instanceof ObjEntity) {
             mediator.fireObjEntityDisplayEvent(event);
             mediator.fireObjAttributeDisplayEvent(event);
-        }
-        else if (entity instanceof DbEntity) {
+        } else if (entity instanceof DbEntity) {
             mediator.fireDbEntityDisplayEvent(event);
             mediator.fireDbAttributeDisplayEvent(event);
         }
