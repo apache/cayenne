@@ -605,10 +605,15 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     /**
-     * Wrap result to given class.  Wrapper class should be public and have public constructor with no args.
-     * Columns order in the query should corespond to fields defined in that class.
+     * Maps result of this query by processing with a given function.
+     * <br/>
+     * Could be used to map plain Object[] to some domain-specific object.
+     * <br/>
+     * <b>Note:</b> this method could be called multiple time, result will be mapped by all functions in the call order.
+     * @param mapper function that maps result to the required type.
+     * @return this query with changed result type
+     * @param <E> new result type
      *
-     * @param mapper function that maps result to required form.
      * @since 4.2
      */
     @SuppressWarnings("unchecked")
