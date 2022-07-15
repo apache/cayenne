@@ -27,13 +27,21 @@ import java.util.function.Function;
 import org.apache.cayenne.CayenneRuntimeException;
 
 /**
- * Simple mapper of Object[] to POJO class. This class relies on field order, so use with caution.
+ * Simple mapper of Object[] to a POJO class.
+ * Target class must have default constructor and at least as many fields as a processed array.
+ * <br/>
+ * <b>Note:</b> Current implementation relies on the field order,
+ * so use with caution as this order may vary on different JDK platforms.
  * @param <T> type of object to produce
+ *
+ * @see org.apache.cayenne.query.ColumnSelect#map(Function)
+ * @see org.apache.cayenne.query.SQLSelect#map(Function)
+ *
  * @since 4.2
  */
 public class PojoMapper<T> implements Function<Object[], T> {
 
-    private static MethodHandles.Lookup lookup = MethodHandles.lookup();
+    private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     private final Class<T> type;
     private final MethodHandle constructor;
