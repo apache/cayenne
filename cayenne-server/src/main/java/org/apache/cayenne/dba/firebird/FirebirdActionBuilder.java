@@ -37,7 +37,7 @@ public class FirebirdActionBuilder extends JdbcActionBuilder {
      * @since 4.2
      */
     @Override
-    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
+    public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
         return new FirebirdSelectAction(query, dataNode);
     }
 }

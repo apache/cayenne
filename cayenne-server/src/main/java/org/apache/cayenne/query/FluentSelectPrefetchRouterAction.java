@@ -35,7 +35,7 @@ import org.apache.cayenne.util.CayenneMapEntry;
  */
 class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
 
-    FluentSelect<?> query;
+    FluentSelect<?, ?> query;
     QueryRouter router;
     EntityResolver resolver;
     ClassDescriptor classDescriptor;
@@ -43,7 +43,7 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
     /**
      * Routes query prefetches, but not the query itself.
      */
-    void route(FluentSelect<?> query, QueryRouter router, EntityResolver resolver) {
+    void route(FluentSelect<?, ?> query, QueryRouter router, EntityResolver resolver) {
         if (!query.isFetchingDataRows() && query.getPrefetches() != null) {
 
             this.query = query;

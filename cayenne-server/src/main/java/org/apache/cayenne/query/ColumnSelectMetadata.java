@@ -65,12 +65,12 @@ class ColumnSelectMetadata extends ObjectSelectMetadata {
 	}
 
 	@Override
-	protected void resolveAutoAliases(FluentSelect<?> query) {
+	protected void resolveAutoAliases(FluentSelect<?, ?> query) {
 		super.resolveAutoAliases(query);
 		resolveColumnsAliases(query);
 	}
 
-	protected void resolveColumnsAliases(FluentSelect<?> query) {
+	protected void resolveColumnsAliases(FluentSelect<?, ?> query) {
         Collection<Property<?>> columns = query.getColumns();
         if(columns != null) {
             for(Property<?> property : columns) {

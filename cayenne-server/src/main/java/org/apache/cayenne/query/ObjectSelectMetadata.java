@@ -60,7 +60,7 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 		return false;
 	}
 
-	protected String makeCacheKey(FluentSelect<?> query, EntityResolver resolver) {
+	protected String makeCacheKey(FluentSelect<?, ?> query, EntityResolver resolver) {
 
 		// create a unique key based on entity or columns, qualifier, ordering, fetch offset and limit
 
@@ -128,27 +128,27 @@ class ObjectSelectMetadata extends BaseQueryMetadata {
 		return key.toString();
 	}
 
-	protected void resolveAutoAliases(FluentSelect<?> query) {
+	protected void resolveAutoAliases(FluentSelect<?, ?> query) {
 		resolveQualifierAliases(query);
         resolveOrderingAliases(query);
 		resolveHavingQualifierAliases(query);
 	}
 
-	protected void resolveQualifierAliases(FluentSelect<?> query) {
+	protected void resolveQualifierAliases(FluentSelect<?, ?> query) {
 		Expression qualifier = query.getWhere();
 		if (qualifier != null) {
 			resolveAutoAliases(qualifier);
 		}
 	}
 
-	protected void resolveHavingQualifierAliases(FluentSelect<?> query) {
+	protected void resolveHavingQualifierAliases(FluentSelect<?, ?> query) {
 		Expression havingQualifier = query.getHaving();
 		if(havingQualifier != null) {
 			resolveAutoAliases(havingQualifier);
 		}
 	}
 
-	protected void resolveOrderingAliases(FluentSelect<?> query) {
+	protected void resolveOrderingAliases(FluentSelect<?, ?> query) {
         Collection<Ordering> orderings = query.getOrderings();
         if(orderings != null) {
             for(Ordering ordering : orderings) {

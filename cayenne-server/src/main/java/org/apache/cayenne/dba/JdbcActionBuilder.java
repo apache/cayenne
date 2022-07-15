@@ -70,7 +70,7 @@ public class JdbcActionBuilder implements SQLActionVisitor {
      * @since 4.2
      */
     @Override
-    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
+    public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
         return new SelectAction(query, dataNode);
     }
 

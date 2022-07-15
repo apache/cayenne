@@ -36,7 +36,7 @@ public class H2ActionBuilder extends JdbcActionBuilder {
      * @since 4.2
      */
     @Override
-    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
+    public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
         return new H2SelectAction(query, dataNode);
     }
 }

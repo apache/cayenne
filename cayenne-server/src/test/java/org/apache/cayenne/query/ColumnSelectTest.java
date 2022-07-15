@@ -107,10 +107,9 @@ public class ColumnSelectTest {
         assertNull(q.getWhere());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void columns() {
-        ColumnSelect q = new ColumnSelect();
+        ColumnSelect<?> q = new ColumnSelect<>();
         assertNull(q.getColumns());
         q.columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY), q.getColumns());
@@ -124,7 +123,7 @@ public class ColumnSelectTest {
 
     @Test
     public void havingExpression() {
-        ColumnSelect q = new ColumnSelect();
+        ColumnSelect<?> q = new ColumnSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -141,7 +140,7 @@ public class ColumnSelectTest {
 
     @Test
     public void havingString() {
-        ColumnSelect q = new ColumnSelect();
+        ColumnSelect<?> q = new ColumnSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -158,7 +157,7 @@ public class ColumnSelectTest {
 
     @Test
     public void and() {
-        ColumnSelect q = new ColumnSelect();
+        ColumnSelect<?> q = new ColumnSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -177,7 +176,7 @@ public class ColumnSelectTest {
 
     @Test
     public void or() {
-        ColumnSelect q = new ColumnSelect();
+        ColumnSelect<?> q = new ColumnSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 

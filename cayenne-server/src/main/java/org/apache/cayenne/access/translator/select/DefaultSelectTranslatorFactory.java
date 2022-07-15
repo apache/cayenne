@@ -35,7 +35,7 @@ public class DefaultSelectTranslatorFactory implements SelectTranslatorFactory {
 	@Override
 	public SelectTranslator translator(Select<?> query, DbAdapter adapter, EntityResolver entityResolver) {
 		if(query instanceof FluentSelect) {
-			return adapter.getSelectTranslator((FluentSelect<?>)query, entityResolver);
+			return adapter.getSelectTranslator((FluentSelect<?, ?>)query, entityResolver);
 		}
 		throw new CayenneRuntimeException("Unsupported type of Select query %s", query);
 	}

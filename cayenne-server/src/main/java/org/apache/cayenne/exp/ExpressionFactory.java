@@ -1437,7 +1437,7 @@ public class ExpressionFactory {
 	 * @param subQuery {@link org.apache.cayenne.query.ObjectSelect} or {@link ColumnSelect}
 	 * @since 4.2
 	 */
-	public static Expression exists(FluentSelect<?> subQuery) {
+	public static Expression exists(FluentSelect<?, ?> subQuery) {
 		return new ASTExists(new ASTSubquery(subQuery));
 	}
 
@@ -1445,7 +1445,7 @@ public class ExpressionFactory {
 	 * @param subQuery {@link org.apache.cayenne.query.ObjectSelect} or {@link ColumnSelect}
 	 * @since 4.2
 	 */
-	public static Expression notExists(FluentSelect<?> subQuery) {
+	public static Expression notExists(FluentSelect<?, ?> subQuery) {
 		return new ASTNotExists(new ASTSubquery(subQuery));
 	}
 

@@ -508,7 +508,7 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public SelectTranslator getSelectTranslator(FluentSelect<?> query, EntityResolver entityResolver) {
+    public SelectTranslator getSelectTranslator(FluentSelect<?, ?> query, EntityResolver entityResolver) {
         return new DefaultSelectTranslator(query, this, entityResolver);
     }
 

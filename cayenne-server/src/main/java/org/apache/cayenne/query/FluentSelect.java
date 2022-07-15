@@ -19,9 +19,14 @@
 
 package org.apache.cayenne.query;
 
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
@@ -29,6 +34,7 @@ import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -39,7 +45,7 @@ import org.apache.cayenne.map.ObjEntity;
  *
  * @since 4.0
  */
-public abstract class FluentSelect<T> extends AbstractQuery implements Select<T> {
+public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends AbstractQuery implements Select<T> {
 
     // root
     protected Class<?> entityType;
@@ -48,13 +54,18 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
 
     protected Expression where;
     protected Expression having;
-    boolean havingExpressionIsActive = false;
+    protected boolean havingExpressionIsActive = false;
 
     protected Collection<Ordering> orderings;
-    boolean distinct;
+    protected boolean distinct;
+
+    protected ObjectSelectMetadata metaData;
 
     protected FluentSelect() {
+        metaData = createMetadata();
     }
+
+    protected abstract ObjectSelectMetadata createMetadata();
 
     protected Object resolveRoot(EntityResolver resolver) {
         Object root;
@@ -80,6 +91,340 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
             throw new CayenneRuntimeException("Undefined root entity of the query");
         }
         return root;
+    }
+
+    /**
+     * Sets the type of the entity to fetch without changing the return type of
+     * the query.
+     *
+     * @return this object
+     */
+    public S entityType(Class<?> entityType) {
+        return resetEntity(entityType, null, null);
+    }
+
+    /**
+     * Sets the {@link ObjEntity} name to fetch without changing the return type
+     * of the query. This form is most often used for generic entities that
+     * don't map to a distinct class.
+     *
+     * @return this object
+     */
+    public S entityName(String entityName) {
+        return resetEntity(null, entityName, null);
+    }
+
+    /**
+     * Sets the {@link DbEntity} name to fetch without changing the return type
+     * of the query. This form is most often used for generic entities that
+     * don't map to a distinct class.
+     *
+     * @return this object
+     */
+    public S dbEntityName(String dbEntityName) {
+        return resetEntity(null, null, dbEntityName);
+    }
+
+    @SuppressWarnings("unchecked")
+    private S resetEntity(Class<?> entityType, String entityName, String dbEntityName) {
+        this.entityType = entityType;
+        this.entityName = entityName;
+        this.dbEntityName = dbEntityName;
+        return (S)this;
+    }
+
+    /**
+     * Appends a qualifier expression of this query. An equivalent to
+     * {@link #and(Expression...)} that can be used a syntactic sugar.
+     *
+     * @return this object
+     */
+    public S where(Expression expression) {
+        return and(expression);
+    }
+
+    /**
+     * Appends a qualifier expression of this query, using provided expression
+     * String and an array of position parameters. This is an equivalent to
+     * calling "and".
+     *
+     * @return this object
+     */
+    public S where(String expressionString, Object... parameters) {
+        return and(ExpressionFactory.exp(expressionString, parameters));
+    }
+
+    /**
+     * AND's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+    @SuppressWarnings("unchecked")
+    public S and(Expression... expressions) {
+        if (expressions == null || expressions.length == 0) {
+            return (S)this;
+        }
+        return and(Arrays.asList(expressions));
+    }
+
+    /**
+     * AND's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+
+    public S and(Collection<Expression> expressions) {
+        return joinExpression(expressions, ExpressionFactory::and);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected S joinExpression(Collection<Expression> expressions, Function<Collection<Expression>, Expression> joiner) {
+        if (expressions == null || expressions.isEmpty()) {
+            return (S)this;
+        }
+
+        Collection<Expression> all;
+        Expression activeExpression = getActiveExpression();
+        if (activeExpression != null) {
+            all = new ArrayList<>(expressions.size() + 1);
+            all.add(activeExpression);
+            all.addAll(expressions);
+        } else {
+            all = expressions;
+        }
+
+        setActiveExpression(joiner.apply(all));
+        return (S)this;
+    }
+
+    /**
+     * OR's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+    @SuppressWarnings("unchecked")
+    public S or(Expression... expressions) {
+        if (expressions == null || expressions.length == 0) {
+            return (S)this;
+        }
+        return or(Arrays.asList(expressions));
+    }
+
+    /**
+     * OR's provided expressions to the existing WHERE clause expression.
+     *
+     * @return this object
+     */
+    public S or(Collection<Expression> expressions) {
+        return joinExpression(expressions, ExpressionFactory::or);
+    }
+
+    /**
+     * Add an ascending ordering on the given property. If there is already an ordering
+     * on this query then add this ordering with a lower priority.
+     *
+     * @param property the property to sort on
+     * @return this object
+     */
+    public S orderBy(String property) {
+        return orderBy(new Ordering(property));
+    }
+
+    /**
+     * Add an ordering on the given property. If there is already an ordering
+     * on this query then add this ordering with a lower priority.
+     *
+     * @param property  the property to sort on
+     * @param sortOrder the direction of the ordering
+     * @return this object
+     */
+    public S orderBy(String property, SortOrder sortOrder) {
+        return orderBy(new Ordering(property, sortOrder));
+    }
+
+    /**
+     * Add one or more orderings to this query.
+     *
+     * @return this object
+     */
+    @SuppressWarnings("unchecked")
+    public S orderBy(Ordering... orderings) {
+
+        if (orderings == null) {
+            return (S)this;
+        }
+
+        if (this.orderings == null) {
+            this.orderings = new ArrayList<>(orderings.length);
+        }
+
+        Collections.addAll(this.orderings, orderings);
+
+        return (S)this;
+    }
+
+    /**
+     * Adds a list of orderings to this query.
+     *
+     * @return this object
+     */
+    @SuppressWarnings("unchecked")
+    public S orderBy(Collection<Ordering> orderings) {
+
+        if (orderings == null) {
+            return (S)this;
+        }
+
+        if (this.orderings == null) {
+            this.orderings = new ArrayList<>(orderings.size());
+        }
+
+        this.orderings.addAll(orderings);
+
+        return (S)this;
+    }
+
+    /**
+     * Merges prefetch into the query prefetch tree.
+     *
+     * @return this object
+     */
+    @SuppressWarnings("unchecked")
+    public S prefetch(PrefetchTreeNode prefetch) {
+        getBaseMetaData().mergePrefetch(prefetch);
+        return (S)this;
+    }
+
+    /**
+     * Merges a prefetch path with specified semantics into the query prefetch tree.
+     *
+     * @return this object
+     */
+    @SuppressWarnings("unchecked")
+    public S prefetch(String path, int semantics) {
+        if (path == null) {
+            return (S)this;
+        }
+        getBaseMetaData().addPrefetch(path, semantics);
+        return (S)this;
+    }
+
+    /**
+     * Resets query fetch limit - a parameter that defines max number of objects
+     * that should be ever be fetched from the database.
+     */
+    @SuppressWarnings("unchecked")
+    public S limit(int fetchLimit) {
+        this.getBaseMetaData().setFetchLimit(fetchLimit);
+        return (S)this;
+    }
+
+    /**
+     * Resets query fetch offset - a parameter that defines how many objects
+     * should be skipped when reading data from the database.
+     */
+    @SuppressWarnings("unchecked")
+    public S offset(int fetchOffset) {
+        this.getBaseMetaData().setFetchOffset(fetchOffset);
+        return (S)this;
+    }
+
+    /**
+     * Resets query page size. A non-negative page size enables query result
+     * pagination that saves memory and processing time for large lists if only
+     * parts of the result are ever going to be accessed.
+     */
+    @SuppressWarnings("unchecked")
+    public S pageSize(int pageSize) {
+        this.getBaseMetaData().setPageSize(pageSize);
+        return (S)this;
+    }
+
+    /**
+     * Sets fetch size of the PreparedStatement generated for this query. Only
+     * non-negative values would change the default size.
+     *
+     * @see Statement#setFetchSize(int)
+     */
+    @SuppressWarnings("unchecked")
+    public S statementFetchSize(int size) {
+        this.getBaseMetaData().setStatementFetchSize(size);
+        return (S)this;
+    }
+
+    /**
+     * Sets query timeout of PreparedStatement generated for this query.
+     * @see Statement#setQueryTimeout(int)
+     */
+    @SuppressWarnings("unchecked")
+    public S queryTimeout(int timeout) {
+        this.getBaseMetaData().setQueryTimeout(timeout);
+        return (S)this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public S cacheStrategy(QueryCacheStrategy strategy) {
+        setCacheStrategy(strategy);
+        setCacheGroup(null);
+        return (S)this;
+    }
+
+    public S cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
+        return cacheStrategy(strategy).cacheGroup(cacheGroup);
+    }
+
+    @SuppressWarnings("unchecked")
+    public S cacheGroup(String cacheGroup) {
+        setCacheGroup(cacheGroup);
+        return (S)this;
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+     * </pre>
+     */
+    public S localCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+     * </pre>
+     */
+    public S localCache() {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+     * </pre>
+     */
+    public S sharedCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when
+     * running the query. This is a short-hand notation for:
+     * <p>
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+     * </pre>
+     */
+    public S sharedCache() {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
     }
 
     public int getStatementFetchSize() {
@@ -139,7 +484,7 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
         return getBaseMetaData().getPrefetchTree();
     }
 
-    void setActiveExpression(Expression exp) {
+    protected void setActiveExpression(Expression exp) {
         if(havingExpressionIsActive) {
             having = exp;
         } else {
@@ -147,7 +492,7 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
         }
     }
 
-    Expression getActiveExpression() {
+    protected Expression getActiveExpression() {
         if(havingExpressionIsActive) {
             return having;
         } else {
@@ -196,7 +541,7 @@ public abstract class FluentSelect<T> extends AbstractQuery implements Select<T>
     }
 
     public boolean isFetchingDataRows() {
-        return false;
+        return getBaseMetaData().isFetchingDataRows();
     }
 
     protected void routePrefetches(QueryRouter router, EntityResolver resolver) {

@@ -37,7 +37,7 @@ public class DerbyActionBuilder extends JdbcActionBuilder {
      * @since 4.2
      */
     @Override
-    public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
+    public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
         return new DerbySelectAction(query, dataNode);
     }
 }

@@ -34,9 +34,9 @@ import org.apache.cayenne.query.QueryMetadata;
  */
 public class FluentSelectWrapper implements TranslatableQueryWrapper {
 
-    private final FluentSelect<?> select;
+    private final FluentSelect<?, ?> select;
 
-    public FluentSelectWrapper(FluentSelect<?> select) {
+    public FluentSelectWrapper(FluentSelect<?, ?> select) {
         this.select = Objects.requireNonNull(select);
     }
 
@@ -71,7 +71,7 @@ public class FluentSelectWrapper implements TranslatableQueryWrapper {
     }
 
     @Override
-    public FluentSelect<?> unwrap() {
+    public FluentSelect<?, ?> unwrap() {
         return select;
     }
 }

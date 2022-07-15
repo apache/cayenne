@@ -76,7 +76,7 @@ public class DefaultSelectTranslator implements SelectTranslator {
         this.context = new TranslatorContext(query, adapter, entityResolver, null);
     }
 
-    public DefaultSelectTranslator(FluentSelect<?> query, DbAdapter adapter, EntityResolver entityResolver) {
+    public DefaultSelectTranslator(FluentSelect<?, ?> query, DbAdapter adapter, EntityResolver entityResolver) {
         this(new FluentSelectWrapper(query), adapter, entityResolver);
     }
 

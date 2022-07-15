@@ -56,7 +56,7 @@ public interface DbAdapter {
 	/**
 	 * @since 4.2
 	 */
-	SelectTranslator getSelectTranslator(FluentSelect<?> query, EntityResolver entityResolver);
+	SelectTranslator getSelectTranslator(FluentSelect<?, ?> query, EntityResolver entityResolver);
 
 	/**
 	 * @since 4.2

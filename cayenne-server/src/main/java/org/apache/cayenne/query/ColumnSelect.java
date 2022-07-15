@@ -19,9 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Function;
@@ -34,9 +32,7 @@ import org.apache.cayenne.exp.property.ComparableProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 
 /**
  * <p>A helper builder for queries selecting individual properties based on the root object.</p>
@@ -65,13 +61,10 @@ import org.apache.cayenne.map.ObjEntity;
  *
  * @since 4.0
  */
-public class ColumnSelect<T> extends FluentSelect<T> {
+public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
-    private Collection<Property<?>> columns;
-    // package private for tests
-    boolean singleColumn = true;
-
-    ColumnSelectMetadata metaData = new ColumnSelectMetadata();
+    protected Collection<Property<?>> columns;
+    protected boolean singleColumn = true;
 
     protected ColumnSelect() {
     }
@@ -89,286 +82,9 @@ public class ColumnSelect<T> extends FluentSelect<T> {
         this.metaData.copyFromInfo(select.metaData);
     }
 
-    /**
-     * Sets the type of the entity to fetch without changing the return type of
-     * the query.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> entityType(Class<?> entityType) {
-        return resetEntity(entityType, null, null);
-    }
-
-    /**
-     * Sets the {@link ObjEntity} name to fetch without changing the return type
-     * of the query. This form is most often used for generic entities that
-     * don't map to a distinct class.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> entityName(String entityName) {
-        return resetEntity(null, entityName, null);
-    }
-
-    /**
-     * Sets the {@link DbEntity} name to fetch without changing the return type
-     * of the query. This form is most often used for generic entities that
-     * don't map to a distinct class.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> dbEntityName(String dbEntityName) {
-        return resetEntity(null, null, dbEntityName);
-    }
-
-    private ColumnSelect<T> resetEntity(Class<?> entityType, String entityName, String dbEntityName) {
-        this.entityType = entityType;
-        this.entityName = entityName;
-        this.dbEntityName = dbEntityName;
-        return this;
-    }
-
-    /**
-     * Appends a qualifier expression of this query. An equivalent to
-     * {@link #and(Expression...)} that can be used a syntactic sugar.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> where(Expression expression) {
-        return and(expression);
-    }
-
-    /**
-     * Appends a qualifier expression of this query, using provided expression
-     * String and an array of position parameters. This is an equivalent to
-     * calling "and".
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> where(String expressionString, Object... parameters) {
-        return and(ExpressionFactory.exp(expressionString, parameters));
-    }
-
-    /**
-     * AND's provided expressions to the existing WHERE clause expression.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> and(Expression... expressions) {
-        if (expressions == null || expressions.length == 0) {
-            return this;
-        }
-
-        return and(Arrays.asList(expressions));
-    }
-
-    /**
-     * OR's provided expressions to the existing WHERE clause expression.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> or(Expression... expressions) {
-        if (expressions == null || expressions.length == 0) {
-            return this;
-        }
-
-        return or(Arrays.asList(expressions));
-    }
-
-    /**
-     * Add an ascending ordering on the given property. If there is already an ordering
-     * on this query then add this ordering with a lower priority.
-     *
-     * @param property the property to sort on
-     * @return this object
-     */
-    public ColumnSelect<T> orderBy(String property) {
-        return orderBy(new Ordering(property));
-    }
-
-    /**
-     * Add an ordering on the given property. If there is already an ordering
-     * on this query then add this ordering with a lower priority.
-     *
-     * @param property  the property to sort on
-     * @param sortOrder the direction of the ordering
-     * @return this object
-     */
-    public ColumnSelect<T> orderBy(String property, SortOrder sortOrder) {
-        return orderBy(new Ordering(property, sortOrder));
-    }
-
-    /**
-     * Add one or more orderings to this query.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> orderBy(Ordering... orderings) {
-
-        if (orderings == null) {
-            return this;
-        }
-
-        if (this.orderings == null) {
-            this.orderings = new ArrayList<>(orderings.length);
-        }
-
-        Collections.addAll(this.orderings, orderings);
-        return this;
-    }
-
-    /**
-     * Adds a list of orderings to this query.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> orderBy(Collection<Ordering> orderings) {
-
-        if (orderings == null) {
-            return this;
-        }
-
-        if (this.orderings == null) {
-            this.orderings = new ArrayList<>(orderings.size());
-        }
-
-        this.orderings.addAll(orderings);
-        return this;
-    }
-
-    /**
-     * Merges prefetch into the query prefetch tree.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> prefetch(PrefetchTreeNode prefetch) {
-        metaData.mergePrefetch(prefetch);
-        return this;
-    }
-
-    /**
-     * Merges a prefetch path with specified semantics into the query prefetch
-     * tree.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> prefetch(String path, int semantics) {
-        if (path == null) {
-            return this;
-        }
-        metaData.addPrefetch(path, semantics);
-        return this;
-    }
-
-    /**
-     * Resets query fetch limit - a parameter that defines max number of objects
-     * that should be ever be fetched from the database.
-     */
-    public ColumnSelect<T> limit(int fetchLimit) {
-        this.metaData.setFetchLimit(fetchLimit);
-        return this;
-    }
-
-    /**
-     * Resets query fetch offset - a parameter that defines how many objects
-     * should be skipped when reading data from the database.
-     */
-    public ColumnSelect<T> offset(int fetchOffset) {
-        this.metaData.setFetchOffset(fetchOffset);
-        return this;
-    }
-
-    /**
-     * Resets query page size. A non-negative page size enables query result
-     * pagination that saves memory and processing time for large lists if only
-     * parts of the result are ever going to be accessed.
-     */
-    public ColumnSelect<T> pageSize(int pageSize) {
-        this.metaData.setPageSize(pageSize);
-        return this;
-    }
-
-    /**
-     * Sets fetch size of the PreparedStatement generated for this query. Only
-     * non-negative values would change the default size.
-     *
-     * @see Statement#setFetchSize(int)
-     */
-    public ColumnSelect<T> statementFetchSize(int size) {
-        this.metaData.setStatementFetchSize(size);
-        return this;
-    }
-
-    /**
-     * Sets query timeout of PreparedStatement generated for this query.
-     * @see Statement#setQueryTimeout(int)
-     */
-    public ColumnSelect<T> queryTimeout(int timeout) {
-        this.metaData.setQueryTimeout(timeout);
-        return this;
-    }
-
-    public ColumnSelect<T> cacheStrategy(QueryCacheStrategy strategy) {
-        setCacheStrategy(strategy);
-        setCacheGroup(null);
-        return this;
-    }
-
-    public ColumnSelect<T> cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
-        return cacheStrategy(strategy).cacheGroup(cacheGroup);
-    }
-
-    public ColumnSelect<T> cacheGroup(String cacheGroup) {
-        setCacheGroup(cacheGroup);
-        return this;
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "local" cache when
-     * running the query. This is a short-hand notation for:
-     * <p>
-     * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
-     * </pre>
-     */
-    public ColumnSelect<T> localCache(String cacheGroup) {
-        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "local" cache when
-     * running the query. This is a short-hand notation for:
-     * <p>
-     * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-     * </pre>
-     */
-    public ColumnSelect<T> localCache() {
-        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "shared" cache when
-     * running the query. This is a short-hand notation for:
-     * <p>
-     * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
-     * </pre>
-     */
-    public ColumnSelect<T> sharedCache(String cacheGroup) {
-        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
-    }
-
-    /**
-     * Instructs Cayenne to look for query results in the "shared" cache when
-     * running the query. This is a short-hand notation for:
-     * <p>
-     * <pre>
-     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-     * </pre>
-     */
-    public ColumnSelect<T> sharedCache() {
-        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+    @Override
+    protected ColumnSelectMetadata createMetadata() {
+        return new ColumnSelectMetadata();
     }
 
     /**
@@ -428,7 +144,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     @SuppressWarnings("unchecked")
-    protected  <E> ColumnSelect<E> column(Property<E> property) {
+    protected <E> ColumnSelect<E> column(Property<E> property) {
         if (this.columns == null) {
             this.columns = new ArrayList<>(1);
         } else {
@@ -510,61 +226,10 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     }
 
     /**
-     * AND's provided expressions to the existing WHERE or HAVING clause expression.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> and(Collection<Expression> expressions) {
-
-        if (expressions == null || expressions.isEmpty()) {
-            return this;
-        }
-
-        Collection<Expression> all;
-        Expression activeExpression = getActiveExpression();
-
-        if (activeExpression != null) {
-            all = new ArrayList<>(expressions.size() + 1);
-            all.add(activeExpression);
-            all.addAll(expressions);
-        } else {
-            all = expressions;
-        }
-
-        setActiveExpression(ExpressionFactory.and(all));
-        return this;
-    }
-
-    /**
-     * OR's provided expressions to the existing WHERE or HAVING clause expression.
-     *
-     * @return this object
-     */
-    public ColumnSelect<T> or(Collection<Expression> expressions) {
-        if (expressions == null || expressions.isEmpty()) {
-            return this;
-        }
-
-        Collection<Expression> all;
-        Expression activeExpression = getActiveExpression();
-
-        if (activeExpression != null) {
-            all = new ArrayList<>(expressions.size() + 1);
-            all.add(activeExpression);
-            all.addAll(expressions);
-        } else {
-            all = expressions;
-        }
-
-        setActiveExpression(ExpressionFactory.or(all));
-        return this;
-    }
-
-    /**
      * Explicitly request distinct in query.
      */
     public ColumnSelect<T> distinct() {
-        metaData.setSuppressingDistinct(false);
+        getBaseMetaData().setSuppressingDistinct(false);
         this.distinct = true;
         return this;
     }
@@ -573,7 +238,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      * Explicitly suppress distinct in query.
      */
     public ColumnSelect<T> suppressDistinct() {
-        metaData.setSuppressingDistinct(true);
+        getBaseMetaData().setSuppressingDistinct(true);
         this.distinct = false;
         return this;
     }
@@ -595,13 +260,13 @@ public class ColumnSelect<T> extends FluentSelect<T> {
     @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
         Object root = resolveRoot(resolver);
-        metaData.resolve(root, resolver, this);
+        getBaseMetaData().resolve(root, resolver, this);
         return metaData;
     }
 
     @Override
-    protected BaseQueryMetadata getBaseMetaData() {
-        return metaData;
+    protected ColumnSelectMetadata getBaseMetaData() {
+        return (ColumnSelectMetadata) metaData;
     }
 
     /**
@@ -618,7 +283,7 @@ public class ColumnSelect<T> extends FluentSelect<T> {
      */
     @SuppressWarnings("unchecked")
     public <E> ColumnSelect<E> map(Function<T, E> mapper) {
-        this.metaData.setResultMapper(mapper);
+        getBaseMetaData().setResultMapper(mapper);
         return (ColumnSelect<E>)this;
     }
 }

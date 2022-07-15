@@ -75,11 +75,11 @@ public class SQLServerActionBuilder extends JdbcActionBuilder {
 	 * @since 4.2
 	 */
 	@Override
-	public <T> SQLAction objectSelectAction(FluentSelect<T> query) {
+	public <T> SQLAction objectSelectAction(FluentSelect<T, ?> query) {
 		return new SQLServerSelectAction(query, dataNode, needInMemoryOffset(query));
 	}
 
-	private boolean needInMemoryOffset(FluentSelect<?> query) {
+	private boolean needInMemoryOffset(FluentSelect<?, ?> query) {
 		return query.getOrderings() == null || query.getOrderings().size() == 0
 				|| version == null || version < 12;
 	}

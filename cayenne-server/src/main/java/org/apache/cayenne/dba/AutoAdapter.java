@@ -101,7 +101,7 @@ public class AutoAdapter implements DbAdapter {
 	 * @since 4.2
 	 */
 	@Override
-	public SelectTranslator getSelectTranslator(FluentSelect<?> query, EntityResolver entityResolver) {
+	public SelectTranslator getSelectTranslator(FluentSelect<?, ?> query, EntityResolver entityResolver) {
 		return getAdapter().getSelectTranslator(query, entityResolver);
 	}
 

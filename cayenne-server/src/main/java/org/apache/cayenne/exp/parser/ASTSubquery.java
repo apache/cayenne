@@ -35,7 +35,7 @@ public class ASTSubquery extends SimpleNode {
 
     private final TranslatableQueryWrapper query;
 
-    public ASTSubquery(FluentSelect<?> query) {
+    public ASTSubquery(FluentSelect<?, ?> query) {
         this(new FluentSelectWrapper(query));
     }
 
