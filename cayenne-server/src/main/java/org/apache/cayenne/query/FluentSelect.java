@@ -125,12 +125,11 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
         return resetEntity(null, null, dbEntityName);
     }
 
-    @SuppressWarnings("unchecked")
     private S resetEntity(Class<?> entityType, String entityName, String dbEntityName) {
         this.entityType = entityType;
         this.entityName = entityName;
         this.dbEntityName = dbEntityName;
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -159,10 +158,9 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @return this object
      */
-    @SuppressWarnings("unchecked")
     public S and(Expression... expressions) {
         if (expressions == null || expressions.length == 0) {
-            return (S)this;
+            return castSelf();
         }
         return and(Arrays.asList(expressions));
     }
@@ -177,10 +175,9 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
         return joinExpression(expressions, ExpressionFactory::and);
     }
 
-    @SuppressWarnings("unchecked")
     protected S joinExpression(Collection<Expression> expressions, Function<Collection<Expression>, Expression> joiner) {
         if (expressions == null || expressions.isEmpty()) {
-            return (S)this;
+            return castSelf();
         }
 
         Collection<Expression> all;
@@ -194,7 +191,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
         }
 
         setActiveExpression(joiner.apply(all));
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -202,10 +199,9 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @return this object
      */
-    @SuppressWarnings("unchecked")
     public S or(Expression... expressions) {
         if (expressions == null || expressions.length == 0) {
-            return (S)this;
+            return castSelf();
         }
         return or(Arrays.asList(expressions));
     }
@@ -247,11 +243,10 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @return this object
      */
-    @SuppressWarnings("unchecked")
     public S orderBy(Ordering... orderings) {
 
         if (orderings == null) {
-            return (S)this;
+            return castSelf();
         }
 
         if (this.orderings == null) {
@@ -260,7 +255,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
 
         Collections.addAll(this.orderings, orderings);
 
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -268,11 +263,10 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @return this object
      */
-    @SuppressWarnings("unchecked")
     public S orderBy(Collection<Ordering> orderings) {
 
         if (orderings == null) {
-            return (S)this;
+            return castSelf();
         }
 
         if (this.orderings == null) {
@@ -281,7 +275,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
 
         this.orderings.addAll(orderings);
 
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -289,10 +283,9 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @return this object
      */
-    @SuppressWarnings("unchecked")
     public S prefetch(PrefetchTreeNode prefetch) {
         getBaseMetaData().mergePrefetch(prefetch);
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -300,33 +293,30 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @return this object
      */
-    @SuppressWarnings("unchecked")
     public S prefetch(String path, int semantics) {
         if (path == null) {
-            return (S)this;
+            return castSelf();
         }
         getBaseMetaData().addPrefetch(path, semantics);
-        return (S)this;
+        return castSelf();
     }
 
     /**
      * Resets query fetch limit - a parameter that defines max number of objects
      * that should be ever be fetched from the database.
      */
-    @SuppressWarnings("unchecked")
     public S limit(int fetchLimit) {
         this.getBaseMetaData().setFetchLimit(fetchLimit);
-        return (S)this;
+        return castSelf();
     }
 
     /**
      * Resets query fetch offset - a parameter that defines how many objects
      * should be skipped when reading data from the database.
      */
-    @SuppressWarnings("unchecked")
     public S offset(int fetchOffset) {
         this.getBaseMetaData().setFetchOffset(fetchOffset);
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -334,10 +324,9 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      * pagination that saves memory and processing time for large lists if only
      * parts of the result are ever going to be accessed.
      */
-    @SuppressWarnings("unchecked")
     public S pageSize(int pageSize) {
         this.getBaseMetaData().setPageSize(pageSize);
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -346,37 +335,33 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @see Statement#setFetchSize(int)
      */
-    @SuppressWarnings("unchecked")
     public S statementFetchSize(int size) {
         this.getBaseMetaData().setStatementFetchSize(size);
-        return (S)this;
+        return castSelf();
     }
 
     /**
      * Sets query timeout of PreparedStatement generated for this query.
      * @see Statement#setQueryTimeout(int)
      */
-    @SuppressWarnings("unchecked")
     public S queryTimeout(int timeout) {
         this.getBaseMetaData().setQueryTimeout(timeout);
-        return (S)this;
+        return castSelf();
     }
 
-    @SuppressWarnings("unchecked")
     public S cacheStrategy(QueryCacheStrategy strategy) {
         setCacheStrategy(strategy);
         setCacheGroup(null);
-        return (S)this;
+        return castSelf();
     }
 
     public S cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
         return cacheStrategy(strategy).cacheGroup(cacheGroup);
     }
 
-    @SuppressWarnings("unchecked")
     public S cacheGroup(String cacheGroup) {
         setCacheGroup(cacheGroup);
-        return (S)this;
+        return castSelf();
     }
 
     /**
@@ -567,5 +552,17 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      */
     public void initWithProperties(Map<String, String> properties) {
         getBaseMetaData().initWithProperties(properties);
+    }
+
+    /**
+     * Utility method to perform (re)cast this type, doesn't perform any checks, so use with caution.
+     *
+     * @return <code>this</code> casted to the type E
+     * @param <E> type to cast to
+     * @since 4.3
+     */
+    @SuppressWarnings("unchecked")
+    protected <E> E castSelf() {
+        return (E)this;
     }
 }

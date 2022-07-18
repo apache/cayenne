@@ -182,10 +182,9 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> implements
      *
      * @return this object
      */
-    @SuppressWarnings("unchecked")
     public ObjectSelect<DataRow> fetchDataRows() {
         metaData.setFetchingDataRows(true);
-        return (ObjectSelect<DataRow>) this;
+        return castSelf();
     }
 
     /**

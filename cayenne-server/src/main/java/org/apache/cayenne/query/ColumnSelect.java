@@ -104,7 +104,6 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * @see ColumnSelect#column(Property)
      * @see ColumnSelect#columns(Collection)
      */
-    @SuppressWarnings("unchecked")
     public ColumnSelect<Object[]> columns(Property<?>... properties) {
         if (properties.length == 0) {
             throw new IllegalArgumentException("properties must contain at least one element");
@@ -114,7 +113,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
         }
         Collections.addAll(columns, properties);
         singleColumn = false;
-        return (ColumnSelect<Object[]>)this;
+        return castSelf();
     }
 
     /**
@@ -125,7 +124,6 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * @param properties collection of properties, <b>must</b> contain at least one element
      * @see ColumnSelect#columns(Property[])
      */
-    @SuppressWarnings("unchecked")
     public ColumnSelect<Object[]> columns(Collection<Property<?>> properties) {
         if (properties == null){
             throw new NullPointerException("properties is null");
@@ -140,10 +138,9 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
         columns.addAll(properties);
         singleColumn = false;
-        return (ColumnSelect<Object[]>)this;
+        return castSelf();
     }
 
-    @SuppressWarnings("unchecked")
     protected <E> ColumnSelect<E> column(Property<E> property) {
         if (this.columns == null) {
             this.columns = new ArrayList<>(1);
@@ -151,7 +148,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
             this.columns.clear(); // if we don't clear then return type will be incorrect
         }
         this.columns.add(property);
-        return (ColumnSelect<E>) this;
+        return castSelf();
     }
 
     /**
@@ -281,9 +278,8 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      *
      * @since 4.2
      */
-    @SuppressWarnings("unchecked")
     public <E> ColumnSelect<E> map(Function<T, E> mapper) {
         getBaseMetaData().setResultMapper(mapper);
-        return (ColumnSelect<E>)this;
+        return castSelf();
     }
 }
