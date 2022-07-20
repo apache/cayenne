@@ -118,7 +118,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * Specifies generator iteration target. &quot;entity&quot; performs one
 	 * iteration for each selected entity. &quot;datamap&quot; performs one
 	 * iteration per datamap (This is always one iteration since cgen currently
-	 * supports specifying one-and-only-one datamap). (Default is &quot;entity&quot;)
+	 * supports specifying one-and-only-one datamap).
+	 * (Default is &quot;entity&quot;)
 	 */
 	@Parameter
 	private String mode;
@@ -202,15 +203,32 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	@Parameter(defaultValue = "false", property = "force")
 	private boolean force;
 
+	/**
+	 * Location of Velocity template file for DataMap class generation.
+	 * DataMap class provides utilities for usage of the Cayenne queries stored in the DataMap.
+	 * If omitted, default template is used.
+	 *
+	 * @since 4.3 renamed from queryTemplate
+	 */
 	@Parameter
-	private String queryTemplate;
+	private String dataMapTemplate;
 
+	/**
+	 * Location of Velocity template file for DataMap superclass generation.
+	 * DataMap class provides utilities for usage of the Cayenne queries stored in the DataMap.
+	 * If omitted, default template is used.
+	 * Ignored unless <code>makepairs</code> set to <code>true</code>.
+	 *
+	 * @since 4.3 renamed from querySuperTemplate
+	 */
 	@Parameter
-	private String querySuperTemplate;
+	private String dataMapSuperTemplate;
 
     /**
-     * If set to <code>true</code>, will generate PK attributes as Properties.
+     * If set to <code>true</code>, will generate Properties for PK attributes.
      * Default is <code>false</code>.
+	 *
+	 * @see org.apache.cayenne.exp.property.IdProperty and its implementations
      * @since 4.1
      */
     @Parameter
@@ -294,8 +312,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		return destDir != null || encoding != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
 				makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
 				superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
-				usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
-				querySuperTemplate != null || createPKProperties != null || externalToolConfig != null;
+				usePkgPath != null || createPropertyNames != null || force || dataMapTemplate != null ||
+				dataMapSuperTemplate != null || createPKProperties != null || externalToolConfig != null;
 	}
 
 	/**
@@ -344,8 +362,8 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : cgenConfiguration.getEmbeddableTemplate());
 		cgenConfiguration.setUsePkgPath(usePkgPath != null ? usePkgPath : cgenConfiguration.isUsePkgPath());
 		cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : cgenConfiguration.isCreatePropertyNames());
-		cgenConfiguration.setDataMapTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getDataMapTemplate());
-		cgenConfiguration.setDataMapSuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getDataMapSuperTemplate());
+		cgenConfiguration.setDataMapTemplate(dataMapTemplate != null ? dataMapTemplate : cgenConfiguration.getDataMapTemplate());
+		cgenConfiguration.setDataMapSuperTemplate(dataMapSuperTemplate != null ? dataMapSuperTemplate : cgenConfiguration.getDataMapSuperTemplate());
 		cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
 		cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
 		if(!cgenConfiguration.isMakePairs()) {
@@ -355,7 +373,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 			if(embeddableTemplate == null) {
 				cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
 			}
-			if(queryTemplate == null) {
+			if(dataMapTemplate == null) {
 				cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
 			}
 		}

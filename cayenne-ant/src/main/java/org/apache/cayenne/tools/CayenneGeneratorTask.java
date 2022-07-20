@@ -65,8 +65,8 @@ public class CayenneGeneratorTask extends CayenneTask {
     protected String template;
     protected String embeddabletemplate;
     protected String embeddablesupertemplate;
-    protected String querytemplate;
-    protected String querysupertemplate;
+    protected String datamaptemplate;
+    protected String datamapsupertemplate;
     protected Boolean usepkgpath;
     protected Boolean createpropertynames;
 
@@ -160,8 +160,8 @@ public class CayenneGeneratorTask extends CayenneTask {
         return destDir != null || encoding != null || excludeEntitiesPattern != null || excludeEmbeddablesPattern != null || includeEntitiesPattern != null ||
                 makepairs != null || mode != null || outputPattern != null || overwrite != null || superpkg != null ||
                 supertemplate != null || template != null || embeddabletemplate != null || embeddablesupertemplate != null ||
-                usepkgpath != null || createpropertynames != null || querytemplate != null ||
-                querysupertemplate != null || createpkproperties != null || force || externaltoolconfig != null;
+                usepkgpath != null || createpropertynames != null || datamaptemplate != null ||
+                datamapsupertemplate != null || createpkproperties != null || force || externaltoolconfig != null;
     }
 
     private CgenConfiguration buildConfiguration(DataMap dataMap) {
@@ -200,8 +200,8 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setEmbeddableTemplate(embeddabletemplate != null ? embeddabletemplate : cgenConfiguration.getEmbeddableTemplate());
         cgenConfiguration.setUsePkgPath(usepkgpath != null ? usepkgpath : cgenConfiguration.isUsePkgPath());
         cgenConfiguration.setCreatePropertyNames(createpropertynames != null ? createpropertynames : cgenConfiguration.isCreatePropertyNames());
-        cgenConfiguration.setDataMapTemplate(querytemplate != null ? querytemplate : cgenConfiguration.getDataMapTemplate());
-        cgenConfiguration.setDataMapSuperTemplate(querysupertemplate != null ? querysupertemplate : cgenConfiguration.getDataMapSuperTemplate());
+        cgenConfiguration.setDataMapTemplate(datamaptemplate != null ? datamaptemplate : cgenConfiguration.getDataMapTemplate());
+        cgenConfiguration.setDataMapSuperTemplate(datamapsupertemplate != null ? datamapsupertemplate : cgenConfiguration.getDataMapSuperTemplate());
         cgenConfiguration.setCreatePKProperties(createpkproperties != null ? createpkproperties : cgenConfiguration.isCreatePKProperties());
         cgenConfiguration.setExternalToolConfig(externaltoolconfig != null ? externaltoolconfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
@@ -211,7 +211,7 @@ public class CayenneGeneratorTask extends CayenneTask {
             if(embeddabletemplate == null) {
                 cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
             }
-            if(querytemplate == null) {
+            if(datamaptemplate == null) {
                 cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
             }
         }
@@ -294,17 +294,19 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     /**
-     * Sets <code>querytemplate</code> property.
+     * Sets <code>datamaptemplate</code> property.
+     * @since 4.3 querytemplate renamed to datamaptemplate
      */
-    public void setQueryTemplate(String querytemplate) {
-        this.querytemplate = querytemplate;
+    public void setDataMapTemplate(String datamaptemplate) {
+        this.datamaptemplate = datamaptemplate;
     }
 
     /**
-     * Sets <code>querysupertemplate</code> property.
+     * Sets <code>datamapsupertemplate</code> property.
+     * @since 4.3 querysupertemplate renamed to datamapsupertemplate
      */
-    public void setQuerySupertemplate(String querysupertemplate) {
-        this.querysupertemplate = querysupertemplate;
+    public void setDataMapSupertemplate(String datamapsupertemplate) {
+        this.datamapsupertemplate = datamapsupertemplate;
     }
 
     /**

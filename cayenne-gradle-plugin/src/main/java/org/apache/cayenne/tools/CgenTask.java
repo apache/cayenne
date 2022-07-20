@@ -120,13 +120,28 @@ public class CgenTask extends BaseCayenneTask {
     @Input
     private boolean force;
 
+    /**
+     * Location of Velocity template file for DataMap class generation.
+     * DataMap class provides utilities for usage of the Cayenne queries stored in the DataMap.
+     * If omitted, default template is used.
+     *
+     * @since 4.3 renamed from queryTemplate
+     */
     @Input
     @Optional
-    private String queryTemplate;
+    private String dataMapTemplate;
 
+    /**
+     * Location of Velocity template file for DataMap superclass generation.
+     * DataMap class provides utilities for usage of the Cayenne queries stored in the DataMap.
+     * If omitted, default template is used.
+     * Ignored unless <code>makepairs</code> set to <code>true</code>.
+     *
+     * @since 4.3 renamed from querySuperTemplate
+     */
     @Input
     @Optional
-    private String querySuperTemplate;
+    private String dataMapSuperTemplate;
 
     /**
      * If set to <code>true</code>, will generate PK attributes as Properties.
@@ -252,8 +267,8 @@ public class CgenTask extends BaseCayenneTask {
         cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : cgenConfiguration.getEmbeddableTemplate());
         cgenConfiguration.setUsePkgPath(usePkgPath != null ? usePkgPath : cgenConfiguration.isUsePkgPath());
         cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : cgenConfiguration.isCreatePropertyNames());
-        cgenConfiguration.setQueryTemplate(queryTemplate != null ? queryTemplate : cgenConfiguration.getQueryTemplate());
-        cgenConfiguration.setQuerySuperTemplate(querySuperTemplate != null ? querySuperTemplate : cgenConfiguration.getQuerySuperTemplate());
+        cgenConfiguration.setDataMapTemplate(dataMapTemplate != null ? dataMapTemplate : cgenConfiguration.getDataMapTemplate());
+        cgenConfiguration.setDataMapSuperTemplate(dataMapSuperTemplate != null ? dataMapSuperTemplate : cgenConfiguration.getDataMapSuperTemplate());
         cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
         cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
@@ -263,8 +278,8 @@ public class CgenTask extends BaseCayenneTask {
             if(embeddableTemplate == null) {
                 cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
             }
-            if(queryTemplate == null) {
-                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+            if(dataMapTemplate == null) {
+                cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
             }
         }
         return cgenConfiguration;
@@ -281,8 +296,8 @@ public class CgenTask extends BaseCayenneTask {
         return destDir != null || destDirName != null || encoding != null || excludeEntities != null || excludeEmbeddables != null || includeEntities != null ||
                 makePairs != null || mode != null || outputPattern != null || overwrite != null || superPkg != null ||
                 superTemplate != null || template != null || embeddableTemplate != null || embeddableSuperTemplate != null ||
-                usePkgPath != null || createPropertyNames != null || force || queryTemplate != null ||
-                querySuperTemplate != null || createPKProperties != null || externalToolConfig != null;
+                usePkgPath != null || createPropertyNames != null || force || dataMapTemplate != null ||
+                dataMapSuperTemplate != null || createPKProperties != null || externalToolConfig != null;
     }
 
     @OutputDirectory
@@ -421,12 +436,28 @@ public class CgenTask extends BaseCayenneTask {
         return externalToolConfig;
     }
 
-    public String getQueryTemplate() {
-        return queryTemplate;
+    public void setDataMapTemplate(String dataMapTemplate) {
+        this.dataMapTemplate = dataMapTemplate;
     }
 
-    public String getQuerySuperTemplate() {
-        return querySuperTemplate;
+    public void dataMapTemplate(String dataMapTemplate) {
+        this.dataMapTemplate = dataMapTemplate;
+    }
+
+    public String getDataMapTemplate() {
+        return dataMapTemplate;
+    }
+
+    public void setDataMapSuperTemplate(String dataMapSuperTemplate) {
+        this.dataMapSuperTemplate = dataMapSuperTemplate;
+    }
+
+    public void dataMapSuperTemplate(String dataMapSuperTemplate) {
+        this.dataMapSuperTemplate = dataMapSuperTemplate;
+    }
+
+    public String getDataMapSuperTemplate() {
+        return dataMapSuperTemplate;
     }
 
     /**
