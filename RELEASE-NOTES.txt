@@ -19,6 +19,7 @@ CAY-2741 Cleanup TransactionDescriptor and deprecate DefaultTransactionDescripto
 CAY-2742 Switch minimum required Java version to 11
 CAY-2747 Update project XML version to 11
 CAY-2751 Simplify DataNode configuration
+CAY-2752 Rename queryTemplate to dataMapTemplate in the cgen config
 
 Bug Fixes:
 

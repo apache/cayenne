@@ -25,6 +25,9 @@ Most notable removals are SelectQuery and these Cayenne modules:
 * Per CAY-2747 Cayenne XML schemas are updated, so you need to update you projects (just open them in the Modeler
 or use cayenne-project-compatibility module)
 
+* Per CAY-2752 code generation configuration has minor changes. You need to review and update
+Maven, Gradle and Ant configs accordingly.
+
 
 UPGRADING TO 4.2.M2
 
