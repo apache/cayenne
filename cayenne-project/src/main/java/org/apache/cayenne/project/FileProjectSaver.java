@@ -356,7 +356,7 @@ public class FileProjectSaver implements ProjectSaver {
 		}
 	}
 
-	class SaveUnit {
+	static class SaveUnit {
 
 		private ConfigurationNode node;
 		private SaverDelegate delegate;

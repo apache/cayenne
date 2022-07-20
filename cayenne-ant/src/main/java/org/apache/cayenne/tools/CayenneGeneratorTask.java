@@ -200,8 +200,8 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setEmbeddableTemplate(embeddabletemplate != null ? embeddabletemplate : cgenConfiguration.getEmbeddableTemplate());
         cgenConfiguration.setUsePkgPath(usepkgpath != null ? usepkgpath : cgenConfiguration.isUsePkgPath());
         cgenConfiguration.setCreatePropertyNames(createpropertynames != null ? createpropertynames : cgenConfiguration.isCreatePropertyNames());
-        cgenConfiguration.setQueryTemplate(querytemplate != null ? querytemplate : cgenConfiguration.getQueryTemplate());
-        cgenConfiguration.setQuerySuperTemplate(querysupertemplate != null ? querysupertemplate : cgenConfiguration.getQuerySuperTemplate());
+        cgenConfiguration.setDataMapTemplate(querytemplate != null ? querytemplate : cgenConfiguration.getDataMapTemplate());
+        cgenConfiguration.setDataMapSuperTemplate(querysupertemplate != null ? querysupertemplate : cgenConfiguration.getDataMapSuperTemplate());
         cgenConfiguration.setCreatePKProperties(createpkproperties != null ? createpkproperties : cgenConfiguration.isCreatePKProperties());
         cgenConfiguration.setExternalToolConfig(externaltoolconfig != null ? externaltoolconfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
@@ -212,7 +212,7 @@ public class CayenneGeneratorTask extends CayenneTask {
                 cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
             }
             if(querytemplate == null) {
-                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
             }
         }
         return cgenConfiguration;

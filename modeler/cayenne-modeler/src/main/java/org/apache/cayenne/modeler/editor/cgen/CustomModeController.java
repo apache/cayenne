@@ -119,9 +119,9 @@ public class CustomModeController extends GeneratorController {
         String embeddableSuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
                 cgenConfiguration.getEmbeddableSuperTemplate(), cgenConfiguration.getRootPath());
         String queryTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-                cgenConfiguration.getQueryTemplate(), cgenConfiguration.getRootPath());
+                cgenConfiguration.getDataMapTemplate(), cgenConfiguration.getRootPath());
         String querySuperTemplateName = getApplication().getCodeTemplateManager().getNameByPath(
-                cgenConfiguration.getQuerySuperTemplate(), cgenConfiguration.getRootPath());
+                cgenConfiguration.getDataMapSuperTemplate(), cgenConfiguration.getRootPath());
 
         view.getSubclassTemplate().setItem(templateName);
         view.getSuperclassTemplate().setItem(superTemplateName);
@@ -141,11 +141,11 @@ public class CustomModeController extends GeneratorController {
             if (!view.getPairs().isSelected()) {
                 cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
                 cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
-                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
             } else {
                 cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
                 cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
-                cgenConfiguration.setQueryTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+                cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
             }
             initForm(cgenConfiguration);
             getParentController().checkCgenConfigDirty();

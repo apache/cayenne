@@ -195,14 +195,14 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     	if(template.trim().length() == 0) {
     		return;
     	}
-    	configuration.setQueryTemplate(template);
+    	configuration.setDataMapTemplate(template);
     }
     
     private void createQuerySuperTemplate(String template) {
     	if(template.trim().length() == 0) {
     		return;
     	}
-    	configuration.setQuerySuperTemplate(template);
+    	configuration.setDataMapSuperTemplate(template);
     }
 
     private void createOutputPattern(String pattern) {

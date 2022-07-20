@@ -39,7 +39,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.apache.velocity.tools.ToolManager;
@@ -65,7 +64,6 @@ public class ClassGenerationAction {
 
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
-	private static final String CGEN_ROOT_PATH = "cayenne.cgen.rootpath";
 
 	/**
 	 * @since 4.1
@@ -147,9 +145,9 @@ public class ClassGenerationAction {
 				return cgenConfiguration.getEmbeddableSuperTemplate();
 			case DATAMAP_SINGLE_CLASS:
 			case DATAMAP_SUBCLASS:
-				return cgenConfiguration.getQueryTemplate();
+				return cgenConfiguration.getDataMapTemplate();
 			case DATAMAP_SUPERCLASS:
-				return cgenConfiguration.getQuerySuperTemplate();
+				return cgenConfiguration.getDataMapSuperTemplate();
 			default:
 				throw new IllegalArgumentException("Invalid template type: " + type);
 		}

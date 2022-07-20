@@ -36,9 +36,6 @@ import java.util.stream.Collectors;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.ModuleLoader;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
@@ -62,8 +59,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Main controller for the code generation UI.
+ *
  * @since 4.1
- * A controller for the class generator dialog.
  */
 public class CodeGeneratorController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);

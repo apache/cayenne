@@ -39,10 +39,8 @@ import org.apache.cayenne.util.XMLSerializable;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
- * Used to keep config of class generation action.
- * Previously was the part of ClassGeneretionAction class.
- * Now CgenConfiguration is saved in dataMap file.
- * You can reuse it in next cgen actions.
+ * Stores configuration for the code generation tool.
+ * CgenConfiguration is stored in the dataMap xml file and used by Modeler and CLI tools (Maven, Gradle and Ant).
  *
  * @since 4.1
  */
@@ -69,8 +67,14 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private String superTemplate;
     private String embeddableTemplate;
     private String embeddableSuperTemplate;
-    private String queryTemplate;
-    private String querySuperTemplate;
+    /**
+     * @since 4.3 renamed from queryTemplate
+     */
+    private String dataMapTemplate;
+    /**
+     * @since 4.3 renamed from querySuperTemplate
+     */
+    private String dataMapSuperTemplate;
     private long timestamp;
     private String outputPattern;
     private String encoding;
@@ -105,8 +109,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
         this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
         this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
-        this.queryTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
-        this.querySuperTemplate = ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
+        this.dataMapTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
+        this.dataMapSuperTemplate = ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
 
         this.embeddableTemplate = ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
         this.embeddableSuperTemplate = ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
@@ -231,20 +235,20 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.embeddableSuperTemplate = embeddableSuperTemplate;
     }
 
-    public String getQueryTemplate() {
-        return queryTemplate;
+    public String getDataMapTemplate() {
+        return dataMapTemplate;
     }
 
-    public void setQueryTemplate(String queryTemplate) {
-        this.queryTemplate = queryTemplate;
+    public void setDataMapTemplate(String dataMapTemplate) {
+        this.dataMapTemplate = dataMapTemplate;
     }
 
-    public String getQuerySuperTemplate() {
-        return querySuperTemplate;
+    public String getDataMapSuperTemplate() {
+        return dataMapSuperTemplate;
     }
 
-    public void setQuerySuperTemplate(String querySuperTemplate) {
-        this.querySuperTemplate = querySuperTemplate;
+    public void setDataMapSuperTemplate(String dataMapSuperTemplate) {
+        this.dataMapSuperTemplate = dataMapSuperTemplate;
     }
 
     public long getTimestamp() {
@@ -331,7 +335,13 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public Path buildPath() {
-        return rootPath != null ? relPath != null ? rootPath.resolve(relPath).toAbsolutePath().normalize() : rootPath : relPath;
+        if(rootPath == null) {
+            return relPath;
+        }
+        if(relPath == null) {
+            return rootPath;
+        }
+        return rootPath.resolve(relPath).toAbsolutePath().normalize();
     }
 
     public void loadEntity(ObjEntity entity) {
@@ -406,8 +416,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("superTemplate", separatorsToUnix(this.superTemplate))
                 .simpleTag("embeddableTemplate", separatorsToUnix(this.embeddableTemplate))
                 .simpleTag("embeddableSuperTemplate", separatorsToUnix(this.embeddableSuperTemplate))
-                .simpleTag("queryTemplate", separatorsToUnix(this.queryTemplate))
-                .simpleTag("querySuperTemplate", separatorsToUnix(this.querySuperTemplate))
+                .simpleTag("queryTemplate", separatorsToUnix(this.dataMapTemplate))
+                .simpleTag("querySuperTemplate", separatorsToUnix(this.dataMapSuperTemplate))
                 .simpleTag("outputPattern", this.outputPattern)
                 .simpleTag("makePairs", Boolean.toString(this.makePairs))
                 .simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))

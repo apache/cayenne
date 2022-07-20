@@ -110,7 +110,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
         		CgenConfiguration cgenConfiguration = getCgenConfig();
-        		cgenConfiguration.setQueryTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+        		cgenConfiguration.setDataMapTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
         				cgenConfiguration.getDataMap().getConfigurationSource()));
                 checkConfigDirty();
         	}
@@ -121,7 +121,7 @@ public class CustomModePanel extends GeneratorControllerPanel {
         	@Override
         	protected void updateModel(String item) throws ValidationException {
         		CgenConfiguration cgenConfiguration = getCgenConfig();
-        		cgenConfiguration.setQuerySuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
+        		cgenConfiguration.setDataMapSuperTemplate(Application.getInstance().getCodeTemplateManager().getTemplatePath(item,
         				cgenConfiguration.getDataMap().getConfigurationSource()));
                 checkConfigDirty();
         	}
