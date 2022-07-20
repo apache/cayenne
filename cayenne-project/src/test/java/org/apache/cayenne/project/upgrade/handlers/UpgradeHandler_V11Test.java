@@ -28,6 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -74,21 +75,51 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
         assertEquals("http://cayenne.apache.org/schema/11/info", objEntity.getFirstChild().getNextSibling().getAttributes().getNamedItem("xmlns:info").getNodeValue());
 
         assertEquals(2, root.getElementsByTagName("db-attribute").getLength());
-
-        NodeList cgens = root.getElementsByTagName("cgen");
-        assertEquals(1, objEntities.getLength());
-        Node cgenConfig = cgens.item(0);
-        assertEquals("http://cayenne.apache.org/schema/11/cgen", cgenConfig.getAttributes().getNamedItem("xmlns").getNodeValue());
-        for(int i=0; i<cgenConfig.getChildNodes().getLength(); i++) {
-            Node node = cgenConfig.getChildNodes().item(i);
-            if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("client")) {
-                fail("<client> tag is still present in the <cgen> config");
-            }
-        }
     }
 
     @Test
-    public void testModelUpgrade() throws Exception {
+    public void testCgenDomUpgrade() throws Exception {
+        Document document = processDataMapDom("test-map-v10.map.xml");
+        Element root = document.getDocumentElement();
+
+        // check cgen config is updated
+        NodeList cgens = root.getElementsByTagName("cgen");
+        assertEquals(1, cgens.getLength());
+        Node cgenConfig = cgens.item(0);
+        assertEquals("http://cayenne.apache.org/schema/11/cgen", cgenConfig.getAttributes().getNamedItem("xmlns").getNodeValue());
+
+        NodeList childNodes = cgenConfig.getChildNodes();
+        boolean dataMapTemplateSeen = false;
+        boolean dataMapSuperTemplateSeen = false;
+        int elements = 0;
+        for(int i = 0; i< childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            if(node.getNodeType() == Node.ELEMENT_NODE) {
+                elements++;
+                switch (node.getNodeName()) {
+                    case "client":
+                        fail("<client> tag is still present in the <cgen> config");
+                    case "queryTemplate":
+                        fail("<queryTemplate> tag is still present in the <cgen> config");
+                    case "querySuperTemplate":
+                        fail("<querySuperTemplate> tag is still present in the <cgen> config");
+                    case "dataMapTemplate":
+                        dataMapTemplateSeen = true;
+                        break;
+                    case "dataMapSuperTemplate":
+                        dataMapSuperTemplateSeen = true;
+                        break;
+                }
+            }
+        }
+
+        assertEquals(4, elements);
+        assertTrue(dataMapTemplateSeen);
+        assertTrue(dataMapSuperTemplateSeen);
+    }
+
+    @Test
+    public void testModelUpgrade() {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
         handler.processModel(descriptor);
         verifyZeroInteractions(descriptor);

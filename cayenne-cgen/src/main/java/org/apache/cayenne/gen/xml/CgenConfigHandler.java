@@ -45,8 +45,8 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     private static final String SUPERCLASS_TEMPLATE_TAG = "superTemplate";
     private static final String EMBEDDABLE_TEMPLATE_TAG = "embeddableTemplate";
     private static final String EMBEDDABLE_SUPER_TEMPLATE_TAG = "embeddableSuperTemplate";
-    private static final String QUERY_TEMPLATE_TAG = "queryTemplate";
-    private static final String QUERY_SUPER_TEMPLATE_TAG = "querySuperTemplate";
+    private static final String DATAMAP_TEMPLATE_TAG = "dataMapTemplate";
+    private static final String DATAMAP_SUPER_TEMPLATE_TAG = "dataMapSuperTemplate";
     private static final String OUTPUT_PATTERN_TAG = "outputPattern";
     private static final String MAKE_PAIRS_TAG = "makePairs";
     private static final String USE_PKG_PATH_TAG = "usePkgPath";
@@ -105,11 +105,11 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
             	break;
             case EMBEDDABLE_SUPER_TEMPLATE_TAG:
             	createEmbeddableSuperTemplate(data);
-            case QUERY_TEMPLATE_TAG:
-            	createQueryTemplate(data);
+            case DATAMAP_TEMPLATE_TAG:
+            	createDataMapTemplate(data);
             	break;
-            case QUERY_SUPER_TEMPLATE_TAG:
-            	createQuerySuperTemplate(data);
+            case DATAMAP_SUPER_TEMPLATE_TAG:
+            	createDataMapSuperTemplate(data);
                 break;
             case OUTPUT_PATTERN_TAG:
                 createOutputPattern(data);
@@ -191,14 +191,14 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     	configuration.setEmbeddableSuperTemplate(template);
     }
     
-    private void createQueryTemplate(String template) {
+    private void createDataMapTemplate(String template) {
     	if(template.trim().length() == 0) {
     		return;
     	}
     	configuration.setDataMapTemplate(template);
     }
     
-    private void createQuerySuperTemplate(String template) {
+    private void createDataMapSuperTemplate(String template) {
     	if(template.trim().length() == 0) {
     		return;
     	}

@@ -25,6 +25,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -32,6 +33,7 @@ import org.w3c.dom.NodeList;
  * Changes highlight:
  *      - schemas version update
  *      - ROP removal
+ *      - cgen schema changes
  *
  * @since 4.3
  */
@@ -57,7 +59,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
 
         dropROPProperties(upgradeUnit);
         dropObjEntityClientInfo(upgradeUnit);
-        dropCgenClientConfig(upgradeUnit);
+        updateCgenConfig(upgradeUnit);
     }
 
     private void upgradeComments(UpgradeUnit upgradeUnit) {
@@ -116,6 +118,35 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             objEntityElement.removeAttribute("serverOnly");
             objEntityElement.removeAttribute("clientClassName");
             objEntityElement.removeAttribute("clientSuperClassName");
+        }
+    }
+
+    private void updateCgenConfig(UpgradeUnit upgradeUnit) {
+        renameQueryTemplates(upgradeUnit);
+        dropCgenClientConfig(upgradeUnit);
+    }
+
+    private void renameQueryTemplates(UpgradeUnit upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList queryTemplates;
+        NodeList querySuperTemplates;
+        try {
+            queryTemplates = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='queryTemplate']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+            querySuperTemplates = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='querySuperTemplate']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+
+        for (int j = 0; j < queryTemplates.getLength(); j++) {
+            Node element = queryTemplates.item(j);
+            upgradeUnit.getDocument().renameNode(element, null, "dataMapTemplate");
+        }
+
+        for (int j = 0; j < querySuperTemplates.getLength(); j++) {
+            Node element = querySuperTemplates.item(j);
+            upgradeUnit.getDocument().renameNode(element, null, "dataMapSuperTemplate");
         }
     }
 
