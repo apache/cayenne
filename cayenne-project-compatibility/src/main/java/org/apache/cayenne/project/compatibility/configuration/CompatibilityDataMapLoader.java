@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.configuration.xml;
+package org.apache.cayenne.project.compatibility.configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +28,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.xml.LoaderContext;
+import org.apache.cayenne.configuration.xml.RootDataMapHandler;
+import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;

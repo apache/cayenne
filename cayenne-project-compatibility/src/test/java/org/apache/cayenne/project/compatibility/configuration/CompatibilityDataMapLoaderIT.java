@@ -17,14 +17,12 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.configuration.xml;
+package org.apache.cayenne.project.compatibility.configuration;
 
 import java.net.URL;
 
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
@@ -34,29 +32,27 @@ import org.apache.cayenne.resource.URLResource;
 import org.junit.Test;
 import org.xml.sax.XMLReader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 4.1
  */
-public class CompatibilityDataChannelDescriptorLoaderIT {
+public class CompatibilityDataMapLoaderIT {
 
     @Test
-    public void testLoad() throws Exception {
+    public void testLoad() {
         Injector injector = getInjector();
 
-        DataChannelDescriptorLoader loader = injector.getInstance(DataChannelDescriptorLoader.class);
-        assertTrue(loader instanceof CompatibilityDataChannelDescriptorLoader);
+        DataMapLoader loader = injector.getInstance(DataMapLoader.class);
+        assertTrue(loader instanceof CompatibilityDataMapLoader);
 
-        URL resourceUrl = getClass().getResource("../../project/compatibility/cayenne-project-v6.xml");
+        URL resourceUrl = getClass().getResource("../test-map-v6.map.xml");
         Resource resource = new URLResource(resourceUrl);
 
-        ConfigurationTree<DataChannelDescriptor> configurationTree = loader.load(resource);
-        assertNotNull(configurationTree.getRootNode());
-        assertTrue(configurationTree.getLoadFailures().isEmpty());
-        assertEquals(1, configurationTree.getRootNode().getDataMaps().size());
-
-        DataMap dataMap = configurationTree.getRootNode().getDataMaps().iterator().next();
+        DataMap dataMap = loader.load(resource);
+        assertNotNull(dataMap);
         assertEquals(1, dataMap.getDbEntities().size());
         assertEquals(1, dataMap.getObjEntities().size());
         assertNotNull(dataMap.getObjEntity("Artist"));
@@ -66,12 +62,11 @@ public class CompatibilityDataChannelDescriptorLoaderIT {
 
     private Injector getInjector() {
         return DIBootstrap.createInjector(
-            new CompatibilityTestModule(),
-            binder -> {
-                binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
-                binder.bind(DataChannelDescriptorLoader.class).to(CompatibilityDataChannelDescriptorLoader.class);
-                binder.bind(DataMapLoader.class).to(CompatibilityDataMapLoader.class);
-            }
+                new CompatibilityTestModule(),
+                binder -> {
+                    binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
+                    binder.bind(DataMapLoader.class).to(CompatibilityDataMapLoader.class);
+                }
         );
     }
 }

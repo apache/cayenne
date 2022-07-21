@@ -21,8 +21,8 @@ package org.apache.cayenne.project.compatibility;
 
 import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.xml.CompatibilityDataChannelDescriptorLoader;
-import org.apache.cayenne.configuration.xml.CompatibilityDataMapLoader;
+import org.apache.cayenne.project.compatibility.configuration.CompatibilityDataChannelDescriptorLoader;
+import org.apache.cayenne.project.compatibility.configuration.CompatibilityDataMapLoader;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.ProjectModule;

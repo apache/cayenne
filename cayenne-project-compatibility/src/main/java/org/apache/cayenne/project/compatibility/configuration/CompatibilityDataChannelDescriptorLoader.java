@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.configuration.xml;
+package org.apache.cayenne.project.compatibility.configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,9 +30,11 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.xml.DataChannelHandler;
+import org.apache.cayenne.configuration.xml.LoaderContext;
+import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.compatibility.CompatibilityUpgradeService;
 import org.apache.cayenne.project.compatibility.DocumentProvider;
 import org.apache.cayenne.project.upgrade.UpgradeMetaData;
@@ -111,12 +113,7 @@ public class CompatibilityDataChannelDescriptorLoader extends XMLDataChannelDesc
 
             XMLReader parser = Util.createXmlReader();
             LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
-            loaderContext.addDataMapListener(new DataMapLoaderListener() {
-                @Override
-                public void onDataMapLoaded(DataMap dataMap) {
-                    descriptor.getDataMaps().add(dataMap);
-                }
-            });
+            loaderContext.addDataMapListener(dataMap -> descriptor.getDataMaps().add(dataMap));
 
             DataChannelHandler rootHandler = new DataChannelHandler(this, descriptor, loaderContext);
             parser.setContentHandler(rootHandler);

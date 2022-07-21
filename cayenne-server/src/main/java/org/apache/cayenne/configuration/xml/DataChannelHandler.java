@@ -28,7 +28,7 @@ import org.xml.sax.ContentHandler;
 /**
  * @since 4.1
  */
-final class DataChannelHandler extends VersionAwareHandler {
+public final class DataChannelHandler extends VersionAwareHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(XMLDataChannelDescriptorLoader.class);
 
@@ -37,7 +37,7 @@ final class DataChannelHandler extends VersionAwareHandler {
     private XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader;
     DataChannelDescriptor descriptor;
 
-    DataChannelHandler(XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader, DataChannelDescriptor dataChannelDescriptor, LoaderContext loaderContext) {
+    public DataChannelHandler(XMLDataChannelDescriptorLoader xmlDataChannelDescriptorLoader, DataChannelDescriptor dataChannelDescriptor, LoaderContext loaderContext) {
         super(loaderContext, DOMAIN_TAG);
         this.xmlDataChannelDescriptorLoader = xmlDataChannelDescriptorLoader;
         this.descriptor = dataChannelDescriptor;

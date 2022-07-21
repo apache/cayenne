@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class CompatibilityUpgradeServiceIT {
 
     @Test
-    public void testUpgradeFullProjectDom() throws Exception {
+    public void testUpgradeFullProjectDom() {
         Injector injector = getInjector();
 
         CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector
@@ -64,7 +64,7 @@ public class CompatibilityUpgradeServiceIT {
     }
 
     @Test
-    public void testUpgradeStandAloneDataMapDom() throws Exception {
+    public void testUpgradeStandAloneDataMapDom() {
         Injector injector = getInjector();
 
         CompatibilityUpgradeService upgradeService = (CompatibilityUpgradeService)injector
