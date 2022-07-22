@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Enclosed.class)
 public class CgenConfigurationTest {
 
-    public static class СgenWindowsConfigurationTest {
+    public static class CgenWindowsConfigurationTest {
 
         CgenConfiguration configuration;
 
@@ -151,7 +151,7 @@ public class CgenConfigurationTest {
         }
     }
 
-    public static class СgenUnixConfigurationTest {
+    public static class CgenUnixConfigurationTest {
 
         CgenConfiguration configuration;
 
