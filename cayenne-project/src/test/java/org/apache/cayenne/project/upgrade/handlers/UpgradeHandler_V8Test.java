@@ -28,8 +28,7 @@ import org.w3c.dom.NodeList;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * @since 4.1
@@ -92,6 +91,6 @@ public class UpgradeHandler_V8Test extends BaseUpgradeHandlerTest {
     public void testModelUpgrade() throws Exception {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
         handler.processModel(descriptor);
-        verifyZeroInteractions(descriptor);
+        verifyNoInteractions(descriptor);
     }
 }

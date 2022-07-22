@@ -67,28 +67,6 @@
 	</dependencies>
 
     <profiles>
-        <profile>
-            <id>code-quality</id>
-
-            <activation>
-                <property>
-                    <name>!fast-and-dirty</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <!--<configuration>
-                            <suppressionsLocation>${project.basedir}/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-                        </configuration>-->
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
 		<profile>
 			<id>mac</id>
 			<build>
@@ -121,18 +99,4 @@
 			</build>
 		</profile>
 	</profiles>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>objectstyle</id>
-			<name>ObjectStyle repository</name>
-			<url>https://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 </project>

@@ -37,10 +37,9 @@
 	<properties>
 		<maven.build.timestamp.format>MMM dd yyyy HH:mm:ss</maven.build.timestamp.format>
 		<project.build.datetime>${maven.build.timestamp}</project.build.datetime>
-        <jacoco.version>0.7.9</jacoco.version>
-		<slf4j.version>1.7.25</slf4j.version>
-		<ant.version>1.10.11</ant.version>
-		<testcontainers.version>1.16.0</testcontainers.version>
+		<slf4j.version>1.7.36</slf4j.version>
+		<ant.version>1.10.12</ant.version>
+		<testcontainers.version>1.17.3</testcontainers.version>
 
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -341,13 +340,13 @@
 			<dependency>
 				<groupId>com.mockrunner</groupId>
 				<artifactId>mockrunner-jdbc</artifactId>
-				<version>1.1.2</version>
+				<version>2.0.6</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>ognl</groupId>
 				<artifactId>ognl</artifactId>
-				<version>2.6.7</version>
+				<version>3.3.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -374,12 +373,12 @@
 			<dependency>
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity-engine-core</artifactId>
-				<version>2.1</version>
+				<version>2.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.velocity.tools</groupId>
 				<artifactId>velocity-tools-generic</artifactId>
-				<version>3.0</version>
+				<version>3.1</version>
 			</dependency>
 			<dependency>
 				<groupId>foundrylogic.vpp</groupId>
@@ -399,27 +398,22 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.13.1</version>
+				<version>4.13.2</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>2.28.2</version>
+				<version>4.6.1</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.ehcache</groupId>
-				<artifactId>ehcache-core</artifactId>
-				<version>2.4.3</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
-				<version>2.4.1</version>
+				<version>2.6.1</version>
 				<scope>test</scope>
 			</dependency>
+			<!-- Derby 10.16 requires Java 17, Derby 10.15 requires additional dependency - derbytools -->
 			<dependency>
             	<groupId>org.apache.derby</groupId>
             	<artifactId>derby</artifactId>
@@ -531,7 +525,7 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ssh</artifactId>
-				<version>2.12</version>
+				<version>3.5.2</version>
 			</extension>
 		</extensions>
 
@@ -565,20 +559,6 @@
 										<versionRange>[1.0,)</versionRange>
 										<goals>
 											<goal>manifest</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.agilejava.docbkx</groupId>
-										<artifactId>docbkx-maven-plugin</artifactId>
-										<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>generate-pdf</goal>
-											<goal>generate-html</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -664,32 +644,6 @@
 										<ignore />
 									</action>
 								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-                    					<artifactId>maven-checkstyle-plugin</artifactId>
-                    					<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-                    					<artifactId>maven-pmd-plugin</artifactId>
-                    					<versionRange>[1.0,)</versionRange>
-										<goals>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>org.apache.maven.plugins</groupId>
@@ -710,18 +664,15 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.4</version>
                 </plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
-					<configuration>
-						<encoding>UTF-8</encoding>
-					</configuration>
+					<version>3.10.1</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-deploy-plugin</artifactId>
@@ -732,41 +683,29 @@
 					<version>2.5.3</version>
 				</plugin>
 				<plugin>
-					<artifactId>maven-jxr-plugin</artifactId>
-					<version>2.5</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.8</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>3.0.0</version>
-				</plugin>
-				<plugin>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>1.4.1</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.6.0</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
-					<version>2.9</version>
+					<version>3.4.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.1</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.4.1</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-antrun-plugin</artifactId>
-					<version>1.7</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
@@ -775,7 +714,7 @@
 				<plugin>   
 					<groupId>org.apache.felix</groupId>
   					<artifactId>maven-bundle-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>5.1.7</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-report-plugin</artifactId>
@@ -784,11 +723,11 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>taglist-maven-plugin</artifactId>
-					<version>2.4</version>
+					<version>3.0.0</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-remote-resources-plugin</artifactId>
-					<version>1.5</version>
+					<version>1.7.0</version>
 					<configuration>
 						<outputDirectory>
 								${project.build.directory}/classes
@@ -805,7 +744,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.4.0</version>
 					<configuration>
 						<!-- Suppress errors in the JavaDocs (it should be cleaned one day...)  -->
 						<doclint>none</doclint>
@@ -821,7 +760,7 @@
 				<plugin>
 					<groupId>org.apache.rat</groupId>
 					<artifactId>apache-rat-plugin</artifactId>
-					<version>0.13</version>
+					<version>0.14</version>
 					<configuration>
 						<licenses>
 							<license implementation="org.apache.rat.analysis.license.ApacheSoftwareLicense20">
@@ -854,18 +793,8 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.2</version>
                 </plugin>
-                <plugin>
-                    <groupId>io.fabric8</groupId>
-                    <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.33.0</version>
-                </plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>3.3.1</version>
-				</plugin>
             </plugins>
 		</pluginManagement>
 
@@ -990,218 +919,6 @@
 	</distributionManagement>
 
 	<profiles>
-		<profile>
-			<id>code-quality</id>
-
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-checkstyle-plugin</artifactId>
-						<configuration>
-							<skip>false</skip>
-							<consoleOutput>false</consoleOutput>
-							<enableRulesSummary>false</enableRulesSummary>
-							<failOnViolation>false</failOnViolation>
-							<!-- TODO make it 'true' when we will be ready -->
-							<violationSeverity>warning</violationSeverity>
-							<configLocation>build-tools/cayenne-checkers/src/main/resources/cayenne-checkstyle.xml</configLocation>
-							<suppressionsLocation>build-tools/cayenne-checkers/src/main/resources/cayenne-checkstyle-suppression.xml</suppressionsLocation>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>process-sources</phase>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-pmd-plugin</artifactId>
-						<configuration>
-							<skip>false</skip>
-							<sourceEncoding>utf-8</sourceEncoding>
-							<targetJdk>11</targetJdk>
-							<verbose>true</verbose>
-							<failOnViolation>false</failOnViolation>
-							<!-- TODO make it 'true' when we will be ready -->
-							<failurePriority>2</failurePriority>
-							<rulesets>
-								<!-- go back on one dir to parent project -->
-								<ruleset>/cayenne-pmd.xml</ruleset>
-							</rulesets>
-							<excludes>
-								<exclude>**/ParseException.java</exclude>
-								<exclude>**/Token.java</exclude>
-								<exclude>**/TokenMgrError.java</exclude>
-								<exclude>**/ParseException.java</exclude>
-								<exclude>**/Parser.java.java</exclude>
-								<exclude>**/ParserConstants.java</exclude>
-								<exclude>**/ParserTokenManager.java</exclude>
-								<exclude>**/SimpleCharStream.java</exclude>
-								<exclude>**/TokenMgrError.java</exclude>
-								<exclude>org/apache/cayenne/ejbql/parser/*</exclude>
-								<exclude>org/apache/cayenne/exp/parser/*</exclude>
-								<exclude>org/apache/cayenne/template/parser/*</exclude>
-							</excludes>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>process-sources</phase>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-						<dependencies>
-							<dependency>
-								<groupId>org.apache.cayenne.build-tools</groupId>
-								<artifactId>cayenne-checkers</artifactId>
-								<version>${project.version}</version>
-							</dependency>
-						</dependencies>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>clirr-maven-plugin</artifactId>
-						<version>2.8</version>
-						<configuration>
-							<comparisonVersion>3.1RC1</comparisonVersion>
-							<minSeverity>info</minSeverity>
-							<logResults>true</logResults>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>jdepend-maven-plugin</artifactId>
-						<version>2.0</version>
-					</plugin>
-				</plugins>
-			</build>
-
-			<reporting>
-				<plugins>
-					<plugin>
-						<artifactId>maven-checkstyle-plugin</artifactId>
-						<inherited>true</inherited>
-					</plugin>
-					<plugin>
-						<artifactId>maven-pmd-plugin</artifactId>
-						<inherited>true</inherited>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>findbugs-maven-plugin</artifactId>
-						<configuration>
-							<effort>Max</effort>
-							<threshold>Low</threshold>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>jdepend-maven-plugin</artifactId>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>clirr-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</reporting>
-		</profile>
-
-
-		<profile>
-			<id>code-coverage</id>
-			<properties>
-				<jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.execution.data.file>
-				<jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>0.8.0</version>
-						<executions>
-							<execution>
-								<id>pre-unit-test</id>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-								<configuration>
-									<destFile>${jacoco.ut.execution.data.file}</destFile>
-									<propertyName>surefireArgLine</propertyName>
-								</configuration>
-							</execution>
-							<execution>
-								<id>post-unit-test</id>
-								<phase>test</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-								<configuration>
-									<dataFile>${jacoco.ut.execution.data.file}</dataFile>
-									<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-								</configuration>
-							</execution>
-
-							<execution>
-								<id>pre-integration-test</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-								<configuration>
-									<destFile>${jacoco.it.execution.data.file}</destFile>
-									<propertyName>failsafeArgLine</propertyName>
-								</configuration>
-							</execution>
-
-							<execution>
-								<id>post-integration-test</id>
-								<phase>post-integration-test</phase>
-								<goals>
-									<goal>report</goal>
-								</goals>
-								<configuration>
-									<dataFile>${jacoco.it.execution.data.file}</dataFile>
-									<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>${surefireArgLine}</argLine>
-						</configuration>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>integration-tests</id>
-								<goals>
-									<goal>integration-test</goal>
-									<goal>verify</goal>
-								</goals>
-								<configuration>
-									<argLine>${failsafeArgLine}</argLine>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-
-
 		<!-- Optional profile used to sign artifacts -->
 		<profile>
 			<id>gpg</id>
@@ -1210,7 +927,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
+						<version>3.0.1</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -1272,7 +989,7 @@
 				<dependency>
 					<groupId>org.firebirdsql.jdbc</groupId>
 					<artifactId>jaybird-jdk18</artifactId>
-					<version>3.0.3</version>
+					<version>4.0.6.java8</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1306,7 +1023,7 @@
 				<dependency>
 					<groupId>com.h2database</groupId>
 					<artifactId>h2</artifactId>
-					<version>1.4.195</version>
+					<version>2.1.214</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1323,7 +1040,7 @@
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>8.0.28</version>
+					<version>8.0.29</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1340,7 +1057,7 @@
 				<dependency>
 					<groupId>mysql</groupId>
 					<artifactId>mysql-connector-java</artifactId>
-					<version>8.0.28</version>
+					<version>8.0.29</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1357,7 +1074,7 @@
 				<dependency>
 					<groupId>org.mariadb.jdbc</groupId>
 					<artifactId>mariadb-java-client</artifactId>
-					<version>2.7.4</version>
+					<version>3.0.6</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1375,7 +1092,7 @@
 					<dependency>
 						<groupId>com.oracle.database.jdbc</groupId>
 						<artifactId>ojdbc-bom</artifactId>
-						<version>21.1.0.0</version>
+						<version>21.6.0.0.1</version>
 						<type>pom</type>
 						<scope>import</scope>
 					</dependency>
@@ -1402,7 +1119,7 @@
 					<dependency>
 						<groupId>com.oracle.database.jdbc</groupId>
 						<artifactId>ojdbc-bom</artifactId>
-						<version>21.1.0.0</version>
+						<version>21.6.0.0.1</version>
 						<type>pom</type>
 						<scope>import</scope>
 					</dependency>
@@ -1428,7 +1145,7 @@
 				<dependency>
 					<groupId>org.postgresql</groupId>
 					<artifactId>postgresql</artifactId>
-					<version>42.3.3</version>
+					<version>42.4.0</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1445,7 +1162,7 @@
 				<dependency>
 					<groupId>org.postgresql</groupId>
 					<artifactId>postgresql</artifactId>
-					<version>42.3.3</version>
+					<version>42.4.0</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1477,7 +1194,7 @@
 				<dependency>
 					<groupId>com.microsoft.sqlserver</groupId>
 					<artifactId>mssql-jdbc</artifactId>
-					<version>9.2.1.jre8</version>
+					<version>10.2.1.jre11</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1494,7 +1211,7 @@
 				<dependency>
 					<groupId>com.microsoft.sqlserver</groupId>
 					<artifactId>mssql-jdbc</artifactId>
-					<version>9.2.1.jre8</version>
+					<version>10.2.1.jre11</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1545,7 +1262,7 @@
 				<dependency>
 					<groupId>org.xerial</groupId>
 					<artifactId>sqlite-jdbc</artifactId>
-					<version>3.25.2</version>
+					<version>3.36.0.3</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1561,8 +1278,8 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.ibm.db2</groupId>
-					<artifactId>db2-driver</artifactId>
-					<version>1.0</version>
+					<artifactId>jcc</artifactId>
+					<version>11.5.7.0</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1579,7 +1296,7 @@
 				<dependency>
 					<groupId>com.ibm.db2</groupId>
 					<artifactId>jcc</artifactId>
-					<version>11.5.6.0</version>
+					<version>11.5.7.0</version>
 					<scope>test</scope>
 				</dependency>
 			</dependencies>
@@ -1606,10 +1323,6 @@
 
     <reporting>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>

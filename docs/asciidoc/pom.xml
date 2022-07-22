@@ -41,12 +41,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <asciidoctorj.version>1.6.2</asciidoctorj.version>
-        <asciidoctor.maven.plugin.version>1.5.8</asciidoctor.maven.plugin.version>
-        <asciidoctorj.pdf.version>1.5.0-alpha.18</asciidoctorj.pdf.version>
-        <jruby.version>9.2.8.0</jruby.version>
+        <asciidoctorj.version>2.5.4</asciidoctorj.version>
+        <asciidoctor.maven.plugin.version>2.2.2</asciidoctor.maven.plugin.version>
+        <asciidoctorj.pdf.version>2.1.4</asciidoctorj.pdf.version>
         <cayenne.version>${project.version}</cayenne.version>
-        <cayenne.major.version>4.2</cayenne.major.version>
+        <cayenne.major.version>4.3</cayenne.major.version>
     </properties>
 
     <dependencies>
@@ -106,11 +105,6 @@
                     </attributes>
                 </configuration>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.jruby</groupId>
-                        <artifactId>jruby-complete</artifactId>
-                        <version>${jruby.version}</version>
-                    </dependency>
                     <dependency>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctorj</artifactId>

@@ -204,7 +204,7 @@
 							<execution>
 								<phase>${build.docs}</phase>
 								<configuration>
-									<tasks>
+									<target>
 										<copy todir="${project.build.directory}/doc-staging">
 											<fileset dir="${basedir}/../docs/asciidoc">
 												<include name="**/target/generated-docs/*.pdf" />
@@ -212,7 +212,7 @@
 											</fileset>
 											<flattenmapper />
 										</copy>
-									</tasks>
+									</target>
 								</configuration>
 								<goals>
 									<goal>run</goal>

@@ -193,10 +193,10 @@
 					<execution>
 						<phase>process-sources</phase>
 						<configuration>
-							<tasks>
+							<target>
 								<!-- This will remove duplicate Node file -->
 								<delete file="${project.build.directory}/generated-sources/jjtree/org/apache/cayenne/ejbql/parser/Node.java" />
-							</tasks>
+							</target>
 						</configuration>
 						<goals>
 							<goal>run</goal>

@@ -134,13 +134,6 @@
 							<destDir>doc/api</destDir>
 							<stylesheet>java</stylesheet>
 							<header><![CDATA[<a href="http://cayenne.apache.org" target="top">Apache Cayenne</a>]]></header>
-							<additionalDependencies>
-								<additionalDependency>
-									<groupId>net.sf.ehcache</groupId>
-									<artifactId>ehcache-core</artifactId>
-									<version>2.4.3</version>
-								</additionalDependency>
-							</additionalDependencies>
 						</configuration>
 						<executions>
 							<execution>

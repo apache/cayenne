@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * @since 4.3
@@ -122,6 +122,6 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
     public void testModelUpgrade() {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
         handler.processModel(descriptor);
-        verifyZeroInteractions(descriptor);
+        verifyNoInteractions(descriptor);
     }
 }

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.di.Inject;
@@ -67,7 +67,7 @@ public class DataContextCommitIT extends ServerCase {
 		diff.apply(diffChecker);
 
 		verify(diffChecker).nodeIdChanged(beforeId, afterId);
-		verifyZeroInteractions(diffChecker);
+		verifyNoMoreInteractions(diffChecker);
 
 	}
 
@@ -95,7 +95,7 @@ public class DataContextCommitIT extends ServerCase {
 
 		diff.apply(diffChecker);
 		verify(diffChecker).nodeIdChanged(beforeId, afterId);
-		verifyZeroInteractions(diffChecker);
+		verifyNoMoreInteractions(diffChecker);
 	}
 
 	@Test
