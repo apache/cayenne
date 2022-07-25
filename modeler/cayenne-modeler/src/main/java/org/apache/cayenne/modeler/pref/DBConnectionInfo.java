@@ -19,18 +19,21 @@
 
 package org.apache.cayenne.modeler.pref;
 
+import java.io.PrintWriter;
+import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import javax.sql.DataSource;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.datasource.DriverDataSource;
-import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ClassLoadingService;
 import org.apache.cayenne.pref.CayennePreference;
@@ -57,6 +60,8 @@ public class DBConnectionInfo extends CayennePreference {
 	private String userName;
 
 	private Preferences dbConnectionInfoPreferences;
+
+	private boolean allowDataSourceFailure;
 
 	public DBConnectionInfo() {
 		dbConnectionInfoPreferences = getCayennePreference().node(DB_CONNECTION_INFO);
@@ -88,6 +93,10 @@ public class DBConnectionInfo extends CayennePreference {
 			setJdbcDriver(((DBConnectionInfo) object).getJdbcDriver());
 			setDbAdapter(((DBConnectionInfo) object).getDbAdapter());
 		}
+	}
+
+	public void setAllowDataSourceFailure(boolean allowDataSourceFailure) {
+		this.allowDataSourceFailure = allowDataSourceFailure;
 	}
 
 	@Override
@@ -182,21 +191,12 @@ public class DBConnectionInfo extends CayennePreference {
 	 * Creates a DbAdapter based on configured values.
 	 */
 	public DbAdapter makeAdapter(final ClassLoadingService classLoader) throws Exception {
-		String adapterClassName = getDbAdapter();
-		Application appInstance = Application.getInstance();
-
-		if (adapterClassName == null || AutoAdapter.class.getName().equals(adapterClassName)) {
-			return appInstance.getInjector().getInstance(DbAdapterFactory.class)
-					.createAdapter(null, makeDataSource(classLoader));
-		}
-
-		try {
-			return appInstance.getInjector().getInstance(AdhocObjectFactory.class)
-					.newInstance(DbAdapter.class, adapterClassName);
-		} catch (Throwable th) {
-			th = Util.unwindException(th);
-			throw new Exception("DbAdapter load error: " + th.getLocalizedMessage());
-		}
+		DataNodeDescriptor descriptor = new DataNodeDescriptor();
+		descriptor.setAdapterType(getDbAdapter());
+		DataSource dataSource = makeDataSource(classLoader);
+		return Application.getInstance().getInjector()
+				.getInstance(DbAdapterFactory.class)
+				.createAdapter(descriptor, dataSource);
 	}
 
 	/**
@@ -208,10 +208,16 @@ public class DBConnectionInfo extends CayennePreference {
 
 		// validate...
 		if (getJdbcDriver() == null) {
+			if(allowDataSourceFailure) {
+				return new DeferredDataSource(classLoader);
+			}
 			throw new SQLException("No JDBC driver set.");
 		}
 
 		if (getUrl() == null) {
+			if(allowDataSourceFailure) {
+				return new DeferredDataSource(classLoader);
+			}
 			throw new SQLException("No DB URL set.");
 		}
 
@@ -220,13 +226,12 @@ public class DBConnectionInfo extends CayennePreference {
 		}
 
 		// load driver...
-		Driver driver;
+		Driver driver = null;
 
 		try {
 			driver = classLoader.loadClass(Driver.class, getJdbcDriver()).getDeclaredConstructor().newInstance();
 		} catch (Throwable th) {
-			th = Util.unwindException(th);
-			throw new SQLException("Driver load error: " + th.getLocalizedMessage());
+			throw new SQLException("Driver load error: " + Util.unwindException(th).getLocalizedMessage());
 		}
 
 		return new DriverDataSource(driver, getUrl(), getUserName(), getPassword());
@@ -324,5 +329,68 @@ public class DBConnectionInfo extends CayennePreference {
 		}
 
 		return updated;
+	}
+
+	private class DeferredDataSource implements DataSource {
+
+		private final ClassLoadingService classLoader;
+
+		public DeferredDataSource(ClassLoadingService classLoader) {
+			this.classLoader = classLoader;
+		}
+
+		DataSource getDeferredDataSource() throws SQLException {
+			allowDataSourceFailure = false;
+			return makeDataSource(classLoader);
+		}
+
+		@Override
+		public Connection getConnection() throws SQLException {
+			return getDeferredDataSource().getConnection();
+		}
+
+		@Override
+		public Connection getConnection(String username, String password) throws SQLException {
+			return getDeferredDataSource().getConnection(username, password);
+		}
+
+		@Override
+		public PrintWriter getLogWriter() throws SQLException {
+			return getDeferredDataSource().getLogWriter();
+		}
+
+		@Override
+		public void setLogWriter(PrintWriter out) throws SQLException {
+			getDeferredDataSource().setLogWriter(out);
+		}
+
+		@Override
+		public void setLoginTimeout(int seconds) throws SQLException {
+			getDeferredDataSource().setLoginTimeout(seconds);
+		}
+
+		@Override
+		public int getLoginTimeout() throws SQLException {
+			return getDeferredDataSource().getLoginTimeout();
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> iface) throws SQLException {
+			return getDeferredDataSource().unwrap(iface);
+		}
+
+		@Override
+		public boolean isWrapperFor(Class<?> iface) throws SQLException {
+			return getDeferredDataSource().isWrapperFor(iface);
+		}
+
+		@Override
+		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+			try {
+				return getDeferredDataSource().getParentLogger();
+			} catch (SQLException e) {
+				throw new SQLFeatureNotSupportedException(e);
+			}
+		}
 	}
 }

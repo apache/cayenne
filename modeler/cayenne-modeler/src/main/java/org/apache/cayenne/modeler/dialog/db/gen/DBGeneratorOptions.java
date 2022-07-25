@@ -73,6 +73,8 @@ public class DBGeneratorOptions extends CayenneController {
         this.tables = new TableSelectorController(parent);
         this.view = new DBGeneratorOptionsView(tables.getView());
         this.connectionInfo = new DBConnectionInfo();
+        // DataSource may not be initialized, so warn connection wizard
+        this.connectionInfo.setAllowDataSourceFailure(true);
         this.generatorDefaults = new DBGeneratorDefaults(parent
                 .getPreferenceForProject()
                 .node("DbGenerator"));
@@ -162,8 +164,7 @@ public class DBGeneratorOptions extends CayenneController {
      */
     protected void prepareGenerator() {
         try {
-            DbAdapter adapter = connectionInfo.makeAdapter(getApplication()
-                    .getClassLoadingService());
+            DbAdapter adapter = connectionInfo.makeAdapter(getApplication().getClassLoadingService());
             generators = new ArrayList<>();
             for (DataMap dataMap : dataMaps) {
                 this.generators.add(new DbGenerator(
