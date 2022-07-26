@@ -21,6 +21,8 @@ package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -28,7 +30,6 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
@@ -77,6 +78,17 @@ public class H2Adapter extends JdbcAdapter {
     @Override
     public SQLTreeProcessor getSqlTreeProcessor() {
         return new H2SQLTreeProcessor();
+    }
+
+    /**
+     * @return translator factory for EJBQL queries
+     * @since 4.3
+     */
+    @Override
+    protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {
+        JdbcEJBQLTranslatorFactory translatorFactory = new H2EJBQLTranslatorFactory();
+        translatorFactory.setCaseInsensitive(caseInsensitiveCollations);
+        return translatorFactory;
     }
 
     @Override

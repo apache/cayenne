@@ -19,25 +19,17 @@
 
 package org.apache.cayenne.dba.h2;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.OffsetFetchNextNode;
-import org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor;
+import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
+import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
+import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * @since 4.2
+ * @since 4.3
  */
-public class H2SQLTreeProcessor extends BaseSQLTreeProcessor {
+public class H2EJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
 
     @Override
-    protected void onColumnNode(Node parent, ColumnNode child, int index) {
-        replaceChild(parent, index, new H2TrimmingColumnNode(child));
+    public EJBQLExpressionVisitor getConditionTranslator(EJBQLTranslationContext context) {
+        return new H2EJBQLConditionTranslator(context);
     }
-
-    @Override
-    protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
-        replaceChild(parent, index, new OffsetFetchNextNode(child), false);
-    }
-
 }

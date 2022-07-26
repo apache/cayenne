@@ -20,24 +20,28 @@
 package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.OffsetFetchNextNode;
-import org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor;
+import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
+import org.apache.cayenne.access.sqlbuilder.sqltree.TrimmingColumnNode;
 
 /**
- * @since 4.2
+ * @since 4.3
  */
-public class H2SQLTreeProcessor extends BaseSQLTreeProcessor {
-
-    @Override
-    protected void onColumnNode(Node parent, ColumnNode child, int index) {
-        replaceChild(parent, index, new H2TrimmingColumnNode(child));
+public class H2TrimmingColumnNode extends TrimmingColumnNode {
+    public H2TrimmingColumnNode(ColumnNode columnNode) {
+        super(columnNode);
     }
 
-    @Override
-    protected void onLimitOffsetNode(Node parent, LimitOffsetNode child, int index) {
-        replaceChild(parent, index, new OffsetFetchNextNode(child), false);
+    protected boolean isAllowedForTrimming() {
+        Node parent = getParent();
+        while(parent != null) {
+            if(parent.getType() == NodeType.JOIN
+                    || parent.getType() == NodeType.UPDATE_SET
+                    || parent.getType() == NodeType.INSERT_COLUMNS) {
+                return false;
+            }
+            parent = parent.getParent();
+        }
+        return true;
     }
-
 }
