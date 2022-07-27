@@ -504,30 +504,8 @@
 			</releases>
 		</repository>
 	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>objectstyle</id>
-			<name>ObjectStyle repository</name>
-			<url>https://maven.objectstyle.org/nexus/content/groups/cayenne-deps</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
 	<build>
 		<defaultGoal>install</defaultGoal>
-
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>3.5.2</version>
-			</extension>
-		</extensions>
 
 		<pluginManagement>
 			<plugins>
@@ -851,12 +829,6 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
 			<plugin>
                 <!-- TOOD move to release plugin -->
 				<groupId>org.apache.rat</groupId>
