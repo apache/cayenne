@@ -42,6 +42,7 @@ import java.util.Map;
 
 /**
  */
+@SuppressWarnings("unused") // methods are used in bindings by name
 public class TableSelectorController extends CayenneController {
 
     protected TableSelectorView view;
@@ -166,7 +167,7 @@ public class TableSelectorController extends CayenneController {
      * ValidationInfo objects describing the problems.
      */
     public void updateTables(Collection<DataMap> dataMaps) {
-        this.tables = new ArrayList<DbEntity>();
+        this.tables = new ArrayList<>();
 
         for (DataMap dataMap : dataMaps) {
             this.tables.addAll(dataMap.getDbEntities());
@@ -175,18 +176,15 @@ public class TableSelectorController extends CayenneController {
         excludedTables.clear();
         validationMessages.clear();
 
-        // if there were errors, filter out those related to
-        // non-derived DbEntities...
+        // if there were errors, filter out those related to non-derived DbEntities...
 
         // TODO: this is inefficient.. we need targeted validation
-        // instead of doing it on the whole project
+        //       instead of doing it on the whole project
 
         Project project = getApplication().getProject();
 
-        ProjectValidator projectValidator = getApplication().getInjector().getInstance(
-                ProjectValidator.class);
-        ValidationResult validationResult = projectValidator.validate(project
-                .getRootNode());
+        ProjectValidator projectValidator = getApplication().getInjector().getInstance(ProjectValidator.class);
+        ValidationResult validationResult = projectValidator.validate(project.getRootNode());
 
         if (validationResult.getFailures().size() > 0) {
 
@@ -195,12 +193,11 @@ public class TableSelectorController extends CayenneController {
 
                 if (nextProblem.getSource() instanceof DbAttribute) {
                     DbAttribute failedAttribute = (DbAttribute) nextProblem.getSource();
-                    failedEntity = (DbEntity) failedAttribute.getEntity();
+                    failedEntity = failedAttribute.getEntity();
                 }
                 else if (nextProblem.getSource() instanceof DbRelationship) {
-                    DbRelationship failedRelationship = (DbRelationship) nextProblem
-                            .getSource();
-                    failedEntity = (DbEntity) failedRelationship.getSourceEntity();
+                    DbRelationship failedRelationship = (DbRelationship) nextProblem.getSource();
+                    failedEntity = failedRelationship.getSourceEntity();
                 }
                 else if (nextProblem.getSource() instanceof DbEntity) {
                     failedEntity = (DbEntity) nextProblem.getSource();
@@ -211,8 +208,7 @@ public class TableSelectorController extends CayenneController {
                 }
 
                 excludedTables.put(failedEntity.getName(), failedEntity);
-                validationMessages.put(failedEntity.getName(), nextProblem
-                        .getDescription());
+                validationMessages.put(failedEntity.getName(), nextProblem.getDescription());
             }
         }
 
@@ -220,7 +216,7 @@ public class TableSelectorController extends CayenneController {
         permanentlyExcludedCount = excludedTables.size();
         selectableTablesList.clear();
         for (DbEntity table : tables) {
-            if (false == excludedTables.containsKey(table.getName())) {
+            if (!excludedTables.containsKey(table.getName())) {
                 selectableTablesList.add(table);
             }
         }
