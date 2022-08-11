@@ -55,16 +55,29 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
  */
 public class DbImportTask extends BaseCayenneTask {
 
+    /**
+     * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
+     * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
+     * the DB type.
+     */
     @Input
     @Optional
     private String adapter;
 
+    /**
+     * Connection properties.
+     *
+     * @since 4.0
+     */
     @Internal
     private DataSourceConfig dataSource = new DataSourceConfig();
 
     @Internal
     private DbImportConfig config = new DbImportConfig();
 
+    /**
+     * An object that contains reverse engineering rules.
+     */
     @Internal
     private ReverseEngineering reverseEngineering;
 
@@ -77,6 +90,7 @@ public class DbImportTask extends BaseCayenneTask {
 
     @TaskAction
     public void runImport() {
+        // check missing data source parameters
         dataSource.validate();
 
         final Injector injector = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(getLogger()), new DbImportModule(),
