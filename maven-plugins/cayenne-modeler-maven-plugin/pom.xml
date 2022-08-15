@@ -55,12 +55,6 @@
 			<groupId>org.apache.cayenne.modeler</groupId>
 			<artifactId>cayenne-modeler</artifactId>
 			<version>${project.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>foundrylogic.vpp</groupId>
-					<artifactId>vpp</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>

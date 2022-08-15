@@ -1,5 +1,5 @@
 Apache Cayenne
-Copyright 2001-2017 The Apache Software Foundation
+Copyright 2001-2022 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
@@ -14,11 +14,6 @@ originally developed at The ObjectStyle Group and donated to the ASF by its auth
 
 * This software includes Ashwood graph library developed by Andriy Shapochka.
 (http://objectstyle.org/ashwood/)
-#if($binary == "true")
-
-* This software includes VPP library developed by FoundryLogic, LLC.
-(http://vpp.sourceforge.net/)
-#end
 
 * This software includes concurrentlinkedhashmap library developed by Google Inc.
 (http://code.google.com/p/concurrentlinkedhashmap/)

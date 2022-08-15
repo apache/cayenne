@@ -50,10 +50,6 @@
             <artifactId>cayenne-dbsync</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>foundrylogic.vpp</groupId>
-			<artifactId>vpp</artifactId>
-		</dependency>
 
         <!-- Test Dependencies -->
         <dependency>

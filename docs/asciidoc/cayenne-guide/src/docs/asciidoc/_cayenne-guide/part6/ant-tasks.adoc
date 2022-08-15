@@ -34,7 +34,6 @@ in the project, use the following Antlib:
 			<include name="commons-lang-*.jar" />
 			<include name="slf4j-api-*.jar" />
 			<include name="velocity-*.jar" />
-			<include name="vpp-2.2.1.jar" />
 		</fileset>
    </classpath>
 </typedef>
