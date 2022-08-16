@@ -35,9 +35,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 public interface RelationshipProperty<E> extends PathProperty<E> {
 
     /**
-     * Returns a version of this property that represents an OUTER join. It is
-     * up to caller to ensure that the property corresponds to a relationship,
-     * as "outer" attributes make no sense.
+     * Returns a version of this property that represents an OUTER join.
      */
     BaseProperty<E> outer();
 
@@ -77,10 +75,22 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
         return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
     }
 
+    /**
+     * Constructs a new property path by appending the argument to the existing property separated by a dot.
+     *
+     * @param property to append to path
+     * @return a newly created Property object.
+     */
     default <T> BaseIdProperty<T> dot(BaseIdProperty<T> property) {
         return PropertyFactory.createBaseId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
     }
 
+    /**
+     * Constructs a new property path by appending the argument to the existing property separated by a dot.
+     *
+     * @param property to append to path
+     * @return a newly created Property object.
+     */
     default <T extends Number> NumericIdProperty<T> dot(NumericIdProperty<T> property) {
         return PropertyFactory.createNumericId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
     }

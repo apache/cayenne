@@ -264,7 +264,7 @@ public class StringProperty<E extends CharSequence> extends BaseProperty<E> impl
         exp[i++] = getExpression();
         for(Object arg : args) {
             if(arg instanceof BaseProperty) {
-                exp[i++] = ((BaseProperty) arg).getExpression();
+                exp[i++] = ((BaseProperty<?>) arg).getExpression();
             } else if(arg instanceof Expression) {
                 exp[i++] = (Expression) arg;
             } else if(arg != null) {

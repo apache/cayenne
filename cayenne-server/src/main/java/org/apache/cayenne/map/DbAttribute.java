@@ -53,7 +53,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
      */
     protected boolean generated;
 
-    // The length of CHAR or VARCHAr or max num of digits for DECIMAL.
+    // The length of CHAR or VARCHAR or max num of digits for DECIMAL.
     protected int maxLength = -1;
 
     /**
@@ -64,8 +64,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
     /**
      * @since 3.0
      */
-    // must call it 'attributePrecison' as 'precision' in 1.2 really meant
-    // 'scale'
+    // must call it 'attributePrecision' as 'precision' in 1.2 really meant 'scale'
     protected int attributePrecision = -1;
 
     public DbAttribute() {
