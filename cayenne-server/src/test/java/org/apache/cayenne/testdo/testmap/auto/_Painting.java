@@ -13,6 +13,7 @@ import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.ArtDataObject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 
 /**
@@ -23,8 +24,9 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
  */
 public abstract class _Painting extends ArtDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final EntityProperty<Painting> SELF = PropertyFactory.createSelf(Painting.class);
     public static final NumericIdProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumericId("PAINTING_ID", "Painting", Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 

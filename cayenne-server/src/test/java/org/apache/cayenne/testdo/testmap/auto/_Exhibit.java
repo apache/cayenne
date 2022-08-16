@@ -13,6 +13,7 @@ import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 
 /**
@@ -23,8 +24,9 @@ import org.apache.cayenne.testdo.testmap.Gallery;
  */
 public abstract class _Exhibit extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final EntityProperty<Exhibit> SELF = PropertyFactory.createSelf(Exhibit.class);
     public static final NumericIdProperty<Integer> EXHIBIT_ID_PK_PROPERTY = PropertyFactory.createNumericId("EXHIBIT_ID", "Exhibit", Integer.class);
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 

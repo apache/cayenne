@@ -50,6 +50,7 @@ $propertyUtils.addImport($attr)##
 #foreach( $rel in ${object.DeclaredRelationships} )
 $propertyUtils.addImport($rel)##
 #end
+$propertyUtils.addImportForSelfProperty($object)##
 ${importUtils.generate()}
 
 /**
@@ -67,6 +68,11 @@ ${importUtils.generate()}
 public abstract class ${superClassName} extends ${baseClassName} {
 
     private static final long serialVersionUID = 1L;
+
+###########################
+## Create self property  ##
+###########################
+    $propertyUtils.selfPropertyDefinition($object)
 
 ###########################
 ## Create property names ##

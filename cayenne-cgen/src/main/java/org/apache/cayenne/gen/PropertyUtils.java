@@ -128,6 +128,12 @@ public class PropertyUtils {
         }
     }
 
+    public void addImportForSelfProperty(ObjEntity entity) {
+        importUtils.addType(PropertyFactory.class.getName());
+        importUtils.addType(EntityProperty.class.getName());
+        importUtils.addType(entity.getJavaClassName());
+    }
+
     public void addImport(ObjAttribute attribute) throws ClassNotFoundException {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
@@ -160,6 +166,12 @@ public class PropertyUtils {
         if (relationship.isToMany()) {
             importUtils.addType(relationship.getCollectionType());
         }
+    }
+
+    public String selfPropertyDefinition(ObjEntity entity) {
+        String propertyType = importUtils.formatJavaType(entity.getJavaClassName());
+        return String.format("public static final EntityProperty<%s> SELF = PropertyFactory.createSelf(%s.class);",
+                propertyType, propertyType);
     }
 
     public String propertyDefinition(ObjEntity entity, DbAttribute attribute) throws ClassNotFoundException {

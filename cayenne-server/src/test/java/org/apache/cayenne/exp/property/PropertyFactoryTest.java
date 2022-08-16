@@ -187,8 +187,7 @@ public class PropertyFactoryTest {
 
     @Test
     public void createSelf() {
-        EntityProperty<Artist> property = PropertyFactory
-                .createSelf(Artist.class);
+        EntityProperty<Artist> property = PropertyFactory.createSelf(Artist.class);
 
         assertNull(property.getName());
         assertEquals(fullObjectExp(), property.getExpression());

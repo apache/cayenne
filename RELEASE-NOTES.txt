@@ -22,6 +22,7 @@ CAY-2747 Update project XML version to 11
 CAY-2751 Simplify DataNode configuration
 CAY-2752 Rename queryTemplate to dataMapTemplate in the cgen config
 CAY-2753 Remove VPP support in the ant task
+CAY-2754 Add SELF property to the cgen templates
 
 Bug Fixes:
 

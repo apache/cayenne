@@ -6,11 +6,13 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Exhibit;
+import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 
 /**
@@ -21,8 +23,9 @@ import org.apache.cayenne.testdo.testmap.Painting;
  */
 public abstract class _Gallery extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final EntityProperty<Gallery> SELF = PropertyFactory.createSelf(Gallery.class);
     public static final NumericIdProperty<Integer> GALLERY_ID_PK_PROPERTY = PropertyFactory.createNumericId("GALLERY_ID", "Gallery", Integer.class);
     public static final String GALLERY_ID_PK_COLUMN = "GALLERY_ID";
 

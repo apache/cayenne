@@ -48,6 +48,7 @@ $propertyUtils.addImport($attr)##
 #foreach( $rel in ${object.DeclaredRelationships} )
 $propertyUtils.addImport($rel)##
 #end
+$propertyUtils.addImportForSelfProperty($object)##
 ${importUtils.generate()}
 
 #set ( $comment = ${metadataUtils.getComment($object)} )
@@ -59,6 +60,11 @@ ${importUtils.generate()}
 public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName} extends ${baseClassName} {
 
     private static final long serialVersionUID = 1L;
+
+###########################
+## Create self property  ##
+###########################
+    $propertyUtils.selfPropertyDefinition($object)
 
 ###########################
 ## Create property names ##
@@ -78,7 +84,6 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 #if( $object.DbEntity )
     #foreach( $idAttr in ${object.DbEntity.PrimaryKeys} )
         #if( $createPKProperties && !${entityUtils.declaresDbAttribute($idAttr)})
-            #set ( $type = "$importUtils.dbAttributeToJavaType($idAttr)")
     $propertyUtils.propertyDefinition($object, $idAttr)
         #else
     public static final String ${stringUtils.capitalizedAsConstant($idAttr.Name)}_PK_COLUMN = "${idAttr.Name}";

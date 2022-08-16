@@ -25,7 +25,6 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -116,11 +115,11 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
     @Test
     public void selectQuery_twoLevelExistsWithExpressionFromParentQuery() {
         Expression deepNestedExp = Artist.ARTIST_NAME.enclosing().enclosing().like("art%")
-                .andExp(Painting.TO_GALLERY.enclosing().eq(PropertyFactory.createSelf(Gallery.class)));
+                .andExp(Painting.TO_GALLERY.enclosing().eq(Gallery.SELF));
 
         Expression exp = Painting.PAINTING_TITLE.like("painting%")
                 .andExp(ExpressionFactory.exists(ObjectSelect.query(Gallery.class, deepNestedExp)))
-                .andExp(Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing()));
+                .andExp(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()));
 
         long count = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class, exp)))
@@ -132,11 +131,11 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
     public void objectSelect_twoLevelExistsWithExpressionFromParentQuery() {
         ObjectSelect<Gallery> deepSubquery = ObjectSelect.query(Gallery.class)
                 .where(Artist.ARTIST_NAME.enclosing().enclosing().like("art%"))
-                .and(Painting.TO_GALLERY.enclosing().eq(PropertyFactory.createSelf(Gallery.class)));
+                .and(Painting.TO_GALLERY.enclosing().eq(Gallery.SELF));
 
         ObjectSelect<Painting> subquery = ObjectSelect.query(Painting.class)
                 .where(Painting.PAINTING_TITLE.like("painting%"))
-                .and(Painting.TO_ARTIST.eq(PropertyFactory.createSelf(Artist.class).enclosing()))
+                .and(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()))
                 .and(ExpressionFactory.exists(deepSubquery));
 
         long count = ObjectSelect.query(Artist.class)

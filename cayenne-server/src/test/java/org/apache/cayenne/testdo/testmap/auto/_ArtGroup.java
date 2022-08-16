@@ -22,8 +22,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
  */
 public abstract class _ArtGroup extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final EntityProperty<ArtGroup> SELF = PropertyFactory.createSelf(ArtGroup.class);
     public static final NumericIdProperty<Integer> GROUP_ID_PK_PROPERTY = PropertyFactory.createNumericId("GROUP_ID", "ArtGroup", Integer.class);
     public static final String GROUP_ID_PK_COLUMN = "GROUP_ID";
 

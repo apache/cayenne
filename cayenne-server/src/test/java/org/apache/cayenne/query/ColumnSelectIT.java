@@ -36,8 +36,6 @@ import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -487,12 +485,12 @@ public class ColumnSelectIT extends ServerCase {
         // test that all table aliases are correct
         List<Object[]> result = ObjectSelect.columnQuery(Artist.class,
                 Artist.PAINTING_ARRAY.outer().count(),
-                PropertyFactory.createSelf(Artist.class),
+                Artist.SELF,
                 Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE),
-                PropertyFactory.createSelf(Artist.class),
+                Artist.SELF,
                 Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME),
                 Artist.ARTIST_NAME,
-                PropertyFactory.createSelf(Artist.class)
+                Artist.SELF
         ).select(context);
         assertEquals(21, result.size());
 
@@ -624,9 +622,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testPageSizeOneObject() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
         List<Artist> a = ObjectSelect.query(Artist.class)
-                .column(artistFull)
+                .column(Artist.SELF)
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
@@ -638,9 +635,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testPageSizeOneObjectAsArray() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
         List<Object[]> a = ObjectSelect.query(Artist.class)
-                .columns(artistFull)
+                .columns(Artist.SELF)
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
@@ -653,9 +649,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testPageSizeObjectAndScalars() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
         List<Object[]> a = ObjectSelect.query(Artist.class)
-                .columns(Artist.ARTIST_NAME, artistFull, Artist.PAINTING_ARRAY.count())
+                .columns(Artist.ARTIST_NAME, Artist.SELF, Artist.PAINTING_ARRAY.count())
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
@@ -672,9 +667,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testPageSizeObjects() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
         List<Object[]> a = ObjectSelect.query(Artist.class)
-                .columns(Artist.ARTIST_NAME, artistFull, Artist.PAINTING_ARRAY.flat())
+                .columns(Artist.ARTIST_NAME, Artist.SELF, Artist.PAINTING_ARRAY.flat())
                 .pageSize(10)
                 .select(context);
 
@@ -698,10 +692,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testObjectColumnWithJointPrefetch() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistFull, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .columns(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
 
@@ -710,10 +702,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testObjectColumnWithDisjointPrefetch() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistFull, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .columns(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .select(context);
 
@@ -722,10 +712,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testObjectColumnWithDisjointByIdPrefetch() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistFull, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .columns(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
                 .prefetch(Artist.PAINTING_ARRAY.disjointById())
                 .select(context);
 
@@ -749,10 +737,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testAggregateColumnWithJointPrefetch() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistFull, Artist.PAINTING_ARRAY.count())
+                .columns(Artist.SELF, Artist.PAINTING_ARRAY.count())
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
 
@@ -761,10 +747,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testAggregateColumnWithDisjointPrefetch() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistFull, Artist.PAINTING_ARRAY.count())
+                .columns(Artist.SELF, Artist.PAINTING_ARRAY.count())
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .select(context);
 
@@ -773,10 +757,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testAggregateColumnWithDisjointByIdPrefetch() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistFull, Artist.PAINTING_ARRAY.count())
+                .columns(Artist.SELF, Artist.PAINTING_ARRAY.count())
                 .prefetch(Artist.PAINTING_ARRAY.disjointById())
                 .select(context);
 
@@ -800,7 +782,7 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void testObjectSelectWithJointPrefetch() {
         List<Artist> result = ObjectSelect.query(Artist.class)
-                .column(PropertyFactory.createSelf(Artist.class))
+                .column(Artist.SELF)
                 .prefetch(Artist.PAINTING_ARRAY.joint())
                 .select(context);
         assertEquals(20, result.size());
@@ -816,7 +798,7 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void testObjectWithDisjointPrefetch() {
         List<Artist> result = ObjectSelect.query(Artist.class)
-                .column(PropertyFactory.createSelf(Artist.class))
+                .column(Artist.SELF)
                 .prefetch(Artist.PAINTING_ARRAY.disjoint())
                 .select(context);
         assertEquals(20, result.size());
@@ -831,7 +813,7 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void testObjectWithDisjointByIdPrefetch() {
         List<Artist> result = ObjectSelect.query(Artist.class)
-                .column(PropertyFactory.createSelf(Artist.class))
+                .column(Artist.SELF)
                 .prefetch(Artist.PAINTING_ARRAY.disjointById())
                 .select(context);
         assertEquals(20, result.size());
@@ -849,10 +831,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testObjectColumn() {
-        EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistProperty, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
+                .columns(Artist.SELF, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
                 .select(context);
         assertEquals(5, result.size());
 
@@ -866,11 +846,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testObjectColumnToOne() {
-        EntityProperty<Artist> artistFull = PropertyFactory.createSelf(Painting.TO_ARTIST.getExpression(), Artist.class);
-        EntityProperty<Gallery> galleryFull = PropertyFactory.createSelf(Painting.TO_GALLERY.getExpression(), Gallery.class);
-
         List<Object[]> result = ObjectSelect.query(Painting.class)
-                .columns(Painting.PAINTING_TITLE, artistFull, galleryFull)
+                .columns(Painting.PAINTING_TITLE, Painting.TO_ARTIST, Painting.TO_GALLERY)
                 .select(context);
         assertEquals(21, result.size());
 
@@ -900,10 +877,8 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testObjectColumnToMany() {
-        EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
-
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(artistProperty, Artist.PAINTING_ARRAY.flat(), Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
+                .columns(Artist.SELF, Artist.PAINTING_ARRAY.flat(), Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
                 .select(context);
         assertEquals(21, result.size());
 
@@ -931,10 +906,9 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testSelfPropertyInOrderBy() {
-        EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .column(artistProperty)
-                .orderBy(artistProperty.desc())
+                .column(Artist.SELF)
+                .orderBy(Artist.SELF.desc())
                 .select(context);
         assertEquals(20, artists.size());
         assertEquals("artist20", artists.get(0).getArtistName());
@@ -944,11 +918,10 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void testSelfPropertyInWhere() {
         Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
-        EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
         Artist selectedArtist = ObjectSelect.query(Artist.class)
-                .column(artistProperty)
-                .where(artistProperty.eq(artist))
-                .orderBy(artistProperty.asc())
+                .column(Artist.SELF)
+                .where(Artist.SELF.eq(artist))
+                .orderBy(Artist.SELF.asc())
                 .selectOne(context);
         assertNotNull(selectedArtist);
         assertEquals(artist.getArtistName(), selectedArtist.getArtistName());
@@ -958,9 +931,8 @@ public class ColumnSelectIT extends ServerCase {
     public void testObjPropertyInWhere() {
         Artist artist = ObjectSelect.query(Artist.class, Artist.ARTIST_NAME.eq("artist1"))
                 .selectFirst(context);
-        EntityProperty<Painting> paintingProperty = PropertyFactory.createSelf(Painting.class);
         List<Painting> result = ObjectSelect.query(Painting.class)
-                .column(paintingProperty)
+                .column(Painting.SELF)
                 .where(Painting.TO_ARTIST.eq(artist))
                 .select(context);
         assertEquals(4, result.size());
@@ -1038,9 +1010,7 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void testNestedContextObjectResult() {
         ObjectContext childContext = runtime.newContext(context);
-
-        EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
-        List<Artist> artists = ObjectSelect.columnQuery(Artist.class, artistProperty)
+        List<Artist> artists = ObjectSelect.columnQuery(Artist.class, Artist.SELF)
                 .select(childContext);
         assertEquals(20, artists.size());
         for(Artist artist : artists) {
@@ -1065,8 +1035,7 @@ public class ColumnSelectIT extends ServerCase {
     public void testNestedContextMixedResult() {
         ObjectContext childContext = runtime.newContext(context);
 
-        EntityProperty<Artist> artistProperty = PropertyFactory.createSelf(Artist.class);
-        List<Object[]> data = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, artistProperty)
+        List<Object[]> data = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.SELF)
                 .select(childContext);
         assertEquals(20, data.size());
         for(Object[] next : data) {
@@ -1108,17 +1077,14 @@ public class ColumnSelectIT extends ServerCase {
     @Test
     public void test2PkSelect() {
         List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
-                PropertyFactory.createSelf(Artist.class),
-                PropertyFactory
-                        .createBase(ExpressionFactory
-                                .dbPathExp("paintingArray.toArtist.ARTIST_ID"),
-                                Integer.class))
+                        Artist.SELF,
+                        Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).dot(Artist.ARTIST_ID_PK_PROPERTY))
                 .where(Artist.ARTIST_ID_PK_PROPERTY.eq(1L))
                 .pageSize(1)
                 .select(context);
         assertEquals(1, results.size());
         assertEquals("artist1", ((Artist)results.get(0)[0]).getArtistName());
-        assertEquals(1, results.get(0)[1]);
+        assertEquals(1L, results.get(0)[1]);
     }
 
     @Test
@@ -1138,19 +1104,16 @@ public class ColumnSelectIT extends ServerCase {
         context.commitChanges();
 
         List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
-                Artist.ARTIST_NAME,
-                PropertyFactory.createSelf(Artist.class),
-                PropertyFactory
-                        .createBase(ExpressionFactory
-                                        .dbPathExp("artistExhibitArray.ARTIST_ID"),
-                                Integer.class))
+                        Artist.ARTIST_NAME,
+                        Artist.SELF,
+                        Artist.ARTIST_EXHIBIT_ARRAY.dot(ArtistExhibit.ARTIST_ID_PK_PROPERTY))
                 .where(Artist.ARTIST_ID_PK_PROPERTY.eq(1L))
                 .pageSize(1)
                 .select(context);
         assertEquals(1, results.size());
         assertEquals("artist1", results.get(0)[0]);
         assertEquals("artist1", ((Artist)results.get(0)[1]).getArtistName());
-        assertEquals(1, results.get(0)[2]);
+        assertEquals(1L, results.get(0)[2]);
     }
 
     @Test

@@ -553,7 +553,7 @@ public class DataContextIT extends ServerCase {
 
 		Painting painting = context.newObject(Painting.class);
 		painting.setPaintingTitle("paint");
-		a1.addToPaintingArray(painting);
+		a1.addToManyTarget("paintingArray", painting, true);
 
 		assertEquals(PersistenceState.MODIFIED, a1.getPersistenceState());
 		try {
