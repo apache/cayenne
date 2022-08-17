@@ -49,7 +49,7 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
 
         String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
         assertFalse(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
-        assertFalse(res.contains("org.apache.cayenne.exp.property.EntityProperty"));
+        assertFalse(res.contains("org.apache.cayenne.exp.property.ListProperty"));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
 
         String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
         assertTrue(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
-        assertFalse(res.contains("org.apache.cayenne.exp.property.EntityProperty"));
+        assertFalse(res.contains("org.apache.cayenne.exp.property.ListProperty"));
     }
 
     @Test

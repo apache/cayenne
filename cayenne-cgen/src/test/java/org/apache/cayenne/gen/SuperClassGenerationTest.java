@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -51,7 +52,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertFalse(res.contains(NumericProperty.class.getName()));
-        assertFalse(res.contains(EntityProperty.class.getName()));
+        assertFalse(res.contains(ListProperty.class.getName()));
     }
 
     @Test
@@ -72,7 +73,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
 
         String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
         assertTrue(res.contains(NumericProperty.class.getName()));
-        assertFalse(res.contains(EntityProperty.class.getName()));
+        assertFalse(res.contains(ListProperty.class.getName()));
     }
 
     @Test
