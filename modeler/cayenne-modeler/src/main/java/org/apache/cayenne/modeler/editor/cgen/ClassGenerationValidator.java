@@ -18,8 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor.cgen;
 
-import java.util.List;
+import java.util.Collection;
 
+import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -39,14 +42,27 @@ import org.apache.cayenne.validation.ValidationResult;
  */
 class ClassGenerationValidator {
 
-    ValidationResult getValidationResult(List<Object> classes) {
+    ValidationResult getValidationResult(Collection<? extends ConfigurationNode> classes) {
         ValidationResult validationResult = new ValidationResult();
-        for (Object classObj : classes) {
-            if (classObj instanceof ObjEntity) {
-                validateEntity(validationResult, (ObjEntity) classObj, false);
-            } else if (classObj instanceof Embeddable) {
-                validateEmbeddable(validationResult, (Embeddable) classObj);
-            }
+        for (ConfigurationNode configurationNode : classes) {
+            configurationNode.acceptVisitor(new BaseConfigurationNodeVisitor<Void>() {
+                @Override
+                public Void visitObjEntity(ObjEntity entity) {
+                    validateEntity(validationResult, entity, false);
+                    return null;
+                }
+
+                @Override
+                public Void visitEmbeddable(Embeddable embeddable) {
+                    validateEmbeddable(validationResult, embeddable);
+                    return null;
+                }
+
+                @Override
+                public Void visitDataMap(DataMap dataMap) {
+                    return null;
+                }
+            });
         }
         return validationResult;
     }
