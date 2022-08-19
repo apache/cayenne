@@ -27,6 +27,7 @@ public abstract class _Painting extends ArtDataObject {
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<Painting> SELF = PropertyFactory.createSelf(Painting.class);
+
     public static final NumericIdProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumericId("PAINTING_ID", "Painting", Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 

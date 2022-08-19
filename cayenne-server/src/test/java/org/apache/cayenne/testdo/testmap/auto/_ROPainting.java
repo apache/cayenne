@@ -25,6 +25,7 @@ public abstract class _ROPainting extends BaseDataObject {
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<ROPainting> SELF = PropertyFactory.createSelf(ROPainting.class);
+
     public static final NumericIdProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumericId("PAINTING_ID", "ROPainting", Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 

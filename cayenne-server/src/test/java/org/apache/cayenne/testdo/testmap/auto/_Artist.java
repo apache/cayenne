@@ -32,6 +32,7 @@ public abstract class _Artist extends BaseDataObject {
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<Artist> SELF = PropertyFactory.createSelf(Artist.class);
+
     public static final NumericIdProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumericId("ARTIST_ID", "Artist", Long.class);
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
 

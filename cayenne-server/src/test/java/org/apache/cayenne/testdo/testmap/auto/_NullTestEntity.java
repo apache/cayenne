@@ -22,6 +22,7 @@ public abstract class _NullTestEntity extends BaseDataObject {
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<NullTestEntity> SELF = PropertyFactory.createSelf(NullTestEntity.class);
+
     public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "NullTestEntity", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 

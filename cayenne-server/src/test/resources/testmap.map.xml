@@ -84,6 +84,7 @@
 	<obj-entity name="Artist" className="org.apache.cayenne.testdo.testmap.Artist" dbEntityName="ARTIST">
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
 		<obj-attribute name="dateOfBirth" type="java.util.Date" db-attribute-path="DATE_OF_BIRTH"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/11/info" name="comment" value="Example of a comment"/>
 	</obj-entity>
 	<obj-entity name="ArtistCallback" className="org.apache.cayenne.testdo.testmap.ArtistCallback" dbEntityName="ARTIST_CT">
 		<obj-attribute name="artistName" type="java.lang.String"/>

@@ -26,6 +26,7 @@ public abstract class _Gallery extends BaseDataObject {
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<Gallery> SELF = PropertyFactory.createSelf(Gallery.class);
+
     public static final NumericIdProperty<Integer> GALLERY_ID_PK_PROPERTY = PropertyFactory.createNumericId("GALLERY_ID", "Gallery", Integer.class);
     public static final String GALLERY_ID_PK_COLUMN = "GALLERY_ID";
 

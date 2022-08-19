@@ -27,6 +27,7 @@ public abstract class _Exhibit extends BaseDataObject {
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<Exhibit> SELF = PropertyFactory.createSelf(Exhibit.class);
+
     public static final NumericIdProperty<Integer> EXHIBIT_ID_PK_PROPERTY = PropertyFactory.createNumericId("EXHIBIT_ID", "Exhibit", Integer.class);
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 

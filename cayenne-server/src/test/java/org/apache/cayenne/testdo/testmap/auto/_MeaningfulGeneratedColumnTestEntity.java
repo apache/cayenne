@@ -22,6 +22,7 @@ public abstract class _MeaningfulGeneratedColumnTestEntity extends BaseDataObjec
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<MeaningfulGeneratedColumnTestEntity> SELF = PropertyFactory.createSelf(MeaningfulGeneratedColumnTestEntity.class);
+
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 
     public static final NumericProperty<Integer> GENERATED_COLUMN = PropertyFactory.createNumeric("generatedColumn", Integer.class);

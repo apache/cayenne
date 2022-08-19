@@ -27,6 +27,7 @@ public abstract class _CompoundPainting extends BaseDataObject {
     private static final long serialVersionUID = 1L;
 
     public static final EntityProperty<CompoundPainting> SELF = PropertyFactory.createSelf(CompoundPainting.class);
+
     public static final NumericIdProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumericId("PAINTING_ID", "CompoundPainting", Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";
 
