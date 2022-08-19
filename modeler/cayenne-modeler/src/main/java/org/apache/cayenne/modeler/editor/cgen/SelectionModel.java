@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -59,9 +60,9 @@ class SelectionModel {
         selectedDataMaps = selectedDataMapsForDataMap.computeIfAbsent(dataMap, dm -> new HashSet<>());
     }
 
-    boolean updateSelection(Predicate<Object> predicate, List<Object> classes) {
+    boolean updateSelection(Predicate<ConfigurationNode> predicate, Collection<ConfigurationNode> classes) {
         boolean modified = false;
-        for (Object classObj : classes) {
+        for (ConfigurationNode classObj : classes) {
             boolean select = predicate.test(classObj);
             if (classObj instanceof ObjEntity) {
                 if (select) {
@@ -98,7 +99,7 @@ class SelectionModel {
         return modified;
     }
 
-    List<Embeddable> getSelectedEmbeddables(List<Object> classes) {
+    List<Embeddable> getSelectedEmbeddables(Collection<ConfigurationNode> classes) {
         List<Embeddable> selected = new ArrayList<>(selectedEmbeddables.size());
         for (Object classObj : classes) {
             if (classObj instanceof Embeddable) {
@@ -112,7 +113,7 @@ class SelectionModel {
         return selected;
     }
 
-    List<ObjEntity> getSelectedEntities(List<Object> classes) {
+    List<ObjEntity> getSelectedEntities(Collection<ConfigurationNode> classes) {
         List<ObjEntity> selected = new ArrayList<>(selectedEntities.size());
         for (Object classObj : classes) {
             if (classObj instanceof ObjEntity) {

@@ -26,3 +26,5 @@ CAY-2754 Add SELF property to the cgen templates
 
 Bug Fixes:
 
+CAY-2755 Modeler: Entities are not sorted by name in the class generation view
+

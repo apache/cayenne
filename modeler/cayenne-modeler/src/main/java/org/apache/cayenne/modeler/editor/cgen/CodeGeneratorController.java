@@ -24,15 +24,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
+import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.event.DataMapEvent;
 import org.apache.cayenne.configuration.event.DataMapListener;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
@@ -67,7 +71,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
 
     protected final ProjectController projectController;
-    protected final List<Object> classes;
+    protected final Set<ConfigurationNode> classes;
     protected final SelectionModel selectionModel;
     protected final CodeGeneratorPane view;
     protected final ClassesTabController classesSelector;
@@ -85,7 +89,10 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         this.view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
         this.prevGeneratorController = new ConcurrentHashMap<>();
         this.projectController = projectController;
-        this.classes = new ArrayList<>();
+        this.classes = new TreeSet<>(
+                Comparator.comparing((ConfigurationNode o) -> o.acceptVisitor(TYPE_GETTER))
+                        .thenComparing(o -> o.acceptVisitor(NAME_GETTER))
+        );
         this.selectionModel = new SelectionModel();
         initBindings();
         initListeners();
@@ -138,22 +145,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     public void generatorSelectedAction() {
         GeneratorController controller = generatorSelector.getGeneratorController();
         classesSelector.validate(classes);
-
-        Predicate<Object> defaultPredicate = object -> {
-            if (object instanceof ObjEntity) {
-                return classesSelector.getProblem(((ObjEntity) object).getName()) == null;
-            }
-
-            if (object instanceof Embeddable) {
-                return classesSelector.getProblem(((Embeddable) object).getClassName()) == null;
-            }
-            return false;
-        };
-
-        Predicate<Object> predicate = controller != null
+        Predicate<ConfigurationNode> predicate = controller != null
                 ? defaultPredicate
                 : o -> false;
-
         updateSelection(predicate);
         classesSelector.classSelectedAction();
     }
@@ -250,14 +244,14 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
                 .collect(Collectors.toList()));
     }
 
-    public List<Object> getClasses() {
+    public Set<?> getClasses() {
         return classes;
     }
 
-    public boolean updateSelection(Predicate<Object> predicate) {
+    public boolean updateSelection(Predicate<ConfigurationNode> predicate) {
         boolean modified = selectionModel.updateSelection(predicate, classes);
 
-        for (Object classObj : classes) {
+        for (ConfigurationNode classObj : classes) {
             if (classObj instanceof DataMap) {
                 boolean selected = predicate.test(classObj);
                 updateArtifactGenerationMode(selected);
@@ -440,4 +434,55 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     public CgenConfiguration getCgenConfiguration() {
         return cgenConfiguration;
     }
+
+    private final Predicate<ConfigurationNode> defaultPredicate = o -> o.acceptVisitor(new BaseConfigurationNodeVisitor<Boolean>() {
+        @Override
+        public Boolean visitDataMap(DataMap dataMap) {
+            return false;
+        }
+
+        @Override
+        public Boolean visitObjEntity(ObjEntity entity) {
+            return classesSelector.getProblem(entity.getName()) == null;
+        }
+
+        @Override
+        public Boolean visitEmbeddable(Embeddable embeddable) {
+            return classesSelector.getProblem(embeddable.getClassName()) == null;
+        }
+    });
+
+    private static final ConfigurationNodeVisitor<Integer> TYPE_GETTER = new BaseConfigurationNodeVisitor<Integer>() {
+        @Override
+        public Integer visitDataMap(DataMap dataMap) {
+            return 10;
+        }
+
+        @Override
+        public Integer visitObjEntity(ObjEntity entity) {
+            return 20;
+        }
+
+        @Override
+        public Integer visitEmbeddable(Embeddable embeddable) {
+            return 30;
+        }
+    };
+
+    private static final ConfigurationNodeVisitor<String> NAME_GETTER = new BaseConfigurationNodeVisitor<String>() {
+        @Override
+        public String visitDataMap(DataMap dataMap) {
+            return dataMap.getName();
+        }
+
+        @Override
+        public String visitEmbeddable(Embeddable embeddable) {
+            return embeddable.getClassName();
+        }
+
+        @Override
+        public String visitObjEntity(ObjEntity entity) {
+            return entity.getName();
+        }
+    };
 }

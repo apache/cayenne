@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -36,6 +37,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.table.TableColumnModel;
 import java.awt.Component;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -143,7 +145,7 @@ public class ClassesTabController extends CayenneController {
         }
     }
 
-    public void validate(List<Object> classes) {
+    public void validate(Collection<? extends ConfigurationNode> classes) {
         ClassGenerationValidator validator = new ClassGenerationValidator();
         this.lastValidationResult = validator.getValidationResult(classes);
     }
