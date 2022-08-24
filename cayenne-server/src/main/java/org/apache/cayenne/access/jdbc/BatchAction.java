@@ -261,14 +261,11 @@ public class BatchAction extends BaseSQLAction {
 
 		ResultSet keysRS = statement.getGeneratedKeys();
 
-		// TODO: andrus, 7/4/2007 - (1) get the type of meaningful PK's from
-		// their
-		// ObjAttributes; (2) use a different form of Statement.execute -
-		// "execute(String,String[])" to be able to map generated column names
-		// (this way
-		// we can support multiple columns.. although need to check how well
-		// this works
-		// with most common drivers)
+		// TODO: andrus, 7/4/2007 -
+		//  	(1) get the type of meaningful PK's from their ObjAttributes;
+		//  	(2) use a different form of Statement.execute - "execute(String,String[])" to be able to map
+		//  		generated column names (this way we can support multiple columns.. although need to check how well
+		// 			this works with most common drivers)
 
 		RowDescriptorBuilder builder = new RowDescriptorBuilder();
 

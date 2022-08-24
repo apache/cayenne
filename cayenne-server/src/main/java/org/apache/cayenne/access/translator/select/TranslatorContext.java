@@ -99,8 +99,8 @@ public class TranslatorContext implements SQLGenerationContext {
     // index of a last result node of a root entity
     private int rootSegmentEnd;
     // should current entity be linked to root object
-    // (prefetch entity should, while unrelated entity in a column select should't)
-    // this flag can be removed if logic that converts result row into an object tree allow random order of columns if a row.
+    // (prefetch entity should, while unrelated entity in a column select shouldn't)
+    // this flag can be removed if logic that converts result row into an object tree allows random order of columns in a row.
     private boolean appendResultToRoot;
 
     private SQLResult sqlResult;

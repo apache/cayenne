@@ -59,7 +59,7 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
                 // resolve lazy suppliers
                 for (Map.Entry<String, Object> next : id.getReplacementIdMap().entrySet()) {
                     if (next.getValue() instanceof Supplier) {
-                        next.setValue(((Supplier) next.getValue()).get());
+                        next.setValue(((Supplier<?>) next.getValue()).get());
                     }
                 }
                 store.markFlattenedPath(dbRow.getChangeId(), path, id.createReplacementId());

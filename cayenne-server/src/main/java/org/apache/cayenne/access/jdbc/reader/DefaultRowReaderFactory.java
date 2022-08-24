@@ -178,8 +178,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 				for (int i = 0; i < columns.length; i++) {
 					if (columns[i] == entry.getValue()) {
 
-						// if attribute type is the same as column, there is no
-						// conflict
+						// if attribute type is the same as column, there is no conflict
 						if (!attribute.getType().equals(columns[i].getJavaClass())) {
 							// note that JDBC index is "1" based
 							index = i + 1;
