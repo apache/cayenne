@@ -370,7 +370,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
      * Creates an accessor for the property of the embeddable class.
      */
     protected Accessor createEmbeddableAccessor(EmbeddableDescriptor descriptor, String propertyName,
-            Class<?> propertyType) {
+                                                Class<?> propertyType) {
         return new FieldAccessor(descriptor.getObjectClass(), propertyName, propertyType);
     }
 
@@ -378,9 +378,9 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
      * Creates a descriptor of the embedded property.
      */
     protected EmbeddableDescriptor createEmbeddableDescriptor(EmbeddedAttribute embeddedAttribute) {
-        // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every
-        // property of
-        // embeddable; look up reusable descriptor instead.
-        return new FieldEmbeddableDescriptor(embeddedAttribute.getEmbeddable(), "owner", "embeddedProperty");
+        // TODO: andrus, 11/19/2007 = avoid creation of descriptor for every property of embeddable;
+        //       look up reusable descriptor instead.
+        return new FieldEmbeddableDescriptor(descriptorMap.getResolver().getObjectFactory(),
+                embeddedAttribute.getEmbeddable(), "owner", "embeddedProperty");
     }
 }

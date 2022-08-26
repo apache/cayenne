@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.embeddable.EmbedChild;
 import org.apache.cayenne.testdo.embeddable.EmbedRoot;
 
 /**
@@ -17,6 +19,8 @@ import org.apache.cayenne.testdo.embeddable.EmbedRoot;
 public abstract class _EmbedChild extends EmbedRoot {
 
     private static final long serialVersionUID = 1L;
+
+    public static final EntityProperty<EmbedChild> SELF = PropertyFactory.createSelf(EmbedChild.class);
 
     public static final String ID_PK_COLUMN = "ID";
 

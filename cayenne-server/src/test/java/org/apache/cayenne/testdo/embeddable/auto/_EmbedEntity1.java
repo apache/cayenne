@@ -7,9 +7,11 @@ import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.property.EmbeddableProperty;
+import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 
@@ -22,6 +24,8 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
 public abstract class _EmbedEntity1 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
+
+    public static final EntityProperty<EmbedEntity1> SELF = PropertyFactory.createSelf(EmbedEntity1.class);
 
     public static final String ID_PK_COLUMN = "ID";
 

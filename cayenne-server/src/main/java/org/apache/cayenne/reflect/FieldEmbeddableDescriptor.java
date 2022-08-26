@@ -19,6 +19,7 @@
 package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.map.Embeddable;
 
 /**
@@ -33,37 +34,20 @@ public class FieldEmbeddableDescriptor implements EmbeddableDescriptor {
     protected Accessor ownerAccessor;
     protected Accessor embeddedPropertyAccessor;
 
-    public FieldEmbeddableDescriptor(Embeddable embeddable, String ownerProperty,
-            String embeddedPropertyProperty) {
+    public FieldEmbeddableDescriptor(AdhocObjectFactory objectFactory, Embeddable embeddable,
+                                     String ownerProperty, String embeddedPropertyProperty) {
         this.embeddable = embeddable;
-        try {
-            this.embeddableClass = Class.forName(embeddable.getClassName(), true, Thread
-                    .currentThread()
-                    .getContextClassLoader());
-        }
-        catch (ClassNotFoundException e) {
-            throw new PropertyException("Class not found", e);
-        }
-
-        this.ownerAccessor = new FieldAccessor(
-                embeddableClass,
-                ownerProperty,
-                Persistent.class);
-        this.embeddedPropertyAccessor = new FieldAccessor(
-                embeddableClass,
-                embeddedPropertyProperty,
-                String.class);
+        this.embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
+        this.ownerAccessor = new FieldAccessor(embeddableClass, ownerProperty, Persistent.class);
+        this.embeddedPropertyAccessor = new FieldAccessor(embeddableClass, embeddedPropertyProperty, String.class);
     }
 
     public Object createObject(Object owner, String embeddedProperty) {
         Object embeddable;
         try {
             embeddable = embeddableClass.getDeclaredConstructor().newInstance();
-        }
-        catch (Throwable e) {
-            throw new PropertyException("Error creating embeddable object of class '"
-                    + embeddableClass.getName()
-                    + "'", e);
+        } catch (Throwable e) {
+            throw new PropertyException("Error creating embeddable object of class '" + embeddableClass.getName() + "'", e);
         }
 
         ownerAccessor.setValue(embeddable, owner);

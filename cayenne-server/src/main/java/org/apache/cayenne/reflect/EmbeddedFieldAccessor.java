@@ -32,10 +32,8 @@ public class EmbeddedFieldAccessor implements Accessor {
     protected EmbeddableDescriptor embeddableDescriptor;
 
     public EmbeddedFieldAccessor(EmbeddableDescriptor embeddableDescriptor,
-            Accessor embeddedAccessor, Accessor embeddableAccessor) {
-        this.propertyPath = embeddedAccessor.getName()
-                + "."
-                + embeddableAccessor.getName();
+                                 Accessor embeddedAccessor, Accessor embeddableAccessor) {
+        this.propertyPath = embeddedAccessor.getName() + "." + embeddableAccessor.getName();
         this.embeddableDescriptor = embeddableDescriptor;
         this.embeddableAccessor = embeddableAccessor;
         this.embeddedAccessor = embeddedAccessor;
@@ -60,8 +58,7 @@ public class EmbeddedFieldAccessor implements Accessor {
     protected Object getEmbeddable(Object owner) {
         Object embeddable = embeddedAccessor.getValue(owner);
         if (embeddable == null) {
-            embeddable = embeddableDescriptor.createObject(owner, embeddedAccessor
-                    .getName());
+            embeddable = embeddableDescriptor.createObject(owner, embeddedAccessor.getName());
             embeddedAccessor.setValue(owner, embeddable);
         }
 
