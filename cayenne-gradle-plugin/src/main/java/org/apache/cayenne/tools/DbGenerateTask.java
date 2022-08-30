@@ -55,25 +55,55 @@ import javax.sql.DataSource;
  */
 public class DbGenerateTask extends BaseCayenneTask {
 
+    /**
+     * Java class implementing org.apache.cayenne.dba.DbAdapter. While this
+     * attribute is optional (a generic JdbcAdapter is used if not set), it is
+     * highly recommended to specify correct target adapter.
+     */
     @Input
     @Optional
     private String adapter;
 
+    /**
+     * Connection properties.
+     *
+     * @since 4.0
+     */
     @Internal
     private DataSourceConfig dataSource = new DataSourceConfig();
 
+    /**
+     * Defines whether cdbgen should drop the tables before attempting to create
+     * new ones. Default is <code>false</code>.
+     */
     @Input
     private boolean dropTables;
 
+    /**
+     * Defines whether cdbgen should drop Cayenne primary key support objects.
+     * Default is <code>false</code>.
+     */
     @Input
     private boolean dropPK;
 
+    /**
+     * Defines whether cdbgen should create new tables. Default is
+     * <code>true</code>.
+     */
     @Input
     private boolean createTables = true;
 
+    /**
+     * Defines whether cdbgen should create Cayenne-specific auto PK objects.
+     * Default is <code>true</code>.
+     */
     @Input
     private boolean createPK = true;
 
+    /**
+     * Defines whether cdbgen should create foreign key copnstraints. Default is
+     * <code>true</code>.
+     */
     @Input
     private boolean createFK = true;
 
@@ -85,6 +115,7 @@ public class DbGenerateTask extends BaseCayenneTask {
     @TaskAction
     public void generateDb() throws GradleException {
 
+        // check missing data source parameter
         dataSource.validate();
 
         getLogger().info("connection settings - [driver: {}, url: {}, username: {}]",
@@ -141,6 +172,9 @@ public class DbGenerateTask extends BaseCayenneTask {
                 .build();
     }
 
+    /**
+     * Loads and returns DataMap based on <code>map</code> attribute.
+     */
     DataMap loadDataMap(Injector injector) throws Exception {
         File dataMapFile = getDataMapFile();
         return injector.getInstance(DataMapLoader.class).load(new URLResource(dataMapFile.toURI().toURL()));

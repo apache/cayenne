@@ -30,6 +30,10 @@ import org.gradle.api.tasks.Internal;
  */
 public class BaseCayenneTask extends DefaultTask {
 
+
+    /**
+     * DataMap XML file to use as a base for DB importing.
+     */
     @Internal
     private File map;
 

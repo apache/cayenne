@@ -46,69 +46,147 @@ public class CgenTask extends BaseCayenneTask {
 
     private static final File[] NO_FILES = new File[0];
 
+    /**
+     * Path to additional DataMap XML files to use for class generation.
+     */
     private File additionalMaps;
 
+    /**
+     * Destination directory for Java classes (ignoring their package names).
+     */
     private File destDir;
 
+    /**
+     * Specify generated file encoding if different from the default on current
+     * platform. Target encoding must be supported by the JVM running Maven
+     * build. Standard encodings supported by Java on all platforms are
+     * US-ASCII, ISO-8859-1, UTF-8, UTF-16BE, UTF-16LE, UTF-16. See Sun Java
+     * Docs for java.nio.charset.Charset for more information.
+     */
     @Input
     @Optional
     private String encoding;
 
+    /**
+     * Entities (expressed as a perl5 regex) to exclude from template
+     * generation. (Default is to include all entities in the DataMap).
+     */
     @Input
     @Optional
     private String excludeEntities;
 
+    /**
+     * Entities (expressed as a perl5 regex) to include in template generation.
+     * (Default is to include all entities in the DataMap).
+     */
     @Input
     @Optional
     private String includeEntities;
 
     /**
      * @since 4.1
+     * Embeddables (expressed as a perl5 regex) to exclude from template
+     * generation. (Default is to include all embeddables in the DataMap).
      */
     @Input
     @Optional
     private String excludeEmbeddables;
 
+    /**
+     * If set to <code>true</code>, will generate subclass/superclass pairs,
+     * with all generated code included in superclass (default is
+     * <code>true</code>).
+     */
     @Input
     @Optional
     private Boolean makePairs;
 
+    /**
+     * Specifies generator iteration target. &quot;entity&quot; performs one
+     * iteration for each selected entity. &quot;datamap&quot; performs one
+     * iteration per datamap (This is always one iteration since cgen currently
+     * supports specifying one-and-only-one datamap).
+     * (Default is &quot;entity&quot;)
+     */
     @Input
     @Optional
     private String mode;
 
+    /**
+     * Name of file for generated output. (Default is &quot;*.java&quot;)
+     */
     @Input
     @Optional
     private String outputPattern;
 
+    /**
+     * If set to <code>true</code>, will overwrite older versions of generated
+     * classes. Ignored unless makepairs is set to <code>false</code>.
+     */
     @Input
     @Optional
     private Boolean overwrite;
 
+    /**
+     * Java package name of generated superclasses. Ignored unless
+     * <code>makepairs</code> set to <code>true</code>. If omitted, each
+     * superclass will be assigned the same package as subclass. Note that
+     * having superclass in a different package would only make sense when
+     * <code>usepkgpath</code> is set to <code>true</code>. Otherwise classes
+     * from different packages will end up in the same directory.
+     */
     @Input
     @Optional
     private String superPkg;
 
+    /**
+     * Location of Velocity template file for Entity superclass generation.
+     * Ignored unless <code>makepairs</code> set to <code>true</code>. If
+     * omitted, default template is used.
+     */
     @Input
     @Optional
     private String superTemplate;
 
+    /**
+     * Location of Velocity template file for Entity class generation. If
+     * omitted, default template is used.
+     */
     @Input
     @Optional
     private String template;
 
+    /**
+     * Location of Velocity template file for Embeddable superclass generation.
+     * Ignored unless <code>makepairs</code> set to <code>true</code>. If
+     * omitted, default template is used.
+     */
     @Input
     @Optional
     private String embeddableSuperTemplate;
 
+    /**
+     * Location of Velocity template file for Embeddable class generation. If
+     * omitted, default template is used.
+     */
     @Input
     @Optional
     private String embeddableTemplate;
 
+    /**
+     * If set to <code>true</code> (default), a directory tree will be generated
+     * in "destDir" corresponding to the class package structure, if set to
+     * <code>false</code>, classes will be generated in &quot;destDir&quot;
+     * ignoring their package.
+     */
     @Input
     @Optional
     private Boolean usePkgPath;
 
+    /**
+     * If set to <code>true</code>, will generate String Property names.
+     * Default is <code>false</code>.
+     */
     @Input
     @Optional
     private Boolean createPropertyNames;
@@ -160,6 +238,7 @@ public class CgenTask extends BaseCayenneTask {
     @Optional
     private String externalToolConfig;
 
+
     private String destDirName;
 
     private DataChannelMetaData metaData;
@@ -210,6 +289,9 @@ public class CgenTask extends BaseCayenneTask {
         }
     }
 
+    /**
+     * Loads and returns DataMap based on <code>cgenConfiguration</code> attribute.
+     */
     private File[] convertAdditionalDataMaps() throws Exception {
         if (additionalMaps == null) {
             return NO_FILES;
@@ -224,6 +306,10 @@ public class CgenTask extends BaseCayenneTask {
         );
     }
 
+    /**
+     * Factory method to create internal class generator. Called from
+     * constructor.
+     */
     ClassGenerationAction createGenerator(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
         return injector.getInstance(ClassGenerationActionFactory.class).createAction(cgenConfiguration);
