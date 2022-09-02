@@ -246,4 +246,7 @@ public class StandardModePanel extends GeneratorControllerPanel {
         return dataMapSuperTemplate;
     }
 
+    public TextAdapter getSuperPkg() {
+        return superPkg;
+    }
 }
