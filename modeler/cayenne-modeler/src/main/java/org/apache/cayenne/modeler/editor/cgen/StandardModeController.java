@@ -179,6 +179,8 @@ public class StandardModeController extends GeneratorController {
     }
 
 
+
+
     private void updateComboBoxes() {
         Path rootPath = cgenConfiguration.getRootPath();
 
@@ -230,7 +232,6 @@ public class StandardModeController extends GeneratorController {
         }
         view.getDataMapTemplate().setItem(dataMapTemplateName);
         view.getDataMapSuperTemplate().setItem(dataMapSuperTemplateName);
-
         view.setDisableSuperComboBoxes(view.getPairs().isSelected());
     }
 
@@ -239,7 +240,12 @@ public class StandardModeController extends GeneratorController {
         super.initForm(cgenConfiguration);
         updateTemplates();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
+        view.getPairs().setSelected(cgenConfiguration.isMakePairs());
+        view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
+        view.getOverwrite().setSelected(cgenConfiguration.isOverwrite());
+        view.getCreatePropertyNames().setSelected(cgenConfiguration.isCreatePropertyNames());
+        view.getPkProperties().setSelected(cgenConfiguration.isCreatePKProperties());
+        view.getSuperPkg().setText(cgenConfiguration.getSuperPkg());
         updateComboBoxes();
     }
-
 }
