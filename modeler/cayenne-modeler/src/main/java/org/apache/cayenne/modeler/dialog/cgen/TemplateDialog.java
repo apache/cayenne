@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.dialog.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.modeler.editor.cgen.CustomModeController;
+import org.apache.cayenne.modeler.editor.cgen.StandardModeController;
 import org.apache.cayenne.modeler.util.CayenneController;
 
 import javax.swing.JDialog;
@@ -80,7 +80,7 @@ public class TemplateDialog extends CayenneController {
             view.dispose();
         });
         view.getAddTemplate().addActionListener(action -> {
-            ((CustomModeController)parent).addTemplateAction(template, superTemplate);
+            ((StandardModeController)parent).addTemplateAction(template, superTemplate);
             view.dispose();
         });
     }

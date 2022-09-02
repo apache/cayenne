@@ -19,21 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import javax.swing.JOptionPane;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.Predicate;
-import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
-
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -62,6 +47,21 @@ import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.JOptionPane;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
+import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+
 /**
  * Main controller for the code generation UI.
  *
@@ -75,18 +75,18 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     protected final SelectionModel selectionModel;
     protected final CodeGeneratorPane view;
     protected final ClassesTabController classesSelector;
-    protected final GeneratorTabController generatorSelector;
     protected final ConcurrentMap<DataMap, GeneratorController> prevGeneratorController;
 
+    private StandardModeController standardModeController;
     private Object currentClass;
     private CgenConfiguration cgenConfiguration;
     private boolean initFromModel;
 
     public CodeGeneratorController(ProjectController projectController) {
         super(projectController);
+        this.standardModeController = new StandardModeController(this);
         this.classesSelector = new ClassesTabController(this);
-        this.generatorSelector = new GeneratorTabController(this);
-        this.view = new CodeGeneratorPane(generatorSelector.getView(), classesSelector.getView());
+        this.view = new CodeGeneratorPane(standardModeController.getView(), classesSelector.getView());
         this.prevGeneratorController = new ConcurrentHashMap<>();
         this.projectController = projectController;
         this.classes = new TreeSet<>(
@@ -101,24 +101,17 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     public void initFromModel() {
         initFromModel = true;
         DataMap dataMap = projectController.getCurrentDataMap();
-
         prepareClasses(dataMap);
         createConfiguration(dataMap);
-
-        GeneratorController modeController = prevGeneratorController.get(dataMap);
-        if (modeController == null) {
-            if (cgenConfiguration.isDefault()) {
-                modeController = generatorSelector.getStandartController();
-            } else {
-                modeController = generatorSelector.getCustomModeController();
-            }
-        }
-
-        prevGeneratorController.put(dataMap, modeController);
-        generatorSelector.setSelectedController(modeController);
+        configureController(standardModeController);
         classesSelector.startup();
         initFromModel = false;
         classesSelector.validate(classes);
+    }
+
+    void configureController(GeneratorController controller) {
+        controller.updateConfiguration(cgenConfiguration);
+        controller.initForm(cgenConfiguration);
     }
 
     private void initListeners() {
@@ -134,21 +127,13 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     protected void initBindings() {
         BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-
         builder.bindToAction(view.getGenerateButton(), "generateAction()");
-        builder.bindToAction(generatorSelector, "generatorSelectedAction()",
-                GeneratorTabController.GENERATOR_PROPERTY);
-
         generatorSelectedAction();
     }
 
     public void generatorSelectedAction() {
-        GeneratorController controller = generatorSelector.getGeneratorController();
         classesSelector.validate(classes);
-        Predicate<ConfigurationNode> predicate = controller != null
-                ? defaultPredicate
-                : o -> false;
-        updateSelection(predicate);
+        updateSelection(defaultPredicate);
         classesSelector.classSelectedAction();
     }
 
