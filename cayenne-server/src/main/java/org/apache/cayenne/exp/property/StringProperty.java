@@ -303,8 +303,9 @@ public class StringProperty<E extends CharSequence> extends BaseProperty<E> impl
     }
 
     /**
-     * @return property that will be translated relative to parent query
+     * @inheritDoc
      */
+    @Override
     public StringProperty<E> enclosing() {
         return PropertyFactory.createString(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
     }

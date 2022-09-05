@@ -199,6 +199,10 @@ class QualifierTranslator implements TraversalHandler {
                 return new FunctionNode("EXISTS", null, false);
             case NOT_EXISTS:
                 return new FunctionNode("NOT EXISTS", null, false);
+            case ALL:
+                return new FunctionNode("ALL", null, false);
+            case ANY:
+                return new FunctionNode("ANY", null, false);
 
             case SUBQUERY:
                 ASTSubquery subquery = (ASTSubquery)node;

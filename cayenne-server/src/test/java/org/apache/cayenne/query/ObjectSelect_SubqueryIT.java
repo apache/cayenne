@@ -170,4 +170,13 @@ public class ObjectSelect_SubqueryIT extends ServerCase {
 
         assertEquals(16L, count);
     }
+
+    @Test
+    public void selectQuery_ltAll() {
+        long count = ObjectSelect.query(Artist.class)
+                .where(Artist.DATE_OF_BIRTH.year().ltAll(ObjectSelect.columnQuery(Artist.class, Artist.DATE_OF_BIRTH.year())))
+                .selectCount(context);
+        assertEquals(0L, count);
+    }
+
 }

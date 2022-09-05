@@ -21,7 +21,9 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTAdd;
+import org.apache.cayenne.exp.parser.ASTAll;
 import org.apache.cayenne.exp.parser.ASTAnd;
+import org.apache.cayenne.exp.parser.ASTAny;
 import org.apache.cayenne.exp.parser.ASTBetween;
 import org.apache.cayenne.exp.parser.ASTBitwiseAnd;
 import org.apache.cayenne.exp.parser.ASTBitwiseLeftShift;
@@ -1467,5 +1469,19 @@ public class ExpressionFactory {
 			throw new IllegalArgumentException("exp should be instance of SimpleNode");
 		}
 		return new ASTNotIn((SimpleNode)exp, new ASTSubquery(subQuery));
+	}
+
+	/**
+	 * @since 4.3
+	 */
+	public static Expression all(ColumnSelect<?> subquery) {
+		return new ASTAll(new ASTSubquery(subquery));
+	}
+
+	/**
+	 * @since 4.3
+	 */
+	public static Expression any(ColumnSelect<?> subquery) {
+		return new ASTAny(new ASTSubquery(subquery));
 	}
 }

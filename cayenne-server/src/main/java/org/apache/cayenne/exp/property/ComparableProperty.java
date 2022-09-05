@@ -19,9 +19,11 @@
 
 package org.apache.cayenne.exp.property;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
+import org.apache.cayenne.query.ColumnSelect;
 
 /**
  * Interface (or "Trait") that provides basic functionality for comparable properties.
@@ -121,5 +123,91 @@ public interface ComparableProperty<E> extends Property<E> {
      */
     default BaseProperty<E> min() {
         return PropertyFactory.createBase(FunctionExpressionFactory.minExp(getExpression()), getType());
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a "< ALL (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression ltAll(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.lessExp(getExpression(), ExpressionFactory.all(subquery));
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a "<= ALL (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression lteAll(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.lessOrEqualExp(getExpression(), ExpressionFactory.all(subquery));
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a "> ALL (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression gtAll(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.greaterExp(getExpression(), ExpressionFactory.all(subquery));
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a ">= ALL (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression gteAll(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.greaterOrEqualExp(getExpression(), ExpressionFactory.all(subquery));
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a "< ANY (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression ltAny(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.lessExp(getExpression(), ExpressionFactory.any(subquery));
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a "<= ANY (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression lteAny(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.lessOrEqualExp(getExpression(), ExpressionFactory.any(subquery));
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a "> ANY (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression gtAny(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.greaterExp(getExpression(), ExpressionFactory.any(subquery));
+    }
+
+    /**
+     * @param subquery to use, must be a single column query.
+     * @return {@link Expression} that translates to a ">= ANY (subquery)" SQL
+     * @since 4.3
+     */
+    default Expression gteAny(ColumnSelect<E> subquery) {
+        assertValidateSubqueryForComparison(subquery);
+        return ExpressionFactory.greaterOrEqualExp(getExpression(), ExpressionFactory.any(subquery));
+    }
+
+    private static <E> void assertValidateSubqueryForComparison(ColumnSelect<E> subquery) {
+        if(subquery.getColumns().size() != 1) {
+            throw new CayenneRuntimeException("Only single-column query could be used in the comparison.");
+        }
     }
 }

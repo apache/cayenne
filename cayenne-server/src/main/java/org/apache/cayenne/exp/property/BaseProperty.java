@@ -401,7 +401,17 @@ public class BaseProperty<E> implements Property<E> {
     }
 
     /**
-     * @return property that will be translated relative to parent query
+     * This operator allows to access properties of the enclosing query from the subquery.
+     * It allows multiple nesting levels to access a corresponding query in case of multiple levels of subqueries.
+     *
+     * Example: <pre>{@code
+     * ObjectSelect.query(Artist.class)
+     *                 .where(ExpressionFactory.notExists(ObjectSelect.query(Painting.class)
+     *                         .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()))))
+     * }
+     * </pre>
+     *
+     * @return property that will be translated relative to a parent query
      */
     public BaseProperty<E> enclosing() {
         return PropertyFactory.createBase(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
