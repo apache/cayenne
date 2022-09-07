@@ -18,18 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Iterator;
-import java.util.Objects;
-
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
@@ -44,27 +32,33 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.codehaus.plexus.util.FileUtils;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
+import org.xmlunit.matchers.CompareMatcher;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Iterator;
+import java.util.Objects;
 
 import static org.apache.cayenne.util.Util.isBlank;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 
 public class DbImporterMojoTest extends AbstractMojoTestCase {
 
     private static DerbyManager derbyAssembly;
-
-    static {
-        XMLUnit.setIgnoreWhitespace(true);
-    }
 
     @BeforeClass
     public static void beforeClass() throws IOException, SQLException {
@@ -478,13 +472,7 @@ public class DbImporterMojoTest extends AbstractMojoTestCase {
             FileReader control = new FileReader(map.getAbsolutePath() + "-result");
             FileReader test = new FileReader(mapFileCopy);
 
-            Diff prototype = new Diff(control, test);
-            prototype.overrideElementQualifier(new ElementNameAndAttributeQualifier());
-            DetailedDiff diff = new DetailedDiff(prototype);
-
-            if (!diff.similar()) {
-                fail(diff.toString());
-            }
+            assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
         } catch (Exception e) {
             e.printStackTrace();
             fail();

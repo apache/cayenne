@@ -26,12 +26,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.util.FileUtils;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.Difference;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
-import org.xml.sax.SAXException;
+import org.xmlunit.matchers.CompareMatcher;
 
 import java.io.File;
 import java.io.FileReader;
@@ -41,10 +37,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.List;
 
-import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.assertCatalog;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.assertCatalogAndSchema;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.assertFlat;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.assertSchema;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.assertSkipRelationshipsLoading;
+import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.assertTableTypes;
 import static org.apache.cayenne.util.Util.isBlank;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -53,9 +54,6 @@ import static org.junit.Assert.fail;
 // based on "cayenneTestConnection", like we do in cayenne-server, etc.
 public class DbImporterTaskTest {
 
-    static {
-        XMLUnit.setIgnoreWhitespace(true);
-    }
 
     private static File distDir(String name) {
         File distDir = new File(FileUtil.baseTestDirectory(), "cdbImport");
@@ -179,19 +177,8 @@ public class DbImporterTaskTest {
         try {
             FileReader control = new FileReader(map.getAbsolutePath() + "-result");
             FileReader test = new FileReader(mapFileCopy);
-
-            DetailedDiff diff = new DetailedDiff(new Diff(control, test));
-            if (!diff.similar()) {
-                for (Difference d : ((List<Difference>) diff.getAllDifferences())) {
-
-                    System.out.println("-------------------------------------------");
-                    System.out.println(d.getTestNodeDetail().getNode());
-                    System.out.println(d.getControlNodeDetail().getValue());
-                }
-                fail(diff.toString());
-            }
-
-        } catch (SAXException | IOException e) {
+            assertThat(test, CompareMatcher.isSimilarTo(control).ignoreWhitespace());
+        } catch (IOException e) {
             e.printStackTrace();
             fail();
         }
