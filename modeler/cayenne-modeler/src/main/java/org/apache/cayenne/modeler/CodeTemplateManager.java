@@ -19,54 +19,29 @@
 
 package org.apache.cayenne.modeler;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-
-import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * Manages code generation templates.
  */
 public class CodeTemplateManager {
 
-	public static final String STANDARD_SERVER_SUPERCLASS = "Standard Server Superclass";
-	public static final String STANDARD_SERVER_SUBCLASS = "Standard Server Subclass";
-	public static final String SINGLE_SERVER_CLASS = "Single Server Class";
-
-	private static final String STANDARD_EMBEDDABLE_SUPERCLASS = "Standard Embeddable Superclass";
-	private static final String STANDARD_EMBEDDABLE_SUBCLASS = "Standard Embeddable Subclass";
-	private static final String SINGLE_EMBEDDABLE_CLASS = "Single Embeddable Class";
-
-	private static final String STANDARD_SERVER_DATAMAP_SUPERCLASS = "Standard Server DataMap Superclass";
-	private static final String STANDARD_SERVER_DATAMAP_SUBCLASS = "Standard Server DataMap Subclass";
-	private static final String SINGLE_DATAMAP_CLASS = "Single DataMap Class";
-
 	public static final String NODE_NAME = "codeTemplateManager";
 
-	private List<String> defaultSubclassTemplates;
-	private List<String> defaultSuperclassTemplates;
 	private Map<String, String> customTemplates;
 	private Map<String, String> reverseCustomTemplate;
-	private Map<String, String> defaultTemplates;
-
-	private List<String> defaultEmbeddableTemplates;
-	private List<String> defaultEmbeddableSuperclassTemplates;
-
-	private List<String> defaultServerDataMapTemplates;
-	private List<String> defaultServerDataMapSuperclassTemplates;
-
-	private Map<String, String> reverseDefaultsTemplates;
 
 	private final Application application;
 	private final Preferences templatePreferences;
@@ -80,50 +55,8 @@ public class CodeTemplateManager {
 	public CodeTemplateManager(Application application) {
 		this.application = application;
 		this.templatePreferences = getTemplatePreferences(application);
-		defaultSuperclassTemplates = new ArrayList<>(2);
-		defaultSuperclassTemplates.add(STANDARD_SERVER_SUPERCLASS);
-
-		defaultSubclassTemplates = new ArrayList<>(2);
-		defaultSubclassTemplates.add(SINGLE_SERVER_CLASS);
-		defaultSubclassTemplates.add(STANDARD_SERVER_SUBCLASS);
-
-		defaultEmbeddableTemplates = new ArrayList<>();
-		defaultEmbeddableTemplates.add(STANDARD_EMBEDDABLE_SUBCLASS);
-		defaultEmbeddableTemplates.add(SINGLE_EMBEDDABLE_CLASS);
-
-		defaultEmbeddableSuperclassTemplates = new ArrayList<>();
-		defaultEmbeddableSuperclassTemplates.add(STANDARD_EMBEDDABLE_SUPERCLASS);
-
-		defaultServerDataMapTemplates = new ArrayList<>();
-		defaultServerDataMapTemplates.add(STANDARD_SERVER_DATAMAP_SUBCLASS);
-		defaultServerDataMapTemplates.add(SINGLE_DATAMAP_CLASS);
-
-		defaultServerDataMapSuperclassTemplates = new ArrayList<>();
-		defaultServerDataMapSuperclassTemplates.add(STANDARD_SERVER_DATAMAP_SUPERCLASS);
 
 		updateCustomTemplates(getTemplatePreferences(application));
-		reverseCustomTemplate = new HashMap<>();
-		for(Map.Entry<String, String> entry : customTemplates.entrySet()){
-			reverseCustomTemplate.put(entry.getValue(), entry.getKey());
-		}
-
-		defaultTemplates = new HashMap<>();
-		defaultTemplates.put(STANDARD_SERVER_SUPERCLASS, ClassGenerationAction.SUPERCLASS_TEMPLATE);
-		defaultTemplates.put(STANDARD_SERVER_SUBCLASS, ClassGenerationAction.SUBCLASS_TEMPLATE);
-		defaultTemplates.put(SINGLE_SERVER_CLASS, ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
-
-		defaultTemplates.put(STANDARD_EMBEDDABLE_SUPERCLASS, ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE);
-		defaultTemplates.put(STANDARD_EMBEDDABLE_SUBCLASS, ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
-		defaultTemplates.put(SINGLE_EMBEDDABLE_CLASS, ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
-
-		defaultTemplates.put(STANDARD_SERVER_DATAMAP_SUBCLASS, ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
-		defaultTemplates.put(SINGLE_DATAMAP_CLASS, ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
-		defaultTemplates.put(STANDARD_SERVER_DATAMAP_SUPERCLASS, ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE);
-
-		reverseDefaultsTemplates = new HashMap<>();
-		for(Map.Entry<String, String> entry : defaultTemplates.entrySet()){
-			reverseDefaultsTemplates.put(entry.getValue(), entry.getKey());
-		}
 	}
 
 	/**
@@ -140,6 +73,11 @@ public class CodeTemplateManager {
 		for (String key : keys) {
 			FSPath path = new FSPath(preference.node(key));
 			customTemplates.put(key, path.getPath());
+		}
+
+		this.reverseCustomTemplate = new HashMap<>();
+		for(Map.Entry<String, String> entry : customTemplates.entrySet()){
+			reverseCustomTemplate.put(entry.getValue(), entry.getKey());
 		}
 	}
 
@@ -159,8 +97,8 @@ public class CodeTemplateManager {
 				logger.warn("Path for template named '{}' could not be resolved", name);
 			}
 		}
-		value = defaultTemplates.get(name);
-		return value != null ? value.toString() : null;
+		TemplateType templateType = TemplateType.byName(name);
+		return templateType != null ? (templateType.pathFromSourceRoot()) : null;
 	}
 
 	public String getNameByPath(String name, Path rootPath) {
@@ -171,9 +109,9 @@ public class CodeTemplateManager {
 		if (reverseCustomTemplate.containsKey(normalizedPath)) {
 			return reverseCustomTemplate.get(normalizedPath);
 		} else {
-			Object value = reverseDefaultsTemplates.get(name);
-			if (value != null) {
-				return value.toString();
+			TemplateType templateType = TemplateType.byPath(name);
+			if (templateType != null) {
+				return templateType.readableName();
 			} else {
 				String preparedName = prepareName(Paths.get(normalizedPath), templatePreferences);
 				return addTemplate(normalizedPath, preparedName).getKey();
@@ -211,29 +149,5 @@ public class CodeTemplateManager {
 
 	public Map<String, String> getCustomTemplates() {
 		return customTemplates;
-	}
-
-	public List<String> getDefaultSubclassTemplates() {
-		return defaultSubclassTemplates;
-	}
-
-	public List<String> getDefaultSuperclassTemplates() {
-		return defaultSuperclassTemplates;
-	}
-
-	public List<String> getDefaultEmbeddableTemplates() {
-		return defaultEmbeddableTemplates;
-	}
-
-	public List<String> getDefaultEmbeddableSuperclassTemplates() {
-		return defaultEmbeddableSuperclassTemplates;
-	}
-
-	public List<String> getDefaultDataMapTemplates() {
-		return defaultServerDataMapTemplates;
-	}
-
-	public List<String> getDefaultDataMapSuperclassTemplates() {
-		return defaultServerDataMapSuperclassTemplates;
 	}
 }

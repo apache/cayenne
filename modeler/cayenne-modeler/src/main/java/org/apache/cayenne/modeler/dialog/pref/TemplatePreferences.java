@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
 import org.apache.cayenne.pref.PreferenceEditor;
 import org.apache.cayenne.swing.BindingBuilder;
-import org.apache.cayenne.swing.ObjectBinding;
 import org.apache.cayenne.swing.TableBindingBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +42,8 @@ public class TemplatePreferences extends CayenneController {
     protected TemplatePreferencesView view;
     protected CayennePreferenceEditor editor;
     protected List<FSPath> templateEntries;
-    protected ObjectBinding tableBinding;
 
-    private static Logger logger = LoggerFactory.getLogger(TemplatePreferences.class);
+    private static final Logger logger = LoggerFactory.getLogger(TemplatePreferences.class);
 
     public TemplatePreferences(PreferenceDialog parent) {
         super(parent);
@@ -66,8 +64,7 @@ public class TemplatePreferences extends CayenneController {
                                 FSPath.class,
                                 getTemplatePreferences().node(key)));
             }
-        }
-        catch (BackingStoreException e) {
+        } catch (BackingStoreException e) {
             logger.warn("Error reading preferences");
         }
 
@@ -90,6 +87,7 @@ public class TemplatePreferences extends CayenneController {
                 this);
 
         builder.bindToAction(view.getAddButton(), "addTemplateAction()");
+        builder.bindToAction(view.getCreateFromDefaultButton(), "createFromDefaultAction()");
         builder.bindToAction(view.getRemoveButton(), "removeTemplateAction()");
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
@@ -119,23 +117,34 @@ public class TemplatePreferences extends CayenneController {
         return editor;
     }
 
+    @SuppressWarnings("unused")
     public void addTemplateAction() {
         FSPath path = new TemplateCreator(this).startupAction();
         addToTemplateEntries(path);
     }
 
+    @SuppressWarnings("unused")
+    public void createFromDefaultAction() {
+        List<FSPath> paths = new CreateTemplateFromDefaultController(this).startupAction();
+        for (FSPath path : paths) {
+            if (!templateEntries.contains(path)) {
+                addToTemplateEntries(path);
+            }
+        }
+    }
+
     void addTemplateAction(String templatePath, String superTemplatePath) {
-        if(templatePath != null) {
+        if (templatePath != null) {
             createTemplate(templatePath);
         }
-        if(superTemplatePath != null) {
+        if (superTemplatePath != null) {
             createTemplate(superTemplatePath);
         }
     }
 
     private void createTemplate(String templatePath) {
         TemplateCreator templateCreator = new TemplateCreator(this);
-        TemplateCreatorView creatorView = (TemplateCreatorView)templateCreator.getView();
+        TemplateCreatorView creatorView = (TemplateCreatorView) templateCreator.getView();
         creatorView.getTemplateChooser().setFile(Paths.get(templatePath).toFile());
         FSPath path = templateCreator.startupAction();
         addToTemplateEntries(path);
@@ -151,6 +160,7 @@ public class TemplatePreferences extends CayenneController {
         }
     }
 
+    @SuppressWarnings("unused")
     public void removeTemplateAction() {
         int selected = view.getTable().getSelectedRow();
         if (selected < 0) {
