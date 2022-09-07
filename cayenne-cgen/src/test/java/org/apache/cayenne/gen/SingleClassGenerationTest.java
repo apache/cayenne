@@ -47,7 +47,7 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot(), context);
         assertFalse(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
         assertFalse(res.contains("org.apache.cayenne.exp.property.ListProperty"));
     }
@@ -68,7 +68,7 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot(), context);
         assertTrue(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
         assertFalse(res.contains("org.apache.cayenne.exp.property.ListProperty"));
     }
@@ -88,7 +88,7 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot(), context);
         assertFalse(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
         assertTrue(res.contains("org.apache.cayenne.exp.property.EntityProperty"));
     }
@@ -113,7 +113,7 @@ public class SingleClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot(), context);
         assertTrue(res.contains("org.apache.cayenne.exp.property.NumericProperty"));
         assertTrue(res.contains("org.apache.cayenne.exp.property.EntityProperty"));
     }

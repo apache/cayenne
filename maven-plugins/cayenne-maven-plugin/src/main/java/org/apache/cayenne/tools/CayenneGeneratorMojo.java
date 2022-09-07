@@ -29,6 +29,7 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -368,13 +369,13 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 		cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
 		if(!cgenConfiguration.isMakePairs()) {
 			if(template == null) {
-				cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
+				cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot());
 			}
 			if(embeddableTemplate == null) {
-				cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
+				cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot());
 			}
 			if(dataMapTemplate == null) {
-				cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+				cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot());
 			}
 		}
 		return cgenConfiguration;
