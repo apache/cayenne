@@ -48,19 +48,17 @@ import org.slf4j.Logger;
 
 public class ClassGenerationAction {
 
-	private static final String TEMPLATES_DIR_NAME = "templates/v4_1/";
+	public static final String SINGLE_CLASS_TEMPLATE = TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot();
+	public static final String SUBCLASS_TEMPLATE = TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot();
+	public static final String SUPERCLASS_TEMPLATE = TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot();
 
-	public static final String SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "singleclass.vm";
-	public static final String SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "subclass.vm";
-	public static final String SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "superclass.vm";
+	public static final String EMBEDDABLE_SINGLE_CLASS_TEMPLATE = TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot();
+	public static final String EMBEDDABLE_SUBCLASS_TEMPLATE = TemplateType.EMBEDDABLE_SUBCLASS.pathFromSourceRoot();
+	public static final String EMBEDDABLE_SUPERCLASS_TEMPLATE = TemplateType.EMBEDDABLE_SUPERCLASS.pathFromSourceRoot();
 
-	public static final String EMBEDDABLE_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "embeddable-singleclass.vm";
-	public static final String EMBEDDABLE_SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "embeddable-subclass.vm";
-	public static final String EMBEDDABLE_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "embeddable-superclass.vm";
-
-	public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-singleclass.vm";
-	public static final String DATAMAP_SUBCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-subclass.vm";
-	public static final String DATAMAP_SUPERCLASS_TEMPLATE = TEMPLATES_DIR_NAME + "datamap-superclass.vm";
+	public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot();
+	public static final String DATAMAP_SUBCLASS_TEMPLATE = TemplateType.DATAMAP_SUBCLASS.pathFromSourceRoot();
+	public static final String DATAMAP_SUPERCLASS_TEMPLATE = TemplateType.DATAMAP_SUPERCLASS.pathFromSourceRoot();
 
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";

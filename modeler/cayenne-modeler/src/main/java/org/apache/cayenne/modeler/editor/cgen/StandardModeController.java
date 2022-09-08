@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.CodeTemplateManager;
 import org.apache.cayenne.modeler.dialog.cgen.TemplateDialog;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
@@ -116,29 +117,35 @@ public class StandardModeController extends GeneratorController {
         List<String> customTemplates = new ArrayList<>(templateManager.getCustomTemplates().keySet());
         Collections.sort(customTemplates);
 
-        List<String> superTemplates = new ArrayList<>(templateManager.getDefaultSuperclassTemplates());
-        Collections.sort(superTemplates);
+        List<String> superTemplates = new ArrayList<>();
+        superTemplates.add(TemplateType.ENTITY_SUPERCLASS.readableName());
         superTemplates.addAll(customTemplates);
 
-        List<String> subTemplates = new ArrayList<>(templateManager.getDefaultSubclassTemplates());
+        List<String> subTemplates = new ArrayList<>();
+        subTemplates.add(TemplateType.ENTITY_SINGLE_CLASS.readableName());
+        subTemplates.add(TemplateType.ENTITY_SUBCLASS.readableName());
         Collections.sort(subTemplates);
         subTemplates.addAll(customTemplates);
 
-        List<String> dataMapSuperTemplates = new ArrayList<>(templateManager.getDefaultDataMapSuperclassTemplates());
-        Collections.sort(dataMapSuperTemplates);
-        dataMapSuperTemplates.addAll(customTemplates);
-
-        List<String> dataMapTemplates = new ArrayList<>(templateManager.getDefaultDataMapTemplates());
-        Collections.sort(dataMapTemplates);
-        dataMapTemplates.addAll(customTemplates);
-
-        List<String> embeddableSuperTemplates = new ArrayList<>(templateManager.getDefaultEmbeddableSuperclassTemplates());
-        Collections.sort(embeddableSuperTemplates);
+        List<String> embeddableSuperTemplates = new ArrayList<>();
+        embeddableSuperTemplates.add(TemplateType.EMBEDDABLE_SUPERCLASS.readableName());
         embeddableSuperTemplates.addAll(customTemplates);
 
-        List<String> embeddableTemplates = new ArrayList<>(templateManager.getDefaultEmbeddableTemplates());
+        List<String> embeddableTemplates = new ArrayList<>();
+        embeddableTemplates.add(TemplateType.EMBEDDABLE_SINGLE_CLASS.readableName());
+        embeddableTemplates.add(TemplateType.EMBEDDABLE_SUBCLASS.readableName());
         Collections.sort(embeddableTemplates);
         embeddableTemplates.addAll(customTemplates);
+
+        List<String> dataMapSuperTemplates = new ArrayList<>();
+        dataMapSuperTemplates.add(TemplateType.DATAMAP_SUPERCLASS.readableName());
+        dataMapSuperTemplates.addAll(customTemplates);
+
+        List<String> dataMapTemplates = new ArrayList<>();
+        dataMapTemplates.add(TemplateType.DATAMAP_SINGLE_CLASS.readableName());
+        dataMapTemplates.add(TemplateType.DATAMAP_SUBCLASS.readableName());
+        Collections.sort(dataMapTemplates);
+        dataMapTemplates.addAll(customTemplates);
 
         this.view.getSubclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
         this.view.getSuperclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));

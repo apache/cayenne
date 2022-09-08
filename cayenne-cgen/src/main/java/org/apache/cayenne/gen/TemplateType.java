@@ -25,31 +25,69 @@ package org.apache.cayenne.gen;
  */
 public enum TemplateType {
 
-    ENTITY_SINGLE_CLASS(false),
+    ENTITY_SINGLE_CLASS(false,"Single Entity Class","singleclass"),
 
-    ENTITY_SUPERCLASS(true),
+    ENTITY_SUPERCLASS(true,"Entity Superclass","superclass"),
 
-    ENTITY_SUBCLASS(false),
+    ENTITY_SUBCLASS(false,"Entity Subclass","subclass"),
 
-    EMBEDDABLE_SINGLE_CLASS(false),
+    EMBEDDABLE_SINGLE_CLASS(false,"Single Embeddable Class","embeddable-singleclass"),
 
-    EMBEDDABLE_SUPERCLASS(true),
+    EMBEDDABLE_SUPERCLASS(true,"Embeddable Superclass","embeddable-superclass"),
 
-    EMBEDDABLE_SUBCLASS(false),
+    EMBEDDABLE_SUBCLASS(false,"Embeddable Subclass","embeddable-subclass"),
 
-    DATAMAP_SINGLE_CLASS(false),
+    DATAMAP_SINGLE_CLASS(false,"Single DataMap Class","datamap-singleclass"),
 
-    DATAMAP_SUPERCLASS(true),
+    DATAMAP_SUPERCLASS(true,"DataMap Superclass","datamap-superclass"),
 
-    DATAMAP_SUBCLASS(false);
+    DATAMAP_SUBCLASS(false,"DataMap Subclass","datamap-subclass");
 
-    private boolean superclass;
+    private final boolean superclass;
+    private final String readableName;
+    private final String fileName;
+    private static final String EXTENSION = ".vm";
+    private static final String TEMPLATES_DIR = "templates/v4_1/";
 
-    private TemplateType(boolean superclass) {
+    TemplateType(boolean superclass, String readableName, String fileName) {
         this.superclass = superclass;
+        this.readableName = readableName;
+        this.fileName = fileName;
     }
 
     public boolean isSuperclass() {
         return superclass;
+    }
+
+    public String readableName() {
+        return readableName;
+    }
+
+    public String fileName(){
+        return fileName;
+    }
+
+    public String fullFileName(){
+        return fileName+EXTENSION;
+    }
+
+    public String pathFromSourceRoot() {return TEMPLATES_DIR+fileName+EXTENSION;}
+
+    public static TemplateType byName(String name){
+        for (TemplateType templateType : TemplateType.values()) {
+            if (templateType.readableName.equals(name)){
+                return templateType;
+            }
+        }
+      return null;
+    }
+
+    public static TemplateType byPath(String path){
+        for (TemplateType templateType : TemplateType.values()) {
+            if (templateType.pathFromSourceRoot().equals(path)){
+                return templateType;
+            }
+        }
+        return null;
     }
 }

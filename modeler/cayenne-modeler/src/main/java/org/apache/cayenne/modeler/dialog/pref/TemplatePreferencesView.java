@@ -34,6 +34,7 @@ import org.apache.cayenne.modeler.util.CayenneTable;
 public class TemplatePreferencesView extends JPanel {
 
     protected JButton addButton;
+    protected JButton createFromDefaultButton;
     protected JButton removeButton;
     protected JTable table;
 
@@ -41,6 +42,7 @@ public class TemplatePreferencesView extends JPanel {
 
         // create widgets
         addButton = new JButton("Add Template");
+        createFromDefaultButton = new JButton("Create from default");
         removeButton = new JButton("Remove Template");
 
         table = new CayenneTable();
@@ -54,12 +56,13 @@ public class TemplatePreferencesView extends JPanel {
         builder.setDefaultDialogBorder();
 
         builder.append(addButton);
+        builder.append(createFromDefaultButton);
         builder.append(removeButton);
 
         setLayout(new BorderLayout());
-        JScrollPane ScrollPane = new JScrollPane(table);
-        ScrollPane.setBorder(BorderFactory.createEmptyBorder());
-        add(ScrollPane, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        add(scrollPane, BorderLayout.CENTER);
         add(builder.getPanel(), BorderLayout.EAST);
     }
 
@@ -69,6 +72,10 @@ public class TemplatePreferencesView extends JPanel {
 
     public JButton getAddButton() {
         return addButton;
+    }
+
+    public JButton getCreateFromDefaultButton() {
+        return createFromDefaultButton;
     }
 
     public JButton getRemoveButton() {

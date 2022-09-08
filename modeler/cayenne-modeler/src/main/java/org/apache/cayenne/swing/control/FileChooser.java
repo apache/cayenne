@@ -217,6 +217,7 @@ public class FileChooser extends JPanel {
         if (!Util.nullSafeEquals(this.currentDirectory, currentDirectory)) {
             File oldValue = this.currentDirectory;
             this.currentDirectory = currentDirectory;
+            this.setFile(currentDirectory);
             firePropertyChange(CURRENT_DIRECTORY_PROPERTY, oldValue, currentDirectory);
         }
     }
