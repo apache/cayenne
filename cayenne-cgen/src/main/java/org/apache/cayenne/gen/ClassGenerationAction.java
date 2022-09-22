@@ -48,18 +48,6 @@ import org.slf4j.Logger;
 
 public class ClassGenerationAction {
 
-	public static final String SINGLE_CLASS_TEMPLATE = TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot();
-	public static final String SUBCLASS_TEMPLATE = TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot();
-	public static final String SUPERCLASS_TEMPLATE = TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot();
-
-	public static final String EMBEDDABLE_SINGLE_CLASS_TEMPLATE = TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot();
-	public static final String EMBEDDABLE_SUBCLASS_TEMPLATE = TemplateType.EMBEDDABLE_SUBCLASS.pathFromSourceRoot();
-	public static final String EMBEDDABLE_SUPERCLASS_TEMPLATE = TemplateType.EMBEDDABLE_SUPERCLASS.pathFromSourceRoot();
-
-	public static final String DATAMAP_SINGLE_CLASS_TEMPLATE = TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot();
-	public static final String DATAMAP_SUBCLASS_TEMPLATE = TemplateType.DATAMAP_SUBCLASS.pathFromSourceRoot();
-	public static final String DATAMAP_SUPERCLASS_TEMPLATE = TemplateType.DATAMAP_SUPERCLASS.pathFromSourceRoot();
-
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
 
@@ -104,30 +92,6 @@ public class ClassGenerationAction {
 		this.templateCache = new HashMap<>(5);
 	}
 
-	public String defaultTemplateName(TemplateType type) {
-		switch (type) {
-			case ENTITY_SINGLE_CLASS:
-				return SINGLE_CLASS_TEMPLATE;
-			case ENTITY_SUBCLASS:
-				return SUBCLASS_TEMPLATE;
-			case ENTITY_SUPERCLASS:
-				return SUPERCLASS_TEMPLATE;
-			case EMBEDDABLE_SUBCLASS:
-				return EMBEDDABLE_SUBCLASS_TEMPLATE;
-			case EMBEDDABLE_SUPERCLASS:
-				return EMBEDDABLE_SUPERCLASS_TEMPLATE;
-			case EMBEDDABLE_SINGLE_CLASS:
-				return EMBEDDABLE_SINGLE_CLASS_TEMPLATE;
-			case DATAMAP_SINGLE_CLASS:
-				return DATAMAP_SINGLE_CLASS_TEMPLATE;
-			case DATAMAP_SUPERCLASS:
-				return DATAMAP_SUPERCLASS_TEMPLATE;
-			case DATAMAP_SUBCLASS:
-				return DATAMAP_SUBCLASS_TEMPLATE;
-			default:
-				throw new IllegalArgumentException("Invalid template type: " + type);
-		}
-	}
 
 	public String customTemplateName(TemplateType type) {
 		switch (type) {
@@ -295,7 +259,7 @@ public class ClassGenerationAction {
 
 		String templateName = customTemplateName(type);
 		if (templateName == null) {
-			templateName = defaultTemplateName(type);
+			templateName = type.pathFromSourceRoot();
 		}
 
 		// Velocity < 1.5 has some memory problems, so we will create a VelocityEngine every time,

@@ -60,13 +60,13 @@ public class StandardModeController extends GeneratorController {
         this.view.getPairs().addActionListener(val -> {
             cgenConfiguration.setMakePairs(view.getPairs().isSelected());
             if (!view.getPairs().isSelected()) {
-                cgenConfiguration.setTemplate(ClassGenerationAction.SINGLE_CLASS_TEMPLATE);
-                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SINGLE_CLASS_TEMPLATE);
-                cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SINGLE_CLASS_TEMPLATE);
+                cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot());
+                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot());
+                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot());
             } else {
-                cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
-                cgenConfiguration.setEmbeddableTemplate(ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE);
-                cgenConfiguration.setDataMapTemplate(ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE);
+                cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
+                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SUBCLASS.pathFromSourceRoot());
+                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SUBCLASS.pathFromSourceRoot());
             }
             initForm(cgenConfiguration);
             getParentController().checkCgenConfigDirty();
@@ -105,8 +105,8 @@ public class StandardModeController extends GeneratorController {
 
     @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
-        cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
-        cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+        cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
+        cgenConfiguration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot());
     }
 
 

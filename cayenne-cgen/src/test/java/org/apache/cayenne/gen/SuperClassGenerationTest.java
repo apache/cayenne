@@ -50,7 +50,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot(), context);
         assertFalse(res.contains(NumericProperty.class.getName()));
         assertFalse(res.contains(ListProperty.class.getName()));
     }
@@ -71,7 +71,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot(), context);
         assertTrue(res.contains(NumericProperty.class.getName()));
         assertFalse(res.contains(ListProperty.class.getName()));
     }
@@ -91,7 +91,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot(), context);
         assertFalse(res.contains(NumericProperty.class.getName()));
         assertTrue(res.contains(EntityProperty.class.getName()));
     }
@@ -117,7 +117,7 @@ public class SuperClassGenerationTest extends ClassGenerationCase {
                 getInjector().getInstance(ToolsUtilsFactory.class)
                         .createPropertyUtils(logger, importUtils));
 
-        String res = renderTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE, context);
+        String res = renderTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot(), context);
         assertTrue(res.contains(NumericProperty.class.getName()));
         assertTrue(res.contains(EntityProperty.class.getName()));
     }

@@ -20,6 +20,7 @@ package org.apache.cayenne.modeler.dialog.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.editor.cgen.StandardModeController;
 import org.apache.cayenne.modeler.util.CayenneController;
 
@@ -72,10 +73,10 @@ public class TemplateDialog extends CayenneController {
     private void initListeners() {
         view.getUseDefault().addActionListener(action -> {
             if(template != null) {
-                cgenConfiguration.setTemplate(ClassGenerationAction.SUBCLASS_TEMPLATE);
+                cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
             }
             if(superTemplate != null) {
-                cgenConfiguration.setSuperTemplate(ClassGenerationAction.SUPERCLASS_TEMPLATE);
+                cgenConfiguration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot());
             }
             view.dispose();
         });
