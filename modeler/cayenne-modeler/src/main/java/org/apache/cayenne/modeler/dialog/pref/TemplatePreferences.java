@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.CodeTemplateManager;
+import org.apache.cayenne.modeler.dialog.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
@@ -89,6 +90,7 @@ public class TemplatePreferences extends CayenneController {
         builder.bindToAction(view.getAddButton(), "addTemplateAction()");
         builder.bindToAction(view.getCreateFromDefaultButton(), "createFromDefaultAction()");
         builder.bindToAction(view.getRemoveButton(), "removeTemplateAction()");
+        builder.bindToAction(view.getTemplateEditorButton(), "templateEditorAction()");
 
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 
@@ -124,6 +126,11 @@ public class TemplatePreferences extends CayenneController {
     }
 
     @SuppressWarnings("unused")
+    public void templateEditorAction() {
+         new TemplateEditorController(this).startupAction();
+    }
+
+    @SuppressWarnings("unused")
     public void createFromDefaultAction() {
         List<FSPath> paths = new CreateTemplateFromDefaultController(this).startupAction();
         for (FSPath path : paths) {
@@ -150,7 +157,7 @@ public class TemplatePreferences extends CayenneController {
         addToTemplateEntries(path);
     }
 
-    private void addToTemplateEntries(FSPath path) {
+    public void addToTemplateEntries(FSPath path) {
         if (path != null) {
             int len = templateEntries.size();
             templateEntries.add(path);

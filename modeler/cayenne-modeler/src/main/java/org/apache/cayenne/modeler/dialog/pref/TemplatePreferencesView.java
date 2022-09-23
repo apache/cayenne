@@ -36,6 +36,7 @@ public class TemplatePreferencesView extends JPanel {
     protected JButton addButton;
     protected JButton createFromDefaultButton;
     protected JButton removeButton;
+    protected JButton templateEditorButton;
     protected JTable table;
 
     public TemplatePreferencesView() {
@@ -43,6 +44,7 @@ public class TemplatePreferencesView extends JPanel {
         // create widgets
         addButton = new JButton("Add Template");
         createFromDefaultButton = new JButton("Create from default");
+        templateEditorButton = new JButton("Edit template");
         removeButton = new JButton("Remove Template");
 
         table = new CayenneTable();
@@ -57,6 +59,7 @@ public class TemplatePreferencesView extends JPanel {
 
         builder.append(addButton);
         builder.append(createFromDefaultButton);
+        builder.append(templateEditorButton);
         builder.append(removeButton);
 
         setLayout(new BorderLayout());
@@ -80,5 +83,9 @@ public class TemplatePreferencesView extends JPanel {
 
     public JButton getRemoveButton() {
         return removeButton;
+    }
+
+    public JButton getTemplateEditorButton() {
+        return templateEditorButton;
     }
 }

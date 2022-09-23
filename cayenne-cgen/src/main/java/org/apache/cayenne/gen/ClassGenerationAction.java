@@ -270,13 +270,7 @@ public class ClassGenerationAction {
 
 		if (template == null) {
 			Properties props = new Properties();
-
-			props.put("resource.loaders", "cayenne");
-			props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
-			props.put("resource.loader.cayenne.cache", "false");
-			if (cgenConfiguration.getRootPath() != null) {
-				props.put("resource.loader.cayenne.root", cgenConfiguration.getRootPath().toString());
-			}
+			initVelocityProperties(props);
 
 			VelocityEngine velocityEngine = new VelocityEngine();
 			velocityEngine.init(props);
@@ -288,12 +282,21 @@ public class ClassGenerationAction {
 		return template;
 	}
 
+	protected void initVelocityProperties(Properties props) {
+		props.put("resource.loaders", "cayenne");
+		props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
+		props.put("resource.loader.cayenne.cache", "false");
+		if (cgenConfiguration.getRootPath() != null) {
+			props.put("resource.loader.cayenne.root", cgenConfiguration.getRootPath().toString());
+		}
+	}
+
 	/**
 	 * Validates the state of this class generator.
 	 * Throws CayenneRuntimeException if it is in an inconsistent state.
 	 * Called internally from "execute".
 	 */
-	private void validateAttributes() {
+	protected void validateAttributes() {
 		Path dir = cgenConfiguration.buildPath();
 		if (dir == null) {
 			throw new CayenneRuntimeException("'rootPath' attribute is missing.");
