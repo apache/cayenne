@@ -107,13 +107,13 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.excludeEmbeddableArtifacts = new ArrayList<>();
         this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
-        this.template = ClassGenerationAction.SUBCLASS_TEMPLATE;
-        this.superTemplate = ClassGenerationAction.SUPERCLASS_TEMPLATE;
-        this.dataMapTemplate = ClassGenerationAction.DATAMAP_SUBCLASS_TEMPLATE;
-        this.dataMapSuperTemplate = ClassGenerationAction.DATAMAP_SUPERCLASS_TEMPLATE;
+        this.template = TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot();
+        this.superTemplate = TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot();
+        this.dataMapTemplate = TemplateType.DATAMAP_SUBCLASS.pathFromSourceRoot();
+        this.dataMapSuperTemplate = TemplateType.DATAMAP_SUPERCLASS.pathFromSourceRoot();
 
-        this.embeddableTemplate = ClassGenerationAction.EMBEDDABLE_SUBCLASS_TEMPLATE;
-        this.embeddableSuperTemplate = ClassGenerationAction.EMBEDDABLE_SUPERCLASS_TEMPLATE;
+        this.embeddableTemplate = TemplateType.EMBEDDABLE_SUBCLASS.pathFromSourceRoot();
+        this.embeddableSuperTemplate = TemplateType.EMBEDDABLE_SUPERCLASS.pathFromSourceRoot();
     }
 
     public void resetCollections() {
@@ -440,8 +440,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 && !createPKProperties
                 && !createPropertyNames
                 && "*.java".equals(outputPattern)
-                && template.equals(ClassGenerationAction.SUBCLASS_TEMPLATE)
-                && superTemplate.equals(ClassGenerationAction.SUPERCLASS_TEMPLATE)
+                && template.equals(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot())
+                && superTemplate.equals(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot())
                 && (superPkg == null || superPkg.isEmpty())
                 && (externalToolConfig == null || externalToolConfig.isEmpty());
     }
