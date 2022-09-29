@@ -72,7 +72,7 @@ public class TemplatePreferences extends CayenneController {
         initBindings();
     }
 
-    public Component getView() {
+    public TemplatePreferencesView getView() {
         return view;
     }
 
@@ -127,7 +127,10 @@ public class TemplatePreferences extends CayenneController {
 
     @SuppressWarnings("unused")
     public void templateEditorAction() {
-         new TemplateEditorController(this).startupAction();
+        int selectedRow = view.getTable().getSelectedRow();
+        if(selectedRow != -1) {
+            new TemplateEditorController(this).startupAction();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -161,9 +164,7 @@ public class TemplatePreferences extends CayenneController {
         if (path != null) {
             int len = templateEntries.size();
             templateEntries.add(path);
-            ((AbstractTableModel) view.getTable().getModel()).fireTableRowsInserted(
-                    len,
-                    len);
+            ((AbstractTableModel) view.getTable().getModel()).fireTableRowsInserted(len, len);
         }
     }
 
@@ -174,16 +175,12 @@ public class TemplatePreferences extends CayenneController {
             return;
         }
 
-        Object key = ((AbstractTableModel) view.getTable().getModel()).getValueAt(
-                selected,
-                0);
+        Object key = view.getTable().getModel().getValueAt(selected, 0);
 
         editor.getRemovedNode().add(getTemplatePreferences().node((String) key));
         templateEntries.remove(selected);
 
-        ((AbstractTableModel) view.getTable().getModel()).fireTableRowsDeleted(
-                selected,
-                selected);
+        ((AbstractTableModel) view.getTable().getModel()).fireTableRowsDeleted(selected, selected);
 
     }
 }

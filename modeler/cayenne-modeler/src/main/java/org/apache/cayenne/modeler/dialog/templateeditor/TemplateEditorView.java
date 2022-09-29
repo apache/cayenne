@@ -54,7 +54,7 @@ public class TemplateEditorView extends JDialog {
     protected JButton saveButton;
     protected JButton findButton;
     protected JButton findAndReplaceButton;
-    protected JComboBox<Object> entityComboBox;
+    protected JComboBox<String> entityComboBox;
     private JSplitPane split;
     private JToolBar toolBar;
     private JPanel topPanel;
@@ -80,7 +80,7 @@ public class TemplateEditorView extends JDialog {
         this.findAndReplaceButton.setToolTipText("Find and replace");
         this.previewButton = new JButton(ModelerUtil.buildIcon("icon-edit.png"));
         this.previewButton.setToolTipText("Generate preview");
-        this.entityComboBox = new JComboBox<>(entityNames.toArray());
+        this.entityComboBox = new JComboBox<>(entityNames.toArray(new String[0]));
         this.entityComboBox.setToolTipText("Select an entity for the test");
     }
 

@@ -40,7 +40,7 @@ public class PreviewClassGenerationFactory implements ClassGenerationActionFacto
     @Inject
     private MetadataUtils metadataUtils;
 
-    @Inject
+    @Inject(TemplateEditorController.TEMPLATE_EDITOR_WRITER)
     private StringWriter writer;
 
     @Override

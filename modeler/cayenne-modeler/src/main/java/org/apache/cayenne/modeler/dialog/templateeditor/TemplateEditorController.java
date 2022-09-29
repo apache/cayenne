@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.dialog.templateeditor;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
@@ -40,31 +41,34 @@ import javax.swing.text.BadLocationException;
 import java.awt.Component;
 import java.io.File;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * since 4.3
  */
 public class TemplateEditorController extends CayenneController {
 
+    public static final String TEMPLATE_EDITOR_REPO = "templateEditorRepo";
+    public static final String TEMPLATE_EDITOR_WRITER = "tplEditorWriter";
+    private static final String EDITED_TEMPLATE = "editedTemplate";
+    private static final Key<StringWriter> TPL_EDITOR_WRITER = Key.get(StringWriter.class, TEMPLATE_EDITOR_WRITER);
+
+    private final Map<String, String> customTemplates;
+    private final DataMap currentDataMap;
+
     protected TemplatePreferencesView preferencesView;
     protected TemplateEditorView view;
     protected boolean canceled;
-    private final Map<String, String> customTemplates;
-    private static final String EDITED_TEMPLATE = "editedTemplate";
-    public static final String TEMPLATE_EDITOR_REPO = "templateEditorRepo";
-    private final DataMap currentDataMap;
 
     public TemplateEditorController(TemplatePreferences preferences) {
         super(preferences);
-        this.preferencesView = (TemplatePreferencesView) preferences.getView();
+        this.preferencesView = preferences.getView();
         this.customTemplates = application.getCodeTemplateManager().getCustomTemplates();
         this.currentDataMap = application.getFrameController().getProjectController().getCurrentDataMap();
-        this.view = new TemplateEditorView( getEntityNames());
+        this.view = new TemplateEditorView(getEntityNames());
         initBindings();
     }
 
@@ -117,18 +121,18 @@ public class TemplateEditorController extends CayenneController {
     public void generateAction() throws Exception {
         putTemplateTextInRepository();
         Injector injector = getInjector();
-        ClassGenerationAction action =  injector
+        ClassGenerationAction action = injector
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(getCgenConfiguration());
-        StringWriter writer = injector.getInstance(StringWriter.class);
-    action.addEntities(Collections.singleton(getSelectedEntity()));
+        StringWriter writer = injector.getInstance(TPL_EDITOR_WRITER);
+        action.addEntities(Collections.singleton(getSelectedEntity()));
         int caretPosition = view.getEditingTemplatePane().getCaretPosition();
         try {
             action.execute();
+        } catch (ParseErrorException pe) {
+            caretPosition = getErrorCaretPosition(pe);
+            writer.write(pe.getMessage());
         } catch (Exception e) {
-            if (e instanceof ParseErrorException) {
-                caretPosition = getErrorCaretPosition((ParseErrorException) e);
-            }
             writer.write(e.getMessage());
         }
         view.getEditingTemplatePane().setCaretPosition(caretPosition);
@@ -147,7 +151,7 @@ public class TemplateEditorController extends CayenneController {
         return new ToolsInjectorBuilder()
                 .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
                 .addModule(binder -> binder.bind(ClassGenerationActionFactory.class).to(PreviewClassGenerationFactory.class))
-                .addModule(binder -> binder.bind(StringWriter.class).to(StringWriter.class))
+                .addModule(binder -> binder.bind(TPL_EDITOR_WRITER).to(StringWriter.class))
                 .create();
     }
 
@@ -176,26 +180,19 @@ public class TemplateEditorController extends CayenneController {
 
     private ObjEntity getSelectedEntity() {
         String selectedEntityName = view.getSelectedEntityName();
-        ObjEntity selectedObject = null;
-        Collection<ObjEntity> objEntities = currentDataMap.getObjEntities();
-        for (ObjEntity object : objEntities) {
-            if (selectedEntityName.equals(object.getName())) {
-                selectedObject = object;
-            }
+        if(currentDataMap == null) {
+            return null;
         }
-        return selectedObject;
+        return currentDataMap.getObjEntity(selectedEntityName);
     }
 
     private List<String> getEntityNames() {
-        ArrayList<String> names = new ArrayList<>();
-        if (currentDataMap != null) {
-            Object[] objEntities = currentDataMap.getObjEntities().toArray();
-            for (Object objEntity : objEntities) {
-                ObjEntity s = (ObjEntity) objEntity;
-                names.add(s.getName());
-            }
+        if(currentDataMap == null) {
+            return Collections.emptyList();
         }
-        return names;
+        return currentDataMap.getObjEntities().stream()
+                .map(ObjEntity::getName)
+                .collect(Collectors.toList());
     }
 
 }
