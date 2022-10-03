@@ -151,7 +151,7 @@ public class PreferenceDialog extends CayenneController {
         makeCloseableOnEscape();
 
         view.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        view.setModal(true);
+        view.setModalityType(Dialog.ModalityType.MODELESS);
     }
 
     protected void registerPanel(final String name, final CayenneController panelController) {

@@ -26,6 +26,7 @@ import org.apache.cayenne.gen.TemplateType;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Properties;
 
@@ -34,7 +35,7 @@ import java.util.Properties;
  */
 public class PreviewGenerationAction extends ClassGenerationAction {
 
-    private Writer writer;
+    private StringWriter writer;
 
     public PreviewGenerationAction(CgenConfiguration cgenConfig) {
         super(cgenConfig);
@@ -45,12 +46,14 @@ public class PreviewGenerationAction extends ClassGenerationAction {
         //Mock
     }
 
-    public void setWriter(Writer writer) {
+    public void setWriter(StringWriter writer) {
         this.writer = writer;
     }
 
     @Override
     protected Writer openWriter(TemplateType templateType) {
+        // clear and return
+        writer.getBuffer().setLength(0);
         return writer;
     }
 
