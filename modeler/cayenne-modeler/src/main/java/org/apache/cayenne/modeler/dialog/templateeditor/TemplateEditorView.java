@@ -34,7 +34,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * since 4.3
  */
-public class TemplateEditorView extends JDialog {
+public class TemplateEditorView extends JFrame {
 
     protected RSyntaxTextArea editingTemplatePane;
     protected RSyntaxTextArea classPreviewPane;
@@ -61,7 +61,7 @@ public class TemplateEditorView extends JDialog {
     static final String VELOCITY_KEY = "text/velocity";
 
 
-    public TemplateEditorView( List<String> entityNames) {
+    public TemplateEditorView(List<String> entityNames) {
         this.setTitle("Template editor");
         this.editingTemplatePane = new TextEditorPane();
         this.classPreviewPane = new RSyntaxTextArea();

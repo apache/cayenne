@@ -73,12 +73,8 @@ public class TemplateEditorController extends CayenneController {
     }
 
     public void startupAction() {
-        this.view.setModal(true);
         this.view.getEditingTemplatePane().setText(loadSelectedTemplateText());
         this.view.editingTemplatePane.setCaretPosition(0);
-        this.view.pack();
-        makeCloseableOnEscape();
-        centerView();
         this.view.setVisible(true);
     }
 

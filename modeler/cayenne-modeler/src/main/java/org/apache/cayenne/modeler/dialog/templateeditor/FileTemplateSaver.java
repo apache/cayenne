@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.dialog.templateeditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -37,7 +37,7 @@ public class FileTemplateSaver  {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTemplateSaver.class);
 
-    public void save(String templateText, File dest, JDialog view) {
+    public void save(String templateText, File dest, JFrame view) {
         try {
             Files.write(dest.toPath(), templateText.getBytes());
         } catch (IOException e) {
