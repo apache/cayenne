@@ -81,16 +81,16 @@ public class Cayenne {
     /**
      * Returns property descriptor for specified property.
      * 
-     * @param properyName
+     * @param propertyName
      *            path to the property
      * @return property descriptor, <code>null</code> if not found
      */
-    public static PropertyDescriptor getProperty(Persistent object, String properyName) {
+    public static PropertyDescriptor getProperty(Persistent object, String propertyName) {
         ClassDescriptor descriptor = getClassDescriptor(object);
         if (descriptor == null) {
             return null;
         }
-        return descriptor.getProperty(properyName);
+        return descriptor.getProperty(propertyName);
     }
 
     /**
@@ -210,7 +210,7 @@ public class Cayenne {
         return readNestedProperty(property, pathRemainder);
     }
 
-    private static final Object readSimpleProperty(Object o, String propertyName) {
+    private static Object readSimpleProperty(Object o, String propertyName) {
         if (o instanceof Persistent) {
 
             PropertyDescriptor property = getProperty((Persistent) o, propertyName);
