@@ -25,6 +25,9 @@ Most notable removals are SelectQuery and these Cayenne modules:
 * Per CAY-2747 Cayenne XML schemas are updated, so you need to update you projects (just open them in the Modeler
 or use cayenne-project-compatibility module)
 
+* Per CAY-2751 there's no more JNDI DataSource provided by Cayenne, nor there's a password encoding capabilities.
+If you need these you should provide you own custom DataSource.
+
 * Per CAY-2752 code generation configuration has minor changes. You need to review and update
 Maven, Gradle and Ant configs accordingly.
 
