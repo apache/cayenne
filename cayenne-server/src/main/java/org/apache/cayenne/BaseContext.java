@@ -616,6 +616,26 @@ public abstract class BaseContext implements ObjectContext {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * @since 4.3
+	 */
+	@Override
+	public void removeUserProperty(String key) {
+		getUserProperties().remove(key);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @since 4.3
+	 */
+	@Override
+	public void clearUserProperties() {
+		getUserProperties().clear();
+	}
+
+	/**
 	 * If ObjEntity qualifier is set, asks it to inject initial value to an
 	 * object. Also performs all Persistent initialization operations
 	 */
