@@ -304,4 +304,18 @@ public interface ObjectContext extends DataChannel, Serializable {
      * @since 3.0
      */
     void setUserProperty(String key, Object value);
+
+    /**
+     * Removes a user-defined property.
+     *
+     * @since 4.3
+     */
+    void removeUserProperty(String key);
+
+    /**
+     * Removes all user-defined properties.
+     *
+     * @since 4.3
+     */
+    void clearUserProperties();
 }

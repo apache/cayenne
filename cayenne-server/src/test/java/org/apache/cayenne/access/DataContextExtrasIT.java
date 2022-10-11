@@ -182,6 +182,26 @@ public class DataContextExtrasIT extends ServerCase {
     }
 
     @Test
+    public void testUserPropertiesRemove() {
+        Object object = new Object();
+
+        context.setUserProperty("ABC", object);
+        assertSame(object, context.getUserProperty("ABC"));
+
+        context.removeUserProperty("ABC");
+        assertNull(context.getUserProperty("ABC"));
+
+        context.setUserProperty("CBA", object);
+        context.setUserProperty("BCA", object);
+        assertSame(object, context.getUserProperty("CBA"));
+        assertSame(object, context.getUserProperty("BCA"));
+
+        context.clearUserProperties();
+        assertNull(context.getUserProperty("CBA"));
+        assertNull(context.getUserProperty("BCA"));
+    }
+
+    @Test
     public void testHasChangesNew() {
 
         assertTrue("No changes expected in context", !context.hasChanges());
