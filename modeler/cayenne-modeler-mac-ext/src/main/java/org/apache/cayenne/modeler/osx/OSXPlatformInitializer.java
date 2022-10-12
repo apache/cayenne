@@ -74,9 +74,9 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         UIManager.put("ToolBarSeparatorUI",           OSXToolBarSeparatorUI.class.getName());
         UIManager.put("PanelUI",                      OSXPanelUI.class.getName());
         // next two is custom made for Cayenne's MainToolBar
-        UIManager.put("MainToolBar.background",       UIManager.get("ToolBar.background"));
-        UIManager.put("MainToolBar.border",           BorderFactory.createEmptyBorder(0, 7, 0, 7));
         UIManager.put("ToolBar.background",           lightGrey);
+        UIManager.put("MainToolBar.background",       lightGrey);
+        UIManager.put("MainToolBar.border",           BorderFactory.createEmptyBorder(0, 7, 0, 7));
         UIManager.put("ToolBar.border",               darkBorder);
         UIManager.put("ScrollPane.border",            darkBorder);
         UIManager.put("Table.scrollPaneBorder",       darkBorder);
