@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import java.util.Arrays;
+
 /**
  * Defines class generation template types.
  * 
@@ -89,5 +91,9 @@ public enum TemplateType {
             }
         }
         return null;
+    }
+
+    public static boolean isDefault(String templateText) {
+        return Arrays.stream(values()).anyMatch(t -> t.pathFromSourceRoot().equals(templateText));
     }
 }

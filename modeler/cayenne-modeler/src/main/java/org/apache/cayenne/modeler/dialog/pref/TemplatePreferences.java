@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.dialog.pref;
 
 import org.apache.cayenne.modeler.CodeTemplateManager;
-import org.apache.cayenne.modeler.dialog.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.pref.FSPath;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.pref.CayennePreferenceEditor;
@@ -31,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.table.AbstractTableModel;
-import java.awt.Component;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,11 +124,7 @@ public class TemplatePreferences extends CayenneController {
     }
 
     @SuppressWarnings("unused")
-    public void templateEditorAction() {
-        int selectedRow = view.getTable().getSelectedRow();
-        if(selectedRow != -1) {
-            new TemplateEditorController(this).startupAction();
-        }
+    public void templateEditorAction() {//noop
     }
 
     @SuppressWarnings("unused")

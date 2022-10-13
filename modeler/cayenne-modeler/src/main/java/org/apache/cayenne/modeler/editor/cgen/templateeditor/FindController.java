@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.templateeditor;
+package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.util.Util;
@@ -35,15 +35,17 @@ import java.awt.event.ActionListener;
  */
 public class FindController extends CayenneController implements ActionListener {
 
-    private  FindView view;
+    private FindView view;
     protected TemplateEditorView parentView;
-    private  JButton nextButton;
-    private  JButton prevButton;
+    private JButton nextButton;
+    private JButton prevButton;
     protected static final String TEXT_NOT_FOUND_MSG = "Text not found";
+    protected static final String FIND_NEXT = "FindNext";
+    private static final String FIND_PREV = "FindPrev";
 
     public FindController(TemplateEditorController parent) {
         super(parent);
-        this.parentView = (TemplateEditorView) parent.getView();
+        this.parentView = parent.getView();
         initComponents();
         initListeners();
     }
@@ -60,9 +62,9 @@ public class FindController extends CayenneController implements ActionListener 
     }
 
     protected void initListeners() {
-        nextButton.setActionCommand("FindNext");
+        nextButton.setActionCommand(FIND_NEXT);
         nextButton.addActionListener(this);
-        prevButton.setActionCommand("FindPrev");
+        prevButton.setActionCommand(FIND_PREV);
         prevButton.addActionListener(this);
     }
 
@@ -71,7 +73,7 @@ public class FindController extends CayenneController implements ActionListener 
 
         // "FindNext" => search forward, "FindPrev" => search backward
         String command = e.getActionCommand();
-        boolean forward = "FindNext".equals(command);
+        boolean forward = FIND_NEXT.equals(command);
 
         SearchContext context = getSearchContext(forward, view);
         if (context == null) return;

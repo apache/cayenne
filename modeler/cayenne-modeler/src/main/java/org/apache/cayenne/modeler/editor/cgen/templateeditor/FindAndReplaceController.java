@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.templateeditor;
+package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
@@ -37,6 +37,8 @@ public class FindAndReplaceController extends FindController implements ActionLi
     private  JButton nextButton;
     private  JButton replaceButton;
     private  JButton replaceAllButton;
+    private static final String REPLACE = "replace";
+    private static final String REPLACE_ALL = "replaceAll";
 
     public FindAndReplaceController(TemplateEditorController parent) {
         super(parent);
@@ -54,11 +56,11 @@ public class FindAndReplaceController extends FindController implements ActionLi
 
     @Override
     protected void initListeners() {
-        nextButton.setActionCommand("findNext");
+        nextButton.setActionCommand(FIND_NEXT);
         nextButton.addActionListener(this);
-        replaceButton.setActionCommand("replace");
+        replaceButton.setActionCommand(REPLACE);
         replaceButton.addActionListener(this);
-        replaceAllButton.setActionCommand("replaceAll");
+        replaceAllButton.setActionCommand(REPLACE_ALL);
         replaceAllButton.addActionListener(this);
     }
 
@@ -68,21 +70,21 @@ public class FindAndReplaceController extends FindController implements ActionLi
         SearchContext context = getSearchContext(true,view);
         if (context == null) return;
         switch (command) {
-            case "findNext": {
+            case FIND_NEXT: {
                 boolean found = SearchEngine.find(parentView.getEditingTemplatePane(), context).wasFound();
                 if (!found) {
                     JOptionPane.showMessageDialog(view, TEXT_NOT_FOUND_MSG);
                 }
                 break;
             }
-            case "replace": {
+            case REPLACE: {
                 boolean found = SearchEngine.replace(parentView.getEditingTemplatePane(), context).wasFound();
                 if (!found) {
                     JOptionPane.showMessageDialog(view, TEXT_NOT_FOUND_MSG);
                 }
                 break;
             }
-            case "replaceAll": {
+            case REPLACE_ALL: {
                 boolean found = SearchEngine.replaceAll(parentView.getEditingTemplatePane(), context).wasFound();
                 if (!found) {
                     JOptionPane.showMessageDialog(view, TEXT_NOT_FOUND_MSG);

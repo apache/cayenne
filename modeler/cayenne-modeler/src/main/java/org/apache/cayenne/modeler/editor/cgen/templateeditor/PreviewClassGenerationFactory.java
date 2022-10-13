@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.templateeditor;
+package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -40,7 +40,7 @@ public class PreviewClassGenerationFactory implements ClassGenerationActionFacto
     @Inject
     private MetadataUtils metadataUtils;
 
-    @Inject(TemplateEditorController.TEMPLATE_EDITOR_WRITER)
+    @Inject(PreviewActionConfigurator.TEMPLATE_EDITOR_WRITER)
     private StringWriter writer;
 
     @Override

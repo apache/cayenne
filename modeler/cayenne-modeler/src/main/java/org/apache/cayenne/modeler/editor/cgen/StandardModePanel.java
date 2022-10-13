@@ -22,19 +22,17 @@ package org.apache.cayenne.modeler.editor.cgen;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.util.ComboBoxAdapter;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
-import java.util.function.BiConsumer;
 
 /**
  * @since 4.1
@@ -48,13 +46,18 @@ public class StandardModePanel extends GeneratorControllerPanel {
     private final JCheckBox pkProperties;
     private TextAdapter superPkg;
     protected TextAdapter outputPattern;
-    private ComboBoxAdapter<String> subclassTemplate;
-    private ComboBoxAdapter<String> superclassTemplate;
-    private ComboBoxAdapter<String> embeddableTemplate;
-    private ComboBoxAdapter<String> embeddableSuperTemplate;
-    private ComboBoxAdapter<String> dataMapTemplate;
-    private ComboBoxAdapter<String> dataMapSuperTemplate;
-    private JButton templateManagerButton;
+    private JButton editSuperclassTemplateBtn;
+    private JButton editSubclassTemplateBtn;
+    private JButton editEmbeddableTemplateBtn;
+    private JButton editEmbeddableSuperTemplateBtn;
+    private JButton editDataMapTemplateBtn;
+    private JButton editDataMapSuperTemplateBtn;
+    private JLabel entityTemplateLbl;
+    private JLabel entitySuperTemplateLbl;
+    private JLabel embeddableTemplateLbl;
+    private JLabel embeddableSuperTemplateLbl;
+    private JLabel datamapTemplateLbl;
+    private JLabel datamapSuperTemplateLbl;
 
 
     public StandardModePanel(CodeGeneratorController codeGeneratorController) {
@@ -65,77 +68,107 @@ public class StandardModePanel extends GeneratorControllerPanel {
         this.usePackagePath = new JCayenneCheckBox();
         this.createPropertyNames = new JCayenneCheckBox();
         this.pkProperties = new JCayenneCheckBox();
-        this.templateManagerButton = new JButton("Templates manager");
-        this.templateManagerButton.setFont(templateManagerButton.getFont().deriveFont(14f));
+
 
         initTextFields();
-        initTemplatesSelector();
+        initEditTemplateLabels();
+        initEditTemplateButtons();
         buildView();
+    }
+
+    private void initEditTemplateLabels() {
+        this.entityTemplateLbl = new JLabel(TemplateType.ENTITY_SUBCLASS.readableName());
+        this.entitySuperTemplateLbl = new JLabel(TemplateType.ENTITY_SUPERCLASS.readableName());
+        this.embeddableTemplateLbl = new JLabel(TemplateType.EMBEDDABLE_SUBCLASS.readableName());
+        this.embeddableSuperTemplateLbl = new JLabel(TemplateType.EMBEDDABLE_SUPERCLASS.readableName());
+        this.datamapTemplateLbl = new JLabel(TemplateType.DATAMAP_SUBCLASS.readableName());
+        this.datamapSuperTemplateLbl = new JLabel(TemplateType.DATAMAP_SUPERCLASS.readableName());
+    }
+
+    private void initEditTemplateButtons() {
+        this.editSubclassTemplateBtn = new JButton("Edit");
+        this.editSuperclassTemplateBtn = new JButton("Edit");
+        this.editEmbeddableTemplateBtn = new JButton("Edit");
+        this.editEmbeddableSuperTemplateBtn = new JButton("Edit");
+        this.editDataMapTemplateBtn = new JButton("Edit");
+        this.editDataMapSuperTemplateBtn = new JButton("Edit");
+
+    }
+
+    public void setEnableEditSubclassTemplateButtons(Boolean isEnabled) {
+        this.editSubclassTemplateBtn.setEnabled(isEnabled);
+        this.editEmbeddableTemplateBtn.setEnabled(isEnabled);
+        this.editDataMapTemplateBtn.setEnabled(isEnabled);
+    }
+
+    public void setEnableEditSuperclassTemplateButtons(Boolean isEnabled) {
+        this.editSuperclassTemplateBtn.setEnabled(isEnabled);
+        this.editEmbeddableSuperTemplateBtn.setEnabled(isEnabled);
+        this.editDataMapSuperTemplateBtn.setEnabled(isEnabled);
     }
 
     protected void buildView() {
         setLayout(new BorderLayout());
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "left:10dlu,3dlu, 140dlu, 3dlu, 50dlu, 3dlu, 20dlu",
+                "left:10dlu, 3dlu, 90dlu, 3dlu, pref, 3dlu, 50dlu, 3dlu, 20dlu",
                 "p, 3dlu, p, 10dlu, 11*(p, 3dlu),10dlu,9*(p, 3dlu)");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
         builder.addLabel("Output Directory", cc.xyw(1, 1, 3));
-        builder.add(outputFolder.getComponent(), cc.xyw(1, 3, 6));
-        builder.add(selectOutputFolder, cc.xy(7, 3));
+        builder.add(outputFolder.getComponent(), cc.xyw(1, 3, 7));
+        builder.add(selectOutputFolder, cc.xy(9, 3));
 
         // Advanced options panel
-        builder.addSeparator("Advanced options", cc.xyw(1, 7, 7 ));
+        builder.addSeparator("Advanced options", cc.xyw(1, 7, 9));
 
         builder.add(pairs, cc.xy(1, 9));
-        builder.addLabel("Make Pairs", cc.xy(3, 9));
+        builder.addLabel("Make Pairs", cc.xyw(3, 9, 3));
 
         builder.add(usePackagePath, cc.xy(1, 11));
-        builder.addLabel("Use Package Path", cc.xy(3, 11));
+        builder.addLabel("Use Package Path", cc.xyw(3, 11, 3));
 
         builder.add(overwrite, cc.xy(1, 13));
-        builder.addLabel("Overwrite Subclasses", cc.xy(3, 13));
+        builder.addLabel("Overwrite Subclasses", cc.xyw(3, 13, 3));
 
         builder.add(createPropertyNames, cc.xy(1, 15));
-        builder.addLabel("Create Property Names", cc.xy(3, 15));
+        builder.addLabel("Create Property Names", cc.xyw(3, 15, 3));
 
         builder.add(pkProperties, cc.xy(1, 17));
-        builder.addLabel("Create PK properties", cc.xy(3, 17));
+        builder.addLabel("Create PK properties", cc.xyw(3, 17, 3));
 
-        builder.addLabel("Output Pattern", cc.xyw(1, 19, 3));
-        builder.add(outputPattern.getComponent(), cc.xyw(1, 21, 3));
+        builder.addLabel("Output Pattern", cc.xyw(1, 19, 5));
+        builder.add(outputPattern.getComponent(), cc.xyw(1, 21, 5));
 
-        builder.addLabel("Superclass package", cc.xyw(1, 23, 3));
-        builder.add(superPkg.getComponent(), cc.xyw(1, 25, 3));
+        builder.addLabel("Superclass package", cc.xyw(1, 23, 5));
+        builder.add(superPkg.getComponent(), cc.xyw(1, 25, 5));
+
 
         //Templates options panel
-        builder.addSeparator("Templates options", cc.xyw(1, 28, 7 ));
+        builder.addSeparator("Templates options", cc.xyw(1, 28, 9));
 
-        builder.add(subclassTemplate.getComboBox(), cc.xyw(1, 30,3));
-        builder.addLabel("Subclass", cc.xyw(5, 30,3));
+        builder.add(entityTemplateLbl, cc.xyw(1, 30, 3));
+        builder.add(editSubclassTemplateBtn, cc.xy(5, 30));
 
-        builder.add(superclassTemplate.getComboBox(), cc.xyw(1, 32,3));
-        builder.addLabel("Superclass", cc.xyw(5, 32,3));
+        builder.add(entitySuperTemplateLbl, cc.xyw(1, 32, 3));
+        builder.add(editSuperclassTemplateBtn, cc.xy(5, 32));
 
-        builder.add(embeddableTemplate.getComboBox(), cc.xyw(1, 34,3));
-        builder.addLabel("Embeddable", cc.xyw(5, 34,3));
+        builder.add(embeddableTemplateLbl, cc.xyw(1, 34, 3));
+        builder.add(editEmbeddableTemplateBtn, cc.xy(5, 34));
 
-        builder.add(embeddableSuperTemplate.getComboBox(), cc.xyw(1, 36,3));
-        builder.addLabel("Embeddable Superclass", cc.xyw(5, 36,3));
+        builder.add(embeddableSuperTemplateLbl, cc.xyw(1, 36, 3));
+        builder.add(editEmbeddableSuperTemplateBtn, cc.xy(5, 36));
 
-        builder.add(dataMapTemplate.getComboBox(), cc.xyw(1, 38,3));
-        builder.addLabel("DataMap", cc.xyw(5, 38,3));
+        builder.add(datamapTemplateLbl, cc.xyw(1, 38, 3));
+        builder.add(editDataMapTemplateBtn, cc.xy(5, 38));
 
-        builder.add(dataMapSuperTemplate.getComboBox(), cc.xyw(1, 40,3));
-        builder.addLabel("DataMap Superclass", cc.xyw(5, 40,3));
-
-        builder.add(templateManagerButton, cc.xyw(1, 44,3));
+        builder.add(datamapSuperTemplateLbl, cc.xyw(1, 40, 3));
+        builder.add(editDataMapSuperTemplateBtn, cc.xy(5, 40));
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }
 
-    private void initTextFields(){
+    private void initTextFields() {
         JTextField superPkgField = new JTextField();
         this.superPkg = new TextAdapter(superPkgField) {
             @Override
@@ -154,45 +187,6 @@ public class StandardModePanel extends GeneratorControllerPanel {
         };
     }
 
-    private void initTemplatesSelector() {
-        JComboBox<String> subclassField = new JComboBox<>();
-        this.subclassTemplate = new StringComboBoxAdapter(subclassField, CgenConfiguration::setTemplate);
-        JComboBox<String> superclassField = new JComboBox<>();
-        this.superclassTemplate = new StringComboBoxAdapter(superclassField, CgenConfiguration::setSuperTemplate);
-        JComboBox<String> embeddableField = new JComboBox<>();
-        this.embeddableTemplate = new StringComboBoxAdapter(embeddableField, CgenConfiguration::setEmbeddableTemplate);
-        JComboBox<String> embeddableSuperField = new JComboBox<>();
-        this.embeddableSuperTemplate = new StringComboBoxAdapter(embeddableSuperField, CgenConfiguration::setEmbeddableSuperTemplate);
-        JComboBox<String> queryField = new JComboBox<>();
-        this.dataMapTemplate = new StringComboBoxAdapter(queryField, CgenConfiguration::setDataMapTemplate);
-        JComboBox<String> querySuper = new JComboBox<>();
-        this.dataMapSuperTemplate = new StringComboBoxAdapter(querySuper, CgenConfiguration::setDataMapSuperTemplate);
-    }
-
-    class StringComboBoxAdapter extends ComboBoxAdapter<String> {
-        private final BiConsumer<CgenConfiguration, String> setTemplate;
-
-        public StringComboBoxAdapter(JComboBox<String> subclassField, BiConsumer<CgenConfiguration, String> setter) {
-            super(subclassField);
-            this.setTemplate = setter;
-        }
-
-        @Override
-        protected void updateModel(String item) throws ValidationException {
-            CgenConfiguration cgenConfiguration = getCgenConfig();
-            String templatePath = Application.getInstance()
-                    .getCodeTemplateManager()
-                    .getTemplatePath(item, cgenConfiguration.getDataMap().getConfigurationSource());
-            setTemplate.accept(cgenConfiguration, templatePath);
-            checkConfigDirty();
-        }
-    }
-
-    public void setDisableSuperComboBoxes(boolean val) {
-        superclassTemplate.getComboBox().setEnabled(val);
-        embeddableSuperTemplate.getComboBox().setEnabled(val);
-        dataMapSuperTemplate.getComboBox().setEnabled(val);
-    }
 
     public JCheckBox getPairs() {
         return pairs;
@@ -218,35 +212,56 @@ public class StandardModePanel extends GeneratorControllerPanel {
         return outputPattern;
     }
 
-    public JButton getTemplateManagerButton() {
-        return templateManagerButton;
-    }
-
-    public ComboBoxAdapter<String> getSubclassTemplate() {
-        return subclassTemplate;
-    }
-
-    public ComboBoxAdapter<String> getSuperclassTemplate() {
-        return superclassTemplate;
-    }
-
-    public ComboBoxAdapter<String> getEmbeddableTemplate() {
-        return embeddableTemplate;
-    }
-
-    public ComboBoxAdapter<String> getEmbeddableSuperTemplate() {
-        return embeddableSuperTemplate;
-    }
-
-    public ComboBoxAdapter<String> getDataMapTemplate() {
-        return dataMapTemplate;
-    }
-
-    public ComboBoxAdapter<String> getDataMapSuperTemplate() {
-        return dataMapSuperTemplate;
-    }
-
     public TextAdapter getSuperPkg() {
         return superPkg;
     }
+
+    public JButton getEditSuperclassTemplateBtn() {
+        return editSuperclassTemplateBtn;
+    }
+
+    public JButton getEditSubclassTemplateBtn() {
+        return editSubclassTemplateBtn;
+    }
+
+    public JButton getEditEmbeddableTemplateBtn() {
+        return editEmbeddableTemplateBtn;
+    }
+
+    public JButton getEditEmbeddableSuperTemplateBtn() {
+        return editEmbeddableSuperTemplateBtn;
+    }
+
+    public JButton getEditDataMapTemplateBtn() {
+        return editDataMapTemplateBtn;
+    }
+
+    public JButton getEditDataMapSuperTemplateBtn() {
+        return editDataMapSuperTemplateBtn;
+    }
+
+    public JLabel getEntityTemplateLbl() {
+        return entityTemplateLbl;
+    }
+
+    public JLabel getEntitySuperTemplateLbl() {
+        return entitySuperTemplateLbl;
+    }
+
+    public JLabel getEmbeddableTemplateLbl() {
+        return embeddableTemplateLbl;
+    }
+
+    public JLabel getEmbeddableSuperTemplateLbl() {
+        return embeddableSuperTemplateLbl;
+    }
+
+    public JLabel getDatamapTemplateLbl() {
+        return datamapTemplateLbl;
+    }
+
+    public JLabel getDatamapSuperTemplateLbl() {
+        return datamapSuperTemplateLbl;
+    }
+
 }

@@ -335,10 +335,10 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public Path buildPath() {
-        if(rootPath == null) {
+        if (rootPath == null) {
             return relPath;
         }
-        if(relPath == null) {
+        if (relPath == null) {
             return rootPath;
         }
         return rootPath.resolve(relPath).toAbsolutePath().normalize();
@@ -412,12 +412,12 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
                 .simpleTag("destDir", separatorsToUnix(buildRelPath()))
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
-                .simpleTag("template", separatorsToUnix(this.template))
-                .simpleTag("superTemplate", separatorsToUnix(this.superTemplate))
-                .simpleTag("embeddableTemplate", separatorsToUnix(this.embeddableTemplate))
-                .simpleTag("embeddableSuperTemplate", separatorsToUnix(this.embeddableSuperTemplate))
-                .simpleTag("dataMapTemplate", separatorsToUnix(this.dataMapTemplate))
-                .simpleTag("dataMapSuperTemplate", separatorsToUnix(this.dataMapSuperTemplate))
+                .start("template").cdata(this.template, true).end()
+                .start("superTemplate").cdata(this.superTemplate, true).end()
+                .start("embeddableTemplate").cdata(this.embeddableTemplate, true).end()
+                .start("embeddableSuperTemplate").cdata(this.embeddableSuperTemplate, true).end()
+                .start("dataMapTemplate").cdata(this.dataMapTemplate, true).end()
+                .start("dataMapSuperTemplate").cdata(this.dataMapSuperTemplate, true).end()
                 .simpleTag("outputPattern", this.outputPattern)
                 .simpleTag("makePairs", Boolean.toString(this.makePairs))
                 .simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
@@ -446,10 +446,40 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 && (externalToolConfig == null || externalToolConfig.isEmpty());
     }
 
-    private String separatorsToUnix (String path){
-        if (path!=null) {
+    private String separatorsToUnix(String path) {
+        if (path != null) {
             return path.replace('\\', '/');
         }
         return null;
+    }
+
+    public String getTemplateByType(TemplateType type) {
+        String templateText = "";
+        switch (type) {
+            case ENTITY_SINGLE_CLASS:
+            case ENTITY_SUBCLASS:
+                templateText = getTemplate();
+                break;
+            case ENTITY_SUPERCLASS:
+                templateText = getSuperTemplate();
+                break;
+
+            case EMBEDDABLE_SINGLE_CLASS:
+            case EMBEDDABLE_SUBCLASS:
+                templateText = getEmbeddableTemplate();
+                break;
+            case EMBEDDABLE_SUPERCLASS:
+                templateText = getEmbeddableSuperTemplate();
+                break;
+
+            case DATAMAP_SINGLE_CLASS:
+            case DATAMAP_SUBCLASS:
+                templateText = getDataMapTemplate();
+                break;
+            case DATAMAP_SUPERCLASS:
+                templateText = getDataMapSuperTemplate();
+                break;
+        }
+        return templateText;
     }
 }
