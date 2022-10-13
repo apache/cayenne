@@ -27,9 +27,9 @@ CAY-2754 Add SELF property to the cgen templates
 CAY-2757 Modeler: Create custom templates from defaults
 CAY-2760 ObjectContext.userProperties need a way to clear properties
 CAY-2761 Modeler: Editor for the cgen templates
-CAY-2762 Modeler: Difference in toolbars colors on OSX
 
 Bug Fixes:
 
 CAY-2755 Modeler: Entities are not sorted by name in the class generation view
+CAY-2762 Modeler: Difference in toolbars colors on OSX
 
