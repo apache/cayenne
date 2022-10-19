@@ -95,18 +95,6 @@ public class StandardModePanel extends GeneratorControllerPanel {
 
     }
 
-    public void setEnableEditSubclassTemplateButtons(Boolean isEnabled) {
-        this.editSubclassTemplateBtn.setEnabled(isEnabled);
-        this.editEmbeddableTemplateBtn.setEnabled(isEnabled);
-        this.editDataMapTemplateBtn.setEnabled(isEnabled);
-    }
-
-    public void setEnableEditSuperclassTemplateButtons(Boolean isEnabled) {
-        this.editSuperclassTemplateBtn.setEnabled(isEnabled);
-        this.editEmbeddableSuperTemplateBtn.setEnabled(isEnabled);
-        this.editDataMapSuperTemplateBtn.setEnabled(isEnabled);
-    }
-
     protected void buildView() {
         setLayout(new BorderLayout());
         CellConstraints cc = new CellConstraints();

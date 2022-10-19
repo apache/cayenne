@@ -126,7 +126,10 @@ public class ClassesTabController extends CayenneController {
         getParentController().enableGenerateButton(selectedCount != 0);
         getParentController().getView().getCheckAll().setSelected(selectedCount >= totalClasses);
         getParentController().updateSelectedEntities();
+        getParentController().getStandardModeController().updateTemplateEditorButtons();
+
     }
+
 
     /**
      * An action that updates entity check boxes in response to the Select All state

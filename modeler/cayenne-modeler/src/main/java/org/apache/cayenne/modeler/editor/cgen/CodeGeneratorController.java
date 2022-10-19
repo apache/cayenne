@@ -332,6 +332,14 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         return selectionModel.getSelectedEntitiesCount();
     }
 
+    public boolean isEntitiesSelected() {
+        return selectionModel.getSelectedEntitiesCount() > 0;
+    }
+
+    public boolean isEmbeddableSelected() {
+        return selectionModel.getSelecetedEmbeddablesCount() > 0;
+    }
+
     public int getSelectedEmbeddablesSize() {
         return selectionModel.getSelecetedEmbeddablesCount();
     }
@@ -350,6 +358,10 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     public void setInitFromModel(boolean initFromModel) {
         this.initFromModel = initFromModel;
+    }
+
+    public StandardModeController getStandardModeController() {
+        return standardModeController;
     }
 
     @Override

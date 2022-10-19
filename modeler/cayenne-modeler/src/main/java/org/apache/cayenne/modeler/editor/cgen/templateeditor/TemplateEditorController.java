@@ -54,7 +54,7 @@ public class TemplateEditorController extends CayenneController {
     private PreviewActionConfigurator actionConfigurator;
 
 
-    public TemplateEditorController( StandardModeController parentController, TemplateType templateType) {
+    public TemplateEditorController(StandardModeController parentController, TemplateType templateType) {
         super(parentController.getCodeGeneratorController());
         this.templateType = templateType;
         this.configuration = parentController.getCodeGeneratorController().getCgenConfiguration();
@@ -66,7 +66,7 @@ public class TemplateEditorController extends CayenneController {
         this.artefactsConfigurator = setupArtefactConfigurator();
         this.editorView = new TemplateEditorView(artefactsConfigurator.getArtifactsNames(currentDataMap));
         this.actionConfigurator = new PreviewActionConfigurator(this);
-        this.isTemplateDefault = TemplateType.isDefault(configuration.getTemplateByType(templateType));
+        this.isTemplateDefault = TemplateType.isDefault(configuration.getTemplateByType(templateType).getData());
         this.isTemplateModified = false;
         this.templateLoader = new EditorTemplateLoader(configuration, this.editorView);
         this.templateSaver = new EditorTemplateSaver(configuration, this.editorView);
@@ -74,14 +74,8 @@ public class TemplateEditorController extends CayenneController {
         configureEditorView(templateType);
         addListeners();
         centerView();
-        disabledEditorsButtonsInParentWindow();
         initBindings();
         this.editorView.setVisible(true);
-    }
-
-    private void disabledEditorsButtonsInParentWindow() {
-        parentController.getView().setEnableEditSubclassTemplateButtons(false);
-        parentController.getView().setEnableEditSuperclassTemplateButtons(false);
     }
 
     private ArtefactsConfigurator setupArtefactConfigurator() {
@@ -92,7 +86,7 @@ public class TemplateEditorController extends CayenneController {
             }
             case EMBEDDABLE_SUPERCLASS:
             case EMBEDDABLE_SUBCLASS: {
-                return   new EmbeddableArtefactsConfigurator();
+                return new EmbeddableArtefactsConfigurator();
             }
             case DATAMAP_SUPERCLASS:
             case DATAMAP_SUBCLASS: {
@@ -107,14 +101,14 @@ public class TemplateEditorController extends CayenneController {
         this.editorView.getEditingTemplatePane().setText(templateLoader.load(templateType, isTemplateDefault));
         this.editorView.editingTemplatePane.setCaretPosition(0);
         this.editorView.getSaveButton().setEnabled(isTemplateModified);
-        this.editorView.setTitle( templateType.readableName() + " - cayenne template editor" );
+        this.editorView.setTitle(templateType.readableName() + " - cayenne template editor");
     }
 
     @Override
     public TemplateEditorView getView() {
         return editorView;
     }
-    
+
     protected void initBindings() {
         BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
         builder.bindToAction(editorView.getSaveButton(), "saveAction()");
@@ -144,21 +138,28 @@ public class TemplateEditorController extends CayenneController {
 
         editorView.addWindowListener(new WindowAdapter() {
             @Override
+            public void windowOpened(WindowEvent e) {
+                parentController.setEditorOpen(true);
+                parentController.updateTemplateEditorButtons();
+            }
+        });
+
+        editorView.addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 if (isTemplateModified && showUnsavedChangesCloseDialog() == 0) {
                     saveAction();
                 }
-                if (configuration.isMakePairs()){
-                    parentController.getView().setEnableEditSuperclassTemplateButtons(true);
-                }
-                parentController.getView().setEnableEditSubclassTemplateButtons(true);
+                parentController.setEditorOpen(false);
+                parentController.updateTemplateEditorButtons();
             }
         });
+
     }
 
     @SuppressWarnings("unused")
     public void saveAction() {
-        templateSaver.save(templateType,isTemplateDefault);
+        templateSaver.save(templateType, isTemplateDefault);
         parentController.getCodeGeneratorController().checkCgenConfigDirty();
         isTemplateModified = false;
         parentController.updateTemplatesLabels(configuration);
@@ -268,7 +269,7 @@ public class TemplateEditorController extends CayenneController {
         return artefactsConfigurator;
     }
 
-    public String getSelectedArtifactName(){
+    public String getSelectedArtifactName() {
         return getView().getSelectedArtifactName();
     }
 }
