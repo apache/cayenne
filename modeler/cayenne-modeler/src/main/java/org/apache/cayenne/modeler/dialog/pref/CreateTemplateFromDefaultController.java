@@ -172,7 +172,7 @@ public class CreateTemplateFromDefaultController extends CayenneController {
         int result = isNameExist(newTemplateName) ? showOverwriteDialog(newTemplateName) : JOptionPane.OK_OPTION;
         TemplateType typeByName = TemplateType.byName(defaultTemplateName);
         if (result == JOptionPane.OK_OPTION && typeByName != null) {
-            String newTemplatePath = destDir.getAbsolutePath() + File.separator + prefix + typeByName.fullFileName();
+            String newTemplatePath = destDir.getAbsolutePath() + File.separator + prefix /*+typeByName.fullFileName()*/;
             createTemplateFile(newTemplatePath, defaultTemplateName);
             FSPath fsPath = codeTemplateManager.addTemplate(newTemplatePath, newTemplateName);
             editor.getAddedNode().add(fsPath.getCurrentPreference());

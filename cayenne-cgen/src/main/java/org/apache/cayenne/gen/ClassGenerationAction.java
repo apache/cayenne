@@ -242,13 +242,12 @@ public class ClassGenerationAction {
         initVelocityProperties(props, type);
         VelocityEngine velocityEngine = new VelocityEngine();
         velocityEngine.init(props);
-        return velocityEngine.getTemplate(type.pathFromSourceRoot());
-
+        return velocityEngine.getTemplate(cgenConfiguration.getTemplateByType(type).getName());
     }
 
     protected void initVelocityProperties(Properties props, TemplateType type) {
-
-        if (TemplateType.isDefault(cgenConfiguration.getTemplateByType(type))) {
+        CgenTemplate template = cgenConfiguration.getTemplateByType(type);
+        if (template.isFile()) {
             props.put("resource.loaders", "cayenne");
             props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
             props.put("resource.loader.cayenne.cache", "false");
@@ -259,15 +258,14 @@ public class ClassGenerationAction {
             props.setProperty(RuntimeConstants.RESOURCE_LOADERS, "string");
             props.setProperty("resource.loader.string.class", StringResourceLoader.class.getName());
             props.setProperty("resource.loader.string.repository.name", CUSTOM_TEMPLATE_REPO);
-            putTemplateTextInRepository(type);
+            putTemplateTextInRepository(template);
         }
     }
 
-    private void putTemplateTextInRepository(TemplateType type) {
-        String templateText = cgenConfiguration.getTemplateByType(type);
+    private void putTemplateTextInRepository(CgenTemplate template) {
         StringResourceLoader.setRepository(CUSTOM_TEMPLATE_REPO, new StringResourceRepositoryImpl());
         StringResourceRepository repo = StringResourceLoader.getRepository(CUSTOM_TEMPLATE_REPO);
-        repo.putStringResource(type.pathFromSourceRoot(), templateText);
+        repo.putStringResource(template.getName(), template.getData());
     }
 
 	/**
@@ -334,9 +332,9 @@ public class ClassGenerationAction {
 		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
 		File dest = new File(mkpath(new File(cgenConfiguration.buildPath().toString()), packageName), filename);
 
-		if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate())) {
-			return null;
-		}
+        if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate().getData())) {
+            return null;
+        }
 
 		return dest;
 	}
@@ -364,10 +362,10 @@ public class ClassGenerationAction {
 				return null;
 			}
 
-			if (!fileNeedUpdate(dest, cgenConfiguration.getTemplate())) {
-				return null;
-			}
-		}
+            if (!fileNeedUpdate(dest, cgenConfiguration.getTemplate().getData())) {
+                return null;
+            }
+        }
 
 		return dest;
 	}
@@ -443,26 +441,26 @@ public class ClassGenerationAction {
 		this.context = context;
 	}
 
-	/**
-	 * @since 4.1
-	 */
-	public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
-		this.cgenConfiguration = cgenConfiguration;
-	}
+    /**
+     * @since 4.1
+     */
+    public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
+        this.cgenConfiguration = cgenConfiguration;
+    }
 
-	public ToolsUtilsFactory getUtilsFactory() {
-		return utilsFactory;
-	}
+    public ToolsUtilsFactory getUtilsFactory() {
+        return utilsFactory;
+    }
 
-	public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
-		this.utilsFactory = utilsFactory;
-	}
+    public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
+        this.utilsFactory = utilsFactory;
+    }
 
-	public void setMetadataUtils(MetadataUtils metadataUtils) {
-		this.metadataUtils = metadataUtils;
-	}
+    public void setMetadataUtils(MetadataUtils metadataUtils) {
+        this.metadataUtils = metadataUtils;
+    }
 
-	public MetadataUtils getMetadataUtils() {
-		return metadataUtils;
-	}
+    public MetadataUtils getMetadataUtils() {
+        return metadataUtils;
+    }
 }

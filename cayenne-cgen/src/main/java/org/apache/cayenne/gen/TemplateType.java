@@ -27,34 +27,31 @@ import java.util.Arrays;
  */
 public enum TemplateType {
 
-    ENTITY_SINGLE_CLASS(false,"Single Entity Class","singleclass"),
+    ENTITY_SINGLE_CLASS(false,"Single Entity Class","templates/v4_1/singleclass.vm"),
 
-    ENTITY_SUPERCLASS(true,"Entity Superclass","superclass"),
+    ENTITY_SUPERCLASS(true,"Entity Superclass","templates/v4_1/superclass.vm"),
 
-    ENTITY_SUBCLASS(false,"Entity Subclass","subclass"),
+    ENTITY_SUBCLASS(false,"Entity Subclass","templates/v4_1/subclass.vm"),
+    EMBEDDABLE_SINGLE_CLASS(false,"Single Embeddable Class","templates/v4_1/embeddable-singleclass.vm"),
 
-    EMBEDDABLE_SINGLE_CLASS(false,"Single Embeddable Class","embeddable-singleclass"),
+    EMBEDDABLE_SUPERCLASS(true,"Embeddable Superclass","templates/v4_1/embeddable-superclass.vm"),
 
-    EMBEDDABLE_SUPERCLASS(true,"Embeddable Superclass","embeddable-superclass"),
+    EMBEDDABLE_SUBCLASS(false,"Embeddable Subclass", "templates/v4_1/embeddable-subclass.vm"),
 
-    EMBEDDABLE_SUBCLASS(false,"Embeddable Subclass","embeddable-subclass"),
+    DATAMAP_SINGLE_CLASS(false,"Single DataMap Class","templates/v4_1/datamap-singleclass.vm"),
 
-    DATAMAP_SINGLE_CLASS(false,"Single DataMap Class","datamap-singleclass"),
+    DATAMAP_SUPERCLASS(true,"DataMap Superclass", "templates/v4_1/datamap-superclass.vm"),
 
-    DATAMAP_SUPERCLASS(true,"DataMap Superclass","datamap-superclass"),
-
-    DATAMAP_SUBCLASS(false,"DataMap Subclass","datamap-subclass");
+    DATAMAP_SUBCLASS(false,"DataMap Subclass",   "templates/v4_1/datamap-subclass.vm");
 
     private final boolean superclass;
     private final String readableName;
-    private final String fileName;
-    private static final String EXTENSION = ".vm";
-    private static final String TEMPLATES_DIR = "templates/v4_1/";
+    private final CgenTemplate defaultTemplate;
 
-    TemplateType(boolean superclass, String readableName, String fileName) {
+    TemplateType(boolean superclass, String readableName,  String defaultTemplate) {
         this.superclass = superclass;
         this.readableName = readableName;
-        this.fileName = fileName;
+        this.defaultTemplate = new CgenTemplate(defaultTemplate,true,this);
     }
 
     public boolean isSuperclass() {
@@ -65,15 +62,11 @@ public enum TemplateType {
         return readableName;
     }
 
-    public String fileName(){
-        return fileName;
-    }
+    public String pathFromSourceRoot() {return defaultTemplate.getData();}
 
-    public String fullFileName(){
-        return fileName+EXTENSION;
+    public CgenTemplate defaultTemplate() {
+        return defaultTemplate;
     }
-
-    public String pathFromSourceRoot() {return TEMPLATES_DIR+fileName+EXTENSION;}
 
     public static TemplateType byName(String name){
         for (TemplateType templateType : TemplateType.values()) {

@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 
 /**
@@ -55,27 +56,27 @@ public class EditorTemplateSaver {
 
         switch (templateType) {
             case ENTITY_SUPERCLASS: {
-                configuration.setSuperTemplate(template);
+                configuration.setSuperTemplate(new CgenTemplate(template,false,TemplateType.ENTITY_SUPERCLASS));
                 break;
             }
             case ENTITY_SUBCLASS: {
-                configuration.setTemplate(template);
+                configuration.setTemplate(new CgenTemplate(template,false,TemplateType.ENTITY_SUBCLASS));
                 break;
             }
             case EMBEDDABLE_SUPERCLASS: {
-                configuration.setEmbeddableSuperTemplate(template);
+                configuration.setEmbeddableSuperTemplate(new CgenTemplate(template,false,TemplateType.EMBEDDABLE_SUPERCLASS));
                 break;
             }
             case EMBEDDABLE_SUBCLASS: {
-                configuration.setEmbeddableTemplate(template);
+                configuration.setEmbeddableTemplate(new CgenTemplate(template,false,TemplateType.EMBEDDABLE_SUBCLASS));
                 break;
             }
             case DATAMAP_SUPERCLASS: {
-                configuration.setDataMapSuperTemplate(template);
+                configuration.setDataMapSuperTemplate(new CgenTemplate(template,false,TemplateType.DATAMAP_SUPERCLASS));
                 break;
             }
             case DATAMAP_SUBCLASS: {
-                configuration.setDataMapTemplate(template);
+                configuration.setDataMapTemplate(new CgenTemplate(template,false,TemplateType.DATAMAP_SUBCLASS));
                 break;
             }
             default:
@@ -86,15 +87,15 @@ public class EditorTemplateSaver {
     private void setDefaultSingleTemplate(TemplateType templateType) {
         switch (templateType) {
             case ENTITY_SUBCLASS: {
-                configuration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot());
+                configuration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
                 break;
             }
             case EMBEDDABLE_SUBCLASS: {
-                configuration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot());
+                configuration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.defaultTemplate());
                 break;
             }
             case DATAMAP_SUBCLASS: {
-                configuration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot());
+                configuration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.defaultTemplate());
                 break;
             }
             default:

@@ -100,26 +100,26 @@ public class StandardModeController extends GeneratorController {
     }
 
     private void setSubclassForDefaults() {
-        if (TemplateType.isDefault(cgenConfiguration.getTemplate())) {
-            cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
+        if (TemplateType.isDefault(cgenConfiguration.getTemplate().getData())) {
+            cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
         }
-        if (TemplateType.isDefault(cgenConfiguration.getEmbeddableTemplate())) {
-            cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SUBCLASS.pathFromSourceRoot());
+        if (TemplateType.isDefault(cgenConfiguration.getEmbeddableTemplate().getData())) {
+            cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate());
         }
-        if (TemplateType.isDefault(cgenConfiguration.getDataMapTemplate())) {
-            cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SUBCLASS.pathFromSourceRoot());
+        if (TemplateType.isDefault(cgenConfiguration.getDataMapTemplate().getData())) {
+            cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SUBCLASS.defaultTemplate());
         }
     }
 
     private void setSingleclassForDefaults() {
-        if (TemplateType.isDefault(cgenConfiguration.getTemplate())) {
-            cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot());
+        if (TemplateType.isDefault(cgenConfiguration.getTemplate().getData())) {
+            cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
         }
-        if (TemplateType.isDefault(cgenConfiguration.getEmbeddableTemplate())) {
-            cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot());
+        if (TemplateType.isDefault(cgenConfiguration.getEmbeddableTemplate().getData())) {
+            cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.defaultTemplate());
         }
-        if (TemplateType.isDefault(cgenConfiguration.getDataMapTemplate())) {
-            cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot());
+        if (TemplateType.isDefault(cgenConfiguration.getDataMapTemplate().getData())) {
+            cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.defaultTemplate());
         }
     }
 

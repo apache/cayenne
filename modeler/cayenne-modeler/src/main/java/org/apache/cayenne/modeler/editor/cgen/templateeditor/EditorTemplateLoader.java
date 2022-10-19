@@ -49,7 +49,7 @@ public class EditorTemplateLoader {
         if (isTemplateDefault) {
             return getDefaultTemplateText(type);
         } else {
-            return cgenConfiguration.getTemplateByType(type);
+            return cgenConfiguration.getTemplateByType(type).getData();
         }
     }
 

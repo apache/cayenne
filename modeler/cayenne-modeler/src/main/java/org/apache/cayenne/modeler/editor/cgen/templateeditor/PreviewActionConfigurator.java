@@ -26,6 +26,7 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 
@@ -76,17 +77,17 @@ public class PreviewActionConfigurator {
         switch (templateType) {
             case ENTITY_SUPERCLASS:
             case ENTITY_SUBCLASS: {
-                previewCgenConfiguration.setTemplate(templateText);
+                previewCgenConfiguration.setTemplate(new CgenTemplate(templateText,false,TemplateType.ENTITY_SUPERCLASS));
                 break;
             }
             case EMBEDDABLE_SUPERCLASS:
             case EMBEDDABLE_SUBCLASS: {
-                previewCgenConfiguration.setEmbeddableTemplate(templateText);
+                previewCgenConfiguration.setEmbeddableTemplate(new CgenTemplate(templateText,false,TemplateType.EMBEDDABLE_SUBCLASS));
                 break;
             }
             case DATAMAP_SUPERCLASS:
             case DATAMAP_SUBCLASS: {
-                previewCgenConfiguration.setDataMapTemplate(templateText);
+                previewCgenConfiguration.setDataMapTemplate(new CgenTemplate(templateText,false,TemplateType.DATAMAP_SUBCLASS));
                 break;
             }
             default:

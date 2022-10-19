@@ -73,10 +73,10 @@ public class TemplateDialog extends CayenneController {
     private void initListeners() {
         view.getUseDefault().addActionListener(action -> {
             if(template != null) {
-                cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
+                cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
             }
             if(superTemplate != null) {
-                cgenConfiguration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot());
+                cgenConfiguration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.defaultTemplate());
             }
             view.dispose();
         });

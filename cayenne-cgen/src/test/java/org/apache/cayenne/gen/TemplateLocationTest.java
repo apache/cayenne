@@ -48,7 +48,7 @@ public class TemplateLocationTest {
     public void upperLevel() throws Exception {
         cgenConfiguration.setRootPath(tempFolder.newFolder().toPath());
         tempFolder.newFile("testTemplate.vm");
-        cgenConfiguration.setTemplate("../testTemplate.vm");
+        cgenConfiguration.setTemplate(new CgenTemplate("../testTemplate.vm",false,TemplateType.ENTITY_SUBCLASS));
         assertNotNull(action.getTemplate(templateType));
     }
 
@@ -56,7 +56,7 @@ public class TemplateLocationTest {
     public void sameLevel() throws Exception {
         cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
         tempFolder.newFile("testTemplate2.vm");
-        cgenConfiguration.setTemplate("testTemplate2.vm");
+        cgenConfiguration.setTemplate(new CgenTemplate("testTemplate2.vm",false,TemplateType.ENTITY_SUBCLASS));
         assertNotNull(action.getTemplate(templateType));
     }
 
@@ -64,7 +64,7 @@ public class TemplateLocationTest {
     public void aboveLevel() throws Exception {
         cgenConfiguration.setRootPath(Paths.get(tempFolder.getRoot().getParent()));
         tempFolder.newFile("testTemplate3.vm");
-        cgenConfiguration.setTemplate(tempFolder.getRoot() + "/testTemplate3.vm");
+        cgenConfiguration.setTemplate(new CgenTemplate(tempFolder.getRoot() + "/testTemplate3.vm",false,TemplateType.ENTITY_SUBCLASS));
         assertNotNull(action.getTemplate(templateType));
     }
 }

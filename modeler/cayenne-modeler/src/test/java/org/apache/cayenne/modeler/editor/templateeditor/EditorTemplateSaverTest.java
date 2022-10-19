@@ -31,7 +31,7 @@ public class EditorTemplateSaverTest {
     public void testSaveCustom(){
         configuration.setMakePairs(true);
         saver.save(TemplateType.ENTITY_SUBCLASS,false);
-        String customTemplate = configuration.getTemplate();
+        String customTemplate = configuration.getTemplate().getData();
         assertEquals(CUSTOM_TPL, customTemplate);
     }
 

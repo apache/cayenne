@@ -1,6 +1,7 @@
 package org.apache.cayenne.modeler.editor.templateeditor;
 
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.modeler.editor.cgen.templateeditor.EditorTemplateLoader;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -28,7 +29,7 @@ public class EditorTemplateLoaderTest {
 
     @Test
     public void testLoadCustom(){
-        configuration.setTemplate(CUSTOM_TPL);
+        configuration.setTemplate(new CgenTemplate(CUSTOM_TPL,false,TemplateType.ENTITY_SUBCLASS));
         String customTemplate = loader.load(TemplateType.ENTITY_SUBCLASS, false);
         assertEquals(CUSTOM_TPL, customTemplate);
 
@@ -36,7 +37,7 @@ public class EditorTemplateLoaderTest {
 
     @Test
     public void testLoadDefault(){
-        configuration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot());
+        configuration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.defaultTemplate());
         String defaultTemplateText = getDefaultTemplateText(TemplateType.ENTITY_SUPERCLASS);
         String defaultTemplate = loader.load(TemplateType.ENTITY_SUPERCLASS, true);
         assertEquals(defaultTemplateText, defaultTemplate);
@@ -44,7 +45,7 @@ public class EditorTemplateLoaderTest {
 
     @Test
     public void testLoadSingleDefault(){
-        configuration.setSuperTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
+        configuration.setSuperTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
         configuration.setMakePairs(false);
         String defaultTemplateText = getDefaultTemplateText(TemplateType.ENTITY_SINGLE_CLASS);
         String defaultTemplate = loader.load(TemplateType.ENTITY_SUBCLASS, true);
