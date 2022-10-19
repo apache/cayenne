@@ -138,17 +138,6 @@ public class StandardModeController extends GeneratorController {
         //noop
     }
 
-
-    @SuppressWarnings("unused")
-    public void popPreferencesAction() {
-        new PreferenceDialog(getApplication().getFrameController()).startupAction(PreferenceDialog.TEMPLATES_KEY);
-    }
-
-    public void addTemplateAction(String template, String superTemplate) {
-        new PreferenceDialog(getApplication().getFrameController()).startupToCreateTemplate(template, superTemplate);
-    }
-
-
     @Override
     public void initForm(CgenConfiguration cgenConfiguration) {
         super.initForm(cgenConfiguration);
