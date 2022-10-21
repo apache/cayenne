@@ -328,7 +328,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
         return injector.getInstance(ClassGenerationActionFactory.class).createAction(cgenConfiguration);
     }
 
-    private CgenConfiguration buildConfiguration(DataMap dataMap) {
+     CgenConfiguration buildConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfiguration.class);
         if (hasConfig()) {
             logger.info("Using cgen config from pom.xml");

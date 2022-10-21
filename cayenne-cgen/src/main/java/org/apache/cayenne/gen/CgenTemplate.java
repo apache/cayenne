@@ -49,4 +49,7 @@ public class CgenTemplate {
         }
     }
 
+    public TemplateType getType() {
+        return type;
+    }
 }

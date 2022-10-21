@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.test.file.FileUtil;
 import org.apache.cayenne.test.resource.ResourceUtil;
 import org.apache.tools.ant.Location;
@@ -32,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Pattern;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -97,12 +101,72 @@ public class CayenneGeneratorTaskTest {
 		assertFalse(_a.exists());
 	}
 
-	/** Test single classes generation including full package path. */
-	@Test
-	public void testSingleClasses1() throws Exception {
-		// prepare destination directory
-		File mapDir = new File(baseDir, "single-classes-tree");
-		assertTrue(mapDir.mkdirs());
+    @Test
+    public void testTransferPluginDataToCgenConfiguration() throws Exception {
+        // prepare destination directory
+        File mapDir = new File(baseDir.toURI());
+
+        // setup task
+        task.setDestDir(mapDir);
+        task.setMap(map);
+        task.setEncoding("UTF-8");
+        task.setMode("all");
+        task.setOutputPattern("pattern");
+        task.setSuperpkg("superPkg");
+        task.setMakepairs(true);
+        task.setCreatepropertynames(true);
+        task.setOverwrite(true);
+        task.setUsepkgpath(true);
+        task.setTemplate(template.getPath());
+
+        // run task
+        task.execute();
+
+        CgenConfiguration cgenConfiguration = task.buildConfiguration(new DataMap());
+        // check results
+
+        assertEquals("UTF-8", cgenConfiguration.getEncoding());
+        assertEquals("all", cgenConfiguration.getArtifactsGenerationMode());
+        assertEquals("pattern", cgenConfiguration.getOutputPattern());
+        assertEquals("superPkg", cgenConfiguration.getSuperPkg());
+        assertTrue(cgenConfiguration.isMakePairs());
+        assertTrue(cgenConfiguration.isCreatePropertyNames());
+        assertTrue(cgenConfiguration.isOverwrite());
+        assertTrue(cgenConfiguration.isUsePkgPath());
+
+        assertTrue(cgenConfiguration.getTemplate().isFile());
+        assertEquals("target\\testrun\\velotemplate.vm", convertPath(cgenConfiguration.getTemplate().getData()));
+        assertEquals(TemplateType.ENTITY_SUBCLASS, cgenConfiguration.getTemplate().getType());
+
+        assertTrue(cgenConfiguration.getSuperTemplate().isFile());
+        assertEquals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate().getData(), cgenConfiguration.getSuperTemplate().getData());
+        assertEquals(TemplateType.ENTITY_SUPERCLASS, cgenConfiguration.getSuperTemplate().getType());
+
+        assertTrue(cgenConfiguration.getEmbeddableTemplate().isFile());
+        assertEquals(TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate().getData(), cgenConfiguration.getEmbeddableTemplate().getData());
+        assertEquals(TemplateType.EMBEDDABLE_SUBCLASS, cgenConfiguration.getEmbeddableTemplate().getType());
+
+        assertTrue(cgenConfiguration.getEmbeddableSuperTemplate().isFile());
+        assertEquals(TemplateType.EMBEDDABLE_SUPERCLASS.defaultTemplate().getData(), cgenConfiguration.getEmbeddableSuperTemplate().getData());
+        assertEquals(TemplateType.EMBEDDABLE_SUPERCLASS, cgenConfiguration.getEmbeddableSuperTemplate().getType());
+
+        assertTrue(cgenConfiguration.getDataMapTemplate().isFile());
+        assertEquals(TemplateType.DATAMAP_SUBCLASS.defaultTemplate().getData(), cgenConfiguration.getDataMapTemplate().getData());
+        assertEquals(TemplateType.DATAMAP_SUBCLASS, cgenConfiguration.getDataMapTemplate().getType());
+
+        assertTrue(cgenConfiguration.getDataMapSuperTemplate().isFile());
+        assertEquals(TemplateType.DATAMAP_SUPERCLASS.defaultTemplate().getData(), cgenConfiguration.getDataMapSuperTemplate().getData());
+        assertEquals(TemplateType.DATAMAP_SUPERCLASS, cgenConfiguration.getDataMapSuperTemplate().getType());
+    }
+
+    /**
+     * Test single classes generation including full package path.
+     */
+    @Test
+    public void testSingleClasses1() throws Exception {
+        // prepare destination directory
+        File mapDir = new File(baseDir, "single-classes-tree");
+        assertTrue(mapDir.mkdirs());
 
 		// setup task
 		task.setDestDir(mapDir);

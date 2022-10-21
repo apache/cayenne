@@ -158,7 +158,7 @@ public class CayenneGeneratorTask extends CayenneTask {
                 datamapsupertemplate != null || createpkproperties != null || force || externaltoolconfig != null;
     }
 
-    private CgenConfiguration buildConfiguration(DataMap dataMap) {
+     CgenConfiguration buildConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfiguration.class);
         if(hasConfig()) {
             logger.info("Using cgen config from pom.xml");
