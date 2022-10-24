@@ -31,12 +31,12 @@ import org.apache.cayenne.util.Util;
  */
 class ScalarRowReader<T> implements RowReader<T> {
 
-    private ExtendedType converter;
-    private int index;
-    private int type;
+    private final ExtendedType<T> converter;
+    private final int index;
+    private final int type;
 
+    @SuppressWarnings("unchecked")
     ScalarRowReader(RowDescriptor descriptor, ScalarResultSegment segmentMetadata) {
-
         int scalarIndex = segmentMetadata.getColumnOffset();
         this.converter = descriptor.getConverters()[scalarIndex];
         this.type = descriptor.getColumns()[scalarIndex].getJdbcType();
@@ -44,10 +44,9 @@ class ScalarRowReader<T> implements RowReader<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T readRow(ResultSet resultSet) {
         try {
-            return (T) converter.materializeObject(resultSet, index, type);
+            return converter.materializeObject(resultSet, index, type);
         } catch (CayenneRuntimeException cex) {
             // rethrow unmodified
             throw cex;
