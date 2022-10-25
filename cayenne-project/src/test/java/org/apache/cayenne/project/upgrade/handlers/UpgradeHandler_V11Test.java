@@ -112,10 +112,37 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
                 }
             }
         }
-
-        assertEquals(4, elements);
+        assertEquals(8, elements);
         assertTrue(dataMapTemplateSeen);
         assertTrue(dataMapSuperTemplateSeen);
+
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                switch (node.getNodeName()) {
+                    case "template":
+                    case "embeddableTemplate":
+                    case "dataMapTemplate":
+                        assertEquals("velocity template stub", node.getFirstChild().getNodeValue());
+                        break;
+                    case "superTemplate":
+                        assertEquals("The template /org/apache/cayenne/project/upgrade/handlers was not found " +
+                                        "during the project upgrade. Use the template editor in Cayenne modeler to set the template",
+                                node.getFirstChild().getNodeValue());
+                        break;
+                    case "embeddableSuperTemplate":
+                        assertEquals("The template ../../testWrongPath was not found during the project upgrade." +
+                                        " Use the template editor in Cayenne modeler to set the template",
+                                node.getFirstChild().getNodeValue());
+                        break;
+                    case "dataMapSuperTemplate":
+                        assertEquals("templates/v4_1/datamap-superclass.vm",node.getFirstChild().getNodeValue());
+                        break;
+                }
+            }
+
+        }
+
     }
 
     @Test

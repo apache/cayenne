@@ -24,20 +24,34 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Upgrade handler for the project version "11" introduced by 4.3.M1 release.
  * Changes highlight:
- *      - schemas version update
- *      - ROP removal
- *      - cgen schema changes
+ * - schemas version update
+ * - ROP removal
+ * - cgen schema changes
  *
  * @since 4.3
  */
 public class UpgradeHandler_V11 implements UpgradeHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V11.class);
 
     @Override
     public String getVersion() {
@@ -124,6 +138,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
     private void updateCgenConfig(UpgradeUnit upgradeUnit) {
         renameQueryTemplates(upgradeUnit);
         dropCgenClientConfig(upgradeUnit);
+        updateTemplates(upgradeUnit);
     }
 
     private void renameQueryTemplates(UpgradeUnit upgradeUnit) {
@@ -164,4 +179,91 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             element.getParentNode().removeChild(element);
         }
     }
+
+    /**
+     * upgrades templates in dataMap. Reads the file by path and write template if it was found.
+     * If not, the warning message will be written.
+     * In case of default template the path to default template will be written.
+     *
+     * @param upgradeUnit - unit to upgrade
+     */
+    private void updateTemplates(UpgradeUnit upgradeUnit) {
+        updateTemplate(upgradeUnit, "template");
+        updateTemplate(upgradeUnit, "superTemplate");
+        updateTemplate(upgradeUnit, "embeddableTemplate");
+        updateTemplate(upgradeUnit, "embeddableSuperTemplate");
+        updateTemplate(upgradeUnit, "dataMapTemplate");
+        updateTemplate(upgradeUnit, "dataMapSuperTemplate");
+    }
+
+    private void updateTemplate(UpgradeUnit upgradeUnit, String nodeName) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList templates;
+        try {
+            templates = (NodeList) xpath.evaluate("/data-map/*[local-name()='cgen']/*[local-name()='" + nodeName + "']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < templates.getLength(); j++) {
+            Node node = templates.item(j).getFirstChild();
+            if (node != null) {
+                String dataMapPath = upgradeUnit.getResource().getURL().getPath();
+                node.setNodeValue(readTemplateFile(node.getNodeValue(), dataMapPath));
+            }
+        }
+    }
+
+    private String readTemplateFile(String path, String dataMapPath) {
+        if (!isTemplateDefault(path)) {
+            try {
+                String templateFromClassPath = readTemplateFromClassPath(path);
+                if (templateFromClassPath != null) {
+                    return templateFromClassPath;
+                }
+                return readTemplateFromFile(path, dataMapPath);
+            } catch (NoSuchFileException e) {
+                return "The template " + path + " was not found during the project upgrade. Use the template editor in Cayenne modeler to set the template";
+            } catch (IOException e) {
+                logger.warn("Can't read the file: " + path);
+                return "Can't read the file: " + path;
+            }
+        } else {
+            return path;
+        }
+    }
+
+    private String readTemplateFromClassPath(String path) throws IOException {
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream(path)) {
+            if (stream != null) {
+                return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            }
+        }
+        return null;
+    }
+
+    private String readTemplateFromFile(String path, String dataMapPath) throws IOException {
+        String absolutPath = buildPath(path, dataMapPath);
+        return new String(Files.readAllBytes(Paths.get(absolutPath)));
+    }
+
+    private String buildPath(String path, String dataMapPath) throws IOException {
+        File dataMap = new File(dataMapPath);
+        return new File(dataMap.getParent(), path).getCanonicalPath();
+    }
+
+    private boolean isTemplateDefault(String template) {
+        ArrayList<String> defaultTemplatePaths = new ArrayList<>(Arrays.asList(
+                "templates/v4_1/singleclass.vm",
+                "templates/v4_1/singleclass.vm",
+                "templates/v4_1/subclass.vm",
+                "templates/v4_1/embeddable-singleclass.vm",
+                "templates/v4_1/embeddable-superclass.vm",
+                "templates/v4_1/embeddable-subclass.vm",
+                "templates/v4_1/datamap-singleclass.vm",
+                "templates/v4_1/datamap-superclass.vm",
+                "templates/v4_1/datamap-subclass.vm"));
+        return defaultTemplatePaths.contains(template);
+    }
+
 }

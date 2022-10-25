@@ -17,8 +17,12 @@
     <cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
         <destDir>../../../../target/cgenClasses</destDir>
         <mode>entity</mode>
-        <queryTemplate>test_query_template</queryTemplate>
-        <querySuperTemplate>test_query_super_template</querySuperTemplate>
+        <template>org/apache/cayenne/project/upgrade/handlers/velocityTemplate.txt</template>
+        <superTemplate>/org/apache/cayenne/project/upgrade/handlers</superTemplate>
+        <embeddableTemplate>org/apache/cayenne/project/upgrade/handlers/velocityTemplate.txt</embeddableTemplate>
+        <embeddableSuperTemplate>../../testWrongPath</embeddableSuperTemplate>
+        <queryTemplate>org/apache/cayenne/project/upgrade/handlers/velocityTemplate.txt</queryTemplate>
+        <querySuperTemplate>templates/v4_1/datamap-superclass.vm</querySuperTemplate>
         <client>true</client>
     </cgen>
     <dbimport xmlns="http://cayenne.apache.org/schema/10/dbimport">
