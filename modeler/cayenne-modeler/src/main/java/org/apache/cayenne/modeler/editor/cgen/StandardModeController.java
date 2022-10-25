@@ -151,6 +151,10 @@ public class StandardModeController extends GeneratorController {
         updateTemplatesLabels(cgenConfiguration);
     }
 
+    /**
+     * Adds or removes mark "edited" to template labels.
+     * @param configuration
+     */
     public void updateTemplatesLabels(CgenConfiguration configuration) {
         updateTemplateLabel(view.getEntityTemplateLbl(), TemplateType.ENTITY_SUBCLASS, configuration.getTemplate().getData());
         updateTemplateLabel(view.getEntitySuperTemplateLbl(), TemplateType.ENTITY_SUPERCLASS, configuration.getSuperTemplate().getData());
@@ -168,6 +172,14 @@ public class StandardModeController extends GeneratorController {
         }
     }
 
+
+    /**
+     * locks or unlocks buttons depending on the state of the window. Tooltips are changing too.
+     * The button locking is affected:
+     * - is template editor window open
+     * - is MakePairs checkbox selected
+     * - is any artefact of appropriate type selected
+     */
     public void updateTemplateEditorButtons() {
         boolean isMakePairs = view.getPairs().isSelected();
         boolean isEntitiesSelected = getParentController().isEntitiesSelected();

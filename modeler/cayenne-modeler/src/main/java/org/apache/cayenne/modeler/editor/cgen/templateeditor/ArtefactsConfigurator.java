@@ -28,6 +28,12 @@ import java.util.List;
  * since 4.3
  */
 public interface ArtefactsConfigurator {
+    /**
+     * adds selected artefact to action for generating class preview.
+     *
+     * @param action class preview generating action
+     * @param artifactName name of artifact to add
+     */
     void config(ClassGenerationAction action, String artifactName);
 
     List<String> getArtifactsNames(DataMap dataMap);
