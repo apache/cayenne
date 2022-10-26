@@ -85,10 +85,9 @@ public class SQLServerAdapter extends SybaseAdapter {
 	private final List<String> SYSTEM_SCHEMAS = Arrays.asList(
 			"db_accessadmin", "db_backupoperator",
 			"db_datareader", "db_datawriter", "db_ddladmin", "db_denydatareader",
-			"db_denydatawriter", "sys", "db_owner", "db_securityadmin", "INFORMATION_SCHEMA"
+			"db_denydatawriter","dbo", "sys", "db_owner", "db_securityadmin", "guest",
+			"INFORMATION_SCHEMA"
 	);
-
-	private final List<String> SYSTEM_CATALOGS = Arrays.asList("model", "msdb", "tempdb");
 
 	public SQLServerAdapter(@Inject RuntimeProperties runtimeProperties,
 							@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
@@ -128,11 +127,6 @@ public class SQLServerAdapter extends SybaseAdapter {
 	@Override
 	public SQLAction getAction(Query query, DataNode node) {
 		return query.createSQLAction(new SQLServerActionBuilder(node, getVersion()));
-	}
-
-	@Override
-	public List<String> getSystemCatalogs() {
-		return SYSTEM_CATALOGS;
 	}
 
 	@Override
