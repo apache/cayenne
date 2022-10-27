@@ -151,8 +151,7 @@ public class TextPaneView extends PlainView {
                             || text.charAt(matcher.start() - 1) == '\n'
                             || text.charAt(matcher.start() - 1) == ' ')) {
                         boolean inComment = false;
-                        for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine
-                            .entrySet()) {
+                        for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine.entrySet()) {
                             if (matcher.start(1) >= entryCommentInLine.getKey()
                                 && matcher.end() <= entryCommentInLine.getValue()) {
                                 inComment = true;
