@@ -31,7 +31,7 @@ import javax.swing.text.PlainView;
 import javax.swing.text.Segment;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.Utilities;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -41,17 +41,22 @@ import java.util.regex.Pattern;
 
 public class TextPaneView extends PlainView {
 
-    private static HashMap<Pattern, SyntaxStyle> patternSyntaxStyle;
-    private static Pattern patternComment;
-    private static Pattern patternCommentStart;
+    private static final HashMap<Pattern, SyntaxStyle> patternSyntaxStyle;
+    private static final Pattern patternComment;
+    private static final Pattern patternCommentStart;
 
-    private static SyntaxStyle syntaxStyleComment;
-    private static HashMap<Pattern, SyntaxStyle> patternValue;
-    private static TextPaneStyleMap style = new TextPaneStyleMap();
+    private static final SyntaxStyle syntaxStyleComment;
+    private static final HashMap<Pattern, SyntaxStyle> patternValue;
+    private static final TextPaneStyleMap style = new TextPaneStyleMap();
 
     static {
         patternSyntaxStyle = new HashMap<>();
         patternValue = new HashMap<>();
+        patternComment = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT,
+                                         Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+        patternCommentStart = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT_START,
+                                              Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
+        syntaxStyleComment = style.syntaxStyleMap.get(TextPaneStyleTypes.COMMENT);
     }
 
     public TextPaneView(Element elem, SyntaxConstant syntaxConstants) {
@@ -67,25 +72,23 @@ public class TextPaneView extends PlainView {
 
         if (patternValue.isEmpty()) {
             patternValue.put(
-                    Pattern.compile(SQLSyntaxConstants.NUMBER_TEXT), style.syntaxStyleMap.get(TextPaneStyleTypes.NUMBER));
+                Pattern.compile(SQLSyntaxConstants.NUMBER_TEXT),
+                style.syntaxStyleMap.get(TextPaneStyleTypes.NUMBER));
         }
-
-        patternComment = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
-        patternCommentStart = Pattern.compile(SQLSyntaxConstants.COMMENT_TEXT_START, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE);
-        syntaxStyleComment = style.syntaxStyleMap.get(TextPaneStyleTypes.COMMENT);
     }
 
     private void addConstants(String[] constants, TextPaneStyleTypes type) {
         for (String keyword : constants) {
-            String patern = "(" + keyword + ")";
+            String pattern = "(" + keyword + ")";
             patternSyntaxStyle.put(
-                    Pattern.compile(patern, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE),
-                    style.syntaxStyleMap.get(type));
+                Pattern.compile(pattern, Pattern.UNICODE_CASE | Pattern.CASE_INSENSITIVE),
+                style.syntaxStyleMap.get(type));
         }
     }
 
     @Override
-    protected int drawUnselectedText(Graphics graphics, int x, int y, int p0, int p1) throws BadLocationException {
+    protected float drawUnselectedText(Graphics2D graphics, float x, float y, int p0, int p1)
+        throws BadLocationException {
 
         boolean lineComment = false;
         Map<Integer, Integer> comment = new HashMap<>();
@@ -115,15 +118,11 @@ public class TextPaneView extends PlainView {
             if (p0 >= entry.getKey() && p1 <= entry.getValue()) {
                 lineComment = true;
                 break;
-            } else if (p0 <= entry.getKey() && p1 >= entry.getValue()) {
+            } else if (p0 < entry.getKey() && p1 > entry.getValue()) {
                 commentInLine.put(entry.getKey() - p0, entry.getValue() - p0);
-            } else if (p0 <= entry.getKey()
-                    && p1 >= entry.getKey()
-                    && p1 < entry.getValue()) {
+            } else if (p0 < entry.getKey() && p1 >= entry.getKey()) {
                 commentInLine.put(entry.getKey() - p0, p1 - p0);
-            } else if (p0 <= entry.getValue()
-                    && p1 >= entry.getValue()
-                    && p0 > entry.getKey()) {
+            } else if (p0 <= entry.getValue() && p1 > entry.getValue()) {
                 commentInLine.put(0, entry.getValue() - p0);
             }
         }
@@ -135,34 +134,31 @@ public class TextPaneView extends PlainView {
             startMap.put(0, text.length());
             syntaxStyleMap.put(0, syntaxStyleComment);
         } else {
-            for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine
-                    .entrySet()) {
+            for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine.entrySet()) {
                 startMap.put(entryCommentInLine.getKey(), entryCommentInLine.getValue());
                 syntaxStyleMap.put(entryCommentInLine.getKey(), syntaxStyleComment);
             }
             // Match all regexes on this snippet, store positions
             for (Map.Entry<Pattern, SyntaxStyle> entry : patternSyntaxStyle.entrySet()) {
-
                 Matcher matcher = entry.getKey().matcher(text);
                 while (matcher.find()) {
-                     if ((text.length() == matcher.end()
-                            || text.charAt(matcher.end()) == '\t'
-                            || text.charAt(matcher.end()) == ' ' || text.charAt(matcher
-                            .end()) == '\n')
-                            && (matcher.start() == 0
-                                    || text.charAt(matcher.start() - 1) == '\t'
-                                    || text.charAt(matcher.start() - 1) == '\n'
-                                    || text.charAt(matcher.start() - 1) == ' ')) {
+                    if ((text.length() == matcher.end()
+                         || text.charAt(matcher.end()) == '\t'
+                         || text.charAt(matcher.end()) == ' '
+                         || text.charAt(matcher.end()) == '\n')
+                        && (matcher.start() == 0
+                            || text.charAt(matcher.start() - 1) == '\t'
+                            || text.charAt(matcher.start() - 1) == '\n'
+                            || text.charAt(matcher.start() - 1) == ' ')) {
                         boolean inComment = false;
-                        for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine
-                                .entrySet()) {
+                        for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine.entrySet()) {
                             if (matcher.start(1) >= entryCommentInLine.getKey()
-                                    && matcher.end() <= entryCommentInLine.getValue()) {
+                                && matcher.end() <= entryCommentInLine.getValue()) {
                                 inComment = true;
+                                break;
                             }
                         }
                         if (!inComment) {
-
                             startMap.put(matcher.start(1), matcher.end());
                             syntaxStyleMap.put(matcher.start(1), entry.getValue());
                         }
@@ -174,20 +170,21 @@ public class TextPaneView extends PlainView {
                 Matcher matcher = entry.getKey().matcher(text);
                 while (matcher.find()) {
                     if ((text.length() == matcher.end()
-                            || text.charAt(matcher.end()) == ' '
-                            || text.charAt(matcher.end()) == ')'
-                            || text.charAt(matcher.end()) == '\t'
-                            || text.charAt(matcher.end()) == '\n')
-                            && (matcher.start() == 0
-                                    || text.charAt(matcher.start() - 1) == '\t'
-                                    || text.charAt(matcher.start() - 1) == ' '
-                                    || text.charAt(matcher.start() - 1) == '='
-                                    || text.charAt(matcher.start() - 1) == '(')) {
+                         || text.charAt(matcher.end()) == ' '
+                         || text.charAt(matcher.end()) == ')'
+                         || text.charAt(matcher.end()) == '\t'
+                         || text.charAt(matcher.end()) == '\n')
+                        && (matcher.start() == 0
+                            || text.charAt(matcher.start() - 1) == '\t'
+                            || text.charAt(matcher.start() - 1) == ' '
+                            || text.charAt(matcher.start() - 1) == '='
+                            || text.charAt(matcher.start() - 1) == '(')) {
                         boolean inComment = false;
                         for (Map.Entry<Integer, Integer> entryCommentInLine : commentInLine.entrySet()) {
                             if (matcher.start() >= entryCommentInLine.getKey()
-                                    && matcher.end() <= entryCommentInLine.getValue()) {
+                                && matcher.end() <= entryCommentInLine.getValue()) {
                                 inComment = true;
+                                break;
                             }
                         }
                         if (!inComment) {
