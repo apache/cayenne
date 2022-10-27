@@ -32,4 +32,4 @@ Bug Fixes:
 
 CAY-2755 Modeler: Entities are not sorted by name in the class generation view
 CAY-2762 Modeler: Difference in toolbars colors on OSX
-
+CAY-2765 dbimport: check excluded catalogs and schemas for the SQLServer
