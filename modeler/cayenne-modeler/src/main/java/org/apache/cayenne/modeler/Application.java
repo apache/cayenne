@@ -221,12 +221,6 @@ public class Application {
         return pref.node(pref.absolutePath() + path);
     }
 
-    /**
-     * Returns a new instance of CodeTemplateManager.
-     */
-    public CodeTemplateManager getCodeTemplateManager() {
-        return new CodeTemplateManager(this);
-    }
 
     /**
      * Reinitializes ModelerClassLoader from preferences.
