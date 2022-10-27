@@ -29,54 +29,52 @@ import org.apache.cayenne.gen.TemplateType;
 public class EditorTemplateSaver {
 
     private final CgenConfiguration configuration;
-    private final TemplateEditorView editorView;
 
 
-    public EditorTemplateSaver(CgenConfiguration configuration, TemplateEditorView editorView) {
+    public EditorTemplateSaver(CgenConfiguration configuration) {
         this.configuration = configuration;
-        this.editorView = editorView;
     }
 
-    public void save(TemplateType type, Boolean isTemplateDefault) {
+    public void save(TemplateType type, Boolean isTemplateDefault, String templateText) {
         if (configuration.isMakePairs() || !isTemplateDefault) {
-            setTemplate(type, isTemplateDefault);
+            setTemplate(type, isTemplateDefault, templateText);
         } else {
             setDefaultSingleTemplate(type);
         }
     }
 
-    private void setTemplate(TemplateType templateType, Boolean isDefault) {
+    private void setTemplate(TemplateType templateType, Boolean isDefault, String templateText) {
 
         String template;
         if (isDefault) {
             template = templateType.pathFromSourceRoot();
         } else {
-            template = editorView.editingTemplatePane.getText();
+            template = templateText;
         }
 
         switch (templateType) {
             case ENTITY_SUPERCLASS: {
-                configuration.setSuperTemplate(new CgenTemplate(template,false,TemplateType.ENTITY_SUPERCLASS));
+                configuration.setSuperTemplate(new CgenTemplate(template, false, TemplateType.ENTITY_SUPERCLASS));
                 break;
             }
             case ENTITY_SUBCLASS: {
-                configuration.setTemplate(new CgenTemplate(template,false,TemplateType.ENTITY_SUBCLASS));
+                configuration.setTemplate(new CgenTemplate(template, false, TemplateType.ENTITY_SUBCLASS));
                 break;
             }
             case EMBEDDABLE_SUPERCLASS: {
-                configuration.setEmbeddableSuperTemplate(new CgenTemplate(template,false,TemplateType.EMBEDDABLE_SUPERCLASS));
+                configuration.setEmbeddableSuperTemplate(new CgenTemplate(template, false, TemplateType.EMBEDDABLE_SUPERCLASS));
                 break;
             }
             case EMBEDDABLE_SUBCLASS: {
-                configuration.setEmbeddableTemplate(new CgenTemplate(template,false,TemplateType.EMBEDDABLE_SUBCLASS));
+                configuration.setEmbeddableTemplate(new CgenTemplate(template, false, TemplateType.EMBEDDABLE_SUBCLASS));
                 break;
             }
             case DATAMAP_SUPERCLASS: {
-                configuration.setDataMapSuperTemplate(new CgenTemplate(template,false,TemplateType.DATAMAP_SUPERCLASS));
+                configuration.setDataMapSuperTemplate(new CgenTemplate(template, false, TemplateType.DATAMAP_SUPERCLASS));
                 break;
             }
             case DATAMAP_SUBCLASS: {
-                configuration.setDataMapTemplate(new CgenTemplate(template,false,TemplateType.DATAMAP_SUBCLASS));
+                configuration.setDataMapTemplate(new CgenTemplate(template, false, TemplateType.DATAMAP_SUBCLASS));
                 break;
             }
             default:

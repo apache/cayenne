@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.project.upgrade.handlers;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +26,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,8 +36,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Upgrade handler for the project version "11" introduced by 4.3.M1 release.
@@ -52,6 +51,17 @@ import java.util.Arrays;
 public class UpgradeHandler_V11 implements UpgradeHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UpgradeHandler_V11.class);
+
+    private static final List<String> defaultTemplatePaths = Arrays.asList(
+            "templates/v4_1/singleclass.vm",
+            "templates/v4_1/superclass.vm",
+            "templates/v4_1/subclass.vm",
+            "templates/v4_1/embeddable-singleclass.vm",
+            "templates/v4_1/embeddable-superclass.vm",
+            "templates/v4_1/embeddable-subclass.vm",
+            "templates/v4_1/datamap-singleclass.vm",
+            "templates/v4_1/datamap-superclass.vm",
+            "templates/v4_1/datamap-subclass.vm");
 
     @Override
     public String getVersion() {
@@ -88,7 +98,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
 
         for (int j = 0; j < infoNodes.getLength(); j++) {
             Element infoElement = (Element) infoNodes.item(j);
-            if(infoElement.hasAttribute("xmlns:info")) {
+            if (infoElement.hasAttribute("xmlns:info")) {
                 infoElement.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/11/info");
             }
         }
@@ -225,8 +235,8 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             } catch (NoSuchFileException e) {
                 return "The template " + path + " was not found during the project upgrade. Use the template editor in Cayenne modeler to set the template";
             } catch (IOException e) {
-                logger.warn("Can't read the file: " + path);
-                return "Can't read the file: " + path;
+                logger.warn("Can't read the file: " + path, e);
+                return "Can't read the file: " + path + e.getMessage();
             }
         } else {
             return path;
@@ -253,16 +263,6 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
     }
 
     private boolean isTemplateDefault(String template) {
-        ArrayList<String> defaultTemplatePaths = new ArrayList<>(Arrays.asList(
-                "templates/v4_1/singleclass.vm",
-                "templates/v4_1/singleclass.vm",
-                "templates/v4_1/subclass.vm",
-                "templates/v4_1/embeddable-singleclass.vm",
-                "templates/v4_1/embeddable-superclass.vm",
-                "templates/v4_1/embeddable-subclass.vm",
-                "templates/v4_1/datamap-singleclass.vm",
-                "templates/v4_1/datamap-superclass.vm",
-                "templates/v4_1/datamap-subclass.vm"));
         return defaultTemplatePaths.contains(template);
     }
 

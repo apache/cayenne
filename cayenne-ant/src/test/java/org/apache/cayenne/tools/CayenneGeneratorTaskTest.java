@@ -135,7 +135,7 @@ public class CayenneGeneratorTaskTest {
         assertTrue(cgenConfiguration.isUsePkgPath());
 
         assertTrue(cgenConfiguration.getTemplate().isFile());
-        assertEquals("target\\testrun\\velotemplate.vm", convertPath(cgenConfiguration.getTemplate().getData()));
+        assertEquals(convertPath("target/testrun/velotemplate.vm"), convertPath(cgenConfiguration.getTemplate().getData()));
         assertEquals(TemplateType.ENTITY_SUBCLASS, cgenConfiguration.getTemplate().getType());
 
         assertTrue(cgenConfiguration.getSuperTemplate().isFile());

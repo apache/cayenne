@@ -48,12 +48,12 @@
 					<createPropertyNames>true</createPropertyNames>
 					<overwrite>true</overwrite>
 
-					<template>testPath</template>
-					<superTemplate>testPath</superTemplate>
-					<embeddableTemplate>testPath</embeddableTemplate>
-					<embeddableSuperTemplate>testPath</embeddableSuperTemplate>
-					<dataMapTemplate>testPath</dataMapTemplate>
-					<dataMapSuperTemplate>testPath</dataMapSuperTemplate>
+					<template>src/test/resources/cgen/project-to-test/testTemplate.vm</template>
+					<superTemplate>src/test/resources/cgen/project-to-test/testTemplate.vm</superTemplate>
+					<embeddableTemplate>src/test/resources/cgen/project-to-test/testTemplate.vm</embeddableTemplate>
+					<embeddableSuperTemplate>src/test/resources/cgen/project-to-test/testTemplate.vm</embeddableSuperTemplate>
+					<dataMapTemplate>src/test/resources/cgen/project-to-test/testTemplate.vm</dataMapTemplate>
+					<dataMapSuperTemplate>src/test/resources/cgen/project-to-test/testTemplate.vm</dataMapSuperTemplate>
 
 					<mode>all</mode>
 				</configuration>

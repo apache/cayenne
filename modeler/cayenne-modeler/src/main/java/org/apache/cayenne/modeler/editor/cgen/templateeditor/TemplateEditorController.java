@@ -69,7 +69,7 @@ public class TemplateEditorController extends CayenneController {
         this.isTemplateDefault = TemplateType.isDefault(configuration.getTemplateByType(templateType).getData());
         this.isTemplateModified = false;
         this.templateLoader = new EditorTemplateLoader(configuration, this.editorView);
-        this.templateSaver = new EditorTemplateSaver(configuration, this.editorView);
+        this.templateSaver = new EditorTemplateSaver(configuration);
 
         configureEditorView(templateType);
         addListeners();
@@ -159,7 +159,7 @@ public class TemplateEditorController extends CayenneController {
 
     @SuppressWarnings("unused")
     public void saveAction() {
-        templateSaver.save(templateType, isTemplateDefault);
+        templateSaver.save(templateType, isTemplateDefault, editorView.getTemplateText());
         parentController.getCodeGeneratorController().checkCgenConfigDirty();
         isTemplateModified = false;
         parentController.updateTemplatesLabels(configuration);

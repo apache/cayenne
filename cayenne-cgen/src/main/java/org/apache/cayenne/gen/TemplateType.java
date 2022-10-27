@@ -77,15 +77,6 @@ public enum TemplateType {
       return null;
     }
 
-    public static TemplateType byPath(String path){
-        for (TemplateType templateType : TemplateType.values()) {
-            if (templateType.pathFromSourceRoot().equals(path)){
-                return templateType;
-            }
-        }
-        return null;
-    }
-
     public static boolean isDefault(String templateText) {
         return Arrays.stream(values()).anyMatch(t -> t.pathFromSourceRoot().equals(templateText));
     }
