@@ -29,7 +29,7 @@ import org.apache.cayenne.map.Relationship;
  */
 abstract class EntityCellMetadata<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
         implements Serializable {
-    GraphBuilder builder;
+    GraphBuilder<E,A,R> builder;
     
     String entityName;
     String label;
@@ -37,7 +37,7 @@ abstract class EntityCellMetadata<E extends Entity<E, A, R>, A extends Attribute
     EntityCellMetadata() {
     }
     
-    EntityCellMetadata(GraphBuilder builder, String entityName) {
+    EntityCellMetadata(GraphBuilder<E,A,R> builder, String entityName) {
         this.builder = builder;
         this.entityName = entityName;
         

@@ -27,7 +27,7 @@ import org.apache.cayenne.map.ObjRelationship;
  * Descriptor of ObjEntity Cell
  */
 class ObjEntityCellMetadata extends EntityCellMetadata<ObjEntity, ObjAttribute, ObjRelationship> {
-    ObjEntityCellMetadata(GraphBuilder builder, String entityName) {
+    ObjEntityCellMetadata(GraphBuilder<ObjEntity, ObjAttribute, ObjRelationship> builder, String entityName) {
         super(builder, entityName);
     }
     
