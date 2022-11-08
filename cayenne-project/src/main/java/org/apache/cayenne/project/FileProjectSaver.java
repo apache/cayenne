@@ -23,6 +23,7 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.ProjectExtension;
 import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.resource.Resource;
@@ -101,6 +102,12 @@ public class FileProjectSaver implements ProjectSaver {
 
         for (ConfigurationNode node : nodes) {
             String targetLocation = nameMapper.configurationLocation(node);
+
+            if (node instanceof DataMap) {
+				DataMap dataMapNode = ((DataMap) node);
+				dataMapNode.setLocation(targetLocation);
+			}
+
             Resource targetResource = baseResource.getRelativeResource(targetLocation);
             units.add(createSaveUnit(node, targetResource, null));
 
