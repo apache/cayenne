@@ -103,5 +103,4 @@ public class XMLDataChannelDescriptorLoader implements DataChannelDescriptorLoad
 		// TODO: andrus 03/10/2010 - actually provide load failures here...
 		return new ConfigurationTree<>(descriptor, null);
 	}
-
 }

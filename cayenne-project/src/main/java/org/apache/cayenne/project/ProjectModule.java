@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
@@ -60,6 +62,7 @@ public class ProjectModule implements Module {
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
         binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class);
         binder.bind(ConfigurationNodeParentGetter.class).to(DefaultConfigurationNodeParentGetter.class);
+        binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
         binder.bind(UpgradeService.class).to(DefaultUpgradeService.class);
         // Note: order is important
