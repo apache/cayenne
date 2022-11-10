@@ -23,6 +23,8 @@ import java.util.EventListener;
 
 /**
  * Interface for classes that are interested in ProjectSaved events.
+ *
+ * @since 4.3
  */
 public interface ProjectSavedListener extends EventListener {
     void updateNamesAfterSaving(ProjectSavedEvent e);
