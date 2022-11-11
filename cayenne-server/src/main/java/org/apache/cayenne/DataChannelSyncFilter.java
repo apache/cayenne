@@ -40,7 +40,7 @@ import org.apache.cayenne.graph.GraphDiff;
  * }}</pre>
  *
  * @see DataChannelQueryFilter
- * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainSyncFilters(org.apache.cayenne.di.Binder)
+ * @see org.apache.cayenne.configuration.server.ServerModuleExtender#addSyncFilter(Class, boolean)
  *
  * @since 4.1
  */

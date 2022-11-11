@@ -16,18 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.ServerModule;
+package org.apache.cayenne.dbsync.reverse.configuration;
+
+import org.apache.cayenne.configuration.server.ServerModuleExtender;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
 
-public class WeakReferenceStrategyModule implements Module {
+// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ServerModuleExtender.
+class ToolsModuleExtender extends ServerModuleExtender {
+
+    public ToolsModuleExtender(Binder binder) {
+        super(binder);
+    }
+
     @Override
-    public void configure(Binder binder) {
-        ServerModule.contributeProperties(binder)
-                //Use in ObjectStoreGCIT
-                .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "weak");
+    protected ServerModuleExtender initAllExtensions() {
+        return super.initAllExtensions();
     }
 }

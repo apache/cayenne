@@ -21,8 +21,8 @@ package org.apache.cayenne.dbsync.reverse.configuration;
 
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
-import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
@@ -36,7 +36,6 @@ import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.DbAdapterFactory;
 import org.apache.cayenne.configuration.server.DefaultDbAdapterFactory;
 import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
-import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -90,8 +89,8 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
-import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.slf4j.Logger;
@@ -100,14 +99,13 @@ import org.xml.sax.XMLReader;
 import java.util.Objects;
 
 /**
- * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven
- * plugins.
- * 
+ * A DI module to bootstrap DI container for Cayenne Ant tasks and Maven plugins.
+ *
  * @since 4.0
  */
 public class ToolsModule implements Module {
 
-    private Logger logger;
+    private final Logger logger;
 
     public ToolsModule(Logger logger) {
         this.logger = Objects.requireNonNull(logger);
@@ -115,14 +113,37 @@ public class ToolsModule implements Module {
 
     public void configure(Binder binder) {
 
-        binder.bind(Logger.class).toInstance(logger);
+        new ToolsModuleExtender(binder)
+                .initAllExtensions()
 
-        // configure empty global stack properties
-        ServerModule.contributeProperties(binder);
-        ServerModule.contributeDefaultTypes(binder);
-        ServerModule.contributeUserTypes(binder);
-        ServerModule.contributeTypeFactories(binder);
-        ServerModule.contributeValueObjectTypes(binder);
+                .addAdapterDetector(FirebirdSniffer.class)
+                .addAdapterDetector(FrontBaseSniffer.class)
+                .addAdapterDetector(IngresSniffer.class)
+                .addAdapterDetector(SQLiteSniffer.class)
+                .addAdapterDetector(DB2Sniffer.class)
+                .addAdapterDetector(H2Sniffer.class)
+                .addAdapterDetector(HSQLDBSniffer.class)
+                .addAdapterDetector(SybaseSniffer.class)
+                .addAdapterDetector(DerbySniffer.class)
+                .addAdapterDetector(SQLServerSniffer.class)
+                .addAdapterDetector(OracleSniffer.class)
+                .addAdapterDetector(PostgresSniffer.class)
+                .addAdapterDetector(MySQLSniffer.class)
+                .addAdapterDetector(MariaDBSniffer.class)
+
+                .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
+                .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
+                .addPkGenerator(FrontBaseAdapter.class, FrontBasePkGenerator.class)
+                .addPkGenerator(H2Adapter.class, H2PkGenerator.class)
+                .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
+                .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
+                .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
+                .addPkGenerator(Oracle8Adapter.class, OraclePkGenerator.class)
+                .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
+                .addPkGenerator(SQLServerAdapter.class, SybasePkGenerator.class)
+                .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class);
+
+        binder.bind(Logger.class).toInstance(logger);
 
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
@@ -135,37 +156,8 @@ public class ToolsModule implements Module {
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
         binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-
-        ServerModule.contributeAdapterDetectors(binder)
-                .add(FirebirdSniffer.class)
-                .add(FrontBaseSniffer.class)
-                .add(IngresSniffer.class)
-                .add(SQLiteSniffer.class)
-                .add(DB2Sniffer.class)
-                .add(H2Sniffer.class)
-                .add(HSQLDBSniffer.class)
-                .add(SybaseSniffer.class)
-                .add(DerbySniffer.class)
-                .add(SQLServerSniffer.class)
-                .add(OracleSniffer.class)
-                .add(PostgresSniffer.class)
-                .add(MySQLSniffer.class)
-                .add(MariaDBSniffer.class);
-
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-        ServerModule.contributePkGenerators(binder)
-                .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
-                .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
-                .put(FrontBaseAdapter.class.getName(), FrontBasePkGenerator.class)
-                .put(H2Adapter.class.getName(), H2PkGenerator.class)
-                .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
-                .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
-                .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
-                .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
-                .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
-                .put(SQLServerAdapter.class.getName(), SybasePkGenerator.class)
-                .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
 
         binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
         binder.bind(DataSourceFactory.class).to(DriverDataSourceFactory.class);

@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
@@ -34,6 +30,10 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
@@ -88,10 +88,10 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
             binder.bind(DataNodeFactory.class).to(ServerCaseDataNodeFactory.class);
             binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
 
-            ServerModule.contributeProperties(binder)
+            ServerModule.extend(binder)
                     // Use soft references instead of default weak.
                     // Should remove problems with random-failing tests (those that are GC-sensitive).
-                    .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
+                    .setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
 
             // map DataSources for all test DataNode names
             binder.bind(ServerCaseDataSourceFactory.class).toInstance(dataSourceFactory);

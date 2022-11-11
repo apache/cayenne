@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.tx.TransactionFilter;
 
 /**
  * This module is autoloaded, all extensions should be done via {@link CacheInvalidationModuleExtender}.
@@ -52,7 +51,6 @@ public class CacheInvalidationModule implements Module {
         contributeInvalidationHandler(binder).add(CacheGroupsHandler.class);
 
         // want the filter to be INSIDE transaction by default
-        ServerModule.contributeDomainSyncFilters(binder)
-                .insertBefore(CacheInvalidationFilter.class, TransactionFilter.class);
+        ServerModule.extend(binder).addSyncFilter(CacheInvalidationFilter.class, true);
     }
 }

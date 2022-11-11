@@ -25,7 +25,6 @@ import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.tx.TransactionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,11 +113,7 @@ public class CommitLogModuleExtender {
                 listeners.add(type);
             }
 
-            if (excludeFromTransaction) {
-                ServerModule.contributeDomainSyncFilters(binder).addAfter(CommitLogFilter.class, TransactionFilter.class);
-            } else {
-                ServerModule.contributeDomainSyncFilters(binder).insertBefore(CommitLogFilter.class, TransactionFilter.class);
-            }
+            ServerModule.extend(binder).addSyncFilter(CommitLogFilter.class, !excludeFromTransaction);
         };
     }
 }

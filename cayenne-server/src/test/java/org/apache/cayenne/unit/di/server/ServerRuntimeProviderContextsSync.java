@@ -18,16 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @since 4.1
@@ -44,8 +43,7 @@ public class ServerRuntimeProviderContextsSync extends ServerRuntimeProvider {
     @Override
     protected Collection<? extends Module> getExtraModules() {
         Collection<Module> modules = new ArrayList<>(super.getExtraModules());
-        modules.add(binder -> ServerModule.contributeProperties(binder)
-                .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(true)));
+        modules.add(binder -> ServerModule.extend(binder).syncContexts());
         return modules;
     }
 }
