@@ -87,7 +87,6 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
-import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
@@ -113,7 +112,9 @@ public class ToolsModule implements Module {
 
     public void configure(Binder binder) {
 
-        new ToolsModuleExtender(binder)
+        new ToolsProjectModuleExtender(binder).initAllExtensions();
+
+        new ToolsServerModuleExtender(binder)
                 .initAllExtensions()
 
                 .addAdapterDetector(FirebirdSniffer.class)
@@ -169,8 +170,6 @@ public class ToolsModule implements Module {
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
         binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
         binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
-
-        ProjectModule.contributeExtensions(binder);
     }
 
 }

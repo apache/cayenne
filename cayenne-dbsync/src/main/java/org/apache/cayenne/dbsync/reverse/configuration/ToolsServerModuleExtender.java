@@ -23,9 +23,9 @@ import org.apache.cayenne.configuration.server.ServerModuleExtender;
 import org.apache.cayenne.di.Binder;
 
 // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ServerModuleExtender.
-class ToolsModuleExtender extends ServerModuleExtender {
+class ToolsServerModuleExtender extends ServerModuleExtender {
 
-    public ToolsModuleExtender(Binder binder) {
+    public ToolsServerModuleExtender(Binder binder) {
         super(binder);
     }
 

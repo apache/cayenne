@@ -52,7 +52,8 @@ public class DbImportModule implements Module {
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
-        ProjectModule.contributeExtensions(binder).add(DbImportExtension.class);
+
+        ProjectModule.extend(binder).addExtension(DbImportExtension.class);
     }
 
 }
