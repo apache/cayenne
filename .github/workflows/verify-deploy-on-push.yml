@@ -56,7 +56,7 @@ jobs:
   deploy:
     needs: verify
     runs-on: ubuntu-latest
-    if: github.repository == 'apache/cayenne' && (contains(github.ref_name, 'STABLE-') || github.ref == 'refs/heads/master'))
+    if: github.repository == 'apache/cayenne' && (contains(github.ref_name, 'STABLE-') || github.ref == 'refs/heads/master')
 
     steps:
       - name: Checkout repository
