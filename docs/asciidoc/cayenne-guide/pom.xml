@@ -89,10 +89,10 @@
                                 </goals>
                                 <configuration>
                                     <backend>html5</backend>
-                                    <sourceHighlighter>coderay</sourceHighlighter>
                                     <embedAssets>true</embedAssets>
                                     <attributes>
                                         <toc>left</toc>
+                                        <source-highlighter>coderay</source-highlighter>
                                     </attributes>
                                 </configuration>
                             </execution>
@@ -106,10 +106,10 @@
                                 </goals>
                                 <configuration>
                                     <backend>pdf</backend>
-                                    <sourceHighlighter>coderay</sourceHighlighter>
                                     <attributes>
                                         <pagenums />
                                         <toc />
+                                        <source-highlighter>coderay</source-highlighter>
                                     </attributes>
                                 </configuration>
                             </execution>
