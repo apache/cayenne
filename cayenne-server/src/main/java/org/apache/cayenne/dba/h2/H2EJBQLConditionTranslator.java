@@ -30,7 +30,7 @@ import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.map.ObjAttribute;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class H2EJBQLConditionTranslator extends EJBQLConditionTranslator {
 

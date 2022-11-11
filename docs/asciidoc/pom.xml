@@ -23,7 +23,7 @@
     <parent>
         <artifactId>cayenne-docs-parent</artifactId>
         <groupId>org.apache.cayenne.docs</groupId>
-        <version>4.3.M1-SNAPSHOT</version>
+        <version>5.0.M1-SNAPSHOT</version>
     </parent>
 
     <artifactId>cayenne-asciidoc-parent</artifactId>
@@ -45,7 +45,7 @@
         <asciidoctor.maven.plugin.version>2.2.2</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>2.1.4</asciidoctorj.pdf.version>
         <cayenne.version>${project.version}</cayenne.version>
-        <cayenne.major.version>4.3</cayenne.major.version>
+        <cayenne.major.version>5.0</cayenne.major.version>
     </properties>
 
     <dependencies>

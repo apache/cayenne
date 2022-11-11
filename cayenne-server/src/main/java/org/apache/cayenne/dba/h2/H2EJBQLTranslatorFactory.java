@@ -24,7 +24,7 @@ import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class H2EJBQLTranslatorFactory extends JdbcEJBQLTranslatorFactory {
 

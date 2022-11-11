@@ -31,7 +31,7 @@ import java.io.Writer;
 import java.util.Properties;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class PreviewGenerationAction extends ClassGenerationAction {
 

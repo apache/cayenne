@@ -45,7 +45,7 @@ import java.util.Map;
  * of WebObjects EOFetchSpecification.
  * 
  * @since 1.1
- * @since 4.3 this query extends {@link ObjectSelect}
+ * @since 5.0 this query extends {@link ObjectSelect}
  */
 @SuppressWarnings("unchecked")
 public class EOQuery<T> extends ObjectSelect<T> {

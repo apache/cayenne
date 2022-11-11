@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
 

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * Locates DataSource mapped via JNDI.
  * 
  * @since 3.1
- * @deprecated since 4.3, unused by Cayenne
+ * @deprecated since 5.0, unused by Cayenne
  */
 @Deprecated
 public class JNDIDataSourceFactory implements DataSourceFactory {

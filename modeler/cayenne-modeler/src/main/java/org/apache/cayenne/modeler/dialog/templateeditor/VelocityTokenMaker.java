@@ -30,7 +30,7 @@ import org.fife.ui.rsyntaxtextarea.TokenImpl;
 
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class VelocityTokenMaker extends AbstractJFlexCTokenMaker {
 

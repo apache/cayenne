@@ -29,7 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class FindAndReplaceController extends FindController implements ActionListener {
 

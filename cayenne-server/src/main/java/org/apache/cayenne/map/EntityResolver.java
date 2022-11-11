@@ -106,7 +106,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     protected transient EntitySorter entitySorter;
 
     /**
-     * @since 4.3
+     * @since 5.0
      */
     protected transient AdhocObjectFactory objectFactory;
 
@@ -563,14 +563,14 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
-     * @since 4.3
+     * @since 5.0
      */
     public void setObjectFactory(AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     /**
-     * @since 4.3
+     * @since 5.0
      */
     public AdhocObjectFactory getObjectFactory() {
         return objectFactory;

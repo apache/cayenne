@@ -288,7 +288,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     /**
      * Sets <code>datamaptemplate</code> property.
-     * @since 4.3 querytemplate renamed to datamaptemplate
+     * @since 5.0 querytemplate renamed to datamaptemplate
      */
     public void setDataMapTemplate(String datamaptemplate) {
         this.datamaptemplate = datamaptemplate;
@@ -296,7 +296,7 @@ public class CayenneGeneratorTask extends CayenneTask {
 
     /**
      * Sets <code>datamapsupertemplate</code> property.
-     * @since 4.3 querysupertemplate renamed to datamapsupertemplate
+     * @since 5.0 querysupertemplate renamed to datamapsupertemplate
      */
     public void setDataMapSupertemplate(String datamapsupertemplate) {
         this.datamapsupertemplate = datamapsupertemplate;

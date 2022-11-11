@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class CreateTemplateFromDefaultView extends JDialog {
 

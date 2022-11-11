@@ -1472,14 +1472,14 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * @since 4.3
+	 * @since 5.0
 	 */
 	public static Expression all(ColumnSelect<?> subquery) {
 		return new ASTAll(new ASTSubquery(subquery));
 	}
 
 	/**
-	 * @since 4.3
+	 * @since 5.0
 	 */
 	public static Expression any(ColumnSelect<?> subquery) {
 		return new ASTAny(new ASTSubquery(subquery));

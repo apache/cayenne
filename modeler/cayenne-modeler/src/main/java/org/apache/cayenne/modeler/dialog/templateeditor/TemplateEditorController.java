@@ -47,7 +47,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class TemplateEditorController extends CayenneController {
 

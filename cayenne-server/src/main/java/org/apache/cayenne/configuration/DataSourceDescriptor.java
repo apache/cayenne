@@ -27,7 +27,7 @@ import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * Helper JavaBean class that holds DataSource information for the Cayenne-managed DataSource.
- * @since 4.3
+ * @since 5.0
  */
 public class DataSourceDescriptor implements Serializable, XMLSerializable {
 

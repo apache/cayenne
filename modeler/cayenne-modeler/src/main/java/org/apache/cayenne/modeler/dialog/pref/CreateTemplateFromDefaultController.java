@@ -48,7 +48,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class CreateTemplateFromDefaultController extends CayenneController {
     protected CreateTemplateFromDefaultView view;

@@ -24,7 +24,7 @@ import java.util.EventObject;
 /**
  * Triggered when project is saved completely.
  *
- * @since 4.3
+ * @since 5.0
  */
 public class ProjectSavedEvent extends EventObject {
     /**

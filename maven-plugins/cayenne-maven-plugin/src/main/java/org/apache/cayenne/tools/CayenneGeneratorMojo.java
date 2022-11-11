@@ -209,7 +209,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * DataMap class provides utilities for usage of the Cayenne queries stored in the DataMap.
 	 * If omitted, default template is used.
 	 *
-	 * @since 4.3 renamed from queryTemplate
+	 * @since 5.0 renamed from queryTemplate
 	 */
 	@Parameter
 	private String dataMapTemplate;
@@ -220,7 +220,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 	 * If omitted, default template is used.
 	 * Ignored unless <code>makepairs</code> set to <code>true</code>.
 	 *
-	 * @since 4.3 renamed from querySuperTemplate
+	 * @since 5.0 renamed from querySuperTemplate
 	 */
 	@Parameter
 	private String dataMapSuperTemplate;

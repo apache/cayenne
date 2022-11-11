@@ -82,7 +82,7 @@ public class H2Adapter extends JdbcAdapter {
 
     /**
      * @return translator factory for EJBQL queries
-     * @since 4.3
+     * @since 5.0
      */
     @Override
     protected EJBQLTranslatorFactory createEJBQLTranslatorFactory() {

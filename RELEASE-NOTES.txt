@@ -8,7 +8,7 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
-Release: 4.3.M1
+Release: 5.0.M1
 Date:
 ----------------------------------
 Changes/New Features:
@@ -16,7 +16,7 @@ Changes/New Features:
 CAY-2378 Switch usage of SelectQuery to ObjectSelect internally
 CAY-2498 Rename packages to prevent crossing package names
 CAY-2715 Support ANY and ALL expressions for subqueries
-CAY-2737 Cayenne 4.3: cleanup deprecated code
+CAY-2737 Cayenne 5.0: cleanup deprecated code
 CAY-2741 Cleanup TransactionDescriptor and deprecate DefaultTransactionDescriptor
 CAY-2742 Switch minimum required Java version to 11
 CAY-2747 Update project XML version to 11
@@ -28,6 +28,7 @@ CAY-2757 Modeler: Create custom templates from defaults
 CAY-2760 ObjectContext.userProperties need a way to clear properties
 CAY-2761 Modeler: Editor for the cgen templates
 CAY-2767 Modeler: upgrade deprecated code in custom components
+CAY-2773 Switch master to "5.0"
 
 Bug Fixes:
 

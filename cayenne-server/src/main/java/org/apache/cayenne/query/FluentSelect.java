@@ -559,7 +559,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> extends Abst
      *
      * @return <code>this</code> casted to the type E
      * @param <E> type to cast to
-     * @since 4.3
+     * @since 5.0
      */
     @SuppressWarnings("unchecked")
     protected <E> E castSelf() {

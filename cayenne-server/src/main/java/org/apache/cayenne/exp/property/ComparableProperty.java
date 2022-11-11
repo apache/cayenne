@@ -128,7 +128,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a "< ALL (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression ltAll(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);
@@ -138,7 +138,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a "<= ALL (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression lteAll(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);
@@ -148,7 +148,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a "> ALL (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression gtAll(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);
@@ -158,7 +158,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a ">= ALL (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression gteAll(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);
@@ -168,7 +168,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a "< ANY (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression ltAny(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);
@@ -178,7 +178,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a "<= ANY (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression lteAny(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);
@@ -188,7 +188,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a "> ANY (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression gtAny(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);
@@ -198,7 +198,7 @@ public interface ComparableProperty<E> extends Property<E> {
     /**
      * @param subquery to use, must be a single column query.
      * @return {@link Expression} that translates to a ">= ANY (subquery)" SQL
-     * @since 4.3
+     * @since 5.0
      */
     default Expression gteAny(ColumnSelect<E> subquery) {
         assertValidateSubqueryForComparison(subquery);

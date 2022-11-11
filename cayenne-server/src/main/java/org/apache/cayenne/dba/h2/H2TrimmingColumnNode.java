@@ -25,7 +25,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TrimmingColumnNode;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class H2TrimmingColumnNode extends TrimmingColumnNode {
     public H2TrimmingColumnNode(ColumnNode columnNode) {

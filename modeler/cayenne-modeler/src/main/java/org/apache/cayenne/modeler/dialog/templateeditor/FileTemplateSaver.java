@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class FileTemplateSaver  {
 

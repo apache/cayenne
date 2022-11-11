@@ -195,12 +195,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	public static final int CUSTOM_OP = 53;
 
 	/**
-	 * @since 4.3
+	 * @since 5.0
 	 */
 	public static final int ALL = 54;
 
 	/**
-	 * @since 4.3
+	 * @since 5.0
 	 */
 	public static final int ANY = 55;
 

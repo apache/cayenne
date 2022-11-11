@@ -618,7 +618,7 @@ public abstract class BaseContext implements ObjectContext {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @since 4.3
+	 * @since 5.0
 	 */
 	@Override
 	public void removeUserProperty(String key) {
@@ -628,7 +628,7 @@ public abstract class BaseContext implements ObjectContext {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @since 4.3
+	 * @since 5.0
 	 */
 	@Override
 	public void clearUserProperties() {

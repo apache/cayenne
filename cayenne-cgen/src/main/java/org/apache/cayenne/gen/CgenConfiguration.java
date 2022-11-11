@@ -68,11 +68,11 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private String embeddableTemplate;
     private String embeddableSuperTemplate;
     /**
-     * @since 4.3 renamed from queryTemplate
+     * @since 5.0 renamed from queryTemplate
      */
     private String dataMapTemplate;
     /**
-     * @since 4.3 renamed from querySuperTemplate
+     * @since 5.0 renamed from querySuperTemplate
      */
     private String dataMapSuperTemplate;
     private long timestamp;

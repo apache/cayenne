@@ -30,7 +30,7 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class FindView extends JDialog {
 

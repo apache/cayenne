@@ -43,7 +43,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class TemplateEditorView extends JFrame {
 
