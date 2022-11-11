@@ -74,7 +74,7 @@ jobs:
           cache: 'maven'
 
       - name: Deploy snapshot
-        run: mvn deploy -DskipTests --settings .github/maven_settings.xml
+        run: mvn deploy -DskipTests --settings .github/maven-settings.xml
         if: contains(env.POM_VERSION, '-SNAPSHOT')
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USER }}
