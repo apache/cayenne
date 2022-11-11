@@ -1,0 +1,50 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: verify PR
+
+on: pull_request
+
+env:
+  MAVEN_OPTS: -Xmx4g -Xms1g -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.count=3
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: JDK ${{ matrix.jdk }}, DB ${{ matrix.db-profile }}
+    if: github.repository == 'apache/cayenne'
+
+    strategy:
+      matrix:
+        jdk: [11, 17]
+        db-profile: [hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc]
+      fail-fast: true
+
+    env:
+      JDK_VERSION: ${{ matrix.jdk }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.jdk }}
+          cache: 'maven'
+
+      - name: mvn verify ${{ matrix.db-profile }}
+        run: mvn verify -q -DcayenneTestConnection=${{ matrix.db-profile }} -DcayenneLogLevel=ERROR
