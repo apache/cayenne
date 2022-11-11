@@ -36,7 +36,7 @@ import org.apache.cayenne.di.ScopeEventListener;
  */
 public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventListener {
 
-	private PoolingDataSourceManager dataSourceManager;
+	private final PoolingDataSourceManager dataSourceManager;
 	private DataSource dataSource;
 
 	public ManagedPoolingDataSource(UnmanagedPoolingDataSource dataSource) {
@@ -68,7 +68,7 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 	}
 
 	/**
-	 * Calls {@link #shutdown()} to drain the underlying pool, close open
+	 * Calls {@link #close()} to drain the underlying pool, close open
 	 * connections and block the DataSource from creating any new connections.
 	 */
 	@Override
@@ -109,7 +109,7 @@ public class ManagedPoolingDataSource implements PoolingDataSource, ScopeEventLi
 
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return (ManagedPoolingDataSource.class.equals(iface)) ? true : dataSource.isWrapperFor(iface);
+		return ManagedPoolingDataSource.class.equals(iface) || dataSource.isWrapperFor(iface);
 	}
 
 	@Override

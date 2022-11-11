@@ -127,85 +127,85 @@ public interface ComparableProperty<E> extends Property<E> {
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a "< ALL (subquery)" SQL
+     * @return {@link Expression} that translates to a "&lt; ALL (subquery)" SQL
      * @since 5.0
      */
     default Expression ltAll(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a "<= ALL (subquery)" SQL
+     * @return {@link Expression} that translates to a "&lt;= ALL (subquery)" SQL
      * @since 5.0
      */
     default Expression lteAll(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessOrEqualExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a "> ALL (subquery)" SQL
+     * @return {@link Expression} that translates to a "&gt; ALL (subquery)" SQL
      * @since 5.0
      */
     default Expression gtAll(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a ">= ALL (subquery)" SQL
+     * @return {@link Expression} that translates to a "&gt;= ALL (subquery)" SQL
      * @since 5.0
      */
     default Expression gteAll(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterOrEqualExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a "< ANY (subquery)" SQL
+     * @return {@link Expression} that translates to a "&lt; ANY (subquery)" SQL
      * @since 5.0
      */
     default Expression ltAny(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessExp(getExpression(), ExpressionFactory.any(subquery));
     }
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a "<= ANY (subquery)" SQL
+     * @return {@link Expression} that translates to a "&lt;= ANY (subquery)" SQL
      * @since 5.0
      */
     default Expression lteAny(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessOrEqualExp(getExpression(), ExpressionFactory.any(subquery));
     }
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a "> ANY (subquery)" SQL
+     * @return {@link Expression} that translates to a "&gt; ANY (subquery)" SQL
      * @since 5.0
      */
     default Expression gtAny(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterExp(getExpression(), ExpressionFactory.any(subquery));
     }
 
     /**
      * @param subquery to use, must be a single column query.
-     * @return {@link Expression} that translates to a ">= ANY (subquery)" SQL
+     * @return {@link Expression} that translates to a "&gt;= ANY (subquery)" SQL
      * @since 5.0
      */
     default Expression gteAny(ColumnSelect<E> subquery) {
-        assertValidateSubqueryForComparison(subquery);
+        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterOrEqualExp(getExpression(), ExpressionFactory.any(subquery));
     }
 
-    private static <E> void assertValidateSubqueryForComparison(ColumnSelect<E> subquery) {
+    private static <E> void assertSubqueryIsValidForComparison(ColumnSelect<E> subquery) {
         if(subquery.getColumns().size() != 1) {
             throw new CayenneRuntimeException("Only single-column query could be used in the comparison.");
         }
