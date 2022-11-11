@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.crypto.db.Table5;
+import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 
@@ -17,6 +19,8 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 public abstract class _Table5 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
+
+    public static final EntityProperty<Table5> SELF = PropertyFactory.createSelf(Table5.class);
 
     public static final String ID_PK_COLUMN = "ID";
 
