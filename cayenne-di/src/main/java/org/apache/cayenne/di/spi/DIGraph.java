@@ -68,6 +68,7 @@ class DIGraph<V> {
 	public void add(V from, V to) {
 		this.add(from);
 		this.add(to);
+		neighbors.get(to).remove(from);
 		neighbors.get(from).add(to);
 	}
 
