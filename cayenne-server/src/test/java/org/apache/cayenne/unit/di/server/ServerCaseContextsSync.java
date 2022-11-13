@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.DIBootstrap;
@@ -43,8 +42,7 @@ public class ServerCaseContextsSync extends DICase {
                 new ServerCaseModule(testScope),
                 binder -> {
                     binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProviderContextsSync.class).in(testScope);
-                    ServerModule.contributeProperties(binder)
-                            .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(true));
+                    ServerModule.extend(binder).syncContexts();
                 });
         injector.getInstance(SchemaBuilder.class).rebuildSchema();
     }

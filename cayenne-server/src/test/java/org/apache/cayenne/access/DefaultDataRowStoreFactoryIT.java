@@ -26,8 +26,10 @@ import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.ServerModuleExtender;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -82,7 +84,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-            ServerModule.setSnapshotCacheSize(binder, CACHE_SIZE);
+            ServerModule.extend(binder).snapshotCacheSize(CACHE_SIZE);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -112,7 +114,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
             binder.bind(DbRowOpSorter.class).to(DefaultDbRowOpSorter.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-            ServerModule.contributeProperties(binder);
+            new TestExtender(binder).initAllExtensions();
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -120,6 +122,17 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
                 .createDataRowStore("test");
 
         assertEquals(dataStore.getEventBridge().getClass(), MockEventBridge.class);
+    }
+
+    static class TestExtender extends ServerModuleExtender {
+        public TestExtender(Binder binder) {
+            super(binder);
+        }
+
+        @Override
+        protected ServerModuleExtender initAllExtensions() {
+            return super.initAllExtensions();
+        }
     }
 
 }

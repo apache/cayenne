@@ -23,7 +23,6 @@ import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.tx.TransactionFilter;
 
 /**
  * This module is autoloaded, all extensions should be done via {@link CacheInvalidationModuleExtender}.
@@ -32,6 +31,10 @@ import org.apache.cayenne.tx.TransactionFilter;
  */
 public class CacheInvalidationModule implements Module {
 
+    /**
+     * @deprecated in favor of {@link #extend(Binder)}
+     */
+    @Deprecated(since = "5.0")
     static ListBuilder<InvalidationHandler> contributeInvalidationHandler(Binder binder) {
         return binder.bindList(InvalidationHandler.class);
     }
@@ -40,19 +43,22 @@ public class CacheInvalidationModule implements Module {
      * Returns a new "extender" to customize the defaults provided by this module.
      *
      * @return a new "extender" to customize the defaults provided by this module.
+     * @since 5.0
      */
-    public static CacheInvalidationModuleExtender extend() {
-        return new CacheInvalidationModuleExtender();
+    public static CacheInvalidationModuleExtender extend(Binder binder) {
+        return new CacheInvalidationModuleExtender(binder);
     }
 
     @Override
     public void configure(Binder binder) {
 
         binder.bind(CacheGroupsHandler.class).to(CacheGroupsHandler.class);
-        contributeInvalidationHandler(binder).add(CacheGroupsHandler.class);
 
-        // want the filter to be INSIDE transaction by default
-        ServerModule.contributeDomainSyncFilters(binder)
-                .insertBefore(CacheInvalidationFilter.class, TransactionFilter.class);
+        extend(binder)
+                .initAllExtensions()
+                .addHandler(CacheGroupsHandler.class);
+
+        // want the filter to be INSIDE transactions by default
+        ServerModule.extend(binder).addSyncFilter(CacheInvalidationFilter.class, true);
     }
 }

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
-import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.access.types.ExtendedType;
 
 /**
  * Defines the names of runtime properties and named collections used in DI modules.
@@ -33,7 +33,7 @@ public interface Constants {
      * A DI container key for the Map&lt;String, String&gt; storing properties
      * used by built-in Cayenne service.
      *
-     * @see org.apache.cayenne.configuration.server.ServerModule#contributeProperties(Binder).
+     * @see org.apache.cayenne.configuration.server.ServerModuleExtender#setProperty(String, Object)
      */
     String PROPERTIES_MAP = "cayenne.properties";
 
@@ -47,7 +47,7 @@ public interface Constants {
     /**
      * A DI container key for the List&lt;Object&gt; storing lifecycle events listeners.
      *
-     * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainListeners(Binder).
+     * @see org.apache.cayenne.configuration.server.ServerModuleExtender#addListener(Object) 
      */
     String SERVER_DOMAIN_LISTENERS_LIST = "cayenne.server.domain_listeners";
 
@@ -61,7 +61,7 @@ public interface Constants {
      * A DI container key for the List&lt;ExtendedType&gt; storing default
      * adapter-agnostic ExtendedTypes.
      *
-     * @see org.apache.cayenne.configuration.server.ServerModule#contributeDefaultTypes(Binder).
+     * @see org.apache.cayenne.configuration.server.ServerModuleExtender#addDefaultExtendedType(ExtendedType) 
      */
     String SERVER_DEFAULT_TYPES_LIST = "cayenne.server.default_types";
 
@@ -69,7 +69,7 @@ public interface Constants {
      * A DI container key for the List&lt;ExtendedType&gt; storing a
      * user-provided ExtendedTypes.
      *
-     * @see org.apache.cayenne.configuration.server.ServerModule#contributeUserTypes(Binder).
+     * @see org.apache.cayenne.configuration.server.ServerModuleExtender#addUserExtendedType(ExtendedType) 
      */
     String SERVER_USER_TYPES_LIST = "cayenne.server.user_types";
 
@@ -77,7 +77,7 @@ public interface Constants {
      * A DI container key for the List&lt;ExtendedTypeFactory&gt; storing
      * default and user-provided ExtendedTypeFactories.
      *
-     * @see org.apache.cayenne.configuration.server.ServerModule#contributeTypeFactories(Binder).
+     * @see org.apache.cayenne.configuration.server.ServerModuleExtender#addExtendedTypeFactory(Class) 
      */
     String SERVER_TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
 
@@ -177,7 +177,7 @@ public interface Constants {
     /**
      * Snapshot cache max size
      *
-     * @see org.apache.cayenne.configuration.server.ServerModule#setSnapshotCacheSize(Binder, int)
+     * @see org.apache.cayenne.configuration.server.ServerModuleExtender#snapshotCacheSize(int) 
      * @since 4.0
      */
     String SNAPSHOT_CACHE_SIZE_PROPERTY = "cayenne.DataRowStore.snapshot.size";

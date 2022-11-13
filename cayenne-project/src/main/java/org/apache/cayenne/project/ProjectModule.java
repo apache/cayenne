@@ -44,15 +44,26 @@ import org.apache.cayenne.project.validation.ProjectValidator;
 public class ProjectModule implements Module {
 
     /**
-     * @since 4.1
+     * @since 5.0
      */
+    public static ProjectModuleExtender extend(Binder binder) {
+        return new ProjectModuleExtender(binder);
+    }
+
+    /**
+     * @since 4.1
+     * @deprecated in favor of {@link #extend(Binder)}
+     */
+    @Deprecated(since = "5.0")
     public static ListBuilder<ProjectExtension> contributeExtensions(Binder binder) {
         return binder.bindList(ProjectExtension.class);
     }
 
     /**
      * @since 4.1
+     * @deprecated in favor of {@link #extend(Binder)}
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<UpgradeHandler> contributeUpgradeHandler(Binder binder) {
         return binder.bindList(UpgradeHandler.class);
     }
@@ -65,14 +76,15 @@ public class ProjectModule implements Module {
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
         binder.bind(UpgradeService.class).to(DefaultUpgradeService.class);
-        // Note: order is important
-        contributeUpgradeHandler(binder)
-                .add(UpgradeHandler_V7.class)
-                .add(UpgradeHandler_V8.class)
-                .add(UpgradeHandler_V9.class)
-                .add(UpgradeHandler_V10.class)
-                .add(UpgradeHandler_V11.class);
 
-        contributeExtensions(binder);
+        extend(binder)
+                .initAllExtensions()
+
+                // Note: order is important
+                .addUpgradeHandler(UpgradeHandler_V7.class)
+                .addUpgradeHandler(UpgradeHandler_V8.class)
+                .addUpgradeHandler(UpgradeHandler_V9.class)
+                .addUpgradeHandler(UpgradeHandler_V10.class)
+                .addUpgradeHandler(UpgradeHandler_V11.class);
     }
 }

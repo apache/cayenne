@@ -21,8 +21,6 @@ package org.apache.cayenne.configuration.server;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.datasource.DataSourceBuilder;
-import org.apache.cayenne.di.ListBuilder;
-import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 
@@ -222,10 +220,8 @@ public class ServerRuntimeBuilder {
 
         if (!configs.isEmpty()) {
             modules.add(binder -> {
-                ListBuilder<String> locationsBinder = ServerModule.contributeProjectLocations(binder);
-                for (String c : configs) {
-                    locationsBinder.add(c);
-                }
+                ServerModuleExtender extender = ServerModule.extend(binder);
+                configs.forEach(extender::addProjectLocation);
             });
         }
 
@@ -240,7 +236,7 @@ public class ServerRuntimeBuilder {
         if (nameOverride != null) {
 
             final String finalNameOverride = nameOverride;
-            modules.add(binder -> ServerModule.contributeProperties(binder).put(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride));
+            modules.add(binder -> ServerModule.extend(binder).setProperty(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride));
         }
 
         if (dataSourceFactory != null) {
@@ -255,31 +251,32 @@ public class ServerRuntimeBuilder {
         else if (jdbcUrl != null && jdbcDriver != null) {
             modules.add(binder -> {
                 binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-                MapBuilder<String> props = ServerModule.contributeProperties(binder)
-                        .put(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver).put(Constants.JDBC_URL_PROPERTY, jdbcUrl);
+                ServerModuleExtender extender = ServerModule.extend(binder)
+                        .setProperty(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver)
+                        .setProperty(Constants.JDBC_URL_PROPERTY, jdbcUrl);
 
                 if (jdbcUser != null) {
-                    props.put(Constants.JDBC_USERNAME_PROPERTY, jdbcUser);
+                    extender.setProperty(Constants.JDBC_USERNAME_PROPERTY, jdbcUser);
                 }
 
                 if (jdbcPassword != null) {
-                    props.put(Constants.JDBC_PASSWORD_PROPERTY, jdbcPassword);
+                    extender.setProperty(Constants.JDBC_PASSWORD_PROPERTY, jdbcPassword);
                 }
 
                 if (jdbcMinConnections > 0) {
-                    props.put(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, Integer.toString(jdbcMinConnections));
+                    extender.setProperty(Constants.JDBC_MIN_CONNECTIONS_PROPERTY, Integer.toString(jdbcMinConnections));
                 }
 
                 if (jdbcMaxConnections > 0) {
-                    props.put(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
+                    extender.setProperty(Constants.JDBC_MAX_CONNECTIONS_PROPERTY, Integer.toString(jdbcMaxConnections));
                 }
 
                 if (maxQueueWaitTime > 0) {
-                    props.put(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
+                    extender.setProperty(Constants.JDBC_MAX_QUEUE_WAIT_TIME, Long.toString(maxQueueWaitTime));
                 }
 
                 if (validationQuery != null) {
-                    props.put(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
+                    extender.setProperty(Constants.JDBC_VALIDATION_QUERY_PROPERTY, validationQuery);
                 }
             });
         }

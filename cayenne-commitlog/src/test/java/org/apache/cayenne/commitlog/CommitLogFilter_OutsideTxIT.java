@@ -36,45 +36,47 @@ import static org.junit.Assert.assertNull;
 
 public class CommitLogFilter_OutsideTxIT extends AuditableServerCase {
 
-	protected ObjectContext context;
-	protected CommitLogListener listener;
+    protected ObjectContext context;
+    protected CommitLogListener listener;
 
-	@Override
-	protected ServerRuntimeBuilder configureCayenne() {
-		this.listener = (originatingContext, changes) -> {
+    @Override
+    protected ServerRuntimeBuilder configureCayenne() {
+        this.listener = (originatingContext, changes) -> {
 
-			// assert we are inside transaction
-			assertNull(BaseTransaction.getThreadTransaction());
+            // assert we are inside transaction
+            assertNull(BaseTransaction.getThreadTransaction());
 
-			for (ObjectChange c : changes.getUniqueChanges()) {
-				AuditLog log = runtime.newContext().newObject(AuditLog.class);
-				log.setLog("DONE: " + c.getPostCommitId());
-				log.getObjectContext().commitChanges();
-			}
-		};
-		return super.configureCayenne().addModule(
-				CommitLogModule.extend().commitLogAnnotationEntitiesOnly().excludeFromTransaction().addListener(listener)
-						.module());
-	}
+            for (ObjectChange c : changes.getUniqueChanges()) {
+                AuditLog log = runtime.newContext().newObject(AuditLog.class);
+                log.setLog("DONE: " + c.getPostCommitId());
+                log.getObjectContext().commitChanges();
+            }
+        };
+        return super.configureCayenne()
+                .addModule(b -> CommitLogModule.extend(b)
+                        .commitLogAnnotationEntitiesOnly()
+                        .excludeFromTransaction()
+                        .addListener(listener));
+    }
 
-	@Before
-	public void before() {
-		this.context = runtime.newContext();
-	}
+    @Before
+    public void before() {
+        this.context = runtime.newContext();
+    }
 
-	@Test
-	public void testCommitLog() throws SQLException {
-		Auditable2 a1 = context.newObject(Auditable2.class);
-		a1.setCharProperty1("yy");
-		a1.setCharProperty2("zz");
+    @Test
+    public void testCommitLog() throws SQLException {
+        Auditable2 a1 = context.newObject(Auditable2.class);
+        a1.setCharProperty1("yy");
+        a1.setCharProperty2("zz");
 
-		Auditable2 a2 = context.newObject(Auditable2.class);
-		a2.setCharProperty1("yy");
-		a2.setCharProperty2("zz");
-		context.commitChanges();
+        Auditable2 a2 = context.newObject(Auditable2.class);
+        a2.setCharProperty1("yy");
+        a2.setCharProperty2("zz");
+        context.commitChanges();
 
-		List<Object[]> logs = auditLog.selectAll();
-		assertEquals(2, logs.size());
-	}
+        List<Object[]> logs = auditLog.selectAll();
+        assertEquals(2, logs.size());
+    }
 
 }

@@ -17,40 +17,20 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jcache;
+package org.apache.cayenne.dbsync.reverse.configuration;
 
-import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
+import org.apache.cayenne.project.ProjectModuleExtender;
 
-import javax.cache.CacheManager;
+// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ServerModuleExtender.
+class ToolsProjectModuleExtender extends ProjectModuleExtender {
 
-/**
- * <p>
- * JCache Module
- * </p>
- *
- * @since 4.0
- */
-public class JCacheModule implements Module {
-
-    public static JCacheModuleExtender extend(Binder binder) {
-        return new JCacheModuleExtender(binder);
-    }
-
-    /**
-     * @deprecated in favor of {@link #extend(Binder)}
-     */
-    @Deprecated(since = "5.0")
-    public static void contributeJCacheProviderConfig(Binder binder, String providerConfigURI) {
-        extend(binder).setJCacheProviderConfig(providerConfigURI);
+    public ToolsProjectModuleExtender(Binder binder) {
+        super(binder);
     }
 
     @Override
-    public void configure(Binder binder) {
-        binder.bind(CacheManager.class).toProvider(JCacheManagerProvider.class);
-        binder.bind(JCacheConfigurationFactory.class).to(JCacheDefaultConfigurationFactory.class);
-        binder.bind(QueryCache.class).to(JCacheQueryCache.class);
+    protected ProjectModuleExtender initAllExtensions() {
+        return super.initAllExtensions();
     }
-
 }

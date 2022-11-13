@@ -38,7 +38,7 @@ import org.apache.cayenne.query.Query;
  * }}</pre>
  *
  * @see DataChannelSyncFilter
- * @see org.apache.cayenne.configuration.server.ServerModule#contributeDomainQueryFilters(org.apache.cayenne.di.Binder)
+ * @see org.apache.cayenne.configuration.server.ServerModuleExtender#addQueryFilter(DataChannelQueryFilter) 
  *
  * @since 4.1
  */

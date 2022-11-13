@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
+import org.apache.cayenne.commitlog.model.ChangeMap;
+import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.commitlog.model.ChangeMap;
-import org.apache.cayenne.commitlog.model.MutableChangeMap;
-import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A {@link DataChannelSyncFilter} that captures commit changes, delegating their
@@ -40,8 +40,8 @@ import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
  */
 public class CommitLogFilter implements DataChannelSyncFilter {
 
-	private CommitLogEntityFactory entityFactory;
-	private Collection<CommitLogListener> listeners;
+	private final CommitLogEntityFactory entityFactory;
+	private final Collection<CommitLogListener> listeners;
 
 	public CommitLogFilter(@Inject CommitLogEntityFactory entityFactory,
 						   @Inject List<CommitLogListener> listeners) {

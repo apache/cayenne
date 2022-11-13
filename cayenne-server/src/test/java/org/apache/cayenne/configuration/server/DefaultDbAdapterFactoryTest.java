@@ -44,8 +44,8 @@ import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.junit.Test;
@@ -76,8 +76,7 @@ public class DefaultDbAdapterFactoryTest {
         dataSource.setupConnection(connection);
 
         Module testModule = binder -> {
-            ServerModule.contributeProperties(binder);
-            ServerModule.contributePkGenerators(binder);
+            ServerModule.extend(binder).initAllExtensions();
 
             binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
@@ -99,29 +98,25 @@ public class DefaultDbAdapterFactoryTest {
     }
 
     @Test
-    public void testCreatedAdapter_Generic() throws Exception {
+    public void testCreatedAdapter_Generic() {
 
-        List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
+        List<DbAdapterDetector> detectors = new ArrayList<>();
 
-        Module testModule = binder -> {
-            ServerModule.contributeProperties(binder);
-            ServerModule.contributeDefaultTypes(binder);
-            ServerModule.contributeUserTypes(binder);
-            ServerModule.contributeTypeFactories(binder);
-            ServerModule.contributePkGenerators(binder);
+        Module testModule = b -> {
 
-            binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-            binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-            binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
-            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+            ServerModule.extend(b).initAllExtensions();
 
-            ServerModule.contributeValueObjectTypes(binder);
-            binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+            b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+            b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
+            b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
+            b.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+            b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            b.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+
+            b.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -143,26 +138,21 @@ public class DefaultDbAdapterFactoryTest {
 
         List<DbAdapterDetector> detectors = new ArrayList<>();
 
-        Module testModule = binder -> {
-            ServerModule.contributeProperties(binder);
-            ServerModule.contributeDefaultTypes(binder);
-            ServerModule.contributeUserTypes(binder);
-            ServerModule.contributeTypeFactories(binder);
-            ServerModule.contributePkGenerators(binder);
+        Module testModule = b -> {
+            ServerModule.extend(b).initAllExtensions();
 
-            binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-            binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-            binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
-            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            binder.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
+            b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+            b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
+            b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
+            b.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+            b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            b.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
 
-            ServerModule.contributeValueObjectTypes(binder);
-            binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-            binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
+            b.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+            b.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -191,8 +181,7 @@ public class DefaultDbAdapterFactoryTest {
         dataSource.setupConnection(connection);
 
         Module testModule = binder -> {
-            ServerModule.contributeProperties(binder);
-            ServerModule.contributePkGenerators(binder);
+            ServerModule.extend(binder).initAllExtensions();
 
             binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);

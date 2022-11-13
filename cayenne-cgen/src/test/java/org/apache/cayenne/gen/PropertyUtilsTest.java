@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.access.types.TimestampType;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.DIBootstrap;
@@ -48,6 +45,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -67,10 +67,10 @@ public class PropertyUtilsTest {
         importUtils = new ImportUtils();
 
         DefaultScope testScope = new DefaultScope();
-        propertyUtils = DIBootstrap.createInjector(new CgenCaseModule(testScope), new CgenModule(),
-                binder ->
-                        ServerModule.contributeUserTypes(binder)
-                                .add(new TimestampType()))
+        propertyUtils = DIBootstrap.createInjector(
+                        new CgenCaseModule(testScope),
+                        new CgenModule(),
+                        binder -> ServerModule.extend(binder).addUserExtendedType(new TimestampType()))
                 .getInstance(ToolsUtilsFactory.class)
                 .createPropertyUtils(logger, importUtils);
     }

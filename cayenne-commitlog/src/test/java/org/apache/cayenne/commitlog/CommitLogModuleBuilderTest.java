@@ -33,35 +33,35 @@ import static org.junit.Assert.assertTrue;
 
 public class CommitLogModuleBuilderTest {
 
-	@Test
-	public void testListener_Object() {
+    @Test
+    public void testListener_Object() {
 
-		L listener = new L();
-		Module m = CommitLogModule.extend().addListener(listener).module();
+        L listener = new L();
+        Module m = b -> CommitLogModule.extend(b).addListener(listener);
 
-		Injector i = DIBootstrap.createInjector(m);
-		List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
-		assertEquals(1, listeners.size());
-		assertTrue(listeners.contains(listener));
-	}
+        Injector i = DIBootstrap.createInjector(m);
+        List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
+        assertEquals(1, listeners.size());
+        assertTrue(listeners.contains(listener));
+    }
 
-	@Test
-	public void testListener_Class() {
+    @Test
+    public void testListener_Class() {
 
-		Module m = CommitLogModule.extend().addListener(L.class).module();
+        Module m = b -> CommitLogModule.extend(b).addListener(L.class);
 
-		Injector i = DIBootstrap.createInjector(m);
-		List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
-		assertEquals(1, listeners.size());
-		assertTrue(listeners.get(0) instanceof L);
-	}
+        Injector i = DIBootstrap.createInjector(m);
+        List<CommitLogListener> listeners = i.getInstance(Key.getListOf(CommitLogListener.class));
+        assertEquals(1, listeners.size());
+        assertTrue(listeners.get(0) instanceof L);
+    }
 
-	public static class L implements CommitLogListener {
+    public static class L implements CommitLogListener {
 
-		@Override
-		public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
-			// do nothing.
-		}
-	}
+        @Override
+        public void onPostCommit(ObjectContext originatingContext, ChangeMap changes) {
+            // do nothing.
+        }
+    }
 
 }

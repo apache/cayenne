@@ -52,8 +52,8 @@ public class CommitLogFilter_TxIT extends AuditableServerCase {
 				log.getObjectContext().commitChanges();
 			}
 		};
-		return super.configureCayenne().addModule(
-				CommitLogModule.extend().commitLogAnnotationEntitiesOnly().addListener(listener).module());
+		return super.configureCayenne().
+				addModule(b -> CommitLogModule.extend(b).commitLogAnnotationEntitiesOnly().addListener(listener));
 	}
 
 	@Before

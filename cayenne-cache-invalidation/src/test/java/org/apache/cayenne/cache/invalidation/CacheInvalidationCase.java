@@ -28,43 +28,46 @@ import org.junit.Before;
 
 public abstract class CacheInvalidationCase {
 
-	protected ServerRuntime runtime;
+    protected ServerRuntime runtime;
 
-	protected TableHelper e1;
+    protected TableHelper e1;
 
-	protected TableHelper e2;
+    protected TableHelper e2;
 
-	@Before
-	public void startCayenne() throws Exception {
-		this.runtime = configureCayenne().build();
+    @Before
+    public void startCayenne() throws Exception {
+        this.runtime = configureCayenne().build();
 
-		DBHelper dbHelper = new DBHelper(runtime.getDataSource());
+        DBHelper dbHelper = new DBHelper(runtime.getDataSource());
 
-		this.e1 = new TableHelper(dbHelper, "E1").setColumns("ID");
-		this.e1.deleteAll();
+        this.e1 = new TableHelper(dbHelper, "E1").setColumns("ID");
+        this.e1.deleteAll();
 
-		this.e2 = new TableHelper(dbHelper, "E2").setColumns("ID");
-		this.e2.deleteAll();
-	}
+        this.e2 = new TableHelper(dbHelper, "E2").setColumns("ID");
+        this.e2.deleteAll();
+    }
 
-	protected abstract Module extendInvalidationModule();
+    protected void extend(CacheInvalidationModuleExtender e) {
+        // do nothing by default, subclasses can override
+    }
 
-	protected Module buildCustomModule() {
-		return binder -> { };
-	}
+    protected Module buildCustomModule() {
+        return binder -> {
+        };
+    }
 
-	protected ServerRuntimeBuilder configureCayenne() {
-		return ServerRuntime.builder()
-				.addModule(extendInvalidationModule())
-				.addModule(buildCustomModule())
-				.addConfig("cayenne-lifecycle.xml");
-	}
+    protected ServerRuntimeBuilder configureCayenne() {
+        return ServerRuntime.builder()
+                .addModule(b -> extend(CacheInvalidationModule.extend(b)))
+                .addModule(buildCustomModule())
+                .addConfig("cayenne-lifecycle.xml");
+    }
 
-	@After
-	public void shutdownCayenne() {
-		if (runtime != null) {
-			runtime.shutdown();
-		}
-	}
+    @After
+    public void shutdownCayenne() {
+        if (runtime != null) {
+            runtime.shutdown();
+        }
+    }
 
 }

@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelQueryFilter;
 import org.apache.cayenne.DataChannelSyncFilter;
@@ -42,39 +39,7 @@ import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslatorFactory;
 import org.apache.cayenne.access.translator.select.SelectTranslatorFactory;
-import org.apache.cayenne.access.types.BigDecimalType;
-import org.apache.cayenne.access.types.BigDecimalValueType;
-import org.apache.cayenne.access.types.BigIntegerValueType;
-import org.apache.cayenne.access.types.BooleanType;
-import org.apache.cayenne.access.types.ByteArrayType;
-import org.apache.cayenne.access.types.ByteType;
-import org.apache.cayenne.access.types.CalendarType;
-import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.CharacterValueType;
-import org.apache.cayenne.access.types.DateType;
-import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
-import org.apache.cayenne.access.types.DoubleType;
-import org.apache.cayenne.access.types.DurationType;
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.access.types.ExtendedTypeFactory;
-import org.apache.cayenne.access.types.FloatType;
-import org.apache.cayenne.access.types.GeoJsonType;
-import org.apache.cayenne.access.types.IntegerType;
-import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
-import org.apache.cayenne.access.types.LocalDateTimeValueType;
-import org.apache.cayenne.access.types.LocalDateValueType;
-import org.apache.cayenne.access.types.LocalTimeValueType;
-import org.apache.cayenne.access.types.LongType;
-import org.apache.cayenne.access.types.PeriodValueType;
-import org.apache.cayenne.access.types.ShortType;
-import org.apache.cayenne.access.types.TimeType;
-import org.apache.cayenne.access.types.TimestampType;
-import org.apache.cayenne.access.types.UUIDValueType;
-import org.apache.cayenne.access.types.UtilDateType;
-import org.apache.cayenne.access.types.ValueObjectType;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.access.types.VoidType;
-import org.apache.cayenne.access.types.WktType;
+import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
@@ -149,8 +114,8 @@ import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.template.CayenneSQLTemplateProcessor;
@@ -163,6 +128,9 @@ import org.apache.cayenne.tx.TransactionFilter;
 import org.apache.cayenne.tx.TransactionManager;
 import org.xml.sax.XMLReader;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * A DI module containing all Cayenne server runtime configuration.
  *
@@ -173,14 +141,25 @@ public class ServerModule implements Module {
     private static final int DEFAULT_MAX_ID_QUALIFIER_SIZE = 10000;
 
     /**
+     * Returns an extender object that allows the app to customize the ServerModule services.
+     *
+     * @since 5.0
+     */
+    public static ServerModuleExtender extend(Binder b) {
+        return new ServerModuleExtender(b);
+    }
+
+    /**
      * Sets transaction management to either external or internal transactions. Default is internally-managed transactions.
      *
      * @param binder      DI binder passed to the module during injector startup.
      * @param useExternal whether external (true) or internal (false) transaction management should be used.
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static void useExternalTransactions(Binder binder, boolean useExternal) {
-        contributeProperties(binder).put(Constants.SERVER_EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
+        extend(binder).setProperty(Constants.SERVER_EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
     }
 
     /**
@@ -189,9 +168,11 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @param size   max size of snapshot cache
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static void setSnapshotCacheSize(Binder binder, int size) {
-        contributeProperties(binder).put(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, Integer.toString(size));
+        extend(binder).snapshotCacheSize(size);
     }
 
     /**
@@ -200,8 +181,9 @@ public class ServerModule implements Module {
      *
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for String locations.
-     * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<String> contributeProjectLocations(Binder binder) {
         return binder.bindList(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST);
     }
@@ -213,7 +195,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for DataChannelQueryFilter.
      * @since 4.1
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<DataChannelQueryFilter> contributeDomainQueryFilters(Binder binder) {
         return binder.bindList(DataChannelQueryFilter.class);
     }
@@ -225,7 +209,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for DataChannelSyncFilter.
      * @since 4.1
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<DataChannelSyncFilter> contributeDomainSyncFilters(Binder binder) {
         return binder.bindList(DataChannelSyncFilter.class);
     }
@@ -236,7 +222,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for listener Objects.
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<Object> contributeDomainListeners(Binder binder) {
         return binder.bindList(Object.class, Constants.SERVER_DOMAIN_LISTENERS_LIST);
     }
@@ -248,7 +236,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for DbAdapterDetectors.
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<DbAdapterDetector> contributeAdapterDetectors(Binder binder) {
         return binder.bindList(DbAdapterDetector.class, Constants.SERVER_ADAPTER_DETECTORS_LIST);
     }
@@ -260,7 +250,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return MapBuilder for properties.
      * @since 4.1
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static MapBuilder<PkGenerator> contributePkGenerators(Binder binder) {
         return binder.bindMap(PkGenerator.class);
     }
@@ -272,7 +264,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return MapBuilder for properties.
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static MapBuilder<String> contributeProperties(Binder binder) {
         return binder.bindMap(String.class, Constants.PROPERTIES_MAP);
     }
@@ -284,7 +278,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for ExtendedTypes.
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<ExtendedTypeFactory> contributeTypeFactories(Binder binder) {
         return binder.bindList(ExtendedTypeFactory.class, Constants.SERVER_TYPE_FACTORIES_LIST);
     }
@@ -297,20 +293,24 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for ExtendedTypes.
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<ExtendedType> contributeDefaultTypes(Binder binder) {
         return binder.bindList(ExtendedType.class, Constants.SERVER_DEFAULT_TYPES_LIST);
     }
 
     /**
      * Provides access to a DI collection builder for {@link ExtendedType}'s that allows downstream modules to "contribute"
-     * their own types. Unlike "default" types (see {@link #contributeDefaultTypes(Binder)}), "user" types are loaded
+     * their own types. Unlike "default" types, "user" types are loaded
      * after the adapter-provided types and can override those.
      *
      * @param binder DI binder passed to the module during injector startup.
      * @return ListBuilder for ExtendedTypes.
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<ExtendedType> contributeUserTypes(Binder binder) {
         return binder.bindList(ExtendedType.class, Constants.SERVER_USER_TYPES_LIST);
     }
@@ -319,7 +319,9 @@ public class ServerModule implements Module {
      * @param binder DI binder passed to module during injector startup
      * @return ListBuilder for user-contributed ValueObjectTypes
      * @since 4.0
+     * @deprecated in favor of {@link #extend(Binder)} API
      */
+    @Deprecated(since = "5.0")
     public static ListBuilder<ValueObjectType> contributeValueObjectTypes(Binder binder) {
         return binder.bindList(ValueObjectType.class);
     }
@@ -334,125 +336,99 @@ public class ServerModule implements Module {
 
     public void configure(Binder binder) {
 
-        // configure global stack properties
-        contributeProperties(binder)
-                .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
-        contributeProperties(binder)
-                .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, String.valueOf(false));
+        extend(binder).initAllExtensions()
 
-        binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-        binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-        binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+                // global stack properties
+                .setProperty(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, DEFAULT_MAX_ID_QUALIFIER_SIZE)
+                .setProperty(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false")
 
-        // configure known DbAdapter detectors in reverse order of popularity.
-        // Users can add their own to install custom adapters automatically
+                // known DbAdapter detectors in reverse order of popularity.
+                .addAdapterDetector(FirebirdSniffer.class)
+                .addAdapterDetector(FrontBaseSniffer.class)
+                .addAdapterDetector(IngresSniffer.class)
+                .addAdapterDetector(SQLiteSniffer.class)
+                .addAdapterDetector(DB2Sniffer.class)
+                .addAdapterDetector(H2Sniffer.class)
+                .addAdapterDetector(HSQLDBSniffer.class)
+                .addAdapterDetector(SybaseSniffer.class)
+                .addAdapterDetector(DerbySniffer.class)
+                .addAdapterDetector(SQLServerSniffer.class)
+                .addAdapterDetector(OracleSniffer.class)
+                .addAdapterDetector(PostgresSniffer.class)
+                .addAdapterDetector(MySQLSniffer.class)
+                .addAdapterDetector(MariaDBSniffer.class)
 
-        contributeAdapterDetectors(binder)
-                .add(FirebirdSniffer.class)
-                .add(FrontBaseSniffer.class)
-                .add(IngresSniffer.class)
-                .add(SQLiteSniffer.class)
-                .add(DB2Sniffer.class)
-                .add(H2Sniffer.class)
-                .add(HSQLDBSniffer.class)
-                .add(SybaseSniffer.class)
-                .add(DerbySniffer.class)
-                .add(SQLServerSniffer.class)
-                .add(OracleSniffer.class)
-                .add(PostgresSniffer.class)
-                .add(MySQLSniffer.class)
-                .add(MariaDBSniffer.class);
+                //  PkGenerators for the known DbAdapters
+                .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
+                .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
+                .addPkGenerator(FrontBaseAdapter.class, FrontBasePkGenerator.class)
+                .addPkGenerator(H2Adapter.class, H2PkGenerator.class)
+                .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
+                .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
+                .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
+                .addPkGenerator(Oracle8Adapter.class, OraclePkGenerator.class)
+                .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
+                .addPkGenerator(SQLServerAdapter.class, SybasePkGenerator.class)
+                .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class)
 
-        //installing Pk for adapters
-        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+                .addSyncFilter(TransactionFilter.class)
 
-        //set PkGenerators for current Adapters
-        contributePkGenerators(binder)
-                .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
-                .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
-                .put(FrontBaseAdapter.class.getName(), FrontBasePkGenerator.class)
-                .put(H2Adapter.class.getName(), H2PkGenerator.class)
-                .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
-                .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
-                .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
-                .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
-                .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
-                .put(SQLServerAdapter.class.getName(), SybasePkGenerator.class)
-                .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
+                // ExtendedTypes
+                .addDefaultExtendedType(new VoidType())
+                .addDefaultExtendedType(new BigDecimalType())
+                .addDefaultExtendedType(new BooleanType())
+                .addDefaultExtendedType(new ByteType(false))
+                .addDefaultExtendedType(new CharType(false, true))
+                .addDefaultExtendedType(new DoubleType())
+                .addDefaultExtendedType(new FloatType())
+                .addDefaultExtendedType(new IntegerType())
+                .addDefaultExtendedType(new LongType())
+                .addDefaultExtendedType(new ShortType(false))
+                .addDefaultExtendedType(new ByteArrayType(false, true))
+                .addDefaultExtendedType(new DateType())
+                .addDefaultExtendedType(new TimeType())
+                .addDefaultExtendedType(new TimestampType())
+                .addDefaultExtendedType(new DurationType())
+                // TODO: this one should be converted from ExtendedType to ValueType
+                .addDefaultExtendedType(new UtilDateType())
+                .addDefaultExtendedType(new CalendarType<>(GregorianCalendar.class))
+                .addDefaultExtendedType(new CalendarType<>(Calendar.class))
+                .addDefaultExtendedType(new GeoJsonType())
+                .addDefaultExtendedType(new WktType())
 
-        // configure a filter chain with only one TransactionFilter as default
-        contributeDomainQueryFilters(binder);
-        contributeDomainSyncFilters(binder).add(TransactionFilter.class);
+                .addExtendedTypeFactory(new InternalUnsupportedTypeFactory())
 
-        // init listener list
-        contributeDomainListeners(binder);
-
-        // configure extended types
-        contributeDefaultTypes(binder)
-                .add(new VoidType())
-                .add(new BigDecimalType())
-                .add(new BooleanType())
-                .add(new ByteType(false))
-                .add(new CharType(false, true))
-                .add(new DoubleType())
-                .add(new FloatType())
-                .add(new IntegerType())
-                .add(new LongType())
-                .add(new ShortType(false))
-                .add(new ByteArrayType(false, true))
-                .add(new DateType())
-                .add(new TimeType())
-                .add(new TimestampType())
-                .add(new DurationType())
-                // should be converted from ExtendedType to ValueType
-                .add(new UtilDateType())
-                .add(new CalendarType<>(GregorianCalendar.class))
-                .add(new CalendarType<>(Calendar.class))
-                // non-standard types
-                .add(GeoJsonType.class)
-                .add(WktType.class);
-        contributeUserTypes(binder);
-        contributeTypeFactories(binder)
-                .add(new InternalUnsupportedTypeFactory());
-
-        // Custom ValueObjects types contribution
-        contributeValueObjectTypes(binder)
-                .add(BigIntegerValueType.class)
-                .add(BigDecimalValueType.class)
-                .add(UUIDValueType.class)
-                .add(LocalDateValueType.class)
-                .add(LocalTimeValueType.class)
-                .add(LocalDateTimeValueType.class)
-                .add(PeriodValueType.class)
-                .add(CharacterValueType.class);
+                // ValueObjectTypes
+                .addValueObjectType(BigIntegerValueType.class)
+                .addValueObjectType(BigDecimalValueType.class)
+                .addValueObjectType(UUIDValueType.class)
+                .addValueObjectType(LocalDateValueType.class)
+                .addValueObjectType(LocalTimeValueType.class)
+                .addValueObjectType(LocalDateTimeValueType.class)
+                .addValueObjectType(PeriodValueType.class)
+                .addValueObjectType(CharacterValueType.class);
 
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
-        // configure explicit configurations
-        contributeProjectLocations(binder);
-
+        binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+        binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+        binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+        binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
+        binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
-
         binder.bind(EventManager.class).toProvider(EventManagerProvider.class);
-
         binder.bind(QueryCache.class).toProvider(MapQueryCacheProvider.class);
-
         binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
-
         binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
 
         // a service to provide the main stack DataDomain
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
-
         binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
 
         // will return DataDomain for request for a DataChannel
         binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
-
         binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
-
         binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
 
         // a service to load project XML descriptors

@@ -18,43 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.access.types.BigDecimalType;
-import org.apache.cayenne.access.types.BigDecimalValueType;
-import org.apache.cayenne.access.types.BigIntegerValueType;
-import org.apache.cayenne.access.types.BooleanType;
-import org.apache.cayenne.access.types.ByteArrayType;
-import org.apache.cayenne.access.types.ByteType;
-import org.apache.cayenne.access.types.CalendarType;
-import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.CharacterValueType;
-import org.apache.cayenne.access.types.DateType;
-import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
-import org.apache.cayenne.access.types.DoubleType;
-import org.apache.cayenne.access.types.DurationType;
-import org.apache.cayenne.access.types.FloatType;
-import org.apache.cayenne.access.types.IntegerType;
-import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
-import org.apache.cayenne.access.types.LocalDateTimeValueType;
-import org.apache.cayenne.access.types.LocalDateValueType;
-import org.apache.cayenne.access.types.LocalTimeValueType;
-import org.apache.cayenne.access.types.LongType;
-import org.apache.cayenne.access.types.PeriodValueType;
-import org.apache.cayenne.access.types.ShortType;
-import org.apache.cayenne.access.types.TimeType;
-import org.apache.cayenne.access.types.TimestampType;
-import org.apache.cayenne.access.types.UUIDValueType;
-import org.apache.cayenne.access.types.UtilDateType;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.access.types.VoidType;
+import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataMapLoader;
@@ -66,7 +36,7 @@ import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.ServerModuleExtender;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
@@ -115,8 +85,8 @@ import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -147,6 +117,9 @@ import org.apache.cayenne.unit.testcontainers.TestContainerProvider;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.xml.sax.XMLReader;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 public class ServerCaseModule implements Module {
 
     protected DefaultScope testScope;
@@ -159,7 +132,7 @@ public class ServerCaseModule implements Module {
 
         // these are the objects injectable in unit tests that subclass from
         // ServerCase. Note that ServerRuntimeProvider creates ServerRuntime
-        // instances complete with their own DI injectors, independent from the
+        // instances complete with their own DI injectors, independent of the
         // unit test injector. ServerRuntime injector contents are customized
         // inside ServerRuntimeProvider.
 
@@ -178,61 +151,60 @@ public class ServerCaseModule implements Module {
                 .put(FrontBaseAdapter.class.getName(), FrontBaseUnitDbAdapter.class.getName())
                 .put(IngresAdapter.class.getName(), IngresUnitDbAdapter.class.getName())
                 .put(SQLiteAdapter.class.getName(), SQLiteUnitDbAdapter.class.getName());
-        ServerModule.contributeProperties(binder)
-                // Use soft references instead of default weak.
-                // Should remove problems with random-failing tests (those that are GC-sensitive).
-                .put(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
-
-        ServerModule.contributeDomainSyncFilters(binder);
-        ServerModule.contributeDomainQueryFilters(binder);
 
         binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
         binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-        ServerModule.contributePkGenerators(binder)
-                .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
-                .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
-                .put(FrontBaseAdapter.class.getName(), FrontBasePkGenerator.class)
-                .put(H2Adapter.class.getName(), H2PkGenerator.class)
-                .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
-                .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
-                .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
-                .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
-                .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
-                .put(SQLServerAdapter.class.getName(), SybasePkGenerator.class)
-                .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
 
-        // configure extended types
-        ServerModule.contributeDefaultTypes(binder)
-                .add(new VoidType())
-                .add(new BigDecimalType())
-                .add(new BooleanType())
-                .add(new ByteArrayType(false, true))
-                .add(new ByteType(false))
-                .add(new CharType(false, true))
-                .add(new DateType())
-                .add(new DoubleType())
-                .add(new FloatType())
-                .add(new IntegerType())
-                .add(new LongType())
-                .add(new ShortType(false))
-                .add(new TimeType())
-                .add(new TimestampType())
-                .add(new UtilDateType())
-                .add(new CalendarType<>(GregorianCalendar.class))
-                .add(new CalendarType<>(Calendar.class))
-                .add(new DurationType());
-        ServerModule.contributeUserTypes(binder);
-        ServerModule.contributeTypeFactories(binder)
-                .add(new InternalUnsupportedTypeFactory());
-        ServerModule.contributeValueObjectTypes(binder)
-                .add(BigIntegerValueType.class)
-                .add(BigDecimalValueType.class)
-                .add(UUIDValueType.class)
-                .add(LocalDateValueType.class)
-                .add(LocalTimeValueType.class)
-                .add(LocalDateTimeValueType.class)
-                .add(PeriodValueType.class)
-                .add(CharacterValueType.class);
+        new ServerCaseModuleExtender(binder)
+                .initAllExtensions()
+
+                // Use soft references instead of default weak.
+                // Should remove problems with random-failing tests (those that are GC-sensitive).
+                .setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft")
+
+                .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
+                .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
+                .addPkGenerator(FrontBaseAdapter.class, FrontBasePkGenerator.class)
+                .addPkGenerator(H2Adapter.class, H2PkGenerator.class)
+                .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
+                .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
+                .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
+                .addPkGenerator(Oracle8Adapter.class, OraclePkGenerator.class)
+                .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
+                .addPkGenerator(SQLServerAdapter.class, SybasePkGenerator.class)
+                .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class)
+
+                // configure extended types
+                .addDefaultExtendedType(new VoidType())
+                .addDefaultExtendedType(new BigDecimalType())
+                .addDefaultExtendedType(new BooleanType())
+                .addDefaultExtendedType(new ByteArrayType(false, true))
+                .addDefaultExtendedType(new ByteType(false))
+                .addDefaultExtendedType(new CharType(false, true))
+                .addDefaultExtendedType(new DateType())
+                .addDefaultExtendedType(new DoubleType())
+                .addDefaultExtendedType(new FloatType())
+                .addDefaultExtendedType(new IntegerType())
+                .addDefaultExtendedType(new LongType())
+                .addDefaultExtendedType(new ShortType(false))
+                .addDefaultExtendedType(new TimeType())
+                .addDefaultExtendedType(new TimestampType())
+                .addDefaultExtendedType(new UtilDateType())
+                .addDefaultExtendedType(new CalendarType<>(GregorianCalendar.class))
+                .addDefaultExtendedType(new CalendarType<>(Calendar.class))
+                .addDefaultExtendedType(new DurationType())
+
+                .addExtendedTypeFactory(new InternalUnsupportedTypeFactory())
+
+                .addValueObjectType(BigIntegerValueType.class)
+                .addValueObjectType(BigDecimalValueType.class)
+                .addValueObjectType(UUIDValueType.class)
+                .addValueObjectType(LocalDateValueType.class)
+                .addValueObjectType(LocalTimeValueType.class)
+                .addValueObjectType(LocalDateTimeValueType.class)
+                .addValueObjectType(PeriodValueType.class)
+                .addValueObjectType(CharacterValueType.class);
+
         binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
         binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
 
@@ -256,6 +228,7 @@ public class ServerCaseModule implements Module {
         binder.bind(DataSourceDescriptor.class).toProviderInstance(new Provider<>() {
             @Inject
             UnitDataSourceDescriptor unitDataSourceDescriptor;
+
             @Override
             public DataSourceDescriptor get() throws DIRuntimeException {
                 return unitDataSourceDescriptor;
@@ -294,5 +267,17 @@ public class ServerCaseModule implements Module {
         binder.bind(DataContext.class).toProvider(ServerCaseDataContextProvider.class).withoutScope();
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);
         binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(testScope);
+    }
+
+    // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ServerModuleExtender.
+    static class ServerCaseModuleExtender extends ServerModuleExtender {
+        public ServerCaseModuleExtender(Binder binder) {
+            super(binder);
+        }
+
+        @Override
+        protected ServerModuleExtender initAllExtensions() {
+            return super.initAllExtensions();
+        }
     }
 }

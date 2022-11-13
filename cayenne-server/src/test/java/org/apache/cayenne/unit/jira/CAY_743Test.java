@@ -40,7 +40,7 @@ public class CAY_743Test {
             @Override
             public void configure(Binder binder) {
                 super.configure(binder);
-                ServerModule.contributeProjectLocations(binder).add("cay743/cayenne-domain.xml");
+                ServerModule.extend(binder).addProjectLocation("cay743/cayenne-domain.xml");
             }
         });
 

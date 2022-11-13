@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.jcache.unit;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -33,6 +29,10 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.ServerCaseProperties;
 import org.apache.cayenne.unit.di.server.ServerRuntimeProvider;
+
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class CacheServerRuntimeProvider extends ServerRuntimeProvider {
 
@@ -55,8 +55,7 @@ public class CacheServerRuntimeProvider extends ServerRuntimeProvider {
             throw new CayenneRuntimeException("Unable to resolve ehcache config resource URI.");
         }
 
-        modules.add(binder -> JCacheModule
-                .contributeJCacheProviderConfig(binder, configURI));
+        modules.add(b -> JCacheModule.extend(b).setJCacheProviderConfig(configURI));
         return modules;
     }
 }
