@@ -20,6 +20,7 @@ package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.junit.Test;
@@ -57,6 +58,11 @@ public class ModuleLoaderTest {
 
         Injector i = DIBootstrap.createInjector(modules);
         assertEquals(Integer.valueOf(66), i.getInstance(Integer.class));
+    }
+
+    @Test(expected = DIRuntimeException.class)
+    public void testLoadCircularModules() {
+        new ModuleLoader().load(CircularModuleProvider.class);
     }
 
     public static class Module1 implements Module {
@@ -102,6 +108,20 @@ public class ModuleLoaderTest {
         @Override
         public void configure(Binder binder) {
             binder.bind(Integer.class).toInstance(66);
+        }
+    }
+
+    public static class Module7 implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(Integer.class).toInstance(77);
+        }
+    }
+
+    public static class Module8 implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(Integer.class).toInstance(88);
         }
     }
 
@@ -210,6 +230,42 @@ public class ModuleLoaderTest {
         @Override
         public Collection<Class<? extends Module>> overrides() {
             return Collections.singletonList(Module5.class);
+        }
+    }
+
+    public static class ModuleProvider7 implements CircularModuleProvider {
+
+        @Override
+        public Module module() {
+            return new Module7();
+        }
+
+        @Override
+        public Class<? extends Module> moduleType() {
+            return Module7.class;
+        }
+
+        @Override
+        public Collection<Class<? extends Module>> overrides() {
+            return Collections.singletonList(Module8.class);
+        }
+    }
+
+    public static class ModuleProvider8 implements CircularModuleProvider {
+
+        @Override
+        public Module module() {
+            return new Module8();
+        }
+
+        @Override
+        public Class<? extends Module> moduleType() {
+            return Module8.class;
+        }
+
+        @Override
+        public Collection<Class<? extends Module>> overrides() {
+            return Collections.singletonList(Module7.class);
         }
     }
 }
