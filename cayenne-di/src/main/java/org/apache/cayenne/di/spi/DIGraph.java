@@ -68,8 +68,16 @@ class DIGraph<V> {
 	public void add(V from, V to) {
 		this.add(from);
 		this.add(to);
-		neighbors.get(to).remove(from);
 		neighbors.get(from).add(to);
+	}
+
+	/**
+	 * Add an edge to the graph; if either vertex does not exist, it's added.
+	 * This implementation allows the creation of multi-edges and self-loops.
+	 */
+	public void addWithOverride(V from, V to) {
+		add(from, to);
+		neighbors.get(to).remove(from);
 	}
 
 	/**

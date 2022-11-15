@@ -73,12 +73,12 @@ class ListProvider<T> implements Provider<List<T>> {
 
     void addAfter(Key<? extends T> key, Provider<? extends T> provider, Key<? extends T> after) {
         providers.put(key, provider);
-        graph.add(key, after);
+        graph.addWithOverride(key, after);
     }
 
     void insertBefore(Key<? extends T> key, Provider<? extends T> provider, Key<? extends T> before) {
         providers.put(key, provider);
-        graph.add(before, key);
+        graph.addWithOverride(before, key);
     }
 
     void addAll(Map<Key<? extends T>, Provider<? extends T>> keyProviderMap) {
@@ -89,14 +89,14 @@ class ListProvider<T> implements Provider<List<T>> {
     void addAllAfter(Map<Key<? extends T>, Provider<? extends T>> keyProviderMap, Key<? extends T> after) {
         providers.putAll(keyProviderMap);
         for (Key<? extends T> key : keyProviderMap.keySet()) {
-            graph.add(key, after);
+            graph.addWithOverride(key, after);
         }
     }
 
     void insertAllBefore(Map<Key<? extends T>, Provider<? extends T>> keyProviderMap, Key<? extends T> before) {
         providers.putAll(keyProviderMap);
         for (Key<? extends T> key : keyProviderMap.keySet()) {
-            graph.add(before, key);
+            graph.addWithOverride(before, key);
         }
     }
 }

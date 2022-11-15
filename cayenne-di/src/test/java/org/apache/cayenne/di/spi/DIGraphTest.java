@@ -39,11 +39,19 @@ public class DIGraphTest {
         assertEquals(asList("y", "a", "z", "x"), sorted);
     }
 
-    @Test
+    @Test(expected = DIRuntimeException.class)
     public void testTopSortDirectCycle() {
         DIGraph<String> graph = new DIGraph<>();
         graph.add("x", "y");
         graph.add("y", "x");
+        graph.topSort();
+    }
+
+    @Test
+    public void testTopSortDirectCycleOverride() {
+        DIGraph<String> graph = new DIGraph<>();
+        graph.addWithOverride("x", "y");
+        graph.addWithOverride("y", "x");
         List<String> sorted = graph.topSort();
         assertEquals(asList("x", "y"), sorted);
     }
