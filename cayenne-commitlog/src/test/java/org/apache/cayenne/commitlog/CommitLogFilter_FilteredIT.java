@@ -52,7 +52,7 @@ public class CommitLogFilter_FilteredIT extends AuditableServerCase {
 	protected ServerRuntimeBuilder configureCayenne() {
 		this.mockListener = mock(CommitLogListener.class);
 		return super.configureCayenne().addModule(
-				CommitLogModule.extend().commitLogAnnotationEntitiesOnly().addListener(mockListener).module());
+				b -> CommitLogModule.extend(b).commitLogAnnotationEntitiesOnly().addListener(mockListener));
 	}
 
 	@Before

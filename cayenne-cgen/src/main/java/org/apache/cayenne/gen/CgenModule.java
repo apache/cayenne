@@ -47,9 +47,9 @@ public class CgenModule implements Module {
         binder.bind(ToolsUtilsFactory.class).to(DefaultToolsUtilsFactory.class);
         binder.bind(MetadataUtils.class).to(MetadataUtils.class);
 
-        ProjectModule.contributeExtensions(binder)
-                .add(CgenExtension.class)
-                .add(InfoExtension.class); // info extension needed to get comments and other metadata
+        ProjectModule.extend(binder)
+                .addExtension(CgenExtension.class)
+                .addExtension(InfoExtension.class); // info extension needed to get comments and other metadata
 
         contributeUserProperties(binder)
                 .add(NumericPropertyDescriptorCreator.class)
@@ -58,6 +58,7 @@ public class CgenModule implements Module {
                 .add(EmbeddablePropertyDescriptorCreator.class);
     }
 
+    // TODO: either convert to an Extender to make non-public
     public static ListBuilder<PropertyDescriptorCreator> contributeUserProperties(Binder binder) {
         return binder.bindList(PropertyDescriptorCreator.class);
     }

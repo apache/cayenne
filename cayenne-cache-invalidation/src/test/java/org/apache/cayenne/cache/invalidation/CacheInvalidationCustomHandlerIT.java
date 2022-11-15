@@ -21,7 +21,6 @@ package org.apache.cayenne.cache.invalidation;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.di.Module;
 import org.apache.cayenne.cache.invalidation.db.E1;
 import org.apache.cayenne.query.ObjectSelect;
 import org.junit.Test;
@@ -38,11 +37,8 @@ import static org.junit.Assert.assertEquals;
 public class CacheInvalidationCustomHandlerIT extends CacheInvalidationCase {
 
     @Override
-    protected Module extendInvalidationModule() {
-        return CacheInvalidationModule.extend()
-                .noCacheGroupsHandler()
-                .addHandler(G1InvalidationHandler.class)
-                .module();
+    protected void extend(CacheInvalidationModuleExtender e) {
+        e.noCacheGroupsHandler().addHandler(G1InvalidationHandler.class);
     }
 
     @Test

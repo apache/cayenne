@@ -31,6 +31,15 @@ If you need these you should provide you own custom DataSource.
 * Per CAY-2752 code generation configuration has minor changes. You need to review and update
 Maven, Gradle and Ant configs accordingly.
 
+* Per CAY-2772, module extension is done differently. This may result in compile errors in some module extensions.
+If you encounter those, change how you configure the modules, following this general pattern (using CacheInvalidationModule
+as an example) :
+    ServerRuntime.builder(..)
+      .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
+      .build();
+Two things to note here: (1) a module-specific extender is created using an "extend(Binder)" method of the module, and
+(2) an extender does not produce a Module, instead it adds services directly to the Binder. So it is usually invoked
+within a lambda that produces a Module, or within an app <odule.
 
 UPGRADING TO 4.2.M2
 

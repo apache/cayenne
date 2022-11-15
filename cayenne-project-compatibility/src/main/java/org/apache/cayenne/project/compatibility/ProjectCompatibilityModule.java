@@ -46,11 +46,11 @@ public class ProjectCompatibilityModule implements Module {
         binder.bind(UpgradeService.class).to(CompatibilityUpgradeService.class);
         binder.bind(DocumentProvider.class).to(DefaultDocumentProvider.class);
 
-        ProjectModule.contributeUpgradeHandler(binder)
-                .add(UpgradeHandler_V7.class)
-                .add(UpgradeHandler_V8.class)
-                .add(UpgradeHandler_V9.class)
-                .add(UpgradeHandler_V10.class)
-                .add(UpgradeHandler_V11.class);
+        ProjectModule.extend(binder)
+                .addUpgradeHandler(UpgradeHandler_V7.class)
+                .addUpgradeHandler(UpgradeHandler_V8.class)
+                .addUpgradeHandler(UpgradeHandler_V9.class)
+                .addUpgradeHandler(UpgradeHandler_V10.class)
+                .addUpgradeHandler(UpgradeHandler_V11.class);
     }
 }

@@ -21,16 +21,9 @@ package org.apache.cayenne.commitlog;
 import org.apache.cayenne.commitlog.meta.AnnotationCommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
-import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.tx.TransactionFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * A builder of a custom extensions module for {@link CommitLogModule} that customizes its services and installs
@@ -40,36 +33,45 @@ import java.util.HashSet;
  */
 public class CommitLogModuleExtender {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommitLogModuleExtender.class);
+    private final Binder binder;
+    private ListBuilder<CommitLogListener> commitLogListeners;
 
-    private Class<? extends CommitLogEntityFactory> entityFactoryType;
-    private Collection<Class<? extends CommitLogListener>> listenerTypes;
-    private Collection<CommitLogListener> listenerInstances;
-    private boolean excludeFromTransaction;
+    protected CommitLogModuleExtender(Binder binder) {
+        this.binder = binder;
+    }
 
-    CommitLogModuleExtender() {
-        entityFactory(IncludeAllCommitLogEntityFactory.class);
-        this.listenerTypes = new HashSet<>();
-        this.listenerInstances = new HashSet<>();
+    protected CommitLogModuleExtender initAllExtensions() {
+        contributeCommitLogListeners();
+        return this;
     }
 
     public CommitLogModuleExtender addListener(Class<? extends CommitLogListener> type) {
-        this.listenerTypes.add(type);
+        contributeCommitLogListeners().add(type);
         return this;
     }
 
     public CommitLogModuleExtender addListener(CommitLogListener instance) {
-        this.listenerInstances.add(instance);
+        contributeCommitLogListeners().add(instance);
         return this;
     }
 
     /**
-     * If called, events will be dispatched outside of the main commit
-     * transaction. By default events are dispatched within the transaction, so
-     * listeners can commit their code together with the main commit.
+     * If called, events will be dispatched outside the main commit transaction. By default, events are dispatched
+     * within the transaction, so listeners can commit their code together with the main commit.
      */
     public CommitLogModuleExtender excludeFromTransaction() {
-        this.excludeFromTransaction = true;
+        return registerFilter(false);
+    }
+
+    /**
+     * @since 5.0
+     */
+    public CommitLogModuleExtender includeInTransaction() {
+        return registerFilter(true);
+    }
+
+    protected CommitLogModuleExtender registerFilter(boolean inTx) {
+        ServerModule.extend(binder).addSyncFilter(CommitLogFilter.class, inTx);
         return this;
     }
 
@@ -84,41 +86,15 @@ public class CommitLogModuleExtender {
     }
 
     /**
-     * Installs a custom factory for {@link CommitLogEntity} objects that
-     * allows implementors to use their own annotations, etc.
+     * Installs a custom factory for {@link CommitLogEntity} objects that allows implementors to use their own
+     * annotations, etc.
      */
     public CommitLogModuleExtender entityFactory(Class<? extends CommitLogEntityFactory> entityFactoryType) {
-        this.entityFactoryType = entityFactoryType;
+        binder.bind(CommitLogEntityFactory.class).to(entityFactoryType);
         return this;
     }
 
-    /**
-     * Creates a DI module that would install {@link CommitLogFilter} and its
-     * listeners in Cayenne.
-     */
-    public Module module() {
-        return binder -> {
-
-            if (listenerTypes.isEmpty() && listenerInstances.isEmpty()) {
-                LOGGER.info("No listeners configured. Skipping CommitLogFilter registration");
-                return;
-            }
-
-            binder.bind(CommitLogEntityFactory.class).to(entityFactoryType);
-
-            ListBuilder<CommitLogListener> listeners = CommitLogModule.contributeListeners(binder)
-                    .addAll(listenerInstances);
-
-            // types have to be added one-by-one
-            for (Class<? extends CommitLogListener> type : listenerTypes) {
-                listeners.add(type);
-            }
-
-            if (excludeFromTransaction) {
-                ServerModule.contributeDomainSyncFilters(binder).addAfter(CommitLogFilter.class, TransactionFilter.class);
-            } else {
-                ServerModule.contributeDomainSyncFilters(binder).insertBefore(CommitLogFilter.class, TransactionFilter.class);
-            }
-        };
+    private ListBuilder<CommitLogListener> contributeCommitLogListeners() {
+        return commitLogListeners != null ? commitLogListeners : (commitLogListeners = binder.bindList(CommitLogListener.class));
     }
 }

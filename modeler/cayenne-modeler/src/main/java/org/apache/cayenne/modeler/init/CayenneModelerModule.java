@@ -54,10 +54,10 @@ public class CayenneModelerModule implements Module {
         binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
 
-        ProjectModule.contributeExtensions(binder)
-                .add(InfoExtension.class)
-                .add(GraphExtension.class)
-                .add(DbImportExtension.class)
-                .add(CgenExtension.class);
+        ProjectModule.extend(binder)
+                .addExtension(InfoExtension.class)
+                .addExtension(GraphExtension.class)
+                .addExtension(DbImportExtension.class)
+                .addExtension(CgenExtension.class);
     }
 }

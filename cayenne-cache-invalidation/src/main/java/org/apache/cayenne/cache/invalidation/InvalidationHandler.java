@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.cache.invalidation;
 
+import org.apache.cayenne.Persistent;
+
 import java.util.Collection;
 import java.util.function.Function;
-
-import org.apache.cayenne.Persistent;
 
 /**
  * A pluggable handler to invalidate cache groups on changes in certain objects.
@@ -31,7 +31,7 @@ import org.apache.cayenne.Persistent;
 public interface InvalidationHandler {
 
     /**
-     * @return invalidation function or null if there is nothing to invalidate
+     * @return invalidation function or null if this handler does not support invalidation of the given type.
      */
     Function<Persistent, Collection<CacheGroupDescriptor>> canHandle(Class<? extends Persistent> type);
 

@@ -19,20 +19,23 @@
 
 package org.apache.cayenne.commitlog;
 
+import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
-import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 
 /**
  * Auto-loadable module that enables gathering of commit log information for Cayenne stack. To add custom listeners to
- * receive commit log events, implement {@link CommitLogListener} and register it using {@link CommitLogModule#extend()}.
+ * receive commit log events, implement {@link CommitLogListener} and register it using {@link CommitLogModule#extend(Binder)}
  *
  * @since 4.0
  */
 public class CommitLogModule implements Module {
 
+    /**
+     * @deprecated use {@link #extend(Binder)} instead
+     */
+    @Deprecated(since = "5.0")
     static ListBuilder<CommitLogListener> contributeListeners(Binder binder) {
         return binder.bindList(CommitLogListener.class);
     }
@@ -41,16 +44,20 @@ public class CommitLogModule implements Module {
      * Starts an extension module builder to add listeners and/or other customizations for {@link CommitLogModule}.
      *
      * @return a new builder of {@link CommitLogModule} extensions.
-     * @see CommitLogListener
+     * @since 5.0
      */
-    public static CommitLogModuleExtender extend() {
-        return new CommitLogModuleExtender();
+    public static CommitLogModuleExtender extend(Binder binder) {
+        return new CommitLogModuleExtender(binder);
     }
 
     @Override
     public void configure(Binder binder) {
-        contributeListeners(binder);
-        binder.bind(CommitLogEntityFactory.class).to(IncludeAllCommitLogEntityFactory.class);
+
+        extend(binder)
+                .initAllExtensions()
+                .entityFactory(IncludeAllCommitLogEntityFactory.class)
+                .includeInTransaction();
+
         binder.bind(CommitLogFilter.class).to(CommitLogFilter.class);
     }
 }

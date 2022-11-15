@@ -18,10 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectId;
@@ -110,13 +106,17 @@ import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
+import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResource;
 import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -164,47 +164,44 @@ public class DataDomainProviderTest {
         final EventManager eventManager = new MockEventManager();
         final TestListener mockListener = new TestListener();
 
-        Module testModule = binder -> {
-            final ClassLoaderManager classLoaderManager = new DefaultClassLoaderManager();
-            binder.bind(ClassLoaderManager.class).toInstance(classLoaderManager);
-            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+        Module testModule = b -> {
 
-            ServerModule.contributeProperties(binder);
+            ClassLoaderManager classLoaderManager = new DefaultClassLoaderManager();
+            b.bind(ClassLoaderManager.class).toInstance(classLoaderManager);
+            b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
+            b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
 
-            ServerModule.contributeAdapterDetectors(binder).add(FirebirdSniffer.class)
-                    .add(FrontBaseSniffer.class).add(IngresSniffer.class)
-                    .add(SQLiteSniffer.class).add(DB2Sniffer.class).add(H2Sniffer.class).add(HSQLDBSniffer.class)
-                    .add(SybaseSniffer.class).add(DerbySniffer.class).add(SQLServerSniffer.class)
-                    .add(OracleSniffer.class).add(PostgresSniffer.class).add(MySQLSniffer.class)
-                    .add(MariaDBSniffer.class);
-            ServerModule.contributeDomainQueryFilters(binder);
-            ServerModule.contributeDomainSyncFilters(binder);
-            ServerModule.contributeDomainListeners(binder).add(mockListener);
-            ServerModule.contributeProjectLocations(binder).add(testConfigName);
+            ServerModule.extend(b)
+                    .initAllExtensions()
 
-            binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
-            binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
-            ServerModule.contributePkGenerators(binder)
-                    .put(DB2Adapter.class.getName(), DB2PkGenerator.class)
-                    .put(DerbyAdapter.class.getName(), DerbyPkGenerator.class)
-                    .put(FrontBaseAdapter.class.getName(), FrontBasePkGenerator.class)
-                    .put(H2Adapter.class.getName(), H2PkGenerator.class)
-                    .put(IngresAdapter.class.getName(), IngresPkGenerator.class)
-                    .put(MySQLAdapter.class.getName(), MySQLPkGenerator.class)
-                    .put(OracleAdapter.class.getName(), OraclePkGenerator.class)
-                    .put(Oracle8Adapter.class.getName(), OraclePkGenerator.class)
-                    .put(PostgresAdapter.class.getName(), PostgresPkGenerator.class)
-                    .put(SQLServerAdapter.class.getName(), SybasePkGenerator.class)
-                    .put(SybaseAdapter.class.getName(), SybasePkGenerator.class);
+                    .addAdapterDetector(FirebirdSniffer.class)
+                    .addAdapterDetector(FrontBaseSniffer.class).addAdapterDetector(IngresSniffer.class)
+                    .addAdapterDetector(SQLiteSniffer.class).addAdapterDetector(DB2Sniffer.class)
+                    .addAdapterDetector(H2Sniffer.class).addAdapterDetector(HSQLDBSniffer.class)
+                    .addAdapterDetector(SybaseSniffer.class).addAdapterDetector(DerbySniffer.class)
+                    .addAdapterDetector(SQLServerSniffer.class).addAdapterDetector(OracleSniffer.class)
+                    .addAdapterDetector(PostgresSniffer.class).addAdapterDetector(MySQLSniffer.class)
+                    .addAdapterDetector(MariaDBSniffer.class)
 
-            // configure extended types
-            ServerModule.contributeDefaultTypes(binder);
-            ServerModule.contributeUserTypes(binder);
-            ServerModule.contributeTypeFactories(binder);
+                    .addListener(mockListener)
+                    .addProjectLocation(testConfigName)
 
-            binder.bind(EventManager.class).toInstance(eventManager);
-            binder.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
-            binder.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
+                    .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
+                    .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
+                    .addPkGenerator(FrontBaseAdapter.class, FrontBasePkGenerator.class)
+                    .addPkGenerator(H2Adapter.class, H2PkGenerator.class)
+                    .addPkGenerator(IngresAdapter.class, IngresPkGenerator.class)
+                    .addPkGenerator(MySQLAdapter.class, MySQLPkGenerator.class)
+                    .addPkGenerator(OracleAdapter.class, OraclePkGenerator.class)
+                    .addPkGenerator(Oracle8Adapter.class, OraclePkGenerator.class)
+                    .addPkGenerator(PostgresAdapter.class, PostgresPkGenerator.class)
+                    .addPkGenerator(SQLServerAdapter.class, SybasePkGenerator.class)
+                    .addPkGenerator(SybaseAdapter.class, SybasePkGenerator.class);
+
+            b.bind(EventManager.class).toInstance(eventManager);
+            b.bind(EntitySorter.class).toInstance(new AshwoodEntitySorter());
+            b.bind(SchemaUpdateStrategyFactory.class).to(DefaultSchemaUpdateStrategyFactory.class);
 
             final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
 
@@ -220,29 +217,28 @@ public class DataDomainProviderTest {
                 }
             };
 
-            binder.bind(ResourceLocator.class).toInstance(locator);
-            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).toInstance(locator);
-            binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
-            binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
-            binder.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
-            binder.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
-            binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
-            binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
-            binder.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
+            b.bind(ResourceLocator.class).toInstance(locator);
+            b.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).toInstance(locator);
+            b.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            b.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
+            b.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);
+            b.bind(DbAdapterFactory.class).to(DefaultDbAdapterFactory.class);
+            b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
+            b.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);
+            b.bind(SelectTranslatorFactory.class).to(DefaultSelectTranslatorFactory.class);
 
-            binder.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
-            binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
-            binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
-            binder.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
-            binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
-            binder.bind(SQLTemplateProcessor.class).toInstance(mock(SQLTemplateProcessor.class));
+            b.bind(DataSourceFactory.class).toInstance(new MockDataSourceFactory());
+            b.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
+            b.bind(QueryCache.class).toInstance(mock(QueryCache.class));
+            b.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
+            b.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
+            b.bind(SQLTemplateProcessor.class).toInstance(mock(SQLTemplateProcessor.class));
 
-            binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
-            binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
+            b.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
+            b.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
 
-            ServerModule.contributeValueObjectTypes(binder);
-            binder.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
-            binder.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
+            b.bind(ValueObjectTypeRegistry.class).to(DefaultValueObjectTypeRegistry.class);
+            b.bind(ValueComparisonStrategyFactory.class).to(DefaultValueComparisonStrategyFactory.class);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);

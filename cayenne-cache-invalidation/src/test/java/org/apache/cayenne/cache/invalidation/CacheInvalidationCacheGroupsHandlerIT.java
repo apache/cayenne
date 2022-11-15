@@ -48,13 +48,6 @@ public class CacheInvalidationCacheGroupsHandlerIT extends CacheInvalidationCase
     }
 
     @Override
-    protected Module extendInvalidationModule() {
-        return binder -> {
-            // do nothing module
-        };
-    }
-
-    @Override
     protected Module buildCustomModule() {
         // Proxy query cache that will count methods calls
         final QueryCache cache = new MapQueryCache() {

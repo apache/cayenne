@@ -42,17 +42,16 @@ import java.util.function.Function;
 
 /**
  * <p>
- * A {@link DataChannelSyncFilter} that invalidates cache groups.
- * Use custom rules for invalidation provided via DI.
- * </p>
- * <p>
+ * A {@link DataChannelSyncFilter} that invalidates cache groups. Use custom rules for invalidation provided via DI.
  * Default rule is based on entities' {@link CacheGroups} annotation.
  * </p>
  * <p>
- * To add default filter: <pre>
- *         ServerRuntime.builder("cayenne-project.xml")
- *              .addModule(CacheInvalidationModuleBuilder.builder().build());
- *     </pre>
+ * To enable the invalidation filter, just include "cayenne-cache-invalidation" module in your project. To add
+ * custom invalidation handlers, use CacheInvalidationModule "extender" API:
+ * <pre>
+ *  ServerRuntime.builder("cayenne-project.xml")
+ *     .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class).build());
+ * </pre>
  * </p>
  *
  * @see CacheInvalidationModuleExtender

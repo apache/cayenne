@@ -16,41 +16,24 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.jcache;
 
-import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Module;
-
-import javax.cache.CacheManager;
 
 /**
- * <p>
- * JCache Module
- * </p>
- *
- * @since 4.0
+ * @since 5.0
  */
-public class JCacheModule implements Module {
+public class JCacheModuleExtender {
 
-    public static JCacheModuleExtender extend(Binder binder) {
-        return new JCacheModuleExtender(binder);
+    private final Binder binder;
+
+    protected JCacheModuleExtender(Binder binder) {
+        this.binder = binder;
     }
 
-    /**
-     * @deprecated in favor of {@link #extend(Binder)}
-     */
-    @Deprecated(since = "5.0")
-    public static void contributeJCacheProviderConfig(Binder binder, String providerConfigURI) {
-        extend(binder).setJCacheProviderConfig(providerConfigURI);
+    public JCacheModuleExtender setJCacheProviderConfig(String providerConfigURI) {
+        ServerModule.extend(binder).setProperty(JCacheConstants.JCACHE_PROVIDER_CONFIG, providerConfigURI);
+        return this;
     }
-
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(CacheManager.class).toProvider(JCacheManagerProvider.class);
-        binder.bind(JCacheConfigurationFactory.class).to(JCacheDefaultConfigurationFactory.class);
-        binder.bind(QueryCache.class).to(JCacheQueryCache.class);
-    }
-
 }

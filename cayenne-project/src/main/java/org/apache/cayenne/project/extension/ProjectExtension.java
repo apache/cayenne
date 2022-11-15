@@ -29,7 +29,7 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
  *     so they can safely store big chunks of data.
  * </p>
  * <p>
- *     Extensions can be contributed by {@link org.apache.cayenne.project.ProjectModule#contributeExtensions(org.apache.cayenne.di.Binder)}.
+ *     Extensions can be contributed by {@link org.apache.cayenne.project.ProjectModuleExtender#addExtension(ProjectExtension)}
  *     {@link org.apache.cayenne.project.ProjectModule} currently used by Modeler and cli tools, e.g. cdbimport and cgen.
  * </p>
  *
