@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         jdk: [8, 11]
-        db-profile: [hsql, h2, derby, mysql-docker, postgres-docker, sqlserver-docker]
+        db-profile: [hsql, h2, derby, mysql-docker] #TODO: postgres-docker, sqlserver-docker
       fail-fast: false # finish all jobs anyway
 
     env:
