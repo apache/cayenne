@@ -17,6 +17,7 @@ CAY-2741 Cleanup TransactionDescriptor and deprecate DefaultTransactionDescripto
 CAY-2743 Deprecate ROP
 CAY-2749 Deprecate object clustering transports
 CAY-2750 Deprecate web module
+CAY-2775 Change Objectstyle maven repository URL
 
 Bug Fixes:
 
