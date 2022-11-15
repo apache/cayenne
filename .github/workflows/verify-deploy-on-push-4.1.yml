@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         jdk: [8, 11]
-        db-profile: [hsql, h2, derby, mysql-tc, postgres-tc, sqlserver-tc]
+        db-profile: [hsql, h2, derby, mysql-docker, postgres-docker, sqlserver-docker]
         include:
           - jdk: 17
             db-profile: postgres-tc
