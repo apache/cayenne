@@ -72,6 +72,15 @@ class DIGraph<V> {
 	}
 
 	/**
+	 * Add an edge to the graph; if either vertex does not exist, it's added.
+	 * This implementation allows the creation of multi-edges and self-loops.
+	 */
+	public void addWithOverride(V from, V to) {
+		add(from, to);
+		neighbors.get(to).remove(from);
+	}
+
+	/**
 	 * True iff graph contains vertex.
 	 */
 	public boolean contains(V vertex) {

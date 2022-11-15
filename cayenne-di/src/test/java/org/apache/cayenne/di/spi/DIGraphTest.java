@@ -47,6 +47,15 @@ public class DIGraphTest {
         graph.topSort();
     }
 
+    @Test
+    public void testTopSortDirectCycleOverride() {
+        DIGraph<String> graph = new DIGraph<>();
+        graph.addWithOverride("x", "y");
+        graph.addWithOverride("y", "x");
+        List<String> sorted = graph.topSort();
+        assertEquals(asList("x", "y"), sorted);
+    }
+
     @Test(expected = DIRuntimeException.class)
     public void testTopSortInDirectCycle() {
         DIGraph<String> graph = new DIGraph<>();
