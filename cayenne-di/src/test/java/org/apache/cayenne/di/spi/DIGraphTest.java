@@ -39,13 +39,12 @@ public class DIGraphTest {
         assertEquals(asList("y", "a", "z", "x"), sorted);
     }
 
-    @Test
+    @Test(expected = DIRuntimeException.class)
     public void testTopSortDirectCycle() {
         DIGraph<String> graph = new DIGraph<>();
         graph.add("x", "y");
         graph.add("y", "x");
-        List<String> sorted = graph.topSort();
-        assertEquals(asList("x", "y"), sorted);
+        graph.topSort();
     }
 
     @Test
