@@ -33,7 +33,7 @@ jobs:
         db-profile: [hsql, h2, derby, mysql-docker, postgres-docker, sqlserver-docker]
         include:
           - jdk: 17
-            db-profile: postgres-tc
+            db-profile: postgres-docker
       fail-fast: false # finish all jobs anyway
 
     env:

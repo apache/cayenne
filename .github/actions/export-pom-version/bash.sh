@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function get_pom_version {
-  awk -F '<[^>]*>' '/<dependencies>/,/<\/dependencies>/{next} /<plugins>/,/<\/plugins>/{next} /<version>/ {$1=$1; gsub(/ /,"") $0; print}' pom.xml
+  awk -F '<[^>]*>' '/<extensions>/,/<\/extensions>/{next} /<dependencies>/,/<\/dependencies>/{next} /<plugins>/,/<\/plugins>/{next} /<version>/ {$1=$1; gsub(/ /,"") $0; print}' pom.xml
 }
 
 VERSION=$(get_pom_version)
