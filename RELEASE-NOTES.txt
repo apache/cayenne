@@ -18,6 +18,7 @@ CAY-2743 Deprecate ROP
 CAY-2749 Deprecate object clustering transports
 CAY-2750 Deprecate web module
 CAY-2775 Change Objectstyle maven repository URL
+CAY-2776 Upgrade Gradle to 7.6
 
 Bug Fixes:
 
