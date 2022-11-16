@@ -32,14 +32,13 @@ import java.security.Key;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class CryptoModuleBuilderTest {
+public class CryptoModuleExtenderTest {
 
     @Test
     public void testBuild_KeySource() {
-
         URL ksUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
-        Module m = new CryptoModuleExtender().keyStore(ksUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1")
-                .valueTransformer(DefaultValueTransformerFactory.class).module();
+        Module m = b -> new CryptoModuleExtender(b).keyStore(ksUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1")
+                .valueTransformerFactory(DefaultValueTransformerFactory.class);
 
         Injector injector = DIBootstrap.createInjector(new CryptoModule(), m);
 
