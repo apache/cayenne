@@ -46,10 +46,16 @@ public class ProjectModuleExtender {
     }
 
     private ListBuilder<ProjectExtension> contributeExtensions() {
-        return extensions != null ? extensions : (extensions = binder.bindList(ProjectExtension.class));
+        if (extensions == null) {
+            extensions = binder.bindList(ProjectExtension.class);
+        }
+        return extensions;
     }
 
     private ListBuilder<UpgradeHandler> contributeUpgradeHandler() {
-        return upgradeHandlers != null ? upgradeHandlers : (upgradeHandlers = binder.bindList(UpgradeHandler.class));
+        if (upgradeHandlers == null) {
+            upgradeHandlers = binder.bindList(UpgradeHandler.class);
+        }
+        return upgradeHandlers;
     }
 }
