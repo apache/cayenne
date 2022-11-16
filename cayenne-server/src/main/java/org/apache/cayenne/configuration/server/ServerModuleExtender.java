@@ -292,46 +292,83 @@ public class ServerModuleExtender {
     }
 
     private ListBuilder<String> contributeProjectLocations() {
-        return projectLocations != null ? projectLocations : (projectLocations = binder.bindList(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+        if (projectLocations == null) {
+            projectLocations = binder.bindList(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST);
+        }
+        return projectLocations;
     }
 
     private MapBuilder<String> contributeProperties() {
-        return properties != null ? properties : (properties = binder.bindMap(String.class, Constants.PROPERTIES_MAP));
+        if (properties == null) {
+            properties = binder.bindMap(String.class, Constants.PROPERTIES_MAP);
+        }
+        return properties;
     }
 
     private ListBuilder<DataChannelQueryFilter> contributeQueryFilters() {
-        return queryFilters != null ? queryFilters : (queryFilters = binder.bindList(DataChannelQueryFilter.class));
+        if (queryFilters == null) {
+            queryFilters = binder.bindList(DataChannelQueryFilter.class);
+        }
+        return queryFilters;
     }
 
     private ListBuilder<DataChannelSyncFilter> contributeSyncFilters() {
-        return syncFilters != null ? syncFilters : (syncFilters = binder.bindList(DataChannelSyncFilter.class));
+        if (syncFilters == null) {
+            syncFilters = binder.bindList(DataChannelSyncFilter.class);
+        }
+        return syncFilters;
     }
 
     private ListBuilder<Object> contributeListeners() {
-        return listeners != null ? listeners : (listeners = binder.bindList(Object.class, Constants.SERVER_DOMAIN_LISTENERS_LIST));
+        if (listeners == null) {
+            listeners = binder.bindList(Object.class, Constants.SERVER_DOMAIN_LISTENERS_LIST);
+        }
+        return listeners;
     }
 
     private ListBuilder<DbAdapterDetector> contributeAdapterDetectors() {
-        return adapterDetectors != null ? adapterDetectors : (adapterDetectors = binder.bindList(DbAdapterDetector.class, Constants.SERVER_ADAPTER_DETECTORS_LIST));
+        if (adapterDetectors == null) {
+            adapterDetectors = binder.bindList(DbAdapterDetector.class,
+                                               Constants.SERVER_ADAPTER_DETECTORS_LIST);
+        }
+        return adapterDetectors;
     }
 
     private ListBuilder<ExtendedType> contributeDefaultExtendedTypes() {
-        return defaultExtendedTypes != null ? defaultExtendedTypes : (defaultExtendedTypes = binder.bindList(ExtendedType.class, Constants.SERVER_DEFAULT_TYPES_LIST));
+        if (defaultExtendedTypes == null) {
+            defaultExtendedTypes = binder.bindList(ExtendedType.class,
+                                                   Constants.SERVER_DEFAULT_TYPES_LIST);
+        }
+        return defaultExtendedTypes;
     }
 
     private ListBuilder<ExtendedType> contributeUserExtendedTypes() {
-        return userExtendedTypes != null ? userExtendedTypes : (userExtendedTypes = binder.bindList(ExtendedType.class, Constants.SERVER_USER_TYPES_LIST));
+        if (userExtendedTypes == null) {
+            userExtendedTypes = binder.bindList(ExtendedType.class,
+                                                Constants.SERVER_USER_TYPES_LIST);
+        }
+        return userExtendedTypes;
     }
 
     private ListBuilder<ExtendedTypeFactory> contributeExtendedTypeFactories() {
-        return extendedTypeFactories != null ? extendedTypeFactories : (extendedTypeFactories = binder.bindList(ExtendedTypeFactory.class, Constants.SERVER_TYPE_FACTORIES_LIST));
+        if (extendedTypeFactories == null) {
+            extendedTypeFactories = binder.bindList(ExtendedTypeFactory.class,
+                                                    Constants.SERVER_TYPE_FACTORIES_LIST);
+        }
+        return extendedTypeFactories;
     }
 
     private ListBuilder<ValueObjectType> contributeValueObjectTypes() {
-        return valueObjectTypes != null ? valueObjectTypes : (valueObjectTypes = binder.bindList(ValueObjectType.class));
+        if (valueObjectTypes == null) {
+            valueObjectTypes = binder.bindList(ValueObjectType.class);
+        }
+        return valueObjectTypes;
     }
 
     private MapBuilder<PkGenerator> contributePkGenerators() {
-        return pkGenerators != null ? pkGenerators : (pkGenerators = binder.bindMap(PkGenerator.class));
+        if (pkGenerators == null) {
+            pkGenerators = binder.bindMap(PkGenerator.class);
+        }
+        return pkGenerators;
     }
 }

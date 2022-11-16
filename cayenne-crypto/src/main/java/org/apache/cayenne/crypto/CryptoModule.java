@@ -18,27 +18,13 @@
  */
 package org.apache.cayenne.crypto;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Types;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
-import java.util.Date;
-
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.crypto.batch.CryptoBatchTranslatorFactoryDecorator;
-import org.apache.cayenne.crypto.cipher.CipherFactory;
 import org.apache.cayenne.crypto.cipher.DefaultCipherFactory;
 import org.apache.cayenne.crypto.key.JceksKeySource;
-import org.apache.cayenne.crypto.key.KeySource;
-import org.apache.cayenne.crypto.map.ColumnMapper;
 import org.apache.cayenne.crypto.map.CryptoDataMapLoader;
-import org.apache.cayenne.crypto.map.PatternColumnMapper;
 import org.apache.cayenne.crypto.reader.CryptoRowReaderFactoryDecorator;
 import org.apache.cayenne.crypto.transformer.DefaultTransformerFactory;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
@@ -50,7 +36,6 @@ import org.apache.cayenne.crypto.transformer.value.BigDecimalConverter;
 import org.apache.cayenne.crypto.transformer.value.BigIntegerConverter;
 import org.apache.cayenne.crypto.transformer.value.BooleanConverter;
 import org.apache.cayenne.crypto.transformer.value.ByteConverter;
-import org.apache.cayenne.crypto.transformer.value.BytesConverter;
 import org.apache.cayenne.crypto.transformer.value.BytesToBytesConverter;
 import org.apache.cayenne.crypto.transformer.value.DefaultValueTransformerFactory;
 import org.apache.cayenne.crypto.transformer.value.DoubleConverter;
@@ -68,8 +53,17 @@ import org.apache.cayenne.crypto.transformer.value.Utf8StringConverter;
 import org.apache.cayenne.crypto.transformer.value.UtilDateConverter;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.di.Module;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Types;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
+import java.util.Date;
 
 /**
  * Contains cryptography extensions for Cayenne.
@@ -82,65 +76,82 @@ public class CryptoModule implements Module {
     private static final String DEFAULT_CIPHER_MODE = "CBC";
     private static final String DEFAULT_CIPHER_PADDING = "PKCS5Padding";
     // same as default keystore password in java...
+    // credentials are stored as char[] to potentially allow wiping them clean in memory...
     private static final char[] DEFAULT_KEY_PASSWORD = "changeit".toCharArray();
     private static final String DEFAULT_COLUMN_MAPPER_PATTERN = "^CRYPTO_";
 
     /**
-     * Returns a new extender that helps to build a custom module that provides required configuration for {@link CryptoModule}
+     * Returns a new extender that helps to build a custom module that provides required configuration for
+     * {@link CryptoModule}
      * as well as custom strategies overriding the defaults defined here.
      *
      * @return a new extender that helps to build a custom module that provides required configuration for {@link CryptoModule}.
+     * @since 5.0
      */
-    public static CryptoModuleExtender extend() {
-        return new CryptoModuleExtender();
-    }
-
-    static MapBuilder<String> contributeProperties(Binder binder) {
-        return binder.bindMap(String.class, CryptoConstants.PROPERTIES_MAP);
-    }
-
-    static MapBuilder<char[]> contributeCredentials(Binder binder) {
-        return binder.bindMap(char[].class, CryptoConstants.CREDENTIALS_MAP);
-    }
-
-    @SuppressWarnings("unchecked")
-    static MapBuilder<BytesConverter<?>> contributeDbToByteConverters(Binder binder) {
-        MapBuilder mapBuilder = binder.bindMap(BytesConverter.class, DefaultValueTransformerFactory.DB_TO_BYTE_CONVERTERS_KEY);
-        return (MapBuilder<BytesConverter<?>>) mapBuilder;
-    }
-
-    @SuppressWarnings("unchecked")
-    static MapBuilder<BytesConverter<?>> contributeObjectToByteConverters(Binder binder) {
-        MapBuilder mapBuilder = binder.bindMap(BytesConverter.class, DefaultValueTransformerFactory.OBJECT_TO_BYTE_CONVERTERS_KEY);
-        return (MapBuilder<BytesConverter<?>>) mapBuilder;
+    public static CryptoModuleExtender extend(Binder binder) {
+        return new CryptoModuleExtender(binder);
     }
 
     @Override
     public void configure(Binder binder) {
+        extend(binder)
+                .cipherAlgorithm(DEFAULT_CIPHER_ALGORITHM)
+                .cipherMode(DEFAULT_CIPHER_MODE)
+                .cipherPadding(DEFAULT_CIPHER_PADDING)
+                .cipherFactory(DefaultCipherFactory.class)
 
-        contributeProperties(binder)
-                .put(CryptoConstants.CIPHER_ALGORITHM, DEFAULT_CIPHER_ALGORITHM)
-                .put(CryptoConstants.CIPHER_MODE, DEFAULT_CIPHER_MODE)
-                .put(CryptoConstants.CIPHER_PADDING, DEFAULT_CIPHER_PADDING);
+                .keyStore((String) null, DEFAULT_KEY_PASSWORD, null)
+                .keySource(JceksKeySource.class)
 
-        // credentials are stored as char[] to potentially allow wiping them clean in memory...
-        contributeCredentials(binder).put(CryptoConstants.KEY_PASSWORD, DEFAULT_KEY_PASSWORD);
+                .valueTransformerFactory(DefaultValueTransformerFactory.class)
+                .bytesTransformerFactory(DefaultBytesTransformerFactory.class)
 
-        binder.bind(CipherFactory.class).to(DefaultCipherFactory.class);
+                .columnMapper(DEFAULT_COLUMN_MAPPER_PATTERN)
+
+                .objectToBytesConverter("byte[]", BytesToBytesConverter.INSTANCE)
+                .objectToBytesConverter(String.class, Utf8StringConverter.INSTANCE)
+
+                .objectToBytesConverter(Double.class, DoubleConverter.INSTANCE)
+                .objectToBytesConverter(Double.TYPE, DoubleConverter.INSTANCE)
+                .objectToBytesConverter(Float.class, FloatConverter.INSTANCE)
+                .objectToBytesConverter(Float.TYPE, FloatConverter.INSTANCE)
+                .objectToBytesConverter(Long.class, LongConverter.INSTANCE)
+                .objectToBytesConverter(Long.TYPE, LongConverter.INSTANCE)
+                .objectToBytesConverter(Integer.class, IntegerConverter.INSTANCE)
+                .objectToBytesConverter(Integer.TYPE, IntegerConverter.INSTANCE)
+                .objectToBytesConverter(Short.class, ShortConverter.INSTANCE)
+                .objectToBytesConverter(Short.TYPE, ShortConverter.INSTANCE)
+                .objectToBytesConverter(Byte.class, ByteConverter.INSTANCE)
+                .objectToBytesConverter(Byte.TYPE, ByteConverter.INSTANCE)
+                .objectToBytesConverter(Boolean.class, BooleanConverter.INSTANCE)
+                .objectToBytesConverter(Boolean.TYPE, BooleanConverter.INSTANCE)
+
+                .objectToBytesConverter(BigInteger.class, BigIntegerConverter.INSTANCE)
+                .objectToBytesConverter(BigDecimal.class, BigDecimalConverter.INSTANCE)
+                .objectToBytesConverter(Date.class, UtilDateConverter.INSTANCE)
+                .objectToBytesConverter(LocalDate.class, LocalDateConverter.INSTANCE)
+                .objectToBytesConverter(LocalTime.class, LocalTimeConverter.INSTANCE)
+                .objectToBytesConverter(LocalDateTime.class, LocalDateTimeConverter.INSTANCE)
+                .objectToBytesConverter(Duration.class, DurationConverter.INSTANCE)
+                .objectToBytesConverter(Period.class, PeriodConverter.INSTANCE)
+
+                .dbToBytesConverter(Types.BINARY, BytesToBytesConverter.INSTANCE)
+                .dbToBytesConverter(Types.BLOB, BytesToBytesConverter.INSTANCE)
+                .dbToBytesConverter(Types.VARBINARY, BytesToBytesConverter.INSTANCE)
+                .dbToBytesConverter(Types.LONGVARBINARY, BytesToBytesConverter.INSTANCE)
+
+                .dbToBytesConverter(Types.CHAR, Base64StringConverter.INSTANCE)
+                .dbToBytesConverter(Types.NCHAR, Base64StringConverter.INSTANCE)
+                .dbToBytesConverter(Types.CLOB, Base64StringConverter.INSTANCE)
+                .dbToBytesConverter(Types.NCLOB, Base64StringConverter.INSTANCE)
+                .dbToBytesConverter(Types.LONGVARCHAR, Base64StringConverter.INSTANCE)
+                .dbToBytesConverter(Types.LONGNVARCHAR, Base64StringConverter.INSTANCE)
+                .dbToBytesConverter(Types.VARCHAR, Base64StringConverter.INSTANCE)
+                .dbToBytesConverter(Types.NVARCHAR, Base64StringConverter.INSTANCE);
+
         binder.bind(TransformerFactory.class).to(DefaultTransformerFactory.class);
-        binder.bind(ValueTransformerFactory.class).to(DefaultValueTransformerFactory.class);
 
-        MapBuilder<BytesConverter<?>> dbToBytesBinder = contributeDbToByteConverters(binder);
-        contributeDefaultDbConverters(dbToBytesBinder);
-
-        MapBuilder<BytesConverter<?>> objectToBytesBinder = contributeObjectToByteConverters(binder);
-        contributeDefaultObjectConverters(objectToBytesBinder);
-
-        binder.bind(BytesTransformerFactory.class).to(DefaultBytesTransformerFactory.class);
-        binder.bind(KeySource.class).to(JceksKeySource.class);
-        binder.bind(ColumnMapper.class).toInstance(new PatternColumnMapper(DEFAULT_COLUMN_MAPPER_PATTERN));
         binder.decorate(DataMapLoader.class).before(CryptoDataMapLoader.class);
-        
         binder.decorate(BatchTranslatorFactory.class).before(CryptoBatchTranslatorFactoryDecorator.class);
         binder.bind(RowReaderFactory.class).to(CryptoRowReaderFactoryDecorator.class);
 
@@ -148,59 +159,5 @@ public class CryptoModule implements Module {
         // not available.
         binder.decorate(ValueTransformerFactory.class).after(LazyValueTransformerFactory.class);
         binder.decorate(BytesTransformerFactory.class).after(LazyBytesTransformerFactory.class);
-    }
-
-    private static void contributeDefaultDbConverters(MapBuilder<BytesConverter<?>> mapBuilder) {
-
-        mapBuilder.put(String.valueOf(Types.BINARY), BytesToBytesConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.BLOB), BytesToBytesConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.VARBINARY), BytesToBytesConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.LONGVARBINARY), BytesToBytesConverter.INSTANCE);
-
-        mapBuilder.put(String.valueOf(Types.CHAR), Base64StringConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.NCHAR), Base64StringConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.CLOB), Base64StringConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.NCLOB), Base64StringConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.LONGVARCHAR), Base64StringConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.LONGNVARCHAR), Base64StringConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.VARCHAR), Base64StringConverter.INSTANCE);
-        mapBuilder.put(String.valueOf(Types.NVARCHAR), Base64StringConverter.INSTANCE);
-    }
-
-    private static void contributeDefaultObjectConverters(MapBuilder<BytesConverter<?>> mapBuilder) {
-
-        mapBuilder.put("byte[]", BytesToBytesConverter.INSTANCE);
-        mapBuilder.put(String.class.getName(), Utf8StringConverter.INSTANCE);
-
-        mapBuilder.put(Double.class.getName(), DoubleConverter.INSTANCE);
-        mapBuilder.put(Double.TYPE.getName(), DoubleConverter.INSTANCE);
-
-        mapBuilder.put(Float.class.getName(), FloatConverter.INSTANCE);
-        mapBuilder.put(Float.TYPE.getName(), FloatConverter.INSTANCE);
-
-        mapBuilder.put(Long.class.getName(), LongConverter.INSTANCE);
-        mapBuilder.put(Long.TYPE.getName(), LongConverter.INSTANCE);
-
-        mapBuilder.put(Integer.class.getName(), IntegerConverter.INSTANCE);
-        mapBuilder.put(Integer.TYPE.getName(), IntegerConverter.INSTANCE);
-
-        mapBuilder.put(Short.class.getName(), ShortConverter.INSTANCE);
-        mapBuilder.put(Short.TYPE.getName(), ShortConverter.INSTANCE);
-
-        mapBuilder.put(Byte.class.getName(), ByteConverter.INSTANCE);
-        mapBuilder.put(Byte.TYPE.getName(), ByteConverter.INSTANCE);
-
-        mapBuilder.put(Boolean.class.getName(), BooleanConverter.INSTANCE);
-        mapBuilder.put(Boolean.TYPE.getName(), BooleanConverter.INSTANCE);
-
-        mapBuilder.put(Date.class.getName(), UtilDateConverter.INSTANCE);
-        mapBuilder.put(BigInteger.class.getName(), BigIntegerConverter.INSTANCE);
-        mapBuilder.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
-
-        mapBuilder.put(LocalDate.class.getName(), LocalDateConverter.INSTANCE);
-        mapBuilder.put(LocalTime.class.getName(), LocalTimeConverter.INSTANCE);
-        mapBuilder.put(LocalDateTime.class.getName(), LocalDateTimeConverter.INSTANCE);
-        mapBuilder.put(Duration.class.getName(), DurationConverter.INSTANCE);
-        mapBuilder.put(Period.class.getName(), PeriodConverter.INSTANCE);
     }
 }

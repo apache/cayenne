@@ -71,7 +71,10 @@ public class CacheInvalidationModuleExtender {
     }
 
     private ListBuilder<InvalidationHandler> contributeInvalidationHandlers() {
-        return invalidationHandlers != null ? invalidationHandlers : (invalidationHandlers = binder.bindList(InvalidationHandler.class));
+        if (invalidationHandlers == null) {
+            invalidationHandlers = binder.bindList(InvalidationHandler.class);
+        }
+        return invalidationHandlers;
     }
 
 }

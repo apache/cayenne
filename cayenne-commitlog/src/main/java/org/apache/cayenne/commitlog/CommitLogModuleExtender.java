@@ -95,6 +95,9 @@ public class CommitLogModuleExtender {
     }
 
     private ListBuilder<CommitLogListener> contributeCommitLogListeners() {
-        return commitLogListeners != null ? commitLogListeners : (commitLogListeners = binder.bindList(CommitLogListener.class));
+        if (commitLogListeners == null) {
+            commitLogListeners = binder.bindList(CommitLogListener.class);
+        }
+        return commitLogListeners;
     }
 }
