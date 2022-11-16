@@ -52,7 +52,7 @@ public class CryptoModuleExtender {
     private ColumnMapper columnMapper;
     private Class<? extends ColumnMapper> columnMapperType;
 
-    private String cipherAlgoritm;
+    private String cipherAlgorithm;
     private String cipherMode;
     private Class<? extends CipherFactory> cipherFactoryType;
 
@@ -75,7 +75,7 @@ public class CryptoModuleExtender {
     }
 
     public CryptoModuleExtender cipherAlgorithm(String algorithm) {
-        this.cipherAlgoritm = Objects.requireNonNull(algorithm);
+        this.cipherAlgorithm = Objects.requireNonNull(algorithm);
         return this;
     }
 
@@ -230,8 +230,8 @@ public class CryptoModuleExtender {
 
             MapBuilder<String> props = CryptoModule.contributeProperties(binder);
 
-            if (cipherAlgoritm != null) {
-                props.put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgoritm);
+            if (cipherAlgorithm != null) {
+                props.put(CryptoConstants.CIPHER_ALGORITHM, cipherAlgorithm);
             }
 
             if (cipherMode != null) {
