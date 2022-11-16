@@ -21,18 +21,17 @@ package org.apache.cayenne.crypto.transformer.value;
 /**
  * @since 4.0
  */
-// we can't use <byte[]> , so parameterizing this converter to Object
-public class BytesToBytesConverter implements BytesConverter<Object> {
+public class BytesToBytesConverter implements BytesConverter<byte[]> {
 
-    public static final BytesConverter<Object> INSTANCE = new BytesToBytesConverter();
+    public static final BytesConverter<byte[]> INSTANCE = new BytesToBytesConverter();
 
     @Override
-    public byte[] toBytes(Object value) {
-        return (byte[]) value;
+    public byte[] toBytes(byte[] value) {
+        return value;
     }
 
     @Override
-    public Object fromBytes(byte[] bytes) {
+    public byte[] fromBytes(byte[] bytes) {
         return bytes;
     }
 

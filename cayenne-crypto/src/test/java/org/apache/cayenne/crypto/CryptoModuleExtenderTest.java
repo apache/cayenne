@@ -38,7 +38,7 @@ public class CryptoModuleExtenderTest {
     public void testBuild_KeySource() {
         URL ksUrl = JceksKeySourceTest.class.getResource(JceksKeySourceTest.KS1_JCEKS);
         Module m = b -> new CryptoModuleExtender(b).keyStore(ksUrl, JceksKeySourceTest.TEST_KEY_PASS, "k1")
-                .valueTransformerFactory(DefaultValueTransformerFactory.class);
+                .valueTransformer(DefaultValueTransformerFactory.class);
 
         Injector injector = DIBootstrap.createInjector(new CryptoModule(), m);
 
@@ -52,4 +52,12 @@ public class CryptoModuleExtenderTest {
         assertEquals("k1", dkName);
     }
 
+    @Test
+    public void testTypeName() {
+        assertEquals("java.lang.String", CryptoModuleExtender.typeName(String.class));
+        assertEquals("byte", CryptoModuleExtender.typeName(Byte.TYPE));
+        assertEquals("java.lang.Byte", CryptoModuleExtender.typeName(Byte.class));
+        assertEquals("int[]", CryptoModuleExtender.typeName(int[].class));
+        assertEquals("java.lang.String[]", CryptoModuleExtender.typeName(String[].class));
+    }
 }

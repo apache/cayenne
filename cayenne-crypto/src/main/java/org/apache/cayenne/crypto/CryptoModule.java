@@ -103,12 +103,12 @@ public class CryptoModule implements Module {
                 .keyStore((String) null, DEFAULT_KEY_PASSWORD, null)
                 .keySource(JceksKeySource.class)
 
-                .valueTransformerFactory(DefaultValueTransformerFactory.class)
-                .bytesTransformerFactory(DefaultBytesTransformerFactory.class)
+                .valueTransformer(DefaultValueTransformerFactory.class)
+                .bytesTransformer(DefaultBytesTransformerFactory.class)
 
                 .columnMapper(DEFAULT_COLUMN_MAPPER_PATTERN)
 
-                .objectToBytesConverter("byte[]", BytesToBytesConverter.INSTANCE)
+                .objectToBytesConverter(byte[].class, BytesToBytesConverter.INSTANCE)
                 .objectToBytesConverter(String.class, Utf8StringConverter.INSTANCE)
 
                 .objectToBytesConverter(Double.class, DoubleConverter.INSTANCE)

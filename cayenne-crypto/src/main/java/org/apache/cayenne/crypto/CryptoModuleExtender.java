@@ -72,24 +72,18 @@ public class CryptoModuleExtender {
         return this;
     }
 
-    public CryptoModuleExtender valueTransformerFactory(Class<? extends ValueTransformerFactory> factoryType) {
+    public CryptoModuleExtender valueTransformer(Class<? extends ValueTransformerFactory> factoryType) {
         binder.bind(ValueTransformerFactory.class).to(factoryType);
         return this;
     }
 
-    public CryptoModuleExtender bytesTransformerFactory(Class<? extends BytesTransformerFactory> factoryType) {
+    public CryptoModuleExtender bytesTransformer(Class<? extends BytesTransformerFactory> factoryType) {
         binder.bind(BytesTransformerFactory.class).to(factoryType);
         return this;
     }
 
     public <T> CryptoModuleExtender objectToBytesConverter(Class<T> objectType, BytesConverter<T> converter) {
-        contributeObjectToByteConverters(binder).put(objectType.getName(), Objects.requireNonNull(converter));
-        return this;
-    }
-
-    // workaround for byte[]
-    CryptoModuleExtender objectToBytesConverter(String objectTypeName, BytesConverter<Object> converter) {
-        contributeObjectToByteConverters(binder).put(objectTypeName, Objects.requireNonNull(converter));
+        contributeObjectToByteConverters(binder).put(typeName(objectType), Objects.requireNonNull(converter));
         return this;
     }
 
@@ -228,5 +222,23 @@ public class CryptoModuleExtender {
             objectToByteConverters = mapBuilder;
         }
         return objectToByteConverters;
+    }
+
+    /**
+     * Get a name of the provided Java type.
+     * Consistent with the logic of {@link org.apache.cayenne.di.AdhocObjectFactory#getJavaClass(String)} method
+     * @param objectType to get a name of
+     * @return a name of the type
+     * @param <T> the type of the class
+     */
+    static <T> String typeName(Class<T> objectType) {
+        if(objectType.isArray()) {
+            if(objectType.getComponentType().isPrimitive()) {
+                return objectType.getComponentType().getSimpleName() + "[]";
+            } else {
+                return objectType.getComponentType().getName() + "[]";
+            }
+        }
+        return objectType.getName();
     }
 }
