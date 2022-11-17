@@ -27,6 +27,7 @@ CAY-2754 Add SELF property to the cgen templates
 CAY-2757 Modeler: Create custom templates from defaults
 CAY-2760 ObjectContext.userProperties need a way to clear properties
 CAY-2761 Modeler: Editor for the cgen templates
+CAY-2766 Modeler: Improving the work with velocity templates for class generation
 CAY-2767 Modeler: upgrade deprecated code in custom components
 CAY-2773 Switch master to "5.0"
 CAY-2776 Upgrade Gradle to 7.6
