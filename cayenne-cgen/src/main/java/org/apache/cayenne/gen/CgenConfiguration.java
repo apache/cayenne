@@ -63,18 +63,18 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private boolean overwrite;
     private boolean usePkgPath;
 
-    private String template;
-    private String superTemplate;
-    private String embeddableTemplate;
-    private String embeddableSuperTemplate;
+    private CgenTemplate template;
+    private CgenTemplate superTemplate;
+    private CgenTemplate embeddableTemplate;
+    private CgenTemplate embeddableSuperTemplate;
     /**
      * @since 5.0 renamed from queryTemplate
      */
-    private String dataMapTemplate;
+    private CgenTemplate dataMapTemplate;
     /**
      * @since 5.0 renamed from querySuperTemplate
      */
-    private String dataMapSuperTemplate;
+    private CgenTemplate dataMapSuperTemplate;
     private long timestamp;
     private String outputPattern;
     private String encoding;
@@ -107,13 +107,14 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.excludeEmbeddableArtifacts = new ArrayList<>();
         this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
-        this.template = TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot();
-        this.superTemplate = TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot();
-        this.dataMapTemplate = TemplateType.DATAMAP_SUBCLASS.pathFromSourceRoot();
-        this.dataMapSuperTemplate = TemplateType.DATAMAP_SUPERCLASS.pathFromSourceRoot();
+        this.template = TemplateType.ENTITY_SUBCLASS.defaultTemplate();
+        this.superTemplate = TemplateType.ENTITY_SUPERCLASS.defaultTemplate();
 
-        this.embeddableTemplate = TemplateType.EMBEDDABLE_SUBCLASS.pathFromSourceRoot();
-        this.embeddableSuperTemplate = TemplateType.EMBEDDABLE_SUPERCLASS.pathFromSourceRoot();
+        this.dataMapTemplate = TemplateType.DATAMAP_SUBCLASS.defaultTemplate();
+        this.dataMapSuperTemplate = TemplateType.DATAMAP_SUPERCLASS.defaultTemplate();
+
+        this.embeddableTemplate = TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate();
+        this.embeddableSuperTemplate = TemplateType.EMBEDDABLE_SUPERCLASS.defaultTemplate();
     }
 
     public void resetCollections() {
@@ -203,51 +204,51 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.usePkgPath = usePkgPath;
     }
 
-    public String getTemplate() {
+    public CgenTemplate getTemplate() {
         return template;
     }
 
-    public void setTemplate(String template) {
+    public void setTemplate(CgenTemplate template) {
         this.template = template;
     }
 
-    public String getSuperTemplate() {
+    public CgenTemplate getSuperTemplate() {
         return superTemplate;
     }
 
-    public void setSuperTemplate(String superTemplate) {
+    public void setSuperTemplate(CgenTemplate superTemplate) {
         this.superTemplate = superTemplate;
     }
 
-    public String getEmbeddableTemplate() {
+    public CgenTemplate getEmbeddableTemplate() {
         return embeddableTemplate;
     }
 
-    public void setEmbeddableTemplate(String embeddableTemplate) {
+    public void setEmbeddableTemplate(CgenTemplate embeddableTemplate) {
         this.embeddableTemplate = embeddableTemplate;
     }
 
-    public String getEmbeddableSuperTemplate() {
+    public CgenTemplate getEmbeddableSuperTemplate() {
         return embeddableSuperTemplate;
     }
 
-    public void setEmbeddableSuperTemplate(String embeddableSuperTemplate) {
+    public void setEmbeddableSuperTemplate(CgenTemplate embeddableSuperTemplate) {
         this.embeddableSuperTemplate = embeddableSuperTemplate;
     }
 
-    public String getDataMapTemplate() {
+    public CgenTemplate getDataMapTemplate() {
         return dataMapTemplate;
     }
 
-    public void setDataMapTemplate(String dataMapTemplate) {
+    public void setDataMapTemplate(CgenTemplate dataMapTemplate) {
         this.dataMapTemplate = dataMapTemplate;
     }
 
-    public String getDataMapSuperTemplate() {
+    public CgenTemplate getDataMapSuperTemplate() {
         return dataMapSuperTemplate;
     }
 
-    public void setDataMapSuperTemplate(String dataMapSuperTemplate) {
+    public void setDataMapSuperTemplate(CgenTemplate dataMapSuperTemplate) {
         this.dataMapSuperTemplate = dataMapSuperTemplate;
     }
 
@@ -335,10 +336,10 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public Path buildPath() {
-        if(rootPath == null) {
+        if (rootPath == null) {
             return relPath;
         }
-        if(relPath == null) {
+        if (relPath == null) {
             return rootPath;
         }
         return rootPath.resolve(relPath).toAbsolutePath().normalize();
@@ -412,12 +413,12 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
                 .simpleTag("destDir", separatorsToUnix(buildRelPath()))
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
-                .simpleTag("template", separatorsToUnix(this.template))
-                .simpleTag("superTemplate", separatorsToUnix(this.superTemplate))
-                .simpleTag("embeddableTemplate", separatorsToUnix(this.embeddableTemplate))
-                .simpleTag("embeddableSuperTemplate", separatorsToUnix(this.embeddableSuperTemplate))
-                .simpleTag("dataMapTemplate", separatorsToUnix(this.dataMapTemplate))
-                .simpleTag("dataMapSuperTemplate", separatorsToUnix(this.dataMapSuperTemplate))
+                .start("template").cdata(this.template.getData(), !this.template.isFile()).end()
+                .start("superTemplate").cdata(this.superTemplate.getData(), !this.superTemplate.isFile()).end()
+                .start("embeddableTemplate").cdata(this.embeddableTemplate.getData(), !this.embeddableTemplate.isFile()).end()
+                .start("embeddableSuperTemplate").cdata(this.embeddableSuperTemplate.getData(), !this.embeddableSuperTemplate.isFile()).end()
+                .start("dataMapTemplate").cdata(this.dataMapTemplate.getData(), !this.dataMapTemplate.isFile()).end()
+                .start("dataMapSuperTemplate").cdata(this.dataMapSuperTemplate.getData(), !this.dataMapSuperTemplate.isFile()).end()
                 .simpleTag("outputPattern", this.outputPattern)
                 .simpleTag("makePairs", Boolean.toString(this.makePairs))
                 .simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
@@ -446,9 +447,35 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 && (externalToolConfig == null || externalToolConfig.isEmpty());
     }
 
-    private String separatorsToUnix (String path){
-        if (path!=null) {
+    private String separatorsToUnix(String path) {
+        if (path != null) {
             return path.replace('\\', '/');
+        }
+        return null;
+    }
+
+    public CgenTemplate getTemplateByType(TemplateType type) {
+        switch (type) {
+            case ENTITY_SINGLE_CLASS:
+            case ENTITY_SUBCLASS:
+                return getTemplate();
+
+            case ENTITY_SUPERCLASS:
+                return getSuperTemplate();
+
+            case EMBEDDABLE_SINGLE_CLASS:
+            case EMBEDDABLE_SUBCLASS:
+                return getEmbeddableTemplate();
+
+            case EMBEDDABLE_SUPERCLASS:
+               return getEmbeddableSuperTemplate();
+
+            case DATAMAP_SINGLE_CLASS:
+            case DATAMAP_SUBCLASS:
+                return getDataMapTemplate();
+
+            case DATAMAP_SUPERCLASS:
+                return getDataMapSuperTemplate();
         }
         return null;
     }

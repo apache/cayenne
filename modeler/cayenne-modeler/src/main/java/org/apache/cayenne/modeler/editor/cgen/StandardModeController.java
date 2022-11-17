@@ -20,54 +20,42 @@
 package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.CodeTemplateManager;
-import org.apache.cayenne.modeler.dialog.cgen.TemplateDialog;
 import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
+import org.apache.cayenne.modeler.editor.cgen.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
-import org.apache.cayenne.swing.BindingBuilder;
 
-import javax.swing.DefaultComboBoxModel;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Supplier;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 
 /**
  * @since 4.1
  */
 public class StandardModeController extends GeneratorController {
 
+    private static final String EDITED = " (edited)";
     protected StandardModePanel view;
     protected DataMapDefaults preferences;
+    protected CodeGeneratorController codeGeneratorController;
+    private boolean isEditorOpen;
 
-    public StandardModeController(CodeGeneratorController parent) {
-        super(parent);
-        bind();
+    public StandardModeController(CodeGeneratorController codeGeneratorController) {
+        super(codeGeneratorController);
+        this.codeGeneratorController = codeGeneratorController;
+        isEditorOpen = false;
         initListeners();
     }
 
-    private void bind() {
-        BindingBuilder builder = new BindingBuilder(getApplication().getBindingFactory(), this);
-        builder.bindToAction(view.getTemplateManagerButton(), "popPreferencesAction()");
-
-    }
 
     protected void initListeners() {
         this.view.getPairs().addActionListener(val -> {
             cgenConfiguration.setMakePairs(view.getPairs().isSelected());
             if (!view.getPairs().isSelected()) {
-                cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot());
-                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot());
-                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot());
+                setSingleclassForDefaults();
             } else {
-                cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
-                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SUBCLASS.pathFromSourceRoot());
-                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SUBCLASS.pathFromSourceRoot());
+                setSubclassForDefaults();
             }
+            updateTemplateEditorButtons();
             initForm(cgenConfiguration);
             getParentController().checkCgenConfigDirty();
         });
@@ -92,6 +80,48 @@ public class StandardModeController extends GeneratorController {
             getParentController().checkCgenConfigDirty();
         });
 
+
+        view.getEditSubclassTemplateBtn().addActionListener(val ->
+                new TemplateEditorController(this, TemplateType.ENTITY_SUBCLASS).startupAction());
+
+        view.getEditSuperclassTemplateBtn().addActionListener(val ->
+                new TemplateEditorController(this, TemplateType.ENTITY_SUPERCLASS).startupAction());
+
+        view.getEditEmbeddableTemplateBtn().addActionListener(val ->
+                new TemplateEditorController(this, TemplateType.EMBEDDABLE_SUBCLASS).startupAction());
+
+        view.getEditEmbeddableSuperTemplateBtn().addActionListener(val ->
+                new TemplateEditorController(this, TemplateType.EMBEDDABLE_SUPERCLASS).startupAction());
+
+        view.getEditDataMapTemplateBtn().addActionListener(val ->
+                new TemplateEditorController(this, TemplateType.DATAMAP_SUBCLASS).startupAction());
+
+        view.getEditDataMapSuperTemplateBtn().addActionListener(val ->
+                new TemplateEditorController(this, TemplateType.DATAMAP_SUPERCLASS).startupAction());
+    }
+
+    private void setSubclassForDefaults() {
+        if (TemplateType.isDefault(cgenConfiguration.getTemplate().getData())) {
+            cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
+        }
+        if (TemplateType.isDefault(cgenConfiguration.getEmbeddableTemplate().getData())) {
+            cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate());
+        }
+        if (TemplateType.isDefault(cgenConfiguration.getDataMapTemplate().getData())) {
+            cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SUBCLASS.defaultTemplate());
+        }
+    }
+
+    private void setSingleclassForDefaults() {
+        if (TemplateType.isDefault(cgenConfiguration.getTemplate().getData())) {
+            cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
+        }
+        if (TemplateType.isDefault(cgenConfiguration.getEmbeddableTemplate().getData())) {
+            cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.defaultTemplate());
+        }
+        if (TemplateType.isDefault(cgenConfiguration.getDataMapTemplate().getData())) {
+            cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.defaultTemplate());
+        }
     }
 
 
@@ -105,147 +135,12 @@ public class StandardModeController extends GeneratorController {
 
     @Override
     public void updateConfiguration(CgenConfiguration cgenConfiguration) {
-        cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot());
-        cgenConfiguration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot());
-    }
-
-
-    private void updateTemplates() {
-
-        CodeTemplateManager templateManager = getApplication().getCodeTemplateManager();
-
-        List<String> customTemplates = new ArrayList<>(templateManager.getCustomTemplates().keySet());
-        Collections.sort(customTemplates);
-
-        List<String> superTemplates = new ArrayList<>();
-        superTemplates.add(TemplateType.ENTITY_SUPERCLASS.readableName());
-        superTemplates.addAll(customTemplates);
-
-        List<String> subTemplates = new ArrayList<>();
-        subTemplates.add(TemplateType.ENTITY_SINGLE_CLASS.readableName());
-        subTemplates.add(TemplateType.ENTITY_SUBCLASS.readableName());
-        Collections.sort(subTemplates);
-        subTemplates.addAll(customTemplates);
-
-        List<String> embeddableSuperTemplates = new ArrayList<>();
-        embeddableSuperTemplates.add(TemplateType.EMBEDDABLE_SUPERCLASS.readableName());
-        embeddableSuperTemplates.addAll(customTemplates);
-
-        List<String> embeddableTemplates = new ArrayList<>();
-        embeddableTemplates.add(TemplateType.EMBEDDABLE_SINGLE_CLASS.readableName());
-        embeddableTemplates.add(TemplateType.EMBEDDABLE_SUBCLASS.readableName());
-        Collections.sort(embeddableTemplates);
-        embeddableTemplates.addAll(customTemplates);
-
-        List<String> dataMapSuperTemplates = new ArrayList<>();
-        dataMapSuperTemplates.add(TemplateType.DATAMAP_SUPERCLASS.readableName());
-        dataMapSuperTemplates.addAll(customTemplates);
-
-        List<String> dataMapTemplates = new ArrayList<>();
-        dataMapTemplates.add(TemplateType.DATAMAP_SINGLE_CLASS.readableName());
-        dataMapTemplates.add(TemplateType.DATAMAP_SUBCLASS.readableName());
-        Collections.sort(dataMapTemplates);
-        dataMapTemplates.addAll(customTemplates);
-
-        this.view.getSubclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(subTemplates.toArray(new String[0])));
-        this.view.getSuperclassTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(superTemplates.toArray(new String[0])));
-        this.view.getDataMapTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(dataMapTemplates.toArray(new String[0])));
-        this.view.getDataMapSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(dataMapSuperTemplates.toArray(new String[0])));
-        this.view.getEmbeddableTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(embeddableTemplates.toArray(new String[0])));
-        this.view.getEmbeddableSuperTemplate().getComboBox().setModel(new DefaultComboBoxModel<>(embeddableSuperTemplates.toArray(new String[0])));
-    }
-
-    @SuppressWarnings("unused")
-    public void popPreferencesAction() {
-        new PreferenceDialog(getApplication().getFrameController()).startupAction(PreferenceDialog.TEMPLATES_KEY);
-        updateTemplates();
-        updateComboBoxes();
-    }
-
-    private void missTemplateDialog(CgenConfiguration cgenConfiguration, String template, String superTemplate) {
-        new TemplateDialog(this, cgenConfiguration, template, superTemplate).startupAction();
-        updateComboBoxes();
-    }
-
-    public void addTemplateAction(String template, String superTemplate) {
-        new PreferenceDialog(getApplication().getFrameController()).startupToCreateTemplate(template, superTemplate);
-        updateTemplates();
-    }
-
-    private String getTemplateName(Supplier<String> supplier, Path path) {
-        return getApplication().getCodeTemplateManager().getNameByPath(
-                supplier.get(), path);
-    }
-
-    private String getPath(Supplier<String> supplier, Path rootPath) {
-        if (rootPath != null) {
-            return rootPath.resolve(Paths.get(supplier.get())).normalize().toString();
-        } else {
-            return (Paths.get(supplier.get()).normalize().toString());
-        }
-    }
-
-
-
-
-    private void updateComboBoxes() {
-        Path rootPath = cgenConfiguration.getRootPath();
-
-        String templateName = getTemplateName(cgenConfiguration::getTemplate, rootPath);
-        String superTemplateName = getTemplateName(cgenConfiguration::getSuperTemplate, rootPath);
-        String embeddableTemplateName = getTemplateName(cgenConfiguration::getEmbeddableTemplate, rootPath);
-        String embeddableSuperTemplateName = getTemplateName(cgenConfiguration::getEmbeddableSuperTemplate, rootPath);
-        String dataMapTemplateName = getTemplateName(cgenConfiguration::getDataMapTemplate, rootPath);
-        String dataMapSuperTemplateName = getTemplateName(cgenConfiguration::getDataMapSuperTemplate, rootPath);
-
-        String path = getPath(cgenConfiguration::getTemplate, rootPath);
-        String superPath = getPath(cgenConfiguration::getSuperTemplate, rootPath);
-        String embeddableTemplatePath = getPath(cgenConfiguration::getEmbeddableTemplate, rootPath);
-        String embeddableSuperTemplatePath = getPath(cgenConfiguration::getEmbeddableSuperTemplate, rootPath);
-        String dataMapTemplatePath = getPath(cgenConfiguration::getDataMapTemplate, rootPath);
-        String dataMapSuperTemplatePath = getPath(cgenConfiguration::getDataMapSuperTemplate, rootPath);
-
-        if (templateName == null && superTemplateName == null) {
-            view.getSubclassTemplate().setItem(null);
-            view.getSuperclassTemplate().setItem(null);
-            missTemplateDialog(cgenConfiguration, path, superPath);
-        } else if (templateName == null) {
-            view.getSubclassTemplate().setItem(null);
-            missTemplateDialog(cgenConfiguration, path, null);
-        } else if (superTemplateName == null) {
-            view.getSuperclassTemplate().setItem(null);
-            missTemplateDialog(cgenConfiguration, null, superPath);
-        } else {
-            view.getSubclassTemplate().setItem(templateName);
-            view.getSuperclassTemplate().setItem(superTemplateName);
-        }
-
-        if(embeddableTemplateName == null && embeddableSuperTemplateName == null) {
-            missTemplateDialog(cgenConfiguration, embeddableTemplatePath, embeddableSuperTemplatePath);
-        } else if(embeddableTemplateName == null) {
-            missTemplateDialog(cgenConfiguration, embeddableTemplatePath, null);
-        } else if(embeddableSuperTemplateName == null) {
-            missTemplateDialog(cgenConfiguration, null, embeddableSuperTemplatePath);
-        }
-        view.getEmbeddableTemplate().setItem(embeddableTemplateName);
-        view.getEmbeddableSuperTemplate().setItem(embeddableSuperTemplateName);
-
-        if(dataMapTemplateName == null && dataMapSuperTemplateName == null) {
-            missTemplateDialog(cgenConfiguration, dataMapTemplatePath, dataMapSuperTemplatePath);
-        } else if(dataMapTemplateName == null) {
-            missTemplateDialog(cgenConfiguration, dataMapTemplatePath, null);
-        } else if(dataMapSuperTemplateName == null) {
-            missTemplateDialog(cgenConfiguration, null, dataMapSuperTemplatePath);
-        }
-        view.getDataMapTemplate().setItem(dataMapTemplateName);
-        view.getDataMapSuperTemplate().setItem(dataMapSuperTemplateName);
-        view.setDisableSuperComboBoxes(view.getPairs().isSelected());
+        //noop
     }
 
     @Override
     public void initForm(CgenConfiguration cgenConfiguration) {
         super.initForm(cgenConfiguration);
-        updateTemplates();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
         view.getPairs().setSelected(cgenConfiguration.isMakePairs());
         view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
@@ -253,6 +148,75 @@ public class StandardModeController extends GeneratorController {
         view.getCreatePropertyNames().setSelected(cgenConfiguration.isCreatePropertyNames());
         view.getPkProperties().setSelected(cgenConfiguration.isCreatePKProperties());
         view.getSuperPkg().setText(cgenConfiguration.getSuperPkg());
-        updateComboBoxes();
+        updateTemplatesLabels(cgenConfiguration);
+    }
+
+    /**
+     * Adds or removes mark "edited" to template labels.
+     * @param configuration
+     */
+    public void updateTemplatesLabels(CgenConfiguration configuration) {
+        updateTemplateLabel(view.getEntityTemplateLbl(), TemplateType.ENTITY_SUBCLASS, configuration.getTemplate().getData());
+        updateTemplateLabel(view.getEntitySuperTemplateLbl(), TemplateType.ENTITY_SUPERCLASS, configuration.getSuperTemplate().getData());
+        updateTemplateLabel(view.getEmbeddableTemplateLbl(), TemplateType.EMBEDDABLE_SUBCLASS, configuration.getEmbeddableTemplate().getData());
+        updateTemplateLabel(view.getEmbeddableSuperTemplateLbl(), TemplateType.EMBEDDABLE_SUPERCLASS, configuration.getEmbeddableSuperTemplate().getData());
+        updateTemplateLabel(view.getDatamapTemplateLbl(), TemplateType.DATAMAP_SUBCLASS, configuration.getDataMapTemplate().getData());
+        updateTemplateLabel(view.getDatamapSuperTemplateLbl(), TemplateType.DATAMAP_SUPERCLASS, configuration.getDataMapSuperTemplate().getData());
+    }
+
+    private void updateTemplateLabel(JLabel label, TemplateType type, String template) {
+        if (!TemplateType.isDefault(template)) {
+            label.setText(type.readableName() + EDITED);
+        } else {
+            label.setText(type.readableName());
+        }
+    }
+
+
+    /**
+     * locks or unlocks buttons depending on the state of the window. Tooltips are changing too.
+     * The button locking is affected:
+     * - is template editor window open
+     * - is MakePairs checkbox selected
+     * - is any artefact of appropriate type selected
+     */
+    public void updateTemplateEditorButtons() {
+        boolean isMakePairs = view.getPairs().isSelected();
+        boolean isEntitiesSelected = getParentController().isEntitiesSelected();
+        boolean isEmbeddableSelected = getParentController().isEmbeddableSelected();
+        boolean isDataMapSelected = getParentController().isDataMapSelected();
+
+        view.getEditSubclassTemplateBtn().setEnabled(isEntitiesSelected && !isEditorOpen);
+        view.getEditSuperclassTemplateBtn().setEnabled(isMakePairs && isEntitiesSelected && !isEditorOpen);
+
+        view.getEditEmbeddableTemplateBtn().setEnabled(isEmbeddableSelected && !isEditorOpen);
+        view.getEditEmbeddableSuperTemplateBtn().setEnabled(isMakePairs && isEmbeddableSelected && !isEditorOpen);
+
+        view.getEditDataMapTemplateBtn().setEnabled(isDataMapSelected&& !isEditorOpen);
+        view.getEditDataMapSuperTemplateBtn().setEnabled(isMakePairs && isDataMapSelected && !isEditorOpen);
+
+        setToolTipText(view.getEditSubclassTemplateBtn());
+        setToolTipText(view.getEditSuperclassTemplateBtn());
+        setToolTipText(view.getEditEmbeddableTemplateBtn());
+        setToolTipText(view.getEditEmbeddableSuperTemplateBtn());
+        setToolTipText(view.getEditDataMapTemplateBtn());
+        setToolTipText(view.getEditDataMapSuperTemplateBtn());
+    }
+
+    private void setToolTipText(JButton button) {
+        if (button.isEnabled()) {
+            button.setToolTipText("Open template editor");
+        } else {
+            button.setToolTipText("At least one artefact of appropriate type must be selected." +
+                    " The Make Pairs checkbox can also affect the blocking");
+        }
+    }
+
+    public CodeGeneratorController getCodeGeneratorController() {
+        return codeGeneratorController;
+    }
+
+    public void setEditorOpen(boolean editorOpen) {
+        isEditorOpen = editorOpen;
     }
 }

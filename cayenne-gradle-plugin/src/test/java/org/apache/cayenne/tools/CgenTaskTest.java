@@ -20,6 +20,7 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
 import org.junit.Rule;
@@ -30,6 +31,7 @@ import org.gradle.api.logging.Logging;
 import java.io.File;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -80,7 +82,7 @@ public class CgenTaskTest {
         task.setOutputPattern("pattern");
         task.setSuperPkg("org.example.model.auto");
         task.setSuperTemplate("superTemplate");
-        task.setTemplate("template");
+        task.setTemplate("org/apache/cayenne/tools/velotemplate.vm");
         task.setMakePairs(true);
         task.setCreatePropertyNames(true);
         task.setOverwrite(true);
@@ -90,14 +92,16 @@ public class CgenTaskTest {
         ClassGenerationAction createdAction = new ClassGenerationAction(configuration);
 
         CgenConfiguration cgenConfiguration = createdAction.getCgenConfiguration();
-        assertEquals(cgenConfiguration.getEmbeddableSuperTemplate(), "superTemplate");
-        assertEquals(cgenConfiguration.getEmbeddableTemplate(), "template");
+        CgenTemplate cgenTemplate = cgenConfiguration.getTemplate();
+        assertNotNull(cgenConfiguration.getEmbeddableSuperTemplate());
+        assertNotNull(cgenConfiguration.getEmbeddableTemplate());
+
         assertEquals(cgenConfiguration.getEncoding(), "UTF-8");
         assertEquals(cgenConfiguration.getArtifactsGenerationMode(), "entity");
         assertEquals(cgenConfiguration.getOutputPattern(), "pattern");
         assertEquals(cgenConfiguration.getSuperPkg(), "org.example.model.auto");
-        assertEquals(cgenConfiguration.getSuperTemplate(), "superTemplate");
-        assertEquals(cgenConfiguration.getTemplate(), "template");
+        assertTrue(cgenTemplate.isFile());
+        assertEquals("org/apache/cayenne/tools/velotemplate.vm", cgenTemplate.getData());
         assertTrue(cgenConfiguration.isMakePairs());
         assertTrue(cgenConfiguration.isCreatePropertyNames());
         assertTrue(cgenConfiguration.isOverwrite());

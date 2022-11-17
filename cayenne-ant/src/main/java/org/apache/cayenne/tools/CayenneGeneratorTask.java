@@ -28,6 +28,7 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.tools.ant.BuildException;
@@ -157,7 +158,7 @@ public class CayenneGeneratorTask extends CayenneTask {
                 datamapsupertemplate != null || createpkproperties != null || force || externaltoolconfig != null;
     }
 
-    private CgenConfiguration buildConfiguration(DataMap dataMap) {
+     CgenConfiguration buildConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfiguration.class);
         if(hasConfig()) {
             logger.info("Using cgen config from pom.xml");
@@ -187,25 +188,25 @@ public class CayenneGeneratorTask extends CayenneTask {
         cgenConfiguration.setOutputPattern(outputPattern != null ? outputPattern : cgenConfiguration.getOutputPattern());
         cgenConfiguration.setOverwrite(overwrite != null ? overwrite : cgenConfiguration.isOverwrite());
         cgenConfiguration.setSuperPkg(superpkg != null ? superpkg : cgenConfiguration.getSuperPkg());
-        cgenConfiguration.setSuperTemplate(supertemplate != null ? supertemplate : cgenConfiguration.getSuperTemplate());
-        cgenConfiguration.setTemplate(template != null ? template :  cgenConfiguration.getTemplate());
-        cgenConfiguration.setEmbeddableSuperTemplate(embeddablesupertemplate != null ? embeddablesupertemplate : cgenConfiguration.getEmbeddableSuperTemplate());
-        cgenConfiguration.setEmbeddableTemplate(embeddabletemplate != null ? embeddabletemplate : cgenConfiguration.getEmbeddableTemplate());
+        cgenConfiguration.setSuperTemplate(supertemplate != null ? new CgenTemplate(supertemplate,true,TemplateType.ENTITY_SUPERCLASS) : cgenConfiguration.getSuperTemplate());
+        cgenConfiguration.setTemplate(template != null ? new CgenTemplate(template,true,TemplateType.ENTITY_SUBCLASS) :  cgenConfiguration.getTemplate());
+        cgenConfiguration.setEmbeddableSuperTemplate(embeddablesupertemplate != null ? new CgenTemplate(embeddablesupertemplate,true,TemplateType.EMBEDDABLE_SUPERCLASS) : cgenConfiguration.getEmbeddableSuperTemplate());
+        cgenConfiguration.setEmbeddableTemplate(embeddabletemplate != null ? new CgenTemplate(embeddabletemplate,true,TemplateType.EMBEDDABLE_SUBCLASS) : cgenConfiguration.getEmbeddableTemplate());
         cgenConfiguration.setUsePkgPath(usepkgpath != null ? usepkgpath : cgenConfiguration.isUsePkgPath());
         cgenConfiguration.setCreatePropertyNames(createpropertynames != null ? createpropertynames : cgenConfiguration.isCreatePropertyNames());
-        cgenConfiguration.setDataMapTemplate(datamaptemplate != null ? datamaptemplate : cgenConfiguration.getDataMapTemplate());
-        cgenConfiguration.setDataMapSuperTemplate(datamapsupertemplate != null ? datamapsupertemplate : cgenConfiguration.getDataMapSuperTemplate());
+        cgenConfiguration.setDataMapTemplate(datamaptemplate != null ? new CgenTemplate(datamaptemplate,true,TemplateType.DATAMAP_SUBCLASS) : cgenConfiguration.getDataMapTemplate());
+        cgenConfiguration.setDataMapSuperTemplate(datamapsupertemplate != null ? new CgenTemplate(datamapsupertemplate,true,TemplateType.DATAMAP_SUPERCLASS) : cgenConfiguration.getDataMapSuperTemplate());
         cgenConfiguration.setCreatePKProperties(createpkproperties != null ? createpkproperties : cgenConfiguration.isCreatePKProperties());
         cgenConfiguration.setExternalToolConfig(externaltoolconfig != null ? externaltoolconfig : cgenConfiguration.getExternalToolConfig());
         if(!cgenConfiguration.isMakePairs()) {
             if(template == null) {
-                cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot());
+                cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
             }
             if(embeddabletemplate == null) {
-                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot());
+                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.defaultTemplate());
             }
             if(datamaptemplate == null) {
-                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot());
+                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.defaultTemplate());
             }
         }
         return cgenConfiguration;

@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.templateeditor;
+package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -32,6 +32,8 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -50,19 +52,27 @@ public class TemplateEditorView extends JFrame {
     protected RSyntaxTextArea editingTemplatePane;
     protected RSyntaxTextArea classPreviewPane;
 
+    private static final String VELOCITY_KEY = "text/velocity";
+    private static final ImageIcon modelerIcon = ModelerUtil.buildIcon("CayenneModeler.png");
+    private static final Icon saveIcon = ModelerUtil.buildIcon("icon-save.png");
+    private static final Icon resetToDefaultIcon = ModelerUtil.buildIcon("icon-undo.png");
+    private static final Icon findIcon = ModelerUtil.buildIcon("icon-query.png");
+    private static final Icon findAndReplaceIcon = ModelerUtil.buildIcon("icon-find_and_replace.png");
+    private static final Icon previewIcon = ModelerUtil.buildIcon("icon-edit.png");
+
     protected JButton previewButton;
     protected JButton saveButton;
     protected JButton findButton;
     protected JButton findAndReplaceButton;
+    protected JButton resetToDefaultButton;
     protected JComboBox<String> entityComboBox;
     private JSplitPane split;
     private JToolBar toolBar;
     private JPanel topPanel;
-    static final String VELOCITY_KEY = "text/velocity";
 
 
     public TemplateEditorView(List<String> entityNames) {
-        this.setTitle("Template editor");
+        this.setIconImage(modelerIcon.getImage());
         this.editingTemplatePane = new TextEditorPane();
         this.classPreviewPane = new RSyntaxTextArea();
         initToolBoxComponents(entityNames);
@@ -72,13 +82,15 @@ public class TemplateEditorView extends JFrame {
     }
 
     private void initToolBoxComponents(List<String> entityNames) {
-        this.saveButton = new JButton(ModelerUtil.buildIcon("icon-save.png"));
+        this.saveButton = new JButton(saveIcon);
         this.saveButton.setToolTipText("Save");
-        this.findButton = new JButton(ModelerUtil.buildIcon("icon-query.png"));
+        this.resetToDefaultButton = new JButton(resetToDefaultIcon);
+        this.resetToDefaultButton.setToolTipText("Reset to default template");
+        this.findButton = new JButton(findIcon);
         this.findButton.setToolTipText("Find");
-        this.findAndReplaceButton = new JButton(ModelerUtil.buildIcon("icon-find_and_replace.png"));
+        this.findAndReplaceButton = new JButton(findAndReplaceIcon);
         this.findAndReplaceButton.setToolTipText("Find and replace");
-        this.previewButton = new JButton(ModelerUtil.buildIcon("icon-edit.png"));
+        this.previewButton = new JButton(previewIcon);
         this.previewButton.setToolTipText("Generate preview");
         this.entityComboBox = new JComboBox<>(entityNames.toArray(new String[0]));
         this.entityComboBox.setToolTipText("Select an entity for the test");
@@ -94,6 +106,7 @@ public class TemplateEditorView extends JFrame {
         getContentPane().add(topPanel, BorderLayout.NORTH);
         getContentPane().add(split, BorderLayout.CENTER);
     }
+
 
     private void initSplitPanel() {
         editingTemplatePane.setSyntaxEditingStyle(VELOCITY_KEY);
@@ -121,6 +134,8 @@ public class TemplateEditorView extends JFrame {
         toolBar.addSeparator();
         toolBar.add(previewButton);
         toolBar.add(entityComboBox);
+        toolBar.addSeparator();
+        toolBar.add(resetToDefaultButton);
     }
 
     private void initTopPanel() {
@@ -146,7 +161,7 @@ public class TemplateEditorView extends JFrame {
         tokenMakerFactory.putMapping(VELOCITY_KEY, VelocityTokenMaker.class.getName());
     }
 
-    public String getSelectedEntityName() {
+    public String getSelectedArtifactName() {
         Object selectedItem = entityComboBox.getSelectedItem();
         if (selectedItem != null) {
             return selectedItem.toString();
@@ -168,6 +183,10 @@ public class TemplateEditorView extends JFrame {
 
     public JButton getFindAndReplaceButton() {
         return findAndReplaceButton;
+    }
+
+    public JButton getResetToDefaultButton() {
+        return resetToDefaultButton;
     }
 
     public String getTemplateText() {

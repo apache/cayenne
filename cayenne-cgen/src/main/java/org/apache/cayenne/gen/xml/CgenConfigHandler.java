@@ -28,6 +28,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenTemplate;
+import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -35,7 +37,7 @@ import org.xml.sax.SAXException;
 /**
  * @since 4.1
  */
-public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
+public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
 
     public static final String CONFIG_TAG = "cgen";
 
@@ -101,15 +103,15 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
                 createSuperclassTemplate(data);
                 break;
             case EMBEDDABLE_TEMPLATE_TAG:
-            	createEmbeddableTemplate(data);
-            	break;
+                createEmbeddableTemplate(data);
+                break;
             case EMBEDDABLE_SUPER_TEMPLATE_TAG:
-            	createEmbeddableSuperTemplate(data);
+                createEmbeddableSuperTemplate(data);
             case DATAMAP_TEMPLATE_TAG:
-            	createDataMapTemplate(data);
-            	break;
+                createDataMapTemplate(data);
+                break;
             case DATAMAP_SUPER_TEMPLATE_TAG:
-            	createDataMapSuperTemplate(data);
+                createDataMapSuperTemplate(data);
                 break;
             case OUTPUT_PATTERN_TAG:
                 createOutputPattern(data);
@@ -136,77 +138,102 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     }
 
     private void createOutputDir(String path) {
-        if(path.trim().length() == 0) {
+        if (path.trim().length() == 0) {
             return;
         }
         configuration.setRelPath(Paths.get(path));
     }
 
     private void createGenerationMode(String mode) {
-        if(mode.trim().length() == 0) {
+        if (mode.trim().length() == 0) {
             return;
         }
         configuration.setArtifactsGenerationMode(mode);
     }
 
     private void createExcludeEntities(String entities) {
-        if(entities.trim().length() == 0) {
+        if (entities.trim().length() == 0) {
             return;
         }
         configuration.loadEntities(entities);
     }
 
     private void createExcludeEmbeddables(String embeddables) {
-        if(embeddables.trim().length() == 0) {
+        if (embeddables.trim().length() == 0) {
             return;
         }
         configuration.loadEmbeddables(embeddables);
     }
 
     private void createSubclassTemplate(String template) {
-        if(template.trim().length() == 0) {
+
+        if (template.trim().length() == 0) {
             return;
         }
-        configuration.setTemplate(template);
+        if (TemplateType.isDefault(template)) {
+            configuration.setTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
+        } else {
+            configuration.setTemplate(new CgenTemplate(template, false,TemplateType.ENTITY_SUBCLASS));
+        }
     }
 
     private void createSuperclassTemplate(String template) {
-        if(template.trim().length() == 0) {
+        if (template.trim().length() == 0) {
             return;
         }
-        configuration.setSuperTemplate(template);
+        if (TemplateType.isDefault(template)) {
+            configuration.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.defaultTemplate());
+        } else {
+            configuration.setSuperTemplate(new CgenTemplate(template,false,TemplateType.ENTITY_SUBCLASS));
+        }
     }
-    
+
     private void createEmbeddableTemplate(String template) {
-    	if(template.trim().length() == 0) {
-    		return;
-    	}
-    	configuration.setEmbeddableTemplate(template);
+        if (template.trim().length() == 0) {
+            return;
+        }
+        if (TemplateType.isDefault(template)) {
+            configuration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate());
+        } else {
+            configuration.setEmbeddableTemplate(new CgenTemplate(template,false,TemplateType.EMBEDDABLE_SUBCLASS));
+        }
     }
-    
+
     private void createEmbeddableSuperTemplate(String template) {
-    	if(template.trim().length() == 0) {
-    		return;
-    	}
-    	configuration.setEmbeddableSuperTemplate(template);
+        if (template.trim().length() == 0) {
+            return;
+        }
+        if (TemplateType.isDefault(template)) {
+            configuration.setEmbeddableSuperTemplate(TemplateType.EMBEDDABLE_SUPERCLASS.defaultTemplate());
+        } else {
+            configuration.setEmbeddableSuperTemplate(new CgenTemplate(template,false,TemplateType.EMBEDDABLE_SUPERCLASS));
+        }
     }
-    
+
     private void createDataMapTemplate(String template) {
-    	if(template.trim().length() == 0) {
-    		return;
-    	}
-    	configuration.setDataMapTemplate(template);
+        if (template.trim().length() == 0) {
+            return;
+        }
+        if (TemplateType.isDefault(template)) {
+            configuration.setDataMapTemplate(TemplateType.DATAMAP_SUBCLASS.defaultTemplate());
+        } else {
+            configuration.setDataMapTemplate(new CgenTemplate(template,false,TemplateType.DATAMAP_SUBCLASS));
+        }
     }
-    
+
     private void createDataMapSuperTemplate(String template) {
-    	if(template.trim().length() == 0) {
-    		return;
-    	}
-    	configuration.setDataMapSuperTemplate(template);
+        if (template.trim().length() == 0) {
+            return;
+        }
+        if (TemplateType.isDefault(template)) {
+            configuration.setDataMapSuperTemplate(TemplateType.DATAMAP_SUPERCLASS.defaultTemplate());
+        } else {
+            configuration.setDataMapSuperTemplate(new CgenTemplate(template,false,TemplateType.DATAMAP_SUPERCLASS));
+        }
     }
 
     private void createOutputPattern(String pattern) {
-        if(pattern.trim().length() == 0) {
+        if (pattern.trim().length() == 0) {
             return;
         }
         configuration.setOutputPattern(pattern);
@@ -220,35 +247,35 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
     }
 
     private void createUsePkgPath(String data) {
-        if(data.trim().length() == 0) {
+        if (data.trim().length() == 0) {
             return;
         }
         configuration.setUsePkgPath(data.equals(TRUE));
     }
 
     private void createOverwriteSubclasses(String data) {
-        if(data.trim().length() == 0) {
+        if (data.trim().length() == 0) {
             return;
         }
         configuration.setOverwrite(data.equals(TRUE));
     }
 
     private void createPropertyNamesTag(String data) {
-        if(data.trim().length() == 0) {
+        if (data.trim().length() == 0) {
             return;
         }
         configuration.setCreatePropertyNames(data.equals(TRUE));
     }
 
     private void createPkPropertiesTag(String data) {
-        if(data.trim().length() == 0) {
+        if (data.trim().length() == 0) {
             return;
         }
         configuration.setCreatePKProperties(data.equals(TRUE));
     }
 
     private void createSuperPkg(String data) {
-        if(data.trim().length() == 0) {
+        if (data.trim().length() == 0) {
             return;
         }
         configuration.setSuperPkg(data);
@@ -272,7 +299,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler{
         } catch (URISyntaxException e) {
             throw new CayenneRuntimeException("Unable to read cgen path", e);
         }
-        if(Files.isRegularFile(resourcePath)) {
+        if (Files.isRegularFile(resourcePath)) {
             resourcePath = resourcePath.getParent();
         }
         return resourcePath;

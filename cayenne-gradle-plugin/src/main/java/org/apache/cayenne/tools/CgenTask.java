@@ -28,6 +28,7 @@ import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.gradle.api.Action;
@@ -194,6 +195,7 @@ public class CgenTask extends BaseCayenneTask {
 
     /**
      * Force run (skip check for files modification time)
+     *
      * @since 4.1
      */
     @Input
@@ -225,6 +227,7 @@ public class CgenTask extends BaseCayenneTask {
     /**
      * If set to <code>true</code>, will generate PK attributes as Properties.
      * Default is <code>false</code>.
+     *
      * @since 4.1
      */
     @Input
@@ -233,6 +236,7 @@ public class CgenTask extends BaseCayenneTask {
 
     /**
      * Optional path (classpath or filesystem) to external velocity tool configuration file
+     *
      * @since 4.2
      */
     @Input
@@ -272,12 +276,12 @@ public class CgenTask extends BaseCayenneTask {
             filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(getLogger(), null, excludeEmbeddables));
             generator.setLogger(getLogger());
 
-            if(this.force || getProject().hasProperty("force")) {
+            if (this.force || getProject().hasProperty("force")) {
                 generator.getCgenConfiguration().setForce(true);
             }
             generator.getCgenConfiguration().setTimestamp(dataMapFile.lastModified());
 
-            if(!hasConfig() && useConfigFromDataMap) {
+            if (!hasConfig() && useConfigFromDataMap) {
                 generator.prepareArtifacts();
             } else {
                 generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
@@ -318,10 +322,10 @@ public class CgenTask extends BaseCayenneTask {
 
     CgenConfiguration buildConfiguration(DataMap dataMap) {
         CgenConfiguration cgenConfiguration;
-        if(hasConfig()) {
+        if (hasConfig()) {
             getLogger().info("Using cgen config from pom.xml");
             return cgenConfigFromPom(dataMap);
-        } else if(metaData != null && metaData.get(dataMap, CgenConfiguration.class) != null) {
+        } else if (metaData != null && metaData.get(dataMap, CgenConfiguration.class) != null) {
             getLogger().info("Using cgen config from " + dataMap.getName());
             useConfigFromDataMap = true;
             cgenConfiguration = metaData.get(dataMap, CgenConfiguration.class);
@@ -335,38 +339,38 @@ public class CgenTask extends BaseCayenneTask {
         }
     }
 
-    private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
+    private CgenConfiguration cgenConfigFromPom(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         cgenConfiguration.setRelPath(getDestDirFile() != null ? getDestDirFile().toPath() : cgenConfiguration.getRelPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
         cgenConfiguration.setMakePairs(makePairs != null ? makePairs : cgenConfiguration.isMakePairs());
-        if(mode != null && mode.equals("datamap")) {
+        if (mode != null && mode.equals("datamap")) {
             replaceDatamapGenerationMode();
         }
         cgenConfiguration.setArtifactsGenerationMode(mode != null ? mode : cgenConfiguration.getArtifactsGenerationMode());
         cgenConfiguration.setOutputPattern(outputPattern != null ? outputPattern : cgenConfiguration.getOutputPattern());
         cgenConfiguration.setOverwrite(overwrite != null ? overwrite : cgenConfiguration.isOverwrite());
         cgenConfiguration.setSuperPkg(superPkg != null ? superPkg : cgenConfiguration.getSuperPkg());
-        cgenConfiguration.setSuperTemplate(superTemplate != null ? superTemplate : cgenConfiguration.getSuperTemplate());
-        cgenConfiguration.setTemplate(template != null ? template :  cgenConfiguration.getTemplate());
-        cgenConfiguration.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? embeddableSuperTemplate : cgenConfiguration.getEmbeddableSuperTemplate());
-        cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? embeddableTemplate : cgenConfiguration.getEmbeddableTemplate());
+        cgenConfiguration.setSuperTemplate(superTemplate != null ? new CgenTemplate(superTemplate, true,TemplateType.ENTITY_SUPERCLASS) : cgenConfiguration.getSuperTemplate());
+        cgenConfiguration.setTemplate(template != null ? new CgenTemplate(template, true,TemplateType.ENTITY_SUBCLASS) : cgenConfiguration.getTemplate());
+        cgenConfiguration.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? new CgenTemplate(embeddableSuperTemplate,true,TemplateType.EMBEDDABLE_SUPERCLASS) : cgenConfiguration.getEmbeddableSuperTemplate());
+        cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? new CgenTemplate(embeddableTemplate,true,TemplateType.EMBEDDABLE_SUBCLASS) : cgenConfiguration.getEmbeddableTemplate());
         cgenConfiguration.setUsePkgPath(usePkgPath != null ? usePkgPath : cgenConfiguration.isUsePkgPath());
         cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : cgenConfiguration.isCreatePropertyNames());
-        cgenConfiguration.setDataMapTemplate(dataMapTemplate != null ? dataMapTemplate : cgenConfiguration.getDataMapTemplate());
-        cgenConfiguration.setDataMapSuperTemplate(dataMapSuperTemplate != null ? dataMapSuperTemplate : cgenConfiguration.getDataMapSuperTemplate());
+        cgenConfiguration.setDataMapTemplate(dataMapTemplate != null ? new CgenTemplate(dataMapTemplate,true,TemplateType.DATAMAP_SUBCLASS) : cgenConfiguration.getDataMapTemplate());
+        cgenConfiguration.setDataMapSuperTemplate(dataMapSuperTemplate != null ? new CgenTemplate(dataMapSuperTemplate,true,TemplateType.DATAMAP_SUPERCLASS) : cgenConfiguration.getDataMapSuperTemplate());
         cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
         cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
-        if(!cgenConfiguration.isMakePairs()) {
-            if(template == null) {
-                cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.pathFromSourceRoot());
+        if (!cgenConfiguration.isMakePairs()) {
+            if (template == null) {
+                cgenConfiguration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
             }
-            if(embeddableTemplate == null) {
-                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.pathFromSourceRoot());
+            if (embeddableTemplate == null) {
+                cgenConfiguration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.defaultTemplate());
             }
-            if(dataMapTemplate == null) {
-                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.pathFromSourceRoot());
+            if (dataMapTemplate == null) {
+                cgenConfiguration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.defaultTemplate());
             }
         }
         return cgenConfiguration;
@@ -399,13 +403,13 @@ public class CgenTask extends BaseCayenneTask {
             getProject().getPlugins().withType(JavaPlugin.class, new Action<JavaPlugin>() {
                 @Override
                 public void execute(final JavaPlugin plugin) {
-                    SourceSetContainer sourceSets = (SourceSetContainer)getProject().getProperties().get("sourceSets");
+                    SourceSetContainer sourceSets = (SourceSetContainer) getProject().getProperties().get("sourceSets");
 
                     Set<File> sourceDirs = sourceSets.getByName("main").getJava().getSrcDirs();
                     if (sourceDirs != null && !sourceDirs.isEmpty()) {
                         // find java directory, if there is no such dir, take first
-                        for(File dir : sourceDirs) {
-                            if(dir.getName().endsWith("java")) {
+                        for (File dir : sourceDirs) {
+                            if (dir.getName().endsWith("java")) {
                                 javaSourceDir.set(dir);
                                 break;
                             }
@@ -706,12 +710,12 @@ public class CgenTask extends BaseCayenneTask {
     public void createPKProperties(boolean createPKProperties) {
         setCreatePKProperties(createPKProperties);
     }
-    
+
     public void setExternalToolConfig(String externalToolConfig) {
-    	this.externalToolConfig = externalToolConfig;
+        this.externalToolConfig = externalToolConfig;
     }
 
     public void externalToolConfig(String externalToolConfig) {
-    	setExternalToolConfig(externalToolConfig);
+        setExternalToolConfig(externalToolConfig);
     }
 }

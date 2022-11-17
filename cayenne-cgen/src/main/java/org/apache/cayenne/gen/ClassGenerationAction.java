@@ -19,6 +19,23 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.context.Context;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
+import org.apache.velocity.runtime.resource.util.StringResourceRepository;
+import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
+import org.apache.velocity.tools.ToolManager;
+import org.apache.velocity.tools.config.ConfigurationUtils;
+import org.apache.velocity.tools.config.FactoryConfiguration;
+import org.slf4j.Logger;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,23 +50,11 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.context.Context;
-import org.apache.velocity.tools.ToolManager;
-import org.apache.velocity.tools.config.ConfigurationUtils;
-import org.apache.velocity.tools.config.FactoryConfiguration;
-import org.slf4j.Logger;
-
 public class ClassGenerationAction {
 
 	public static final String SUPERCLASS_PREFIX = "_";
 	private static final String WILDCARD = "*";
+    private static final String CUSTOM_TEMPLATE_REPO = "customTemplateRepo";
 
 	/**
 	 * @since 4.1
@@ -90,29 +95,6 @@ public class ClassGenerationAction {
 			this.context = new VelocityContext();
 		}
 		this.templateCache = new HashMap<>(5);
-	}
-
-
-	public String customTemplateName(TemplateType type) {
-		switch (type) {
-			case ENTITY_SINGLE_CLASS:
-			case ENTITY_SUBCLASS:
-				return cgenConfiguration.getTemplate();
-			case ENTITY_SUPERCLASS:
-				return cgenConfiguration.getSuperTemplate();
-			case EMBEDDABLE_SINGLE_CLASS:
-			case EMBEDDABLE_SUBCLASS:
-				return cgenConfiguration.getEmbeddableTemplate();
-			case EMBEDDABLE_SUPERCLASS:
-				return cgenConfiguration.getEmbeddableSuperTemplate();
-			case DATAMAP_SINGLE_CLASS:
-			case DATAMAP_SUBCLASS:
-				return cgenConfiguration.getDataMapTemplate();
-			case DATAMAP_SUPERCLASS:
-				return cgenConfiguration.getDataMapSuperTemplate();
-			default:
-				throw new IllegalArgumentException("Invalid template type: " + type);
-		}
 	}
 
     /**
@@ -255,41 +237,36 @@ public class ClassGenerationAction {
 		}
 	}
 
-	 Template getTemplate(TemplateType type) {
+    protected Template getTemplate(TemplateType type) {
+        Properties props = new Properties();
+        initVelocityProperties(props, type);
+        VelocityEngine velocityEngine = new VelocityEngine();
+        velocityEngine.init(props);
+        return velocityEngine.getTemplate(cgenConfiguration.getTemplateByType(type).getName());
+    }
 
-		String templateName = customTemplateName(type);
-		if (templateName == null) {
-			templateName = type.pathFromSourceRoot();
-		}
+    protected void initVelocityProperties(Properties props, TemplateType type) {
+        CgenTemplate template = cgenConfiguration.getTemplateByType(type);
+        if (template.isFile()) {
+            props.put("resource.loaders", "cayenne");
+            props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
+            props.put("resource.loader.cayenne.cache", "false");
+            if (cgenConfiguration.getRootPath() != null) {
+                props.put("resource.loader.cayenne.root", cgenConfiguration.getRootPath().toString());
+            }
+        } else {
+            props.setProperty(RuntimeConstants.RESOURCE_LOADERS, "string");
+            props.setProperty("resource.loader.string.class", StringResourceLoader.class.getName());
+            props.setProperty("resource.loader.string.repository.name", CUSTOM_TEMPLATE_REPO);
+            putTemplateTextInRepository(template);
+        }
+    }
 
-		// Velocity < 1.5 has some memory problems, so we will create a VelocityEngine every time,
-		// and store templates in an internal cache, to avoid uncontrolled memory leaks...
-		// Presumably 1.5 fixes it.
-
-		Template template = templateCache.get(templateName);
-
-		if (template == null) {
-			Properties props = new Properties();
-			initVelocityProperties(props);
-
-			VelocityEngine velocityEngine = new VelocityEngine();
-			velocityEngine.init(props);
-
-			template = velocityEngine.getTemplate(templateName);
-			templateCache.put(templateName, template);
-		}
-
-		return template;
-	}
-
-	protected void initVelocityProperties(Properties props) {
-		props.put("resource.loaders", "cayenne");
-		props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
-		props.put("resource.loader.cayenne.cache", "false");
-		if (cgenConfiguration.getRootPath() != null) {
-			props.put("resource.loader.cayenne.root", cgenConfiguration.getRootPath().toString());
-		}
-	}
+    private void putTemplateTextInRepository(CgenTemplate template) {
+        StringResourceLoader.setRepository(CUSTOM_TEMPLATE_REPO, new StringResourceRepositoryImpl());
+        StringResourceRepository repo = StringResourceLoader.getRepository(CUSTOM_TEMPLATE_REPO);
+        repo.putStringResource(template.getName(), template.getData());
+    }
 
 	/**
 	 * Validates the state of this class generator.
@@ -355,9 +332,9 @@ public class ClassGenerationAction {
 		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
 		File dest = new File(mkpath(new File(cgenConfiguration.buildPath().toString()), packageName), filename);
 
-		if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate())) {
-			return null;
-		}
+        if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate().getData())) {
+            return null;
+        }
 
 		return dest;
 	}
@@ -385,10 +362,10 @@ public class ClassGenerationAction {
 				return null;
 			}
 
-			if (!fileNeedUpdate(dest, cgenConfiguration.getTemplate())) {
-				return null;
-			}
-		}
+            if (!fileNeedUpdate(dest, cgenConfiguration.getTemplate().getData())) {
+                return null;
+            }
+        }
 
 		return dest;
 	}
@@ -464,26 +441,26 @@ public class ClassGenerationAction {
 		this.context = context;
 	}
 
-	/**
-	 * @since 4.1
-	 */
-	public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
-		this.cgenConfiguration = cgenConfiguration;
-	}
+    /**
+     * @since 4.1
+     */
+    public void setCgenConfiguration(CgenConfiguration cgenConfiguration) {
+        this.cgenConfiguration = cgenConfiguration;
+    }
 
-	public ToolsUtilsFactory getUtilsFactory() {
-		return utilsFactory;
-	}
+    public ToolsUtilsFactory getUtilsFactory() {
+        return utilsFactory;
+    }
 
-	public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
-		this.utilsFactory = utilsFactory;
-	}
+    public void setUtilsFactory(ToolsUtilsFactory utilsFactory) {
+        this.utilsFactory = utilsFactory;
+    }
 
-	public void setMetadataUtils(MetadataUtils metadataUtils) {
-		this.metadataUtils = metadataUtils;
-	}
+    public void setMetadataUtils(MetadataUtils metadataUtils) {
+        this.metadataUtils = metadataUtils;
+    }
 
-	public MetadataUtils getMetadataUtils() {
-		return metadataUtils;
-	}
+    public MetadataUtils getMetadataUtils() {
+        return metadataUtils;
+    }
 }

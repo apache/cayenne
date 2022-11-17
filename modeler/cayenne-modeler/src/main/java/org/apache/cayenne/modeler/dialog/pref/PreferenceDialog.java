@@ -41,10 +41,9 @@ public class PreferenceDialog extends CayenneController {
     public static final String GENERAL_KEY = "General";
     public static final String DATA_SOURCES_KEY = "Local DataSources";
     public static final String CLASS_PATH_KEY = "ClassPath";
-    public static final String TEMPLATES_KEY = "Templates";
 
-    private static final String[] preferenceMenus = new String[] {
-            GENERAL_KEY, DATA_SOURCES_KEY, CLASS_PATH_KEY, TEMPLATES_KEY
+    private static final String[] preferenceMenus = new String[]{
+            GENERAL_KEY, DATA_SOURCES_KEY, CLASS_PATH_KEY
     };
 
     protected PreferenceDialogView view;
@@ -132,17 +131,11 @@ public class PreferenceDialog extends CayenneController {
         view.setVisible(true);
     }
 
-    public void startupToCreateTemplate(String template, String superTemplate) {
-        configure();
-        ((TemplatePreferences) detailControllers.get(TEMPLATES_KEY)).addTemplateAction(template, superTemplate);
-    }
-
     protected void configure() {
         // init known panels
         registerPanel(GENERAL_KEY, new GeneralPreferences(this));
         registerPanel(DATA_SOURCES_KEY, new DataSourcePreferences(this));
         registerPanel(CLASS_PATH_KEY, new ClasspathPreferences(this));
-        registerPanel(TEMPLATES_KEY, new TemplatePreferences(this));
         view.getDetailLayout().show(view.getDetailPanel(), GENERAL_KEY);
         view.pack();
 

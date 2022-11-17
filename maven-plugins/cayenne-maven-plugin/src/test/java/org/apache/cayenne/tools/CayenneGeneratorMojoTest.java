@@ -18,12 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.map.DataMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
+
 public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
+
+    public static final String TEST_TEMPLATE_PATH = "src/test/resources/cgen/project-to-test/testTemplate.vm";
 
     public void testCgenExecution() throws Exception {
 
@@ -64,6 +71,51 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertTrue(content.contains("public static final ListProperty<TestRelEntity> ADDITIONAL_REL = PropertyFactory.createList(\"additionalRel\", TestRelEntity.class);"));
         assertTrue(content.contains("public void addToAdditionalRel(TestRelEntity obj)"));
         assertTrue(content.contains("public void removeFromAdditionalRel(TestRelEntity obj)"));
+    }
+
+    public void testTransferPluginDataToCgenConfiguration() throws Exception {
+        File pom = getTestFile("src/test/resources/cgen/project-to-test/pomTransferPluginToCgen.xml");
+        assertNotNull(pom);
+        assertTrue(pom.exists());
+
+        CayenneGeneratorMojo myMojo = (CayenneGeneratorMojo) lookupMojo("cgen", pom);
+        assertNotNull(myMojo);
+
+        myMojo.execute();
+        CgenConfiguration cgenConfiguration = myMojo.buildConfiguration(new DataMap());
+
+        assertEquals("UTF-8", cgenConfiguration.getEncoding());
+        assertEquals("all", cgenConfiguration.getArtifactsGenerationMode());
+        assertEquals("pattern", cgenConfiguration.getOutputPattern());
+        assertEquals("superPkg", cgenConfiguration.getSuperPkg());
+        assertTrue(cgenConfiguration.isMakePairs());
+        assertTrue(cgenConfiguration.isCreatePropertyNames());
+        assertTrue(cgenConfiguration.isOverwrite());
+        assertTrue(cgenConfiguration.isUsePkgPath());
+
+        assertTrue(cgenConfiguration.getTemplate().isFile());
+        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getTemplate().getData());
+        assertEquals(TemplateType.ENTITY_SUBCLASS,cgenConfiguration.getTemplate().getType());
+
+        assertTrue(cgenConfiguration.getSuperTemplate().isFile());
+        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getSuperTemplate().getData());
+        assertEquals(TemplateType.ENTITY_SUPERCLASS,cgenConfiguration.getSuperTemplate().getType());
+
+        assertTrue(cgenConfiguration.getEmbeddableTemplate().isFile());
+        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getEmbeddableTemplate().getData());
+        assertEquals(TemplateType.EMBEDDABLE_SUBCLASS,cgenConfiguration.getEmbeddableTemplate().getType());
+
+        assertTrue(cgenConfiguration.getEmbeddableSuperTemplate().isFile());
+        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getEmbeddableSuperTemplate().getData());
+        assertEquals(TemplateType.EMBEDDABLE_SUPERCLASS,cgenConfiguration.getEmbeddableSuperTemplate().getType());
+
+        assertTrue(cgenConfiguration.getDataMapTemplate().isFile());
+        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getDataMapTemplate().getData());
+        assertEquals(TemplateType.DATAMAP_SUBCLASS,cgenConfiguration.getDataMapTemplate().getType());
+
+        assertTrue(cgenConfiguration.getDataMapSuperTemplate().isFile());
+        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getDataMapSuperTemplate().getData());
+        assertEquals(TemplateType.DATAMAP_SUPERCLASS,cgenConfiguration.getDataMapSuperTemplate().getType());
     }
 
     public void testCgenDataMapConfig() throws Exception {

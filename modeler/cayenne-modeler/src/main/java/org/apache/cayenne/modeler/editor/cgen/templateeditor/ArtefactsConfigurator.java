@@ -17,39 +17,24 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.templateeditor;
+package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
-import org.apache.cayenne.gen.ClassGenerationActionFactory;
-import org.apache.cayenne.gen.MetadataUtils;
-import org.apache.cayenne.gen.ToolsUtilsFactory;
+import org.apache.cayenne.map.DataMap;
 
-import java.io.StringWriter;
-
+import java.util.List;
 
 /**
- * @since 5.0
+ * since 4.3
  */
-public class PreviewClassGenerationFactory implements ClassGenerationActionFactory {
+public interface ArtefactsConfigurator {
+    /**
+     * adds selected artefact to action for generating class preview.
+     *
+     * @param action class preview generating action
+     * @param artifactName name of artifact to add
+     */
+    void config(ClassGenerationAction action, String artifactName);
 
-    @Inject
-    private ToolsUtilsFactory utilsFactory;
-
-    @Inject
-    private MetadataUtils metadataUtils;
-
-    @Inject(TemplateEditorController.TEMPLATE_EDITOR_WRITER)
-    private StringWriter writer;
-
-    @Override
-    public ClassGenerationAction createAction(CgenConfiguration cgenConfiguration) {
-        PreviewGenerationAction action = new PreviewGenerationAction(cgenConfiguration);
-        action.setUtilsFactory(utilsFactory);
-        action.setMetadataUtils(metadataUtils);
-        action.setWriter(writer);
-        return action;
-    }
-
+    List<String> getArtifactsNames(DataMap dataMap);
 }

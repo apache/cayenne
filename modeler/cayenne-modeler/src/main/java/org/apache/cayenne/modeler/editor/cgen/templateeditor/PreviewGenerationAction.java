@@ -17,20 +17,18 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.dialog.templateeditor;
+package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Properties;
 
 /**
+ * Used for generating class preview in template editor
  * @since 5.0
  */
 public class PreviewGenerationAction extends ClassGenerationAction {
@@ -56,12 +54,4 @@ public class PreviewGenerationAction extends ClassGenerationAction {
         writer.getBuffer().setLength(0);
         return writer;
     }
-
-    @Override
-    protected void initVelocityProperties(Properties props) {
-        props.setProperty(RuntimeConstants.RESOURCE_LOADERS, "string");
-        props.setProperty("resource.loader.string.class", StringResourceLoader.class.getName());
-        props.setProperty("resource.loader.string.repository.name",TemplateEditorController.TEMPLATE_EDITOR_REPO);
-    }
-
 }
