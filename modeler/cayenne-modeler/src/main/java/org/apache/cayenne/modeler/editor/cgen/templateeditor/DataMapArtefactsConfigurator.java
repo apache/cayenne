@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class DataMapArtefactsConfigurator implements ArtefactsConfigurator {
 

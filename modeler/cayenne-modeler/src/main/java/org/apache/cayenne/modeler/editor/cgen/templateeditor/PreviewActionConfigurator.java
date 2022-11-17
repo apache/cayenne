@@ -37,7 +37,7 @@ import java.io.Writer;
 /**
  * Performs a preset of action to generate a class preview in the template editor
  *
- * @since 4.3
+ * @since 5.0
  */
 public class PreviewActionConfigurator {
 

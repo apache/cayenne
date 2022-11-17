@@ -20,7 +20,7 @@
 package org.apache.cayenne.gen;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class CgenTemplate {
     private final String data;

@@ -32,7 +32,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class EditorTemplateLoader {
 

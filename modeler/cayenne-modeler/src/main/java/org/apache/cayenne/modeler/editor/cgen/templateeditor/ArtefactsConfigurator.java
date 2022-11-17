@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import java.util.List;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public interface ArtefactsConfigurator {
     /**

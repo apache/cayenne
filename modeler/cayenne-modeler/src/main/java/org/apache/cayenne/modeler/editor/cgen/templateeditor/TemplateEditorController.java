@@ -37,7 +37,7 @@ import java.awt.event.WindowEvent;
 import java.io.Writer;
 
 /**
- * since 4.3
+ * @since 5.0
  */
 public class TemplateEditorController extends CayenneController {
 
