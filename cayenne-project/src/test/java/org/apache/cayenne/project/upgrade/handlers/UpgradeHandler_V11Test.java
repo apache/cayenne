@@ -123,7 +123,7 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
                     case "template":
                     case "embeddableTemplate":
                     case "dataMapTemplate":
-                        assertEquals("velocity template stub", node.getFirstChild().getNodeValue());
+                        assertEquals(TEST_TEMPLATE_CONTENT, node.getFirstChild().getNodeValue());
                         break;
                     case "superTemplate":
                         assertEquals("The template /org/apache/cayenne/project/upgrade/handlers was not found " +
@@ -151,4 +151,23 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
         handler.processModel(descriptor);
         verifyNoInteractions(descriptor);
     }
+
+
+    private static final String TEST_TEMPLATE_CONTENT = "##   Licensed to the Apache Software Foundation (ASF) under one\n" +
+            "##  or more contributor license agreements.  See the NOTICE file\n" +
+            "##  distributed with this work for additional information\n" +
+            "##  regarding copyright ownership.  The ASF licenses this file\n" +
+            "##  to you under the Apache License, Version 2.0 (the\n" +
+            "##  \"License\"); you may not use this file except in compliance\n" +
+            "##  with the License.  You may obtain a copy of the License at\n" +
+            "##\n" +
+            "##    https://www.apache.org/licenses/LICENSE-2.0\n" +
+            "##\n" +
+            "##  Unless required by applicable law or agreed to in writing,\n" +
+            "##  software distributed under the License is distributed on an\n" +
+            "##  \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n" +
+            "##  KIND, either express or implied.  See the License for the\n" +
+            "##  specific language governing permissions and limitations\n" +
+            "##  under the License.\n" +
+            "velocity template stub";
 }
