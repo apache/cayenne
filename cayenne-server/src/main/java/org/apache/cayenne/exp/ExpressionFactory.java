@@ -77,6 +77,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Helper class to build expressions.
@@ -328,6 +329,14 @@ public class ExpressionFactory {
 			return new ASTTrue();
 		}
 
+		Function<Object, ASTPath> pathProvider;
+		if (path.startsWith(ASTDbPath.DB_PREFIX)) {
+			pathProvider = ASTDbPath::new;
+			path = path.substring(ASTDbPath.DB_PREFIX.length());
+		} else {
+			pathProvider = ASTObjPath::new;
+		}
+
 		int split = path.indexOf(SPLIT_SEPARATOR);
 
 		List<Expression> matches = new ArrayList<>(values.length);
@@ -353,13 +362,13 @@ public class ExpressionFactory {
 				String aliasedPath = beforeSplit + alias + afterSplit;
 				i++;
 
-				ASTPath pathExp = new ASTObjPath(aliasedPath);
+				ASTPath pathExp = pathProvider.apply(aliasedPath);
 				pathExp.setPathAliases(Collections.singletonMap(alias, splitChunk));
 				matches.add(new ASTEqual(pathExp, value));
 			}
 		} else {
 			for (Object value : values) {
-				matches.add(new ASTEqual(new ASTObjPath(path), value));
+				matches.add(new ASTEqual(pathProvider.apply(path), value));
 			}
 		}
 
