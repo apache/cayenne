@@ -22,7 +22,6 @@ package org.apache.cayenne.tools;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.Test;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,14 +49,14 @@ public class GradlePluginIT extends BaseTaskIT {
     }
 
     @Test
-    public void testGradleVersionsCompatibility() throws Exception {
+    public void testGradleVersionsCompatibility() {
 
         String[] versions;
 
         // Old gradle versions will fail on new JDK
         int javaMajorVersion = getJavaMajorVersion(System.getProperty("java.version"));
         if(javaMajorVersion >= 19) {
-            versions = new String[]{"7.6"};
+            versions = new String[]{"7.6-rc-3"};
         } else if(javaMajorVersion >= 17) {
             versions = new String[]{"7.3"};
         } else if(javaMajorVersion >= 16) {
