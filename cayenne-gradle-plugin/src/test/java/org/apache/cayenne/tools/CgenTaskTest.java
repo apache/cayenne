@@ -63,8 +63,8 @@ public class CgenTaskTest {
         doCallRealMethod().when(mock).setOverwrite(anyBoolean());
         doCallRealMethod().when(mock).setUsePkgPath(anyBoolean());
         doCallRealMethod().when(mock).setTemplate(anyString());
-        when(mock.buildConfiguration(dataMap)).thenCallRealMethod();
-        when(mock.createGenerator(dataMap)).thenCallRealMethod();
+        when(mock.buildConfigurations(dataMap)).thenCallRealMethod();
+        when(mock.createGenerators(dataMap)).thenCallRealMethod();
         when(mock.getLogger()).thenReturn(Logging.getLogger(CgenTaskTest.class));
 
         return mock;
@@ -88,25 +88,26 @@ public class CgenTaskTest {
         task.setOverwrite(true);
         task.setUsePkgPath(true);
 
-        CgenConfiguration configuration = task.buildConfiguration(dataMap);
-        ClassGenerationAction createdAction = new ClassGenerationAction(configuration);
+        for (CgenConfiguration configuration : task.buildConfigurations(dataMap)) {
 
-        CgenConfiguration cgenConfiguration = createdAction.getCgenConfiguration();
-        CgenTemplate cgenTemplate = cgenConfiguration.getTemplate();
-        assertNotNull(cgenConfiguration.getEmbeddableSuperTemplate());
-        assertNotNull(cgenConfiguration.getEmbeddableTemplate());
+            ClassGenerationAction createdAction = new ClassGenerationAction(configuration);
 
-        assertEquals(cgenConfiguration.getEncoding(), "UTF-8");
-        assertEquals(cgenConfiguration.getArtifactsGenerationMode(), "entity");
-        assertEquals(cgenConfiguration.getOutputPattern(), "pattern");
-        assertEquals(cgenConfiguration.getSuperPkg(), "org.example.model.auto");
-        assertTrue(cgenTemplate.isFile());
-        assertEquals("org/apache/cayenne/tools/velotemplate.vm", cgenTemplate.getData());
-        assertTrue(cgenConfiguration.isMakePairs());
-        assertTrue(cgenConfiguration.isCreatePropertyNames());
-        assertTrue(cgenConfiguration.isOverwrite());
-        assertTrue(cgenConfiguration.isUsePkgPath());
+            CgenConfiguration cgenConfiguration = createdAction.getCgenConfiguration();
+            CgenTemplate cgenTemplate = cgenConfiguration.getTemplate();
+            assertNotNull(cgenConfiguration.getEmbeddableSuperTemplate());
+            assertNotNull(cgenConfiguration.getEmbeddableTemplate());
 
+            assertEquals(cgenConfiguration.getEncoding(), "UTF-8");
+            assertEquals(cgenConfiguration.getArtifactsGenerationMode(), "entity");
+            assertEquals(cgenConfiguration.getOutputPattern(), "pattern");
+            assertEquals(cgenConfiguration.getSuperPkg(), "org.example.model.auto");
+            assertTrue(cgenTemplate.isFile());
+            assertEquals("org/apache/cayenne/tools/velotemplate.vm", cgenTemplate.getData());
+            assertTrue(cgenConfiguration.isMakePairs());
+            assertTrue(cgenConfiguration.isCreatePropertyNames());
+            assertTrue(cgenConfiguration.isOverwrite());
+            assertTrue(cgenConfiguration.isUsePkgPath());
+        }
     }
 
 }

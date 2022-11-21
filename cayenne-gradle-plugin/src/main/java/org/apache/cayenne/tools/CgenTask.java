@@ -26,6 +26,7 @@ import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.CgenTemplate;
@@ -39,6 +40,8 @@ import org.gradle.api.tasks.*;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -268,27 +271,28 @@ public class CgenTask extends BaseCayenneTask {
             loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
 
             DataMap dataMap = loaderAction.getMainDataMap();
-            ClassGenerationAction generator = this.createGenerator(dataMap);
-            CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
-            filterEntityAction.setNameFilter(NamePatternMatcher.build(getLogger(), includeEntities, excludeEntities));
+            for (ClassGenerationAction generator : this.createGenerators(dataMap)) {
+                CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
+                filterEntityAction.setNameFilter(NamePatternMatcher.build(getLogger(), includeEntities, excludeEntities));
 
-            CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
-            filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(getLogger(), null, excludeEmbeddables));
-            generator.setLogger(getLogger());
+                CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
+                filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(getLogger(), null, excludeEmbeddables));
+                generator.setLogger(getLogger());
 
-            if (this.force || getProject().hasProperty("force")) {
-                generator.getCgenConfiguration().setForce(true);
+                if (this.force || getProject().hasProperty("force")) {
+                    generator.getCgenConfiguration().setForce(true);
+                }
+                generator.getCgenConfiguration().setTimestamp(dataMapFile.lastModified());
+
+                if (!hasConfig() && useConfigFromDataMap) {
+                    generator.prepareArtifacts();
+                } else {
+                    generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
+                    generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
+                    generator.addQueries(dataMap.getQueryDescriptors());
+                }
+                generator.execute();
             }
-            generator.getCgenConfiguration().setTimestamp(dataMapFile.lastModified());
-
-            if (!hasConfig() && useConfigFromDataMap) {
-                generator.prepareArtifacts();
-            } else {
-                generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
-                generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
-                generator.addQueries(dataMap.getQueryDescriptors());
-            }
-            generator.execute();
         } catch (Exception exception) {
             throw new GradleException("Error generating classes: ", exception);
         }
@@ -315,27 +319,36 @@ public class CgenTask extends BaseCayenneTask {
      * Factory method to create internal class generator. Called from
      * constructor.
      */
-    ClassGenerationAction createGenerator(DataMap dataMap) {
-        CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
-        return injector.getInstance(ClassGenerationActionFactory.class).createAction(cgenConfiguration);
+    List<ClassGenerationAction> createGenerators(DataMap dataMap) {
+        List<ClassGenerationAction> generators = new ArrayList<>();
+        for (CgenConfiguration configuration : buildConfigurations(dataMap)) {
+            generators.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration));
+        }
+        return generators;
     }
 
-    CgenConfiguration buildConfiguration(DataMap dataMap) {
+    List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
+        List<CgenConfiguration> configurations = new ArrayList<>();
         CgenConfiguration cgenConfiguration;
         if (hasConfig()) {
             getLogger().info("Using cgen config from pom.xml");
-            return cgenConfigFromPom(dataMap);
-        } else if (metaData != null && metaData.get(dataMap, CgenConfiguration.class) != null) {
-            getLogger().info("Using cgen config from " + dataMap.getName());
+            configurations.add(cgenConfigFromPom(dataMap));
+            return configurations;
+        } else if (metaData != null && metaData.get(dataMap, CgenConfigList.class) != null) {
+            CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
+            for (CgenConfiguration configuration : cgenConfigList.getAll()) {
+                getLogger().info("Using cgen config from " + dataMap.getName());
+                configurations.add(configuration);
+            }
             useConfigFromDataMap = true;
-            cgenConfiguration = metaData.get(dataMap, CgenConfiguration.class);
-            return cgenConfiguration;
+            return configurations;
         } else {
             getLogger().info("Using default cgen config.");
             cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setRelPath(getDestDirFile().getPath());
             cgenConfiguration.setDataMap(dataMap);
-            return cgenConfiguration;
+            configurations.add(cgenConfiguration);
+            return configurations;
         }
     }
 
