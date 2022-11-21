@@ -63,6 +63,7 @@ public class WinPlatformInitializer implements PlatformInitializer {
         UIManager.put("ScrollPane.border",      BorderFactory.createEmptyBorder());
         UIManager.put("Table.scrollPaneBorder", BorderFactory.createEmptyBorder());
         UIManager.put("SplitPane.border",       BorderFactory.createEmptyBorder());
+        UIManager.put("CheckBoxHeader.border",  BorderFactory.createEmptyBorder(0, 15, 0, 0));
         UIManager.put("SplitPane.background",   darkGrey);
         UIManager.put("Separator.background",   darkGrey);
         UIManager.put("Separator.foreground",   darkGrey);

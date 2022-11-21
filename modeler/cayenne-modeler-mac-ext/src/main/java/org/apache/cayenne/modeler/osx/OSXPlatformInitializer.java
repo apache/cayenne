@@ -73,7 +73,7 @@ public class OSXPlatformInitializer implements PlatformInitializer {
 
         UIManager.put("ToolBarSeparatorUI",           OSXToolBarSeparatorUI.class.getName());
         UIManager.put("PanelUI",                      OSXPanelUI.class.getName());
-        // next two is custom made for Cayenne's MainToolBar
+        // next two is custom-made for Cayenne's MainToolBar
         UIManager.put("ToolBar.background",           lightGrey);
         UIManager.put("MainToolBar.background",       lightGrey);
         UIManager.put("MainToolBar.border",           BorderFactory.createEmptyBorder(0, 7, 0, 7));
@@ -92,6 +92,7 @@ public class OSXPlatformInitializer implements PlatformInitializer {
         UIManager.put("Table.selectionForeground",    Color.BLACK);
         UIManager.put("Table.selectionBackground",    lightGrey);
         UIManager.put("Table.focusCellHighlightBorder", BorderFactory.createEmptyBorder());
+        UIManager.put("CheckBoxHeader.border",          BorderFactory.createEmptyBorder(0, 9, 0, 0));
 
         // MacOS BigSur needs additional style tweaking for the tabs active state
         OSXVersion version = OSXVersion.fromSystemProperties();

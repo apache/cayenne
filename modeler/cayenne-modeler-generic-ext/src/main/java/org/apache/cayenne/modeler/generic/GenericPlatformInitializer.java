@@ -81,6 +81,7 @@ public class GenericPlatformInitializer implements PlatformInitializer {
         UIManager.put("Table.scrollPaneBorder",         BorderFactory.createEmptyBorder());
         UIManager.put("SplitPane.border",               BorderFactory.createEmptyBorder());
         UIManager.put("ToolBar.border",                 BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        UIManager.put("CheckBoxHeader.border",          BorderFactory.createEmptyBorder(0, 15, 0, 0));
         UIManager.put("MenuItem.selectionBackground",   greyHighlight);
         UIManager.put("MenuItem.selectionForeground",   Color.BLACK);
         // this one is custom for MainToolBar

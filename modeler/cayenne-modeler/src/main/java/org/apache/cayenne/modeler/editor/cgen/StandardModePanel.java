@@ -28,10 +28,12 @@ import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 import java.awt.BorderLayout;
 
 /**
@@ -58,7 +60,7 @@ public class StandardModePanel extends GeneratorControllerPanel {
     private JLabel embeddableSuperTemplateLbl;
     private JLabel datamapTemplateLbl;
     private JLabel datamapSuperTemplateLbl;
-
+    static final Border CGEN_PANEL_BORDER = BorderFactory.createEmptyBorder(5, 13, 5, 13);
 
     public StandardModePanel(CodeGeneratorController codeGeneratorController) {
         super(Application.getInstance().getFrameController().getProjectController(), codeGeneratorController);
@@ -99,7 +101,7 @@ public class StandardModePanel extends GeneratorControllerPanel {
         setLayout(new BorderLayout());
         CellConstraints cc = new CellConstraints();
         FormLayout layout = new FormLayout(
-                "left:10dlu, 3dlu, 90dlu, 3dlu, pref, 3dlu, 50dlu, 3dlu, 20dlu",
+                "left:10dlu, 3dlu, 97dlu, 3dlu, 40dlu, 3dlu, 50dlu, 3dlu, 20dlu",
                 "p, 3dlu, p, 10dlu, 11*(p, 3dlu),10dlu,9*(p, 3dlu)");
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
@@ -152,6 +154,7 @@ public class StandardModePanel extends GeneratorControllerPanel {
 
         builder.add(datamapSuperTemplateLbl, cc.xyw(1, 40, 3));
         builder.add(editDataMapSuperTemplateBtn, cc.xy(5, 40));
+        builder.getPanel().setBorder(CGEN_PANEL_BORDER);
 
         add(builder.getPanel(), BorderLayout.CENTER);
     }

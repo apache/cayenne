@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
@@ -36,6 +38,9 @@ public class ClassesTabPanel extends JPanel {
 
         this.table = new JTable();
         this.table.setRowHeight(22);
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setBackground(UIManager.getColor("Table.selectionBackground"));
+        this.table.getTableHeader().setDefaultRenderer(renderer);
 
         JScrollPane tablePanel = new JScrollPane(
                 table,

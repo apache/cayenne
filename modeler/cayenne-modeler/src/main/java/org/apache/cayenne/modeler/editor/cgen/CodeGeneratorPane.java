@@ -19,13 +19,13 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
-import com.jgoodies.forms.builder.DefaultFormBuilder;
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -33,7 +33,6 @@ import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 
 /**
  * @since 4.1
@@ -41,42 +40,27 @@ import java.awt.FlowLayout;
 public class CodeGeneratorPane extends JPanel {
 
     private JButton generateButton;
-    private JCheckBox checkAll;
-    private JLabel checkAllLabel;
+    private JComboBox<String> configurationsComboBox;
+    private JButton addConfigBtn;
+    private JButton editConfigBtn;
+    private JButton removeConfigBtn;
+    private JSplitPane splitPane;
 
     public CodeGeneratorPane(Component generatorPanel, Component entitySelectorPanel) {
         super();
         this.setLayout(new BorderLayout());
 
-        JPanel toolBarPanel = new JPanel();
-        toolBarPanel.setLayout(new BorderLayout());
+        initSplitPanel(generatorPanel, entitySelectorPanel);
+        buildView();
+    }
 
-        FormLayout layout = new FormLayout(
-                "fill:110", "");
-        DefaultFormBuilder builder = new DefaultFormBuilder(layout);
-        this.generateButton = new JButton("Generate");
-        generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
-        generateButton.setEnabled(false);
-        builder.append(generateButton);
-        toolBarPanel.add(builder.getPanel(), BorderLayout.EAST);
+    private void buildView() {
+        add(getTopPanel(), BorderLayout.NORTH);
+        add(splitPane, BorderLayout.CENTER);
+    }
 
-        this.checkAll = new JCheckBox();
-        this.checkAllLabel = new JLabel("Check All Classes");
-        checkAll.addItemListener(event -> {
-            if (checkAll.isSelected()) {
-                checkAllLabel.setText("Uncheck All Classess");
-            } else {
-                checkAllLabel.setText("Check All Classes");
-            }
-        });
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-        topPanel.add(checkAll);
-        topPanel.add(checkAllLabel);
-        toolBarPanel.add(topPanel, BorderLayout.WEST);
-
-        add(toolBarPanel, BorderLayout.NORTH);
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    private void initSplitPanel(Component generatorPanel, Component entitySelectorPanel) {
+        this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         JScrollPane scrollPane = new JScrollPane(
                 generatorPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -86,15 +70,67 @@ public class CodeGeneratorPane extends JPanel {
         // assemble
         splitPane.setRightComponent(scrollPane);
         splitPane.setLeftComponent(entitySelectorPanel);
+    }
 
-        add(splitPane, BorderLayout.CENTER);
+    private JPanel getTopPanel() {
+        JPanel configPanel = new JPanel();
+        configPanel.setLayout(new BorderLayout());
+        configPanel.add(getConfigurationsPanel(), BorderLayout.WEST);
+        configPanel.add(getGeneratePanel(), BorderLayout.EAST);
+        configPanel.setBorder(StandardModePanel.CGEN_PANEL_BORDER);
+        return configPanel;
+    }
+
+    private JPanel getConfigurationsPanel() {
+        FormLayout configCroupLayout = new FormLayout(
+                "109dlu,3dlu,pref,3dlu,pref,3dlu,pref",
+                "p");
+        PanelBuilder configCroupBuilder = new PanelBuilder(configCroupLayout);
+        CellConstraints cc = new CellConstraints();
+        this.configurationsComboBox = new JComboBox<>();
+        this.addConfigBtn = new JButton(ModelerUtil.buildIcon("icon-new.png"));
+        addConfigBtn.setToolTipText("New configuration");
+        this.editConfigBtn = new JButton(ModelerUtil.buildIcon("icon-edit.png"));
+        editConfigBtn.setToolTipText("Rename configuration");
+        this.removeConfigBtn = new JButton(ModelerUtil.buildIcon("icon-trash.png"));
+        removeConfigBtn.setToolTipText("Remove configuration");
+        configCroupBuilder.add(configurationsComboBox, cc.xy(1, 1));
+        configCroupBuilder.add(addConfigBtn, cc.xy(3, 1));
+        configCroupBuilder.add(editConfigBtn, cc.xy(5, 1));
+        configCroupBuilder.add(removeConfigBtn, cc.xy(7, 1));
+        return configCroupBuilder.getPanel();
+    }
+
+    private JPanel getGeneratePanel() {
+        this.generateButton = new JButton("Generate");
+        this.generateButton.setIcon(ModelerUtil.buildIcon("icon-gen_java.png"));
+        this.generateButton.setEnabled(false);
+        FormLayout generateCroupLayout = new FormLayout(
+                "60dlu", "p");
+        PanelBuilder generateCroupBuilder = new PanelBuilder(generateCroupLayout);
+        CellConstraints cc = new CellConstraints();
+
+        generateCroupBuilder.add(generateButton,cc.xy(1,1));
+        return generateCroupBuilder.getPanel();
     }
 
     public JButton getGenerateButton() {
         return generateButton;
     }
 
-    public JCheckBox getCheckAll() {
-        return checkAll;
+    public JComboBox<String> getConfigurationsComboBox() {
+        return configurationsComboBox;
+    }
+
+    public JButton getAddConfigBtn() {
+        return addConfigBtn;
+    }
+
+    public JButton getEditConfigBtn() {
+        return editConfigBtn;
+    }
+
+    public JButton getRemoveConfigBtn() {
+        return removeConfigBtn;
     }
 }
