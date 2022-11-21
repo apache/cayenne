@@ -54,27 +54,27 @@ public class EditorTemplateSaver {
 
         switch (templateType) {
             case ENTITY_SUPERCLASS: {
-                configuration.setSuperTemplate(new CgenTemplate(template, false, TemplateType.ENTITY_SUPERCLASS));
+                configuration.setSuperTemplate(new CgenTemplate(template, isDefault, TemplateType.ENTITY_SUPERCLASS));
                 break;
             }
             case ENTITY_SUBCLASS: {
-                configuration.setTemplate(new CgenTemplate(template, false, TemplateType.ENTITY_SUBCLASS));
+                configuration.setTemplate(new CgenTemplate(template, isDefault, TemplateType.ENTITY_SUBCLASS));
                 break;
             }
             case EMBEDDABLE_SUPERCLASS: {
-                configuration.setEmbeddableSuperTemplate(new CgenTemplate(template, false, TemplateType.EMBEDDABLE_SUPERCLASS));
+                configuration.setEmbeddableSuperTemplate(new CgenTemplate(template, isDefault, TemplateType.EMBEDDABLE_SUPERCLASS));
                 break;
             }
             case EMBEDDABLE_SUBCLASS: {
-                configuration.setEmbeddableTemplate(new CgenTemplate(template, false, TemplateType.EMBEDDABLE_SUBCLASS));
+                configuration.setEmbeddableTemplate(new CgenTemplate(template, isDefault, TemplateType.EMBEDDABLE_SUBCLASS));
                 break;
             }
             case DATAMAP_SUPERCLASS: {
-                configuration.setDataMapSuperTemplate(new CgenTemplate(template, false, TemplateType.DATAMAP_SUPERCLASS));
+                configuration.setDataMapSuperTemplate(new CgenTemplate(template, isDefault, TemplateType.DATAMAP_SUPERCLASS));
                 break;
             }
             case DATAMAP_SUBCLASS: {
-                configuration.setDataMapTemplate(new CgenTemplate(template, false, TemplateType.DATAMAP_SUBCLASS));
+                configuration.setDataMapTemplate(new CgenTemplate(template, isDefault, TemplateType.DATAMAP_SUBCLASS));
                 break;
             }
             default:
