@@ -21,6 +21,7 @@ package org.apache.cayenne.tools;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
@@ -335,26 +336,20 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     }
 
     List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
-        List<CgenConfiguration> configurations = new ArrayList<>();
         CgenConfigList cgenConfigList = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfigList.class);
         if (hasConfig()) {
             logger.info("Using cgen config from pom.xml");
-            configurations.add(cgenConfigFromPom(dataMap));
-            return configurations;
+            return Collections.singletonList(cgenConfigFromPom(dataMap));
         } else if (cgenConfigList != null) {
-            for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
-                configurations.add(cgenConfiguration);
-                logger.info("Using cgen config from " + cgenConfiguration.getDataMap().getName());
-            }
+            logger.info("Using cgen config from dataMap");
             useConfigFromDataMap = true;
-            return configurations;
+            return cgenConfigList.getAll();
         } else {
             logger.info("Using default cgen config.");
             CgenConfiguration cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setDataMap(dataMap);
             cgenConfiguration.setRelPath(defaultDir.getPath());
-            configurations.add(cgenConfiguration);
-            return configurations;
+            return Collections.singletonList(cgenConfiguration);
         }
     }
 

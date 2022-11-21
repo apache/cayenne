@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.dialog.pref.PreferenceDialog;
 import org.apache.cayenne.modeler.editor.cgen.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
 

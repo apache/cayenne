@@ -58,26 +58,26 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
             return;
         }
         boolean generationFail = false;
+        ClassGenerationActionFactory actionFactory = new ToolsInjectorBuilder()
+                .addModule(binder
+                        -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
+                .create()
+                .getInstance(ClassGenerationActionFactory.class);
+
         for (DataMap dataMap : dataMaps) {
             try {
                 CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
-                if (cgenConfigList != null) {
-                    for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
-                        if (cgenConfiguration == null) {
-                            cgenConfiguration = createConfiguration(dataMap);
-                        }
-                        // should always run here
-                        cgenConfiguration.setForce(true);
-                        ClassGenerationAction classGenerationAction = new ToolsInjectorBuilder()
-                                .addModule(binder
-                                        -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
-                                .create()
-                                .getInstance(ClassGenerationActionFactory.class)
-                                .createAction(cgenConfiguration);
-                        classGenerationAction.prepareArtifacts();
-                        classGenerationAction.execute();
-                    }
+                if (cgenConfigList == null) {
+                    cgenConfigList = new CgenConfigList();
+                    cgenConfigList.add(createConfiguration(dataMap));
                 }
+                for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
+                    cgenConfiguration.setForce(true);
+                    ClassGenerationAction action = actionFactory.createAction(cgenConfiguration);
+                    action.prepareArtifacts();
+                    action.execute();
+                }
+
             } catch (Exception e) {
                 LOGGER.error("Error generating classes", e);
                 generationFail = true;

@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -328,27 +329,21 @@ public class CgenTask extends BaseCayenneTask {
     }
 
     List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
-        List<CgenConfiguration> configurations = new ArrayList<>();
         CgenConfiguration cgenConfiguration;
         if (hasConfig()) {
             getLogger().info("Using cgen config from pom.xml");
-            configurations.add(cgenConfigFromPom(dataMap));
-            return configurations;
+            return Collections.singletonList(cgenConfigFromPom(dataMap));
         } else if (metaData != null && metaData.get(dataMap, CgenConfigList.class) != null) {
+            getLogger().info("Using cgen config from " + dataMap.getName());
             CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
-            for (CgenConfiguration configuration : cgenConfigList.getAll()) {
-                getLogger().info("Using cgen config from " + dataMap.getName());
-                configurations.add(configuration);
-            }
             useConfigFromDataMap = true;
-            return configurations;
+            return cgenConfigList.getAll();
         } else {
             getLogger().info("Using default cgen config.");
             cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setRelPath(getDestDirFile().getPath());
             cgenConfiguration.setDataMap(dataMap);
-            configurations.add(cgenConfiguration);
-            return configurations;
+            return Collections.singletonList(cgenConfiguration);
         }
     }
 
