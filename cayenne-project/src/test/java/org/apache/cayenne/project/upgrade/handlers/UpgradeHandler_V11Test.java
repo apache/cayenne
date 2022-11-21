@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 /**
  * @since 5.0
  */
-public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
+public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
     UpgradeHandler newHandler() {
         return new UpgradeHandler_V11();
@@ -72,7 +72,9 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
         assertEquals("Artist", attributes.getNamedItem("name").getNodeValue());
         assertEquals("Artist", attributes.getNamedItem("dbEntityName").getNodeValue());
         assertEquals(3, objEntity.getChildNodes().getLength());
-        assertEquals("http://cayenne.apache.org/schema/11/info", objEntity.getFirstChild().getNextSibling().getAttributes().getNamedItem("xmlns:info").getNodeValue());
+        assertEquals("http://cayenne.apache.org/schema/11/info",
+                     objEntity.getFirstChild().getNextSibling().getAttributes().getNamedItem("xmlns:info")
+                             .getNodeValue());
 
         assertEquals(2, root.getElementsByTagName("db-attribute").getLength());
     }
@@ -86,15 +88,16 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
         NodeList cgens = root.getElementsByTagName("cgen");
         assertEquals(1, cgens.getLength());
         Node cgenConfig = cgens.item(0);
-        assertEquals("http://cayenne.apache.org/schema/11/cgen", cgenConfig.getAttributes().getNamedItem("xmlns").getNodeValue());
+        assertEquals("http://cayenne.apache.org/schema/11/cgen",
+                     cgenConfig.getAttributes().getNamedItem("xmlns").getNodeValue());
 
         NodeList childNodes = cgenConfig.getChildNodes();
         boolean dataMapTemplateSeen = false;
         boolean dataMapSuperTemplateSeen = false;
         int elements = 0;
-        for(int i = 0; i< childNodes.getLength(); i++) {
+        for (int i = 0; i < childNodes.getLength(); i++) {
             Node node = childNodes.item(i);
-            if(node.getNodeType() == Node.ELEMENT_NODE) {
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
                 elements++;
                 switch (node.getNodeName()) {
                     case "client":
@@ -127,22 +130,20 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
                         break;
                     case "superTemplate":
                         assertEquals("The template /org/apache/cayenne/project/upgrade/handlers was not found " +
-                                        "during the project upgrade. Use the template editor in Cayenne modeler to set the template",
-                                node.getFirstChild().getNodeValue());
+                                     "during the project upgrade. Use the template editor in Cayenne modeler to set the template",
+                                     node.getFirstChild().getNodeValue());
                         break;
                     case "embeddableSuperTemplate":
                         assertEquals("The template ../../testWrongPath was not found during the project upgrade." +
-                                        " Use the template editor in Cayenne modeler to set the template",
-                                node.getFirstChild().getNodeValue());
+                                     " Use the template editor in Cayenne modeler to set the template",
+                                     node.getFirstChild().getNodeValue());
                         break;
                     case "dataMapSuperTemplate":
-                        assertEquals("templates/v4_1/datamap-superclass.vm",node.getFirstChild().getNodeValue());
+                        assertEquals("templates/v4_1/datamap-superclass.vm", node.getFirstChild().getNodeValue());
                         break;
                 }
             }
-
         }
-
     }
 
     @Test
@@ -152,22 +153,23 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest{
         verifyNoInteractions(descriptor);
     }
 
-
-    private static final String TEST_TEMPLATE_CONTENT = "##   Licensed to the Apache Software Foundation (ASF) under one\n" +
-            "##  or more contributor license agreements.  See the NOTICE file\n" +
-            "##  distributed with this work for additional information\n" +
-            "##  regarding copyright ownership.  The ASF licenses this file\n" +
-            "##  to you under the Apache License, Version 2.0 (the\n" +
-            "##  \"License\"); you may not use this file except in compliance\n" +
-            "##  with the License.  You may obtain a copy of the License at\n" +
-            "##\n" +
-            "##    https://www.apache.org/licenses/LICENSE-2.0\n" +
-            "##\n" +
-            "##  Unless required by applicable law or agreed to in writing,\n" +
-            "##  software distributed under the License is distributed on an\n" +
-            "##  \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY\n" +
-            "##  KIND, either express or implied.  See the License for the\n" +
-            "##  specific language governing permissions and limitations\n" +
-            "##  under the License.\n" +
-            "velocity template stub";
+    private static final String TEST_TEMPLATE_CONTENT =
+            String.join(System.lineSeparator(),
+                        "##   Licensed to the Apache Software Foundation (ASF) under one",
+                        "##  or more contributor license agreements.  See the NOTICE file",
+                        "##  distributed with this work for additional information",
+                        "##  regarding copyright ownership.  The ASF licenses this file",
+                        "##  to you under the Apache License, Version 2.0 (the",
+                        "##  \"License\"); you may not use this file except in compliance",
+                        "##  with the License.  You may obtain a copy of the License at",
+                        "##",
+                        "##    https://www.apache.org/licenses/LICENSE-2.0",
+                        "##",
+                        "##  Unless required by applicable law or agreed to in writing,",
+                        "##  software distributed under the License is distributed on an",
+                        "##  \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY",
+                        "##  KIND, either express or implied.  See the License for the",
+                        "##  specific language governing permissions and limitations",
+                        "##  under the License.",
+                        "velocity template stub");
 }
