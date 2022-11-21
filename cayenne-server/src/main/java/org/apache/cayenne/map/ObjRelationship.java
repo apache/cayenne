@@ -193,11 +193,11 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
             return null;
         }
 
-        Entity source = getSourceEntity();
+        ObjEntity source = getSourceEntity();
 
         for (ObjRelationship relationship : target.getRelationships()) {
-
-            if (relationship.getTargetEntity() != source) {
+            ObjEntity maybeSameSource = relationship.getTargetEntity();
+            if (maybeSameSource != source && !source.isSubentityOf(maybeSameSource)) {
                 continue;
             }
 
@@ -306,10 +306,9 @@ public class ObjRelationship extends Relationship implements ConfigurationNode {
             return true;
         }
 
-        // entities with qualifiers may result in filtering even existing target
-        // rows, so
-        // such relationships are optional
-        if (isQualifiedEntity((ObjEntity) getTargetEntity())) {
+        // entities with qualifiers may result in filtering even existing target rows,
+        // so such relationships are optional
+        if (isQualifiedEntity(getTargetEntity())) {
             return true;
         }
 

@@ -61,7 +61,7 @@ public class EffectiveOpId {
                 Object initial = value;
                 int safeguard = 0;
                 while (value instanceof Supplier && safeguard < MAX_NESTED_SUPPLIER_LEVEL) {
-                    value = ((Supplier) value).get();
+                    value = ((Supplier<?>) value).get();
                     safeguard++;
                 }
 

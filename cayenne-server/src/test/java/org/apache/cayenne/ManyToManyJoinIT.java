@@ -22,6 +22,8 @@ import static org.junit.Assert.*;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Author;
+import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationship;
+import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationshipSub;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Song;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -46,6 +48,31 @@ public class ManyToManyJoinIT extends ServerCase {
         
         context.commitChanges();
         assertEquals(author, song.getAuthors().iterator().next());
+    }
+
+    @Test
+    public void testManyToManySelfRelationship() {
+        SelfRelationship parent1 = context.newObject(SelfRelationship.class);
+        parent1.setName("parent1");
+
+        SelfRelationshipSub child1 = context.newObject(SelfRelationshipSub.class);
+        child1.setName("child1");
+
+        SelfRelationshipSub child2 = context.newObject(SelfRelationshipSub.class);
+        child2.setName("child2");
+
+        // this sets both forward and reverse relationships
+        child2.addToSelfParents(parent1);
+
+        // this still couldn't set reverse relationship, as it present in the Subclass only
+        parent1.addToSelfChildren(child1);
+
+        context.commitChanges();
+
+        assertEquals(2, parent1.getSelfChildren().size());
+
+        assertEquals(1, child2.getSelfParents().size());
+        assertEquals(1, child1.getSelfParents().size());
     }
 
 }
