@@ -29,6 +29,7 @@ import java.util.prefs.Preferences;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
@@ -52,35 +53,39 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
 
     public void runGenerators(Set<DataMap> dataMaps) {
         DataChannelMetaData metaData = Application.getInstance().getMetaData();
-        if(dataMaps.isEmpty()) {
+        if (dataMaps.isEmpty()) {
             view.showEmptyMessage();
             return;
         }
         boolean generationFail = false;
-        for(DataMap dataMap : dataMaps) {
+        for (DataMap dataMap : dataMaps) {
             try {
-                CgenConfiguration cgenConfiguration = metaData.get(dataMap, CgenConfiguration.class);
-                if(cgenConfiguration == null) {
-                    cgenConfiguration = createConfiguration(dataMap);
+                CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
+                if (cgenConfigList != null) {
+                    for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
+                        if (cgenConfiguration == null) {
+                            cgenConfiguration = createConfiguration(dataMap);
+                        }
+                        // should always run here
+                        cgenConfiguration.setForce(true);
+                        ClassGenerationAction classGenerationAction = new ToolsInjectorBuilder()
+                                .addModule(binder
+                                        -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
+                                .create()
+                                .getInstance(ClassGenerationActionFactory.class)
+                                .createAction(cgenConfiguration);
+                        classGenerationAction.prepareArtifacts();
+                        classGenerationAction.execute();
+                    }
                 }
-                // should always run here
-                cgenConfiguration.setForce(true);
-                ClassGenerationAction classGenerationAction = new ToolsInjectorBuilder()
-                        .addModule(binder
-                                -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
-                        .create()
-                        .getInstance(ClassGenerationActionFactory.class)
-                        .createAction(cgenConfiguration);
-                classGenerationAction.prepareArtifacts();
-                classGenerationAction.execute();
             } catch (Exception e) {
                 LOGGER.error("Error generating classes", e);
                 generationFail = true;
-                ((CgenTab)view).showErrorMessage(e.getMessage());
+                ((CgenTab) view).showErrorMessage(e.getMessage());
             }
         }
-        if(!generationFail) {
-            ((CgenTab)view).showSuccessMessage();
+        if (!generationFail) {
+            ((CgenTab) view).showSuccessMessage();
         }
     }
 
