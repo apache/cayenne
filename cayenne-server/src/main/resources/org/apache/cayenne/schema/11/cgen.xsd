@@ -26,6 +26,7 @@
     <xs:element name="cgen">
         <xs:complexType>
                 <xs:sequence>
+                    <xs:element name="name" minOccurs="0" type="xs:string"/>
                     <xs:element name="excludeEntities" minOccurs="0" type="xs:string"/>
                     <xs:element name="excludeEmbeddables" minOccurs="0" type="xs:string"/>
                     <xs:element name="destDir" minOccurs="0" type="xs:string"/>

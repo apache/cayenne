@@ -52,6 +52,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private Set<String> embeddableArtifacts;
     private Collection<String> excludeEmbeddableArtifacts;
 
+    private String name;
     private String superPkg;
     private DataMap dataMap;
 
@@ -128,6 +129,14 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     public void setSuperPkg(String superPkg) {
         this.superPkg = superPkg;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public DataMap getDataMap() {
@@ -409,6 +418,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("cgen")
                 .attribute("xmlns", CgenExtension.NAMESPACE)
+                .simpleTag("name", this.name)
                 .simpleTag("excludeEntities", getExcludeEntites())
                 .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
                 .simpleTag("destDir", separatorsToUnix(buildRelPath()))
