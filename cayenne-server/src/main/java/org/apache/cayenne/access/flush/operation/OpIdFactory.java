@@ -40,7 +40,7 @@ public class OpIdFactory {
     }
 
     /**
-     * Special wrapper for the ObjectId, that uses replacement map as a data source for hashCode() and equals()
+     * Special wrapper for the ObjectId, that uses entity name + replacement map for hashCode() and equals()
      */
     static class ReplacementAwareObjectId implements ObjectId {
 
@@ -98,7 +98,7 @@ public class OpIdFactory {
             if(!other.isReplacementIdAttached()) {
                 return false;
             }
-            if(!Objects.equals(getEntityName(), other.getEntityName())) {
+            if(!Objects.equals(originalId.getEntityName(), other.getEntityName())) {
                 return false;
             }
             return originalId.getReplacementIdMap().equals(other.getReplacementIdMap());
@@ -107,6 +107,11 @@ public class OpIdFactory {
         @Override
         public int hashCode() {
             return 31 * getEntityName().hashCode() + originalId.getReplacementIdMap().hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "OpId: " + originalId;
         }
     }
 
