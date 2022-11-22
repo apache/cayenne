@@ -8,6 +8,15 @@
 		<db-attribute name="AUTHOR_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="AUTHOR_NAME" type="VARCHAR" isMandatory="true" length="50"/>
 	</db-entity>
+	<db-entity name="X_SELF">
+		<db-attribute name="NAME" type="VARCHAR" isMandatory="true" length="255"/>
+		<db-attribute name="SELF_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="TYPE" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="X_SELF_JOIN">
+		<db-attribute name="SELF_ID_FROM" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="SELF_ID_TO" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
 	<db-entity name="X_SONG">
 		<db-attribute name="SONG_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="SONG_NAME" type="VARCHAR" isMandatory="true" length="50"/>
@@ -19,20 +28,42 @@
 	<obj-entity name="Author" className="org.apache.cayenne.testdo.relationships_many_to_many_join.Author" dbEntityName="X_AUTHOR">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="AUTHOR_NAME"/>
 	</obj-entity>
+	<obj-entity name="SelfRelationship" className="org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationship" dbEntityName="X_SELF">
+		<qualifier><![CDATA[type = 1]]></qualifier>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+		<obj-attribute name="type" type="int" db-attribute-path="TYPE"/>
+	</obj-entity>
+	<obj-entity name="SelfRelationshipSub" superEntityName="SelfRelationship" className="org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationshipSub">
+		<qualifier><![CDATA[type = 2]]></qualifier>
+	</obj-entity>
 	<obj-entity name="Song" className="org.apache.cayenne.testdo.relationships_many_to_many_join.Song" dbEntityName="X_SONG">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="SONG_NAME"/>
 	</obj-entity>
 	<db-relationship name="songAuthor" source="X_AUTHOR" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</db-relationship>
-	<db-relationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
-		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
+	<db-relationship name="selfJoinFrom" source="X_SELF" target="X_SELF_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="SELF_ID" target="SELF_ID_FROM"/>
 	</db-relationship>
-	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG">
+	<db-relationship name="selfJoinTo" source="X_SELF" target="X_SELF_JOIN" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="SELF_ID" target="SELF_ID_TO"/>
+	</db-relationship>
+	<db-relationship name="selfFrom" source="X_SELF_JOIN" target="X_SELF">
+		<db-attribute-pair source="SELF_ID_FROM" target="SELF_ID"/>
+	</db-relationship>
+	<db-relationship name="selfTo" source="X_SELF_JOIN" target="X_SELF">
+		<db-attribute-pair source="SELF_ID_TO" target="SELF_ID"/>
+	</db-relationship>
+	<db-relationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
 	</db-relationship>
 	<db-relationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR">
 		<db-attribute-pair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</db-relationship>
+	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG">
+		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
+	</db-relationship>
+	<obj-relationship name="selfChildren" source="SelfRelationship" target="SelfRelationshipSub" deleteRule="Deny" db-relationship-path="selfJoinFrom.selfTo"/>
+	<obj-relationship name="selfParents" source="SelfRelationshipSub" target="SelfRelationship" deleteRule="Nullify" db-relationship-path="selfJoinTo.selfFrom"/>
 	<obj-relationship name="authors" source="Song" target="Author" collection-type="java.util.Set" deleteRule="Cascade" db-relationship-path="songAuthor.author"/>
 </data-map>

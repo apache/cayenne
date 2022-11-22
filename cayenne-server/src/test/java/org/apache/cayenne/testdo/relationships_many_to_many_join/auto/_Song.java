@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 import java.util.Set;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.Property;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SetProperty;
+import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Author;
 
 /**
@@ -17,12 +19,12 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.Author;
  */
 public abstract class _Song extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     public static final String SONG_ID_PK_COLUMN = "SONG_ID";
 
-    public static final Property<String> NAME = Property.create("name", String.class);
-    public static final Property<Set<Author>> AUTHORS = Property.create("authors", Set.class);
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final SetProperty<Author> AUTHORS = PropertyFactory.createSet("authors", Author.class);
 
     protected String name;
 
