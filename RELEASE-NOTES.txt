@@ -24,6 +24,7 @@ CAY-2751 Simplify DataNode configuration
 CAY-2752 Rename queryTemplate to dataMapTemplate in the cgen config
 CAY-2753 Remove VPP support in the ant task
 CAY-2754 Add SELF property to the cgen templates
+CAY-2756 Modeler: simplify cgen UI
 CAY-2757 Modeler: Create custom templates from defaults
 CAY-2760 ObjectContext.userProperties need a way to clear properties
 CAY-2761 Modeler: Editor for the cgen templates
