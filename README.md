@@ -20,7 +20,7 @@ Apache Cayenne
 ==============
 
 [![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server/4.2.RC1.svg)](https://cayenne.apache.org/download/)
-[![Build Status](https://app.travis-ci.com/apache/cayenne.svg?branch=master)](https://app.travis-ci.com/apache/cayenne)
+[![verify and deploy 4.2](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push-4.2.yml/badge.svg)](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push-4.2.yml)
 
 
 <p align="center">
