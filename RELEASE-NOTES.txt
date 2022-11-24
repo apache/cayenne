@@ -32,10 +32,12 @@ CAY-2766 Modeler: Improving the work with velocity templates for class generatio
 CAY-2767 Modeler: upgrade deprecated code in custom components
 CAY-2773 Switch master to "5.0"
 CAY-2776 Upgrade Gradle to 7.6
+CAY-2780 Modeler: Multiple configurations for classes generation
 
 Bug Fixes:
 
 CAY-2755 Modeler: Entities are not sorted by name in the class generation view
 CAY-2762 Modeler: Difference in toolbars colors on OSX
+CAY-2764 Split expressions do not work with DB relationships
 CAY-2765 dbimport: check excluded catalogs and schemas for the SQLServer
 CAY-2774 Overriding service ordering in DI List causes DIRuntimeException
