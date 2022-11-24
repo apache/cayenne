@@ -20,7 +20,6 @@
 package org.apache.cayenne.gen;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,16 +76,6 @@ public class PropertyUtils {
         FACTORY_METHODS.put(BaseIdProperty.class.getName(), "createBaseId");
     }
 
-    private static final List<Class<?>> JAVA_DATE_TYPES = Arrays.asList(
-            java.util.Date.class,
-            java.time.LocalDate.class,
-            java.time.LocalTime.class,
-            java.time.LocalDateTime.class,
-            java.sql.Date.class,
-            java.sql.Time.class,
-            java.sql.Timestamp.class
-    );
-
     private final ImportUtils importUtils;
 
     private List<PropertyDescriptorCreator> propertyList;
@@ -110,8 +99,11 @@ public class PropertyUtils {
         this.logger = logger;
     }
 
-    public void addImportForPK(EntityUtils entityUtils) throws ClassNotFoundException {
+    public void addImportForPK(EntityUtils entityUtils) {
         DbEntity entity = entityUtils.objEntity.getDbEntity();
+        if(entity == null) {
+            return;
+        }
         boolean needToCreatePK = false;
 
         for(DbAttribute attribute : entity.getPrimaryKeys()) {
@@ -128,7 +120,7 @@ public class PropertyUtils {
         }
     }
 
-    public void addImport(ObjAttribute attribute) throws ClassNotFoundException {
+    public void addImport(ObjAttribute attribute) {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
@@ -137,13 +129,13 @@ public class PropertyUtils {
         }
     }
 
-    public void addImport(EmbeddedAttribute attribute) throws ClassNotFoundException {
+    public void addImport(EmbeddedAttribute attribute) {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(EmbeddableObject.class.getName()).getPropertyType());
     }
 
-    public void addImport(EmbeddableAttribute attribute) throws ClassNotFoundException {
+    public void addImport(EmbeddableAttribute attribute) {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
@@ -169,7 +161,7 @@ public class PropertyUtils {
         }
     }
 
-    public String propertyDefinition(ObjEntity entity, DbAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(ObjEntity entity, DbAttribute attribute) {
         StringUtils utils = StringUtils.getInstance();
 
         String attributeType = TypesMapping.getJavaBySqlType(attribute);
@@ -188,7 +180,7 @@ public class PropertyUtils {
         );
     }
 
-    public String propertyDefinition(ObjAttribute attribute, boolean client) throws ClassNotFoundException {
+    public String propertyDefinition(ObjAttribute attribute, boolean client) {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
@@ -213,11 +205,11 @@ public class PropertyUtils {
         return name;
     }
 
-    public String propertyDefinition(ObjAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(ObjAttribute attribute) {
         return propertyDefinition(attribute, false);
     }
 
-    public String propertyDefinition(EmbeddedAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(EmbeddedAttribute attribute) {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(EmbeddableObject.class.getName());
@@ -231,7 +223,7 @@ public class PropertyUtils {
         );
     }
 
-    public String propertyDefinition(EmbeddableAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(EmbeddableAttribute attribute) {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
@@ -344,10 +336,14 @@ public class PropertyUtils {
         return FACTORY_METHODS.get(propertyType);
     }
 
-    private String getPkPropertyTypeForType(String attributeType) throws ClassNotFoundException {
-        Class<?> javaClass = Class.forName(attributeType);
-        if (Number.class.isAssignableFrom(javaClass)) {
-            return NumericIdProperty.class.getName();
+    private String getPkPropertyTypeForType(String attributeType) {
+        try {
+            Class<?> javaClass = Class.forName(attributeType);
+            if (Number.class.isAssignableFrom(javaClass)) {
+                return NumericIdProperty.class.getName();
+            }
+        } catch (ClassNotFoundException ex) {
+            return BaseIdProperty.class.getName();
         }
         return BaseIdProperty.class.getName();
     }
