@@ -70,6 +70,7 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
             throw new IllegalStateException("Non-relationship aliased path part: " + alias);
         }
 
+        entity = relationship.getTargetEntity();
         processRelationship(relationship);
     }
 
