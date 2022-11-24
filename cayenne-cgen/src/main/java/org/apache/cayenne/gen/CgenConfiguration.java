@@ -93,21 +93,21 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     public CgenConfiguration() {
         this.name = CgenConfigList.DEFAULT_CONFIG_NAME;
-        /*
+        /**
          * {@link #isDefault()} method should be in sync with the following values
          */
         this.outputPattern = "*.java";
         this.timestamp = 0L;
         this.usePkgPath = true;
         this.makePairs = true;
-        setArtifactsGenerationMode("entity");
+        this.createPKProperties = true;
+        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
         this.artifacts = new ArrayList<>();
         this.entityArtifacts = new HashSet<>();
         this.excludeEntityArtifacts = new ArrayList<>();
         this.embeddableArtifacts = new HashSet<>();
         this.excludeEmbeddableArtifacts = new ArrayList<>();
-        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
 
         this.template = TemplateType.ENTITY_SUBCLASS.defaultTemplate();
         this.superTemplate = TemplateType.ENTITY_SUPERCLASS.defaultTemplate();
@@ -446,10 +446,10 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      */
     public boolean isDefault() {
         // this must be is sync with actual default values
-        return isMakePairs()
+        return makePairs
                 && usePkgPath
                 && !overwrite
-                && !createPKProperties
+                && createPKProperties
                 && !createPropertyNames
                 && "*.java".equals(outputPattern)
                 && template.equals(TemplateType.ENTITY_SUBCLASS.defaultTemplate())
