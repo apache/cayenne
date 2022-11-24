@@ -92,6 +92,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private String externalToolConfig;
 
     public CgenConfiguration() {
+        this.name = CgenConfigList.DEFAULT_CONFIG_NAME;
         /*
          * {@link #isDefault()} method should be in sync with the following values
          */
@@ -451,8 +452,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 && !createPKProperties
                 && !createPropertyNames
                 && "*.java".equals(outputPattern)
-                && template.equals(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot())
-                && superTemplate.equals(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot())
+                && template.equals(TemplateType.ENTITY_SUBCLASS.defaultTemplate())
+                && superTemplate.equals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate())
                 && (superPkg == null || superPkg.isEmpty())
                 && (externalToolConfig == null || externalToolConfig.isEmpty());
     }
