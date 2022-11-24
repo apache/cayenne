@@ -110,8 +110,11 @@ public class PropertyUtils {
         this.logger = logger;
     }
 
-    public void addImportForPK(EntityUtils entityUtils) throws ClassNotFoundException {
+    public void addImportForPK(EntityUtils entityUtils) {
         DbEntity entity = entityUtils.objEntity.getDbEntity();
+        if(entity == null) {
+            return;
+        }
         boolean needToCreatePK = false;
 
         for(DbAttribute attribute : entity.getPrimaryKeys()) {
@@ -134,7 +137,7 @@ public class PropertyUtils {
         importUtils.addType(entity.getJavaClassName());
     }
 
-    public void addImport(ObjAttribute attribute) throws ClassNotFoundException {
+    public void addImport(ObjAttribute attribute) {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
@@ -143,13 +146,13 @@ public class PropertyUtils {
         }
     }
 
-    public void addImport(EmbeddedAttribute attribute) throws ClassNotFoundException {
+    public void addImport(EmbeddedAttribute attribute) {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(EmbeddableObject.class.getName()).getPropertyType());
     }
 
-    public void addImport(EmbeddableAttribute attribute) throws ClassNotFoundException {
+    public void addImport(EmbeddableAttribute attribute) {
         importUtils.addType(PropertyFactory.class.getName());
         importUtils.addType(attribute.getType());
         importUtils.addType(getPropertyDescriptor(attribute.getType()).getPropertyType());
@@ -174,7 +177,7 @@ public class PropertyUtils {
                 propertyType, propertyType);
     }
 
-    public String propertyDefinition(ObjEntity entity, DbAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(ObjEntity entity, DbAttribute attribute) {
         StringUtils utils = StringUtils.getInstance();
 
         String attributeType = TypesMapping.getJavaBySqlType(attribute);
@@ -193,7 +196,7 @@ public class PropertyUtils {
         );
     }
 
-    public String propertyDefinition(ObjAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(ObjAttribute attribute) {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
@@ -218,7 +221,7 @@ public class PropertyUtils {
         return name;
     }
 
-    public String propertyDefinition(EmbeddedAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(EmbeddedAttribute attribute) {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(EmbeddableObject.class.getName());
@@ -232,7 +235,7 @@ public class PropertyUtils {
         );
     }
 
-    public String propertyDefinition(EmbeddableAttribute attribute) throws ClassNotFoundException {
+    public String propertyDefinition(EmbeddableAttribute attribute) {
         StringUtils utils = StringUtils.getInstance();
         String attributeType = utils.stripGeneric(importUtils.formatJavaType(attribute.getType(), false));
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor(attribute.getType());
@@ -339,10 +342,14 @@ public class PropertyUtils {
         return FACTORY_METHODS.get(propertyType);
     }
 
-    private String getPkPropertyTypeForType(String attributeType) throws ClassNotFoundException {
-        Class<?> javaClass = Class.forName(attributeType);
-        if (Number.class.isAssignableFrom(javaClass)) {
-            return NumericIdProperty.class.getName();
+    private String getPkPropertyTypeForType(String attributeType) {
+        try {
+            Class<?> javaClass = Class.forName(attributeType);
+            if (Number.class.isAssignableFrom(javaClass)) {
+                return NumericIdProperty.class.getName();
+            }
+        } catch (ClassNotFoundException ex) {
+            return BaseIdProperty.class.getName();
         }
         return BaseIdProperty.class.getName();
     }

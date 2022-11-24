@@ -22,6 +22,7 @@ package org.apache.cayenne.gen;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -121,7 +123,15 @@ public class BaseTemplatesGenerationTest {
         dataMap.setName("ObjEntity");
 
         DbEntity dbEntity = new DbEntity();
+        DbAttribute dbAttribute = new DbAttribute("id");
+        dbAttribute.setMandatory(true);
+        dbAttribute.setPrimaryKey(true);
+        dbAttribute.setType(Types.INTEGER);
+        dbEntity.addAttribute(dbAttribute);
         dbEntity.setName("EntityTest");
+        dbEntity.setDataMap(dataMap);
+        dataMap.addDbEntity(dbEntity);
+
         objEntity.setDbEntity(dbEntity);
         objEntity.setClassName("test.ObjEntity");
         objEntity.setDataMap(dataMap);
