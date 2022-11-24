@@ -19,18 +19,20 @@
 
 package org.apache.cayenne.gen;
 
+import java.util.Objects;
+
 /**
  * @since 5.0
  */
 public class CgenTemplate {
     private final String data;
     private final boolean isFile;
-    private TemplateType type;
+    private final TemplateType type;
 
-    public CgenTemplate(String data, Boolean isFile, TemplateType type) {
-        this.data = data;
+    public CgenTemplate(String data, boolean isFile, TemplateType type) {
+        this.data = Objects.requireNonNull(data);
         this.isFile = isFile;
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
     }
 
     public String getData() {
@@ -51,5 +53,18 @@ public class CgenTemplate {
 
     public TemplateType getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CgenTemplate that = (CgenTemplate) o;
+        return isFile == that.isFile && type == that.type && data.equals(that.data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(data, isFile, type);
     }
 }

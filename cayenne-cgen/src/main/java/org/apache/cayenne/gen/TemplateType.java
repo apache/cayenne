@@ -32,6 +32,7 @@ public enum TemplateType {
     ENTITY_SUPERCLASS(true,"Entity Superclass","templates/v4_1/superclass.vm"),
 
     ENTITY_SUBCLASS(false,"Entity Subclass","templates/v4_1/subclass.vm"),
+
     EMBEDDABLE_SINGLE_CLASS(false,"Single Embeddable Class","templates/v4_1/embeddable-singleclass.vm"),
 
     EMBEDDABLE_SUPERCLASS(true,"Embeddable Superclass","templates/v4_1/embeddable-superclass.vm"),
@@ -66,15 +67,6 @@ public enum TemplateType {
 
     public CgenTemplate defaultTemplate() {
         return defaultTemplate;
-    }
-
-    public static TemplateType byName(String name){
-        for (TemplateType templateType : TemplateType.values()) {
-            if (templateType.readableName.equals(name)){
-                return templateType;
-            }
-        }
-      return null;
     }
 
     public static boolean isDefault(String templateText) {

@@ -60,6 +60,12 @@ class SelectionModel {
         selectedDataMaps = selectedDataMapsForDataMap.computeIfAbsent(dataMap, dm -> new HashSet<>());
     }
 
+    void clearAll(){
+        selectedEntities.clear();
+        selectedEmbeddables.clear();
+        selectedDataMaps.clear();
+    }
+
     boolean updateSelection(Predicate<ConfigurationNode> predicate, Collection<ConfigurationNode> classes) {
         boolean modified = false;
         for (ConfigurationNode classObj : classes) {

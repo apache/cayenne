@@ -28,11 +28,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 /**
  * @since 4.1
@@ -41,6 +41,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
 
     public static final String CONFIG_TAG = "cgen";
 
+    private static final String NAME = "name";
     private static final String OUTPUT_DIRECTORY_TAG = "destDir";
     private static final String GENERATION_MODE_TAG = "mode";
     private static final String SUBCLASS_TEMPLATE_TAG = "template";
@@ -72,11 +73,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        switch (localName) {
-            case CONFIG_TAG:
-                createConfig();
-                return true;
+    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
+        if (CONFIG_TAG.equals(localName)) {
+            createConfig();
+            return true;
         }
         return false;
     }
@@ -84,6 +84,9 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected void processCharData(String localName, String data) {
         switch (localName) {
+            case NAME:
+                setName(data);
+                break;
             case OUTPUT_DIRECTORY_TAG:
                 createOutputDir(data);
                 break;
@@ -135,6 +138,13 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
                 createSuperPkg(data);
                 break;
         }
+    }
+
+    private void setName(String name) {
+        if (name.trim().length() == 0) {
+            return;
+        }
+        configuration.setName(name);
     }
 
     private void createOutputDir(String path) {
@@ -287,7 +297,13 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
             configuration.setRootPath(buildRootPath(dataMap));
             configuration.resolveExcludeEntities();
             configuration.resolveExcludeEmbeddables();
-            CgenConfigHandler.this.metaData.add(dataMap, configuration);
+
+            CgenConfigList configurations = CgenConfigHandler.this.metaData.get(dataMap, CgenConfigList.class);
+            if (configurations == null) {
+                configurations = new CgenConfigList();
+                CgenConfigHandler.this.metaData.add(dataMap, configurations);
+            }
+            configurations.add(configuration);
         });
     }
 

@@ -46,21 +46,20 @@ import java.util.List;
 public class ClassesTabController extends CayenneController {
 
     private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
-
     protected ClassesTabPanel view;
     protected ObjectBinding tableBinding;
-
     private ValidationResult lastValidationResult;
-    private BindingBuilder builder;
+    private final BindingBuilder builder;
+    private final CheckBoxHeader checkBoxHeader;
 
     public ClassesTabController(CodeGeneratorController parent) {
         super(parent);
-
+        this.checkBoxHeader = new CheckBoxHeader();
         this.view = new ClassesTabPanel();
         this.builder = new BindingBuilder(getApplication().getBindingFactory(), this);
     }
 
-    public void startup(){
+    public void startup() {
         initBindings();
         classSelectedAction();
     }
@@ -74,8 +73,7 @@ public class ClassesTabController extends CayenneController {
     }
 
     protected void initBindings() {
-        builder.bindToAction(getParentController().getView().getCheckAll(), "checkAllAction()");
-
+        builder.bindToAction(checkBoxHeader, "checkAllAction()");
         TableBindingBuilder tableBuilder = new TableBindingBuilder(builder);
 
         tableBuilder.addColumn(
@@ -86,7 +84,7 @@ public class ClassesTabController extends CayenneController {
                 Boolean.TRUE);
 
         tableBuilder.addColumn(
-                "Class",
+                "  Class",
                 "getItemName(#item)",
                 JLabel.class,
                 false,
@@ -101,6 +99,7 @@ public class ClassesTabController extends CayenneController {
 
         this.tableBinding = tableBuilder.bindToTable(view.getTable(), "parent.classes");
         TableColumnModel columnModel = view.getTable().getColumnModel();
+        columnModel.getColumn(0).setHeaderRenderer(checkBoxHeader);
         columnModel.getColumn(1).setCellRenderer(new ImageRendererColumn());
         columnModel.getColumn(2).setCellRenderer(new ImageRendererColumn());
     }
@@ -122,12 +121,11 @@ public class ClassesTabController extends CayenneController {
                 + getParentController().getSelectedEmbeddablesSize()
                 + (getParentController().isDataMapSelected() ? 1 : 0);
         int totalClasses = getParentController().getClasses().size();
-
+        checkBoxHeader.setSelected(selectedCount >= totalClasses);
         getParentController().enableGenerateButton(selectedCount != 0);
-        getParentController().getView().getCheckAll().setSelected(selectedCount >= totalClasses);
         getParentController().updateSelectedEntities();
         getParentController().getStandardModeController().updateTemplateEditorButtons();
-
+        view.repaint();
     }
 
 
@@ -137,14 +135,10 @@ public class ClassesTabController extends CayenneController {
      */
     @SuppressWarnings("unused")
     public void checkAllAction() {
-        if (getParentController().updateSelection(getParentController().getView().getCheckAll().isSelected() ? o -> true : o -> false)) {
+        if (getParentController().updateSelection(checkBoxHeader.isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
             getParentController().updateSelectedEntities();
-            if(getParentController().getView().getCheckAll().isSelected()) {
-                getParentController().enableGenerateButton(true);
-            } else {
-                getParentController().enableGenerateButton(false);
-            }
+            getParentController().enableGenerateButton(checkBoxHeader.isSelected());
         }
     }
 
@@ -175,13 +169,14 @@ public class ClassesTabController extends CayenneController {
 
         JLabel labelIcon = new JLabel();
         labelIcon.setVisible(true);
-        if(validationFailure != null) {
+        if (validationFailure != null) {
             labelIcon.setIcon(ERROR_ICON);
             labelIcon.setToolTipText(validationFailure.getDescription());
         }
         return labelIcon;
     }
 
+    @SuppressWarnings("unused")
     public JLabel getItemName(Object obj) {
         String className;
         Icon icon;

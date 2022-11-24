@@ -99,6 +99,7 @@ public class TemplateEditorController extends CayenneController {
 
     private void configureEditorView(TemplateType templateType) {
         this.editorView.getEditingTemplatePane().setText(templateLoader.load(templateType, isTemplateDefault));
+        this.editorView.getEditingTemplatePane().discardAllEdits();
         this.editorView.editingTemplatePane.setCaretPosition(0);
         this.editorView.getSaveButton().setEnabled(isTemplateModified);
         this.editorView.setTitle(templateType.readableName() + " - cayenne template editor");

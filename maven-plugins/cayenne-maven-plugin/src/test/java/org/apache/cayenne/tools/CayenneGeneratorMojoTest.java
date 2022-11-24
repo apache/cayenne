@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
 import java.io.File;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -82,40 +83,41 @@ public class CayenneGeneratorMojoTest extends AbstractMojoTestCase {
         assertNotNull(myMojo);
 
         myMojo.execute();
-        CgenConfiguration cgenConfiguration = myMojo.buildConfiguration(new DataMap());
+        List<CgenConfiguration> cgenConfigurations = myMojo.buildConfigurations(new DataMap());
+        for (CgenConfiguration cgenConfiguration : cgenConfigurations) {
+            assertEquals("UTF-8", cgenConfiguration.getEncoding());
+            assertEquals("all", cgenConfiguration.getArtifactsGenerationMode());
+            assertEquals("pattern", cgenConfiguration.getOutputPattern());
+            assertEquals("superPkg", cgenConfiguration.getSuperPkg());
+            assertTrue(cgenConfiguration.isMakePairs());
+            assertTrue(cgenConfiguration.isCreatePropertyNames());
+            assertTrue(cgenConfiguration.isOverwrite());
+            assertTrue(cgenConfiguration.isUsePkgPath());
 
-        assertEquals("UTF-8", cgenConfiguration.getEncoding());
-        assertEquals("all", cgenConfiguration.getArtifactsGenerationMode());
-        assertEquals("pattern", cgenConfiguration.getOutputPattern());
-        assertEquals("superPkg", cgenConfiguration.getSuperPkg());
-        assertTrue(cgenConfiguration.isMakePairs());
-        assertTrue(cgenConfiguration.isCreatePropertyNames());
-        assertTrue(cgenConfiguration.isOverwrite());
-        assertTrue(cgenConfiguration.isUsePkgPath());
+            assertTrue(cgenConfiguration.getTemplate().isFile());
+            assertEquals(TEST_TEMPLATE_PATH, cgenConfiguration.getTemplate().getData());
+            assertEquals(TemplateType.ENTITY_SUBCLASS, cgenConfiguration.getTemplate().getType());
 
-        assertTrue(cgenConfiguration.getTemplate().isFile());
-        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getTemplate().getData());
-        assertEquals(TemplateType.ENTITY_SUBCLASS,cgenConfiguration.getTemplate().getType());
+            assertTrue(cgenConfiguration.getSuperTemplate().isFile());
+            assertEquals(TEST_TEMPLATE_PATH, cgenConfiguration.getSuperTemplate().getData());
+            assertEquals(TemplateType.ENTITY_SUPERCLASS, cgenConfiguration.getSuperTemplate().getType());
 
-        assertTrue(cgenConfiguration.getSuperTemplate().isFile());
-        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getSuperTemplate().getData());
-        assertEquals(TemplateType.ENTITY_SUPERCLASS,cgenConfiguration.getSuperTemplate().getType());
+            assertTrue(cgenConfiguration.getEmbeddableTemplate().isFile());
+            assertEquals(TEST_TEMPLATE_PATH, cgenConfiguration.getEmbeddableTemplate().getData());
+            assertEquals(TemplateType.EMBEDDABLE_SUBCLASS, cgenConfiguration.getEmbeddableTemplate().getType());
 
-        assertTrue(cgenConfiguration.getEmbeddableTemplate().isFile());
-        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getEmbeddableTemplate().getData());
-        assertEquals(TemplateType.EMBEDDABLE_SUBCLASS,cgenConfiguration.getEmbeddableTemplate().getType());
+            assertTrue(cgenConfiguration.getEmbeddableSuperTemplate().isFile());
+            assertEquals(TEST_TEMPLATE_PATH, cgenConfiguration.getEmbeddableSuperTemplate().getData());
+            assertEquals(TemplateType.EMBEDDABLE_SUPERCLASS, cgenConfiguration.getEmbeddableSuperTemplate().getType());
 
-        assertTrue(cgenConfiguration.getEmbeddableSuperTemplate().isFile());
-        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getEmbeddableSuperTemplate().getData());
-        assertEquals(TemplateType.EMBEDDABLE_SUPERCLASS,cgenConfiguration.getEmbeddableSuperTemplate().getType());
+            assertTrue(cgenConfiguration.getDataMapTemplate().isFile());
+            assertEquals(TEST_TEMPLATE_PATH, cgenConfiguration.getDataMapTemplate().getData());
+            assertEquals(TemplateType.DATAMAP_SUBCLASS, cgenConfiguration.getDataMapTemplate().getType());
 
-        assertTrue(cgenConfiguration.getDataMapTemplate().isFile());
-        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getDataMapTemplate().getData());
-        assertEquals(TemplateType.DATAMAP_SUBCLASS,cgenConfiguration.getDataMapTemplate().getType());
-
-        assertTrue(cgenConfiguration.getDataMapSuperTemplate().isFile());
-        assertEquals(TEST_TEMPLATE_PATH,cgenConfiguration.getDataMapSuperTemplate().getData());
-        assertEquals(TemplateType.DATAMAP_SUPERCLASS,cgenConfiguration.getDataMapSuperTemplate().getType());
+            assertTrue(cgenConfiguration.getDataMapSuperTemplate().isFile());
+            assertEquals(TEST_TEMPLATE_PATH, cgenConfiguration.getDataMapSuperTemplate().getData());
+            assertEquals(TemplateType.DATAMAP_SUPERCLASS, cgenConfiguration.getDataMapSuperTemplate().getType());
+        }
     }
 
     public void testCgenDataMapConfig() throws Exception {

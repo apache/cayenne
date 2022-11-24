@@ -20,6 +20,9 @@
 package org.apache.cayenne.tools;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -27,6 +30,7 @@ import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.CgenTemplate;
@@ -265,29 +269,29 @@ public class CayenneGeneratorMojo extends AbstractMojo {
 
         try {
             loaderAction.setAdditionalDataMapFiles(convertAdditionalDataMaps());
-
             DataMap dataMap = loaderAction.getMainDataMap();
-            ClassGenerationAction generator = createGenerator(dataMap);
-            CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
-            filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
+            for (ClassGenerationAction generator : createGenerators(dataMap)) {
+                CayenneGeneratorEntityFilterAction filterEntityAction = new CayenneGeneratorEntityFilterAction();
+                filterEntityAction.setNameFilter(NamePatternMatcher.build(logger, includeEntities, excludeEntities));
 
-            CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
-            filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddables));
-            generator.setLogger(logger);
+                CayenneGeneratorEmbeddableFilterAction filterEmbeddableAction = new CayenneGeneratorEmbeddableFilterAction();
+                filterEmbeddableAction.setNameFilter(NamePatternMatcher.build(logger, null, excludeEmbeddables));
+                generator.setLogger(logger);
 
-            if (force) {
-                // will (re-)generate all files
-                generator.getCgenConfiguration().setForce(true);
+                if (force) {
+                    // will (re-)generate all files
+                    generator.getCgenConfiguration().setForce(true);
+                }
+                generator.getCgenConfiguration().setTimestamp(map.lastModified());
+                if (!hasConfig() && useConfigFromDataMap) {
+                    generator.prepareArtifacts();
+                } else {
+                    generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
+                    generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
+                    generator.addQueries(dataMap.getQueryDescriptors());
+                }
+                generator.execute();
             }
-            generator.getCgenConfiguration().setTimestamp(map.lastModified());
-            if (!hasConfig() && useConfigFromDataMap) {
-                generator.prepareArtifacts();
-            } else {
-                generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
-                generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
-                generator.addQueries(dataMap.getQueryDescriptors());
-            }
-            generator.execute();
         } catch (Exception e) {
             throw new MojoExecutionException("Error generating classes: ", e);
         }
@@ -323,26 +327,29 @@ public class CayenneGeneratorMojo extends AbstractMojo {
      * Factory method to create internal class generator. Called from
      * constructor.
      */
-    private ClassGenerationAction createGenerator(DataMap dataMap) {
-        CgenConfiguration cgenConfiguration = buildConfiguration(dataMap);
-        return injector.getInstance(ClassGenerationActionFactory.class).createAction(cgenConfiguration);
+    private List<ClassGenerationAction> createGenerators(DataMap dataMap) {
+        List<ClassGenerationAction> actions = new ArrayList<>();
+        for (CgenConfiguration configuration : buildConfigurations(dataMap)) {
+            actions.add(injector.getInstance(ClassGenerationActionFactory.class).createAction(configuration));
+        }
+        return actions;
     }
 
-     CgenConfiguration buildConfiguration(DataMap dataMap) {
-        CgenConfiguration cgenConfiguration = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfiguration.class);
+    List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
+        CgenConfigList cgenConfigList = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfigList.class);
         if (hasConfig()) {
             logger.info("Using cgen config from pom.xml");
-            return cgenConfigFromPom(dataMap);
-        } else if (cgenConfiguration != null) {
-            logger.info("Using cgen config from " + cgenConfiguration.getDataMap().getName());
+            return Collections.singletonList(cgenConfigFromPom(dataMap));
+        } else if (cgenConfigList != null) {
+            logger.info("Using cgen config from dataMap");
             useConfigFromDataMap = true;
-            return cgenConfiguration;
+            return cgenConfigList.getAll();
         } else {
             logger.info("Using default cgen config.");
-            cgenConfiguration = new CgenConfiguration();
+            CgenConfiguration cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setDataMap(dataMap);
             cgenConfiguration.setRelPath(defaultDir.getPath());
-            return cgenConfiguration;
+            return Collections.singletonList(cgenConfiguration);
         }
     }
 
@@ -359,14 +366,14 @@ public class CayenneGeneratorMojo extends AbstractMojo {
         cgenConfiguration.setOutputPattern(outputPattern != null ? outputPattern : cgenConfiguration.getOutputPattern());
         cgenConfiguration.setOverwrite(overwrite != null ? overwrite : cgenConfiguration.isOverwrite());
         cgenConfiguration.setSuperPkg(superPkg != null ? superPkg : cgenConfiguration.getSuperPkg());
-        cgenConfiguration.setSuperTemplate(superTemplate != null ? new CgenTemplate(superTemplate, true,TemplateType.ENTITY_SUPERCLASS) : cgenConfiguration.getSuperTemplate());
-        cgenConfiguration.setTemplate(template != null ? new CgenTemplate(template, true,TemplateType.ENTITY_SUBCLASS) : cgenConfiguration.getTemplate());
-        cgenConfiguration.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? new CgenTemplate(embeddableSuperTemplate,true,TemplateType.EMBEDDABLE_SUPERCLASS) : cgenConfiguration.getEmbeddableSuperTemplate());
-        cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? new CgenTemplate(embeddableTemplate,true,TemplateType.EMBEDDABLE_SUBCLASS) : cgenConfiguration.getEmbeddableTemplate());
+        cgenConfiguration.setSuperTemplate(superTemplate != null ? new CgenTemplate(superTemplate, true, TemplateType.ENTITY_SUPERCLASS) : cgenConfiguration.getSuperTemplate());
+        cgenConfiguration.setTemplate(template != null ? new CgenTemplate(template, true, TemplateType.ENTITY_SUBCLASS) : cgenConfiguration.getTemplate());
+        cgenConfiguration.setEmbeddableSuperTemplate(embeddableSuperTemplate != null ? new CgenTemplate(embeddableSuperTemplate, true, TemplateType.EMBEDDABLE_SUPERCLASS) : cgenConfiguration.getEmbeddableSuperTemplate());
+        cgenConfiguration.setEmbeddableTemplate(embeddableTemplate != null ? new CgenTemplate(embeddableTemplate, true, TemplateType.EMBEDDABLE_SUBCLASS) : cgenConfiguration.getEmbeddableTemplate());
         cgenConfiguration.setUsePkgPath(usePkgPath != null ? usePkgPath : cgenConfiguration.isUsePkgPath());
         cgenConfiguration.setCreatePropertyNames(createPropertyNames != null ? createPropertyNames : cgenConfiguration.isCreatePropertyNames());
-        cgenConfiguration.setDataMapTemplate(dataMapTemplate != null ? new CgenTemplate(dataMapTemplate,true,TemplateType.DATAMAP_SUBCLASS) : cgenConfiguration.getDataMapTemplate());
-        cgenConfiguration.setDataMapSuperTemplate(dataMapSuperTemplate != null ? new CgenTemplate(dataMapSuperTemplate,true,TemplateType.DATAMAP_SUPERCLASS) : cgenConfiguration.getDataMapSuperTemplate());
+        cgenConfiguration.setDataMapTemplate(dataMapTemplate != null ? new CgenTemplate(dataMapTemplate, true, TemplateType.DATAMAP_SUBCLASS) : cgenConfiguration.getDataMapTemplate());
+        cgenConfiguration.setDataMapSuperTemplate(dataMapSuperTemplate != null ? new CgenTemplate(dataMapSuperTemplate, true, TemplateType.DATAMAP_SUPERCLASS) : cgenConfiguration.getDataMapSuperTemplate());
         cgenConfiguration.setCreatePKProperties(createPKProperties != null ? createPKProperties : cgenConfiguration.isCreatePKProperties());
         cgenConfiguration.setExternalToolConfig(externalToolConfig != null ? externalToolConfig : cgenConfiguration.getExternalToolConfig());
         if (!cgenConfiguration.isMakePairs()) {

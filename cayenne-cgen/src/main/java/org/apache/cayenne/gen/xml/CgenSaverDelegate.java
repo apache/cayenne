@@ -21,6 +21,7 @@ package org.apache.cayenne.gen.xml;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 
@@ -37,16 +38,20 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
 
     private DataChannelMetaData metaData;
 
-    CgenSaverDelegate(DataChannelMetaData metaData){
+    CgenSaverDelegate(DataChannelMetaData metaData) {
         this.metaData = metaData;
     }
 
     @Override
     public Void visitDataMap(DataMap dataMap) {
-        CgenConfiguration cgen = metaData.get(dataMap, CgenConfiguration.class);
-        if(cgen != null){
-            resolveOutputDir(getBaseDirectory().getURL(), cgen);
-            encoder.nested(cgen, getParentDelegate());
+        CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
+        if (cgenConfigList != null) {
+            for (CgenConfiguration cgen : cgenConfigList.getAll()) {
+                if (cgen != null) {
+                    resolveOutputDir(getBaseDirectory().getURL(), cgen);
+                    encoder.nested(cgen, getParentDelegate());
+                }
+            }
         }
         return null;
     }

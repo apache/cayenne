@@ -52,6 +52,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private Set<String> embeddableArtifacts;
     private Collection<String> excludeEmbeddableArtifacts;
 
+    private String name;
     private String superPkg;
     private DataMap dataMap;
 
@@ -91,6 +92,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     private String externalToolConfig;
 
     public CgenConfiguration() {
+        this.name = CgenConfigList.DEFAULT_CONFIG_NAME;
         /*
          * {@link #isDefault()} method should be in sync with the following values
          */
@@ -128,6 +130,14 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     public void setSuperPkg(String superPkg) {
         this.superPkg = superPkg;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public DataMap getDataMap() {
@@ -409,6 +419,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("cgen")
                 .attribute("xmlns", CgenExtension.NAMESPACE)
+                .simpleTag("name", this.name)
                 .simpleTag("excludeEntities", getExcludeEntites())
                 .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
                 .simpleTag("destDir", separatorsToUnix(buildRelPath()))
@@ -441,8 +452,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 && !createPKProperties
                 && !createPropertyNames
                 && "*.java".equals(outputPattern)
-                && template.equals(TemplateType.ENTITY_SUBCLASS.pathFromSourceRoot())
-                && superTemplate.equals(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot())
+                && template.equals(TemplateType.ENTITY_SUBCLASS.defaultTemplate())
+                && superTemplate.equals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate())
                 && (superPkg == null || superPkg.isEmpty())
                 && (externalToolConfig == null || externalToolConfig.isEmpty());
     }
