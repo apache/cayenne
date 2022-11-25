@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.Entity;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.Entity;
 
 /**
  * @since 4.2
@@ -37,6 +37,8 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
 
     public static final char OUTER_JOIN_INDICATOR = '+';
     public static final char SPLIT_PATH_INDICATOR = '#';
+
+    public static final String DB_PATH_ALIAS_INDICATOR = "^";
 
     protected final Map<String, String> pathSplitAliases;
     protected final TranslatorContext context;
@@ -62,17 +64,17 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     public PathTranslationResult process(String path) {
         PathComponents components = new PathComponents(path);
         String[] rawComponents = components.getAll();
-        for(int i=0; i<rawComponents.length; i++) {
+        for (int i = 0; i < rawComponents.length; i++) {
             String next = rawComponents[i];
             isOuterJoin = false;
             lastComponent = i == rawComponents.length - 1;
             String alias = pathSplitAliases.get(next);
-            if(alias != null) {
+            if (alias != null) {
                 currentAlias = next;
                 processAliasedAttribute(next, alias);
                 currentAlias = null;
             } else {
-                if(next.charAt(next.length() - 1) == OUTER_JOIN_INDICATOR) {
+                if (next.charAt(next.length() - 1) == OUTER_JOIN_INDICATOR) {
                     isOuterJoin = true;
                     next = next.substring(0, next.length() - 1);
                 }
@@ -104,7 +106,7 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
 
     @Override
     public Optional<DbRelationship> getDbRelationship() {
-        if(relationship == null) {
+        if (relationship == null) {
             return Optional.empty();
         }
         return Optional.of(relationship);
@@ -121,14 +123,14 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     }
 
     protected void appendCurrentPath(String nextSegment) {
-        if(currentDbPath.length() > 0) {
+        if (currentDbPath.length() > 0) {
             currentDbPath.append('.');
         }
         currentDbPath.append(nextSegment);
-        if(currentAlias != null) {
+        if (currentAlias != null) {
             currentDbPath.append(SPLIT_PATH_INDICATOR).append(currentAlias);
         }
-        if(isOuterJoin) {
+        if (isOuterJoin) {
             currentDbPath.append(OUTER_JOIN_INDICATOR);
         }
     }

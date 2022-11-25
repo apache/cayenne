@@ -22,7 +22,9 @@ package org.apache.cayenne.exp;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testdo.testmap.Award;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -175,6 +177,91 @@ public class ExpressionFactoryIT extends ServerCase {
         List<Artist> dbArtists = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.matchAllExp("db:|paintingArray.toGallery.GALLERY_NAME", "g1", "g2"))
                 .select(context);
+        assertFalse(objArtists.isEmpty());
+        assertEquals(objArtists, dbArtists);
+    }
+
+    @Test
+    public void testSplitExpressions_EndsWithRelationship() {
+        Artist artist1 = context.newObject(Artist.class),
+                artist2 = context.newObject(Artist.class);
+        artist1.setArtistName("a1");
+        artist2.setArtistName("a2");
+
+        Painting p1 = context.newObject(Painting.class),
+                p2 = context.newObject(Painting.class),
+                p3 = context.newObject(Painting.class);
+        p1.setPaintingTitle("p1");
+        p2.setPaintingTitle("p2");
+        p3.setPaintingTitle("p3");
+
+        artist1.addToPaintingArray(p1);
+        artist1.addToPaintingArray(p2);
+        artist2.addToPaintingArray(p3);
+
+        context.commitChanges();
+
+        List<Artist> objArtists = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.matchAllExp("|paintingArray", p1, p2)).select(context);
+        List<Artist> dbArtists = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.matchAllExp("db:|paintingArray", p1, p2)).select(context);
+        assertFalse(objArtists.isEmpty());
+        assertEquals(objArtists, dbArtists);
+    }
+
+    @Test
+    public void testSplitExpressions_EndsWithRelationship_DifferentObjDbPath() {
+        Artist artist1 = context.newObject(Artist.class),
+                artist2 = context.newObject(Artist.class);
+        artist1.setArtistName("a1");
+        artist2.setArtistName("a2");
+
+        Award aw1 = context.newObject(Award.class),
+                aw2 = context.newObject(Award.class),
+                aw3 = context.newObject(Award.class);
+        aw1.setName("aw1");
+        aw2.setName("aw2");
+        aw3.setName("aw3");
+
+        artist1.addToAwardArray(aw1);
+        artist1.addToAwardArray(aw2);
+        artist2.addToAwardArray(aw3);
+
+        context.commitChanges();
+
+        List<Artist> objArtists = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.matchAllExp("|awardArray", aw1, aw2)).select(context);
+        List<Artist> dbArtists = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.matchAllExp("db:|artistAwardArray", aw1, aw2)).select(context);
+        assertFalse(objArtists.isEmpty());
+        assertEquals(objArtists, dbArtists);
+    }
+
+    @Test
+    public void testSplitExpressions_EndsWithRelationship_Flattened() {
+        Artist a1 = context.newObject(Artist.class),
+                a2 = context.newObject(Artist.class);
+        a1.setArtistName("a1");
+        a2.setArtistName("a2");
+
+        ArtGroup ag1 = context.newObject(ArtGroup.class),
+                ag2 = context.newObject(ArtGroup.class);
+        ag1.setName("ag1");
+        ag2.setName("ag2");
+
+        a1.addToGroupArray(ag1);
+        a2.addToGroupArray(ag1);
+        a2.addToGroupArray(ag2);
+
+        context.commitChanges();
+
+        List<Artist> objArtists = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.matchAllExp("|groupArray", ag1, ag2))
+                .select(context);
+        List<Artist> dbArtists = ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.matchAllExp("db:|artistGroupArray.toGroup", ag1, ag2))
+                .select(context);
+        assertFalse(objArtists.isEmpty());
         assertEquals(objArtists, dbArtists);
     }
 
@@ -183,23 +270,18 @@ public class ExpressionFactoryIT extends ServerCase {
         List<Artist> res;
 
         // First version via expression string
-        Expression exp1 = exp(
-                "length(substring(artistName, 1, 3)) > length(trim(artistName))"
-        );
+        Expression exp1 = exp("length(substring(artistName, 1, 3)) > length(trim(artistName))");
         res = ObjectSelect.query(Artist.class, exp1).select(context);
         assertEquals(0, res.size());
 
         // Second version via FunctionExpressionFactory API
-        Expression exp2 = greaterExp(
-                lengthExp(substringExp(Artist.ARTIST_NAME.getExpression(), 1, 3)),
-                lengthExp(trimExp(Artist.ARTIST_NAME.getExpression()))
-        );
+        Expression exp2 = greaterExp(lengthExp(substringExp(Artist.ARTIST_NAME.getExpression(), 1, 3)),
+                                     lengthExp(trimExp(Artist.ARTIST_NAME.getExpression())));
         res = ObjectSelect.query(Artist.class, exp2).select(context);
         assertEquals(0, res.size());
 
         // Third version via Property API
-        Expression exp3 = Artist.ARTIST_NAME.substring(1, 3).length()
-                .gt(Artist.ARTIST_NAME.trim().length());
+        Expression exp3 = Artist.ARTIST_NAME.substring(1, 3).length().gt(Artist.ARTIST_NAME.trim().length());
         res = ObjectSelect.query(Artist.class, exp3).select(context);
         assertEquals(0, res.size());
 

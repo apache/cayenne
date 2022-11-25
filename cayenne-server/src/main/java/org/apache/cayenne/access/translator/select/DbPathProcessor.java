@@ -35,7 +35,7 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
     DbPathProcessor(TranslatorContext context, DbEntity entity, String parentPath, boolean flattenedPath) {
         super(context, entity);
         this.flattenedPath = flattenedPath;
-        if(parentPath != null) {
+        if (parentPath != null) {
             currentDbPath.append(parentPath);
         }
     }
@@ -48,13 +48,13 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
     @Override
     protected void processNormalAttribute(String next) {
         DbAttribute dbAttribute = entity.getAttribute(next);
-        if(dbAttribute != null) {
+        if (dbAttribute != null) {
             processAttribute(dbAttribute);
             return;
         }
 
         DbRelationship relationship = entity.getRelationship(next);
-        if(relationship != null) {
+        if (relationship != null) {
             entity = relationship.getTargetEntity();
             processRelationship(relationship);
             return;
@@ -65,13 +65,22 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
 
     @Override
     protected void processAliasedAttribute(String next, String alias) {
-        DbRelationship relationship = entity.getRelationship(alias);
-        if(relationship == null) {
-            throw new IllegalStateException("Non-relationship aliased path part: " + alias);
+        int dotPosition = alias.indexOf(".");
+        boolean isCompositeAlias = dotPosition >= 0;
+        String trueAlias = isCompositeAlias ? alias.substring(0, dotPosition) : alias;
+        String ending = isCompositeAlias ? alias.substring(dotPosition + 1) : "";
+
+        DbRelationship relationship = entity.getRelationship(trueAlias);
+        if (relationship == null) {
+            throw new IllegalStateException("Non-relationship aliased path part: " + trueAlias);
         }
 
         entity = relationship.getTargetEntity();
         processRelationship(relationship);
+        if (ending.isEmpty()) {
+            return;
+        }
+        processNormalAttribute(ending);
     }
 
     private void processAttribute(DbAttribute attribute) {
@@ -86,8 +95,9 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
         } else {
             appendCurrentPath(relationship.getName());
             context.getTableTree().addJoinTable(currentDbPath.toString(), relationship, isOuterJoin()
-                    ? JoinType.LEFT_OUTER : JoinType.INNER);
-            if(!relationship.isToMany()) {
+                                                                                        ? JoinType.LEFT_OUTER
+                                                                                        : JoinType.INNER);
+            if (!relationship.isToMany()) {
                 String path = currentDbPath.toString();
                 for (DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
                     addAttribute(path, attribute);
@@ -104,16 +114,16 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
         if (relationship.isToMany() || !relationship.isToPK()) {
             // match on target PK
             context.getTableTree().addJoinTable(currentDbPath.toString(), relationship, isOuterJoin()
-                    ? JoinType.LEFT_OUTER : JoinType.INNER);
+                                                                                        ? JoinType.LEFT_OUTER
+                                                                                        : JoinType.INNER);
             path = currentDbPath.toString();
-            for(DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
+            for (DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
                 addAttribute(path, attribute);
             }
         } else {
-            for(DbJoin join : relationship.getJoins()) {
+            for (DbJoin join : relationship.getJoins()) {
                 addAttribute(path, join.getSource());
             }
         }
     }
-
 }

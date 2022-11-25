@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import java.util.Optional;
-
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -28,6 +26,8 @@ import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+
+import java.util.Optional;
 
 /**
  * @since 4.2
@@ -39,7 +39,7 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
 
     ObjPathProcessor(TranslatorContext context, ObjEntity entity, String parentPath) {
         super(context, entity);
-        if(parentPath != null) {
+        if (parentPath != null) {
             currentDbPath.append(parentPath);
         }
     }
@@ -51,33 +51,34 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
     @Override
     protected void processNormalAttribute(String next) {
         attribute = fetchAttribute(next);
-        if(attribute != null) {
+        if (attribute != null) {
             processAttribute(attribute);
             return;
         }
 
         ObjRelationship relationship = entity.getRelationship(next);
-        if(relationship != null) {
+        if (relationship != null) {
             processRelationship(relationship);
             return;
         }
 
         throw new IllegalStateException("Unable to resolve path: " + currentDbPath.toString()
-                + " (unknown '" + next + "' component)");
+                                        + " (unknown '" + next + "' component)");
     }
 
     @Override
     protected void processAliasedAttribute(String next, String alias) {
         ObjRelationship relationship = entity.getRelationship(alias);
-        if(relationship == null) {
+        if (relationship == null) {
             throw new IllegalStateException("Non-relationship aliased path part: " + alias);
         }
 
+        pathSplitAliases.put(DB_PATH_ALIAS_INDICATOR + next, relationship.getDbRelationshipPath());
         processRelationship(relationship);
     }
 
     protected ObjAttribute fetchAttribute(String name) {
-        if(embeddedAttribute != null) {
+        if (embeddedAttribute != null) {
             ObjAttribute attribute = embeddedAttribute.getAttribute(name);
             embeddedAttribute = null;
             return attribute;
@@ -87,9 +88,9 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
     }
 
     protected void processAttribute(ObjAttribute attribute) {
-        if(attribute instanceof EmbeddedAttribute) {
-            embeddedAttribute = (EmbeddedAttribute)attribute;
-            if(lastComponent) {
+        if (attribute instanceof EmbeddedAttribute) {
+            embeddedAttribute = (EmbeddedAttribute) attribute;
+            if (lastComponent) {
                 embeddedAttribute.getAttributes().forEach(a -> {
                     int len = currentDbPath.length();
                     processAttribute(a);
@@ -118,19 +119,20 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
             entity = relationship.getTargetEntity();
             // find and add joins ....
             int count = relationship.getDbRelationships().size();
-            for (int i=0; i<count; i++) {
+            for (int i = 0; i < count; i++) {
                 DbRelationship dbRel = relationship.getDbRelationships().get(i);
                 appendCurrentPath(dbRel.getName());
                 boolean leftJoin = isOuterJoin() || count > 1;
                 context.getTableTree().addJoinTable(currentDbPath.toString(), dbRel,
-                        leftJoin ? JoinType.LEFT_OUTER : JoinType.INNER);
+                                                    leftJoin ? JoinType.LEFT_OUTER : JoinType.INNER);
             }
         }
     }
 
     protected void processRelTermination(ObjRelationship relationship) {
-        String path = currentAlias != null ? currentAlias : relationship.getDbRelationshipPath();
-        if(isOuterJoin()) {
+        String path = currentAlias != null ? DB_PATH_ALIAS_INDICATOR + currentAlias
+                                           : relationship.getDbRelationshipPath();
+        if (isOuterJoin()) {
             path += OUTER_JOIN_INDICATOR;
         }
         PathTranslationResult result = context.getPathTranslator()
@@ -144,7 +146,7 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
 
     @Override
     public Optional<Embeddable> getEmbeddable() {
-        if(embeddedAttribute != null) {
+        if (embeddedAttribute != null) {
             return Optional.of(embeddedAttribute.getEmbeddable());
         }
         return Optional.empty();
