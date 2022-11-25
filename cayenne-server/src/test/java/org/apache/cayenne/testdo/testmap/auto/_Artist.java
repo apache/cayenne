@@ -16,6 +16,7 @@ import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Award;
 import org.apache.cayenne.testdo.testmap.Painting;
 
 /**
@@ -39,6 +40,7 @@ public abstract class _Artist extends BaseDataObject {
     public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);
     public static final DateProperty<Date> DATE_OF_BIRTH = PropertyFactory.createDate("dateOfBirth", Date.class);
     public static final ListProperty<ArtistExhibit> ARTIST_EXHIBIT_ARRAY = PropertyFactory.createList("artistExhibitArray", ArtistExhibit.class);
+    public static final ListProperty<Award> AWARD_ARRAY = PropertyFactory.createList("awardArray", Award.class);
     public static final ListProperty<ArtGroup> GROUP_ARRAY = PropertyFactory.createList("groupArray", ArtGroup.class);
     public static final ListProperty<Painting> PAINTING_ARRAY = PropertyFactory.createList("paintingArray", Painting.class);
 
@@ -46,6 +48,7 @@ public abstract class _Artist extends BaseDataObject {
     protected Date dateOfBirth;
 
     protected Object artistExhibitArray;
+    protected Object awardArray;
     protected Object groupArray;
     protected Object paintingArray;
 
@@ -80,6 +83,19 @@ public abstract class _Artist extends BaseDataObject {
     @SuppressWarnings("unchecked")
     public List<ArtistExhibit> getArtistExhibitArray() {
         return (List<ArtistExhibit>)readProperty("artistExhibitArray");
+    }
+
+    public void addToAwardArray(Award obj) {
+        addToManyTarget("awardArray", obj, true);
+    }
+
+    public void removeFromAwardArray(Award obj) {
+        removeToManyTarget("awardArray", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Award> getAwardArray() {
+        return (List<Award>)readProperty("awardArray");
     }
 
     public void addToGroupArray(ArtGroup obj) {
@@ -121,6 +137,8 @@ public abstract class _Artist extends BaseDataObject {
                 return this.dateOfBirth;
             case "artistExhibitArray":
                 return this.artistExhibitArray;
+            case "awardArray":
+                return this.awardArray;
             case "groupArray":
                 return this.groupArray;
             case "paintingArray":
@@ -145,6 +163,9 @@ public abstract class _Artist extends BaseDataObject {
                 break;
             case "artistExhibitArray":
                 this.artistExhibitArray = val;
+                break;
+            case "awardArray":
+                this.awardArray = val;
                 break;
             case "groupArray":
                 this.groupArray = val;
@@ -171,6 +192,7 @@ public abstract class _Artist extends BaseDataObject {
         out.writeObject(this.artistName);
         out.writeObject(this.dateOfBirth);
         out.writeObject(this.artistExhibitArray);
+        out.writeObject(this.awardArray);
         out.writeObject(this.groupArray);
         out.writeObject(this.paintingArray);
     }
@@ -181,6 +203,7 @@ public abstract class _Artist extends BaseDataObject {
         this.artistName = (String)in.readObject();
         this.dateOfBirth = (Date)in.readObject();
         this.artistExhibitArray = in.readObject();
+        this.awardArray = in.readObject();
         this.groupArray = in.readObject();
         this.paintingArray = in.readObject();
     }

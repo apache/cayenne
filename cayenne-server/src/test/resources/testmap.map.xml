@@ -40,6 +40,11 @@
 		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="GROUP_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
+	<db-entity name="AWARD">
+		<db-attribute name="ARTIST_ID" type="BIGINT" isMandatory="true"/>
+		<db-attribute name="AWARD_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="NAME" type="VARCHAR" length="255"/>
+	</db-entity>
 	<db-entity name="EXHIBIT">
 		<db-attribute name="CLOSING_DATE" type="TIMESTAMP" isMandatory="true"/>
 		<db-attribute name="EXHIBIT_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -98,6 +103,9 @@
 		<post-load method-name="postLoadEntityObjEntity"/>
 	</obj-entity>
 	<obj-entity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT"/>
+	<obj-entity name="Award" className="org.apache.cayenne.testdo.testmap.Award" dbEntityName="AWARD" superClassName="org.apache.cayenne.CayenneDataObject">
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
+	</obj-entity>
 	<obj-entity name="CompoundPainting" className="org.apache.cayenne.testdo.testmap.CompoundPainting" dbEntityName="PAINTING">
 		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
@@ -165,6 +173,9 @@
 	<db-relationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP">
 		<db-attribute-pair source="PARENT_GROUP_ID" target="GROUP_ID"/>
 	</db-relationship>
+	<db-relationship name="artistAwardArray" source="ARTIST" target="AWARD" toMany="true">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
+	</db-relationship>
 	<db-relationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
@@ -185,6 +196,9 @@
 	</db-relationship>
 	<db-relationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP">
 		<db-attribute-pair source="GROUP_ID" target="GROUP_ID"/>
+	</db-relationship>
+	<db-relationship name="toArtist" source="AWARD" target="ARTIST">
+		<db-attribute-pair source="ARTIST_ID" target="ARTIST_ID"/>
 	</db-relationship>
 	<db-relationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
@@ -217,10 +231,12 @@
 	<obj-relationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toChildGroups"/>
 	<obj-relationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="Nullify" db-relationship-path="toParentGroup"/>
 	<obj-relationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="Cascade" db-relationship-path="artistExhibitArray"/>
+	<obj-relationship name="awardArray" source="Artist" target="Award" deleteRule="Deny" db-relationship-path="artistAwardArray"/>
 	<obj-relationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="Cascade" db-relationship-path="artistGroupArray.toGroup"/>
 	<obj-relationship name="paintingArray" source="Artist" target="Painting" deleteRule="Cascade" db-relationship-path="paintingArray"/>
 	<obj-relationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<obj-relationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="Nullify" db-relationship-path="toExhibit"/>
+	<obj-relationship name="toArtist" source="Award" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<obj-relationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="Nullify" db-relationship-path="toArtist"/>
 	<obj-relationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="Nullify" db-relationship-path="toGallery"/>
 	<obj-relationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="Cascade" db-relationship-path="toPaintingInfo"/>
