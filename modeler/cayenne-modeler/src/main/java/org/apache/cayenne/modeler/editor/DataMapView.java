@@ -606,9 +606,14 @@ public class DataMapView extends JPanel {
         if (dataMap == null) {
             return;
         }
-
-        ObjectInfo.putToMetaData(eventController.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
-        eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
+        String currentComment = getComment(dataMap);
+        if (currentComment == null) {
+            currentComment = "";
+        }
+            if (!comment.equals(currentComment)) {
+                ObjectInfo.putToMetaData(eventController.getApplication().getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
+                eventController.fireDataMapEvent(new DataMapEvent(this, dataMap));
+            }
     }
 
     private String getComment(DataMap dataMap) {
