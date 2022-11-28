@@ -802,7 +802,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>
-						-DcayenneTestConnection=${cayenneTestConnection} -Djava.net.preferIPv4Stack=true -Dcayenne.runtime.db.collation.assume.ci=${collationCi}
+						 -DcayenneTestConnection=${cayenneTestConnection} -Djava.net.preferIPv4Stack=true -Dcayenne.runtime.db.collation.assume.ci=${collationCi}
 					</argLine>
 					<systemPropertyVariables>
 						<property>
@@ -833,6 +833,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
+					<argLine>
+						-Dhsqldb.method_class_names=org.apache.cayenne.unit.HSQLProcedures.*
+					</argLine>
                     <systemPropertyVariables>
                         <org.slf4j.simpleLogger.defaultLogLevel>${cayenneLogLevel}</org.slf4j.simpleLogger.defaultLogLevel>
                     </systemPropertyVariables>
