@@ -74,7 +74,7 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
                 processAliasedAttribute(next, alias);
                 currentAlias = null;
             } else {
-                if (next.charAt(next.length() - 1) == OUTER_JOIN_INDICATOR) {
+                if (!next.isEmpty() && next.charAt(next.length() - 1) == OUTER_JOIN_INDICATOR) {
                     isOuterJoin = true;
                     next = next.substring(0, next.length() - 1);
                 }
