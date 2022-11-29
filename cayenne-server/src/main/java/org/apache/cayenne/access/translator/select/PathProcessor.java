@@ -37,8 +37,7 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
 
     public static final char OUTER_JOIN_INDICATOR = '+';
     public static final char SPLIT_PATH_INDICATOR = '#';
-
-    public static final String DB_PATH_ALIAS_INDICATOR = "^";
+    public static final String DB_PATH_ALIAS_INDICATOR = "db:";
 
     protected final Map<String, String> pathSplitAliases;
     protected final TranslatorContext context;

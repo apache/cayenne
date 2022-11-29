@@ -109,6 +109,11 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
     protected void processRelTermination(DbRelationship relationship) {
         this.relationship = relationship;
         String path = currentDbPath.toString();
+
+        // Back to obj alias to keep joins optimised.
+        if (currentAlias != null && currentAlias.startsWith(DB_PATH_ALIAS_INDICATOR)) {
+            currentAlias = currentAlias.substring(DB_PATH_ALIAS_INDICATOR.length());
+        }
         appendCurrentPath(relationship.getName());
 
         if (relationship.isToMany() || !relationship.isToPK()) {
