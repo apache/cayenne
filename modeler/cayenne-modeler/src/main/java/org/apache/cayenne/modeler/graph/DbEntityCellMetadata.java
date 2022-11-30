@@ -27,15 +27,16 @@ import org.apache.cayenne.map.DbRelationship;
  * Descriptor of DbEntity Cell
  */
 class DbEntityCellMetadata extends EntityCellMetadata<DbEntity, DbAttribute, DbRelationship> {
-    DbEntityCellMetadata(GraphBuilder builder, String entityName) {
-        super(builder, entityName);
+    DbEntityCellMetadata(DbGraphBuilder builder, DbEntity entity) {
+        super(builder, entity);
     }
     
     @Override
     public DbEntity fetchEntity() {
         for (DataMap dm : builder.getDataDomain().getDataMaps()) {
-            if (dm.getDbEntity(entityName) != null) {
-                return dm.getDbEntity(entityName);
+            DbEntity dbEntity =dm.getDbEntity(entityName) ;
+            if (dbEntity!= null) {
+                return dbEntity;
             }
         }
         return null;

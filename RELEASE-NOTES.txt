@@ -37,6 +37,7 @@ CAY-2781 Enable 'Create PK properties' by default in the cgen configuration
 
 Bug Fixes:
 
+CAY-2732 Exception when creating ObjEntity from a DbEntity
 CAY-2755 Modeler: Entities are not sorted by name in the class generation view
 CAY-2762 Modeler: Difference in toolbars colors on OSX
 CAY-2763 Split expressions do not work with flattened relationships

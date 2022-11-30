@@ -304,8 +304,8 @@ abstract class BaseGraphBuilder<E extends Entity<E, A, R>, A extends Attribute<E
     }
 
     /**
-     * Returns whether an entity is not connected to any other TODO: not fine
-     * algorithm, it iterates through all entities and all rels
+     * Returns whether an entity is not connected to any other
+     * TODO: not fine algorithm, it iterates through all entities and all rels
      */
     protected boolean isIsolated(DataChannelDescriptor domain, E entity) {
         if (entity.getRelationships().size() == 0) {

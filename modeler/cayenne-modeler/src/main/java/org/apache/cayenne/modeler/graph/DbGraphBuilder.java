@@ -40,8 +40,7 @@ import org.jgraph.graph.GraphConstants;
 /**
  * Class for building ER-graph, based on DbEntity information
  */
-class DbGraphBuilder extends BaseGraphBuilder<DbEntity, DbAttribute, DbRelationship> implements DbEntityListener,
-        DbAttributeListener, DbRelationshipListener {
+class DbGraphBuilder extends BaseGraphBuilder<DbEntity, DbAttribute, DbRelationship> implements DbEntityListener, DbAttributeListener, DbRelationshipListener {
 
     static final Color ENTITY_COLOR = new Color(197, 253, 252);
 
@@ -60,16 +59,14 @@ class DbGraphBuilder extends BaseGraphBuilder<DbEntity, DbAttribute, DbRelations
 
     @Override
     protected DbEntityCellMetadata getCellMetadata(DbEntity e) {
-        return new DbEntityCellMetadata(this, e.getName());
+        return new DbEntityCellMetadata(this, e);
     }
 
     @Override
     protected DefaultEdge createRelationshipCell(DbRelationship rel) {
         DefaultEdge edge = super.createRelationshipCell(rel);
         if (edge != null) {
-            GraphConstants.setDashPattern(edge.getAttributes(), new float[] {
-                    10, 3
-            });
+            GraphConstants.setDashPattern(edge.getAttributes(), new float[] {10, 3});
         }
         return edge;
     }

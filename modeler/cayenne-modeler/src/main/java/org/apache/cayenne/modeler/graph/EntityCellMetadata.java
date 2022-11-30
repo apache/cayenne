@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.graph;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
@@ -29,45 +30,32 @@ import org.apache.cayenne.map.Relationship;
  */
 abstract class EntityCellMetadata<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
         implements Serializable {
-    GraphBuilder<E,A,R> builder;
+    final GraphBuilder<E,A,R> builder;
+    final String entityName;
+    final String label;
     
-    String entityName;
-    String label;
-    
-    EntityCellMetadata() {
-    }
-    
-    EntityCellMetadata(GraphBuilder<E,A,R> builder, String entityName) {
-        this.builder = builder;
-        this.entityName = entityName;
-        
-        rebuildLabel();
+    EntityCellMetadata(GraphBuilder<E,A,R> builder, Entity<E,A,R> entity) {
+        this.builder = Objects.requireNonNull(builder);
+        this.entityName = Objects.requireNonNull(entity).getName();
+        this.label = createLabel(entity);
     }
         
     /**
      * Resolves entity
      */
     public abstract Entity<E, A, R> fetchEntity();
-    
-    final void rebuildLabel() {
-        label = createLabel();
-    }
-    
+
     public String toString() {
-        if (label == null) {
-            rebuildLabel();
-        }
-        
         return label;
     }
     
     /**
      * Creates label for this cell
      */
-    String createLabel() {
-        Entity<E, A, R> entity = fetchEntity();
-        StringBuilder label = new StringBuilder("<html><center><u><b>").
-                append(entity.getName()).append("</b></u></center>");
+    String createLabel(Entity<E, A, R> entity) {
+        StringBuilder label = new StringBuilder("<html><center><u><b>")
+                .append(entity.getName())
+                .append("</b></u></center>");
         for (A attr : entity.getAttributes()) {
             if (isPrimary(attr)) {
                 label.append("<br><i>").append(attr.getName()).append("</i>");
@@ -78,7 +66,7 @@ abstract class EntityCellMetadata<E extends Entity<E, A, R>, A extends Attribute
                 label.append("<br>").append(attr.getName());
             }
         }
-        return label.toString();
+        return label.append("</html>").toString();
     }
     
     /**

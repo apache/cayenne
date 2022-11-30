@@ -27,15 +27,16 @@ import org.apache.cayenne.map.ObjRelationship;
  * Descriptor of ObjEntity Cell
  */
 class ObjEntityCellMetadata extends EntityCellMetadata<ObjEntity, ObjAttribute, ObjRelationship> {
-    ObjEntityCellMetadata(GraphBuilder<ObjEntity, ObjAttribute, ObjRelationship> builder, String entityName) {
-        super(builder, entityName);
+    ObjEntityCellMetadata(ObjGraphBuilder builder, ObjEntity entity) {
+        super(builder, entity);
     }
     
     @Override
     public ObjEntity fetchEntity() {
         for (DataMap dm : builder.getDataDomain().getDataMaps()) {
-            if (dm.getObjEntity(entityName) != null) {
-                return dm.getObjEntity(entityName);
+            ObjEntity objEntity =dm.getObjEntity(entityName) ;
+            if (objEntity!= null) {
+                return objEntity;
             }
         }
         return null;
