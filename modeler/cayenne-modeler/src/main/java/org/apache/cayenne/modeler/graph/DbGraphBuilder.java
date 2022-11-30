@@ -23,6 +23,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.event.AttributeEvent;
@@ -39,13 +40,12 @@ import org.jgraph.graph.GraphConstants;
 /**
  * Class for building ER-graph, based on DbEntity information
  */
-class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener,
-        DbAttributeListener, DbRelationshipListener {
+class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener, DbAttributeListener, DbRelationshipListener {
 
     static final Color ENTITY_COLOR = new Color(197, 253, 252);
 
     @Override
-    protected Collection<? extends Entity> getEntities(DataMap map) {
+    protected Collection<DbEntity> getEntities(DataMap map) {
         return map.getDbEntities();
     }
 
@@ -59,16 +59,14 @@ class DbGraphBuilder extends BaseGraphBuilder implements DbEntityListener,
 
     @Override
     protected EntityCellMetadata getCellMetadata(Entity e) {
-        return new DbEntityCellMetadata(this, e.getName());
+        return new DbEntityCellMetadata(this, e);
     }
 
     @Override
     protected DefaultEdge createRelationshipCell(Relationship rel) {
         DefaultEdge edge = super.createRelationshipCell(rel);
         if (edge != null) {
-            GraphConstants.setDashPattern(edge.getAttributes(), new float[] {
-                    10, 3
-            });
+            GraphConstants.setDashPattern(edge.getAttributes(), new float[] {10, 3});
         }
         return edge;
     }

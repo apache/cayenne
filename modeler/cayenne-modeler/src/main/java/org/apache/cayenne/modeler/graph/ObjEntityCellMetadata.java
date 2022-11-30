@@ -18,27 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.graph;
 
-import java.util.Iterator;
-
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.ObjEntity;
 
 /**
  * Descriptor of ObjEntity Cell
  */
 class ObjEntityCellMetadata extends EntityCellMetadata {
-    ObjEntityCellMetadata(GraphBuilder builder, String entityName) {
-        super(builder, entityName);
+    ObjEntityCellMetadata(GraphBuilder builder, Entity entity) {
+        super(builder, entity);
     }
     
     @Override
     public Entity fetchEntity() {
-        Iterator<DataMap> it = builder.getDataDomain().getDataMaps().iterator();
-        while(it.hasNext()){
-            DataMap dm = (DataMap)it.next();
-            if(dm.getObjEntity(entityName)!=null){
-                return dm.getObjEntity(entityName);
+        for (DataMap dm : builder.getDataDomain().getDataMaps()) {
+            ObjEntity objEntity = dm.getObjEntity(entityName);
+            if (objEntity != null) {
+                return objEntity;
             }
         }
         return null;

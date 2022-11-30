@@ -19,6 +19,7 @@
 package org.apache.cayenne.modeler.graph;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
@@ -27,19 +28,14 @@ import org.apache.cayenne.map.Entity;
  * Abstract class to describe entity's cell 
  */
 abstract class EntityCellMetadata implements Serializable {
-    GraphBuilder builder;
+    final GraphBuilder builder;
+    final String entityName;
+    final String label;
     
-    String entityName;
-    String label;
-    
-    EntityCellMetadata() {
-    }
-    
-    EntityCellMetadata(GraphBuilder builder, String entityName) {
-        this.builder = builder;
-        this.entityName = entityName;
-        
-        rebuildLabel();
+    EntityCellMetadata(GraphBuilder builder, Entity entity) {
+        this.builder = Objects.requireNonNull(builder);
+        this.entityName = Objects.requireNonNull(entity).getName();
+        this.label = createLabel(entity);
     }
         
     /**
@@ -47,25 +43,17 @@ abstract class EntityCellMetadata implements Serializable {
      */
     public abstract Entity fetchEntity();
     
-    final void rebuildLabel() {
-        label = createLabel();
-    }
-    
     public String toString() {
-        if (label == null) {
-            rebuildLabel();
-        }
-        
         return label;
     }
     
     /**
      * Creates label for this cell
      */
-    String createLabel() {
-        Entity entity = fetchEntity();
-        StringBuilder label = new StringBuilder("<html><center><u><b>").
-                append(entity.getName()).append("</b></u></center>");
+    String createLabel(Entity entity) {
+        StringBuilder label = new StringBuilder("<html><center><u><b>")
+                .append(entity.getName())
+                .append("</b></u></center>");
         for (Attribute attr : entity.getAttributes()) {
             if (isPrimary(attr)) {
                 label.append("<br><i>").append(attr.getName()).append("</i>");
@@ -76,7 +64,7 @@ abstract class EntityCellMetadata implements Serializable {
                 label.append("<br>").append(attr.getName());
             }
         }
-        return label.toString();
+        return label.append("</html>").toString();
     }
     
     /**

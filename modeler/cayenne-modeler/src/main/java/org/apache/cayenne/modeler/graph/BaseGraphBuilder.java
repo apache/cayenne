@@ -207,7 +207,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             // JGraphSimpleLayout layout = new JGraphSimpleLayout(JGraphSimpleLayout.TYPE_TILT, 4000, 2000);
             layout.run(facade);
             // Obtain a map of the resulting attribute changes from the facade
-            Map nested = facade.createNestedMap(true, true);
+            Map<?, ?> nested = facade.createNestedMap(true, true);
 
             // Apply the results to the actual graph
             edit(nested);
@@ -220,7 +220,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             public void mouseReleased(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     Object selected = graph.getSelectionCell();
-                    if (selected != null && selected instanceof DefaultGraphCell) {
+                    if (selected instanceof DefaultGraphCell) {
                         Object userObject = ((DefaultGraphCell) selected).getUserObject();
                         if (userObject instanceof EntityCellMetadata) {
                             showPopup(e.getPoint(), ((EntityCellMetadata) userObject).fetchEntity());
@@ -257,7 +257,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
             for (int isolatedIndex = 0; isolatedIndex < isolatedObjects.size();) {
                 for (int i = 0; isolatedIndex < isolatedObjects.size() && i < x - row; i++) {
                     GraphConstants.setBounds(isolatedObjects.get(isolatedIndex).getAttributes(),
-                            new Rectangle2D.Double(pref.width - posX, pref.height - 3 * posY / 2, 10, 10));
+                            new Rectangle2D.Double(pref.width - posX, pref.height - 3.0 * posY / 2, 10, 10));
                     isolatedIndex += 2; // because every 2nd object is port
                     posX += dx;
                 }
@@ -301,8 +301,8 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
     }
 
     /**
-     * Returns whether an entity is not connected to any other TODO: not fine
-     * algorithm, it iterates through all entities and all rels
+     * Returns whether an entity is not connected to any other
+     * TODO: not fine algorithm, it iterates through all entities and all rels
      */
     protected boolean isIsolated(DataChannelDescriptor domain, Entity entity) {
         if (entity.getRelationships().size() == 0) {
@@ -575,7 +575,7 @@ abstract class BaseGraphBuilder implements GraphBuilder, DataMapListener {
         encoder.end();
     }
 
-    private void edit(final Map map) {
+    private void edit(final Map<?,?> map) {
         runWithUndoDisabled(() -> graph.getGraphLayoutCache().edit(map));
     }
 

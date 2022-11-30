@@ -35,9 +35,8 @@ import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.DefaultEdge;
 import org.jgraph.graph.DefaultGraphCell;
 import org.jgraph.graph.GraphConstants;
-import org.slf4j.LoggerFactory;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +56,7 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
     }
 
     @Override
-    protected Collection<? extends Entity> getEntities(DataMap map) {
+    protected Collection<ObjEntity> getEntities(DataMap map) {
         return map.getObjEntities();
     }
 
@@ -102,12 +101,8 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
                 edge.setSource(sourceCell.getChildAt(0));
                 edge.setTarget(targetCell.getChildAt(0));
 
-                GraphConstants.setDashPattern(edge.getAttributes(), new float[] {
-                        5, 5
-                });
-                GraphConstants.setLineEnd(
-                        edge.getAttributes(),
-                        GraphConstants.ARROW_TECHNICAL);
+                GraphConstants.setDashPattern(edge.getAttributes(), new float[] {5, 5});
+                GraphConstants.setLineEnd(edge.getAttributes(), GraphConstants.ARROW_TECHNICAL);
                 GraphConstants.setSelectable(edge.getAttributes(), false);
 
                 inheritanceEdges.put(entity, edge);
@@ -120,7 +115,7 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
 
     @Override
     protected EntityCellMetadata getCellMetadata(Entity e) {
-        return new ObjEntityCellMetadata(this, e.getName());
+        return new ObjEntityCellMetadata(this, e);
     }
 
     @Override
@@ -154,14 +149,11 @@ class ObjGraphBuilder extends BaseGraphBuilder implements ObjEntityListener,
         DefaultEdge inheritanceEdge = inheritanceEdges.get(entity);
         if (inheritanceEdge != null) {
             if (entity.getSuperEntity() == null) {
-                graph.getGraphLayoutCache().remove(new Object[] {
-                    inheritanceEdge
-                });
+                graph.getGraphLayoutCache().remove(new Object[] {inheritanceEdge});
                 inheritanceEdges.remove(entity);
             }
             else {
-                inheritanceEdge.setTarget(entityCells.get(
-                        entity.getSuperEntity().getName()).getChildAt(0));
+                inheritanceEdge.setTarget(entityCells.get(entity.getSuperEntity().getName()).getChildAt(0));
 
                 Map<DefaultEdge, AttributeMap> nested = new HashMap<>();
                 nested.put(inheritanceEdge, inheritanceEdge.getAttributes());
