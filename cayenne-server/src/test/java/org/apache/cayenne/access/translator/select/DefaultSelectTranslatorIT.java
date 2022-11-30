@@ -35,6 +35,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
+import org.apache.cayenne.testdo.testmap.Award;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -789,4 +790,70 @@ public class DefaultSelectTranslatorIT extends ServerCase {
 		}
 	}
 
+	@Test
+	public void testAliasedJoins() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						ExpressionFactory.matchAllExp("|awardArray", 1, 2),
+						Artist.AWARD_ARRAY.alias("aw1").dot(Award.NAME).eq("123")
+				));
+		query.select(context);
+
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, dataNode.getAdapter(),
+																		 context.getEntityResolver());
+		translator.translate();
+
+		int totalJoins = translator.getContext().getTableCount() - 1;
+		assertEquals(3, totalJoins);
+	}
+
+	@Test
+	public void testAliasedJoins_DifferentAliases() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
+						Artist.AWARD_ARRAY.alias("aw2").dot(Award.NAME).eq("123")
+				));
+		query.select(context);
+
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, dataNode.getAdapter(),
+																		 context.getEntityResolver());
+		translator.translate();
+
+		int totalJoins = translator.getContext().getTableCount() - 1;
+		assertEquals(2, totalJoins);
+	}
+
+	@Test
+	public void testAliasedJoins_DifferentProperties() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
+						Artist.PAINTING_ARRAY.alias("aw2").dot(Painting.PAINTING_TITLE).eq("123")
+				));
+		query.select(context);
+
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, dataNode.getAdapter(),
+																		 context.getEntityResolver());
+		translator.translate();
+
+		int totalJoins = translator.getContext().getTableCount() - 1;
+		assertEquals(2, totalJoins);
+	}
+
+	@Test
+	public void testAliasedJoins_FlattenedRelationship() {
+		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
+				.where(ExpressionFactory.and(
+						ExpressionFactory.matchAllExp("|groupArray.name", "ag1", "ag2")
+				));
+		query.select(context);
+
+		DefaultSelectTranslator translator = new DefaultSelectTranslator(query, dataNode.getAdapter(),
+																		 context.getEntityResolver());
+		translator.translate();
+
+		int totalJoins = translator.getContext().getTableCount() - 1;
+		assertEquals(4, totalJoins);
+	}
 }
