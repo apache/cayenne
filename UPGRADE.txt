@@ -5,6 +5,11 @@ IMPORTANT: be sure to read all notes for the intermediate releases between your
            current release and the release you are upgrading to.
 -------------------------------------------------------------------------------
 
+UPGRADING TO 4.2.RC2
+
+* Per CAY-2743, CAY-2749 and CAY-2750 There are several modules that was deprecated with no direct replacement (including ROP).
+You can still use safely these modules in Cayenne 4.2, but they will be removed in future versions.
+
 UPGRADING TO 4.2.M2
 
 * Per CAY-2659 All batch translators (`InsertBatchTranslator`, `UpdateBatchTranslator`, etc.) are updated to the new SQLBuilder utility.

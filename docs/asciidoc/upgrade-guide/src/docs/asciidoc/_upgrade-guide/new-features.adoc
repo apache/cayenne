@@ -13,8 +13,8 @@
 // License.
 == Java Version
 
-Minimum required JDK version is 1.8 or newer.
-Cayenne 4.2 is fully tested with Java 1.8 and 11.
+Minimum required JDK version is 8 or newer.
+Cayenne 4.2 is fully tested with Java 8, 11 and 17.
 
 == New Features
 
@@ -38,8 +38,9 @@ Property API are greatly revised.
 This API allows to use type aware expression factories aka Properties.
 These properties are normally generated as static constants in model classes, but they can also be created manually by
 `PropertyFactory` if needed.
+New API provides designated properties for different datatypes and relationships, including special variant that represents primary keys.
 
-Typical usage in select queries:
+Usage example in `ObjectSelect` query:
 
 [source,java]
 ----
@@ -51,6 +52,34 @@ Artist artist = ObjectSelect.query(Artist.class)
         .selectOne(context);
 ----
 
-//== Internal Changes
-//=== New select query translator
-//=== New Flush Action implementation
+See https://cayenne.apache.org/docs/4.2/api/org/apache/cayenne/exp/property/package-summary.html[JavaDoc] for details.
+
+=== New types support
+
+Cayenne 4.2 brings support for the Json and Geo types that are common now in RDBMS, see https://github.com/apache/cayenne-examples/tree/master/cayenne-jdbc-type-other[this demo] for the usage example.
+Additionally, Cayenne now supports `java.time.Duration` and `java.time.Period` out of the box.
+
+== Deprecations and API incompatibilities
+
+For the full list of deprecations refer to `UPGRADE.txt`. Here's the most important changes.
+
+=== SelectQuery
+
+`SelectQuery` is deprecated in favour of `ObjectSelect`. It's still fully functional and could be used,
+but it will be removed in a future.
+
+=== Obsolete modules
+
+There are several modules that are deprecated in Cayenne 4.2 and will be removed in a later version:
+
+- Cayenne ROP
+- Cayenne Web
+- Event bridges: XMPP, JMS and JGroups
+
+These modules could be still safely used in 4.2.
+
+=== ObjectId
+
+ObjectId can't be instantiated directly, `ObjectId.of(..)` factory methods should be used.
+E.g. `ObjectId.of("Artist", 1)` instead of `new ObjectId("Artist", 1)`.
+
