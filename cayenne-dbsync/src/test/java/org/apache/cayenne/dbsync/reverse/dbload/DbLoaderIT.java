@@ -96,7 +96,7 @@ public class DbLoaderIT extends ServerCase {
         assertFalse(date.isMandatory());
 
         // DbRelationship
-        assertEquals(4, artist.getRelationships().size());
+        assertEquals(5, artist.getRelationships().size());
 
         DbRelationship exhibits = artist.getRelationship("artistExhibits");
         assertNotNull(exhibits);
