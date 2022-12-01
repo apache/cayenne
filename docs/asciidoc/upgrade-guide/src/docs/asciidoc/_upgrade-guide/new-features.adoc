@@ -11,46 +11,10 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
+
 == Java Version
 
-Minimum required JDK version is 1.8 or newer.
-Cayenne 4.2 is fully tested with Java 1.8 and 11.
+Minimum required JDK version is 11 or newer.
+Cayenne 5.0 is fully tested with Java 11 and 17.
 
 == New Features
-
-=== Subqueries
-
-Expressions are now support subqueries.
-
-[source,java]
-----
-ColumnSelect<Long> subQuery = ObjectSelect
-        .columnQuery(Artist.class, Artist.ARTIST_ID_PK_PROPERTY)
-        .where(...);
-List<Artist> artists = ObjectSelect.query(Artist.class)
-        .where(Artist.ARTIST_ID_PK_PROPERTY.in(subQuery))
-        .select(context);
-----
-
-=== New Property API
-
-Property API are greatly revised.
-This API allows to use type aware expression factories aka Properties.
-These properties are normally generated as static constants in model classes, but they can also be created manually by
-`PropertyFactory` if needed.
-
-Typical usage in select queries:
-
-[source,java]
-----
-Painting painting = //...
-Artist artist = ObjectSelect.query(Artist.class)
-        .where(Artist.PAINTING_ARRAY.contains(painting))
-        .and(Artist.DATE_OF_BIRTH.year().gt(1950))
-        .and(Artist.ARTIST_NAME.lower().like("pablo%"))
-        .selectOne(context);
-----
-
-//== Internal Changes
-//=== New select query translator
-//=== New Flush Action implementation
