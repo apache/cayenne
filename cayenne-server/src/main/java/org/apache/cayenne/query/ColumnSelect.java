@@ -47,7 +47,7 @@ import org.apache.cayenne.map.EntityResolver;
  *      List<String> names = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME).select(context);
  *
  *      // select count:
- *      long count = ObjectSelect.columnQuery(Artist.class, Property.COUNT).selectOne();
+ *      long count = ObjectSelect.columnQuery(Artist.class, PropertyFactory.COUNT).selectOne();
  *
  *      // select only required properties of an entity:
  *      List<Object[]> data = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)
