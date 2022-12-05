@@ -15,6 +15,7 @@ Changes/New Features:
 
 Bug Fixes:
 
+CAY-2783 DbEntity to ObjEntity synchronization should check mandatory flag for primitive java types
 
 ----------------------------------
 Release: 4.2.RC2
