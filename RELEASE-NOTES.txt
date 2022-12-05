@@ -45,3 +45,4 @@ CAY-2764 Split expressions do not work with DB relationships
 CAY-2765 dbimport: check excluded catalogs and schemas for the SQLServer
 CAY-2774 Overriding service ordering in DI List causes DIRuntimeException
 CAY-2782 Modeler: save button becomes active on DataMap comment field focus
+CAY-2783 DbEntity to ObjEntity synchronization should check mandatory flag for primitive java types

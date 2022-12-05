@@ -305,7 +305,7 @@ public class EntityMergeSupport {
 
         String type = TypesMapping.getJavaBySqlType(dbAttribute);
         String primitiveType;
-        if (usingPrimitives && (primitiveType = CLASS_TO_PRIMITIVE.get(type)) != null) {
+        if (usingPrimitives && dbAttribute.isMandatory() && (primitiveType = CLASS_TO_PRIMITIVE.get(type)) != null) {
             return primitiveType;
         }
         return type;
