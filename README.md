@@ -19,7 +19,7 @@
 Apache Cayenne
 ==============
 
-[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server/4.2.RC1.svg)](https://cayenne.apache.org/download/)
+[![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server/4.2.RC2.svg)](https://cayenne.apache.org/download/)
 [![verify and deploy 4.2](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push-4.2.yml/badge.svg)](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push-4.2.yml)
 
 
@@ -73,7 +73,7 @@ Here is example of Cayenne Maven plugin setup that will do it:
 <plugin>
     <groupId>org.apache.cayenne.plugins</groupId>
     <artifactId>cayenne-maven-plugin</artifactId>
-    <version>4.2.RC1</version>
+    <version>4.2.RC2</version>
 
     <dependencies>
         <dependency>
@@ -116,7 +116,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.2.RC1'
+        classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.2.RC2'
         classpath 'mysql:mysql-connector-java:8.0.29'
     }
 }
@@ -157,7 +157,7 @@ gradlew build
     <dependency>
         <groupId>org.apache.cayenne</groupId>
         <artifactId>cayenne-server</artifactId>
-        <version>4.2.RC1</version>
+        <version>4.2.RC2</version>
     </dependency>
 </dependencies>
 ```
@@ -165,7 +165,7 @@ gradlew build
 ##### Gradle
 
 ```gradle
-compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.2.RC1'
+compile group: 'org.apache.cayenne', name: 'cayenne-server', version: '4.2.RC2'
  
 // or, if Gradle plugin is used
 compile cayenne.dependency('server')
