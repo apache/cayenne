@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -173,29 +174,67 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         return rootPath;
     }
 
+    /**
+     * @param rootPath absolute target path for the cgen generation
+     */
     public void setRootPath(Path rootPath) {
+        if (!Objects.requireNonNull(rootPath).isAbsolute()) {
+            throw new ValidationException("Root path : " + '"' + rootPath + '"' + "should be absolute");
+        }
         this.rootPath = rootPath;
     }
 
-    public void setRelPath(Path relPath) {
+    /**
+     * Directly set relative (to {@code rootPath}) output directory
+     * @param relPath to set
+     * @since 5.0 renamed from {@code setRelPath()}
+     */
+    public void setRelativePath(Path relPath) {
         this.relPath = relPath;
     }
 
-    public void setRelPath(String pathStr) {
+    public Path getRelPath() {
+        return relPath;
+    }
+
+    /**
+     * @param pathStr to update relative path with
+     * @since 5.0 renamed from {@code setRelPath()}
+     */
+    public void updateRelativeOutputPath(String pathStr) {
         Path path = Paths.get(pathStr);
-
         if (rootPath != null) {
-
-            if (!rootPath.isAbsolute()) {
-                throw new ValidationException("Root path : " + '"' + rootPath + '"' + "should be absolute");
-            }
-
             if (path.isAbsolute() && rootPath.getRoot().equals(path.getRoot())) {
                 this.relPath = rootPath.relativize(path);
                 return;
             }
         }
         this.relPath = path;
+    }
+
+    /**
+     * @return normalized relative path
+     * @since 5.0 renamed from {@code buildRelPath()} and made package private
+     */
+    String getNormalizedRelativePath() {
+        if (relPath == null || relPath.toString().isEmpty()) {
+            return ".";
+        }
+        return relPath.toString();
+    }
+
+    /**
+     * @return calculated output directory
+     * @since 5.0 renamed from {@code buildPath()}
+     */
+    public Path buildOutputPath() {
+        if (rootPath == null) {
+            return relPath;
+        }
+        if (relPath == null) {
+            return rootPath;
+        }
+        return rootPath.resolve(relPath).toAbsolutePath().normalize();
     }
 
     public boolean isOverwrite() {
@@ -310,17 +349,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         this.createPKProperties = createPKProperties;
     }
 
-    public Path getRelPath() {
-        return relPath;
-    }
-
-    public String buildRelPath() {
-        if (relPath == null || relPath.toString().isEmpty()) {
-            return ".";
-        }
-        return relPath.toString();
-    }
-
     Collection<Artifact> getArtifacts() {
         return artifacts;
     }
@@ -343,16 +371,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     void addArtifact(Artifact artifact) {
         artifacts.add(artifact);
-    }
-
-    public Path buildPath() {
-        if (rootPath == null) {
-            return relPath;
-        }
-        if (relPath == null) {
-            return rootPath;
-        }
-        return rootPath.resolve(relPath).toAbsolutePath().normalize();
     }
 
     public void loadEntity(ObjEntity entity) {
@@ -422,7 +440,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("name", this.name)
                 .simpleTag("excludeEntities", getExcludeEntites())
                 .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
-                .simpleTag("destDir", separatorsToUnix(buildRelPath()))
+                .simpleTag("destDir", separatorsToUnix(getNormalizedRelativePath()))
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
                 .start("template").cdata(this.template.getData(), !this.template.isFile()).end()
                 .start("superTemplate").cdata(this.superTemplate.getData(), !this.superTemplate.isFile()).end()

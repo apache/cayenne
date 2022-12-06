@@ -54,70 +54,70 @@ public class CgenConfigurationTest {
         public void equalRootsEqualDirectories() {
             configuration.setRootPath(Paths.get("C:\\test1\\test2\\test3"));
             Path relPath = Paths.get("C:\\test1\\test2\\test3");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get(""), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void equalRootsNotEqualDirectories() {
             configuration.setRootPath(Paths.get("C:\\test1\\test2\\test3"));
             Path relPath = Paths.get("C:\\test1\\test2\\testAnother");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("..\\testAnother"), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void equalRootsEmptyDirectories() {
             configuration.setRootPath(Paths.get("C:\\"));
             Path relPath = Paths.get("C:\\");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get(""), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void notEqualRootsEqualDirectories() {
             configuration.setRootPath(Paths.get("C:\\test1\\test2\\test3"));
             Path relPath = Paths.get("E:\\test1\\test2\\test3");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("E:\\test1\\test2\\test3"), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void notEqualRootsNotEqualDirectories() {
             configuration.setRootPath(Paths.get("C:\\test1\\test2\\test3"));
             Path relPath = Paths.get("E:\\test1\\test2\\testAnother");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("E:\\test1\\test2\\testAnother"), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void notEqualRootsEmptyDirectories() {
             configuration.setRootPath(Paths.get("C:\\"));
             Path relPath = Paths.get("E:\\");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("E:\\"), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test(expected = ValidationException.class)
         public void emptyRootNotEmptyRelPath() {
             configuration.setRootPath(Paths.get(""));
             Path relPath = Paths.get("E:\\");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("E:\\"), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
@@ -125,29 +125,29 @@ public class CgenConfigurationTest {
             configuration.setRootPath(Paths.get("E:\\"));
             Path relPath = Paths.get("");
 
-            configuration.setRelPath(relPath);
+            configuration.setRelativePath(relPath);
 
             assertEquals(relPath, configuration.getRelPath());
-            assertEquals(Paths.get("E:\\"), configuration.buildPath());
+            assertEquals(Paths.get("E:\\"), configuration.buildOutputPath());
         }
 
         @Test(expected = InvalidPathException.class)
         public void invalidRelPath() {
             configuration.setRootPath(Paths.get("C:\\test1\\test2\\test3"));
-            configuration.setRelPath("invalidRoot:\\test");
+            configuration.updateRelativeOutputPath("invalidRoot:\\test");
         }
 
         @Test(expected = InvalidPathException.class)
         public void invalidRootPath() {
             configuration.setRootPath(Paths.get("invalidRoot:\\test"));
-            configuration.setRelPath("C:\\test1\\test2\\test3");
+            configuration.updateRelativeOutputPath("C:\\test1\\test2\\test3");
         }
 
         @Test
         public void nullRootPath() {
-            configuration.setRelPath("C:\\test1\\test2\\test3");
+            configuration.updateRelativeOutputPath("C:\\test1\\test2\\test3");
             assertEquals(Paths.get("C:\\test1\\test2\\test3"), configuration.getRelPath());
-            assertEquals(Paths.get("C:\\test1\\test2\\test3"), configuration.buildPath());
+            assertEquals(Paths.get("C:\\test1\\test2\\test3"), configuration.buildOutputPath());
         }
     }
 
@@ -169,79 +169,79 @@ public class CgenConfigurationTest {
         public void equalRootsEqualDirectories() {
             configuration.setRootPath(Paths.get("/test1/test2/test3"));
             Path relPath = Paths.get("/test1/test2/test3");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
 
             assertEquals(Paths.get(""), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void equalRootsNotEqualDirectories() {
             configuration.setRootPath(Paths.get("/test1/test2/test3"));
             Path relPath = Paths.get("/test1/test2/testAnother");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("../testAnother"), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void equalRootsEmptyDirectories() {
             configuration.setRootPath(Paths.get("/"));
             Path relPath = Paths.get("/");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get(""), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void concatCorrectRootPathAndRelPath() {
             configuration.setRootPath(Paths.get("/test1/test2/test3"));
             Path relPath = Paths.get("test1/test2/test3");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("test1/test2/test3"), configuration.getRelPath());
-            assertEquals(Paths.get("/test1/test2/test3/test1/test2/test3"), configuration.buildPath());
+            assertEquals(Paths.get("/test1/test2/test3/test1/test2/test3"), configuration.buildOutputPath());
         }
 
         @Test(expected = ValidationException.class)
         public void emptyRootNotEmptyRelPath() {
             configuration.setRootPath(Paths.get(""));
             Path relPath = Paths.get("/");
-            configuration.setRelPath(relPath.toString());
+            configuration.updateRelativeOutputPath(relPath.toString());
 
             assertEquals(Paths.get("/"), configuration.getRelPath());
-            assertEquals(relPath, configuration.buildPath());
+            assertEquals(relPath, configuration.buildOutputPath());
         }
 
         @Test
         public void notEmptyRootEmptyRelPath() {
             configuration.setRootPath(Paths.get("/"));
-            configuration.setRelPath("");
+            configuration.updateRelativeOutputPath("");
 
             assertEquals(Paths.get(""), configuration.getRelPath());
-            assertEquals(Paths.get("/"), configuration.buildPath());
+            assertEquals(Paths.get("/"), configuration.buildOutputPath());
         }
 
         @Test(expected = ValidationException.class)
         public void invalidRootPath() {
             configuration.setRootPath(Paths.get("invalidRoot:/test"));
-            configuration.setRelPath("/test1/test2/test3");
+            configuration.updateRelativeOutputPath("/test1/test2/test3");
         }
 
         @Test(expected = ValidationException.class)
         public void concatInvalidRootPathAndRelPath() {
             configuration.setRootPath(Paths.get("invalidRoot:/test"));
-            configuration.setRelPath("test1/test2/test3");
+            configuration.updateRelativeOutputPath("test1/test2/test3");
         }
 
         @Test
         public void nullRootPath() {
-            configuration.setRelPath("/test1/test2/test3");
+            configuration.updateRelativeOutputPath("/test1/test2/test3");
             assertEquals(Paths.get("/test1/test2/test3"), configuration.getRelPath());
-            assertEquals(Paths.get("/test1/test2/test3"), configuration.buildPath());
+            assertEquals(Paths.get("/test1/test2/test3"), configuration.buildOutputPath());
         }
     }
 

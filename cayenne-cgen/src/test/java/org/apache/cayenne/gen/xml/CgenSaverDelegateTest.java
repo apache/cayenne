@@ -50,7 +50,19 @@ public class CgenSaverDelegateTest {
         CgenConfiguration config = new CgenConfiguration();
 
         config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
-        config.setRelPath(Paths.get(""));
+        config.setRelativePath(Paths.get(""));
+
+        URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
+
+        CgenSaverDelegate.resolveOutputDir(baseURL, config);
+
+        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
+        assertEquals(Paths.get("../java"), config.getRelPath());
+    }
+
+    @Test
+    public void testEmptyRootInMavenTree() throws Exception {
+        CgenConfiguration config = new CgenConfiguration();
 
         URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
 
@@ -64,17 +76,11 @@ public class CgenSaverDelegateTest {
     public void testEmptyRoot() throws Exception {
         CgenConfiguration config = new CgenConfiguration();
 
-        URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
+        URL baseURL = Paths.get("/tmp/somefolder").toUri().toURL();
 
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
-        assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
+        assertEquals(Paths.get("/tmp/somefolder").toAbsolutePath(), config.getRootPath());
         assertEquals(Paths.get(""), config.getRelPath());
     }
-
-
-
-
-
-
 }

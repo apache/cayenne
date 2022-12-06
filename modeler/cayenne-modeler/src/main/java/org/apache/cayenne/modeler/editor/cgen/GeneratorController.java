@@ -64,7 +64,7 @@ public abstract class GeneratorController extends CayenneController {
         this.cgenConfiguration = cgenConfiguration;
 
         if (cgenConfiguration.getRootPath() != null) {
-            getView().getOutputFolder().setText(cgenConfiguration.buildPath().toString());
+            getView().getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
         }
         if(cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
             getParentController().setCurrentClass(cgenConfiguration.getDataMap());

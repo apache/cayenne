@@ -268,7 +268,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
 
 		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
-		cgenConfiguration.setRelPath(".");
+		cgenConfiguration.updateRelativeOutputPath(".");
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
@@ -290,7 +290,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		TemplateType templateType = TemplateType.DATAMAP_SINGLE_CLASS;
 
 		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
-		cgenConfiguration.setRelPath(".");
+		cgenConfiguration.updateRelativeOutputPath(".");
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");

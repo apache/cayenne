@@ -10,6 +10,7 @@ import org.apache.cayenne.crypto.db.Table1;
 import org.apache.cayenne.crypto.db.Table7;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -26,6 +27,7 @@ public abstract class _Table1 extends BaseDataObject {
 
     public static final EntityProperty<Table1> SELF = PropertyFactory.createSelf(Table1.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Table1", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final NumericProperty<Integer> CRYPTO_INT = PropertyFactory.createNumeric("cryptoInt", Integer.class);

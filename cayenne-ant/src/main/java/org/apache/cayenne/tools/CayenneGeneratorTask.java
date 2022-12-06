@@ -184,7 +184,9 @@ public class CayenneGeneratorTask extends CayenneTask {
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap){
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
-        cgenConfiguration.setRelPath(destDir != null ? destDir.toPath() : cgenConfiguration.getRelPath());
+        if(destDir != null) {
+            cgenConfiguration.setRelativePath(destDir.toPath());
+        }
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
         cgenConfiguration.setMakePairs(makepairs != null ? makepairs : cgenConfiguration.isMakePairs());
         if(mode != null && mode.equals("datamap")) {

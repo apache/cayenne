@@ -531,7 +531,11 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
      */
     public void onProjectSaved(ProjectSavedEvent e) {
         // update path input
-        getStandardModeController().getView().getOutputFolder().setText(cgenConfiguration.getRootPath().toString());
+        if(getStandardModeController() != null
+                && getStandardModeController().getView() != null
+                && cgenConfiguration != null) {
+            getStandardModeController().getView().getOutputFolder().setText(cgenConfiguration.getRootPath().toString());
+        }
     }
 
     private final Predicate<ConfigurationNode> defaultPredicate = o -> o.acceptVisitor(new BaseConfigurationNodeVisitor<Boolean>() {

@@ -341,7 +341,7 @@ public class CgenTask extends BaseCayenneTask {
         } else {
             getLogger().info("Using default cgen config.");
             cgenConfiguration = new CgenConfiguration();
-            cgenConfiguration.setRelPath(getDestDirFile().getPath());
+            cgenConfiguration.updateRelativeOutputPath(getDestDirFile().getPath());
             cgenConfiguration.setDataMap(dataMap);
             return Collections.singletonList(cgenConfiguration);
         }
@@ -350,7 +350,9 @@ public class CgenTask extends BaseCayenneTask {
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
-        cgenConfiguration.setRelPath(getDestDirFile() != null ? getDestDirFile().toPath() : cgenConfiguration.getRelPath());
+        if(getDestDirFile() != null) {
+            cgenConfiguration.setRelativePath(getDestDirFile().toPath());
+        }
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
         cgenConfiguration.setMakePairs(makePairs != null ? makePairs : cgenConfiguration.isMakePairs());
         if (mode != null && mode.equals("datamap")) {

@@ -151,7 +151,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
         if (path.trim().length() == 0) {
             return;
         }
-        configuration.setRelPath(Paths.get(path));
+        configuration.setRelativePath(Paths.get(path));
     }
 
     private void createGenerationMode(String mode) {
