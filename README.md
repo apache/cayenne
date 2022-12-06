@@ -79,7 +79,7 @@ Here is example of Cayenne Maven plugin setup that will do it:
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.29</version>
+            <version>8.0.31</version>
         </dependency>
     </dependencies>
 
@@ -117,7 +117,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.apache.cayenne.plugins', name: 'cayenne-gradle-plugin', version: '4.2.RC2'
-        classpath 'mysql:mysql-connector-java:8.0.29'
+        classpath 'mysql:mysql-connector-java:8.0.31'
     }
 }
 
