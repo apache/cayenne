@@ -41,6 +41,7 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.DbImportController;
+import org.apache.cayenne.modeler.event.ProjectSavedEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.BindingBuilder;
@@ -49,8 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JOptionPane;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -150,6 +149,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         projectController.addObjEntityListener(this);
         projectController.addEmbeddableListener(this);
         projectController.addDataMapListener(this);
+        projectController.addProjectSavedListener(this::onProjectSaved);
     }
 
     @Override
@@ -311,23 +311,6 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         map.getEmbeddables().forEach(embeddable -> configuration.loadEmbeddable(embeddable.getClassName()));
 
         Path basePath = Paths.get(ModelerUtil.initOutputFolder());
-
-        // TODO: this should be done in actual generation, not here
-        // no such folder
-        if (!Files.exists(basePath)) {
-            try {
-                Files.createDirectories(basePath);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(getView(), "Can't create directory. Select a different one.");
-                return null;
-            }
-        }
-        // not a directory
-        if (!Files.isDirectory(basePath)) {
-            JOptionPane.showMessageDialog(this.getView(), basePath + " is not a valid directory.");
-            return null;
-        }
-
         if (map.getLocation() != null) {
             configuration.setRootPath(basePath);
         }
@@ -540,6 +523,15 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     public CgenConfiguration getCgenConfiguration() {
         return cgenConfiguration;
+    }
+
+    /**
+     * Update cgen path if project is saved and no path is already set manually
+     * @param e event we are processing
+     */
+    public void onProjectSaved(ProjectSavedEvent e) {
+        // update path input
+        getStandardModeController().getView().getOutputFolder().setText(cgenConfiguration.getRootPath().toString());
     }
 
     private final Predicate<ConfigurationNode> defaultPredicate = o -> o.acceptVisitor(new BaseConfigurationNodeVisitor<Boolean>() {

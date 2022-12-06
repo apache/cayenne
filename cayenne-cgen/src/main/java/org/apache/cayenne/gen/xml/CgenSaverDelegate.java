@@ -22,6 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
+import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 
@@ -70,16 +71,19 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
         if(Files.isRegularFile(resourcePath)) {
             resourcePath = resourcePath.getParent();
         }
+
         Path oldRoot = cgenConfiguration.getRootPath();
         if(oldRoot == null) {
-            cgenConfiguration.setRootPath(resourcePath);
+            Path cgenPath = Utils.getMavenSrcPathForPath(resourcePath.toString())
+                    .map(Path::of)
+                    .orElse(resourcePath);
+            cgenConfiguration.setRootPath(cgenPath);
         }
+
         Path prevPath = cgenConfiguration.buildPath();
         if(prevPath != null) {
             if(prevPath.isAbsolute()) {
-
                 Path relPath = prevPath;
-
                 if (resourcePath.getRoot().equals(prevPath.getRoot())) {
                     relPath = resourcePath.relativize(prevPath).normalize();
                 }

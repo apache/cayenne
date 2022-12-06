@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
-import javax.swing.JOptionPane;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
@@ -93,23 +90,6 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         Path basePath = Paths.get(ModelerUtil.initOutputFolder());
-
-        // no such folder
-        if (!Files.exists(basePath)) {
-            try {
-                Files.createDirectories(basePath);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(getView(), "Can't create directory. Select a different one.");
-                return null;
-            }
-        }
-
-        // not a directory
-        if (!Files.isDirectory(basePath)) {
-            JOptionPane.showMessageDialog(getView(), basePath + " is not a valid directory.");
-            return null;
-        }
-
         cgenConfiguration.setRootPath(basePath);
         Preferences preferences = Application.getInstance().getPreferencesNode(GeneralPreferences.class, "");
         if (preferences != null) {

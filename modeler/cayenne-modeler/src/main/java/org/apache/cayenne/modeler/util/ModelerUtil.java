@@ -44,6 +44,7 @@ import java.util.UUID;
 
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.modeler.Application;
@@ -219,47 +220,26 @@ public final class ModelerUtil {
         child.setLocation(x, y);
     }
 
+
+
     /**
+     * Get default output path for the class generator.
+     * Current implementation of this method uses {@code cayenne.cgen.destdir} if set or tries to check
+     * if current project is inside Maven-like {@code resource} directory to return corresponding {@code src} directory.
+     *
+     * @return best guess for the cgen output
      * @since 4.1
      */
     public static String initOutputFolder() {
-        String path;
         if (System.getProperty("cayenne.cgen.destdir") != null) {
             return System.getProperty("cayenne.cgen.destdir");
-        } else {
-            // init default directory..
-            FSPath lastPath = Application.getInstance().getFrameController().getLastDirectory();
-
-            path = checkDefaultMavenResourceDir(lastPath, "test");
-
-            if (path != null || (path = checkDefaultMavenResourceDir(lastPath, "main")) != null) {
-                return path;
-            } else {
-                File lastDir = lastPath.getExistingDirectory(false);
-                return lastDir != null ? lastDir.getAbsolutePath() : ".";
-            }
         }
-    }
 
-    private static String checkDefaultMavenResourceDir(FSPath lastPath, String dirType) {
-        String path = lastPath.getPath();
-        String resourcePath = buildFilePath("src", dirType, "resources");
-        int idx = path.indexOf(resourcePath);
-        if (idx < 0) {
-            return null;
-        }
-        return path.substring(0, idx) + buildFilePath("src", dirType, "java");
-    }
-
-    private static String buildFilePath(String... pathElements) {
-        if (pathElements.length == 0) {
-            return "";
-        }
-        StringBuilder path = new StringBuilder(pathElements[0]);
-        for (int i = 1; i < pathElements.length; i++) {
-            path.append(File.separator).append(pathElements[i]);
-        }
-        return path.toString();
+        FSPath lastPath = Application.getInstance().getFrameController().getLastDirectory();
+        return Utils.getMavenSrcPathForPath(lastPath.getPath()).orElseGet(() -> {
+            File lastDir = lastPath.getExistingDirectory(false);
+            return lastDir != null ? lastDir.getAbsolutePath() : ".";
+        });
     }
 
 }
