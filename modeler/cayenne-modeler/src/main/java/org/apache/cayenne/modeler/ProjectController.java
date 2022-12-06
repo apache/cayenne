@@ -878,9 +878,8 @@ public class ProjectController extends CayenneController {
     }
 
     public void fireProjectSavedEvent(ProjectSavedEvent e) {
-        setDirty(true);
         for (ProjectSavedListener eventListener : listenerList.getListeners(ProjectSavedListener.class)) {
-            eventListener.updateNamesAfterSaving(e);
+            eventListener.onProjectSaved(e);
         }
     }
 

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.modeler.event;
 
+import org.apache.cayenne.modeler.ProjectController;
+
 import java.util.EventObject;
 
 /**
@@ -33,7 +35,12 @@ public class ProjectSavedEvent extends EventObject {
      * @param source the object on which the Event initially occurred
      * @throws IllegalArgumentException if source is null
      */
-    public ProjectSavedEvent(Object source) {
+    public ProjectSavedEvent(ProjectController source) {
         super(source);
+    }
+
+    @Override
+    public ProjectController getSource() {
+        return (ProjectController)super.getSource();
     }
 }

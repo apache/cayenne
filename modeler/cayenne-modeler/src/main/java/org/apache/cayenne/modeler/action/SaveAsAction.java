@@ -34,6 +34,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.validator.ValidatorDialog;
 import org.apache.cayenne.modeler.event.ProjectOnSaveEvent;
+import org.apache.cayenne.modeler.event.ProjectSavedEvent;
 import org.apache.cayenne.modeler.util.CayenneAction;
 import org.apache.cayenne.pref.RenamedPreferences;
 import org.apache.cayenne.project.Project;
@@ -143,6 +144,7 @@ public class SaveAsAction extends CayenneAction {
 
         // Reset the watcher now
         getProjectController().getFileChangeTracker().reconfigure();
+        getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(getProjectController()));
 
         return true;
     }

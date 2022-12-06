@@ -87,8 +87,8 @@ public class SaveAction extends SaveAsAction {
 
         // Reset the watcher now
         getProjectController().getFileChangeTracker().reconfigure();
+        getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(getProjectController()));
 
-        getProjectController().fireProjectSavedEvent(new ProjectSavedEvent(this));
         return true;
     }
 }

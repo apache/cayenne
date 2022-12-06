@@ -27,5 +27,5 @@ import java.util.EventListener;
  * @since 5.0
  */
 public interface ProjectSavedListener extends EventListener {
-    void updateNamesAfterSaving(ProjectSavedEvent e);
+    void onProjectSaved(ProjectSavedEvent e);
 }
