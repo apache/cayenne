@@ -276,22 +276,22 @@ public class ClassGenerationAction {
 	protected void validateAttributes() {
 		Path dir = cgenConfiguration.buildPath();
 		if (dir == null) {
-			throw new CayenneRuntimeException("'rootPath' attribute is missing.");
+			throw new CayenneRuntimeException("Output directory is not set.");
 		}
 		if(Files.notExists(dir)) {
 			try {
 				Files.createDirectories(dir);
 			} catch (IOException e) {
-				throw new CayenneRuntimeException("can't create directory");
+				throw new CayenneRuntimeException("Can't create output directory '%s'", dir);
 			}
 		}
 
 		if (!Files.isDirectory(dir)) {
-			throw new CayenneRuntimeException("'destDir' is not a directory.");
+			throw new CayenneRuntimeException("'%s' is not a directory.", dir);
 		}
 
 		if (!Files.isWritable(dir)) {
-			throw new CayenneRuntimeException("Do not have write permissions for %s", dir);
+			throw new CayenneRuntimeException("No write permission for the output directory '%s'", dir);
 		}
 	}
 
