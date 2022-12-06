@@ -20,13 +20,13 @@ SET SCHEMA schema_01;
 
 CREATE TABLE schema_01.new_table (
   id INTEGER NOT NULL,
-  COL2 INTEGER,
+  COL2 INTEGER NOT NULL,
   PRIMARY KEY (id)
  );
 
 CREATE TABLE schema_01.existing_table (
   id INTEGER NOT NULL,
-  COL2 INTEGER,
+  COL2 INTEGER NOT NULL,
   PRIMARY KEY (id)
  );
 

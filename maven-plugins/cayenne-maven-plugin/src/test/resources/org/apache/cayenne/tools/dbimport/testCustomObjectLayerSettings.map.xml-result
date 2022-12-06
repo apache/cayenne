@@ -23,11 +23,11 @@
           project-version="10">
     <property name="defaultSchema" value="SCHEMA_01"/>
     <db-entity name="EXISTING_TABLE" schema="SCHEMA_01">
-    	<db-attribute name="COL2" type="INTEGER" length="10"/>
+    	<db-attribute name="COL2" type="INTEGER" isMandatory="true" length="10"/>
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
     <db-entity name="NEW_TABLE" schema="SCHEMA_01">
-    	<db-attribute name="COL2" type="INTEGER" length="10"/>
+    	<db-attribute name="COL2" type="INTEGER" isMandatory="true" length="10"/>
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
     <db-entity name="XYZ_PREFIXED_NEW_TABLE" schema="SCHEMA_01">
