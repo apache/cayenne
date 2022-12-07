@@ -238,10 +238,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      */
     public Path buildOutputPath() {
         if (rootProjectPath == null) {
-            if(!cgenOutputRelativePath.isAbsolute()) {
-                throw new ValidationException("Output directory is a relative path but no root is set.");
-            }
-            // this should be only in case this is a new unsaved project
+            // this could be an unsaved project or direct usage in tools (Ant, Maven or Gradle)
             return cgenOutputRelativePath;
         }
 
