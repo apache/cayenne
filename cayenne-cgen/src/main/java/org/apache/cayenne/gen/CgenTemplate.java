@@ -22,6 +22,9 @@ package org.apache.cayenne.gen;
 import java.util.Objects;
 
 /**
+ * Template source for the class generation.
+ * Could be either some resource (file or classpath resource) or just text.
+ *
  * @since 5.0
  */
 public class CgenTemplate {

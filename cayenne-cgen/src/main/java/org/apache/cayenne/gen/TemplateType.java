@@ -18,41 +18,39 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
-import java.util.Arrays;
-
 /**
  * Defines class generation template types.
- * 
+ *
  * @since 3.0
  */
 public enum TemplateType {
 
-    ENTITY_SINGLE_CLASS(false,"Single Entity Class","templates/v4_1/singleclass.vm"),
+    ENTITY_SINGLE_CLASS(false, "Single Entity Class", "templates/v4_1/singleclass.vm"),
 
-    ENTITY_SUPERCLASS(true,"Entity Superclass","templates/v4_1/superclass.vm"),
+    ENTITY_SUPERCLASS(true, "Entity Superclass", "templates/v4_1/superclass.vm"),
 
-    ENTITY_SUBCLASS(false,"Entity Subclass","templates/v4_1/subclass.vm"),
+    ENTITY_SUBCLASS(false, "Entity Subclass", "templates/v4_1/subclass.vm"),
 
-    EMBEDDABLE_SINGLE_CLASS(false,"Single Embeddable Class","templates/v4_1/embeddable-singleclass.vm"),
+    EMBEDDABLE_SINGLE_CLASS(false, "Single Embeddable Class", "templates/v4_1/embeddable-singleclass.vm"),
 
-    EMBEDDABLE_SUPERCLASS(true,"Embeddable Superclass","templates/v4_1/embeddable-superclass.vm"),
+    EMBEDDABLE_SUPERCLASS(true, "Embeddable Superclass", "templates/v4_1/embeddable-superclass.vm"),
 
-    EMBEDDABLE_SUBCLASS(false,"Embeddable Subclass", "templates/v4_1/embeddable-subclass.vm"),
+    EMBEDDABLE_SUBCLASS(false, "Embeddable Subclass", "templates/v4_1/embeddable-subclass.vm"),
 
-    DATAMAP_SINGLE_CLASS(false,"Single DataMap Class","templates/v4_1/datamap-singleclass.vm"),
+    DATAMAP_SINGLE_CLASS(false, "Single DataMap Class", "templates/v4_1/datamap-singleclass.vm"),
 
-    DATAMAP_SUPERCLASS(true,"DataMap Superclass", "templates/v4_1/datamap-superclass.vm"),
+    DATAMAP_SUPERCLASS(true, "DataMap Superclass", "templates/v4_1/datamap-superclass.vm"),
 
-    DATAMAP_SUBCLASS(false,"DataMap Subclass",   "templates/v4_1/datamap-subclass.vm");
+    DATAMAP_SUBCLASS(false, "DataMap Subclass", "templates/v4_1/datamap-subclass.vm");
 
     private final boolean superclass;
     private final String readableName;
     private final CgenTemplate defaultTemplate;
 
-    TemplateType(boolean superclass, String readableName,  String defaultTemplate) {
+    TemplateType(boolean superclass, String readableName, String defaultTemplate) {
         this.superclass = superclass;
         this.readableName = readableName;
-        this.defaultTemplate = new CgenTemplate(defaultTemplate,true,this);
+        this.defaultTemplate = new CgenTemplate(defaultTemplate, true, this);
     }
 
     public boolean isSuperclass() {
@@ -63,13 +61,20 @@ public enum TemplateType {
         return readableName;
     }
 
-    public String pathFromSourceRoot() {return defaultTemplate.getData();}
+    public String pathFromSourceRoot() {
+        return defaultTemplate.getData();
+    }
 
     public CgenTemplate defaultTemplate() {
         return defaultTemplate;
     }
 
     public static boolean isDefault(String templateText) {
-        return Arrays.stream(values()).anyMatch(t -> t.pathFromSourceRoot().equals(templateText));
+        for (TemplateType type : values()) {
+            if (type.pathFromSourceRoot().equals(templateText)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
