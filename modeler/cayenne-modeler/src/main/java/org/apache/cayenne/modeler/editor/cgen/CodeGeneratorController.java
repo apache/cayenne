@@ -287,10 +287,6 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         }
 
         cgenConfiguration = createDefaultCgenConfiguration(dataMap);
-        if (cgenConfiguration == null) {
-            return;
-        }
-
         addToSelectedEntities(dataMap.getObjEntities()
                 .stream()
                 .map(Entity::getName)
@@ -309,10 +305,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
         map.getObjEntities().forEach(configuration::loadEntity);
         map.getEmbeddables().forEach(embeddable -> configuration.loadEmbeddable(embeddable.getClassName()));
-
-        Path basePath = Paths.get(ModelerUtil.initOutputFolder());
         if (map.getLocation() != null) {
-            configuration.setRootPath(basePath);
+            Path basePath = Paths.get(ModelerUtil.initOutputFolder());
+            configuration.updateOutputPath(basePath);
         }
         Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
         if (preferences != null) {
