@@ -307,6 +307,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
         });
     }
 
+    /**
+     * @param dataMap loaded cgen config related to
+     * @return base path to the Cayenne project
+     */
     private Path buildRootPath(DataMap dataMap) {
         URL url = dataMap.getConfigurationSource().getURL();
         Path resourcePath;

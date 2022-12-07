@@ -534,7 +534,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         if(getStandardModeController() != null
                 && getStandardModeController().getView() != null
                 && cgenConfiguration != null) {
-            getStandardModeController().getView().getOutputFolder().setText(cgenConfiguration.getRootPath().toString());
+            getStandardModeController().getView().getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
         }
     }
 

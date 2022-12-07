@@ -46,13 +46,10 @@ public class GeneratorControllerPanel extends JPanel {
         this.outputFolder = new TextAdapter(new JTextField()) {
             @Override
             protected void updateModel(String text) throws ValidationException {
-
                 CgenConfiguration cgenByDataMap = getCgenConfig();
-
                 if (cgenByDataMap != null) {
-
                     if (cgenByDataMap.getRootPath() == null && !Paths.get(text).isAbsolute()) {
-                        throw new ValidationException("You should save project to use rel path as output directory ");
+                        throw new ValidationException("You should save project to use relative path as an output directory.");
                     }
                     cgenByDataMap.updateRelativeOutputPath(text);
                     checkConfigDirty();

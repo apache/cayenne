@@ -62,6 +62,30 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
             return;
         }
 
+        Path baseDirectory = getBaseDirectoryForURL(baseURL);
+        Path prevRootPath = cgenConfiguration.getRootPath();
+        Path prevOutputPath = cgenConfiguration.buildOutputPath();
+        // Update cgen root path.
+        cgenConfiguration.setRootPath(baseDirectory);
+
+        // If no root path was set, try to calculate if we are inside Maven tree structure and use it
+        if(prevRootPath == null) {
+            Utils.getMavenSrcPathForPath(baseDirectory)
+                    .map(Path::of)
+                    .ifPresent(cgenConfiguration::updateRelativeOutputPath);
+        }
+
+        if(prevOutputPath != null) {
+            // Update relative path to match with the new root
+            cgenConfiguration.updateRelativeOutputPath(prevOutputPath);
+        } else if(cgenConfiguration.getRelPath() == null) {
+            // No path was set, and we are not in the Maven tree.
+            // Set output dir match with the root, nothing else we could do here
+            cgenConfiguration.updateRelativeOutputPath(baseDirectory);
+        }
+    }
+
+    private static Path getBaseDirectoryForURL(URL baseURL) {
         Path resourcePath;
         try {
             resourcePath = Paths.get(baseURL.toURI());
@@ -71,25 +95,6 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
         if(Files.isRegularFile(resourcePath)) {
             resourcePath = resourcePath.getParent();
         }
-
-        Path oldRoot = cgenConfiguration.getRootPath();
-        if(oldRoot == null) {
-            Path cgenPath = Utils.getMavenSrcPathForPath(resourcePath.toString())
-                    .map(Path::of)
-                    .orElse(resourcePath);
-            cgenConfiguration.setRootPath(cgenPath);
-        }
-
-        Path prevPath = cgenConfiguration.buildOutputPath();
-        if(prevPath != null) {
-            if(prevPath.isAbsolute()) {
-                Path relPath = prevPath;
-                if (resourcePath.getRoot().equals(prevPath.getRoot())) {
-                    relPath = resourcePath.relativize(prevPath).normalize();
-                }
-                cgenConfiguration.setRelativePath(relPath);
-            }
-        }
-        cgenConfiguration.setRootPath(resourcePath);
+        return resourcePath;
     }
 }

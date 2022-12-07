@@ -47,6 +47,18 @@ import org.apache.cayenne.validation.ValidationException;
  */
 public class CgenConfiguration implements Serializable, XMLSerializable {
 
+    /**
+     * Should point to the directory that holds Cayenne project XML.
+     * Could be null in some cases now.
+     */
+    private Path rootProjectPath;
+
+    /**
+     * Target directory for generated classes, relative to the {@code rootProjectPath}
+     * (if root path is set, and it's possible to relativize).
+     */
+    private Path cgenOutputRelativePath;
+
     private Collection<Artifact> artifacts;
     private Set<String> entityArtifacts;
     private Collection<String> excludeEntityArtifacts;
@@ -59,9 +71,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     private ArtifactsGenerationMode artifactsGenerationMode;
     private boolean makePairs;
-
-    private Path rootPath;
-    private Path relPath;
     private boolean overwrite;
     private boolean usePkgPath;
 
@@ -171,70 +180,92 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     public Path getRootPath() {
-        return rootPath;
+        return rootProjectPath;
     }
 
     /**
-     * @param rootPath absolute target path for the cgen generation
+     * TODO: this should be used in loadin and sa
+     * @param rootProjectPath root path for the Cayenne project this config relates to
      */
-    public void setRootPath(Path rootPath) {
-        if (!Objects.requireNonNull(rootPath).isAbsolute()) {
-            throw new ValidationException("Root path : " + '"' + rootPath + '"' + "should be absolute");
+    public void setRootPath(Path rootProjectPath) {
+        if (!Objects.requireNonNull(rootProjectPath).isAbsolute()) {
+            throw new ValidationException("Project root path '%s' should be absolute.", rootProjectPath);
         }
-        this.rootPath = rootPath;
+        this.rootProjectPath = rootProjectPath;
     }
 
     /**
-     * Directly set relative (to {@code rootPath}) output directory
+     * Directly set relative (to {@code rootProjectPath}) output directory
+     *
      * @param relPath to set
-     * @since 5.0 renamed from {@code setRelPath()}
+     * @since 5.0 renamed from {@code setRelPath()}*
      */
     public void setRelativePath(Path relPath) {
-        this.relPath = relPath;
-    }
-
-    public Path getRelPath() {
-        return relPath;
+        this.cgenOutputRelativePath = relPath;
     }
 
     /**
+     * @return cgen output relative path
+     * TODO: used only it tests, maybe should be hidden completely
+     */
+    public Path getRelPath() {
+        return cgenOutputRelativePath;
+    }
+
+    /**
+     * TODO: used only by TextInput in the Cgen UI, review this
+     *
      * @param pathStr to update relative path with
      * @since 5.0 renamed from {@code setRelPath()}
      */
     public void updateRelativeOutputPath(String pathStr) {
-        Path path = Paths.get(pathStr);
-        if (rootPath != null) {
-            if (path.isAbsolute() && rootPath.getRoot().equals(path.getRoot())) {
-                this.relPath = rootPath.relativize(path);
-                return;
-            }
-        }
-        this.relPath = path;
+        updateRelativeOutputPath(Paths.get(pathStr));
     }
 
     /**
+     * @param path  to update relative path with
+     * @since 5.0
+     */
+    public void updateRelativeOutputPath(Path path) {
+        if (rootProjectPath != null) {
+            if (path.isAbsolute() && rootProjectPath.getRoot().equals(path.getRoot())) {
+                this.cgenOutputRelativePath = rootProjectPath.relativize(path);
+                return;
+            }
+        }
+        this.cgenOutputRelativePath = path;
+    }
+
+    /**
+     * TODO: used for the XML serialization, could be changed
      * @return normalized relative path
      * @since 5.0 renamed from {@code buildRelPath()} and made package private
      */
     String getNormalizedRelativePath() {
-        if (relPath == null || relPath.toString().isEmpty()) {
+        if (cgenOutputRelativePath == null || cgenOutputRelativePath.toString().isEmpty()) {
             return ".";
         }
-        return relPath.toString();
+        return cgenOutputRelativePath.toString();
     }
 
     /**
+     * TODO: change return type to Optional&lt;Path&gt;
      * @return calculated output directory
      * @since 5.0 renamed from {@code buildPath()}
      */
     public Path buildOutputPath() {
-        if (rootPath == null) {
-            return relPath;
+        if (rootProjectPath == null) {
+            return cgenOutputRelativePath;
         }
-        if (relPath == null) {
-            return rootPath;
+        if(cgenOutputRelativePath == null) {
+            return null;
         }
-        return rootPath.resolve(relPath).toAbsolutePath().normalize();
+
+        if(cgenOutputRelativePath.isAbsolute()) {
+            return cgenOutputRelativePath.normalize();
+        } else {
+            return rootProjectPath.resolve(cgenOutputRelativePath).toAbsolutePath().normalize();
+        }
     }
 
     public boolean isOverwrite() {

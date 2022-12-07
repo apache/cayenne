@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen.internal;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -28,6 +29,10 @@ import java.util.Optional;
  * @since 5.0
  */
 public class Utils {
+
+    public static Optional<String> getMavenSrcPathForPath(Path path) {
+        return getMavenSrcPathForPath(path.toAbsolutePath().toString());
+    }
 
     /**
      * @param path to check
@@ -59,13 +64,6 @@ public class Utils {
     }
 
     private static String buildFilePath(String... pathElements) {
-        if (pathElements.length == 0) {
-            return "";
-        }
-        StringBuilder path = new StringBuilder(pathElements[0]);
-        for (int i = 1; i < pathElements.length; i++) {
-            path.append(File.separator).append(pathElements[i]);
-        }
-        return path.toString();
+        return String.join(File.separator, pathElements);
     }
 }

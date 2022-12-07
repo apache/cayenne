@@ -348,7 +348,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
             logger.info("Using default cgen config.");
             CgenConfiguration cgenConfiguration = new CgenConfiguration();
             cgenConfiguration.setDataMap(dataMap);
-            cgenConfiguration.updateRelativeOutputPath(defaultDir.getPath());
+            cgenConfiguration.setRelativePath(defaultDir.toPath());
             return Collections.singletonList(cgenConfiguration);
         }
     }
@@ -356,8 +356,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     private CgenConfiguration cgenConfigFromPom(DataMap dataMap) {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
-        // TODO: check this call, CayenneGeneratorTask and CgenTask use setRelPath()
-        cgenConfiguration.updateRelativeOutputPath(destDir != null ? destDir.getPath() : defaultDir.getPath());
+        cgenConfiguration.setRelativePath(destDir != null ? destDir.toPath() : defaultDir.toPath());
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
         cgenConfiguration.setMakePairs(makePairs != null ? makePairs : cgenConfiguration.isMakePairs());
         if (mode != null && mode.equals("datamap")) {
