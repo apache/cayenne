@@ -145,7 +145,7 @@ public class BaseTemplatesGenerationTest {
         cgenConfiguration.addArtifact(artifact);
 
         cgenConfiguration.setRootPath(folder.getRoot().toPath());
-        cgenConfiguration.setRelativePath(Paths.get("."));
+        cgenConfiguration.updateOutputPath(Paths.get("."));
         cgenConfiguration.loadEntity(objEntity);
         cgenConfiguration.setDataMap(dataMap);
 

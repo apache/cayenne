@@ -50,7 +50,7 @@ public class CgenSaverDelegateTest {
         CgenConfiguration config = new CgenConfiguration();
 
         config.setRootPath(Paths.get("/tmp/src/main/java").toAbsolutePath());
-        config.setRelativePath(Paths.get(""));
+        config.updateOutputPath(Paths.get(""));
 
         URL baseURL = Paths.get("/tmp/src/main/resources").toUri().toURL();
 

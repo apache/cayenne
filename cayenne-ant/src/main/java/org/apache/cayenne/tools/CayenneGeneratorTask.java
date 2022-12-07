@@ -185,7 +185,7 @@ public class CayenneGeneratorTask extends CayenneTask {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
         cgenConfiguration.setDataMap(dataMap);
         if(destDir != null) {
-            cgenConfiguration.setRelativePath(destDir.toPath());
+            cgenConfiguration.updateOutputPath(destDir.toPath());
         }
         cgenConfiguration.setEncoding(encoding != null ? encoding : cgenConfiguration.getEncoding());
         cgenConfiguration.setMakePairs(makepairs != null ? makepairs : cgenConfiguration.isMakePairs());

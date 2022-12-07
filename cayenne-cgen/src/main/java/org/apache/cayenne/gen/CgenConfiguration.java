@@ -21,7 +21,6 @@ package org.apache.cayenne.gen;
 
 import java.io.Serializable;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -184,8 +183,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     /**
-     * TODO: this should be used in loadin and sa
      * @param rootProjectPath root path for the Cayenne project this config relates to
+     * @see #updateOutputPath(Path)
      */
     public void setRootPath(Path rootProjectPath) {
         if (!Objects.requireNonNull(rootProjectPath).isAbsolute()) {
@@ -195,38 +194,19 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     /**
-     * Directly set relative (to {@code rootProjectPath}) output directory
-     *
-     * @param relPath to set
-     * @since 5.0 renamed from {@code setRelPath()}*
-     */
-    public void setRelativePath(Path relPath) {
-        this.cgenOutputRelativePath = relPath;
-    }
-
-    /**
      * @return cgen output relative path
-     * TODO: used only it tests, maybe should be hidden completely
      */
     public Path getRelPath() {
         return cgenOutputRelativePath;
     }
 
     /**
-     * TODO: used only by TextInput in the Cgen UI, review this
-     *
-     * @param pathStr to update relative path with
-     * @since 5.0 renamed from {@code setRelPath()}
-     */
-    public void updateRelativeOutputPath(String pathStr) {
-        updateRelativeOutputPath(Paths.get(pathStr));
-    }
-
-    /**
-     * @param path  to update relative path with
+     * Method that calculates output path based on provided {@code Path} and {@code rootProjectPath}
+     * @param path to update relative path with
+     * @see #setRootPath(Path)
      * @since 5.0
      */
-    public void updateRelativeOutputPath(Path path) {
+    public void updateOutputPath(Path path) {
         if (rootProjectPath != null) {
             if (path.isAbsolute() && rootProjectPath.getRoot().equals(path.getRoot())) {
                 this.cgenOutputRelativePath = rootProjectPath.relativize(path);
@@ -237,7 +217,6 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     /**
-     * TODO: used for the XML serialization, could be changed
      * @return normalized relative path
      * @since 5.0 renamed from {@code buildRelPath()} and made package private
      */
@@ -249,15 +228,25 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     /**
-     * TODO: change return type to Optional&lt;Path&gt;
+     * This method calculates effective output directory for the class generator.
+     * It uses {@code rootProjectPath} and {@code cgenOutputRelativePath}.
+     *
      * @return calculated output directory
+     * @see #setRootPath(Path)
+     * @see #updateOutputPath(Path)
      * @since 5.0 renamed from {@code buildPath()}
      */
     public Path buildOutputPath() {
         if (rootProjectPath == null) {
+            if(!cgenOutputRelativePath.isAbsolute()) {
+                throw new ValidationException("Output directory is a relative path but no root is set.");
+            }
+            // this should be only in case this is a new unsaved project
             return cgenOutputRelativePath;
         }
+
         if(cgenOutputRelativePath == null) {
+            // this case should be invalid, but let the caller deal with it
             return null;
         }
 

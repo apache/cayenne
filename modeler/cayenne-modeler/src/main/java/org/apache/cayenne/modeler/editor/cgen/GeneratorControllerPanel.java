@@ -27,6 +27,7 @@ import org.apache.cayenne.validation.ValidationException;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -48,10 +49,11 @@ public class GeneratorControllerPanel extends JPanel {
             protected void updateModel(String text) throws ValidationException {
                 CgenConfiguration cgenByDataMap = getCgenConfig();
                 if (cgenByDataMap != null) {
-                    if (cgenByDataMap.getRootPath() == null && !Paths.get(text).isAbsolute()) {
+                    Path path = Paths.get(text);
+                    if (cgenByDataMap.getRootPath() == null && !path.isAbsolute()) {
                         throw new ValidationException("You should save project to use relative path as an output directory.");
                     }
-                    cgenByDataMap.updateRelativeOutputPath(text);
+                    cgenByDataMap.updateOutputPath(path);
                     checkConfigDirty();
                 }
             }
@@ -68,9 +70,7 @@ public class GeneratorControllerPanel extends JPanel {
     }
 
     protected void checkConfigDirty() {
-        if (!codeGeneratorController.isInitFromModel()) {
-            codeGeneratorController.checkCgenConfigDirty();
-        }
+        codeGeneratorController.checkCgenConfigDirty();
     }
 
     protected CgenConfiguration getCgenConfig() {

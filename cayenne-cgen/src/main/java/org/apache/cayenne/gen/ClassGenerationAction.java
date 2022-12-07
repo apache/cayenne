@@ -330,7 +330,7 @@ public class ClassGenerationAction {
 		String className = (String) context.get(Artifact.SUPER_CLASS_KEY);
 
 		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
-		File dest = new File(mkpath(new File(cgenConfiguration.buildOutputPath().toString()), packageName), filename);
+		File dest = new File(mkpath(cgenConfiguration.buildOutputPath().toFile(), packageName), filename);
 
         if (dest.exists() && !fileNeedUpdate(dest, cgenConfiguration.getSuperTemplate().getData())) {
             return null;
@@ -349,7 +349,7 @@ public class ClassGenerationAction {
 		String className = (String) context.get(Artifact.SUB_CLASS_KEY);
 
 		String filename = StringUtils.getInstance().replaceWildcardInStringWithString(WILDCARD, cgenConfiguration.getOutputPattern(), className);
-		File dest = new File(mkpath(new File(Objects.requireNonNull(cgenConfiguration.buildOutputPath()).toString()), packageName), filename);
+		File dest = new File(mkpath(cgenConfiguration.buildOutputPath().toFile(), packageName), filename);
 
 		if (dest.exists()) {
 			// no overwrite of subclasses

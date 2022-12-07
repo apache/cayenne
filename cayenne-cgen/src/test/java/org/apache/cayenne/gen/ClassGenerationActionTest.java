@@ -20,6 +20,7 @@
 package org.apache.cayenne.gen;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -268,7 +269,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		TemplateType templateType = TemplateType.DATAMAP_SUPERCLASS;
 
 		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
-		cgenConfiguration.updateRelativeOutputPath(".");
+		cgenConfiguration.updateOutputPath(Paths.get("."));
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
@@ -290,7 +291,7 @@ public class ClassGenerationActionTest extends CgenCase {
 		TemplateType templateType = TemplateType.DATAMAP_SINGLE_CLASS;
 
 		cgenConfiguration.setRootPath(tempFolder.getRoot().toPath());
-		cgenConfiguration.updateRelativeOutputPath(".");
+		cgenConfiguration.updateOutputPath(Paths.get("."));
 		action = new ClassGenerationAction(cgenConfiguration);
 		ObjEntity testEntity1 = new ObjEntity("TEST");
 		testEntity1.setClassName("TestClass1");
