@@ -304,7 +304,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         configuration.setDataMap(map);
 
         map.getObjEntities().forEach(configuration::loadEntity);
-        map.getEmbeddables().forEach(embeddable -> configuration.loadEmbeddable(embeddable.getClassName()));
+        map.getEmbeddables().forEach(configuration::loadEmbeddable);
         if (map.getLocation() != null) {
             Path basePath = Paths.get(ModelerUtil.initOutputFolder());
             configuration.updateOutputPath(basePath);
@@ -391,7 +391,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         if (cgenConfiguration != null) {
             cgenConfiguration.getEmbeddables().clear();
             for (Embeddable embeddable : selectionModel.getSelectedEmbeddables(classes)) {
-                cgenConfiguration.loadEmbeddable(embeddable.getClassName());
+                cgenConfiguration.loadEmbeddable(embeddable);
             }
         }
         checkCgenConfigDirty();
@@ -477,10 +477,10 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     @Override
     public void embeddableAdded(EmbeddableEvent e, DataMap map) {
         prepareClasses(map);
-        String embeddableClassName = e.getEmbeddable().getClassName();
-        selectionModel.addSelectedEmbeddable(embeddableClassName);
+        Embeddable embeddable = e.getEmbeddable();
+        selectionModel.addSelectedEmbeddable(embeddable.getClassName());
         if (cgenConfiguration != null) {
-            cgenConfiguration.loadEmbeddable(embeddableClassName);
+            cgenConfiguration.loadEmbeddable(embeddable);
         }
         checkCgenConfigDirty();
     }

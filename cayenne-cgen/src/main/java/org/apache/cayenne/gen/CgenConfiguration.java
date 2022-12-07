@@ -396,8 +396,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         }
     }
 
-    public void loadEmbeddable(String name) {
-        embeddableArtifacts.add(name);
+    public void loadEmbeddable(Embeddable embeddable) {
+        embeddableArtifacts.add(embeddable.getClassName());
     }
 
     public void loadEntities(String entities) {
