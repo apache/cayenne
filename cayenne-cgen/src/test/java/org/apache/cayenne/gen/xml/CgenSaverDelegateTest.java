@@ -42,7 +42,7 @@ public class CgenSaverDelegateTest {
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
         assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get(""), config.getRelPath()); // TODO: do we care about this case?
+        assertEquals(Paths.get(""), config.getRawOutputPath()); // TODO: do we care about this case?
     }
 
     @Test
@@ -57,7 +57,7 @@ public class CgenSaverDelegateTest {
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
         assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get("../java"), config.getRelPath());
+        assertEquals(Paths.get("../java"), config.getRawOutputPath());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class CgenSaverDelegateTest {
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
         assertEquals(Paths.get("/tmp/src/main/resources").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get("../java"), config.getRelPath());
+        assertEquals(Paths.get("../java"), config.getRawOutputPath());
     }
 
     @Test
@@ -81,6 +81,6 @@ public class CgenSaverDelegateTest {
         CgenSaverDelegate.resolveOutputDir(baseURL, config);
 
         assertEquals(Paths.get("/tmp/somefolder").toAbsolutePath(), config.getRootPath());
-        assertEquals(Paths.get(""), config.getRelPath());
+        assertEquals(Paths.get(""), config.getRawOutputPath());
     }
 }

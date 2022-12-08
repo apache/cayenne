@@ -56,7 +56,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
      * Target directory for generated classes, relative to the {@code rootProjectPath}
      * (if root path is set, and it's possible to relativize).
      */
-    private Path cgenOutputRelativePath;
+    private Path cgenOutputPath;
 
     private Collection<Artifact> artifacts;
     private Set<String> entityArtifacts;
@@ -194,42 +194,47 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     }
 
     /**
+     * Method returns output path as is, without any processing.
      * @return cgen output relative path
+     * @see #buildOutputPath()
+     * @since 5.0 renamed from {@code getRelPath()}
      */
-    public Path getRelPath() {
-        return cgenOutputRelativePath;
+    public Path getRawOutputPath() {
+        return cgenOutputPath;
     }
 
     /**
-     * Method that calculates output path based on provided {@code Path} and {@code rootProjectPath}
-     * @param path to update relative path with
+     * Method that updates output path based on provided {@code Path} and {@code rootProjectPath}
+     *
+     * @param path to update output path with, could be an absolute path or a path
+     *             relative to the {@code rootProjectPath} or cgen tool environment
      * @see #setRootPath(Path)
      * @since 5.0
      */
     public void updateOutputPath(Path path) {
         if (rootProjectPath != null) {
             if (path.isAbsolute() && rootProjectPath.getRoot().equals(path.getRoot())) {
-                this.cgenOutputRelativePath = rootProjectPath.relativize(path);
+                this.cgenOutputPath = rootProjectPath.relativize(path);
                 return;
             }
         }
-        this.cgenOutputRelativePath = path;
+        this.cgenOutputPath = path;
     }
 
     /**
      * @return normalized relative path
      * @since 5.0 renamed from {@code buildRelPath()} and made package private
      */
-    String getNormalizedRelativePath() {
-        if (cgenOutputRelativePath == null || cgenOutputRelativePath.toString().isEmpty()) {
+    String getNormalizedOutputPath() {
+        if (cgenOutputPath == null || cgenOutputPath.toString().isEmpty()) {
             return ".";
         }
-        return cgenOutputRelativePath.toString();
+        return cgenOutputPath.toString();
     }
 
     /**
      * This method calculates effective output directory for the class generator.
-     * It uses {@code rootProjectPath} and {@code cgenOutputRelativePath}.
+     * It uses {@code cgenOutputPath} and {@code rootProjectPath} (if set).
      *
      * @return calculated output directory
      * @see #setRootPath(Path)
@@ -239,18 +244,18 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
     public Path buildOutputPath() {
         if (rootProjectPath == null) {
             // this could be an unsaved project or direct usage in tools (Ant, Maven or Gradle)
-            return cgenOutputRelativePath;
+            return cgenOutputPath;
         }
 
-        if(cgenOutputRelativePath == null) {
+        if(cgenOutputPath == null) {
             // this case should be invalid, but let the caller deal with it
             return null;
         }
 
-        if(cgenOutputRelativePath.isAbsolute()) {
-            return cgenOutputRelativePath.normalize();
+        if(cgenOutputPath.isAbsolute()) {
+            return cgenOutputPath.normalize();
         } else {
-            return rootProjectPath.resolve(cgenOutputRelativePath).toAbsolutePath().normalize();
+            return rootProjectPath.resolve(cgenOutputPath).toAbsolutePath().normalize();
         }
     }
 
@@ -457,7 +462,7 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
                 .simpleTag("name", this.name)
                 .simpleTag("excludeEntities", getExcludeEntites())
                 .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
-                .simpleTag("destDir", separatorsToUnix(getNormalizedRelativePath()))
+                .simpleTag("destDir", separatorsToUnix(getNormalizedOutputPath()))
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
                 .start("template").cdata(this.template.getData(), !this.template.isFile()).end()
                 .start("superTemplate").cdata(this.superTemplate.getData(), !this.superTemplate.isFile()).end()

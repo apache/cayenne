@@ -78,9 +78,9 @@ public class CgenSaverDelegate extends BaseSaverDelegate {
         if(prevOutputPath != null) {
             // Update relative path to match with the new root
             cgenConfiguration.updateOutputPath(prevOutputPath);
-        } else if(cgenConfiguration.getRelPath() == null) {
+        } else if(cgenConfiguration.buildOutputPath() == null) {
             // No path was set, and we are not in the Maven tree.
-            // Set output dir match with the root, nothing else we could do here
+            // Set output dir match with the root, nothing else we could do here.
             cgenConfiguration.updateOutputPath(baseDirectory);
         }
     }

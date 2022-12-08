@@ -56,7 +56,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("C:\\test1\\test2\\test3");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get(""), configuration.getRelPath());
+            assertEquals(Paths.get(""), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -66,7 +66,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("C:\\test1\\test2\\testAnother");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("..\\testAnother"), configuration.getRelPath());
+            assertEquals(Paths.get("..\\testAnother"), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -76,7 +76,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("C:\\");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get(""), configuration.getRelPath());
+            assertEquals(Paths.get(""), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -86,7 +86,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("E:\\test1\\test2\\test3");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("E:\\test1\\test2\\test3"), configuration.getRelPath());
+            assertEquals(Paths.get("E:\\test1\\test2\\test3"), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -96,7 +96,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("E:\\test1\\test2\\testAnother");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("E:\\test1\\test2\\testAnother"), configuration.getRelPath());
+            assertEquals(Paths.get("E:\\test1\\test2\\testAnother"), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -106,7 +106,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("E:\\");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("E:\\"), configuration.getRelPath());
+            assertEquals(Paths.get("E:\\"), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -116,7 +116,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("E:\\");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("E:\\"), configuration.getRelPath());
+            assertEquals(Paths.get("E:\\"), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -127,7 +127,7 @@ public class CgenConfigurationTest {
 
             configuration.updateOutputPath(relPath);
 
-            assertEquals(relPath, configuration.getRelPath());
+            assertEquals(relPath, configuration.getRawOutputPath());
             assertEquals(Paths.get("E:\\"), configuration.buildOutputPath());
         }
 
@@ -139,7 +139,7 @@ public class CgenConfigurationTest {
         @Test
         public void nullRootPath() {
             configuration.updateOutputPath(Path.of("C:\\test1\\test2\\test3"));
-            assertEquals(Paths.get("C:\\test1\\test2\\test3"), configuration.getRelPath());
+            assertEquals(Paths.get("C:\\test1\\test2\\test3"), configuration.getRawOutputPath());
             assertEquals(Paths.get("C:\\test1\\test2\\test3"), configuration.buildOutputPath());
         }
     }
@@ -165,7 +165,7 @@ public class CgenConfigurationTest {
             configuration.updateOutputPath(relPath);
 
 
-            assertEquals(Paths.get(""), configuration.getRelPath());
+            assertEquals(Paths.get(""), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -175,7 +175,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("/test1/test2/testAnother");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("../testAnother"), configuration.getRelPath());
+            assertEquals(Paths.get("../testAnother"), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -185,7 +185,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("/");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get(""), configuration.getRelPath());
+            assertEquals(Paths.get(""), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -195,7 +195,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("test1/test2/test3");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("test1/test2/test3"), configuration.getRelPath());
+            assertEquals(Paths.get("test1/test2/test3"), configuration.getRawOutputPath());
             assertEquals(Paths.get("/test1/test2/test3/test1/test2/test3"), configuration.buildOutputPath());
         }
 
@@ -205,7 +205,7 @@ public class CgenConfigurationTest {
             Path relPath = Paths.get("/");
             configuration.updateOutputPath(relPath);
 
-            assertEquals(Paths.get("/"), configuration.getRelPath());
+            assertEquals(Paths.get("/"), configuration.getRawOutputPath());
             assertEquals(relPath, configuration.buildOutputPath());
         }
 
@@ -214,7 +214,7 @@ public class CgenConfigurationTest {
             configuration.setRootPath(Paths.get("/"));
             configuration.updateOutputPath(Paths.get(""));
 
-            assertEquals(Paths.get(""), configuration.getRelPath());
+            assertEquals(Paths.get(""), configuration.getRawOutputPath());
             assertEquals(Paths.get("/"), configuration.buildOutputPath());
         }
 
@@ -233,7 +233,7 @@ public class CgenConfigurationTest {
         @Test
         public void nullRootPath() {
             configuration.updateOutputPath(Paths.get("/test1/test2/test3"));
-            assertEquals(Paths.get("/test1/test2/test3"), configuration.getRelPath());
+            assertEquals(Paths.get("/test1/test2/test3"), configuration.getRawOutputPath());
             assertEquals(Paths.get("/test1/test2/test3"), configuration.buildOutputPath());
         }
     }
