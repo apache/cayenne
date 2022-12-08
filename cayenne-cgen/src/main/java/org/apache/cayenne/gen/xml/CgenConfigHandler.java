@@ -165,14 +165,14 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
         if (entities.trim().length() == 0) {
             return;
         }
-        configuration.loadEntities(entities);
+        configuration.parseExcludedEntities(entities);
     }
 
     private void createExcludeEmbeddables(String embeddables) {
         if (embeddables.trim().length() == 0) {
             return;
         }
-        configuration.loadEmbeddables(embeddables);
+        configuration.parseExcludedEmbeddables(embeddables);
     }
 
     private void createSubclassTemplate(String template) {
@@ -295,8 +295,8 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
             configuration.setRootPath(buildRootPath(dataMap));
-            configuration.resolveExcludeEntities();
-            configuration.resolveExcludeEmbeddables();
+            configuration.resolveExcludedEntities();
+            configuration.resolveExcludedEmbeddables();
 
             CgenConfigList configurations = CgenConfigHandler.this.metaData.get(dataMap, CgenConfigList.class);
             if (configurations == null) {

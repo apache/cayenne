@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.cgen.domain;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -95,8 +94,8 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
             cgenConfiguration.setEncoding(preferences.get(GeneralPreferences.ENCODING_PREFERENCE, null));
         }
 
-        cgenConfiguration.resolveExcludeEntities();
-        cgenConfiguration.resolveExcludeEmbeddables();
+        cgenConfiguration.resolveExcludedEntities();
+        cgenConfiguration.resolveExcludedEmbeddables();
         return cgenConfiguration;
     }
 

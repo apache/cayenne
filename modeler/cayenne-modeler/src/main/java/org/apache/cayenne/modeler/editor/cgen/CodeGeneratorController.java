@@ -499,7 +499,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         if (e.getSource() instanceof DbImportController) {
             if (cgenConfiguration != null) {
                 for (ObjEntity objEntity : e.getDataMap().getObjEntities()) {
-                    if (!cgenConfiguration.getExcludeEntityArtifacts().contains(objEntity.getName())) {
+                    if (!cgenConfiguration.getExcludedEntityArtifacts().contains(objEntity.getName())) {
                         addEntity(cgenConfiguration.getDataMap(), objEntity);
                     }
                 }

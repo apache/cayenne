@@ -60,9 +60,9 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
     private Collection<Artifact> artifacts;
     private Set<String> entityArtifacts;
-    private Collection<String> excludeEntityArtifacts;
+    private Collection<String> excludedEntityArtifacts;
     private Set<String> embeddableArtifacts;
-    private Collection<String> excludeEmbeddableArtifacts;
+    private Collection<String> excludedEmbeddableArtifacts;
 
     private String name;
     private String superPkg;
@@ -114,9 +114,9 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
 
         this.artifacts = new ArrayList<>();
         this.entityArtifacts = new HashSet<>();
-        this.excludeEntityArtifacts = new ArrayList<>();
+        this.excludedEntityArtifacts = new ArrayList<>();
         this.embeddableArtifacts = new HashSet<>();
-        this.excludeEmbeddableArtifacts = new ArrayList<>();
+        this.excludedEmbeddableArtifacts = new ArrayList<>();
 
         this.template = TemplateType.ENTITY_SUBCLASS.defaultTemplate();
         this.superTemplate = TemplateType.ENTITY_SUPERCLASS.defaultTemplate();
@@ -405,54 +405,72 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         embeddableArtifacts.add(embeddable.getClassName());
     }
 
-    public void loadEntities(String entities) {
-        excludeEntityArtifacts.addAll(Arrays.asList(entities.split(",")));
+    /**
+     * @param entities comma separated list of entities to exclude
+     * @since 5.0 renamed from {@code loadEntities()}
+     */
+    public void parseExcludedEntities(String entities) {
+        excludedEntityArtifacts.addAll(Arrays.asList(entities.split(",")));
     }
 
-    private String getExcludeEntites() {
-        Collection<String> excludeEntities = dataMap.getObjEntities()
+    private String getExcludedEntities() {
+        return dataMap.getObjEntities()
                 .stream()
                 .map(ObjEntity::getName)
                 .filter(name -> !entityArtifacts.contains(name))
-                .collect(Collectors.toList());
-        return String.join(",", excludeEntities);
+                .collect(Collectors.joining(","));
     }
 
-    public void loadEmbeddables(String embeddables) {
-        excludeEmbeddableArtifacts.addAll(Arrays.asList(embeddables.split(",")));
+    /**
+     * @param embeddables comma separated list of embeddables to exclude
+     * @since 5.0 renamed from {@code loadEmbeddables()}
+     */
+    public void parseExcludedEmbeddables(String embeddables) {
+        excludedEmbeddableArtifacts.addAll(Arrays.asList(embeddables.split(",")));
     }
 
-    private String getExcludeEmbeddables() {
-        Collection<String> excludeEmbeddable = dataMap.getEmbeddables()
+    private String getExcludedEmbeddables() {
+        return dataMap.getEmbeddables()
                 .stream()
                 .map(Embeddable::getClassName)
                 .filter(className -> !embeddableArtifacts.contains(className))
-                .collect(Collectors.toList());
-        return String.join(",", excludeEmbeddable);
+                .collect(Collectors.joining(","));
     }
 
-    public void resolveExcludeEntities() {
+    /**
+     * @since 5.0 renamed from {@code resolveExcludeEntities()}
+     */
+    public void resolveExcludedEntities() {
         entityArtifacts = dataMap.getObjEntities()
                 .stream()
                 .map(ObjEntity::getName)
-                .filter(name -> !excludeEntityArtifacts.contains(name))
+                .filter(name -> !excludedEntityArtifacts.contains(name))
                 .collect(Collectors.toSet());
     }
 
-    public void resolveExcludeEmbeddables() {
+    /**
+     * @since 5.0 renamed from {@code resolveExcludeEmbeddables()}
+     */
+    public void resolveExcludedEmbeddables() {
         embeddableArtifacts = dataMap.getEmbeddables()
                 .stream()
                 .map(Embeddable::getClassName)
-                .filter(className -> !excludeEmbeddableArtifacts.contains(className))
+                .filter(className -> !excludedEmbeddableArtifacts.contains(className))
                 .collect(Collectors.toSet());
     }
 
-    public Collection<String> getExcludeEntityArtifacts() {
-        return excludeEntityArtifacts;
+    /**
+     * @since 5.0 renamed from {@code getExcludeEntityArtifacts()}
+     */
+    public Collection<String> getExcludedEntityArtifacts() {
+        return excludedEntityArtifacts;
     }
 
-    public Collection<String> getExcludeEmbeddableArtifacts() {
-        return excludeEmbeddableArtifacts;
+    /**
+     * @since 5.0 renamed from {@code getExcludeEmbeddableArtifacts()}
+     */
+    public Collection<String> getExcludedEmbeddableArtifacts() {
+        return excludedEmbeddableArtifacts;
     }
 
     @Override
@@ -460,8 +478,8 @@ public class CgenConfiguration implements Serializable, XMLSerializable {
         encoder.start("cgen")
                 .attribute("xmlns", CgenExtension.NAMESPACE)
                 .simpleTag("name", this.name)
-                .simpleTag("excludeEntities", getExcludeEntites())
-                .simpleTag("excludeEmbeddables", getExcludeEmbeddables())
+                .simpleTag("excludeEntities", getExcludedEntities())
+                .simpleTag("excludeEmbeddables", getExcludedEmbeddables())
                 .simpleTag("destDir", separatorsToUnix(getNormalizedOutputPath()))
                 .simpleTag("mode", this.artifactsGenerationMode.getLabel())
                 .start("template").cdata(this.template.getData(), !this.template.isFile()).end()
