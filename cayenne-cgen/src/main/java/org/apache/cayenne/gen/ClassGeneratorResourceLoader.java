@@ -39,18 +39,14 @@ import org.apache.velocity.util.ExtProperties;
  *
  * @since 1.2
  */
-// must be public top-level class as it is
-// instantiated via reflection by Velocity
+// must be public top-level class as it is instantiated via reflection by Velocity
 public class ClassGeneratorResourceLoader extends FileResourceLoader {
 
     private Path root;
 
     @Override
     public void init(ExtProperties configuration) {
-        String rootPathStr = configuration.getString("root");
-        if(rootPathStr != null) {
-            root = Paths.get(rootPathStr);
-        }
+        root = (Path)configuration.getProperty("root");
     }
 
     /**
@@ -63,8 +59,7 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
      * </ol>
      */
     @Override
-    public synchronized Reader getResourceReader(String name, String charset)
-            throws ResourceNotFoundException {
+    public synchronized Reader getResourceReader(String name, String charset) throws ResourceNotFoundException {
 
         Reader stream;
 
@@ -103,9 +98,9 @@ public class ClassGeneratorResourceLoader extends FileResourceLoader {
     protected Reader loadFromAbsPath(String name) {
         try {
             File file = new File(name);
-            return (file.canRead()) ? new BufferedReader(new FileReader(file
-                    .getAbsolutePath())) : null;
-
+            return file.canRead()
+                    ? new BufferedReader(new FileReader(file.getAbsolutePath()))
+                    : null;
         } catch (FileNotFoundException fnfe) {
             return null;
         }

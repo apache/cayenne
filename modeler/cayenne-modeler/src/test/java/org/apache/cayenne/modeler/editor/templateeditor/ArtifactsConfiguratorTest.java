@@ -82,7 +82,7 @@ public class ArtifactsConfiguratorTest {
 
         assertTrue(entityArtifactsNames.contains("objEntity"));
         assertTrue(embeddableArtifactsNames.contains("embeddable"));
-        assertTrue(dataMapArtifactsNames.contains("queryDescriptor"));
+        assertTrue(dataMapArtifactsNames.contains("dataMap"));
     }
 
     private DataMap configureDataMap() {

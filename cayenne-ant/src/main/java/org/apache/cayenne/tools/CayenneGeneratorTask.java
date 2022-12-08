@@ -137,7 +137,7 @@ public class CayenneGeneratorTask extends CayenneTask {
                 } else {
                     generatorAction.addEntities(filterEntityAction.getFilteredEntities(dataMap));
                     generatorAction.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
-                    generatorAction.addQueries(dataMap.getQueryDescriptors());
+                    generatorAction.addDataMap(dataMap);
                 }
                 generatorAction.execute();
             }

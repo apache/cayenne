@@ -288,7 +288,7 @@ public class CayenneGeneratorMojo extends AbstractMojo {
                 } else {
                     generator.addEntities(filterEntityAction.getFilteredEntities(dataMap));
                     generator.addEmbeddables(filterEmbeddableAction.getFilteredEmbeddables(dataMap));
-                    generator.addQueries(dataMap.getQueryDescriptors());
+                    generator.addDataMap(dataMap);
                 }
                 generator.execute();
             }

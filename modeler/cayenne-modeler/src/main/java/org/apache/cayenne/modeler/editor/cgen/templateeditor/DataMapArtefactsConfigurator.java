@@ -21,11 +21,9 @@ package org.apache.cayenne.modeler.editor.cgen.templateeditor;
 
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.QueryDescriptor;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @since 5.0
@@ -34,23 +32,12 @@ public class DataMapArtefactsConfigurator implements ArtefactsConfigurator {
 
     @Override
     public void config(ClassGenerationAction action, String artifactName) {
-        action.addQueries(Collections.singleton(getSelectedEntity(artifactName, action)));
+        action.addDataMap(action.getCgenConfiguration().getDataMap());
     }
 
+    @Override
     public List<String> getArtifactsNames(DataMap dataMap) {
-        if (dataMap != null) {
-            return dataMap.getQueryDescriptors().stream()
-                    .map(QueryDescriptor::getName)
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return Collections.singletonList(dataMap.getName());
     }
 
-    private QueryDescriptor getSelectedEntity(String artifactName, ClassGenerationAction action) {
-        DataMap dataMap = action.getCgenConfiguration().getDataMap();
-        if (dataMap != null) {
-            return dataMap.getQueryDescriptor(artifactName);
-        }
-        return null;
-    }
 }
