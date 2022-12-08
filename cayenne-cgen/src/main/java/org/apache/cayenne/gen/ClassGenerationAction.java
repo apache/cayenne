@@ -250,7 +250,9 @@ public class ClassGenerationAction {
             props.put(RuntimeConstants.RESOURCE_LOADERS, "cayenne");
             props.put("resource.loader.cayenne.class", ClassGeneratorResourceLoader.class.getName());
             props.put("resource.loader.cayenne.cache", "false");
-            props.put("resource.loader.cayenne.root", cgenConfiguration.getRootPath());
+            if(cgenConfiguration.getRootPath() != null) {
+                props.put("resource.loader.cayenne.root", cgenConfiguration.getRootPath());
+            }
         } else {
             props.put(RuntimeConstants.RESOURCE_LOADERS, "string");
             props.put("resource.loader.string.class", StringResourceLoader.class.getName());
