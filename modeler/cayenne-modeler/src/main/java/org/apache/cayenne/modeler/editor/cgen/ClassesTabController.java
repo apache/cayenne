@@ -139,6 +139,7 @@ public class ClassesTabController extends CayenneController {
             tableBinding.updateView();
             getParentController().updateSelectedEntities();
             getParentController().enableGenerateButton(checkBoxHeader.isSelected());
+            getParentController().getStandardModeController().updateTemplateEditorButtons();
         }
     }
 
