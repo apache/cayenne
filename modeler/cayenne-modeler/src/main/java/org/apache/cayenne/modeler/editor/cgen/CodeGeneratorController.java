@@ -262,8 +262,9 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         }
     }
 
-    public void enableGenerateButton(boolean enable) {
-        view.getGenerateButton().setEnabled(enable);
+    public void updateGenerateButton(){
+        boolean isOutputPathValid = standardModeController.getView().getOutputFolder().isDataValid();
+        view.getGenerateButton().setEnabled(!selectionModel.isModelEmpty()&& isOutputPathValid);
     }
 
     private void prepareClasses(DataMap dataMap) {

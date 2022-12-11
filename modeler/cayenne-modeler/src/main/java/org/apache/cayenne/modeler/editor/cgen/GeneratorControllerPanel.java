@@ -27,6 +27,7 @@ import org.apache.cayenne.validation.ValidationException;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -49,11 +50,22 @@ public class GeneratorControllerPanel extends JPanel {
             protected void updateModel(String text) throws ValidationException {
                 CgenConfiguration cgenByDataMap = getCgenConfig();
                 if (cgenByDataMap != null) {
-                    Path path = Paths.get(text);
+                    Path path;
+                    try {
+                        path = Paths.get(text);
+                    } catch (InvalidPathException e) {
+                        isDataValid = false;
+                        codeGeneratorController.updateGenerateButton();
+                        throw new ValidationException("An invalid path has been detected. It cannot be saved or used until it is corrected.");
+                    }
                     if (cgenByDataMap.getRootPath() == null && !path.isAbsolute()) {
+                        isDataValid =false;
+                        codeGeneratorController.updateGenerateButton();
                         throw new ValidationException("You should save project to use relative path as an output directory.");
                     }
                     cgenByDataMap.updateOutputPath(path);
+                    isDataValid = true;
+                    codeGeneratorController.updateGenerateButton();
                     checkConfigDirty();
                 }
             }

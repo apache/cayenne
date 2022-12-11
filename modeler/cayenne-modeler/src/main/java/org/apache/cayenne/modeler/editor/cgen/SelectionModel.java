@@ -105,6 +105,10 @@ class SelectionModel {
         return modified;
     }
 
+    boolean isModelEmpty() {
+        return (getSelectedEntitiesCount() == 0 && getSelecetedEmbeddablesCount() == 0 && getSelectedDataMapsCount() == 0);
+    }
+
     List<Embeddable> getSelectedEmbeddables(Collection<ConfigurationNode> classes) {
         List<Embeddable> selected = new ArrayList<>(selectedEmbeddables.size());
         for (Object classObj : classes) {
