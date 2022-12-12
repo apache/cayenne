@@ -51,6 +51,7 @@ public abstract class TextAdapter {
     protected UndoableEditListener undoableListener;
 
     protected JTextComponent textComponent;
+    protected boolean isDataValid;
 
     public TextAdapter(JTextField textField) {
         this(textField, true, false, true);
@@ -175,5 +176,9 @@ public abstract class TextAdapter {
     protected void clear() {
         textComponent.setBackground(defaultBGColor);
         textComponent.setToolTipText(defaultToolTip);
+    }
+
+    public boolean isDataValid() {
+        return isDataValid;
     }
 }

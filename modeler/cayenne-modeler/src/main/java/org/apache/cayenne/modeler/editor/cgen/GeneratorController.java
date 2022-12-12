@@ -70,6 +70,7 @@ public abstract class GeneratorController extends CayenneController {
             getParentController().setCurrentClass(cgenConfiguration.getDataMap());
             getParentController().setSelected(true);
         }
+        getView().getOutputFolder().updateModel();
     }
 
     public abstract void updateConfiguration(CgenConfiguration cgenConfiguration);

@@ -122,7 +122,7 @@ public class ClassesTabController extends CayenneController {
                 + (getParentController().isDataMapSelected() ? 1 : 0);
         int totalClasses = getParentController().getClasses().size();
         checkBoxHeader.setSelected(selectedCount >= totalClasses);
-        getParentController().enableGenerateButton(selectedCount != 0);
+        getParentController().updateGenerateButton();
         getParentController().updateSelectedEntities();
         getParentController().getStandardModeController().updateTemplateEditorButtons();
         view.repaint();
@@ -138,7 +138,7 @@ public class ClassesTabController extends CayenneController {
         if (getParentController().updateSelection(checkBoxHeader.isSelected() ? o -> true : o -> false)) {
             tableBinding.updateView();
             getParentController().updateSelectedEntities();
-            getParentController().enableGenerateButton(checkBoxHeader.isSelected());
+            getParentController().updateGenerateButton();
             getParentController().getStandardModeController().updateTemplateEditorButtons();
         }
     }
