@@ -18,7 +18,7 @@
  ****************************************************************/
 
 
-package org.apache.cayenne.modeler.editor.cgen;
+package org.apache.cayenne.modeler.util;
 
 import javax.swing.JCheckBox;
 import javax.swing.JTable;
@@ -34,7 +34,7 @@ import java.awt.event.MouseListener;
  *
  * @since 4.2
  */
-    class CheckBoxHeader extends JCheckBox implements TableCellRenderer, MouseListener  {
+public class CheckBoxHeader extends JCheckBox implements TableCellRenderer, MouseListener  {
         protected int column;
         protected boolean mousePressed = false;
         private final CheckBoxHeader rendererComponent;
