@@ -37,9 +37,7 @@ import org.apache.cayenne.modeler.undo.JTextFieldUndoListener;
 import org.apache.cayenne.validation.ValidationException;
 
 /**
- * A validating adapter for JTextComponent. Implement {@link #updateModel(String)}to
- * initialize model on text change.
- * 
+ * A validating adapter for JTextComponent. Implement {@link #updateModel(String)} initialize model on text change.
  */
 public abstract class TextAdapter {
 
@@ -58,7 +56,7 @@ public abstract class TextAdapter {
     }
 
     public TextAdapter(JTextField textField, boolean checkOnFocusLost,
-            boolean checkOnTyping, boolean checkOnEnter) {
+                       boolean checkOnTyping, boolean checkOnEnter) {
 
         this(textField, true, false);
 
@@ -78,7 +76,7 @@ public abstract class TextAdapter {
     }
 
     public TextAdapter(JTextComponent textComponent, boolean checkOnFocusLost,
-            boolean checkOnTyping) {
+                       boolean checkOnTyping) {
 
         this.errorColor = ValidatorDialog.WARNING_COLOR;
         this.defaultBGColor = textComponent.getBackground();
@@ -153,11 +151,9 @@ public abstract class TextAdapter {
         try {
             clear();
             textComponent.setText(text);
-        }
-        finally {
+        } finally {
             modelUpdateDisabled = false;
-            this.textComponent.getDocument().addUndoableEditListener(
-                    this.undoableListener);
+            this.textComponent.getDocument().addUndoableEditListener(this.undoableListener);
         }
 
     }
@@ -166,8 +162,7 @@ public abstract class TextAdapter {
         try {
             updateModel(textComponent.getText());
             clear();
-        }
-        catch (ValidationException vex) {
+        } catch (ValidationException vex) {
             textComponent.setBackground(errorColor);
             textComponent.setToolTipText(vex.getUnlabeledMessage());
         }

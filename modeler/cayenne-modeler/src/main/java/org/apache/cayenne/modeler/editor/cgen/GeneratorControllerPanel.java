@@ -59,7 +59,7 @@ public class GeneratorControllerPanel extends JPanel {
                         throw new ValidationException("An invalid path has been detected. It cannot be saved or used until it is corrected.");
                     }
                     if (cgenByDataMap.getRootPath() == null && !path.isAbsolute()) {
-                        isDataValid =false;
+                        isDataValid = false;
                         codeGeneratorController.updateGenerateButton();
                         throw new ValidationException("You should save project to use relative path as an output directory.");
                     }
