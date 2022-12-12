@@ -38,19 +38,19 @@ import java.io.File;
 /**
  * @since 4.1
  */
-public class StandardModeController extends CayenneController {
+public class CgenConfigController extends CayenneController {
 
     private CgenConfiguration cgenConfiguration;
-    protected StandardModePanel view;
+    protected CgenConfigPanel view;
     protected DataMapDefaults preferences;
-    protected CodeGeneratorController codeGeneratorController;
+    protected CgenController cgenController;
     private boolean isEditorOpen;
     private static final String EDITED = " (edited)";
 
-    public StandardModeController(CodeGeneratorController parent) {
+    public CgenConfigController(CgenController parent) {
         super(parent);
-        this.codeGeneratorController = parent;
-        this.view = new StandardModePanel(getParentController());
+        this.cgenController = parent;
+        this.view = new CgenConfigPanel(getParentController());
         isEditorOpen = false;
         initListeners();
         initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
@@ -115,8 +115,8 @@ public class StandardModeController extends CayenneController {
         bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
     }
 
-    protected CodeGeneratorController getParentController() {
-        return (CodeGeneratorController) getParent();
+    protected CgenController getParentController() {
+        return (CgenController) getParent();
     }
 
 
@@ -144,7 +144,7 @@ public class StandardModeController extends CayenneController {
         }
     }
 
-    public StandardModePanel getView() {
+    public CgenConfigPanel getView() {
         return view;
     }
 
@@ -263,8 +263,8 @@ public class StandardModeController extends CayenneController {
         }
     }
 
-    public CodeGeneratorController getCodeGeneratorController() {
-        return codeGeneratorController;
+    public CgenController getCodeGeneratorController() {
+        return cgenController;
     }
 
     public void setEditorOpen(boolean editorOpen) {

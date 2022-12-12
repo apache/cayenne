@@ -25,6 +25,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.CellRenderers;
+import org.apache.cayenne.modeler.util.CheckBoxHeader;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.cayenne.swing.ImageRendererColumn;
@@ -43,19 +44,19 @@ import java.util.List;
 /**
  * @since 4.1
  */
-public class ClassesTabController extends CayenneController {
+public class CgenArtefactSelectorController extends CayenneController {
 
     private static final Icon ERROR_ICON = ModelerUtil.buildIcon("icon-error.png");
-    protected ClassesTabPanel view;
+    protected CgenArtefactSelectorPanel view;
     protected ObjectBinding tableBinding;
     private ValidationResult lastValidationResult;
     private final BindingBuilder builder;
     private final CheckBoxHeader checkBoxHeader;
 
-    public ClassesTabController(CodeGeneratorController parent) {
+    public CgenArtefactSelectorController(CgenController parent) {
         super(parent);
         this.checkBoxHeader = new CheckBoxHeader();
-        this.view = new ClassesTabPanel();
+        this.view = new CgenArtefactSelectorPanel();
         this.builder = new BindingBuilder(getApplication().getBindingFactory(), this);
     }
 
@@ -64,8 +65,8 @@ public class ClassesTabController extends CayenneController {
         classSelectedAction();
     }
 
-    protected CodeGeneratorController getParentController() {
-        return (CodeGeneratorController) getParent();
+    protected CgenController getParentController() {
+        return (CgenController) getParent();
     }
 
     public Component getView() {
@@ -144,7 +145,7 @@ public class ClassesTabController extends CayenneController {
     }
 
     public void validate(Collection<? extends ConfigurationNode> classes) {
-        ClassGenerationValidator validator = new ClassGenerationValidator();
+        CgenValidator validator = new CgenValidator();
         this.lastValidationResult = validator.getValidationResult(classes);
     }
 

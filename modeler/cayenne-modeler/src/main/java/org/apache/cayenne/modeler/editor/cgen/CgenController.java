@@ -66,14 +66,14 @@ import java.util.stream.Collectors;
  *
  * @since 4.1
  */
-public class CodeGeneratorController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
+public class CgenController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
     protected final ProjectController projectController;
     protected final Set<ConfigurationNode> classes;
     protected final SelectionModel selectionModel;
-    protected final CodeGeneratorPane view;
-    protected ClassesTabController classesSelector;
-    private final StandardModeController standardModeController;
+    protected final CgenPane view;
+    protected CgenArtefactSelectorController classesSelector;
+    private final CgenConfigController cgenConfigController;
     private CgenConfigList cgenConfigList;
     private Object currentClass;
     private CgenConfiguration cgenConfiguration;
@@ -81,11 +81,11 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     private DataMap dataMap;
     private boolean initFromModel;
 
-    public CodeGeneratorController(ProjectController projectController) {
+    public CgenController(ProjectController projectController) {
         super(projectController);
-        this.standardModeController = new StandardModeController(this);
-        this.classesSelector = new ClassesTabController(this);
-        this.view = new CodeGeneratorPane(standardModeController.getView(), classesSelector.getView());
+        this.cgenConfigController = new CgenConfigController(this);
+        this.classesSelector = new CgenArtefactSelectorController(this);
+        this.view = new CgenPane(cgenConfigController.getView(), classesSelector.getView());
         this.projectController = projectController;
         this.classes = new TreeSet<>(
                 Comparator.comparing((ConfigurationNode o) -> o.acceptVisitor(TYPE_GETTER))
@@ -108,7 +108,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         initCgenConfigurations();
         initConfigurationsComboBox();
         setConfiguration((String) view.getConfigurationsComboBox().getSelectedItem());
-        standardModeController.initForm(cgenConfiguration);
+        cgenConfigController.initForm(cgenConfiguration);
         addConfigurationComboBoxListener();
         classesSelector.startup();
         initFromModel = false;
@@ -119,7 +119,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         view.getConfigurationsComboBox().addActionListener(e -> {
             selectionModel.clearAll();
             setConfiguration((String) view.getConfigurationsComboBox().getSelectedItem());
-            standardModeController.initForm(cgenConfiguration);
+            cgenConfigController.initForm(cgenConfiguration);
             classesSelector.initBindings();
             classesSelector.validate(classes);
         });
@@ -142,7 +142,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     @Override
-    public CodeGeneratorPane getView() {
+    public CgenPane getView() {
         return view;
     }
 
@@ -256,7 +256,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     public void updateGenerateButton(){
-        boolean isOutputPathValid = standardModeController.getView().isDataValid();
+        boolean isOutputPathValid = cgenConfigController.getView().isDataValid();
         view.getGenerateButton().setEnabled(!selectionModel.isModelEmpty()&& isOutputPathValid);
     }
 
@@ -442,8 +442,8 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         this.initFromModel = initFromModel;
     }
 
-    public StandardModeController getStandardModeController() {
-        return standardModeController;
+    public CgenConfigController getStandardModeController() {
+        return cgenConfigController;
     }
 
     @Override

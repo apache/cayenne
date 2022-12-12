@@ -40,7 +40,7 @@ import org.apache.cayenne.validation.ValidationResult;
  *
  * @since 4.2
  */
-class ClassGenerationValidator {
+class CgenValidator {
 
     ValidationResult getValidationResult(Collection<? extends ConfigurationNode> classes) {
         ValidationResult validationResult = new ValidationResult();

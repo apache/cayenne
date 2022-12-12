@@ -24,8 +24,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
@@ -45,11 +43,11 @@ import java.nio.file.Paths;
 /**
  * @since 4.1
  */
-public class StandardModePanel extends JPanel {
+public class CgenConfigPanel extends JPanel {
 
     protected TextAdapter outputFolder;
     protected JButton selectOutputFolder;
-    protected CodeGeneratorController codeGeneratorController;
+    protected CgenController cgenController;
     private boolean isDataValid;
     private final String INVALID_PATH_MSG = "An invalid path has been detected. It cannot be saved or used until it is corrected.";
     private final String NEED_TO_SAVE_PROJECT_MSG= "You should save project to use relative path as an output directory.";
@@ -74,8 +72,8 @@ public class StandardModePanel extends JPanel {
     private JLabel datamapSuperTemplateLbl;
     static final Border CGEN_PANEL_BORDER = BorderFactory.createEmptyBorder(5, 13, 5, 13);
 
-    public StandardModePanel( CodeGeneratorController codeGeneratorController) {
-        this.codeGeneratorController = codeGeneratorController;
+    public CgenConfigPanel(CgenController cgenController) {
+        this.cgenController = cgenController;
         this.selectOutputFolder = new JButton("..");
         this.pairs = new JCayenneCheckBox();
         this.overwrite = new JCayenneCheckBox();
@@ -227,7 +225,7 @@ public class StandardModePanel extends JPanel {
 
     private void updateGenerateButton(boolean isDataValid){
         this.isDataValid = isDataValid;
-        codeGeneratorController.updateGenerateButton();
+        cgenController.updateGenerateButton();
     }
 
 
@@ -317,11 +315,11 @@ public class StandardModePanel extends JPanel {
     }
 
     protected void checkConfigDirty() {
-        codeGeneratorController.checkCgenConfigDirty();
+        cgenController.checkCgenConfigDirty();
     }
 
     protected CgenConfiguration getCgenConfig() {
-        return codeGeneratorController.getCgenConfiguration();
+        return cgenController.getCgenConfiguration();
     }
 
     public boolean isDataValid() {

@@ -37,7 +37,7 @@ import java.awt.Dimension;
 /**
  * @since 4.1
  */
-public class CodeGeneratorPane extends JPanel {
+public class CgenPane extends JPanel {
 
     private JButton generateButton;
     private JComboBox<String> configurationsComboBox;
@@ -46,7 +46,7 @@ public class CodeGeneratorPane extends JPanel {
     private JButton removeConfigBtn;
     private JSplitPane splitPane;
 
-    public CodeGeneratorPane(Component generatorPanel, Component entitySelectorPanel) {
+    public CgenPane(Component generatorPanel, Component entitySelectorPanel) {
         super();
         this.setLayout(new BorderLayout());
 
@@ -77,7 +77,7 @@ public class CodeGeneratorPane extends JPanel {
         configPanel.setLayout(new BorderLayout());
         configPanel.add(getConfigurationsPanel(), BorderLayout.WEST);
         configPanel.add(getGeneratePanel(), BorderLayout.EAST);
-        configPanel.setBorder(StandardModePanel.CGEN_PANEL_BORDER);
+        configPanel.setBorder(CgenConfigPanel.CGEN_PANEL_BORDER);
         return configPanel;
     }
 

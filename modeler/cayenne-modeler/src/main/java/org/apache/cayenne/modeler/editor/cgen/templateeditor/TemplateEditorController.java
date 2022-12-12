@@ -23,7 +23,7 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.editor.cgen.StandardModeController;
+import org.apache.cayenne.modeler.editor.cgen.CgenConfigController;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.swing.BindingBuilder;
 import org.apache.velocity.exception.ParseErrorException;
@@ -43,7 +43,7 @@ public class TemplateEditorController extends CayenneController {
 
     private final DataMap currentDataMap;
     private final CgenConfiguration configuration;
-    private final StandardModeController parentController;
+    private final CgenConfigController parentController;
     private final TemplateType templateType;
     private EditorTemplateLoader templateLoader;
     private EditorTemplateSaver templateSaver;
@@ -54,7 +54,7 @@ public class TemplateEditorController extends CayenneController {
     private PreviewActionConfigurator actionConfigurator;
 
 
-    public TemplateEditorController(StandardModeController parentController, TemplateType templateType) {
+    public TemplateEditorController(CgenConfigController parentController, TemplateType templateType) {
         super(parentController.getCodeGeneratorController());
         this.templateType = templateType;
         this.configuration = parentController.getCodeGeneratorController().getCgenConfiguration();

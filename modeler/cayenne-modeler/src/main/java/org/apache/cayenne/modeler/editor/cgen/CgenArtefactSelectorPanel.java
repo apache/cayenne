@@ -31,10 +31,10 @@ import java.awt.Dimension;
 /**
  * @since 4.1
  */
-public class ClassesTabPanel extends JPanel {
+public class CgenArtefactSelectorPanel extends JPanel {
 
     protected JTable table;
-    ClassesTabPanel() {
+    CgenArtefactSelectorPanel() {
 
         this.table = new JTable();
         this.table.setRowHeight(22);
