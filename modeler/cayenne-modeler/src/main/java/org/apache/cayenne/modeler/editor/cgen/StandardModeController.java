@@ -21,28 +21,39 @@ package org.apache.cayenne.modeler.editor.cgen;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.editor.cgen.templateeditor.TemplateEditorController;
 import org.apache.cayenne.modeler.pref.DataMapDefaults;
+import org.apache.cayenne.modeler.pref.FSPath;
+import org.apache.cayenne.modeler.util.CayenneController;
+import org.apache.cayenne.modeler.util.TextAdapter;
+import org.apache.cayenne.swing.BindingBuilder;
+import org.apache.cayenne.util.Util;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import java.io.File;
 
 /**
  * @since 4.1
  */
-public class StandardModeController extends GeneratorController {
+public class StandardModeController extends CayenneController {
 
-    private static final String EDITED = " (edited)";
+    private CgenConfiguration cgenConfiguration;
     protected StandardModePanel view;
     protected DataMapDefaults preferences;
     protected CodeGeneratorController codeGeneratorController;
     private boolean isEditorOpen;
+    private static final String EDITED = " (edited)";
 
-    public StandardModeController(CodeGeneratorController codeGeneratorController) {
-        super(codeGeneratorController);
-        this.codeGeneratorController = codeGeneratorController;
+    public StandardModeController(CodeGeneratorController parent) {
+        super(parent);
+        this.codeGeneratorController = parent;
+        this.view = new StandardModePanel(getParentController());
         isEditorOpen = false;
         initListeners();
+        initBindings(new BindingBuilder(getApplication().getBindingFactory(), this));
     }
 
 
@@ -99,6 +110,16 @@ public class StandardModeController extends GeneratorController {
                 new TemplateEditorController(this, TemplateType.DATAMAP_SUPERCLASS).startupAction());
     }
 
+    private void initBindings(BindingBuilder bindingBuilder) {
+        JButton outputSelect = getView().getSelectOutputFolder();
+        bindingBuilder.bindToAction(outputSelect, "selectOutputFolderAction()");
+    }
+
+    protected CodeGeneratorController getParentController() {
+        return (CodeGeneratorController) getParent();
+    }
+
+
     private void setSubclassForDefaults() {
         if (TemplateType.isDefault(cgenConfiguration.getTemplate().getData())) {
             cgenConfiguration.setTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
@@ -123,23 +144,21 @@ public class StandardModeController extends GeneratorController {
         }
     }
 
-
-    protected void createView() {
-        this.view = new StandardModePanel(getParentController());
-    }
-
     public StandardModePanel getView() {
         return view;
     }
 
-    @Override
-    public void updateConfiguration(CgenConfiguration cgenConfiguration) {
-        //noop
-    }
-
-    @Override
     public void initForm(CgenConfiguration cgenConfiguration) {
-        super.initForm(cgenConfiguration);
+        this.cgenConfiguration = cgenConfiguration;
+
+        if (cgenConfiguration.getRootPath() != null) {
+            getView().getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
+        }
+        if(cgenConfiguration.getArtifactsGenerationMode().equalsIgnoreCase("all")) {
+            getParentController().setCurrentClass(cgenConfiguration.getDataMap());
+            getParentController().setSelected(true);
+        }
+        getView().getOutputFolder().updateModel();
         view.getOutputPattern().setText(cgenConfiguration.getOutputPattern());
         view.getPairs().setSelected(cgenConfiguration.isMakePairs());
         view.getUsePackagePath().setSelected(cgenConfiguration.isUsePkgPath());
@@ -208,6 +227,39 @@ public class StandardModeController extends GeneratorController {
         } else {
             button.setToolTipText("At least one artefact of appropriate type must be selected." +
                     " The Make Pairs checkbox can also affect the blocking");
+        }
+    }
+
+    /**
+     * An action method that pops up a file chooser dialog to pick the
+     * generation directory.
+     */
+    @SuppressWarnings("unused")
+    public void selectOutputFolderAction() {
+
+        TextAdapter outputFolder = getView().getOutputFolder();
+        String currentDir = outputFolder.getComponent().getText();
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+
+        // guess start directory
+        if (!Util.isEmptyString(currentDir)) {
+            chooser.setCurrentDirectory(new File(currentDir));
+        } else {
+            FSPath lastDir = Application.getInstance().getFrameController().getLastDirectory();
+            lastDir.updateChooser(chooser);
+        }
+
+        int result = chooser.showOpenDialog(getView());
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selected = chooser.getSelectedFile();
+
+            // update model
+            String path = selected.getAbsolutePath();
+            getView().getOutputFolder().setText(path);
+            getView().getOutputFolder().updateModel();
         }
     }
 

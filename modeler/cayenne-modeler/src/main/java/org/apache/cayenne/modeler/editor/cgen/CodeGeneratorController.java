@@ -108,7 +108,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         initCgenConfigurations();
         initConfigurationsComboBox();
         setConfiguration((String) view.getConfigurationsComboBox().getSelectedItem());
-        configureController(standardModeController);
+        standardModeController.initForm(cgenConfiguration);
         addConfigurationComboBoxListener();
         classesSelector.startup();
         initFromModel = false;
@@ -132,11 +132,6 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
             cgenConfigList.add(createDefaultCgenConfiguration(dataMap));
             projectController.getApplication().getMetaData().add(dataMap, cgenConfigList);
         }
-    }
-
-    void configureController(GeneratorController controller) {
-        controller.updateConfiguration(cgenConfiguration);
-        controller.initForm(cgenConfiguration);
     }
 
     private void initListeners() {
