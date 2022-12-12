@@ -42,7 +42,6 @@ import org.apache.cayenne.modeler.ProjectController;
 import org.apache.cayenne.modeler.dialog.ErrorDebugDialog;
 import org.apache.cayenne.modeler.dialog.pref.GeneralPreferences;
 import org.apache.cayenne.modeler.editor.DbImportController;
-import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
 import org.apache.cayenne.modeler.event.ProjectSavedEvent;
 import org.apache.cayenne.modeler.util.CayenneController;
 import org.apache.cayenne.modeler.util.ModelerUtil;
@@ -58,8 +57,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -71,16 +68,12 @@ import java.util.stream.Collectors;
  */
 public class CodeGeneratorController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
-
     protected final ProjectController projectController;
     protected final Set<ConfigurationNode> classes;
     protected final SelectionModel selectionModel;
     protected final CodeGeneratorPane view;
     protected ClassesTabController classesSelector;
-    protected final ConcurrentMap<DataMap, GeneratorController> prevGeneratorController;
-
     private final StandardModeController standardModeController;
-
     private CgenConfigList cgenConfigList;
     private Object currentClass;
     private CgenConfiguration cgenConfiguration;
@@ -93,7 +86,6 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         this.standardModeController = new StandardModeController(this);
         this.classesSelector = new ClassesTabController(this);
         this.view = new CodeGeneratorPane(standardModeController.getView(), classesSelector.getView());
-        this.prevGeneratorController = new ConcurrentHashMap<>();
         this.projectController = projectController;
         this.classes = new TreeSet<>(
                 Comparator.comparing((ConfigurationNode o) -> o.acceptVisitor(TYPE_GETTER))
