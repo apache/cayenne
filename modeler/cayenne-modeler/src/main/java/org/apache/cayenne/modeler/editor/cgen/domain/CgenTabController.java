@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
@@ -73,7 +74,10 @@ public class CgenTabController extends GeneratorsTabController<CgenConfiguration
                     action.prepareArtifacts();
                     action.execute();
                 }
-
+            } catch (CayenneRuntimeException e) {
+                LOGGER.error("Error generating classes", e);
+                generationFail = true;
+                ((CgenTab) view).showErrorMessage(e.getUnlabeledMessage());
             } catch (Exception e) {
                 LOGGER.error("Error generating classes", e);
                 generationFail = true;

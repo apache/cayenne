@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.cgen;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
@@ -56,8 +57,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -69,16 +68,12 @@ import java.util.stream.Collectors;
  */
 public class CodeGeneratorController extends CayenneController implements ObjEntityListener, EmbeddableListener, DataMapListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(ErrorDebugDialog.class);
-
     protected final ProjectController projectController;
     protected final Set<ConfigurationNode> classes;
     protected final SelectionModel selectionModel;
     protected final CodeGeneratorPane view;
     protected ClassesTabController classesSelector;
-    protected final ConcurrentMap<DataMap, GeneratorController> prevGeneratorController;
-
     private final StandardModeController standardModeController;
-
     private CgenConfigList cgenConfigList;
     private Object currentClass;
     private CgenConfiguration cgenConfiguration;
@@ -91,7 +86,6 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
         this.standardModeController = new StandardModeController(this);
         this.classesSelector = new ClassesTabController(this);
         this.view = new CodeGeneratorPane(standardModeController.getView(), classesSelector.getView());
-        this.prevGeneratorController = new ConcurrentHashMap<>();
         this.projectController = projectController;
         this.classes = new TreeSet<>(
                 Comparator.comparing((ConfigurationNode o) -> o.acceptVisitor(TYPE_GETTER))
@@ -188,6 +182,11 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
             JOptionPane.showMessageDialog(
                     this.getView(),
                     "Class generation finished");
+        } catch (CayenneRuntimeException e) {
+            LOGGER.error("Error generating classes", e);
+            JOptionPane.showMessageDialog(
+                    this.getView(),
+                    "Error generating classes - " + e.getUnlabeledMessage());
         } catch (Exception e) {
             LOGGER.error("Error generating classes", e);
             JOptionPane.showMessageDialog(
@@ -523,11 +522,12 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
 
     /**
      * Update cgen path if project is saved and no path is already set manually
+     *
      * @param e event we are processing
      */
     public void onProjectSaved(ProjectSavedEvent e) {
         // update path input
-        if(getStandardModeController() != null
+        if (getStandardModeController() != null
                 && getStandardModeController().getView() != null
                 && cgenConfiguration != null) {
             getStandardModeController().getView().getOutputFolder().setText(cgenConfiguration.buildOutputPath().toString());
