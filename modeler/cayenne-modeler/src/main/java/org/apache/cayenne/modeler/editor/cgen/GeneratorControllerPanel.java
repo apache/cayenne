@@ -41,6 +41,9 @@ public class GeneratorControllerPanel extends JPanel {
     protected JButton selectOutputFolder;
     protected ProjectController projectController;
     protected CodeGeneratorController codeGeneratorController;
+    private boolean isDataValid;
+    private final String INVALID_PATH_MSG = "An invalid path has been detected. It cannot be saved or used until it is corrected.";
+    private final String NEED_TO_SAVE_PROJECT_MSG= "You should save project to use relative path as an output directory.";
 
     public GeneratorControllerPanel(ProjectController projectController, CodeGeneratorController codeGeneratorController) {
         this.projectController = projectController;
@@ -54,23 +57,37 @@ public class GeneratorControllerPanel extends JPanel {
                     try {
                         path = Paths.get(text);
                     } catch (InvalidPathException e) {
-                        isDataValid = false;
-                        codeGeneratorController.updateGenerateButton();
-                        throw new ValidationException("An invalid path has been detected. It cannot be saved or used until it is corrected.");
+                        updateGenerateButton(false);
+                        throw new ValidationException(INVALID_PATH_MSG);
                     }
                     if (cgenByDataMap.getRootPath() == null && !path.isAbsolute()) {
-                        isDataValid = false;
-                        codeGeneratorController.updateGenerateButton();
-                        throw new ValidationException("You should save project to use relative path as an output directory.");
+                        updateGenerateButton(false);
+                        throw new ValidationException(NEED_TO_SAVE_PROJECT_MSG);
                     }
                     cgenByDataMap.updateOutputPath(path);
-                    isDataValid = true;
-                    codeGeneratorController.updateGenerateButton();
+                    updateGenerateButton(true);
                     checkConfigDirty();
                 }
             }
+
+            @Override
+            public void setText(String text) {
+                super.setText(text);
+                try {
+                    Paths.get(text);
+                } catch (InvalidPathException e) {
+                    updateGenerateButton(false);
+                    throw new ValidationException(INVALID_PATH_MSG);
+                }
+                updateGenerateButton(true);
+            }
         };
         this.selectOutputFolder = new JButton("..");
+    }
+
+    private void updateGenerateButton(boolean isDataValid){
+        this.isDataValid = isDataValid;
+        codeGeneratorController.updateGenerateButton();
     }
 
     public TextAdapter getOutputFolder() {
@@ -87,5 +104,9 @@ public class GeneratorControllerPanel extends JPanel {
 
     protected CgenConfiguration getCgenConfig() {
         return codeGeneratorController.getCgenConfiguration();
+    }
+
+    public boolean isDataValid() {
+        return isDataValid;
     }
 }
