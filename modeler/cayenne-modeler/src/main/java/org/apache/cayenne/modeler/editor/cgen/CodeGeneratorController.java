@@ -247,8 +247,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
                 "Delete cgenConfiguration",
                 JOptionPane.YES_NO_OPTION
         );
-        // result "0" mean selecting YES
-        if (result == 0) {
+        if (result == JOptionPane.OK_OPTION) {
             if (view.getConfigurationsComboBox().getItemCount() > 1) {
                 cgenConfigList.removeByName(cgenConfiguration.getName());
                 view.getConfigurationsComboBox().removeItem(view.getConfigurationsComboBox().getSelectedItem());
@@ -262,7 +261,7 @@ public class CodeGeneratorController extends CayenneController implements ObjEnt
     }
 
     public void updateGenerateButton(){
-        boolean isOutputPathValid = standardModeController.getView().getOutputFolder().isDataValid();
+        boolean isOutputPathValid = standardModeController.getView().isDataValid();
         view.getGenerateButton().setEnabled(!selectionModel.isModelEmpty()&& isOutputPathValid);
     }
 
