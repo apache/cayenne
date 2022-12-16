@@ -129,7 +129,7 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
             // skip db-generated
             if (supportsGeneratedKeys && dbAttr.isGenerated()) {
                 // mark that this attribute should be generated at insert time
-                idMap.put(dbAttrName, new IdGenerationMarker(id));
+                idMap.put(dbAttrName, IdGenerationMarker.marker());
                 continue;
             }
 
