@@ -31,8 +31,10 @@ import java.util.Objects;
  */
 public class OpIdFactory {
 
+    private static final String DB_PREFIX = "db:";
+
     static public ObjectId idForOperation(ObjectId originalId) {
-        if(originalId.isReplacementIdAttached()) {
+        if(originalId.isReplacementIdAttached() && originalId.getEntityName().startsWith(DB_PREFIX)) {
             return new ReplacementAwareObjectId(originalId);
         } else {
             return originalId;
