@@ -45,6 +45,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -233,43 +234,72 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         ColumnSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
                 .column(CompoundPaintingLongNames.SELF);
 
-        CompoundPaintingLongNames beforeCompoundPainting = originalQuery.selectFirst(context);
+        CompoundPaintingLongNames beforeCompoundPainting = originalQuery.select(context)
+                .stream()
+                .filter(c -> c.getArtistLongName().equals("artist1"))
+                .findFirst()
+                .orElseThrow();
 
         String beforeArtistNameFromContext = beforeCompoundPainting.getArtistLongName();
         String beforePaintingTitleFromContext = beforeCompoundPainting.getPaintingTitle();
 
-        Object beforeArtistNameFromDatabase = tArtist.selectAll().get(0)[1];
-        Object beforePaintingTitleFromDatabase = tPainting.selectAll().get(0)[1];
+        String beforeArtistNameFromDatabase = tArtist.selectAll().stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("artist1"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("artist1"))
+                .findFirst()
+                .orElseThrow();
+
+        String beforePaintingTitleFromDatabase = tPainting.selectAll().stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("painting1"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("painting1"))
+                .findFirst()
+                .orElseThrow();
 
         assertNotNull(beforeArtistNameFromDatabase);
         assertNotNull(beforePaintingTitleFromDatabase);
 
-        assertTrue(beforeArtistNameFromDatabase instanceof String);
-        assertTrue(beforePaintingTitleFromDatabase instanceof String);
-
-        assertEquals(((String) beforeArtistNameFromDatabase).trim(), beforeArtistNameFromContext);
-        assertEquals(((String) beforePaintingTitleFromDatabase).trim(), beforePaintingTitleFromContext);
+        assertEquals(beforeArtistNameFromDatabase.trim(), beforeArtistNameFromContext);
+        assertEquals(beforePaintingTitleFromDatabase.trim(), beforePaintingTitleFromContext);
 
         beforeCompoundPainting.setArtistLongName("some");
         beforeCompoundPainting.setPaintingTitle("omes");
         context.commitChanges();
 
-        CompoundPaintingLongNames afterCompoundPainting = originalQuery.selectFirst(context);
+        CompoundPaintingLongNames afterCompoundPainting = originalQuery.select(context)
+                .stream()
+                .filter(c -> c.getArtistLongName().equals("some"))
+                .findFirst()
+                .orElseThrow();
 
         String afterArtistNameFromContext = afterCompoundPainting.getArtistLongName();
         String afterPaintingTitleFromContext = afterCompoundPainting.getPaintingTitle();
 
-        Object afterArtistNameFromDatabase = tArtist.selectAll().get(0)[1];
-        Object afterPaintingTitleFromDatabase = tPainting.selectAll().get(0)[1];
+        String afterArtistNameFromDatabase = tArtist.selectAll()
+                .stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("some"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("some"))
+                .findFirst()
+                .orElseThrow();
+
+        String afterPaintingTitleFromDatabase = tPainting.selectAll().stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("omes"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("omes"))
+                .findFirst()
+                .orElseThrow();
 
         assertNotNull(afterArtistNameFromDatabase);
         assertNotNull(afterPaintingTitleFromDatabase);
 
-        assertTrue(afterArtistNameFromDatabase instanceof String);
-        assertTrue(afterPaintingTitleFromDatabase instanceof String);
-
-        assertEquals(((String) afterArtistNameFromDatabase).trim(), afterArtistNameFromContext);
-        assertEquals(((String) afterPaintingTitleFromDatabase).trim(), afterPaintingTitleFromContext);
+        assertEquals((afterArtistNameFromDatabase).trim(), afterArtistNameFromContext);
+        assertEquals((afterPaintingTitleFromDatabase).trim(), afterPaintingTitleFromContext);
     }
 
     @Test
@@ -277,43 +307,70 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         createTestDataSet();
         ObjectSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class);
 
-        CompoundPaintingLongNames beforeCompoundPainting = originalQuery.selectFirst(context);
+        CompoundPaintingLongNames beforeCompoundPainting = originalQuery.select(context)
+                .stream()
+                .filter(c -> c.getArtistLongName().equals("artist1"))
+                .findFirst()
+                .orElseThrow();
 
         String beforeArtistNameFromContext = beforeCompoundPainting.getArtistLongName();
         String beforePaintingTitleFromContext = beforeCompoundPainting.getPaintingTitle();
 
-        Object beforeArtistNameFromDatabase = tArtist.selectAll().get(0)[1];
-        Object beforePaintingTitleFromDatabase = tPainting.selectAll().get(0)[1];
+        String beforeArtistNameFromDatabase = tArtist.selectAll().stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("artist1"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("artist1"))
+                .findFirst()
+                .orElseThrow();
+        String beforePaintingTitleFromDatabase = tPainting.selectAll().stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("painting1"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("painting1"))
+                .findFirst()
+                .orElseThrow();
 
         assertNotNull(beforeArtistNameFromDatabase);
         assertNotNull(beforePaintingTitleFromDatabase);
 
-        assertTrue(beforeArtistNameFromDatabase instanceof String);
-        assertTrue(beforePaintingTitleFromDatabase instanceof String);
-
-        assertEquals(((String) beforeArtistNameFromDatabase).trim(), beforeArtistNameFromContext);
-        assertEquals(((String) beforePaintingTitleFromDatabase).trim(), beforePaintingTitleFromContext);
+        assertEquals(beforeArtistNameFromDatabase.trim(), beforeArtistNameFromContext);
+        assertEquals(beforePaintingTitleFromDatabase.trim(), beforePaintingTitleFromContext);
 
         beforeCompoundPainting.setArtistLongName("some");
         beforeCompoundPainting.setPaintingTitle("omes");
         context.commitChanges();
 
-        CompoundPaintingLongNames afterCompoundPainting = originalQuery.selectFirst(context);
+        CompoundPaintingLongNames afterCompoundPainting = originalQuery.select(context)
+                .stream()
+                .filter(c -> c.getArtistLongName().equals("some"))
+                .findFirst()
+                .orElseThrow();
 
         String afterArtistNameFromContext = afterCompoundPainting.getArtistLongName();
         String afterPaintingTitleFromContext = afterCompoundPainting.getPaintingTitle();
 
-        Object afterArtistNameFromDatabase = tArtist.selectAll().get(0)[1];
-        Object afterPaintingTitleFromDatabase = tPainting.selectAll().get(0)[1];
+        String afterArtistNameFromDatabase = tArtist.selectAll().stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("some"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("some"))
+                .findFirst()
+                .orElseThrow();
+
+        String afterPaintingTitleFromDatabase = tPainting.selectAll().stream()
+                .map(Arrays::toString)
+                .filter(c -> c.contains("omes"))
+                .flatMap(s -> Arrays.stream(s.split(",")))
+                .filter(v -> v.contains("omes"))
+                .findFirst()
+                .orElseThrow();
 
         assertNotNull(afterArtistNameFromDatabase);
         assertNotNull(afterPaintingTitleFromDatabase);
 
-        assertTrue(afterArtistNameFromDatabase instanceof String);
-        assertTrue(afterPaintingTitleFromDatabase instanceof String);
-
-        assertEquals(((String) afterArtistNameFromDatabase).trim(), afterArtistNameFromContext);
-        assertEquals(((String) afterPaintingTitleFromDatabase).trim(), afterPaintingTitleFromContext);
+        assertEquals(afterArtistNameFromDatabase.trim(), afterArtistNameFromContext);
+        assertEquals(afterPaintingTitleFromDatabase.trim(), afterPaintingTitleFromContext);
     }
 
     @Test
