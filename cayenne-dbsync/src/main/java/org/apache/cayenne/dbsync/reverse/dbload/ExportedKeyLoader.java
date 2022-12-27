@@ -37,6 +37,9 @@ class ExportedKeyLoader extends PerEntityLoader {
 
     @Override
     boolean shouldLoad(DbEntity entity) {
+        if (config.isSkipRelationshipsLoading()) {
+            return false;
+        }
         return delegate.dbRelationship(entity);
     }
 

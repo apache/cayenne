@@ -21,6 +21,7 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.CompareToBuilder;
@@ -34,7 +35,7 @@ import org.apache.cayenne.util.Util;
  *
  * @since 4.0
  */
-public class ExportedKey implements Comparable {
+public class ExportedKey implements Comparable<ExportedKey> {
 
     private final KeyData pk;
     private final KeyData fk;
@@ -62,7 +63,7 @@ public class ExportedKey implements Comparable {
         String fkName = rs.getString("FK_NAME");
         fk = new KeyData(fkCatalog, fkSchema, fkTable, fkColumn, fkName);
 
-        this.keySeq = rs.getShort("KEY_SEQ");
+        keySeq = rs.getShort("KEY_SEQ");
     }
 
     public KeyData getPk() {
@@ -102,15 +103,11 @@ public class ExportedKey implements Comparable {
     }
 
     @Override
-    public int compareTo(Object obj) {
-        if (obj == null || !obj.getClass().equals(getClass())) {
-            throw new IllegalArgumentException();
-        }
-        if (obj == this) {
+    public int compareTo(ExportedKey rhs) {
+        Objects.requireNonNull(rhs);
+        if (rhs == this) {
             return 0;
         }
-
-        ExportedKey rhs = (ExportedKey) obj;
         return new CompareToBuilder()
                 .append(pk, rhs.pk)
                 .append(fk, rhs.fk)
@@ -127,7 +124,7 @@ public class ExportedKey implements Comparable {
         return pk + " <- " + fk;
     }
 
-    public static class KeyData implements Comparable {
+    public static class KeyData implements Comparable<KeyData> {
         private final String catalog;
         private final String schema;
         private final String table;
@@ -168,15 +165,12 @@ public class ExportedKey implements Comparable {
         }
 
         @Override
-        public int compareTo(Object obj) {
-            if (obj == null || !obj.getClass().equals(getClass())) {
-                throw new IllegalArgumentException();
-            }
-            if (obj == this) {
+        public int compareTo(KeyData rhs) {
+            Objects.requireNonNull(rhs);
+            if (rhs == this) {
                 return 0;
             }
 
-            KeyData rhs = (KeyData) obj;
             return new CompareToBuilder()
                     .append(catalog, rhs.catalog)
                     .append(schema, rhs.schema)
@@ -239,16 +233,10 @@ public class ExportedKey implements Comparable {
             }
 
             if(Util.isEmptyString(schema)) {
-                if(!Util.isEmptyString(entity.getSchema())) {
-                    return false;
-                }
+                return Util.isEmptyString(entity.getSchema());
             } else {
-                if(!schema.equals(entity.getSchema())) {
-                    return false;
-                }
+                return schema.equals(entity.getSchema());
             }
-
-            return true;
         }
     }
 }
