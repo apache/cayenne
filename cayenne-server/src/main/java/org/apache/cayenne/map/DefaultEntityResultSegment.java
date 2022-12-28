@@ -53,15 +53,12 @@ public class DefaultEntityResultSegment implements EntityResultSegment {
 
     public String getColumnPath(String resultSetLabel) {
 
-        String columnPath = null;
-
         for (Map.Entry<String, String> entry : fields.entrySet()) {
             if (resultSetLabel.equals(entry.getValue())) {
-                columnPath = entry.getKey();
-                break;
+                return entry.getKey();
             }
         }
 
-        return columnPath;
+        return null;
     }
 }

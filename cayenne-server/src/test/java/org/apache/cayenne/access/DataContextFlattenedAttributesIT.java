@@ -45,7 +45,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -230,34 +229,20 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
 
     @Test
     public void testSelectColumnQuery() throws Exception {
-        createTestDataSet();
+        createTestDataWithDeletion();
+
         ColumnSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
                 .column(CompoundPaintingLongNames.SELF);
 
-        CompoundPaintingLongNames beforeCompoundPainting = originalQuery.select(context)
-                .stream()
-                .filter(c -> c.getArtistLongName().equals("artist1"))
-                .findFirst()
-                .orElseThrow();
+        CompoundPaintingLongNames beforeCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
 
         String beforeArtistNameFromContext = beforeCompoundPainting.getArtistLongName();
         String beforePaintingTitleFromContext = beforeCompoundPainting.getPaintingTitle();
 
-        String beforeArtistNameFromDatabase = tArtist.selectAll().stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("artist1"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("artist1"))
-                .findFirst()
-                .orElseThrow();
-
-        String beforePaintingTitleFromDatabase = tPainting.selectAll().stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("painting1"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("painting1"))
-                .findFirst()
-                .orElseThrow();
+        String beforeArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String beforePaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
 
         assertNotNull(beforeArtistNameFromDatabase);
         assertNotNull(beforePaintingTitleFromDatabase);
@@ -269,31 +254,15 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         beforeCompoundPainting.setPaintingTitle("omes");
         context.commitChanges();
 
-        CompoundPaintingLongNames afterCompoundPainting = originalQuery.select(context)
-                .stream()
-                .filter(c -> c.getArtistLongName().equals("some"))
-                .findFirst()
-                .orElseThrow();
+        CompoundPaintingLongNames afterCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
 
         String afterArtistNameFromContext = afterCompoundPainting.getArtistLongName();
         String afterPaintingTitleFromContext = afterCompoundPainting.getPaintingTitle();
 
-        String afterArtistNameFromDatabase = tArtist.selectAll()
-                .stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("some"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("some"))
-                .findFirst()
-                .orElseThrow();
-
-        String afterPaintingTitleFromDatabase = tPainting.selectAll().stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("omes"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("omes"))
-                .findFirst()
-                .orElseThrow();
+        String afterArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String afterPaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
 
         assertNotNull(afterArtistNameFromDatabase);
         assertNotNull(afterPaintingTitleFromDatabase);
@@ -304,32 +273,19 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
 
     @Test
     public void testObjectSelectQuery() throws Exception {
-        createTestDataSet();
+        createTestDataWithDeletion();
+
         ObjectSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class);
 
-        CompoundPaintingLongNames beforeCompoundPainting = originalQuery.select(context)
-                .stream()
-                .filter(c -> c.getArtistLongName().equals("artist1"))
-                .findFirst()
-                .orElseThrow();
+        CompoundPaintingLongNames beforeCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
 
         String beforeArtistNameFromContext = beforeCompoundPainting.getArtistLongName();
         String beforePaintingTitleFromContext = beforeCompoundPainting.getPaintingTitle();
 
-        String beforeArtistNameFromDatabase = tArtist.selectAll().stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("artist1"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("artist1"))
-                .findFirst()
-                .orElseThrow();
-        String beforePaintingTitleFromDatabase = tPainting.selectAll().stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("painting1"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("painting1"))
-                .findFirst()
-                .orElseThrow();
+        String beforeArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String beforePaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
 
         assertNotNull(beforeArtistNameFromDatabase);
         assertNotNull(beforePaintingTitleFromDatabase);
@@ -341,30 +297,15 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         beforeCompoundPainting.setPaintingTitle("omes");
         context.commitChanges();
 
-        CompoundPaintingLongNames afterCompoundPainting = originalQuery.select(context)
-                .stream()
-                .filter(c -> c.getArtistLongName().equals("some"))
-                .findFirst()
-                .orElseThrow();
+        CompoundPaintingLongNames afterCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
 
         String afterArtistNameFromContext = afterCompoundPainting.getArtistLongName();
         String afterPaintingTitleFromContext = afterCompoundPainting.getPaintingTitle();
 
-        String afterArtistNameFromDatabase = tArtist.selectAll().stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("some"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("some"))
-                .findFirst()
-                .orElseThrow();
-
-        String afterPaintingTitleFromDatabase = tPainting.selectAll().stream()
-                .map(Arrays::toString)
-                .filter(c -> c.contains("omes"))
-                .flatMap(s -> Arrays.stream(s.split(",")))
-                .filter(v -> v.contains("omes"))
-                .findFirst()
-                .orElseThrow();
+        String afterArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String afterPaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
 
         assertNotNull(afterArtistNameFromDatabase);
         assertNotNull(afterPaintingTitleFromDatabase);
@@ -602,5 +543,21 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             assertEquals("PX1", o3.getPaintingTitle());
             assertEquals("TX1", o3.getTextReview());
         }
+    }
+
+    /**
+     * Guarantee initial structure of database via deletion all data inside
+     */
+    private void createTestDataWithDeletion() throws Exception {
+        tPaintingInfo.deleteAll();
+        tPainting.deleteAll();
+        tGallery.deleteAll();
+        tArtist.deleteAll();
+
+        long dateBase = System.currentTimeMillis();
+        tArtist.insert(1, "artist1", new java.sql.Date(dateBase + 1000 * 60 * 60 * 24));
+        tGallery.insert(1, "gallery1");
+        tPainting.insert(1, "painting1", 1, new BigDecimal("1000"), 1);
+        tPaintingInfo.insert(1, "painting review1");
     }
 }
