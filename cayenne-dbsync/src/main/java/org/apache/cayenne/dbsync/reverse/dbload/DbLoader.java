@@ -64,6 +64,7 @@ public class DbLoader {
     private void createLoaders() {
         loaders.add(new EntityLoader(adapter, config, delegate));
         loaders.add(new AttributeLoader(adapter, config, delegate));
+        loaders.add(new FallbackAttributeLoader(adapter, config, delegate));
         loaders.add(new PrimaryKeyLoader(config, delegate));
         loaders.add(new ExportedKeyLoader(config, delegate));
         loaders.add(new RelationshipLoader(config, delegate, nameGenerator));

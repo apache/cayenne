@@ -43,9 +43,17 @@ public abstract class PerCatalogAndSchemaLoader extends AbstractLoader {
                     while (rs.next()) {
                         processResultSetRow(catalog, schema, map, rs);
                     }
+                } catch (SQLException ex) {
+                    if(!catchException(catalog.name, schema.name, ex)) {
+                        throw ex;
+                    }
                 }
             }
         }
+    }
+
+    boolean catchException(String catalogName, String schemaName, SQLException ex) {
+        return false;
     }
 
     boolean shouldLoad(CatalogFilter catalog, SchemaFilter schema) {

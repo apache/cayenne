@@ -21,16 +21,12 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.dbsync.model.DetectedDbAttribute;
 import org.apache.cayenne.dbsync.reverse.filters.CatalogFilter;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
 import org.apache.cayenne.dbsync.reverse.filters.SchemaFilter;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,13 +35,11 @@ class AttributeLoader extends PerCatalogAndSchemaLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbLoader.class);
 
-    private boolean firstRow;
-    private boolean supportAutoIncrement;
+    private final AttributeProcessor attributeProcessor;
 
     AttributeLoader(DbAdapter adapter, DbLoaderConfiguration config, DbLoaderDelegate delegate) {
         super(adapter, config, delegate);
-        firstRow = true;
-        supportAutoIncrement = false;
+        attributeProcessor = new AttributeProcessor(adapter);
     }
 
     protected ResultSet getResultSet(String catalogName, String schemaName, DatabaseMetaData metaData) throws SQLException {
@@ -53,12 +47,15 @@ class AttributeLoader extends PerCatalogAndSchemaLoader {
     }
 
     @Override
-    protected void processResultSetRow(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
-        if (firstRow) {
-            supportAutoIncrement = checkForAutoIncrement(rs);
-            firstRow = false;
-        }
+    boolean catchException(String catalogName, String schemaName, SQLException ex) {
+        String message = "Unable to load columns for the "
+                + catalogName + "/" + schemaName + ", falling back to per-entity loader.";
+        LOGGER.warn(message, ex);
+        return true;
+    }
 
+    @Override
+    protected void processResultSetRow(CatalogFilter catalog, SchemaFilter schema, DbLoadDataStore map, ResultSet rs) throws SQLException {
         // for a reason not quiet apparent to me, Oracle sometimes
         // returns duplicate record sets for the same table, messing up
         // table names. E.g. for the system table "WK$_ATTR_MAPPING" columns
@@ -70,73 +67,8 @@ class AttributeLoader extends PerCatalogAndSchemaLoader {
             return;
         }
 
-        // Filter out columns by name
-        String columnName = rs.getString("COLUMN_NAME");
         PatternFilter columnFilter = schema.tables.getIncludeTableColumnFilter(tableName);
-        if (columnFilter == null || !columnFilter.isIncluded(columnName)) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Skip column '" + tableName + "." + columnName +
-                        "' (Path: " + catalog.name + "/" + schema.name + "; Filter: " + columnFilter + ")");
-            }
-            return;
-        }
 
-        DbAttribute attribute = createDbAttribute(rs);
-        addToDbEntity(entity, attribute);
-    }
-
-    private boolean checkForAutoIncrement(ResultSet rs) throws SQLException {
-        ResultSetMetaData rsMetaData = rs.getMetaData();
-        for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
-            if("IS_AUTOINCREMENT".equals(rsMetaData.getColumnLabel(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void addToDbEntity(DbEntity entity, DbAttribute attribute) {
-        attribute.setEntity(entity);
-
-        // override existing attributes if it comes again
-        if (entity.getAttribute(attribute.getName()) != null) {
-            entity.removeAttribute(attribute.getName());
-        }
-        entity.addAttribute(attribute);
-    }
-
-    private DbAttribute createDbAttribute(ResultSet rs) throws SQLException {
-
-        // gets attribute's (column's) information
-        int columnType = rs.getInt("DATA_TYPE");
-
-        // ignore precision of non-decimal columns
-        int decimalDigits = -1;
-        if (TypesMapping.isDecimal(columnType)) {
-            decimalDigits = rs.getInt("DECIMAL_DIGITS");
-            if (rs.wasNull()) {
-                decimalDigits = -1;
-            }
-        }
-
-        // create attribute delegating this task to adapter
-        DetectedDbAttribute detectedDbAttribute = new DetectedDbAttribute(adapter.buildAttribute(
-                rs.getString("COLUMN_NAME"),
-                rs.getString("TYPE_NAME"),
-                columnType,
-                rs.getInt("COLUMN_SIZE"),
-                decimalDigits,
-                rs.getBoolean("NULLABLE")));
-
-        // store raw type name
-        detectedDbAttribute.setJdbcTypeName(rs.getString("TYPE_NAME"));
-
-        if (supportAutoIncrement) {
-            if ("YES".equals(rs.getString("IS_AUTOINCREMENT"))) {
-                detectedDbAttribute.setGenerated(true);
-            }
-        }
-
-        return detectedDbAttribute;
+        attributeProcessor.processAttribute(rs, columnFilter, entity);
     }
 }
