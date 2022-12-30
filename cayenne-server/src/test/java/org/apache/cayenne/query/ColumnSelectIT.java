@@ -917,7 +917,7 @@ public class ColumnSelectIT extends ServerCase {
 
     @Test
     public void testSelfPropertyInWhere() {
-        Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
+        Artist artist = Artist.SELF.query().selectFirst(context);
         Artist selectedArtist = ObjectSelect.query(Artist.class)
                 .column(Artist.SELF)
                 .where(Artist.SELF.eq(artist))

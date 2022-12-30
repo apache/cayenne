@@ -9,6 +9,7 @@ import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
@@ -23,7 +24,7 @@ public abstract class _PaintingInfo extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<PaintingInfo> SELF = PropertyFactory.createSelf(PaintingInfo.class);
+    public static final SelfProperty<PaintingInfo> SELF = PropertyFactory.createSelf(PaintingInfo.class);
 
     public static final NumericIdProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumericId("PAINTING_ID", "PaintingInfo", Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";

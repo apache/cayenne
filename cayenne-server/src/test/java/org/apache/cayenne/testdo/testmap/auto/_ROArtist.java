@@ -8,10 +8,10 @@ import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.property.DateProperty;
-import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
@@ -26,7 +26,7 @@ public abstract class _ROArtist extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<ROArtist> SELF = PropertyFactory.createSelf(ROArtist.class);
+    public static final SelfProperty<ROArtist> SELF = PropertyFactory.createSelf(ROArtist.class);
 
     public static final NumericIdProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumericId("ARTIST_ID", "ROArtist", Long.class);
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";

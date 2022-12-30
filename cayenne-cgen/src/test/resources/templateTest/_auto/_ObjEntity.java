@@ -5,9 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import test.ObjEntity;
 
 /**
@@ -20,7 +20,7 @@ public abstract class _ObjEntity extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<ObjEntity> SELF = PropertyFactory.createSelf(ObjEntity.class);
+    public static final SelfProperty<ObjEntity> SELF = PropertyFactory.createSelf(ObjEntity.class);
 
     public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("id", "null", Integer.class);
     public static final String ID_PK_COLUMN = "id";
