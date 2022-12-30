@@ -22,6 +22,7 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
@@ -262,14 +263,15 @@ public class VerticalInheritanceIT extends ServerCase {
 		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
 
 		TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
-		ivSub1Table.setColumns("ID", "SUB1_NAME");
+		ivSub1Table.setColumns("ID", "SUB1_NAME", "SUB1_PRICE");
 
 		TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
-		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME");
+		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
 
 		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
 		sub1Sub1.setName("XyZN");
 		sub1Sub1.setSub1Name("mDA");
+		sub1Sub1.setPrice(42.0);
 		sub1Sub1.setSub1Sub1Name("3DQa");
 		sub1Sub1.getObjectContext().commitChanges();
 
@@ -285,14 +287,16 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals("IvSub1Sub1", data[2]);
 
 		Object[] subdata = ivSub1Table.select();
-		assertEquals(2, subdata.length);
+		assertEquals(3, subdata.length);
 		assertEquals(data[0], subdata[0]);
 		assertEquals("mDA", subdata[1]);
+		assertNull(subdata[2]);
 
 		Object[] subsubdata = ivSub1Sub1Table.select();
-		assertEquals(2, subsubdata.length);
+		assertEquals(3, subsubdata.length);
 		assertEquals(data[0], subsubdata[0]);
 		assertEquals("3DQa", subsubdata[1]);
+		assertNull(subdata[2]);
 	}
 
     @Test
@@ -747,5 +751,102 @@ public class VerticalInheritanceIT extends ServerCase {
 		context.commitChanges();
 
 		assertTrue(Cayenne.intPKForObject(sub) > 0);
+	}
+
+	@Test
+	public void testColumnSelectVerticalInheritance_Sub1() throws SQLException {
+		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+		TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+		ivSub1Table.setColumns("ID", "SUB1_NAME", "SUB1_PRICE");
+
+		TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
+
+		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
+		sub1Sub1.setName("XyZN");
+		sub1Sub1.setSub1Name("mDA");
+		sub1Sub1.setPrice(42.0);
+		sub1Sub1.setSub1Sub1Name("3DQa");
+		sub1Sub1.getObjectContext().commitChanges();
+
+		assertEquals(1, ivRootTable.getRowCount());
+		assertEquals(1, ivSub1Table.getRowCount());
+		assertEquals(1, ivSub1Sub1Table.getRowCount());
+
+		Object[] data = ivRootTable.select();
+		assertEquals(3, data.length);
+		assertTrue(data[0] instanceof Number);
+		assertTrue(((Number) data[0]).intValue() > 0);
+		assertEquals("XyZN", data[1]);
+		assertEquals("IvSub1Sub1", data[2]);
+
+		Object[] subdata = ivSub1Table.select();
+		assertEquals(3, subdata.length);
+		assertEquals(data[0], subdata[0]);
+		assertEquals("mDA", subdata[1]);
+
+		Object[] subsubdata = ivSub1Sub1Table.select();
+		assertEquals(3, subsubdata.length);
+		assertEquals(data[0], subsubdata[0]);
+		assertEquals("3DQa", subsubdata[1]);
+
+		ColumnSelect<IvSub1> originalQueryForSub1 = ObjectSelect.query(IvSub1.class)
+				.column(IvSub1.SELF);
+
+		IvSub1 result = originalQueryForSub1.selectOne(context);
+		assertEquals("XyZN", result.getName());
+		assertEquals(Double.valueOf(42.0), result.getPrice());
+		assertEquals("mDA", result.getSub1Name());
+	}
+
+	@Test
+	public void testColumnSelectVerticalInheritance_Sub1Sub1() throws SQLException {
+		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
+		ivRootTable.setColumns("ID", "NAME", "DISCRIMINATOR");
+
+		TableHelper ivSub1Table = new TableHelper(dbHelper, "IV_SUB1");
+		ivSub1Table.setColumns("ID", "SUB1_NAME", "SUB1_PRICE");
+
+		TableHelper ivSub1Sub1Table = new TableHelper(dbHelper, "IV_SUB1_SUB1");
+		ivSub1Sub1Table.setColumns("ID", "SUB1_SUB1_NAME", "SUB1_SUB1_PRICE");
+
+		IvSub1Sub1 sub1Sub1 = context.newObject(IvSub1Sub1.class);
+		sub1Sub1.setName("XyZN");
+		sub1Sub1.setSub1Name("mDA");
+		sub1Sub1.setPrice(42.0);
+		sub1Sub1.setSub1Sub1Name("3DQa");
+		sub1Sub1.getObjectContext().commitChanges();
+
+		assertEquals(1, ivRootTable.getRowCount());
+		assertEquals(1, ivSub1Table.getRowCount());
+		assertEquals(1, ivSub1Sub1Table.getRowCount());
+
+		Object[] data = ivRootTable.select();
+		assertEquals(3, data.length);
+		assertTrue(data[0] instanceof Number);
+		assertTrue(((Number) data[0]).intValue() > 0);
+		assertEquals("XyZN", data[1]);
+		assertEquals("IvSub1Sub1", data[2]);
+
+		Object[] subdata = ivSub1Table.select();
+		assertEquals(3, subdata.length);
+		assertEquals(data[0], subdata[0]);
+		assertEquals("mDA", subdata[1]);
+
+		Object[] subsubdata = ivSub1Sub1Table.select();
+		assertEquals(3, subsubdata.length);
+		assertEquals(data[0], subsubdata[0]);
+		assertEquals("3DQa", subsubdata[1]);
+
+		ColumnSelect<IvSub1Sub1> originalQueryForSub1Sub1 = ObjectSelect.query(IvSub1Sub1.class)
+				.column(IvSub1Sub1.SELF);
+
+		IvSub1Sub1 result = originalQueryForSub1Sub1.selectOne(context);
+		assertEquals("XyZN", result.getName());
+		assertEquals(Double.valueOf(42.0), result.getPrice());
+		assertEquals("mDA", result.getSub1Name());
+		assertEquals("3DQa", result.getSub1Sub1Name());
 	}
 }

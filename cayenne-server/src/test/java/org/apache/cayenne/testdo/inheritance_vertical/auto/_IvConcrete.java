@@ -20,7 +20,9 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvConcrete;
  */
 public abstract class _IvConcrete extends IvAbstract {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
+
+    public static final EntityProperty<IvConcrete> SELF = PropertyFactory.createSelf(IvConcrete.class);
 
     public static final String ID_PK_COLUMN = "ID";
 

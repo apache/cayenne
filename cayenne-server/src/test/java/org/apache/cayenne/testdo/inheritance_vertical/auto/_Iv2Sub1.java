@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Root;
+import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
 
 /**
@@ -17,7 +18,9 @@ import org.apache.cayenne.testdo.inheritance_vertical.Iv2X;
  */
 public abstract class _Iv2Sub1 extends Iv2Root {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
+
+    public static final EntityProperty<Iv2Sub1> SELF = PropertyFactory.createSelf(Iv2Sub1.class);
 
     public static final String ID_PK_COLUMN = "ID";
 
