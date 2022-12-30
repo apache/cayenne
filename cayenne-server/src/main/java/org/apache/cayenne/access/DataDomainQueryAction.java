@@ -395,12 +395,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         QueryCacheEntryFactory factory = getCacheObjectFactory();
 
         if (cache) {
+            boolean wasResponseNull = (response == null);
             List cachedResults = queryCache.get(metadata, factory);
 
             // response may already be initialized by the factory above ... it
             // is null if
             // there was a preexisting cache entry
-            if (response == null) {
+            if (response == null || wasResponseNull) {
                 response = new ListResponse(cachedResults);
             }
 

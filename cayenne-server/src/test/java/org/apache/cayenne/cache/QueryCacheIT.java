@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -54,5 +55,43 @@ public class QueryCacheIT extends ServerCase {
         assertNotSame(
                 result1.get(0).getObjectContext(), 
                 result2.get(0).getObjectContext());
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testLocalCacheStoresAnImmutableList() {
+        
+        Artist a = context1.newObject(Artist.class);
+        a.setArtistName("artist");
+        context1.commitChanges();
+        
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).localCache();
+        List<Artist> result1 = context1.performQuery(q);
+        assertEquals(1, result1.size());
+        
+        // Mutate the returned list. This should not change the cache.
+        result1.add(context1.newObject(Artist.class));
+        List<Artist> result2 = context1.performQuery(q);
+        assertEquals("the list stored in the local query cache cannot be mutated after being returned", 1, result2.size());
+
+        result2.add(context1.newObject(Artist.class));
+        List<Artist> result3 = context1.performQuery(q);
+        assertEquals("the list stored in the local query cache cannot be mutated after being returned", 1, result3.size());
+    }
+    
+    @Test
+    public void testSharedCacheStoresAnImmutableList() {
+        
+        Artist a = context1.newObject(Artist.class);
+        a.setArtistName("artist");
+        context1.commitChanges();
+        
+        ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).sharedCache();
+        List<Artist> result1 = context1.performQuery(q);
+        assertEquals(1, result1.size());
+        
+        // Mutate the returned list. This should not change the cache.
+        result1.add(context1.newObject(Artist.class));
+        List<Artist> result2 = context1.performQuery(q);
+        assertEquals("the list stored in the shared query cache cannot be mutated after being returned", 1, result2.size());
     }
 }
