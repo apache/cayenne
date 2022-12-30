@@ -19,7 +19,12 @@
 
 package org.apache.cayenne.gen.internal;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.DataMap;
+
 import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -52,6 +57,22 @@ public class Utils {
         }
 
         return Optional.empty();
+    }
+
+    public static Path getRootPathForDataMap(DataMap dataMap) {
+        if(dataMap.getConfigurationSource() == null) {
+            throw new CayenneRuntimeException("Unable to create path from the unsaved DataMap");
+        }
+        Path resourcePath;
+        try {
+            resourcePath = Path.of(dataMap.getConfigurationSource().getURL().toURI());
+        } catch (URISyntaxException e) {
+            throw new CayenneRuntimeException("Unable to create path from the DataMap source location", e);
+        }
+        if (Files.isRegularFile(resourcePath)) {
+            resourcePath = resourcePath.getParent();
+        }
+        return resourcePath;
     }
 
     private static String checkDefaultMavenResourceDir(String path, String dirType) {

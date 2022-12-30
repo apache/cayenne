@@ -31,6 +31,7 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.xml.sax.Attributes;
 
@@ -294,7 +295,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
     private void createConfig() {
         loaderContext.addDataMapListener(dataMap -> {
             configuration.setDataMap(dataMap);
-            configuration.setRootPath(buildRootPath(dataMap));
+            configuration.setRootPath(Utils.getRootPathForDataMap(dataMap));
             configuration.resolveExcludedEntities();
             configuration.resolveExcludedEmbeddables();
 
@@ -305,23 +306,5 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
             }
             configurations.add(configuration);
         });
-    }
-
-    /**
-     * @param dataMap loaded cgen config related to
-     * @return base path to the Cayenne project
-     */
-    private Path buildRootPath(DataMap dataMap) {
-        URL url = dataMap.getConfigurationSource().getURL();
-        Path resourcePath;
-        try {
-            resourcePath = Paths.get(url.toURI());
-        } catch (URISyntaxException e) {
-            throw new CayenneRuntimeException("Unable to read cgen path", e);
-        }
-        if (Files.isRegularFile(resourcePath)) {
-            resourcePath = resourcePath.getParent();
-        }
-        return resourcePath;
     }
 }

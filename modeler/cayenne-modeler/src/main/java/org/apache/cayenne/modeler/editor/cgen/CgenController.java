@@ -30,6 +30,7 @@ import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
@@ -301,6 +302,7 @@ public class CgenController extends CayenneController implements ObjEntityListen
         map.getEmbeddables().forEach(configuration::loadEmbeddable);
         if (map.getLocation() != null) {
             Path basePath = Paths.get(ModelerUtil.initOutputFolder());
+            configuration.setRootPath(Utils.getRootPathForDataMap(dataMap));
             configuration.updateOutputPath(basePath);
         }
         Preferences preferences = application.getPreferencesNode(GeneralPreferences.class, "");
