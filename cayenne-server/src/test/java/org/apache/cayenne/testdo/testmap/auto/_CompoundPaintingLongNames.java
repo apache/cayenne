@@ -10,6 +10,7 @@ import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
@@ -27,7 +28,7 @@ public abstract class _CompoundPaintingLongNames extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<CompoundPaintingLongNames> SELF = PropertyFactory.createSelf(CompoundPaintingLongNames.class);
+    public static final SelfProperty<CompoundPaintingLongNames> SELF = PropertyFactory.createSelf(CompoundPaintingLongNames.class);
 
     public static final NumericIdProperty<Integer> PAINTING_ID_PK_PROPERTY = PropertyFactory.createNumericId("PAINTING_ID", "CompoundPaintingLongNames", Integer.class);
     public static final String PAINTING_ID_PK_COLUMN = "PAINTING_ID";

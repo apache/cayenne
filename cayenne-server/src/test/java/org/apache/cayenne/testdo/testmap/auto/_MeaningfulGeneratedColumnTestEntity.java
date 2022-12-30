@@ -5,9 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.MeaningfulGeneratedColumnTestEntity;
 
@@ -21,7 +21,7 @@ public abstract class _MeaningfulGeneratedColumnTestEntity extends BaseDataObjec
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<MeaningfulGeneratedColumnTestEntity> SELF = PropertyFactory.createSelf(MeaningfulGeneratedColumnTestEntity.class);
+    public static final SelfProperty<MeaningfulGeneratedColumnTestEntity> SELF = PropertyFactory.createSelf(MeaningfulGeneratedColumnTestEntity.class);
 
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
 

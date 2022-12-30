@@ -267,8 +267,8 @@ public class PropertyFactory {
      * @param <T> type of represented entity
      * @return new 'self' property
      */
-    public static <T extends Persistent> EntityProperty<T> createSelf(Class<T> type) {
-        return createEntity(ExpressionFactory.fullObjectExp(), type);
+    public static <T extends Persistent> SelfProperty<T> createSelf(Class<T> type) {
+        return new SelfProperty<>(null, ExpressionFactory.fullObjectExp(), type);
     }
 
     /**

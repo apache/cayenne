@@ -10,6 +10,7 @@ import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -24,7 +25,7 @@ public abstract class _ArtGroup extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<ArtGroup> SELF = PropertyFactory.createSelf(ArtGroup.class);
+    public static final SelfProperty<ArtGroup> SELF = PropertyFactory.createSelf(ArtGroup.class);
 
     public static final NumericIdProperty<Integer> GROUP_ID_PK_PROPERTY = PropertyFactory.createNumericId("GROUP_ID", "ArtGroup", Integer.class);
     public static final String GROUP_ID_PK_COLUMN = "GROUP_ID";

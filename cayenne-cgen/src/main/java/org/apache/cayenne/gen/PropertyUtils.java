@@ -42,6 +42,7 @@ import org.apache.cayenne.exp.property.MapProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.SetProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.gen.property.PropertyDescriptorCreator;
@@ -133,7 +134,7 @@ public class PropertyUtils {
 
     public void addImportForSelfProperty(ObjEntity entity) {
         importUtils.addType(PropertyFactory.class.getName());
-        importUtils.addType(EntityProperty.class.getName());
+        importUtils.addType(SelfProperty.class.getName());
         importUtils.addType(entity.getJavaClassName());
     }
 
@@ -173,7 +174,7 @@ public class PropertyUtils {
 
     public String selfPropertyDefinition(ObjEntity entity) {
         String propertyType = importUtils.formatJavaType(entity.getJavaClassName());
-        return String.format("public static final EntityProperty<%s> SELF = PropertyFactory.createSelf(%s.class);",
+        return String.format("public static final SelfProperty<%s> SELF = PropertyFactory.createSelf(%s.class);",
                 propertyType, propertyType);
     }
 

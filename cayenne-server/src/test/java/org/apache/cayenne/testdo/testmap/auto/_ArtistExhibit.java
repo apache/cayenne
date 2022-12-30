@@ -8,6 +8,7 @@ import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
@@ -22,7 +23,7 @@ public abstract class _ArtistExhibit extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<ArtistExhibit> SELF = PropertyFactory.createSelf(ArtistExhibit.class);
+    public static final SelfProperty<ArtistExhibit> SELF = PropertyFactory.createSelf(ArtistExhibit.class);
 
     public static final NumericIdProperty<Long> ARTIST_ID_PK_PROPERTY = PropertyFactory.createNumericId("ARTIST_ID", "ArtistExhibit", Long.class);
     public static final String ARTIST_ID_PK_COLUMN = "ARTIST_ID";
