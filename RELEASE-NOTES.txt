@@ -34,6 +34,7 @@ CAY-2773 Switch master to "5.0"
 CAY-2776 Upgrade Gradle to 7.6
 CAY-2780 Modeler: Multiple configurations for classes generation
 CAY-2781 Enable 'Create PK properties' by default in the cgen configuration
+CAY-2784 Remove 'Use Java primitive types' option from dbimport
 CAY-2788 DbImport: Add fallback option for the batch attribute loader
 
 Bug Fixes:
