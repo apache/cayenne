@@ -8,6 +8,7 @@ import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBaseWithLock;
+import org.apache.cayenne.testdo.inheritance_vertical.IvImplWithLock;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
 
 /**
@@ -18,7 +19,9 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
  */
 public abstract class _IvImplWithLock extends IvBaseWithLock {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
+
+    public static final EntityProperty<IvImplWithLock> SELF = PropertyFactory.createSelf(IvImplWithLock.class);
 
     public static final String ID_PK_COLUMN = "ID";
 

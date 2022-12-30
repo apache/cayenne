@@ -76,10 +76,12 @@
 	<db-entity name="IV_SUB1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="SUB1_NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="SUB1_PRICE" type="DOUBLE"/>
 	</db-entity>
 	<db-entity name="IV_SUB1_SUB1">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 		<db-attribute name="SUB1_SUB1_NAME" type="VARCHAR" length="100"/>
+		<db-attribute name="SUB1_SUB1_PRICE" type="INTEGER"/>
 	</db-entity>
 	<db-entity name="IV_SUB2">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -147,6 +149,7 @@
 	</obj-entity>
 	<obj-entity name="IvSub1" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvSub1">
 		<qualifier><![CDATA[discriminator = "IvSub1"]]></qualifier>
+		<obj-attribute name="price" type="java.lang.Double" db-attribute-path="sub1.SUB1_PRICE"/>
 		<obj-attribute name="sub1Name" type="java.lang.String" db-attribute-path="sub1.SUB1_NAME"/>
 		<attribute-override name="discrimiantor" db-attribute-path="DISCRIMINATOR"/>
 		<attribute-override name="discriminator" db-attribute-path="DISCRIMINATOR"/>
@@ -155,6 +158,7 @@
 	<obj-entity name="IvSub1Sub1" superEntityName="IvSub1" className="org.apache.cayenne.testdo.inheritance_vertical.IvSub1Sub1">
 		<qualifier><![CDATA[discriminator = "IvSub1Sub1"]]></qualifier>
 		<obj-attribute name="sub1Sub1Name" type="java.lang.String" db-attribute-path="sub1.sub1Sub1.SUB1_SUB1_NAME"/>
+		<attribute-override name="price" db-attribute-path="sub1.sub1Sub1.SUB1_SUB1_PRICE"/>
 		<attribute-override name="sub1Name" db-attribute-path="sub1.SUB1_NAME"/>
 	</obj-entity>
 	<obj-entity name="IvSub2" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvSub2">

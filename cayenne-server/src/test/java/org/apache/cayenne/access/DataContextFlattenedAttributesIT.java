@@ -22,8 +22,11 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DefaultEntityResultSegment;
+import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
@@ -37,6 +40,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -61,11 +65,17 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
-    private void createTestDataSet() throws Exception {
-        TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
+    private TableHelper tArtist;
+    private TableHelper tPainting;
+    private TableHelper tPaintingInfo;
+    private TableHelper tGallery;
+
+    @Before
+    public void createTestDataSetStructure() {
+        tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
 
-        TableHelper tPainting = new TableHelper(dbHelper, "PAINTING");
+        tPainting = new TableHelper(dbHelper, "PAINTING");
         tPainting.setColumns(
                 "PAINTING_ID",
                 "PAINTING_TITLE",
@@ -78,12 +88,14 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
                 Types.DECIMAL,
                 Types.INTEGER);
 
-        TableHelper tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
+        tPaintingInfo = new TableHelper(dbHelper, "PAINTING_INFO");
         tPaintingInfo.setColumns("PAINTING_ID", "TEXT_REVIEW");
 
-        TableHelper tGallery = new TableHelper(dbHelper, "GALLERY");
+        tGallery = new TableHelper(dbHelper, "GALLERY");
         tGallery.setColumns("GALLERY_ID", "GALLERY_NAME");
+    }
 
+    private void createTestDataSet() throws Exception {
         long dateBase = System.currentTimeMillis();
         for (int i = 1; i <= 4; i++) {
             tArtist.insert(i + 1, "artist" + i, new java.sql.Date(dateBase
@@ -191,6 +203,115 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         // the error was thrown on query execution
         List<?> objects = ObjectSelect.query(CompoundPaintingLongNames.class).select(context);
         assertNotNull(objects);
+    }
+
+    @Test
+    public void testColumnQueryWithFlattenedAttribute() throws Exception {
+        createTestDataSet();
+        ColumnSelect<Object[]> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
+                .columns(CompoundPaintingLongNames.SELF);
+
+        DataNode dataNode = context.getParentDataDomain().getDataNodes().iterator().next();
+        DefaultSelectTranslator translator =
+                new DefaultSelectTranslator(originalQuery, dataNode.getAdapter(), context.getEntityResolver());
+
+        translator.getSql();
+
+        DefaultEntityResultSegment segment = (DefaultEntityResultSegment) originalQuery
+                .getMetaData(context.getEntityResolver())
+                .getResultSetMapping()
+                .get(0);
+
+        assertEquals(12, segment.getFields().size());
+        assertEquals(12, translator.getResultColumns().length);
+        assertEquals(segment.getFields().size(), translator.getResultColumns().length);
+    }
+
+    @Test
+    public void testSelectColumnQuery() throws Exception {
+        createTestDataWithDeletion();
+
+        ColumnSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
+                .column(CompoundPaintingLongNames.SELF);
+
+        CompoundPaintingLongNames beforeCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
+
+        String beforeArtistNameFromContext = beforeCompoundPainting.getArtistLongName();
+        String beforePaintingTitleFromContext = beforeCompoundPainting.getPaintingTitle();
+
+        String beforeArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String beforePaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
+
+        assertNotNull(beforeArtistNameFromDatabase);
+        assertNotNull(beforePaintingTitleFromDatabase);
+
+        assertEquals(beforeArtistNameFromDatabase.trim(), beforeArtistNameFromContext);
+        assertEquals(beforePaintingTitleFromDatabase.trim(), beforePaintingTitleFromContext);
+
+        beforeCompoundPainting.setArtistLongName("some");
+        beforeCompoundPainting.setPaintingTitle("omes");
+        context.commitChanges();
+
+        CompoundPaintingLongNames afterCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
+
+        String afterArtistNameFromContext = afterCompoundPainting.getArtistLongName();
+        String afterPaintingTitleFromContext = afterCompoundPainting.getPaintingTitle();
+
+        String afterArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String afterPaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
+
+        assertNotNull(afterArtistNameFromDatabase);
+        assertNotNull(afterPaintingTitleFromDatabase);
+
+        assertEquals((afterArtistNameFromDatabase).trim(), afterArtistNameFromContext);
+        assertEquals((afterPaintingTitleFromDatabase).trim(), afterPaintingTitleFromContext);
+    }
+
+    @Test
+    public void testObjectSelectQuery() throws Exception {
+        createTestDataWithDeletion();
+
+        ObjectSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class);
+
+        CompoundPaintingLongNames beforeCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
+
+        String beforeArtistNameFromContext = beforeCompoundPainting.getArtistLongName();
+        String beforePaintingTitleFromContext = beforeCompoundPainting.getPaintingTitle();
+
+        String beforeArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String beforePaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
+
+        assertNotNull(beforeArtistNameFromDatabase);
+        assertNotNull(beforePaintingTitleFromDatabase);
+
+        assertEquals(beforeArtistNameFromDatabase.trim(), beforeArtistNameFromContext);
+        assertEquals(beforePaintingTitleFromDatabase.trim(), beforePaintingTitleFromContext);
+
+        beforeCompoundPainting.setArtistLongName("some");
+        beforeCompoundPainting.setPaintingTitle("omes");
+        context.commitChanges();
+
+        CompoundPaintingLongNames afterCompoundPainting = originalQuery
+                .where(CompoundPaintingLongNames.PAINTING_ID_PK_PROPERTY.eq(1))
+                .selectOne(context);
+
+        String afterArtistNameFromContext = afterCompoundPainting.getArtistLongName();
+        String afterPaintingTitleFromContext = afterCompoundPainting.getPaintingTitle();
+
+        String afterArtistNameFromDatabase = (String) tArtist.selectAll().get(0)[1];
+        String afterPaintingTitleFromDatabase = (String) tPainting.selectAll().get(0)[1];
+
+        assertNotNull(afterArtistNameFromDatabase);
+        assertNotNull(afterPaintingTitleFromDatabase);
+
+        assertEquals(afterArtistNameFromDatabase.trim(), afterArtistNameFromContext);
+        assertEquals(afterPaintingTitleFromDatabase.trim(), afterPaintingTitleFromContext);
     }
 
     @Test
@@ -422,5 +543,21 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             assertEquals("PX1", o3.getPaintingTitle());
             assertEquals("TX1", o3.getTextReview());
         }
+    }
+
+    /**
+     * Guarantee initial structure of database via deletion all data inside
+     */
+    private void createTestDataWithDeletion() throws Exception {
+        tPaintingInfo.deleteAll();
+        tPainting.deleteAll();
+        tGallery.deleteAll();
+        tArtist.deleteAll();
+
+        long dateBase = System.currentTimeMillis();
+        tArtist.insert(1, "artist1", new java.sql.Date(dateBase + 1000 * 60 * 60 * 24));
+        tGallery.insert(1, "gallery1");
+        tPainting.insert(1, "painting1", 1, new BigDecimal("1000"), 1);
+        tPaintingInfo.insert(1, "painting review1");
     }
 }
