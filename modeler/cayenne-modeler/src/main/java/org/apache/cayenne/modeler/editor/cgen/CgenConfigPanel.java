@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.editor.cgen;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.util.TextAdapter;
 import org.apache.cayenne.swing.components.JCayenneCheckBox;
 import org.apache.cayenne.validation.ValidationException;
@@ -32,15 +32,25 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import java.awt.BorderLayout;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @since 4.1
  */
-public class StandardModePanel extends GeneratorControllerPanel {
+public class CgenConfigPanel extends JPanel {
 
+    protected TextAdapter outputFolder;
+    protected JButton selectOutputFolder;
+    protected CgenController cgenController;
+    private boolean isDataValid;
+    private final String INVALID_PATH_MSG = "An invalid path has been detected. It cannot be saved or used until it is corrected.";
+    private final String NEED_TO_SAVE_PROJECT_MSG= "You should save project to use relative path as an output directory.";
     private final JCheckBox pairs;
     private final JCheckBox overwrite;
     private final JCheckBox usePackagePath;
@@ -62,21 +72,21 @@ public class StandardModePanel extends GeneratorControllerPanel {
     private JLabel datamapSuperTemplateLbl;
     static final Border CGEN_PANEL_BORDER = BorderFactory.createEmptyBorder(5, 13, 5, 13);
 
-    public StandardModePanel(CodeGeneratorController codeGeneratorController) {
-        super(Application.getInstance().getFrameController().getProjectController(), codeGeneratorController);
-        this.codeGeneratorController = codeGeneratorController;
+    public CgenConfigPanel(CgenController cgenController) {
+        this.cgenController = cgenController;
+        this.selectOutputFolder = new JButton("..");
         this.pairs = new JCayenneCheckBox();
         this.overwrite = new JCayenneCheckBox();
         this.usePackagePath = new JCayenneCheckBox();
         this.createPropertyNames = new JCayenneCheckBox();
         this.pkProperties = new JCayenneCheckBox();
 
-
         initTextFields();
         initEditTemplateLabels();
         initEditTemplateButtons();
         buildView();
     }
+
 
     private void initEditTemplateLabels() {
         this.entityTemplateLbl = new JLabel(TemplateType.ENTITY_SUBCLASS.readableName());
@@ -176,6 +186,46 @@ public class StandardModePanel extends GeneratorControllerPanel {
                 checkConfigDirty();
             }
         };
+
+        this.outputFolder = new TextAdapter(new JTextField()) {
+            @Override
+            protected void updateModel(String text) throws ValidationException {
+                CgenConfiguration cgenByDataMap = getCgenConfig();
+                if (cgenByDataMap != null) {
+                    Path path;
+                    try {
+                        path = Paths.get(text);
+                    } catch (InvalidPathException e) {
+                        updateGenerateButton(false);
+                        throw new ValidationException(INVALID_PATH_MSG);
+                    }
+                    if (cgenByDataMap.getRootPath() == null && !path.isAbsolute()) {
+                        updateGenerateButton(false);
+                        throw new ValidationException(NEED_TO_SAVE_PROJECT_MSG);
+                    }
+                    cgenByDataMap.updateOutputPath(path);
+                    updateGenerateButton(true);
+                    checkConfigDirty();
+                }
+            }
+
+            @Override
+            public void setText(String text) {
+                super.setText(text);
+                try {
+                    Paths.get(text);
+                } catch (InvalidPathException e) {
+                    updateGenerateButton(false);
+                    throw new ValidationException(INVALID_PATH_MSG);
+                }
+                updateGenerateButton(true);
+            }
+        };
+    }
+
+    private void updateGenerateButton(boolean isDataValid){
+        this.isDataValid = isDataValid;
+        cgenController.updateGenerateButton();
     }
 
 
@@ -255,4 +305,24 @@ public class StandardModePanel extends GeneratorControllerPanel {
         return datamapSuperTemplateLbl;
     }
 
+
+    public TextAdapter getOutputFolder() {
+        return outputFolder;
+    }
+
+    public JButton getSelectOutputFolder() {
+        return selectOutputFolder;
+    }
+
+    protected void checkConfigDirty() {
+        cgenController.checkCgenConfigDirty();
+    }
+
+    protected CgenConfiguration getCgenConfig() {
+        return cgenController.getCgenConfiguration();
+    }
+
+    public boolean isDataValid() {
+        return isDataValid;
+    }
 }

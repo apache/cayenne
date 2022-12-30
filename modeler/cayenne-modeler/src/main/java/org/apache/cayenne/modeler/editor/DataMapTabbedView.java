@@ -18,9 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.editor;
 
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ProjectController;
-import org.apache.cayenne.modeler.editor.cgen.CodeGeneratorController;
+import org.apache.cayenne.modeler.editor.cgen.CgenController;
 import org.apache.cayenne.modeler.editor.cgen.domain.CgenTab;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.editor.dbimport.domain.DbImportTab;
@@ -37,7 +36,7 @@ public class DataMapTabbedView extends JTabbedPane {
     ProjectController mediator;
     private DbImportView dbImportView;
     private JScrollPane dbImportScrollPane;
-    private CodeGeneratorController codeGeneratorController;
+    private CgenController cgenController;
     private JScrollPane cgenView;
 
     /**
@@ -63,15 +62,15 @@ public class DataMapTabbedView extends JTabbedPane {
         JScrollPane dataMapScrollPane = new JScrollPane(new DataMapView(mediator));
         dbImportView = new DbImportView(mediator);
         dbImportScrollPane = new JScrollPane(dbImportView);
-        codeGeneratorController = new CodeGeneratorController(mediator);
-        cgenView = new JScrollPane(codeGeneratorController.getView());
+        cgenController = new CgenController(mediator);
+        cgenView = new JScrollPane(cgenController.getView());
         addTab("DataMap", dataMapScrollPane);
         addTab("DB Import", dbImportScrollPane);
         addTab("Class Generation", cgenView);
 
         addChangeListener(tab -> {
             if(isCgenTabActive()) {
-                codeGeneratorController.initFromModel();
+                cgenController.initFromModel();
             } else if(isDbImportTabActive()) {
                 dbImportView.initFromModel();
             }
