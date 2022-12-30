@@ -27,5 +27,6 @@
     </cgen>
     <dbimport xmlns="http://cayenne.apache.org/schema/10/dbimport">
         <defaultPackage>org.example</defaultPackage>
+        <usePrimitives>true</usePrimitives>
     </dbimport>
 </data-map>

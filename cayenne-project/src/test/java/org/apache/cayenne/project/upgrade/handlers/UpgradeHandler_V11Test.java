@@ -147,6 +147,41 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
     }
 
     @Test
+    public void testDbImportDomUpgrade() throws Exception {
+        Document document = processDataMapDom("test-map-v10.map.xml");
+        Element root = document.getDocumentElement();
+
+        // check cgen config is updated
+        NodeList dbimport = root.getElementsByTagName("dbimport");
+        assertEquals(1, dbimport.getLength());
+        Node dbimportConfig = dbimport.item(0);
+        assertEquals("http://cayenne.apache.org/schema/11/dbimport",
+                dbimportConfig.getAttributes().getNamedItem("xmlns").getNodeValue());
+
+        NodeList childNodes = dbimportConfig.getChildNodes();
+        int elements = 0;
+        boolean defaultPackageSeen = false;
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                elements++;
+                switch (node.getNodeName()) {
+                    case "usePrimitives":
+                        fail("<usePrimitives> tag is still present in the <dbimport> config");
+                    case "defaultPackage":
+                        defaultPackageSeen = true;
+                        break;
+                    default:
+                        fail("Unexpected element <" + node.getNodeName() + "> in the <dbimport> config");
+                }
+            }
+        }
+
+        assertTrue(defaultPackageSeen);
+        assertEquals(1, elements);
+    }
+
+    @Test
     public void testModelUpgrade() {
         DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
         handler.processModel(descriptor);

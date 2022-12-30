@@ -54,7 +54,6 @@ public class DbImportConfiguration {
     private String defaultPackage;
     private String meaningfulPkTables;
     private String adapter;
-    private boolean usePrimitives;
     private boolean useJava7Types;
     private Logger logger;
     private String namingStrategy;
@@ -140,12 +139,22 @@ public class DbImportConfiguration {
         this.meaningfulPkTables = meaningfulPkTables;
     }
 
+    /**
+     * @deprecated since 5.0
+     * @return false
+     */
+    @Deprecated
     public boolean isUsePrimitives() {
-        return usePrimitives;
+        return false;
     }
 
+    /**
+     * does nothing
+     * @param usePrimitives not used
+     * @deprecated since 5.0
+     */
+    @Deprecated
     public void setUsePrimitives(boolean usePrimitives) {
-        this.usePrimitives = usePrimitives;
     }
 
     public boolean isUseJava7Types() {

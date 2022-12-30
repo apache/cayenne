@@ -87,20 +87,17 @@ public class EntityMergeSupport {
     private final List<EntityMergeListener> listeners;
     private final boolean removingMeaningfulFKs;
     private final NameFilter meaningfulPKsFilter;
-    private final boolean usingPrimitives;
     private final boolean usingJava7Types;
 
     public EntityMergeSupport(ObjectNameGenerator nameGenerator,
                               NameFilter meaningfulPKsFilter,
                               boolean removingMeaningfulFKs,
-                              boolean usingPrimitives,
                               boolean usingJava7Types) {
 
         this.listeners = new ArrayList<>();
         this.nameGenerator = nameGenerator;
         this.removingMeaningfulFKs = removingMeaningfulFKs;
         this.meaningfulPKsFilter = meaningfulPKsFilter;
-        this.usingPrimitives = usingPrimitives;
         this.usingJava7Types = usingJava7Types;
 
         // will ensure that all created ObjRelationships would have
@@ -303,9 +300,10 @@ public class EntityMergeSupport {
             }
         }
 
-        String type = TypesMapping.getJavaBySqlType(dbAttribute);
-        String primitiveType;
-        if (usingPrimitives && dbAttribute.isMandatory() && (primitiveType = CLASS_TO_PRIMITIVE.get(type)) != null) {
+        String type = TypesMapping.getJavaBySqlType(dbAttribute.getType());
+        String primitiveType = CLASS_TO_PRIMITIVE.get(type);
+        // use primitive types for non nullable attributes
+        if (primitiveType != null && dbAttribute.isMandatory()) {
             return primitiveType;
         }
         return type;

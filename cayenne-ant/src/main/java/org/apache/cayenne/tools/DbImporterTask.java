@@ -59,7 +59,6 @@ public class DbImporterTask extends Task {
 
     public DbImporterTask() {
         this.config = new DbImportConfiguration();
-        this.config.setUsePrimitives(true);
         this.config.setUseJava7Types(false);
         this.config.setNamingStrategy(DefaultObjectNameGenerator.class.getName());
 
@@ -243,8 +242,12 @@ public class DbImporterTask extends Task {
         config.setUsername(username);
     }
 
+    /**
+     * @deprecated since 5.0
+     */
+    @Deprecated
     public void setUsePrimitives(boolean flag) {
-        config.setUsePrimitives(flag);
+
     }
 
     /**

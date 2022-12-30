@@ -102,7 +102,6 @@ public class MergerContext {
     public static class Builder {
 
         private MergerContext context;
-        private boolean usingPrimitives;
         private boolean usingJava7Types;
         private NameFilter meaningfulPKsFilter;
 
@@ -135,7 +134,6 @@ public class MergerContext {
             context.entityMergeSupport = new EntityMergeSupport(context.nameGenerator,
                     meaningfulPKsFilter,
                     true,
-                    usingPrimitives,
                     usingJava7Types);
 
             return context;
@@ -148,11 +146,6 @@ public class MergerContext {
 
         public Builder nameGenerator(ObjectNameGenerator nameGenerator) {
             this.context.nameGenerator = Objects.requireNonNull(nameGenerator);
-            return this;
-        }
-
-        public Builder usingPrimitives(boolean flag) {
-            this.usingPrimitives = flag;
             return this;
         }
 
