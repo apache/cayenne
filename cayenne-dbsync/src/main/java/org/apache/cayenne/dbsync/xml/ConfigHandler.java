@@ -51,7 +51,6 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     private static final String SKIP_RELATIONSHIPS_LOADING_TAG = "skipRelationshipsLoading";
     private static final String STRIP_FROM_TABLE_NAMES_TAG = "stripFromTableNames";
     private static final String USE_JAVA7_TYPES_TAG = "useJava7Types";
-    private static final String USE_PRIMITIVES_TAG = "usePrimitives";
     private static final String INCLUDE_TABLE_TAG = "includeTable";
     private static final String EXCLUDE_TABLE_TAG = "excludeTable";
     private static final String INCLUDE_COLUMN_TAG = "includeColumn";
@@ -132,9 +131,6 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
             case USE_JAVA7_TYPES_TAG:
                 createUseJava7Types(data);
                 break;
-            case USE_PRIMITIVES_TAG:
-                createUsePrimitives(data);
-                break;
             case EXCLUDE_TABLE_TAG:
                 createExcludeTable(data);
                 break;
@@ -200,20 +196,6 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
 
         if (configuration != null) {
             configuration.addExcludeTable(new ExcludeTable(excludeTable));
-        }
-    }
-
-    private void createUsePrimitives(String usePrimitives) {
-        if (usePrimitives.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            if (usePrimitives.equals(TRUE)) {
-                configuration.setUsePrimitives(true);
-            } else {
-                configuration.setUsePrimitives(false);
-            }
         }
     }
 

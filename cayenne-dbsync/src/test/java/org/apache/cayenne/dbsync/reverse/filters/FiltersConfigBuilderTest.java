@@ -54,8 +54,7 @@ public class FiltersConfigBuilderTest {
                 "      IncludeTable: table2\n" +
                 "        IncludeColumn: includeColumn\n" +
                 "      IncludeTable: table3\n" +
-                "        IncludeColumn: includeColumn\n\n" +
-                "  Use primitives", engineering.toString());
+                "        IncludeColumn: includeColumn\n", engineering.toString());
     }
 
     @Test
@@ -82,8 +81,7 @@ public class FiltersConfigBuilderTest {
                 "    Schema: schemaName02\n" +
                 "      IncludeTable: table1\n" +
                 "        IncludeColumn: includeColumn\n" +
-                "      ExcludeTable: table2\n\n"+
-                "  Use primitives", engineering.toString());
+                "      ExcludeTable: table2\n", engineering.toString());
     }
 
     @Test
@@ -108,8 +106,7 @@ public class FiltersConfigBuilderTest {
                 "    Schema: null\n" +
                 "      IncludeTable: null\n" +
                 "        ExcludeColumn: calculated_.*\n" +
-                "      ExcludeTable: SYS_.*\n\n" +
-                "  Use primitives", engineering.toString());
+                "      ExcludeTable: SYS_.*\n", engineering.toString());
     }
 
     @Test
@@ -123,8 +120,7 @@ public class FiltersConfigBuilderTest {
                 "ReverseEngineering: \n" +
                 "  Catalog: null\n" +
                 "    Schema: s\n" +
-                "      IncludeTable: null\n\n" +
-                "  Use primitives", engineering.toString());
+                "      IncludeTable: null\n", engineering.toString());
     }
 
     @Test
@@ -207,8 +203,7 @@ public class FiltersConfigBuilderTest {
                 "    IncludeColumn: c_xxx1\n" +
                 "    ExcludeColumn: c_xxx2\n" +
                 "    IncludeProcedure: p7\n" +
-                "    ExcludeProcedure: p8\n\n" +
-                "  Use primitives", engineering.toString());
+                "    ExcludeProcedure: p8\n", engineering.toString());
 
 
         builder.compact();
@@ -264,8 +259,7 @@ public class FiltersConfigBuilderTest {
                         "      IncludeProcedure: p5\n" +
                         "      IncludeProcedure: p7\n" +
                         "      ExcludeProcedure: p6\n" +
-                        "      ExcludeProcedure: p8\n\n" +
-                        "  Use primitives", engineering.toString());
+                        "      ExcludeProcedure: p8\n", engineering.toString());
     }
 
     protected IncludeTable includeTable(String name, String incCol, String excCol) {

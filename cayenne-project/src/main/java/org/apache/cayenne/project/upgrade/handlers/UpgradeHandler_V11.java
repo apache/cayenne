@@ -84,6 +84,7 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         dropROPProperties(upgradeUnit);
         dropObjEntityClientInfo(upgradeUnit);
         updateCgenConfig(upgradeUnit);
+        updateDbImportConfig(upgradeUnit);
     }
 
     private void upgradeComments(UpgradeUnit upgradeUnit) {
@@ -142,6 +143,21 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
             objEntityElement.removeAttribute("serverOnly");
             objEntityElement.removeAttribute("clientClassName");
             objEntityElement.removeAttribute("clientSuperClassName");
+        }
+    }
+
+    private void updateDbImportConfig(UpgradeUnit upgradeUnit) {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        NodeList nodes;
+        try {
+            nodes = (NodeList) xpath.evaluate("/data-map/*[local-name()='dbimport']/*[local-name()='usePrimitives']",
+                    upgradeUnit.getDocument(), XPathConstants.NODESET);
+        } catch (Exception e) {
+            return;
+        }
+        for (int j = 0; j < nodes.getLength(); j++) {
+            Element element = (Element) nodes.item(j);
+            element.getParentNode().removeChild(element);
         }
     }
 

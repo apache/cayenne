@@ -241,10 +241,6 @@ public class DbImportView extends JPanel {
         return configPanel.getForceDataMapSchema().isSelected();
     }
 
-    public boolean isUsePrimitives() {
-        return configPanel.getUsePrimitives().isSelected();
-    }
-
     public boolean isUseJava7Typed() {
         return configPanel.getUseJava7Types().isSelected();
     }

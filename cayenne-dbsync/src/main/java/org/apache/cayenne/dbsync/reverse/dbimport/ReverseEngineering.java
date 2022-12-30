@@ -98,12 +98,6 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
     private String stripFromTableNames = "";
 
     /**
-     * <p>If true, would use primitives instead of numeric and boolean classes.</p>
-     * <p>Default is <b>"true"</b>, i.e. primitives will be used.</p>
-     */
-    private boolean usePrimitives = true;
-
-    /**
      * Use old Java 7 date types
      */
     private boolean useJava7Types = false;
@@ -137,7 +131,6 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         this.setForceDataMapSchema(original.isForceDataMapSchema());
         this.setForceDataMapCatalog(original.isForceDataMapCatalog());
         this.setUseJava7Types(original.isUseJava7Types());
-        this.setUsePrimitives(original.isUsePrimitives());
         this.setTableTypes(Arrays.asList(original.getTableTypes()));
         this.setName(original.getName());
         for (Catalog catalog : original.getCatalogs()) {
@@ -220,9 +213,6 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         if (forceDataMapSchema) {
             res.append("\n  Force DataMap schema");
         }
-        if (usePrimitives) {
-            res.append("\n  Use primitives");
-        }
         if (useJava7Types) {
             res.append("\n  Use Java 7 types");
         }
@@ -253,8 +243,13 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         return stripFromTableNames;
     }
 
+    /**
+     * @return false
+     * @deprecated since 5.0
+     */
+    @Deprecated
     public boolean isUsePrimitives() {
-        return usePrimitives;
+        return false;
     }
 
     public boolean isUseJava7Types() {
@@ -285,8 +280,12 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
         this.stripFromTableNames = stripFromTableNames;
     }
 
+    /**
+     * does nothing
+     * @deprecated since 5.0
+     */
+    @Deprecated
     public void setUsePrimitives(boolean usePrimitives) {
-        this.usePrimitives = usePrimitives;
     }
 
     public void setUseJava7Types(boolean useJava7Types) {
@@ -322,7 +321,6 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
                 .simpleTag("skipRelationshipsLoading", this.getSkipRelationshipsLoading().toString())
                 .simpleTag("stripFromTableNames", this.getStripFromTableNames())
                 .simpleTag("useJava7Types", Boolean.toString(this.isUseJava7Types()))
-                .simpleTag("usePrimitives", Boolean.toString(this.isUsePrimitives()))
                 .end();
     }
 

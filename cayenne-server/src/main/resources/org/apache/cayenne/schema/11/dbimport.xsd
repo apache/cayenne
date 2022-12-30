@@ -41,7 +41,6 @@
                         <xs:element name="skipRelationshipsLoading" minOccurs="0" type="xs:boolean"/>
                         <xs:element name="stripFromTableNames" minOccurs="0" type="xs:string"/>
                         <xs:element name="useJava7Types" minOccurs="0" type="xs:boolean"/>
-                        <xs:element name="usePrimitives" minOccurs="0" type="xs:boolean"/>
 
                         <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
                     </xs:sequence>

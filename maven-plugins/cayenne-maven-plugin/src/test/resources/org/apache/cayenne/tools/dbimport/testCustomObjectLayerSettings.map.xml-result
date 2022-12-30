@@ -34,10 +34,10 @@
         <db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="10"/>
     </db-entity>
     <obj-entity name="ExistingTable" className="ExistingTable" dbEntityName="EXISTING_TABLE">
-    	 <obj-attribute name="col2" type="int" db-attribute-path="COL2"/>
+    	 <obj-attribute name="col2" type="java.lang.Integer" db-attribute-path="COL2"/>
     </obj-entity>
     <obj-entity name="NewTable" className="NewTable" dbEntityName="NEW_TABLE">
-    	 <obj-attribute name="col2" type="int" db-attribute-path="COL2"/>
+    	 <obj-attribute name="col2" type="java.lang.Integer" db-attribute-path="COL2"/>
     	 <obj-attribute name="id" type="int" db-attribute-path="ID"/>
     </obj-entity>
     <obj-entity name="PrefixedNewTable" className="PrefixedNewTable" dbEntityName="XYZ_PREFIXED_NEW_TABLE">
