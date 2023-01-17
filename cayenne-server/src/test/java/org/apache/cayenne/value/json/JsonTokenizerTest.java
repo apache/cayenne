@@ -284,6 +284,24 @@ public class JsonTokenizerTest {
     }
 
     @Test
+    public void testTrailingSpaces() {
+        JsonTokenizer tokenizer;
+        JsonTokenizer.JsonToken token;
+
+        tokenizer = new JsonTokenizer("{\"test\": \"some value\"} \n");
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.OBJECT_START, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.STRING, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.STRING, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.OBJECT_END, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.NONE, token.type);
+    }
+
+    @Test
     public void testEmptyArray() {
         JsonTokenizer tokenizer = new JsonTokenizer("[]");
         JsonTokenizer.JsonToken token1 = tokenizer.nextToken();
