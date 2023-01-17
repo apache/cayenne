@@ -28,22 +28,22 @@ public class OpIdFactoryTest {
 
     @Test
     public void testEqualsAndHashCode() {
-        ObjectId idSource1 = ObjectId.of("test");
+        ObjectId idSource1 = ObjectId.of("db:test");
         idSource1.getReplacementIdMap().put("id", 1);
 
-        ObjectId idSource2 = ObjectId.of("test");
+        ObjectId idSource2 = ObjectId.of("db:test");
         idSource2.getReplacementIdMap().put("id", 1);
 
-        ObjectId idSource3 = ObjectId.of("test");
+        ObjectId idSource3 = ObjectId.of("db:test");
         idSource3.getReplacementIdMap().put("id2", 1);
 
-        ObjectId idSource4 = ObjectId.of("test2");
+        ObjectId idSource4 = ObjectId.of("db:test2");
         idSource4.getReplacementIdMap().put("id", 1);
 
-        ObjectId idSource5 = ObjectId.of("test2");
+        ObjectId idSource5 = ObjectId.of("db:test2");
         idSource5.getReplacementIdMap().put("id", 1);
 
-        ObjectId idSource6 = ObjectId.of("test", "id", 1);
+        ObjectId idSource6 = ObjectId.of("db:test", "id", 1);
 
         ObjectId id1 = OpIdFactory.idForOperation(idSource1);
         ObjectId id2 = OpIdFactory.idForOperation(idSource2);
