@@ -52,6 +52,9 @@ final class JsonTokenizer {
         while (position < data.length) {
             // skip whitespace
             skipWhitespace();
+            if (position == data.length) {
+                break;
+            }
             JsonToken token = nextValue();
             // only string could be used as an object member name
             if (states[currentState] == State.OBJECT_MEMBER_NAME) {
