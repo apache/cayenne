@@ -29,6 +29,16 @@ import static org.junit.Assert.assertEquals;
 public class JsonTokenizerTest {
 
     @Test
+    public void testEmpty() {
+        JsonTokenizer tokenizer;
+        JsonTokenizer.JsonToken token;
+
+        tokenizer = new JsonTokenizer("");
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.NONE, token.type);
+    }
+
+    @Test
     public void testNull() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
