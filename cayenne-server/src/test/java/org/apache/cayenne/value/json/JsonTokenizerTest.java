@@ -29,6 +29,16 @@ import static org.junit.Assert.assertEquals;
 public class JsonTokenizerTest {
 
     @Test
+    public void testEmpty() {
+        JsonTokenizer tokenizer;
+        JsonTokenizer.JsonToken token;
+
+        tokenizer = new JsonTokenizer("");
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.NONE, token.type);
+    }
+
+    @Test
     public void testNull() {
         JsonTokenizer tokenizer;
         JsonTokenizer.JsonToken token;
@@ -271,6 +281,24 @@ public class JsonTokenizerTest {
         assertEquals("2", token4.toString());
         assertEquals(JsonTokenizer.TokenType.STRING, token5.type);
         assertEquals("abc", token5.toString());
+    }
+
+    @Test
+    public void testTrailingSpaces() {
+        JsonTokenizer tokenizer;
+        JsonTokenizer.JsonToken token;
+
+        tokenizer = new JsonTokenizer("{\"test\": \"some value\"} \n");
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.OBJECT_START, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.STRING, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.STRING, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.OBJECT_END, token.type);
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.NONE, token.type);
     }
 
     @Test
