@@ -180,11 +180,9 @@ public class CDOReflexiveRelICustomSorterIT extends ServerCaseCustomSorter {
 
         Gallery updatedGallery = ObjectSelect.query(Gallery.class).selectFirst(context);
         updatedGallery.setGalleryName("gallery2");
-        context.commitChanges();
 
         Artist updatedArtist1 = ObjectSelect.query(Artist.class).selectFirst(context);
         updatedArtist1.setArtistName("artist11");
-        context.commitChanges();
 
         context.deleteObject(artist2);
         context.commitChanges();
