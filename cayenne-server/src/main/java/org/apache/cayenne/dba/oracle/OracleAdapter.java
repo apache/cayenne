@@ -36,9 +36,11 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ByteType;
+import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ShortType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
@@ -200,7 +202,8 @@ public class OracleAdapter extends JdbcAdapter {
 		super.configureExtendedTypes(map);
 
 		// create specially configured CharType handler
-		map.registerType(new OracleCharType());
+		OracleCharType charType = new OracleCharType();
+		map.registerType(charType);
 
 		// create specially configured ByteArrayType handler
 		map.registerType(new OracleByteArrayType());
@@ -211,7 +214,9 @@ public class OracleAdapter extends JdbcAdapter {
 		// At least on MacOS X, driver does not handle Short and Byte properly
 		map.registerType(new ShortType(true));
 		map.registerType(new ByteType(true));
+
 		map.registerType(new OracleBooleanType());
+		map.registerType(new JsonType(charType, true));
 	}
 
 	/**
