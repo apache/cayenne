@@ -84,7 +84,9 @@ Broken PostgreSQL types mapping.
    <jdbc-type name="NUMERIC">
        <db-type name="numeric"/>
    </jdbc-type>
-   <jdbc-type name="OTHER"/>
+   <jdbc-type name="OTHER">
+       <db-type name="json"/>
+   </jdbc-type>
    <jdbc-type name="REAL">
        <db-type name="real"/>
    </jdbc-type>
