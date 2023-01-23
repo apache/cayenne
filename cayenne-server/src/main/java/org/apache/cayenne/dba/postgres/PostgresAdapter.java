@@ -116,10 +116,13 @@ public class PostgresAdapter extends JdbcAdapter {
 	@Override
 	public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
 
+		if ("json".equalsIgnoreCase(typeName)) {
+			type = Types.OTHER;
+		}
 		// "bytea" maps to pretty much any binary type, so
 		// it is up to us to select the most sensible default.
 		// And the winner is LONGVARBINARY
-		if (BYTEA.equalsIgnoreCase(typeName)) {
+		else if (BYTEA.equalsIgnoreCase(typeName)) {
 			type = Types.LONGVARBINARY;
 		}
 		// oid is returned as INTEGER, need to make it BLOB
