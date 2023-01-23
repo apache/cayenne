@@ -30,10 +30,13 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.modeler.editor.dbimport.tree.NodeType;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -206,5 +209,46 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     public void setLoaded(boolean loaded) {
         isLoaded = loaded;
+    }
+
+    public List<DbImportTreeNode> getChildNodes() {
+        List<DbImportTreeNode> childNodes = new ArrayList<>();
+        Collections.list(this.children()).forEach(c -> childNodes.add((DbImportTreeNode) c));
+        return childNodes;
+    }
+
+    public NodeType getNodeType() {
+        if (userObject instanceof Catalog) {
+            return NodeType.CATALOG;
+        } else if (userObject instanceof Schema) {
+            return NodeType.SCHEMA;
+        } else if (userObject instanceof IncludeTable) {
+            return NodeType.INCLUDE_TABLE;
+        } else if (userObject instanceof ExcludeTable) {
+            return NodeType.EXCLUDE_TABLE;
+        } else if (userObject instanceof IncludeColumn) {
+            return NodeType.INCLUDE_COLUMN;
+        } else if (userObject instanceof ExcludeColumn) {
+            return NodeType.EXCLUDE_COLUMN;
+        } else if (userObject instanceof IncludeProcedure) {
+            return NodeType.INCLUDE_PROCEDURE;
+        } else if (userObject instanceof ExcludeProcedure) {
+            return NodeType.EXCLUDE_PROCEDURE;
+        }
+        return NodeType.UNKNOWN;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getChildrenObjectsByType(NodeType type) {
+        return getChildNodes()
+                .stream()
+                .filter(n -> type.equals(n.getNodeType()))
+                .map(filteredNode -> (T) filteredNode.getUserObject())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DbImportTreeNode getLastChild() {
+        return (DbImportTreeNode) super.getLastChild();
     }
 }
