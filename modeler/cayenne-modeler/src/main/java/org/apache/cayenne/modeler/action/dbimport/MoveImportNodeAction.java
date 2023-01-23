@@ -30,6 +30,7 @@ import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportTree;
 import org.apache.cayenne.modeler.editor.dbimport.DbImportView;
 import org.apache.cayenne.modeler.editor.dbimport.DraggableTreePanel;
@@ -119,6 +120,7 @@ public class MoveImportNodeAction extends CayenneAction {
     public void performAction(ActionEvent e) {
         TreePath[] paths = sourceTree.getSelectionPaths();
         TreeManipulationAction action = null;
+        DbImportTreeNode foundNode = null;
         String insertableName = EMPTY_NAME;
         DbImportView rootParent = (DbImportView) panel.getParent().getParent();
         rootParent.getReverseEngineeringProgress().setVisible(true);
@@ -129,7 +131,7 @@ public class MoveImportNodeAction extends CayenneAction {
                 for (TreePath path : paths) {
                     DbImportTreeNode selectedElement = (DbImportTreeNode) path.getLastPathComponent();
                     DbImportTreeNode previousNode;
-                    DbImportTreeNode foundNode = targetTree.findNodeByParentsChain(
+                    foundNode = targetTree.findNodeByParentsChain(
                             targetTree.getRootNode(), selectedElement, 0
                     );
                     // If parent nodes from db schema doesn't exist, create it
@@ -195,6 +197,11 @@ public class MoveImportNodeAction extends CayenneAction {
                             reverseEngineeringOldCopy, reverseEngineeringNewCopy, targetTree, getProjectController()
                     );
                     getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
+                }
+                if (foundNode != null) {
+                    DbImportSorter.sortNodeWithAllChildren((DbImportTreeNode) foundNode.getRoot());
+                    targetTree.reloadModel();
+                    targetTree.setSelectionPath(new TreePath(foundNode.getLastChild().getPath()));
                 }
             } finally {
                 rootParent.getReverseEngineeringProgress().setVisible(false);

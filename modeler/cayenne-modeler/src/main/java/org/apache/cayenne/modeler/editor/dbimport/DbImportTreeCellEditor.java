@@ -120,8 +120,10 @@ public class DbImportTreeCellEditor extends DefaultTreeCellEditor {
                 tree.startEditingAtPath(tree.getSelectionPath());
             }
         }
-        DbImportTreeNode selectedNode = (DbImportTreeNode) tree.getSelectionPath().getLastPathComponent();
-        ((DbImportModel) tree.getModel()).reload(selectedNode);
+        if (tree.getSelectionPath() != null) {
+            DbImportTreeNode selectedNode = (DbImportTreeNode) tree.getSelectionPath().getLastPathComponent();
+            ((DbImportModel) tree.getModel()).reload(selectedNode);
+        }
     }
 
     private boolean equalNodes(int i, DbImportTreeNode parent, DbImportTreeNode selectedElement) {

@@ -186,7 +186,7 @@ public class ColorTreeRenderer extends DbImportTreeCellRenderer {
 
         ReverseEngineering config = new ReverseEngineering();
         Object configNode = null;
-        while(!selectedNode.isReverseEngineering()) {
+        while( selectedNode!= null && !selectedNode.isReverseEngineering()) {
             configNode = addToMask(configNode, selectedNode);
             selectedNode = selectedNode.getParent();
         }
