@@ -28,6 +28,7 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -50,7 +51,7 @@ import java.util.List;
  * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/">
  * HSQLDB RDBMS </a>. Sample connection settings to use with HSQLDB are shown
  * below:
- * 
+ *
  * <pre>
  *        test-hsqldb.jdbc.username = test
  *        test-hsqldb.jdbc.password = secret
@@ -80,7 +81,10 @@ public class HSQLDBAdapter extends JdbcAdapter {
 		super.configureExtendedTypes(map);
 
 		// create specially configured CharType handler
-		map.registerType(new CharType(true, true));
+		CharType charType = new CharType(true, true);
+		map.registerType(charType);
+
+		map.registerType(new JsonType(charType, true));
 	}
 
 	/**
@@ -104,7 +108,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 	/**
 	 * Generate fully-qualified name for 1.8 and on. Subclass generates
 	 * unqualified name.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	protected String getTableName(DbEntity entity) {
@@ -114,7 +118,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 	/**
 	 * Returns DbEntity schema name for 1.8 and on. Subclass generates
 	 * unqualified name.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	protected String getSchemaName(DbEntity entity) {
@@ -123,7 +127,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
 	/**
 	 * Uses special action builder to create the right action.
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
@@ -133,7 +137,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
 	/**
 	 * Returns a DDL string to create a unique constraint over a set of columns.
-	 * 
+	 *
 	 * @since 1.1
 	 */
 	@Override
@@ -171,7 +175,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
 	/**
 	 * Adds an ADD CONSTRAINT clause to a relationship constraint.
-	 * 
+	 *
 	 * @see JdbcAdapter#createFkConstraint(DbRelationship)
 	 */
 	@Override
@@ -224,7 +228,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
 
 	/**
 	 * Uses "CREATE CACHED TABLE" instead of "CREATE TABLE".
-	 * 
+	 *
 	 * @since 1.2
 	 */
 	@Override
