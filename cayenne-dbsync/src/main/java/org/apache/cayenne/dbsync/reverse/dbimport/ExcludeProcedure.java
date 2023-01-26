@@ -40,6 +40,10 @@ public class ExcludeProcedure extends PatternParam implements XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.simpleTag("excludeProcedure", this.getPattern());
+        encoder.start("excludeProcedure")
+                .attribute("pinned", this.isPinned())
+                .cdata(this.getPattern())
+                .end();
+
     }
 }

@@ -40,6 +40,9 @@ public class ExcludeTable extends PatternParam implements XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.simpleTag("excludeTable", this.getPattern());
+        encoder.start("excludeTable")
+                .attribute("pinned", this.isPinned())
+                .cdata(this.getPattern())
+                .end();
     }
 }

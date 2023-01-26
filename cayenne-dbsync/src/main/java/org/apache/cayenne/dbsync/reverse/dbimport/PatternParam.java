@@ -28,6 +28,16 @@ public class PatternParam {
 
     private String pattern;
 
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        isPinned = pinned;
+    }
+
+    private boolean isPinned;
+
     public PatternParam() {
     }
 

@@ -103,10 +103,11 @@ public class IncludeTable extends PatternParam implements XMLSerializable {
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("includeTable")
-            .simpleTag("name", this.getPattern())
-            .nested(this.getIncludeColumns(), delegate)
-            .nested(this.getExcludeColumns(), delegate)
-        .end();
+                .attribute("pinned", this.isPinned())
+                .simpleTag("name", this.getPattern())
+                .nested(this.getIncludeColumns(), delegate)
+                .nested(this.getExcludeColumns(), delegate)
+                .end();
     }
 
     @Override

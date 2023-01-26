@@ -40,6 +40,9 @@ public class IncludeProcedure extends PatternParam implements XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.simpleTag("includeProcedure", this.getPattern());
+        encoder.start("includeProcedure")
+                .attribute("pinned", this.isPinned())
+                .cdata(this.getPattern())
+                .end();
     }
 }
