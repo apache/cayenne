@@ -118,9 +118,16 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         int count = result.getDbAttributes().size();
         for(int i=0; i<count; i++) {
             ResultNodeDescriptor resultNodeDescriptor = processTranslationResult(result, i);
-            if(resultNodeDescriptor != null && i == count - 1) {
+            DbAttribute dbAttribute = result.getDbAttributes().get(i);
+            if(resultNodeDescriptor != null) {
                 resultNodeDescriptor.setJavaType(oa.getType());
-                addEntityResultField(oa.getDbAttribute());
+                if (result.getDbAttributes().size() > 1) {
+                    String dataRowKey = result.getAttributePaths().get(i) + "." + dbAttribute.getName();
+                    resultNodeDescriptor.setDataRowKey(dataRowKey);
+                    addEntityResultField(dataRowKey);
+                } else {
+                    addEntityResultField(dbAttribute);
+                }
             }
         }
 
@@ -174,6 +181,12 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         String name = labelPrefix == null ? attribute.getName() : labelPrefix + '.' + attribute.getName();
         if(context.getQuery().needsResultSetMapping()) {
             entityResult.addDbField(name, name);
+        }
+    }
+
+    private void addEntityResultField(String nameForFlattenedAttribute) {
+        if (context.getQuery().needsResultSetMapping()) {
+            entityResult.addDbField(nameForFlattenedAttribute, nameForFlattenedAttribute);
         }
     }
 

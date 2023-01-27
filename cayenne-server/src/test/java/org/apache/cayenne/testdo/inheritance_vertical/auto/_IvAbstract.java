@@ -16,7 +16,7 @@ import org.apache.cayenne.exp.property.StringProperty;
  */
 public abstract class _IvAbstract extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     public static final String ID_PK_COLUMN = "ID";
 

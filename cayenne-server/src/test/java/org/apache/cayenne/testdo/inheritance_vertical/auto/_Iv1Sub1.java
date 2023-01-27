@@ -16,7 +16,7 @@ import org.apache.cayenne.testdo.inheritance_vertical.Iv1Root;
  */
 public abstract class _Iv1Sub1 extends Iv1Root {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     public static final String ID_PK_COLUMN = "ID";
 

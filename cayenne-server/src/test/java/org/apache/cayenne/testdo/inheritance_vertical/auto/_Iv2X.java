@@ -14,7 +14,7 @@ import org.apache.cayenne.BaseDataObject;
  */
 public abstract class _Iv2X extends BaseDataObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     public static final String ID_PK_COLUMN = "ID";
 

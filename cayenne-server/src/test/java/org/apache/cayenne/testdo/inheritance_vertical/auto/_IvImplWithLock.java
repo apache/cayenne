@@ -18,7 +18,7 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
  */
 public abstract class _IvImplWithLock extends IvBaseWithLock {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
     public static final String ID_PK_COLUMN = "ID";
 
