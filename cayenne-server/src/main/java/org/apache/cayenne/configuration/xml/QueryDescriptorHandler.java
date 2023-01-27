@@ -90,7 +90,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected void processCharData(String localName, String data) {
+    protected boolean processCharData(String localName, String data) {
         switch (localName) {
             case QUERY_SQL_TAG:
                 queryBuilder.addSql(data, sqlKey);
@@ -112,6 +112,7 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
                 addPrefetchWithSemantics(data);
                 break;
         }
+        return true;
     }
 
     @Override

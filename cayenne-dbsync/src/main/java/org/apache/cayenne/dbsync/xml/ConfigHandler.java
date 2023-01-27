@@ -102,7 +102,7 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected void processCharData(String localName, String data) {
+    protected boolean processCharData(String localName, String data) {
         switch (localName) {
             case DEFAULT_PACKAGE_TAG:
                 createDefaultPackage(data);
@@ -147,6 +147,7 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
                 createExcludeProcedure(data);
                 break;
         }
+        return true;
     }
 
     private void createExcludeProcedure(String excludeProcedure) {

@@ -58,7 +58,7 @@ public class DbKeyGeneratorHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected void processCharData(String localName, String data) {
+    protected boolean processCharData(String localName, String data) {
         switch (localName) {
             case DB_GENERATOR_TYPE_TAG:
                 setDbGeneratorType(data);
@@ -72,6 +72,7 @@ public class DbKeyGeneratorHandler extends NamespaceAwareNestedTagHandler {
                 setDbKeyCacheSize(data);
                 break;
         }
+        return true;
     }
 
     private void createDbKeyGenerator() {
