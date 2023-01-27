@@ -16,6 +16,7 @@ Changes/New Features:
 Bug Fixes:
 
 CAY-2783 DbEntity to ObjEntity synchronization should check mandatory flag for primitive java types
+CAY-2789 MalformedJsonException thrown when reading manually edited JSON data in Postgres
 
 ----------------------------------
 Release: 4.2.RC2
