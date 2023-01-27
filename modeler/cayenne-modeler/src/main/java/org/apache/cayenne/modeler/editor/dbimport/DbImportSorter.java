@@ -38,6 +38,7 @@ import java.util.List;
 public class DbImportSorter {
     private static final Comparator<DbImportTreeNode> NODE_COMPARATOR = Comparator
             .comparing(DbImportTreeNode::getNodeType)
+            .thenComparing(DbImportTreeNode::isPinned,Comparator.reverseOrder())
             .thenComparing(DbImportTreeNode::getSimpleNodeName);
 
     public static void sortSingleNode(DbImportTreeNode node) {
