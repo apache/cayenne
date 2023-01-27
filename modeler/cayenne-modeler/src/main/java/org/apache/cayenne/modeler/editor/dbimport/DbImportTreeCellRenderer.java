@@ -19,15 +19,8 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
+import org.apache.cayenne.modeler.editor.dbimport.tree.NodeType;
 import org.apache.cayenne.modeler.util.ModelerUtil;
 
 import javax.swing.ImageIcon;
@@ -43,38 +36,50 @@ import java.util.Map;
 public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
 
     protected DbImportTreeNode node;
-    private Map<Class, String> icons;
-    private Map<Class, String> transferableTreeIcons;
+    private Map<NodeType, String> icons;
+    private Map<NodeType, String> markedIcons;
+    private Map<NodeType, String> transferableTreeIcons;
 
     public DbImportTreeCellRenderer() {
         super();
         initIcons();
-        initTrasferableTreeIcons();
+        initPinnedIcons();
+        initTransferableTreeIcons();
     }
 
-    private void initTrasferableTreeIcons() {
+    private void initTransferableTreeIcons() {
         transferableTreeIcons = new HashMap<>();
-        transferableTreeIcons.put(Catalog.class, "icon-dbi-catalog.png");
-        transferableTreeIcons.put(Schema.class, "icon-dbi-schema.png");
-        transferableTreeIcons.put(IncludeTable.class, "icon-dbentity.png");
-        transferableTreeIcons.put(IncludeProcedure.class, "icon-stored-procedure.png");
-        transferableTreeIcons.put(IncludeColumn.class, "icon-dbi-column.png");
+        transferableTreeIcons.put(NodeType.CATALOG, "icon-dbi-catalog.png");
+        transferableTreeIcons.put(NodeType.SCHEMA, "icon-dbi-schema.png");
+        transferableTreeIcons.put(NodeType.INCLUDE_TABLE, "icon-dbentity.png");
+        transferableTreeIcons.put(NodeType.INCLUDE_PROCEDURE, "icon-stored-procedure.png");
+        transferableTreeIcons.put(NodeType.INCLUDE_COLUMN, "icon-dbi-column.png");
     }
 
     private void initIcons() {
         icons = new HashMap<>();
-        icons.put(Catalog.class, "icon-dbi-catalog.png");
-        icons.put(Schema.class, "icon-dbi-schema.png");
-        icons.put(IncludeTable.class, "icon-dbi-includeTable.png");
-        icons.put(ExcludeTable.class, "icon-dbi-excludeTable.png");
-        icons.put(IncludeColumn.class, "icon-dbi-includeColumn.png");
-        icons.put(ExcludeColumn.class, "icon-dbi-excludeColumn.png");
-        icons.put(IncludeProcedure.class, "icon-dbi-includeProcedure.png");
-        icons.put(ExcludeProcedure.class, "icon-dbi-excludeProcedure.png");
+        icons.put(NodeType.CATALOG, "icon-dbi-catalog.png");
+        icons.put(NodeType.SCHEMA, "icon-dbi-schema.png");
+        icons.put(NodeType.INCLUDE_TABLE, "icon-dbi-includeTable.png");
+        icons.put(NodeType.EXCLUDE_TABLE, "icon-dbi-excludeTable.png");
+        icons.put(NodeType.INCLUDE_COLUMN, "icon-dbi-includeColumn.png");
+        icons.put(NodeType.EXCLUDE_COLUMN, "icon-dbi-excludeColumn.png");
+        icons.put(NodeType.INCLUDE_PROCEDURE, "icon-dbi-includeProcedure.png");
+        icons.put(NodeType.EXCLUDE_PROCEDURE, "icon-dbi-excludeProcedure.png");
     }
 
-    private ImageIcon getIconByNodeType(Class nodeClass, boolean isTransferable) {
-        String iconName = !isTransferable ? icons.get(nodeClass) : transferableTreeIcons.get(nodeClass);
+    private void initPinnedIcons() {
+        markedIcons = new HashMap<>();
+        markedIcons.put(NodeType.INCLUDE_TABLE, "icon-dbi-pinnedIncludeTable.png");
+        markedIcons.put(NodeType.EXCLUDE_TABLE, "icon-dbi-pinnedExcludeTable.png");
+        markedIcons.put(NodeType.INCLUDE_COLUMN, "icon-dbi-pinnedIncludeColumn.png");
+        markedIcons.put(NodeType.EXCLUDE_COLUMN, "icon-dbi-pinnedExcludeColumn.png");
+        markedIcons.put(NodeType.INCLUDE_PROCEDURE, "icon-dbi-pinnedIncludeProcedure.png");
+        markedIcons.put(NodeType.EXCLUDE_PROCEDURE, "icon-dbi-pinnedExcludeProcedure.png");
+    }
+
+    private ImageIcon getIconByNodeType(NodeType type, boolean isTransferable) {
+        String iconName = !isTransferable ? icons.get(type) : transferableTreeIcons.get(type);
         if (iconName == null) {
             return null;
         }
@@ -82,15 +87,19 @@ public class DbImportTreeCellRenderer extends DefaultTreeCellRenderer {
     }
 
     @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
+    public Component getTreeCellRendererComponent(JTree tree,
+                                                  Object value,
                                                   boolean sel,
                                                   boolean expanded,
                                                   boolean leaf, int row,
                                                   boolean hasFocus) {
-
         super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
         node = (DbImportTreeNode) value;
-        setIcon(getIconByNodeType(node.getUserObject().getClass(), ((DbImportTree) tree).isTransferable()));
+        if (node.isPinned() && node.getNodeType() != NodeType.CATALOG && node.getNodeType() != NodeType.SCHEMA) {
+            setIcon(ModelerUtil.buildIcon(markedIcons.get(node.getNodeType())));
+        } else {
+            setIcon(getIconByNodeType(node.getNodeType(), ((DbImportTree) tree).isTransferable()));
+        }
         return this;
     }
 }
