@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     private boolean isLoaded;
+    private boolean isPinned;
 
     public DbImportTreeNode() {
         this(null);
@@ -54,6 +55,7 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
         super();
         this.userObject = userObject;
         this.allowsChildren = allowsChildren;
+        setPinned(userObject);
         parent = null;
     }
 
@@ -99,6 +101,20 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
 
     public DbImportTreeNode(Object userObject) {
         this(userObject, true);
+    }
+
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        isPinned = pinned;
+    }
+
+    private void setPinned(Object userObject){
+        if (userObject instanceof PatternParam){
+            this.setPinned(((PatternParam) userObject).isPinned());
+        }
     }
 
     // Compare parents chain
