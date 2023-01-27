@@ -113,12 +113,13 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected void processCharData(String localName, String data) {
+    protected boolean processCharData(String localName, String data) {
         switch (localName) {
             case QUALIFIER_TAG:
                 createQualifier(data);
                 break;
         }
+        return true;
     }
 
     private void createObjEntity(Attributes attributes) {

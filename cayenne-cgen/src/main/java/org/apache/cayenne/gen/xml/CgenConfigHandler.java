@@ -83,7 +83,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected void processCharData(String localName, String data) {
+    protected boolean processCharData(String localName, String data) {
         switch (localName) {
             case NAME:
                 setName(data);
@@ -139,6 +139,7 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
                 createSuperPkg(data);
                 break;
         }
+        return true;
     }
 
     private void setName(String name) {

@@ -46,12 +46,13 @@ public class TableTypesHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected void processCharData(String localName, String data) {
+    protected boolean processCharData(String localName, String data) {
         switch (localName) {
             case TABLE_TYPE_TAG:
                 addTableType(data);
                 break;
         }
+        return true;
     }
 
     private void addTableType(String data) {

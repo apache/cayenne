@@ -54,7 +54,8 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
 
     abstract protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException;
 
-    protected void processCharData(String localName, String data) {
+    protected boolean processCharData(String localName, String data) {
+        return false;
     }
 
     @Override
@@ -82,8 +83,11 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
     @Override
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         super.endElement(namespaceURI, localName, qName);
-        if(namespaceURI.equals(targetNamespace) && parentHandler instanceof NamespaceAwareNestedTagHandler) {
-            ((NamespaceAwareNestedTagHandler)parentHandler).processCharData(localName, charactersBuffer.toString());
+        String data = charactersBuffer.toString();
+        if(!processCharData(localName, data)) {
+            if(namespaceURI.equals(targetNamespace) && parentHandler instanceof NamespaceAwareNestedTagHandler) {
+                ((NamespaceAwareNestedTagHandler)parentHandler).processCharData(localName, data);
+            }
         }
     }
 
