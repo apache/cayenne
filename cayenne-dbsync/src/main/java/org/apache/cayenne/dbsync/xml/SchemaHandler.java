@@ -20,33 +20,16 @@
 package org.apache.cayenne.dbsync.xml;
 
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.dbimport.SchemaContainer;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 
 /**
  * @since 4.1
  */
 class SchemaHandler extends NamespaceAwareNestedTagHandler {
-
-    private static final String SCHEMA_TAG = "schema";
-    private static final String SCHEMA_NAME_TAG = "name";
-    private static final String INCLUDE_TABLE_TAG = "includeTable";
-    private static final String EXCLUDE_TABLE_TAG = "excludeTable";
-    private static final String INCLUDE_COLUMN_TAG = "includeColumn";
-    private static final String EXCLUDE_COLUMN_TAG = "excludeColumn";
-    private static final String INCLUDE_PROCEDURE_TAG = "includeProcedure";
-    private static final String EXCLUDE_PROCEDURE_TAG = "excludeProcedure";
-
-    private SchemaContainer entity;
+    private final SchemaContainer entity;
 
     private Schema schema;
 
@@ -56,126 +39,45 @@ class SchemaHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
+    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
         switch (localName) {
-            case SCHEMA_TAG:
+            case DbImportTags.SCHEMA_TAG:
                 createSchema();
                 return true;
         }
-
         return false;
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String qName, Attributes attributes) {
-
         if (namespaceURI.equals(targetNamespace)) {
             switch (localName) {
-                case INCLUDE_TABLE_TAG:
+                case DbImportTags.INCLUDE_TABLE_TAG:
                     return new IncludeTableHandler(this, schema);
+                case DbImportTags.EXCLUDE_TABLE_TAG:
+                case DbImportTags.INCLUDE_COLUMN_TAG:
+                case DbImportTags.EXCLUDE_COLUMN_TAG:
+                case DbImportTags.INCLUDE_PROCEDURE_TAG:
+                case DbImportTags.EXCLUDE_PROCEDURE_TAG:
+                    return new PatternParamHandler(this, schema);
             }
         }
-
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
         switch (localName) {
-            case INCLUDE_TABLE_TAG:
-                createIncludeTable(data);
-                break;
-            case SCHEMA_NAME_TAG:
+            case DbImportTags.NAME_TAG:
                 createSchemaName(data);
-                break;
-            case EXCLUDE_TABLE_TAG:
-                createExcludeTable(data);
-                break;
-            case INCLUDE_COLUMN_TAG:
-                createIncludeColumn(data);
-                break;
-            case EXCLUDE_COLUMN_TAG:
-                createExcludeColumn(data);
-                break;
-            case INCLUDE_PROCEDURE_TAG:
-                createIncludeProcedure(data);
-                break;
-            case EXCLUDE_PROCEDURE_TAG:
-                createExcludeProcedure(data);
                 break;
         }
         return true;
     }
 
-    private void createIncludeTable(String includeTableData) {
-        if (includeTableData.trim().length() == 0) {
-            return;
-        }
-
-        if (schema != null) {
-            IncludeTable includeTable = new IncludeTable();
-            includeTable.setName(includeTableData);
-            schema.addIncludeTable(includeTable);
-        }
-    }
-
-    private void createExcludeProcedure(String excludeProcedure) {
-        if (excludeProcedure.trim().length() == 0) {
-            return;
-        }
-
-        if (schema != null) {
-            schema.addExcludeProcedure(new ExcludeProcedure(excludeProcedure));
-        }
-    }
-
-    private void createIncludeProcedure(String includeProcedure) {
-        if (includeProcedure.trim().length() == 0) {
-            return;
-        }
-
-        if (schema != null) {
-            schema.addIncludeProcedure(new IncludeProcedure(includeProcedure));
-        }
-    }
-
-    private void createExcludeColumn(String excludeColumn) {
-        if (excludeColumn.trim().length() == 0) {
-            return;
-        }
-
-        if (schema != null) {
-            schema.addExcludeColumn(new ExcludeColumn(excludeColumn));
-        }
-    }
-
-    private void createIncludeColumn(String includeColumn) {
-        if (includeColumn.trim().length() == 0) {
-            return;
-        }
-
-        if (schema != null) {
-            schema.addIncludeColumn(new IncludeColumn(includeColumn));
-        }
-    }
-
-    private void createExcludeTable(String excludeTable) {
-        if (excludeTable.trim().length() == 0) {
-            return;
-        }
-
-        if (schema != null) {
-            schema.addExcludeTable(new ExcludeTable(excludeTable));
-        }
-    }
-
     private void createSchemaName(String schemaName) {
-        if (schemaName.trim().length() == 0) {
-            return;
-        }
-
-        if (schema != null) {
+        if (!schemaName.trim().isEmpty() && schema != null) {
             schema.setName(schemaName);
         }
     }

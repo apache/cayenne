@@ -41,7 +41,7 @@ class DbImportLoaderDelegate implements LoaderDelegate {
 
     @Override
     public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
-        if(ConfigHandler.CONFIG_TAG.equals(tag) || ConfigHandler.OLD_CONFIG_TAG.equals(tag)) {
+        if(DbImportTags.CONFIG_TAG.equals(tag) || DbImportTags.OLD_CONFIG_TAG.equals(tag)) {
             return new ConfigHandler(parent, metaData);
         }
         return null;

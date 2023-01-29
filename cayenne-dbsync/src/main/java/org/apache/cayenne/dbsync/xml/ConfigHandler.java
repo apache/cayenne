@@ -21,47 +21,18 @@ package org.apache.cayenne.dbsync.xml;
 
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
+
 
 /**
  * @since 4.1
  */
 class ConfigHandler extends NamespaceAwareNestedTagHandler {
-
-    static final String OLD_CONFIG_TAG = "config";
-    static final String CONFIG_TAG = "dbImport";
-
-    private static final String CATALOG_TAG = "catalog";
-    private static final String SCHEMA_TAG = "schema";
-    private static final String TABLE_TYPES_TAG = "tableTypes";
-    private static final String DEFAULT_PACKAGE_TAG = "defaultPackage";
-    private static final String FORCE_DATAMAP_CATALOG_TAG = "forceDataMapCatalog";
-    private static final String FORCE_DATAMAP_SCHEMA_TAG = "forceDataMapSchema";
-    private static final String MEANINGFUL_PK_TABLES_TAG = "meaningfulPkTables";
-    private static final String NAMING_STRATEGY_TAG = "namingStrategy";
-    private static final String SKIP_PK_LOADING_TAG = "skipPrimaryKeyLoading";
-    private static final String SKIP_RELATIONSHIPS_LOADING_TAG = "skipRelationshipsLoading";
-    private static final String STRIP_FROM_TABLE_NAMES_TAG = "stripFromTableNames";
-    private static final String USE_JAVA7_TYPES_TAG = "useJava7Types";
-    private static final String INCLUDE_TABLE_TAG = "includeTable";
-    private static final String EXCLUDE_TABLE_TAG = "excludeTable";
-    private static final String INCLUDE_COLUMN_TAG = "includeColumn";
-    private static final String EXCLUDE_COLUMN_TAG = "excludeColumn";
-    private static final String INCLUDE_PROCEDURE_TAG = "includeProcedure";
-    private static final String EXCLUDE_PROCEDURE_TAG = "excludeProcedure";
-
     private static final String TRUE = "true";
-
     private ReverseEngineering configuration;
-    private DataChannelMetaData metaData;
+    private final DataChannelMetaData metaData;
 
     ConfigHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
         super(parentHandler);
@@ -70,242 +41,124 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
+    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
         switch (localName) {
-            case CONFIG_TAG:
-            case OLD_CONFIG_TAG:
+            case DbImportTags.CONFIG_TAG:
+            case DbImportTags.OLD_CONFIG_TAG:
                 createConfig();
                 return true;
         }
-
         return false;
     }
 
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String qName, Attributes attributes) {
-
         if (namespaceURI.equals(targetNamespace)) {
             switch (localName) {
-                case CATALOG_TAG:
+                case DbImportTags.CATALOG_TAG:
                     return new CatalogHandler(this, configuration);
-                case SCHEMA_TAG:
+                case DbImportTags.SCHEMA_TAG:
                     return new SchemaHandler(this, configuration);
-                case INCLUDE_TABLE_TAG:
-                    return new IncludeTableHandler(this , configuration);
-                case TABLE_TYPES_TAG:
+                case DbImportTags.TABLE_TYPES_TAG:
                     return new TableTypesHandler(this, configuration);
+                case DbImportTags.INCLUDE_TABLE_TAG:
+                    return new IncludeTableHandler(this, configuration);
+                case DbImportTags.EXCLUDE_TABLE_TAG:
+                case DbImportTags.INCLUDE_COLUMN_TAG:
+                case DbImportTags.EXCLUDE_COLUMN_TAG:
+                case DbImportTags.INCLUDE_PROCEDURE_TAG:
+                case DbImportTags.EXCLUDE_PROCEDURE_TAG:
+                    return new PatternParamHandler(this, configuration);
             }
         }
-
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
         switch (localName) {
-            case DEFAULT_PACKAGE_TAG:
+            case DbImportTags.DEFAULT_PACKAGE_TAG:
                 createDefaultPackage(data);
                 break;
-            case FORCE_DATAMAP_CATALOG_TAG:
+            case DbImportTags.FORCE_DATAMAP_CATALOG_TAG:
                 createForceDatamapCatalog(data);
                 break;
-            case FORCE_DATAMAP_SCHEMA_TAG:
+            case DbImportTags.FORCE_DATAMAP_SCHEMA_TAG:
                 createForceDatamapSchema(data);
                 break;
-            case MEANINGFUL_PK_TABLES_TAG:
+            case DbImportTags.MEANINGFUL_PK_TABLES_TAG:
                 createMeaningfulPkTables(data);
                 break;
-            case NAMING_STRATEGY_TAG:
+            case DbImportTags.NAMING_STRATEGY_TAG:
                 createNamingStrategy(data);
                 break;
-            case SKIP_PK_LOADING_TAG:
+            case DbImportTags.SKIP_PK_LOADING_TAG:
                 createSkipPkLoading(data);
                 break;
-            case SKIP_RELATIONSHIPS_LOADING_TAG:
+            case DbImportTags.SKIP_RELATIONSHIPS_LOADING_TAG:
                 createSkipRelationshipsLoading(data);
                 break;
-            case STRIP_FROM_TABLE_NAMES_TAG:
+            case DbImportTags.STRIP_FROM_TABLE_NAMES_TAG:
                 createStripFromTableNames(data);
                 break;
-            case USE_JAVA7_TYPES_TAG:
+            case DbImportTags.USE_JAVA7_TYPES_TAG:
                 createUseJava7Types(data);
-                break;
-            case EXCLUDE_TABLE_TAG:
-                createExcludeTable(data);
-                break;
-            case INCLUDE_COLUMN_TAG:
-                createIncludeColumn(data);
-                break;
-            case EXCLUDE_COLUMN_TAG:
-                createExcludeColumn(data);
-                break;
-            case INCLUDE_PROCEDURE_TAG:
-                createIncludeProcedure(data);
-                break;
-            case EXCLUDE_PROCEDURE_TAG:
-                createExcludeProcedure(data);
                 break;
         }
         return true;
     }
 
-    private void createExcludeProcedure(String excludeProcedure) {
-        if (excludeProcedure.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            configuration.addExcludeProcedure(new ExcludeProcedure(excludeProcedure));
-        }
-    }
-
-    private void createIncludeProcedure(String includeProcedure) {
-        if (includeProcedure.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            configuration.addIncludeProcedure(new IncludeProcedure(includeProcedure));
-        }
-    }
-
-    private void createExcludeColumn(String excludeColumn) {
-        if (excludeColumn.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            configuration.addExcludeColumn(new ExcludeColumn(excludeColumn));
-        }
-    }
-
-    private void createIncludeColumn(String includeColumn) {
-        if (includeColumn.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            configuration.addIncludeColumn(new IncludeColumn(includeColumn));
-        }
-    }
-
-    private void createExcludeTable(String excludeTable) {
-        if (excludeTable.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            configuration.addExcludeTable(new ExcludeTable(excludeTable));
-        }
-    }
-
     private void createUseJava7Types(String useJava7Types) {
-        if (useJava7Types.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            if (useJava7Types.equals(TRUE)) {
-                configuration.setUseJava7Types(true);
-            } else {
-                configuration.setUseJava7Types(false);
-            }
+        if (!useJava7Types.trim().isEmpty() && configuration != null) {
+            configuration.setUseJava7Types(useJava7Types.equals(TRUE));
         }
     }
 
     private void createStripFromTableNames(String stripFromTableNames) {
-        if (stripFromTableNames.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
+        if (!stripFromTableNames.trim().isEmpty() && configuration != null) {
             configuration.setStripFromTableNames(stripFromTableNames);
         }
     }
 
     private void createSkipRelationshipsLoading(String skipRelationshipsLoading) {
-        if (skipRelationshipsLoading.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            if (skipRelationshipsLoading.equals(TRUE)) {
-                configuration.setSkipRelationshipsLoading(true);
-            } else {
-                configuration.setSkipRelationshipsLoading(false);
-            }
+        if (!skipRelationshipsLoading.trim().isEmpty() && configuration != null) {
+            configuration.setSkipRelationshipsLoading(skipRelationshipsLoading.equals(TRUE));
         }
     }
 
     private void createSkipPkLoading(String skipPkLoading) {
-        if (skipPkLoading.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            if (skipPkLoading.equals(TRUE)) {
-                configuration.setSkipPrimaryKeyLoading(true);
-            } else {
-                configuration.setSkipPrimaryKeyLoading(false);
-            }
+        if (!skipPkLoading.trim().isEmpty() && configuration != null) {
+            configuration.setSkipPrimaryKeyLoading(skipPkLoading.equals(TRUE));
         }
     }
 
     private void createNamingStrategy(String namingStrategy) {
-        if (namingStrategy.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
+        if (!namingStrategy.trim().isEmpty() && configuration != null) {
             configuration.setNamingStrategy(namingStrategy);
         }
     }
 
     private void createMeaningfulPkTables(String meaningfulPkTables) {
-        if (meaningfulPkTables.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
+        if (!meaningfulPkTables.trim().isEmpty() && configuration != null) {
             configuration.setMeaningfulPkTables(meaningfulPkTables);
         }
     }
 
     private void createForceDatamapSchema(String forceDatamapSchema) {
-        if (forceDatamapSchema.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            if (forceDatamapSchema.equals(TRUE)) {
-                configuration.setForceDataMapSchema(true);
-            } else {
-                configuration.setForceDataMapSchema(false);
-            }
+        if (!forceDatamapSchema.trim().isEmpty() && configuration != null) {
+            configuration.setForceDataMapSchema(forceDatamapSchema.equals(TRUE));
         }
     }
 
     private void createForceDatamapCatalog(String forceDatamapCatalog) {
-        if (forceDatamapCatalog.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
-            if (forceDatamapCatalog.equals(TRUE)) {
-                configuration.setForceDataMapCatalog(true);
-            } else {
-                configuration.setForceDataMapCatalog(false);
-            }
+        if (!forceDatamapCatalog.trim().isEmpty() && configuration != null) {
+            configuration.setForceDataMapCatalog(forceDatamapCatalog.equals(TRUE));
         }
     }
 
     private void createDefaultPackage(String defaultPackage) {
-        if (defaultPackage.trim().length() == 0) {
-            return;
-        }
-
-        if (configuration != null) {
+        if (!defaultPackage.trim().isEmpty() && configuration != null) {
             configuration.setDefaultPackage(defaultPackage);
         }
     }
