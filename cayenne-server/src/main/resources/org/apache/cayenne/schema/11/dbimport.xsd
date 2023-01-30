@@ -64,21 +64,42 @@
     <xs:complexType name="includeTable" mixed="true">
         <xs:sequence>
             <xs:element name="name" minOccurs="0" type="xs:string"/>
-            <xs:element name="includeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="includeColumn" type="dbi:includeColumn" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeColumn" type="dbi:excludeColumn" minOccurs="0" maxOccurs="unbounded"/>
 
             <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
         </xs:sequence>
+        <xs:attribute name="pinned" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="excludeTable" mixed="true">
+        <xs:attribute name="pinned" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="includeColumn" mixed="true">
+        <xs:attribute name="pinned" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="excludeColumn" mixed="true">
+        <xs:attribute name="pinned" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="includeProcedure" mixed="true">
+        <xs:attribute name="pinned" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="excludeProcedure" mixed="true">
+        <xs:attribute name="pinned" type="xs:boolean"/>
     </xs:complexType>
 
     <xs:complexType name="container" abstract="true">
         <xs:sequence>
             <xs:element name="includeTable" type="dbi:includeTable" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeTable" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="includeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="includeProcedure" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="excludeProcedure" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeTable" type="dbi:excludeTable" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="includeColumn" type="dbi:includeColumn" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeColumn" type="dbi:excludeColumn" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="includeProcedure" type="dbi:includeProcedure" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="excludeProcedure" type="dbi:excludeProcedure" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
