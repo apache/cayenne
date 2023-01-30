@@ -211,10 +211,9 @@ public class DbImportTreeNode extends DefaultMutableTreeNode {
         isLoaded = loaded;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public List<DbImportTreeNode> getChildNodes() {
-        List<DbImportTreeNode> childNodes = new ArrayList<>();
-        Collections.list(this.children()).forEach(c -> childNodes.add((DbImportTreeNode) c));
-        return childNodes;
+        return (List) Collections.list(this.children());
     }
 
     public NodeType getNodeType() {

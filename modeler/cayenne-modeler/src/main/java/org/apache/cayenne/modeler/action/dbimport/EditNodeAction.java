@@ -79,7 +79,7 @@ public class EditNodeAction extends TreeManipulationAction {
                     putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
                 }
             }
-            DbImportSorter.sortNode(selectedElement.getParent());
+            DbImportSorter.sortSingleNode(selectedElement.getParent());
             tree.reloadModel();
             tree.setSelectionPath(new TreePath(selectedElement.getPath()));
             selectedElement = null;

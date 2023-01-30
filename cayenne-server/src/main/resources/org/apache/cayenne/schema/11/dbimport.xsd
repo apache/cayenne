@@ -79,8 +79,6 @@
             <xs:element name="excludeColumn" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="includeProcedure" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="excludeProcedure" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-
-            <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
         </xs:sequence>
     </xs:complexType>
 

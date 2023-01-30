@@ -71,6 +71,7 @@ public class DbImportTree extends JTree {
         printParams(reverseEngineering.getExcludeColumns(), root);
         printParams(reverseEngineering.getIncludeProcedures(), root);
         printParams(reverseEngineering.getExcludeProcedures(), root);
+        DbImportSorter.sortSubtree(root);
         model.reload();
     }
 
@@ -255,7 +256,6 @@ public class DbImportTree extends JTree {
                 parent.add(node);
             }
         }
-        DbImportSorter.sortNode(parent);
     }
 
     public void reloadModel(){

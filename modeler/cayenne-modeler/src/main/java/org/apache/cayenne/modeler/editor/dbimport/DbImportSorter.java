@@ -40,16 +40,14 @@ public class DbImportSorter {
             .comparing(DbImportTreeNode::getNodeType)
             .thenComparing(DbImportTreeNode::getSimpleNodeName);
 
-    public static void sortNode(DbImportTreeNode node) {
+    public static void sortSingleNode(DbImportTreeNode node) {
         sortNodeItems(node);
         syncUserObjectItems(node);
     }
 
-    public static void sortNodeWithAllChildren(DbImportTreeNode node) {
-        DbImportSorter.sortNode(node);
-        for (int i = 0; i < node.getChildCount(); i++) {
-            sortNodeWithAllChildren((DbImportTreeNode) node.getChildAt(i));
-        }
+    public static void sortSubtree(DbImportTreeNode root) {
+        sortSingleNode(root);
+        root.getChildNodes().forEach(DbImportSorter::sortSubtree);
     }
 
     private static void sortNodeItems(DbImportTreeNode node) {
@@ -66,14 +64,14 @@ public class DbImportSorter {
         if (parentNode.isReverseEngineering()) {
             syncCatalogs(parentNode, (ReverseEngineering) userObject);
             syncSchemas(parentNode, (ReverseEngineering) userObject);
-            syncPatternParams(parentNode, (ReverseEngineering) userObject);
+            syncPatternParamsInContainer(parentNode, (ReverseEngineering) userObject);
         }
         if (parentNode.isCatalog()) {
             syncSchemas(parentNode, (Catalog) userObject);
-            syncPatternParams(parentNode, (Catalog) userObject);
+            syncPatternParamsInContainer(parentNode, (Catalog) userObject);
         }
         if (parentNode.isSchema()) {
-            syncPatternParams(parentNode, (Schema) userObject);
+            syncPatternParamsInContainer(parentNode, (Schema) userObject);
         }
         if (parentNode.isIncludeTable()) {
             syncTablesColumns(parentNode, (IncludeTable) userObject);
@@ -81,29 +79,28 @@ public class DbImportSorter {
     }
 
     private static void syncCatalogs(DbImportTreeNode node, ReverseEngineering reverseEngineering) {
-        syncItemsInContainer(reverseEngineering.getCatalogs(),node,NodeType.CATALOG);
+        syncPatternParams(reverseEngineering.getCatalogs(), node, NodeType.CATALOG);
     }
 
     private static void syncSchemas(DbImportTreeNode node, SchemaContainer schemaContainer) {
-        syncItemsInContainer(schemaContainer.getSchemas(),node,NodeType.SCHEMA);
+        syncPatternParams(schemaContainer.getSchemas(), node, NodeType.SCHEMA);
     }
 
-    private static void syncPatternParams(DbImportTreeNode node, FilterContainer container) {
-        syncItemsInContainer(container.getIncludeTables(),node,NodeType.INCLUDE_TABLE);
-        syncItemsInContainer(container.getExcludeTables(),node,NodeType.EXCLUDE_TABLE);
-        syncItemsInContainer(container.getIncludeColumns(),node,NodeType.INCLUDE_COLUMN);
-        syncItemsInContainer(container.getExcludeColumns(),node,NodeType.EXCLUDE_COLUMN);
-        syncItemsInContainer(container.getIncludeProcedures(),node,NodeType.INCLUDE_PROCEDURE);
-        syncItemsInContainer(container.getExcludeProcedures(),node,NodeType.EXCLUDE_PROCEDURE);
+    private static void syncPatternParamsInContainer(DbImportTreeNode node, FilterContainer container) {
+        syncPatternParams(container.getIncludeTables(), node, NodeType.INCLUDE_TABLE);
+        syncPatternParams(container.getExcludeTables(), node, NodeType.EXCLUDE_TABLE);
+        syncPatternParams(container.getIncludeColumns(), node, NodeType.INCLUDE_COLUMN);
+        syncPatternParams(container.getExcludeColumns(), node, NodeType.EXCLUDE_COLUMN);
+        syncPatternParams(container.getIncludeProcedures(), node, NodeType.INCLUDE_PROCEDURE);
+        syncPatternParams(container.getExcludeProcedures(), node, NodeType.EXCLUDE_PROCEDURE);
     }
 
     private static void syncTablesColumns(DbImportTreeNode node, IncludeTable table) {
-        syncItemsInContainer(table.getIncludeColumns(),node,NodeType.INCLUDE_COLUMN);
-        syncItemsInContainer(table.getExcludeColumns(),node,NodeType.EXCLUDE_COLUMN);
+        syncPatternParams(table.getIncludeColumns(), node, NodeType.INCLUDE_COLUMN);
+        syncPatternParams(table.getExcludeColumns(), node, NodeType.EXCLUDE_COLUMN);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void syncItemsInContainer(Collection collection, DbImportTreeNode node, NodeType type){
+    private static <T> void syncPatternParams(Collection<T> collection, DbImportTreeNode node, NodeType type) {
         collection.clear();
         collection.addAll(node.getChildrenObjectsByType(type));
     }

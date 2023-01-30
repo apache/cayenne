@@ -199,7 +199,7 @@ public class MoveImportNodeAction extends CayenneAction {
                     getProjectController().getApplication().getUndoManager().addEdit(undoableEdit);
                 }
                 if (foundNode != null) {
-                    DbImportSorter.sortNodeWithAllChildren((DbImportTreeNode) foundNode.getRoot());
+                    DbImportSorter.sortSubtree((DbImportTreeNode) foundNode.getRoot());
                     targetTree.reloadModel();
                     targetTree.setSelectionPath(new TreePath(foundNode.getLastChild().getPath()));
                 }

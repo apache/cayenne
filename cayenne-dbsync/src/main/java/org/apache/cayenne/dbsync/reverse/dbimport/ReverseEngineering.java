@@ -296,14 +296,14 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
         encoder.start("dbImport")
                 .attribute("xmlns", DbImportExtension.NAMESPACE)
-                .nested(this.getCatalogs(), delegate)
-                .nested(this.getSchemas(), delegate)
                 .nested(this.getIncludeTables(), delegate)
                 .nested(this.getExcludeTables(), delegate)
                 .nested(this.getIncludeColumns(), delegate)
                 .nested(this.getExcludeColumns(), delegate)
                 .nested(this.getIncludeProcedures(), delegate)
-                .nested(this.getExcludeProcedures(), delegate);
+                .nested(this.getExcludeProcedures(), delegate)
+                .nested(this.getCatalogs(), delegate)
+                .nested(this.getSchemas(), delegate);
         String[] tableTypes = this.getTableTypes();
         if(tableTypes.length != 0) {
             encoder.start("tableTypes");
