@@ -19,16 +19,6 @@
 
 package org.apache.cayenne.modeler.editor.dbimport;
 
-import javax.swing.JTree;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.function.BiFunction;
-
 import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
@@ -41,6 +31,16 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.action.LoadDbSchemaAction;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
 import org.apache.cayenne.modeler.dialog.db.load.TransferableNode;
+
+import javax.swing.JTree;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.BiFunction;
 
 
 /**
@@ -71,6 +71,7 @@ public class DbImportTree extends JTree {
         printParams(reverseEngineering.getExcludeColumns(), root);
         printParams(reverseEngineering.getIncludeProcedures(), root);
         printParams(reverseEngineering.getExcludeProcedures(), root);
+        DbImportSorter.sortSubtree(root);
         model.reload();
     }
 
@@ -255,6 +256,11 @@ public class DbImportTree extends JTree {
                 parent.add(node);
             }
         }
+    }
+
+    public void reloadModel(){
+        DbImportModel model = (DbImportModel)this.getModel();
+        model.reload();
     }
 
     private void printIncludeTables(Collection<IncludeTable> collection, DbImportTreeNode parent) {

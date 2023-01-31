@@ -24,8 +24,10 @@ import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.dialog.db.load.DbImportTreeNode;
+import org.apache.cayenne.modeler.editor.dbimport.DbImportSorter;
 import org.apache.cayenne.util.Util;
 
+import javax.swing.tree.TreePath;
 import java.awt.event.ActionEvent;
 
 /**
@@ -72,12 +74,15 @@ public class EditNodeAction extends TreeManipulationAction {
                         ((PatternParam) selectedObject).setPattern(actionName);
                     }
                     updateModel(true);
-                    selectedElement = null;
                 }
                 if (!actionName.equals(EMPTY_NAME)) {
                     putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
                 }
             }
+            DbImportSorter.sortSingleNode(selectedElement.getParent());
+            tree.reloadModel();
+            tree.setSelectionPath(new TreePath(selectedElement.getPath()));
+            selectedElement = null;
         }
     }
 
