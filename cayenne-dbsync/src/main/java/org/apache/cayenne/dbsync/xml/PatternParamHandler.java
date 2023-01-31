@@ -88,7 +88,7 @@ class PatternParamHandler extends NamespaceAwareNestedTagHandler {
     }
 
     protected boolean isPinned(Attributes attributes) {
-        return Objects.equals(attributes.getValue("pinned"), "true");
+        return Objects.equals(attributes.getValue(DbImportTags.PINNED), "true");
     }
 
 }

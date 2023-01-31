@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dbsync.xml.DbImportExtension;
+import org.apache.cayenne.dbsync.xml.DbImportTags;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -294,8 +295,8 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("dbImport")
-                .attribute("xmlns", DbImportExtension.NAMESPACE)
+        encoder.start(DbImportTags.CONFIG_TAG)
+                .attribute(DbImportTags.XMLNS, DbImportExtension.NAMESPACE)
                 .nested(this.getIncludeTables(), delegate)
                 .nested(this.getExcludeTables(), delegate)
                 .nested(this.getIncludeColumns(), delegate)
@@ -306,21 +307,21 @@ public class ReverseEngineering extends SchemaContainer implements Serializable,
                 .nested(this.getSchemas(), delegate);
         String[] tableTypes = this.getTableTypes();
         if(tableTypes.length != 0) {
-            encoder.start("tableTypes");
+            encoder.start(DbImportTags.TABLE_TYPES_TAG);
             for(String type : tableTypes) {
-                encoder.simpleTag("tableType", type);
+                encoder.simpleTag(DbImportTags.TABLE_TYPE_TAG, type);
             }
             encoder.end();
         }
-        encoder.simpleTag("defaultPackage", this.getDefaultPackage())
-                .simpleTag("forceDataMapCatalog", Boolean.toString(this.isForceDataMapCatalog()))
-                .simpleTag("forceDataMapSchema", Boolean.toString(this.isForceDataMapSchema()))
-                .simpleTag("meaningfulPkTables", this.getMeaningfulPkTables())
-                .simpleTag("namingStrategy", this.getNamingStrategy())
-                .simpleTag("skipPrimaryKeyLoading", this.getSkipPrimaryKeyLoading().toString())
-                .simpleTag("skipRelationshipsLoading", this.getSkipRelationshipsLoading().toString())
-                .simpleTag("stripFromTableNames", this.getStripFromTableNames())
-                .simpleTag("useJava7Types", Boolean.toString(this.isUseJava7Types()))
+        encoder.simpleTag(DbImportTags.DEFAULT_PACKAGE_TAG, this.getDefaultPackage())
+                .simpleTag(DbImportTags.FORCE_DATAMAP_CATALOG_TAG, Boolean.toString(this.isForceDataMapCatalog()))
+                .simpleTag(DbImportTags.FORCE_DATAMAP_SCHEMA_TAG, Boolean.toString(this.isForceDataMapSchema()))
+                .simpleTag(DbImportTags.MEANINGFUL_PK_TABLES_TAG, this.getMeaningfulPkTables())
+                .simpleTag(DbImportTags.NAMING_STRATEGY_TAG, this.getNamingStrategy())
+                .simpleTag(DbImportTags.SKIP_PK_LOADING_TAG, this.getSkipPrimaryKeyLoading().toString())
+                .simpleTag(DbImportTags.SKIP_RELATIONSHIPS_LOADING_TAG, this.getSkipRelationshipsLoading().toString())
+                .simpleTag(DbImportTags.STRIP_FROM_TABLE_NAMES_TAG, this.getStripFromTableNames())
+                .simpleTag(DbImportTags.USE_JAVA7_TYPES_TAG, Boolean.toString(this.isUseJava7Types()))
                 .end();
     }
 

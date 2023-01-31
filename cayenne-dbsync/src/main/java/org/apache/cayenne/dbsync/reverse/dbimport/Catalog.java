@@ -20,6 +20,7 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.dbsync.xml.DbImportTags;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -47,14 +48,14 @@ public class Catalog extends SchemaContainer implements XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("catalog")
+        encoder.start(DbImportTags.CATALOG_TAG)
             .nested(this.getIncludeTables(), delegate)
             .nested(this.getExcludeTables(), delegate)
             .nested(this.getIncludeColumns(), delegate)
             .nested(this.getExcludeColumns(), delegate)
             .nested(this.getIncludeProcedures(), delegate)
             .nested(this.getExcludeProcedures(), delegate)
-            .simpleTag("name", this.getName())
+            .simpleTag(DbImportTags.NAME_TAG, this.getName())
             .nested(this.getSchemas(), delegate)
         .end();
     }

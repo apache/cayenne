@@ -21,12 +21,14 @@ package org.apache.cayenne.dbsync.xml;
 
 public class DbImportTags {
 
+    public static final String XMLNS = "xmlns";
     public static final String OLD_CONFIG_TAG = "config";
     public static final String CONFIG_TAG = "dbImport";
 
     public static final String CATALOG_TAG = "catalog";
     public static final String SCHEMA_TAG = "schema";
     public static final String TABLE_TYPES_TAG = "tableTypes";
+    public static final String TABLE_TYPE_TAG = "tableType";
     public static final String DEFAULT_PACKAGE_TAG = "defaultPackage";
     public static final String FORCE_DATAMAP_CATALOG_TAG = "forceDataMapCatalog";
     public static final String FORCE_DATAMAP_SCHEMA_TAG = "forceDataMapSchema";
@@ -44,5 +46,6 @@ public class DbImportTags {
     public static final String EXCLUDE_PROCEDURE_TAG = "excludeProcedure";
 
     public static final String NAME_TAG = "name";
+    public static final String PINNED = "pinned";
 
 }

@@ -20,6 +20,7 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.dbsync.xml.DbImportTags;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -40,8 +41,8 @@ public class IncludeProcedure extends PatternParam implements XMLSerializable {
 
     @Override
     public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
-        encoder.start("includeProcedure")
-                .attribute("pinned", this.isPinned())
+        encoder.start(DbImportTags.INCLUDE_PROCEDURE_TAG)
+                .attribute(DbImportTags.PINNED, this.isPinned())
                 .cdata(this.getPattern())
                 .end();
     }
