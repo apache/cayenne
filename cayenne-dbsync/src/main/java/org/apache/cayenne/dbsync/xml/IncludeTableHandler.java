@@ -27,21 +27,17 @@ import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
 import org.xml.sax.Attributes;
 
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
  * @since 4.1
  */
-class IncludeTableHandler extends NamespaceAwareNestedTagHandler {
+class IncludeTableHandler extends PatternParamHandler {
     private IncludeTable includeTable;
-    private final FilterContainer container;
-    private boolean isPinned;
 
     IncludeTableHandler(NamespaceAwareNestedTagHandler parentHandler, FilterContainer container) {
-        super(parentHandler);
-        this.container = container;
+        super(parentHandler, container);
     }
 
     @Override
@@ -99,9 +95,5 @@ class IncludeTableHandler extends NamespaceAwareNestedTagHandler {
             param.setPinned(isPinned);
             addParam.accept(includeTable, param);
         }
-    }
-
-    private boolean isPinned(Attributes attributes) {
-        return Objects.equals(attributes.getValue("pinned"), "true");
     }
 }

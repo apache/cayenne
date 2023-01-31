@@ -39,9 +39,9 @@ import java.util.function.Function;
  */
 class PatternParamHandler extends NamespaceAwareNestedTagHandler {
 
-    private boolean isPinned;
+    protected boolean isPinned;
 
-    private final FilterContainer container;
+    protected final FilterContainer container;
 
     PatternParamHandler(NamespaceAwareNestedTagHandler parentHandler, FilterContainer container) {
         super(parentHandler);
@@ -77,9 +77,9 @@ class PatternParamHandler extends NamespaceAwareNestedTagHandler {
         return true;
     }
 
-    private   <T extends PatternParam> void createPatternParam(String pattern,
-                                                             Function<String, T> paramConstructor,
-                                                             BiConsumer<FilterContainer, T> addParam) {
+    protected <T extends PatternParam> void createPatternParam(String pattern,
+                                                               Function<String, T> paramConstructor,
+                                                               BiConsumer<FilterContainer, T> addParam) {
         if (!pattern.trim().isEmpty() && container != null) {
             T param = paramConstructor.apply(pattern);
             param.setPinned(isPinned);
@@ -87,7 +87,7 @@ class PatternParamHandler extends NamespaceAwareNestedTagHandler {
         }
     }
 
-    private boolean isPinned(Attributes attributes) {
+    protected boolean isPinned(Attributes attributes) {
         return Objects.equals(attributes.getValue("pinned"), "true");
     }
 
