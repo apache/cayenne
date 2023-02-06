@@ -12,7 +12,6 @@ import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
-import org.apache.cayenne.testdo.reflexive.Other;
 import org.apache.cayenne.testdo.reflexive.Reflexive;
 
 /**
@@ -21,7 +20,7 @@ import org.apache.cayenne.testdo.reflexive.Reflexive;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Reflexive extends BaseDataObject {
+public abstract class _Other extends BaseDataObject {
 
     private static final long serialVersionUID = 1L; 
 
@@ -29,16 +28,11 @@ public abstract class _Reflexive extends BaseDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final ListProperty<Reflexive> CHILDREN = PropertyFactory.createList("children", Reflexive.class);
-    public static final EntityProperty<Other> TO_OTHER = PropertyFactory.createEntity("toOther", Other.class);
-    public static final EntityProperty<Reflexive> TO_PARENT = PropertyFactory.createEntity("toParent", Reflexive.class);
+    public static final ListProperty<Reflexive> REFLEXIVES = PropertyFactory.createList("reflexives", Reflexive.class);
 
     protected String name;
 
-    protected Object children;
-    protected Object toOther;
-    protected Object toParent;
-
+    protected Object reflexives;
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
         this.name = name;
@@ -49,33 +43,17 @@ public abstract class _Reflexive extends BaseDataObject {
         return this.name;
     }
 
-    public void addToChildren(Reflexive obj) {
-        addToManyTarget("children", obj, true);
+    public void addToReflexives(Reflexive obj) {
+        addToManyTarget("reflexives", obj, true);
     }
 
-    public void removeFromChildren(Reflexive obj) {
-        removeToManyTarget("children", obj, true);
+    public void removeFromReflexives(Reflexive obj) {
+        removeToManyTarget("reflexives", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Reflexive> getChildren() {
-        return (List<Reflexive>)readProperty("children");
-    }
-
-    public void setToOther(Other toOther) {
-        setToOneTarget("toOther", toOther, true);
-    }
-
-    public Other getToOther() {
-        return (Other)readProperty("toOther");
-    }
-
-    public void setToParent(Reflexive toParent) {
-        setToOneTarget("toParent", toParent, true);
-    }
-
-    public Reflexive getToParent() {
-        return (Reflexive)readProperty("toParent");
+    public List<Reflexive> getReflexives() {
+        return (List<Reflexive>)readProperty("reflexives");
     }
 
     @Override
@@ -87,12 +65,8 @@ public abstract class _Reflexive extends BaseDataObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "children":
-                return this.children;
-            case "toOther":
-                return this.toOther;
-            case "toParent":
-                return this.toParent;
+            case "reflexives":
+                return this.reflexives;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -108,14 +82,8 @@ public abstract class _Reflexive extends BaseDataObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "children":
-                this.children = val;
-                break;
-            case "toOther":
-                this.toOther = val;
-                break;
-            case "toParent":
-                this.toParent = val;
+            case "reflexives":
+                this.reflexives = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -134,18 +102,14 @@ public abstract class _Reflexive extends BaseDataObject {
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
         out.writeObject(this.name);
-        out.writeObject(this.children);
-        out.writeObject(this.toOther);
-        out.writeObject(this.toParent);
+        out.writeObject(this.reflexives);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
         this.name = (String)in.readObject();
-        this.children = in.readObject();
-        this.toOther = in.readObject();
-        this.toParent = in.readObject();
+        this.reflexives = in.readObject();
     }
 
 }
