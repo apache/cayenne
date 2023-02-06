@@ -41,13 +41,11 @@ public class CayenneDataObjectReflexiveIT extends ServerCase {
 
     @Test
     public void addReflexiveParentAndChild() {
-        // can add Reflexive Parent (that belongsTo Other) and Child, 100 times
+        // can add Reflexive Parent and Child, 100 times
         final int attempts = 100;
         int errors = 0;
 
         for (int i = 0; i < attempts; i++) {
-            // when parent is created and associated to "Other"
-
             final Reflexive parent = context.newObject(Reflexive.class);
             parent.setName("parentA"+i);
 
