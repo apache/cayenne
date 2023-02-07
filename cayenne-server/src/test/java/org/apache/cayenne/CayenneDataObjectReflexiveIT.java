@@ -56,6 +56,10 @@ public class CayenneDataObjectReflexiveIT extends ServerCase {
 
             try {
                 context.commitChanges();
+
+                // unset parent so that DBCleaner.clean() will work correctly
+                child.setToParent(null);
+                context.commitChanges();
             } catch (final Exception e) {
                 errors++;
                 e.printStackTrace();
@@ -93,6 +97,10 @@ public class CayenneDataObjectReflexiveIT extends ServerCase {
             child.setToParent(parent);
 
             try {
+                context.commitChanges();
+
+                // unset parent so that DBCleaner.clean() will work correctly
+                child.setToParent(null);
                 context.commitChanges();
             } catch (final Exception e) {
                 errors++;
