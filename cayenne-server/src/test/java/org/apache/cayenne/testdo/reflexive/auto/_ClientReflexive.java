@@ -15,10 +15,12 @@ public abstract class _ClientReflexive extends PersistentObject {
 
     public static final String NAME_PROPERTY = "name";
     public static final String CHILDREN_PROPERTY = "children";
+    public static final String TO_OTHER_PROPERTY = "toOther";
     public static final String TO_PARENT_PROPERTY = "toParent";
 
     protected String name;
     protected List<ClientReflexive> children;
+    protected ValueHolder toOther;
     protected ValueHolder toParent;
 
     public String getName() {
@@ -62,6 +64,21 @@ public abstract class _ClientReflexive extends PersistentObject {
         }
 
         this.children.remove(object);
+    }
+
+    public ClientReflexive getToOther() {
+        if(objectContext != null) {
+            objectContext.prepareForAccess(this, "toOther", true);
+        }
+
+        return (ClientReflexive) toOther.getValue();
+    }
+    public void setToOther(ClientReflexive toOther) {
+        if(objectContext != null) {
+            objectContext.prepareForAccess(this, "toOther", true);
+        }
+
+        this.toOther.setValue(toOther);
     }
 
     public ClientReflexive getToParent() {
