@@ -61,14 +61,15 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
         int start = 0;
         int idx = 0;
         DbRowOp lastRow = null;
-        for(DbRowOp row : sortedDbRows) {
+        for (int i = 0; i < sortedDbRows.size(); i++) {
+            DbRowOp row = sortedDbRows.get(i);
             if (row.getEntity() != lastEntity) {
-                start = idx;
                 if(lastEntity != null && sorter.isReflexive(lastEntity)) {
                     ObjEntity objEntity = resolver.getObjEntity(lastRow.getObject().getObjectId().getEntityName());
                     List<DbRowOp> reflexiveSublist = sortedDbRows.subList(start, idx);
                     sorter.sortObjectsForEntity(objEntity, reflexiveSublist, lastRow instanceof DeleteDbRowOp);
                 }
+                start = idx;
                 lastEntity = row.getEntity();
             }
             lastRow = row;
