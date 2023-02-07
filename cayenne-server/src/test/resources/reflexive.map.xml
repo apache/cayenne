@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.reflexive"/>
 	<property name="clientSupported" value="true"/>
@@ -16,7 +16,7 @@
 		<db-attribute name="OTHER_ID" type="INTEGER"/>
 		<db-attribute name="PARENT_ID" type="INTEGER"/>
 	</db-entity>
-	<obj-entity name="Other" className="org.apache.cayenne.testdo.reflexive.Other" dbEntityName="OTHER">
+	<obj-entity name="Other" className="org.apache.cayenne.testdo.reflexive.Other" clientClassName="org.apache.cayenne.testdo.reflexive.ClientOther" dbEntityName="OTHER">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
 	<obj-entity name="Reflexive" className="org.apache.cayenne.testdo.reflexive.Reflexive" clientClassName="org.apache.cayenne.testdo.reflexive.ClientReflexive" dbEntityName="REFLEXIVE">
@@ -38,4 +38,21 @@
 	<obj-relationship name="children" source="Reflexive" target="Reflexive" db-relationship-path="children"/>
 	<obj-relationship name="toOther" source="Reflexive" target="Other" db-relationship-path="toOther"/>
 	<obj-relationship name="toParent" source="Reflexive" target="Reflexive" db-relationship-path="toParent"/>
+	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<destDir>../java</destDir>
+		<mode>entity</mode>
+		<template>templates/v4_1/client-subclass.vm</template>
+		<superTemplate>templates/v4_1/client-superclass.vm</superTemplate>
+		<embeddableTemplate>templates/v4_1/embeddable-subclass.vm</embeddableTemplate>
+		<embeddableSuperTemplate>templates/v4_1/embeddable-superclass.vm</embeddableSuperTemplate>
+		<queryTemplate>templates/v4_1/datamap-subclass.vm</queryTemplate>
+		<querySuperTemplate>templates/v4_1/datamap-superclass.vm</querySuperTemplate>
+		<outputPattern>*.java</outputPattern>
+		<makePairs>true</makePairs>
+		<usePkgPath>true</usePkgPath>
+		<overwrite>false</overwrite>
+		<createPropertyNames>false</createPropertyNames>
+		<createPKProperties>false</createPKProperties>
+		<client>true</client>
+	</cgen>
 </data-map>

@@ -1,10 +1,17 @@
 package org.apache.cayenne.testdo.reflexive.auto;
 
+import java.util.List;
+
 import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.ValueHolder;
+import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.reflexive.ClientOther;
 import org.apache.cayenne.testdo.reflexive.ClientReflexive;
-
-import java.util.List;
+import org.apache.cayenne.util.PersistentObjectHolder;
+import org.apache.cayenne.util.PersistentObjectList;
 
 /**
  * A generated persistent class mapped as "Reflexive" Cayenne entity. It is a good idea to
@@ -13,70 +20,80 @@ import java.util.List;
  */
 public abstract class _ClientReflexive extends PersistentObject {
 
-    public static final String NAME_PROPERTY = "name";
-    public static final String CHILDREN_PROPERTY = "children";
-    public static final String TO_OTHER_PROPERTY = "toOther";
-    public static final String TO_PARENT_PROPERTY = "toParent";
+    public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final ListProperty<ClientReflexive> CHILDREN = PropertyFactory.createList("children", ClientReflexive.class);
+    public static final EntityProperty<ClientOther> TO_OTHER = PropertyFactory.createEntity("toOther", ClientOther.class);
+    public static final EntityProperty<ClientReflexive> TO_PARENT = PropertyFactory.createEntity("toParent", ClientReflexive.class);
 
     protected String name;
     protected List<ClientReflexive> children;
-    protected ValueHolder toOther;
-    protected ValueHolder toParent;
+    protected ValueHolder<ClientOther> toOther;
+    protected ValueHolder<ClientReflexive> toParent;
 
     public String getName() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "name", false);
         }
 
+
         return name;
     }
+
     public void setName(String name) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "name", false);
+            objectContext.propertyChanged(this, "name", this.name, name);
         }
 
-        Object oldValue = this.name;
         this.name = name;
-
-        // notify objectContext about simple property change
-        if(objectContext != null) {
-            objectContext.propertyChanged(this, "name", oldValue, name);
-        }
     }
 
     public List<ClientReflexive> getChildren() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "children", true);
-        }
+        } else if (this.children == null) {
+        	this.children = new PersistentObjectList<>(this, "children");
+		}
 
         return children;
     }
+
     public void addToChildren(ClientReflexive object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "children", true);
-        }
+        } else if (this.children == null) {
+        	this.children = new PersistentObjectList<>(this, "children");
+		}
 
         this.children.add(object);
     }
+
     public void removeFromChildren(ClientReflexive object) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "children", true);
-        }
+        } else if (this.children == null) {
+        	this.children = new PersistentObjectList<>(this, "children");
+		}
 
         this.children.remove(object);
     }
 
-    public ClientReflexive getToOther() {
+    public ClientOther getToOther() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "toOther", true);
-        }
+        } else if (this.toOther == null) {
+        	this.toOther = new PersistentObjectHolder<>(this, "toOther");
+		}
 
-        return (ClientReflexive) toOther.getValue();
+        return toOther.getValue();
     }
-    public void setToOther(ClientReflexive toOther) {
+
+    public void setToOther(ClientOther toOther) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "toOther", true);
-        }
+        } else if (this.toOther == null) {
+        	this.toOther = new PersistentObjectHolder<>(this, "toOther");
+		}
 
         this.toOther.setValue(toOther);
     }
@@ -84,14 +101,19 @@ public abstract class _ClientReflexive extends PersistentObject {
     public ClientReflexive getToParent() {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "toParent", true);
-        }
+        } else if (this.toParent == null) {
+        	this.toParent = new PersistentObjectHolder<>(this, "toParent");
+		}
 
-        return (ClientReflexive) toParent.getValue();
+        return toParent.getValue();
     }
+
     public void setToParent(ClientReflexive toParent) {
         if(objectContext != null) {
             objectContext.prepareForAccess(this, "toParent", true);
-        }
+        } else if (this.toParent == null) {
+        	this.toParent = new PersistentObjectHolder<>(this, "toParent");
+		}
 
         this.toParent.setValue(toParent);
     }
