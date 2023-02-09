@@ -16,7 +16,7 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-[![Build Status](https://travis-ci.org/apache/cayenne.svg)](https://travis-ci.org/apache/cayenne)
+[![verify 4.0](https://github.com/apache/cayenne/actions/workflows/verify-on-push-4.0.yml/badge.svg)](https://github.com/apache/cayenne/actions/workflows/verify-on-push-4.0.yml)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/)
 
 Apache Cayenne
