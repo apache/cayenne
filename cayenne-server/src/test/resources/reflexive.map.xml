@@ -38,21 +38,4 @@
 	<obj-relationship name="children" source="Reflexive" target="Reflexive" db-relationship-path="children"/>
 	<obj-relationship name="toOther" source="Reflexive" target="Other" db-relationship-path="toOther"/>
 	<obj-relationship name="toParent" source="Reflexive" target="Reflexive" db-relationship-path="toParent"/>
-	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
-		<destDir>../java</destDir>
-		<mode>entity</mode>
-		<template>templates/v4_1/client-subclass.vm</template>
-		<superTemplate>templates/v4_1/client-superclass.vm</superTemplate>
-		<embeddableTemplate>templates/v4_1/embeddable-subclass.vm</embeddableTemplate>
-		<embeddableSuperTemplate>templates/v4_1/embeddable-superclass.vm</embeddableSuperTemplate>
-		<queryTemplate>templates/v4_1/datamap-subclass.vm</queryTemplate>
-		<querySuperTemplate>templates/v4_1/datamap-superclass.vm</querySuperTemplate>
-		<outputPattern>*.java</outputPattern>
-		<makePairs>true</makePairs>
-		<usePkgPath>true</usePkgPath>
-		<overwrite>false</overwrite>
-		<createPropertyNames>false</createPropertyNames>
-		<createPKProperties>false</createPKProperties>
-		<client>true</client>
-	</cgen>
 </data-map>
