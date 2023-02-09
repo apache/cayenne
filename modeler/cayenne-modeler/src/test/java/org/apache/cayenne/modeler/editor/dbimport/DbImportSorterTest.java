@@ -47,8 +47,8 @@ public class DbImportSorterTest {
     }
 
     @Test
-    public void sortNodeTest(){
-        DbImportSorter.sortSingleNode(node);
+    public void sortSingleNodeTest(){
+        DbImportSorter.sortSingleNode(node,DbImportSorter.NODE_COMPARATOR_BY_TYPE_BY_NAME);
 
         assertEquals("a", node.getChildNodes().get(0).getSimpleNodeName());
         assertEquals("b", node.getChildNodes().get(1).getSimpleNodeName());
@@ -57,8 +57,8 @@ public class DbImportSorterTest {
 
 
     @Test
-    public void sortNodeWithAllChildrenTest(){
-        DbImportSorter.sortSubtree(node);
+    public void sortSubtreeTest(){
+        DbImportSorter.sortSubtree(node,DbImportSorter.NODE_COMPARATOR_BY_TYPE_BY_NAME);
 
         DbImportTreeNode tableNode = node.getChildNodes().get(0);
         DbImportTreeNode columnNode = tableNode.getChildNodes().get(0);

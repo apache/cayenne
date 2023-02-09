@@ -71,7 +71,7 @@ public class DbImportTree extends JTree {
         printParams(reverseEngineering.getExcludeColumns(), root);
         printParams(reverseEngineering.getIncludeProcedures(), root);
         printParams(reverseEngineering.getExcludeProcedures(), root);
-        DbImportSorter.sortSubtree(root);
+        DbImportSorter.sortSubtree(root,DbImportSorter.NODE_COMPARATOR_BY_TYPE);
         model.reload();
     }
 
