@@ -95,8 +95,10 @@
 							<mainClass>org.apache.cayenne.modeler.win.WinMain</mainClass>
 							<icon>src/japplication/resources/CayenneModeler.ico</icon>
 							<os>windows</os>
-							<jvm>1.5+</jvm>
-							<jvmOptions>-Xmx500m</jvmOptions>
+							<jvm0>1.8</jvm0>
+							<jvm0Options>-Xmx500m</jvm0Options>
+							<jvm1>17</jvm1>
+							<jvm1Options>-Xmx500m --add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED</jvm1Options>
 						</configuration>
 						<executions>
 							<execution>
