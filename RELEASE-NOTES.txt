@@ -14,6 +14,7 @@ Date:
 
 Changes/New Features:
 
+CAY-2775 Change ObjectStyle maven repository URL
 CAY-2793 Modeler: support for JDK 17+ for Cayenne 4.0
 
 ----------------------------------
@@ -25,7 +26,6 @@ Changes/New Features:
 
 CAY-2519 Use NoopEventManager if SERVER_CONTEXTS_SYNC_PROPERTY is false
 CAY-2570 Use MySQL adapter for latest versions of MariaDB
-CAY-2775 Change ObjectStyle maven repository URL
 
 Bug Fixes:
 
