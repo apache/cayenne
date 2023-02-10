@@ -19,8 +19,8 @@
 Apache Cayenne
 ==============
 
+[![verify and deploy 4.1](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push-4.1.yml/badge.svg)](https://github.com/apache/cayenne/actions/workflows/verify-deploy-on-push-4.1.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/org.apache.cayenne/cayenne-server.svg)](https://cayenne.apache.org/download/)
-[![Build Status](https://travis-ci.org/apache/cayenne.svg)](https://travis-ci.org/apache/cayenne)
 
 <!-- Broken maven badge: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.apache.cayenne/cayenne-server/) -->
 <!-- Jenkins badge: [![Build Status](https://builds.apache.org/job/cayenne-master/badge/icon)](https://builds.apache.org/view/All/job/cayenne-master/) -->
