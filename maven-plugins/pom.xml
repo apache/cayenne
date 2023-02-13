@@ -107,7 +107,7 @@
 						<goals>
 							<goal>descriptor</goal>
 						</goals>
-						<phase>process-classes</phase>
+						<phase>compile</phase>
 					</execution>
 				</executions>
 			</plugin>
