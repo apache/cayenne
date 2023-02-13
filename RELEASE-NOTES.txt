@@ -9,7 +9,7 @@ https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
 Release: 4.0.3
-Date:
+Date: February 13, 2023
 ----------------------------------
 
 Changes/New Features:
