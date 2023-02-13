@@ -21,6 +21,8 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import java.sql.DatabaseMetaData;
 import java.sql.Types;
+import java.util.Properties;
+import java.util.function.Predicate;
 
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
@@ -34,6 +36,10 @@ import static org.junit.Assert.assertTrue;
 
 public class AttributeLoaderIT extends BaseLoaderIT {
 
+    private Predicate<Properties> isOracleConnection =
+            (properties) -> "oracle-tc".equals(properties.getProperty("cayenneTestConnection"))
+                    || ("" + properties.getProperty("cayenneJdbcUrl")).startsWith("jdbc:oracle");
+
     @Test
     public void testAttributeLoad() throws Exception {
         createDbEntities();
@@ -45,7 +51,12 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         DbAttribute a = getDbAttribute(artist, "ARTIST_ID");
         assertNotNull(a);
         if(accessStackAdapter.onlyGenericNumberType()) {
-            assertEquals(Types.INTEGER, a.getType());
+            // All integer types are mapped to NUMERIC in Oracle DB.
+            if (isOracleConnection.test(System.getProperties())) {
+                assertEquals(Types.NUMERIC, a.getType());
+            } else {
+                assertEquals(Types.INTEGER, a.getType());
+            }
         } else {
             assertEquals(Types.BIGINT, a.getType());
         }
@@ -54,7 +65,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
 
         a = getDbAttribute(artist, "ARTIST_NAME");
         assertNotNull(a);
-        assertEquals(Types.CHAR, a.getType());
+        assertEquals(Types.VARCHAR, a.getType());
         assertEquals(254, a.getMaxLength());
         assertTrue(a.isMandatory());
 
@@ -105,15 +116,27 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         // check varchar
         assertEquals(msgForTypeMismatch(Types.VARCHAR, varcharAttr), Types.VARCHAR, varcharAttr.getType());
         assertEquals(255, varcharAttr.getMaxLength());
+
         // check integer
-        assertEquals(msgForTypeMismatch(Types.INTEGER, integerAttr), Types.INTEGER, integerAttr.getType());
+        // All integer types are mapped to NUMERIC in Oracle DB.
+        if (isOracleConnection.test(System.getProperties())) {
+            assertEquals(msgForTypeMismatch(Types.NUMERIC, integerAttr), Types.NUMERIC, integerAttr.getType());
+        } else {
+            assertEquals(msgForTypeMismatch(Types.INTEGER, integerAttr), Types.INTEGER, integerAttr.getType());
+        }
+
         // check float
         assertTrue(msgForTypeMismatch(Types.FLOAT, floatAttr), Types.FLOAT == floatAttr.getType()
                 || Types.DOUBLE == floatAttr.getType() || Types.REAL == floatAttr.getType());
 
         // check smallint
-        assertTrue(msgForTypeMismatch(Types.SMALLINT, smallintAttr), Types.SMALLINT == smallintAttr.getType()
-                || Types.INTEGER == smallintAttr.getType());
+        // All integer types are mapped to NUMERIC in Oracle DB.
+        if (isOracleConnection.test(System.getProperties())) {
+            assertEquals(msgForTypeMismatch(Types.NUMERIC, smallintAttr), Types.NUMERIC, smallintAttr.getType());
+        } else {
+            assertTrue(msgForTypeMismatch(Types.SMALLINT, smallintAttr),
+                       Types.SMALLINT == smallintAttr.getType() || Types.INTEGER == smallintAttr.getType());
+        }
     }
 
     private void assertGenerated() {
