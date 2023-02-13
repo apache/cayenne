@@ -39,10 +39,13 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Properties;
+import java.util.function.Predicate;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,6 +71,10 @@ public class SQLTemplateIT extends ServerCase {
 	private TableHelper tArtist;
 
 	private TableHelper tArtistCt;
+
+    public Predicate<Properties> isOracleConnection =
+            (properties) -> "oracle-tc".equals(properties.getProperty("cayenneTestConnection"))
+                    || ("" + properties.getProperty("cayenneJdbcUrl")).startsWith("jdbc:oracle");
 
 	@Before
 	public void setUp() throws Exception {
@@ -311,7 +318,10 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(2, artists.size());
 		assertEquals(1, artists.get(0).length);
 		assertTrue(artists.get(0) instanceof Object[]);
-		assertTrue(artists.get(0)[0] instanceof Long);
+
+        // TODO: JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
+        Class<?> idType = isOracleConnection.test(System.getProperties()) ? BigDecimal.class : Long.class;
+        assertThat(artists.get(0)[0], instanceOf(idType));
 	}
 
 	@Test
@@ -325,7 +335,10 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(2, artists.size());
 		assertEquals(2, artists.get(0).length);
 		assertTrue(artists.get(0) instanceof Object[]);
-		assertTrue(artists.get(0)[0] instanceof Long);
+
+        // JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
+        Class<?> idType = isOracleConnection.test(System.getProperties()) ? BigDecimal.class : Long.class;
+		assertThat(artists.get(0)[0], instanceOf(idType));
 	}
 
 	@Test

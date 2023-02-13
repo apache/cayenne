@@ -111,17 +111,17 @@ public class AggregateExpInMemoryEvaluationIT extends ServerCase {
 
         Expression maxExp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).max().getExpression();
 
-        Object max0 = maxExp.evaluate(artists.get(0));
+        BigDecimal max0 = (BigDecimal) maxExp.evaluate(artists.get(0));
         BigDecimal expected0 = BigDecimal.valueOf(20000, 2);
-        assertEquals(expected0, max0);
+        assertEquals(0, expected0.compareTo(max0));
 
-        Object max1 = maxExp.evaluate(artists.get(1));
+        BigDecimal max1 = (BigDecimal) maxExp.evaluate(artists.get(1));
         BigDecimal expected1 = BigDecimal.valueOf(100000, 2);
-        assertEquals(expected1, max1);
+        assertEquals(0, expected1.compareTo(max1));
 
-        Object max4 = maxExp.evaluate(artists.get(4));
+        BigDecimal max4 = (BigDecimal) maxExp.evaluate(artists.get(4));
         BigDecimal expected4 = BigDecimal.valueOf(19000, 2);
-        assertEquals(expected4, max4);
+        assertEquals(0, expected4.compareTo(max4));
     }
 
     @Test
@@ -133,17 +133,17 @@ public class AggregateExpInMemoryEvaluationIT extends ServerCase {
 
         Expression minExp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).min().getExpression();
 
-        Object min0 = minExp.evaluate(artists.get(0));
+        BigDecimal min0 = (BigDecimal) minExp.evaluate(artists.get(0));
         BigDecimal expected0 = BigDecimal.valueOf(5000, 2);
-        assertEquals(expected0, min0);
+        assertEquals(0, expected0.compareTo(min0));
 
-        Object min3 = minExp.evaluate(artists.get(3));
+        BigDecimal min3 = (BigDecimal) minExp.evaluate(artists.get(3));
         BigDecimal expected1 = BigDecimal.valueOf(3000, 2);
-        assertEquals(expected1, min3);
+        assertEquals(0, expected1.compareTo(min3));
 
-        Object min4 = minExp.evaluate(artists.get(4));
+        BigDecimal min4 = (BigDecimal) minExp.evaluate(artists.get(4));
         BigDecimal expected4 = BigDecimal.valueOf(4000, 2);
-        assertEquals(expected4, min4);
+        assertEquals(0, expected4.compareTo(min4));
     }
 
     @Test

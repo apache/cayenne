@@ -27,6 +27,9 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
+import java.util.Properties;
+import java.util.function.Predicate;
+
 import static org.junit.Assert.*;
 
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
@@ -34,6 +37,10 @@ public class CircularDependencyIT extends ServerCase {
 
     @Inject
     private ObjectContext context;
+
+    private Predicate<Properties> isOracleConnection =
+            (properties) -> "oracle-tc".equals(properties.getProperty("cayenneTestConnection"))
+                    || ("" + properties.getProperty("cayenneJdbcUrl")).startsWith("jdbc:oracle");
     
     @Test()
     public void testCycle() {
@@ -50,8 +57,15 @@ public class CircularDependencyIT extends ServerCase {
             context.commitChanges();
             fail("Exception should be thrown here");
         } catch (CayenneRuntimeException ex) {
-            assertTrue("Unexpected exception message: " + ex.getMessage(),
-                    ex.getMessage().contains("PK is not generated"));
+            // TODO: Oracle adapter still does not fully support key generation.
+            if (isOracleConnection.test(System.getProperties())) {
+                assertTrue(ex.getCause().getMessage().contains("parent key not found"));
+            } else {
+                assertTrue(String.format("Unexpected exception message: %s%nCause: %s - %s",
+                                ex.getMessage(), ex.getCause(),
+                                ex.getCause() != null ? ex.getCause().getMessage() : null),
+                        ex.getMessage().contains("PK is not generated"));
+            }
         }
 
     }
