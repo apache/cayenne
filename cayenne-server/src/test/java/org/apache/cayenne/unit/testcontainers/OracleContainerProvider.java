@@ -42,14 +42,12 @@ public class OracleContainerProvider extends TestContainerProvider {
     @Override
     JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
         return new OracleContainer(dockerImageName)
-                .withStartupTimeout(Duration.ofMinutes(5))
-                .withEnv("ORACLE_ALLOW_REMOTE", "true")
-                .withEnv("ORACLE_DISABLE_ASYNCH_IO", "true");
+                .withStartupTimeout(Duration.ofMinutes(5));
     }
 
     @Override
     String getDockerImage() {
-        return "oracleinanutshell/oracle-xe-11g";
+        return "gvenzl/oracle-xe:18-slim-faststart";
     }
 
     @Override
