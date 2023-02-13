@@ -26,14 +26,7 @@ import java.util.List;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
-import org.apache.cayenne.access.types.ByteArrayType;
-import org.apache.cayenne.access.types.ByteType;
-import org.apache.cayenne.access.types.CharType;
-import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.access.types.ExtendedTypeFactory;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.access.types.ShortType;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
+import org.apache.cayenne.access.types.*;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DefaultQuotingStrategy;
@@ -100,7 +93,8 @@ public class SybaseAdapter extends JdbcAdapter {
         super.configureExtendedTypes(map);
 
         // create specially configured CharType handler
-        map.registerType(new CharType(true, false));
+        CharType charType = new CharType(true, false);
+        map.registerType(charType);
 
         // create specially configured ByteArrayType handler
         map.registerType(new ByteArrayType(true, false));
@@ -109,6 +103,7 @@ public class SybaseAdapter extends JdbcAdapter {
         // java.lang.Byte
         map.registerType(new ShortType(true));
         map.registerType(new ByteType(true));
+        map.registerType(new JsonType(charType, true));
     }
 
     @Override

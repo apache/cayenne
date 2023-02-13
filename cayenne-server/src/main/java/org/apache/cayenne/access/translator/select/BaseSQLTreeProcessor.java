@@ -34,7 +34,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 /**
  * @since 4.2
  */
-public class BaseSQLTreeProcessor extends SimpleNodeTreeVisitor implements SQLTreeProcessor {
+public class BaseSQLTreeProcessor extends TypeAwareSQLTreeProcessor implements SQLTreeProcessor {
 
     @Override
     public Node process(Node node) {
