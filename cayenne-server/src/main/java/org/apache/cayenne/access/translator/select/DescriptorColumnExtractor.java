@@ -120,12 +120,19 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
             ResultNodeDescriptor resultNodeDescriptor = processTranslationResult(result, i);
             DbAttribute dbAttribute = result.getDbAttributes().get(i);
             if(resultNodeDescriptor != null) {
-                resultNodeDescriptor.setJavaType(oa.getType());
-                if (result.getDbAttributes().size() > 1) {
+                // set exact Java type only for the result node directly related to the ObjAttribute we processing
+                // for the rest DbAttributes Java type would be calculated based on the DB type
+                // see also CAY-2794
+                if(dbAttribute == oa.getDbAttribute()) {
+                    resultNodeDescriptor.setJavaType(oa.getType());
+                }
+                if (count > 1) {
+                    // it was a flattened attribute, so need to keep full path info
                     String dataRowKey = result.getAttributePaths().get(i) + "." + dbAttribute.getName();
                     resultNodeDescriptor.setDataRowKey(dataRowKey);
                     addEntityResultField(dataRowKey);
                 } else {
+                    // simple attribute
                     addEntityResultField(dbAttribute);
                 }
             }
