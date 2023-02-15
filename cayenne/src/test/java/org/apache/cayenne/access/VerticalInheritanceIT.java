@@ -37,6 +37,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -639,6 +640,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 		IvImpl impl = context.newObject(IvImpl.class);
 		impl.setName("Impl 1");
+		impl.setAttr0(new Date());
 		impl.setAttr1("attr1");
 		impl.setAttr2("attr2");
 		impl.setOther1(other1);
