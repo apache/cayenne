@@ -3,7 +3,9 @@ package org.apache.cayenne.testdo.inheritance_vertical.auto;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Date;
 
+import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
@@ -22,16 +24,28 @@ public abstract class _IvImpl extends IvBase {
 
     public static final String ID_PK_COLUMN = "ID";
 
+    public static final DateProperty<Date> ATTR0 = PropertyFactory.createDate("attr0", Date.class);
     public static final StringProperty<String> ATTR1 = PropertyFactory.createString("attr1", String.class);
     public static final StringProperty<String> ATTR2 = PropertyFactory.createString("attr2", String.class);
     public static final EntityProperty<IvOther> OTHER1 = PropertyFactory.createEntity("other1", IvOther.class);
     public static final EntityProperty<IvOther> OTHER2 = PropertyFactory.createEntity("other2", IvOther.class);
 
+    protected Date attr0;
     protected String attr1;
     protected String attr2;
 
     protected Object other1;
     protected Object other2;
+
+    public void setAttr0(Date attr0) {
+        beforePropertyWrite("attr0", this.attr0, attr0);
+        this.attr0 = attr0;
+    }
+
+    public Date getAttr0() {
+        beforePropertyRead("attr0");
+        return this.attr0;
+    }
 
     public void setAttr1(String attr1) {
         beforePropertyWrite("attr1", this.attr1, attr1);
@@ -76,6 +90,8 @@ public abstract class _IvImpl extends IvBase {
         }
 
         switch(propName) {
+            case "attr0":
+                return this.attr0;
             case "attr1":
                 return this.attr1;
             case "attr2":
@@ -96,6 +112,9 @@ public abstract class _IvImpl extends IvBase {
         }
 
         switch (propName) {
+            case "attr0":
+                this.attr0 = (Date)val;
+                break;
             case "attr1":
                 this.attr1 = (String)val;
                 break;
@@ -124,6 +143,7 @@ public abstract class _IvImpl extends IvBase {
     @Override
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
+        out.writeObject(this.attr0);
         out.writeObject(this.attr1);
         out.writeObject(this.attr2);
         out.writeObject(this.other1);
@@ -133,6 +153,7 @@ public abstract class _IvImpl extends IvBase {
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
+        this.attr0 = (Date)in.readObject();
         this.attr1 = (String)in.readObject();
         this.attr2 = (String)in.readObject();
         this.other1 = in.readObject();
