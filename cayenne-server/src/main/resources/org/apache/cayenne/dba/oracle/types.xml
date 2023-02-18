@@ -106,7 +106,7 @@ Oracle types mapping
        <db-type name="RAW"/>
    </jdbc-type>
    <jdbc-type name="VARCHAR">
-       <db-type name="VARCHAR"/>
+       <db-type name="VARCHAR2"/>
    </jdbc-type>
    <jdbc-type name="NVARCHAR">
        <db-type name="NVARCHAR2"/>
