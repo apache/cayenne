@@ -51,11 +51,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -69,25 +70,28 @@ public class SchemaBuilder {
 
 	private static final String[] MAPS_REQUIRING_SCHEMA_SETUP = { "testmap.map.xml", "compound.map.xml",
 			"misc-types.map.xml", "things.map.xml", "numeric-types.map.xml", "binary-pk.map.xml", "no-pk.map.xml",
-			"lob.map.xml", "date-time.map.xml", "enum.map.xml", "extended-type.map.xml", "generated.map.xml",
-			"mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml", "inheritance.map.xml",
-			"locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml",
+			"lob.map.xml", "date-time.map.xml", "enum.map.xml", "json.map.xml", "extended-type.map.xml",
+			"generated.map.xml", "mixed-persistence-strategy.map.xml", "people.map.xml", "primitive.map.xml",
+			"inheritance.map.xml", "locking.map.xml", "soft-delete.map.xml", "empty.map.xml", "relationships.map.xml",
 			"relationships-activity.map.xml", "relationships-delete-rules.map.xml",
 			"relationships-collection-to-many.map.xml", "relationships-child-master.map.xml",
-			"relationships-clob.map.xml", "relationships-flattened.map.xml", "relationships-many-to-many-join.map.xml", "relationships-set-to-many.map.xml",
-			"relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml", "return-types.map.xml",
-			"uuid.map.xml", "multi-tier.map.xml", "reflexive.map.xml", "delete-rules.map.xml",
-            "lifecycle-callbacks-order.map.xml", "lifecycles.map.xml", "map-to-many.map.xml", "toone.map.xml", "meaningful-pk.map.xml",
-			"table-primitives.map.xml", "generic.map.xml", "map-db1.map.xml", "map-db2.map.xml", "embeddable.map.xml",
-			"qualified.map.xml", "quoted-identifiers.map.xml", "inheritance-single-table1.map.xml",
-			"inheritance-vertical.map.xml", "oneway-rels.map.xml", "unsupported-distinct-types.map.xml",
-			"array-type.map.xml", "cay-2032.map.xml", "weighted-sort.map.xml", "hybrid-data-object.map.xml",
-			"java8.map.xml", "inheritance-with-enum.map.xml", "lazy-attributes.map.xml", "cay2666/datamap.map.xml", "cay2641/datamapLazy.map.xml",
-			"annotation/datamapAnnotation.map.xml" };
+			"relationships-clob.map.xml", "relationships-flattened.map.xml", "relationships-many-to-many-join.map.xml",
+			"relationships-set-to-many.map.xml", "relationships-to-many-fk.map.xml", "relationships-to-one-fk.map.xml",
+			"return-types.map.xml", "uuid.map.xml", "multi-tier.map.xml", "reflexive.map.xml", "delete-rules.map.xml",
+            "lifecycle-callbacks-order.map.xml", "lifecycles.map.xml", "map-to-many.map.xml", "toone.map.xml",
+            "meaningful-pk.map.xml", "table-primitives.map.xml", "generic.map.xml", "map-db1.map.xml",
+            "map-db2.map.xml", "embeddable.map.xml", "qualified.map.xml", "quoted-identifiers.map.xml",
+            "inheritance-single-table1.map.xml", "inheritance-vertical.map.xml", "oneway-rels.map.xml",
+            "unsupported-distinct-types.map.xml", "array-type.map.xml", "cay-2032.map.xml",
+            "weighted-sort.map.xml", "hybrid-data-object.map.xml", "java8.map.xml", "inheritance-with-enum.map.xml",
+            "lazy-attributes.map.xml", "cay2666/datamap.map.xml", "cay2641/datamapLazy.map.xml",
+            "annotation/datamapAnnotation.map.xml" };
 
 	// hardcoded dependent entities that should be excluded
 	// if LOBs are not supported
-	private static final String[] EXTRA_EXCLUDED_FOR_NO_LOB = new String[] { "CLOB_DETAIL" };
+	private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
+
+	private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
 
 	private ServerCaseDataSourceFactory dataSourceFactory;
 	private UnitDbAdapter unitDbAdapter;
@@ -242,8 +246,8 @@ public class SchemaBuilder {
 	private List<DbEntity> dbEntitiesInInsertOrder(DataMap map) {
 		TreeMap<String, DbEntity> dbEntityMap = new TreeMap<>(map.getDbEntityMap());
 		List<DbEntity> entities = new ArrayList<>(dbEntityMap.values());
-
-		dbEntitiesFilter(entities);
+		List<DbEntity> excludedEntities = excludeEntities(entities);
+		entities.removeAll(excludedEntities);
 
 		domain.getEntitySorter().sortDbEntities(entities, false);
 		return entities;
@@ -253,70 +257,63 @@ public class SchemaBuilder {
 		DataMap map = domain.getDataMap(dataMap.getName());
 		Map<String, DbEntity> dbEntityMap = new TreeMap<>(map.getDbEntityMap());
 		List<DbEntity> entities = new ArrayList<>(dbEntityMap.values());
-
-		dbEntitiesFilter(entities);
+		List<DbEntity> excludedEntities = excludeEntities(entities);
+		entities.removeAll(excludedEntities);
 
 		domain.getEntitySorter().sortDbEntities(entities, true);
 		return entities;
 	}
 
-	// This seems actually unused for some time now (from 2014 to 2018), and caused no trouble
-	private void dbEntitiesFilter(List<DbEntity> entities) {
-		// filter various unsupported tests...
+	private List<DbEntity> excludeEntities(Collection<DbEntity> entities) {
+		// exclude various unsupported tests...
 
-		// LOBs
 		boolean excludeLOB = !unitDbAdapter.supportsLobs();
-		boolean excludeBinPK = !unitDbAdapter.supportsBinaryPK();
-		if (excludeLOB || excludeBinPK) {
+		boolean excludeNativeJson = !unitDbAdapter.supportsJsonType();
+		boolean excludeBinaryPK = !unitDbAdapter.supportsBinaryPK();
+		if (!excludeLOB && !excludeNativeJson && !excludeBinaryPK) {
+			return Collections.emptyList();
+		}
 
-			List<DbEntity> filtered = new ArrayList<>();
+		List<DbEntity> excludedEntities = new ArrayList<>();
+		for (DbEntity entity : entities) {
 
-			for (DbEntity ent : entities) {
-
-				// check for LOB attributes
-				if (excludeLOB) {
-					if (Arrays.binarySearch(EXTRA_EXCLUDED_FOR_NO_LOB, ent.getName()) >= 0) {
-						continue;
-					}
-
-					boolean hasLob = false;
-					for (final DbAttribute attr : ent.getAttributes()) {
-						if (attr.getType() == Types.BLOB || attr.getType() == Types.CLOB) {
-							hasLob = true;
-							break;
-						}
-					}
-
-					if (hasLob) {
-						continue;
-					}
+			// check for LOB attributes
+			if (excludeLOB) {
+				if (EXTRA_EXCLUDED_FOR_NO_LOB.contains(entity.getName())) {
+					excludedEntities.add(entity);
+					continue;
 				}
-
-				// check for BIN PK
-				if (excludeBinPK) {
-					boolean skip = false;
-					for (final DbAttribute attr : ent.getAttributes()) {
-						// check for BIN PK or FK to BIN Pk
-						if (attr.getType() == Types.BINARY || attr.getType() == Types.VARBINARY
-								|| attr.getType() == Types.LONGVARBINARY) {
-
-							if (attr.isPrimaryKey() || attr.isForeignKey()) {
-								skip = true;
-								break;
-							}
-						}
-					}
-
-					if (skip) {
-						continue;
-					}
+				Set<Integer> lobTypes = Set.of(Types.BLOB, Types.CLOB, Types.NCLOB);
+				boolean hasLob = entity.getAttributes().stream()
+						.map(DbAttribute::getType)
+						.anyMatch(lobTypes::contains);
+				if (hasLob) {
+					excludedEntities.add(entity);
+					continue;
 				}
-
-				filtered.add(ent);
 			}
 
-			entities = filtered;
+			// check for native json type
+			if (excludeNativeJson) {
+				if (EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON.contains(entity.getName())) {
+					excludedEntities.add(entity);
+					continue;
+				}
+			}
+
+			// check for BIN PK
+			if (excludeBinaryPK) {
+				Set<Integer> binaryTypes = Set.of(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY);
+				boolean hasBinaryPK = entity.getAttributes().stream()
+						.filter(attribute -> attribute.isPrimaryKey() || attribute.isForeignKey())
+						.map(DbAttribute::getType)
+						.anyMatch(binaryTypes::contains);
+				if (hasBinaryPK) {
+					excludedEntities.add(entity);
+				}
+			}
 		}
+		return excludedEntities;
 	}
 
 	private void dropSchema(DataNode node, DataMap map) throws Exception {
@@ -396,18 +393,19 @@ public class SchemaBuilder {
 	 */
 	private Collection<String> tableCreateQueries(DataNode node, DataMap map) {
 		DbAdapter adapter = node.getAdapter();
-		DbGenerator gen = new DbGenerator(adapter, map, null, domain, jdbcEventLogger);
 
-		List<DbEntity> orderedEnts = dbEntitiesInInsertOrder(map);
+		List<DbEntity> orderedEntities = dbEntitiesInInsertOrder(map);
+		List<DbEntity> excludedEntities = excludeEntities(map.getDbEntities());
+		DbGenerator gen = new DbGenerator(adapter, map, excludedEntities, domain, jdbcEventLogger);
 		List<String> queries = new ArrayList<>();
 
 		// table definitions
-		for (DbEntity ent : orderedEnts) {
+		for (DbEntity ent : orderedEntities) {
 			queries.add(adapter.createTable(ent));
 		}
 
 		// FK constraints
-		for (DbEntity ent : orderedEnts) {
+		for (DbEntity ent : orderedEntities) {
 			if (!unitDbAdapter.supportsFKConstraints(ent)) {
 				continue;
 			}
@@ -418,5 +416,4 @@ public class SchemaBuilder {
 
 		return queries;
 	}
-
 }
