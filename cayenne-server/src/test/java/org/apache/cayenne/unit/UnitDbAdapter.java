@@ -222,6 +222,13 @@ public class UnitDbAdapter {
         return supportsLobs();
     }
 
+    /**
+     * Returns true if the target database has native json data type.
+     */
+    public boolean supportsJsonType() {
+        return false;
+    }
+
     public boolean supportsBinaryPK() {
         return true;
     }
