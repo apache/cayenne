@@ -35,6 +35,7 @@ import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -78,10 +79,13 @@ public class DB2Adapter extends JdbcAdapter {
         super.configureExtendedTypes(map);
 
         // create specially configured CharType handler
-        map.registerType(new CharType(true, true));
+        CharType charType = new CharType(true, true);
+        map.registerType(charType);
         // configure boolean type to work with numeric columns
         map.registerType(new DB2BooleanType());
+
         map.registerType(new ByteArrayType(false, false));
+        map.registerType(new JsonType(charType, true));
     }
 
     /**
