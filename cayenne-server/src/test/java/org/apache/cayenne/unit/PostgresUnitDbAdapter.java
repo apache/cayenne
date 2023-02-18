@@ -67,6 +67,11 @@ public class PostgresUnitDbAdapter extends UnitDbAdapter {
     }
 
     @Override
+    public boolean supportsJsonType() {
+        return true;
+    }
+
+    @Override
     public boolean supportsGeneratedKeysDrop() {
         return true;
     }
