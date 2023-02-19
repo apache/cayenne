@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.value.json;
 
+import java.util.Objects;
+
 /**
  * Simple utils to process JSON.
  *
@@ -53,7 +55,7 @@ public final class JsonUtils {
     public static boolean compare(String json1, String json2) {
         Object object1 = new JsonReader(json1).process();
         Object object2 = new JsonReader(json2).process();
-        return object1.equals(object2);
+        return Objects.equals(object1, object2);
     }
 
     private JsonUtils() {
