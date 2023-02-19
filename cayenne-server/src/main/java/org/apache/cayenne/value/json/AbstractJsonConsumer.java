@@ -52,8 +52,11 @@ abstract class AbstractJsonConsumer<T> {
     protected abstract T output();
 
     T process() {
-        JsonTokenizer.JsonToken token;
-        while((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE) {
+        JsonTokenizer.JsonToken token = tokenizer.nextToken();
+        if (token.getType() == JsonTokenizer.TokenType.NONE) {
+            throw new MalformedJsonException("Unexpected EOF");
+        }
+        do {
             switch (token.getType()) {
                 case ARRAY_START:
                     onArrayStart();
@@ -79,7 +82,7 @@ abstract class AbstractJsonConsumer<T> {
                     processValue(token);
                     break;
             }
-        }
+        } while ((token = tokenizer.nextToken()).getType() != JsonTokenizer.TokenType.NONE);
         return output();
     }
 
