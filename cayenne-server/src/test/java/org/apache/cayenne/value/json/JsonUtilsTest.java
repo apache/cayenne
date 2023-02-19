@@ -20,55 +20,111 @@
 package org.apache.cayenne.value.json;
 
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThrows;
 
 /**
  * @since 4.2
  */
+@RunWith(Enclosed.class)
 public class JsonUtilsTest {
 
-    @Test
-    public void compare() {
-        assertTrue(JsonUtils.compare("[]", "[]"));
-        assertTrue(JsonUtils.compare("{}", "{}"));
-        assertFalse(JsonUtils.compare("[]", "{}"));
+    @RunWith(Parameterized.class)
+    public static class CompareTest {
 
-        assertTrue(JsonUtils.compare("123", "123"));
-        assertFalse(JsonUtils.compare("123", "124"));
+        @Parameterized.Parameters(name = " {0} eq {1} ")
+        public static Object[][] data() {
+            return new Object[][]{
+                    {"[]", "[]", true},
+                    {"{}", "{}", true},
+                    {"[]", "{}", false},
 
-        assertTrue(JsonUtils.compare("null", "null"));
-        assertTrue(JsonUtils.compare("true", "true"));
-        assertFalse(JsonUtils.compare("true", "false"));
+                    {"123", "123", true},
+                    {"123", "124", false},
 
-        assertTrue(JsonUtils.compare("\"123\"", "\"123\""));
-        assertFalse(JsonUtils.compare("123", "\"123\""));
+                    {"null", "null", true},
+                    {"true", "true", true},
+                    {"true", "false", false},
 
-        assertTrue(JsonUtils.compare("[1,2,3]", "[1, 2, 3]"));
-        assertFalse(JsonUtils.compare("[1,2,3]", "[1,2,3,4]"));
-        assertFalse(JsonUtils.compare("[1,2,3]", "[1,2]"));
-        assertFalse(JsonUtils.compare("[1,2,3]", "[1,2,4]"));
+                    {"\"123\"", "\"123\"", true},
+                    {"123", "\"123\"", false},
 
-        assertTrue(JsonUtils.compare("{\"abc\":123,\"def\":321}", " {\"def\" :  321 , \n\t\"abc\" :\t123 }"));
-        assertFalse(JsonUtils.compare("{\"abc\":123}", " {\"abc\" :  124 }"));
+                    {"[1,2,3]", "[1, 2, 3]", true},
+                    {"[1,2,3]", "[1,2,3,4]", false},
+                    {"[1,2,3]", "[1,2]", false},
+                    {"[1,2,3]", "[1,2,4]", false},
+
+                    {"{\"abc\":123,\"def\":321}", " {\"def\" :  321 , \n\t\"abc\" :\t123 }", true},
+                    {"{\"abc\":123}", " {\"abc\" :  124 }", false}
+            };
+        }
+
+        @Parameterized.Parameter
+        public String jsonStringA;
+        @Parameterized.Parameter(1)
+        public String jsonStringB;
+        @Parameterized.Parameter(2)
+        public boolean areEquals;
+
+        @Test
+        public void compare() {
+            assertEquals(areEquals, JsonUtils.compare(jsonStringA, jsonStringB));
+        }
     }
 
-    @Test
-    public void normalize() {
-        assertEquals("[]", JsonUtils.normalize("[]"));
-        assertEquals("{}", JsonUtils.normalize("{}"));
-        assertEquals("true", JsonUtils.normalize("true"));
-        assertEquals("null", JsonUtils.normalize("null"));
-        assertEquals("false", JsonUtils.normalize("false"));
-        assertEquals("123", JsonUtils.normalize("123"));
-        assertEquals("-10.24e3", JsonUtils.normalize("-10.24e3"));
-        assertEquals("\"abc\\\"def\"", JsonUtils.normalize("\"abc\\\"def\""));
+    @RunWith(Parameterized.class)
+    public static class NormalizeTest {
 
-        assertEquals("[1, 2.0, -0.3e3, false, null, true]",
-                JsonUtils.normalize("[1 ,  2.0  ,-0.3e3, false,\nnull,\ttrue]"));
-        assertEquals("{\"abc\": 321, \"def\": true, \"ghi\": \"jkl\"}",
-                JsonUtils.normalize("{\"abc\":321,\n\"def\":true,\n\t\"ghi\":\"jkl\"}"));
+        @Parameterized.Parameters(name = " {0} ")
+        public static Object[][] data() {
+            return new Object[][]{
+                    {"[]", "[]", null},
+                    {"{}", "{}", null},
+                    {"true", "true", null},
+                    {"null", "null", null},
+                    {"false", "false", null},
+                    {"123", "123", null},
+                    {"-10.24e3", "-10.24e3", null},
+                    {"\"abc\\\"def\"", "\"abc\\\"def\"", null},
+
+                    {
+                            "[1, 2.0, -0.3e3, false, null, true]",
+                            "[1 ,  2.0  ,-0.3e3, false,\nnull,\ttrue]",
+                            null
+                    },
+                    {
+                            "{\"abc\": 321, \"def\": true, \"ghi\": \"jkl\"}",
+                            "{\"abc\":321,\n\"def\":true,\n\t\"ghi\":\"jkl\"}",
+                            null
+                    },
+                    {
+                            "{\"tags\": [\"ad\", \"irure\", \"anim\"], \"age\": 20}",
+                            "{\"tags\": [\"ad\",\n\"irure\", \"anim\"],\n\"age\": 20}",
+                            null
+                    },
+
+                    {"", "", MalformedJsonException.class},
+            };
+        }
+
+        @Parameterized.Parameter
+        public String expected;
+        @Parameterized.Parameter(1)
+        public String jsonString;
+        @Parameterized.Parameter(2)
+        public Class<? extends Throwable> throwable;
+
+        @Test
+        public void normalize() {
+            if (throwable == null) {
+                assertEquals(expected, JsonUtils.normalize(jsonString));
+            } else {
+                assertThrows(throwable, () -> JsonUtils.normalize(jsonString));
+            }
+        }
     }
 }
