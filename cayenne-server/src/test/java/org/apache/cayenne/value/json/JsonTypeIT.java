@@ -31,8 +31,10 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.value.Json;
-import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.JSON_PROJECT)
 public class JsonTypeIT extends ServerCase {
@@ -647,14 +649,18 @@ public class JsonTypeIT extends ServerCase {
 
     @Test
     public void testJsonEmptyString() {
-        testJson("");
+        assertThrows(MalformedJsonException.class, () -> testJson(""));
+    }
+
+    @Test
+    public void testJsonBlankString() {
+        assertThrows(MalformedJsonException.class, () -> testJson("  "));
     }
 
     private void testJson(String jsonString) {
-        String jsonStringMinified = JsonUtils.normalize(jsonString);
-        testJsonVarchar(jsonStringMinified);
+        testJsonVarchar(jsonString);
         if (unitDbAdapter.supportsJsonType()) {
-            testJsonOther(jsonStringMinified);
+            testJsonOther(jsonString);
         }
     }
 
@@ -663,13 +669,13 @@ public class JsonTypeIT extends ServerCase {
         jsonInsert.setData(new Json(jsonString));
 
         if (jsonString.isBlank()) {
-            Assert.assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
+            assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
             return;
         }
         context.commitChanges();
 
         JsonOther jsonSelect = context.selectOne(SelectById.query(JsonOther.class, jsonInsert.getObjectId()));
-        Assert.assertEquals(jsonInsert.getData(), jsonSelect.getData());
+        assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 
     private void testJsonVarchar(String jsonString) {
@@ -678,12 +684,12 @@ public class JsonTypeIT extends ServerCase {
 
         // In Oracle, an empty string is equivalent to NULL
         if (unitDbAdapter instanceof OracleUnitDbAdapter && jsonString.isEmpty()) {
-            Assert.assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
+            assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
             return;
         }
         context.commitChanges();
 
         JsonVarchar jsonSelect = context.selectOne(SelectById.query(JsonVarchar.class, jsonInsert.getObjectId()));
-        Assert.assertEquals(jsonInsert.getData(), jsonSelect.getData());
+        assertEquals(jsonInsert.getData(), jsonSelect.getData());
     }
 }
