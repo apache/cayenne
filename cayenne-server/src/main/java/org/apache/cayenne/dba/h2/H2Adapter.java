@@ -26,6 +26,7 @@ import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -36,6 +37,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
+import java.sql.Types;
 import java.util.List;
 
 /**
@@ -106,6 +108,19 @@ public class H2Adapter extends JdbcAdapter {
         super.configureExtendedTypes(map);
 
         // create specially configured CharType handler
-        map.registerType(new H2CharType());
+        H2CharType charType = new H2CharType();
+        map.registerType(charType);
+
+        map.registerType(new JsonType(charType, false));
     }
+
+    @Override
+    public DbAttribute buildAttribute(String name, String typeName, int type, int size, int scale, boolean allowNulls) {
+        if ("json".equalsIgnoreCase(typeName)) {
+            type = Types.OTHER;
+        }
+        return super.buildAttribute(name, typeName, type, size, scale, allowNulls);
+    }
+
+
 }
