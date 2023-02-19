@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.value;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import org.apache.cayenne.value.json.JsonUtils;
@@ -28,8 +29,9 @@ import org.apache.cayenne.value.json.JsonUtils;
  *
  * @since 4.2
  */
-public class Json {
+public class Json implements Serializable {
 
+    private static final long serialVersionUID = 7594825997288498022L;
     private final String json;
 
     public Json(String json) {
