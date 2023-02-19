@@ -58,6 +58,9 @@ class JsonFormatter extends AbstractJsonConsumer<String> {
             builder.delete(builder.length() - 2, builder.length());
         }
         builder.append('}');
+        if (State.ARRAY.equals(currentState())) {
+            builder.append(", ");
+        }
     }
 
     @Override
