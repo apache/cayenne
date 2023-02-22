@@ -21,6 +21,7 @@ package org.apache.cayenne.dbsync.reverse.filters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
@@ -138,8 +139,15 @@ public class TableFilter {
 
         TableFilter that = (TableFilter) o;
 
-        return excludes.equals(that.excludes)
-                && includes.equals(that.includes);
+        Set<IncludeTableFilter> includeSet = new TreeSet<>(includes);
+        Set<IncludeTableFilter> thatIncludeSet = new TreeSet<>(that.includes);
+        Set<Pattern> excludeSet = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+        Set<Pattern> thatExcludeSet = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+        excludeSet.addAll(excludes);
+        thatExcludeSet.addAll(that.excludes);
+
+        return includeSet.equals(thatIncludeSet)
+                && excludeSet.equals(thatExcludeSet);
 
     }
 
