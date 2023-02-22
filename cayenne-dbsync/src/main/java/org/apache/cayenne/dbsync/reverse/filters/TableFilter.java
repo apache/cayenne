@@ -19,7 +19,8 @@
 package org.apache.cayenne.dbsync.reverse.filters;
 
 
-import java.util.SortedSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
@@ -30,13 +31,13 @@ import org.apache.cayenne.util.Util;
  */
 public class TableFilter {
 
-    private final SortedSet<IncludeTableFilter> includes;
-    private final SortedSet<Pattern> excludes;
+    private final List<IncludeTableFilter> includes;
+    private final List<Pattern> excludes;
 
     /**
      * Includes can contain only one include table
      */
-    public TableFilter(SortedSet<IncludeTableFilter> includes, SortedSet<Pattern> excludes) {
+    public TableFilter(List<IncludeTableFilter> includes, List<Pattern> excludes) {
         this.includes = includes;
         this.excludes = excludes;
     }
@@ -89,22 +90,26 @@ public class TableFilter {
         return include;
     }
 
-    public SortedSet<IncludeTableFilter> getIncludes() {
+    public List<IncludeTableFilter> getIncludes() {
         return includes;
     }
 
+    public List<Pattern> getExcludes() {
+        return excludes;
+    }
+
     public static TableFilter include(String tablePattern) {
-        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter(tablePattern == null ? null : tablePattern.replaceAll("%", ".*")));
 
-        return new TableFilter(includes, new TreeSet<>());
+        return new TableFilter(includes, new ArrayList<>());
     }
 
     public static TableFilter everything() {
-        TreeSet<IncludeTableFilter> includes = new TreeSet<>();
+        List<IncludeTableFilter> includes = new ArrayList<>();
         includes.add(new IncludeTableFilter(null));
 
-        return new TableFilter(includes, new TreeSet<>());
+        return new TableFilter(includes, new ArrayList<>());
     }
 
     protected StringBuilder toString(StringBuilder res, String prefix) {

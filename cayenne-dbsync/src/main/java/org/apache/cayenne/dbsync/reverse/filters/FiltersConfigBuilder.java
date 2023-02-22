@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.apache.cayenne.dba.DbAdapter;
@@ -156,16 +154,16 @@ public final class FiltersConfigBuilder {
         return schemaFilters;
     }
 
-    private SortedSet<Pattern> transformExcludeTable(Collection<ExcludeTable> excludeTables) {
-        SortedSet<Pattern> res = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
+    private List<Pattern> transformExcludeTable(Collection<ExcludeTable> excludeTables) {
+        List<Pattern> res =  new ArrayList<>();
         for (ExcludeTable exclude : excludeTables) {
             res.add(PatternFilter.pattern(exclude.getPattern()));
         }
         return res;
     }
 
-    private SortedSet<IncludeTableFilter> transformIncludeTable(Collection<IncludeTable> includeTables) {
-        SortedSet<IncludeTableFilter> includeTableFilters = new TreeSet<>();
+    private List<IncludeTableFilter> transformIncludeTable(Collection<IncludeTable> includeTables) {
+        List<IncludeTableFilter> includeTableFilters = new ArrayList<>();
         for (IncludeTable includeTable : includeTables) {
             includeTableFilters.add(new IncludeTableFilter(includeTable.getPattern()
                     , transform(includeTable.getIncludeColumns(), includeTable.getExcludeColumns())
