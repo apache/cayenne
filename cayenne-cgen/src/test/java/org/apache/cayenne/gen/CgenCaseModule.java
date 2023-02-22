@@ -24,6 +24,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultScope;
 import org.apache.cayenne.gen.mock.CustomPropertyDescriptor;
 import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
+import org.apache.cayenne.unit.di.server.ServerCaseExtraModulesProperties;
 import org.apache.cayenne.unit.di.server.ServerCaseLifecycleManager;
 import org.apache.cayenne.unit.di.server.ServerCaseProperties;
 
@@ -41,6 +42,7 @@ public class CgenCaseModule implements Module {
     public void configure(Binder binder) {
         binder.bind(UnitTestLifecycleManager.class).toInstance(new ServerCaseLifecycleManager(testScope));
         binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
+        binder.bind(ServerCaseExtraModulesProperties.class).to(ServerCaseExtraModulesProperties.class).in(testScope);
 
         CgenModule.contributeUserProperties(binder)
                 .add(CustomPropertyDescriptor.class);

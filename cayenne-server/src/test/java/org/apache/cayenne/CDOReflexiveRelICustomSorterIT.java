@@ -19,7 +19,12 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -27,13 +32,14 @@ import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCaseCustomSorter;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CDOReflexiveRelICustomSorterIT extends ServerCaseCustomSorter {
+@InjectExtraModules(extraModules = {CDOReflexiveRelICustomSorterIT.CustomServerCase.class})
+public class CDOReflexiveRelICustomSorterIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
@@ -186,5 +192,14 @@ public class CDOReflexiveRelICustomSorterIT extends ServerCaseCustomSorter {
 
         context.deleteObject(artist2);
         context.commitChanges();
+    }
+
+    protected static class CustomServerCase implements Module {
+        public CustomServerCase() {}
+
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class);
+        }
     }
 }

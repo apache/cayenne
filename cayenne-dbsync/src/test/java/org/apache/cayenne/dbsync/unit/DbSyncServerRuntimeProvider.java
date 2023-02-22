@@ -28,6 +28,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.server.ServerCaseExtraModulesProperties;
 import org.apache.cayenne.unit.di.server.ServerCaseProperties;
 import org.apache.cayenne.unit.di.server.ServerRuntimeProvider;
 
@@ -35,9 +36,10 @@ public class DbSyncServerRuntimeProvider extends ServerRuntimeProvider {
 
     public DbSyncServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
                                        @Inject ServerCaseProperties properties,
+                                       @Inject ServerCaseExtraModulesProperties extraModulesProperties,
                                        @Inject Provider<DbAdapter> dbAdapterProvider,
                                        @Inject UnitDbAdapter unitDbAdapter) {
-        super(dataSourceFactory, properties, dbAdapterProvider, unitDbAdapter);
+        super(dataSourceFactory, properties, extraModulesProperties, dbAdapterProvider, unitDbAdapter);
     }
 
     @Override
