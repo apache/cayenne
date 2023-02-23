@@ -139,16 +139,18 @@ public class TableFilter {
 
         TableFilter that = (TableFilter) o;
 
-        Set<IncludeTableFilter> includeSet = new TreeSet<>(includes);
-        Set<IncludeTableFilter> thatIncludeSet = new TreeSet<>(that.includes);
-        Set<Pattern> excludeSet = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
-        Set<Pattern> thatExcludeSet = new TreeSet<>(PatternFilter.PATTERN_COMPARATOR);
-        excludeSet.addAll(excludes);
-        thatExcludeSet.addAll(that.excludes);
+        boolean excludeEquals = true;
+        // Check if the lists have the same patterns in the same order
+        for (int i = 0; i < excludes.size(); i++) {
+            Pattern pattern = excludes.get(i);
+            Pattern thatPattern = that.excludes.get(i);
+            if (!pattern.pattern().equals(thatPattern.pattern())) {
+                excludeEquals = false;
+                break;
+            }
+        }
 
-        return includeSet.equals(thatIncludeSet)
-                && excludeSet.equals(thatExcludeSet);
-
+        return includes.equals(that.includes) && excludeEquals;
     }
 
     @Override

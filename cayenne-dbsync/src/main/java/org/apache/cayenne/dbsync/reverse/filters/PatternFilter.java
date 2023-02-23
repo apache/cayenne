@@ -136,14 +136,29 @@ public class PatternFilter {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof PatternFilter)) {
             return false;
         }
 
+        PatternFilter that = (PatternFilter) o;
 
-        PatternFilter filter = (PatternFilter) o;
-        return includes.equals(filter.includes)
-                && excludes.equals(filter.excludes);
+        if (includes == that.includes) {
+            return true;
+        }
+
+        if (includes.size() != that.includes.size()) {
+            return false;
+        }
+
+        // Check if the lists have the same patterns in the same order
+        for (int i = 0; i < includes.size(); i++) {
+            Pattern pattern = excludes.get(i);
+            Pattern thatPattern = that.excludes.get(i);
+            if (!pattern.pattern().equals(thatPattern.pattern())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

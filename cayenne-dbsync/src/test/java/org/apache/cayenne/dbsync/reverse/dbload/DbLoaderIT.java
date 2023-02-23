@@ -26,6 +26,7 @@ import org.apache.cayenne.dbsync.naming.NoStemStemmer;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.Inject;
@@ -96,8 +97,12 @@ public class DbLoaderIT extends ServerCase {
         DataMap loaded = loader.load();
         assertNotNull(loaded);
 
-        assertNull(loaded.getDbEntity("ARTIST").getAttribute("DATE_OF_BIRTH"));
-        assertNotNull(loaded.getDbEntity("PAINTING").getAttribute("PAINTING_DESCRIPTION"));
+        DbEntity artist = loaded.getDbEntity("ARTIST");
+        DbEntity painting = loaded.getDbEntity("PAINTING");
+        assertNotNull(artist);
+        assertNotNull(painting);
+        assertNull(getDbAttribute(artist,"DATE_OF_BIRTH"));
+        assertNotNull(getDbAttribute(painting,"PAINTING_DESCRIPTION"));
     }
 
 
