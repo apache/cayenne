@@ -55,7 +55,7 @@ public class AttributeLoaderIT extends BaseLoaderIT {
 
         a = getDbAttribute(artist, "ARTIST_NAME");
         assertNotNull(a);
-        assertEquals(Types.VARCHAR, a.getType());
+        assertEquals(Types.CHAR, a.getType());
         assertEquals(254, a.getMaxLength());
         assertTrue(a.isMandatory());
 
