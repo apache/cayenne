@@ -31,6 +31,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -44,8 +45,6 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Properties;
-import java.util.function.Predicate;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,10 +70,6 @@ public class SQLTemplateIT extends ServerCase {
 	private TableHelper tArtist;
 
 	private TableHelper tArtistCt;
-
-    public Predicate<Properties> isOracleConnection =
-            (properties) -> "oracle-tc".equals(properties.getProperty("cayenneTestConnection"))
-                    || ("" + properties.getProperty("cayenneJdbcUrl")).startsWith("jdbc:oracle");
 
 	@Before
 	public void setUp() throws Exception {
@@ -320,7 +315,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertTrue(artists.get(0) instanceof Object[]);
 
         // TODO: JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
-        Class<?> idType = isOracleConnection.test(System.getProperties()) ? BigDecimal.class : Long.class;
+        Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
         assertThat(artists.get(0)[0], instanceOf(idType));
 	}
 
@@ -337,7 +332,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertTrue(artists.get(0) instanceof Object[]);
 
         // JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
-        Class<?> idType = isOracleConnection.test(System.getProperties()) ? BigDecimal.class : Long.class;
+        Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
 		assertThat(artists.get(0)[0], instanceOf(idType));
 	}
 

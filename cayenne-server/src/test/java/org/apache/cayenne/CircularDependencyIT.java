@@ -22,13 +22,12 @@ package org.apache.cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
+import org.apache.cayenne.unit.OracleUnitDbAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
-
-import java.util.Properties;
-import java.util.function.Predicate;
 
 import static org.junit.Assert.*;
 
@@ -36,12 +35,11 @@ import static org.junit.Assert.*;
 public class CircularDependencyIT extends ServerCase {
 
     @Inject
+    private UnitDbAdapter unitDbAdapter;
+
+    @Inject
     private ObjectContext context;
 
-    private Predicate<Properties> isOracleConnection =
-            (properties) -> "oracle-tc".equals(properties.getProperty("cayenneTestConnection"))
-                    || ("" + properties.getProperty("cayenneJdbcUrl")).startsWith("jdbc:oracle");
-    
     @Test()
     public void testCycle() {
         E1 e1 = context.newObject(E1.class);
@@ -58,7 +56,7 @@ public class CircularDependencyIT extends ServerCase {
             fail("Exception should be thrown here");
         } catch (CayenneRuntimeException ex) {
             // TODO: Oracle adapter still does not fully support key generation.
-            if (isOracleConnection.test(System.getProperties())) {
+            if (unitDbAdapter instanceof OracleUnitDbAdapter) {
                 assertTrue(ex.getCause().getMessage().contains("parent key not found"));
             } else {
                 assertTrue(String.format("Unexpected exception message: %s%nCause: %s - %s",
