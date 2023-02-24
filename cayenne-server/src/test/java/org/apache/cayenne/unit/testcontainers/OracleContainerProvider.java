@@ -31,11 +31,6 @@ public class OracleContainerProvider extends TestContainerProvider {
     @Override
     public JdbcDatabaseContainer<?> startContainer(String version) {
         JdbcDatabaseContainer<?> container = super.startContainer(version);
-        // need to wait to ensure Oracle DB has started
-        try {
-            Thread.sleep(40000);
-        } catch (InterruptedException ignored) {
-        }
         return container;
     }
 
