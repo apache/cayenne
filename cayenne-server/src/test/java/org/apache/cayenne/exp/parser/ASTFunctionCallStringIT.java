@@ -27,6 +27,8 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.unit.OracleUnitDbAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -34,12 +36,16 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNull;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * @since 4.0
  */
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ASTFunctionCallStringIT extends ServerCase {
+
+    @Inject
+    private UnitDbAdapter unitDbAdapter;
 
     @Inject
     private ObjectContext context;
@@ -62,6 +68,10 @@ public class ASTFunctionCallStringIT extends ServerCase {
 
     @Test
     public void testASTUpperInWhere() throws Exception {
+        // TODO: This will fail for Oracle, so skip for now.
+        //       It is necessary to provide connection with "fixedString=true" property somehow.
+        //       Also see CAY-1470.
+        assumeFalse(unitDbAdapter instanceof OracleUnitDbAdapter);
         Artist a1 = createArtist("name");
         Artist a2 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.upper().eq("NAME")).selectOne(context);
@@ -70,6 +80,10 @@ public class ASTFunctionCallStringIT extends ServerCase {
 
     @Test
     public void testASTLowerInWhere() throws Exception {
+        // TODO: This will fail for Oracle, so skip for now.
+        //       It is necessary to provide connection with "fixedString=true" property somehow.
+        //       Also see CAY-1470.
+        assumeFalse(unitDbAdapter instanceof OracleUnitDbAdapter);
         Artist a1 = createArtist("NAME");
         Artist a2 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.lower().eq("name")).selectOne(context);

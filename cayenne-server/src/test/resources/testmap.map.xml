@@ -24,7 +24,7 @@
 	</db-entity>
 	<db-entity name="ARTIST">
 		<db-attribute name="ARTIST_ID" type="BIGINT" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="ARTIST_NAME" type="VARCHAR" isMandatory="true" length="254"/>
+		<db-attribute name="ARTIST_NAME" type="CHAR" isMandatory="true" length="254"/>
 		<db-attribute name="DATE_OF_BIRTH" type="DATE"/>
 	</db-entity>
 	<db-entity name="ARTIST_CT">
