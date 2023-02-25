@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.value.json;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.json.JsonOther;
 import org.apache.cayenne.testdo.json.JsonVarchar;
-import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -667,11 +665,6 @@ public class JsonTypeIT extends ServerCase {
     private void testJsonOther(String jsonString) {
         JsonOther jsonInsert = context.newObject(JsonOther.class);
         jsonInsert.setData(new Json(jsonString));
-
-        if (jsonString.isBlank()) {
-            assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
-            return;
-        }
         context.commitChanges();
 
         JsonOther jsonSelect = context.selectOne(SelectById.query(JsonOther.class, jsonInsert.getObjectId()));
@@ -681,12 +674,6 @@ public class JsonTypeIT extends ServerCase {
     private void testJsonVarchar(String jsonString) {
         JsonVarchar jsonInsert = context.newObject(JsonVarchar.class);
         jsonInsert.setData(new Json(jsonString));
-
-        // In Oracle, an empty string is equivalent to NULL
-        if (unitDbAdapter instanceof OracleUnitDbAdapter && jsonString.isEmpty()) {
-            assertThrows(CayenneRuntimeException.class, () -> context.commitChanges());
-            return;
-        }
         context.commitChanges();
 
         JsonVarchar jsonSelect = context.selectOne(SelectById.query(JsonVarchar.class, jsonInsert.getObjectId()));
