@@ -51,6 +51,7 @@ public class SortNodesAction extends TreeManipulationAction {
         ArrayList<DbImportTreeNode> treeExpandList = tree.getTreeExpandList();
         DbImportSorter.sortSubtree(tree.getRootNode(), DbImportSorter.NODE_COMPARATOR_BY_TYPE_BY_NAME);
         putReverseEngineeringToUndoManager(reverseEngineeringOldCopy);
+        getProjectController().setDirty(true);
         tree.reloadModel();
         tree.expandTree(treeExpandList);
     }
