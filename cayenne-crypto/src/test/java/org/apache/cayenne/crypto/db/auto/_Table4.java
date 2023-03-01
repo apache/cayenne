@@ -6,10 +6,10 @@ import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.crypto.db.Table4;
-import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 
 /**
@@ -22,7 +22,7 @@ public abstract class _Table4 extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<Table4> SELF = PropertyFactory.createSelf(Table4.class);
+    public static final SelfProperty<Table4> SELF = PropertyFactory.createSelf(Table4.class);
 
     public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Table4", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
