@@ -24,8 +24,11 @@ import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
+import org.apache.cayenne.access.types.CharType;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
+import org.apache.cayenne.access.types.ExtendedTypeMap;
+import org.apache.cayenne.access.types.JsonType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -118,6 +121,15 @@ public class SQLServerAdapter extends SybaseAdapter {
 			return new SQLServerTreeProcessorV12();
 		}
 		return new SQLServerTreeProcessor();
+	}
+
+	@Override
+	protected void configureExtendedTypes(ExtendedTypeMap map) {
+		super.configureExtendedTypes(map);
+
+		CharType charType = new CharType(true, false);
+		map.registerType(charType);
+		map.registerType(new JsonType(charType, true));
 	}
 
 	/**
