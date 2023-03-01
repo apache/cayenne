@@ -93,6 +93,7 @@ public class DraggableTreePanel extends JScrollPane {
 
     private CayenneAction.CayenneToolbarButton moveButton;
     private CayenneAction.CayenneToolbarButton moveInvertButton;
+    private ImportSourceTree importSourceTree;
 
     public DraggableTreePanel(ProjectController projectController, DbImportTree sourceTree, DbImportTree targetTree) {
         super(sourceTree);
@@ -143,6 +144,7 @@ public class DraggableTreePanel extends JScrollPane {
         targetTree.setTransferHandler(new TargetTreeTransferHandler());
         targetTree.addTreeSelectionListener(new TargetTreeSelectionListener());
         targetTree.setDragEnabled(true);
+        targetTree.setDropMode(DropMode.INSERT);
     }
 
     private boolean canBeInverted() {
@@ -226,7 +228,7 @@ public class DraggableTreePanel extends JScrollPane {
 
         if (selectedElement.isIncludeColumn() || selectedElement.isExcludeColumn()) {
             DbImportTreeNode node = targetTree.findNode(targetTree.getRootNode(), selectedElement.getParent(), 0);
-            if(node != null && node.isExcludeTable()) {
+            if (node != null && node.isExcludeTable()) {
                 return false;
             }
         }
@@ -273,7 +275,7 @@ public class DraggableTreePanel extends JScrollPane {
         return sourceTree;
     }
 
-    private static class SourceTreeTransferHandler extends TransferHandler {
+    private class SourceTreeTransferHandler extends TransferHandler {
 
         @Override
         public int getSourceActions(JComponent c) {
@@ -282,6 +284,7 @@ public class DraggableTreePanel extends JScrollPane {
 
         @Override
         public Transferable createTransferable(JComponent c) {
+            importSourceTree = ImportSourceTree.SOURCE_TREE;
             JTree tree = (JTree) c;
             TreePath[] paths = tree.getSelectionPaths();
             int pathLength = paths == null ? 0 : paths.length;
@@ -356,10 +359,52 @@ public class DraggableTreePanel extends JScrollPane {
     }
 
     private class TargetTreeTransferHandler extends TransferHandler {
+        private DbImportTreeNode sourceParentNode;
+        DbImportModel model = (DbImportModel) targetTree.getModel();
+
+        @Override
+        protected Transferable createTransferable(JComponent c) {
+            JTree tree = (JTree) c;
+            importSourceTree = ImportSourceTree.TARGET_TREE;
+            TreePath[] paths = tree.getSelectionPaths();
+            DbImportTreeNode lastSelectedNode = (DbImportTreeNode) tree.getLastSelectedPathComponent();
+            sourceParentNode = lastSelectedNode.getParent();
+            if (paths != null && paths.length > 0) {
+                DbImportTreeNode[] nodes = new DbImportTreeNode[paths.length];
+                for (int i = 0; i < paths.length; i++) {
+                    nodes[i] = (DbImportTreeNode) paths[i].getLastPathComponent();
+                }
+                return new Transferable() {
+                    @Override
+                    public DataFlavor[] getTransferDataFlavors() {
+                        return TransferableNode.flavors;
+                    }
+
+                    @Override
+                    public boolean isDataFlavorSupported(DataFlavor flavor) {
+                        return true;
+                    }
+
+                    @Override
+                    public Object getTransferData(DataFlavor flavor) {
+                        return nodes;
+                    }
+                };
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void exportDone(JComponent source, Transferable data, int action) {
+            if (importSourceTree == ImportSourceTree.TARGET_TREE && sourceParentNode != null) {
+                model.reload(sourceParentNode);
+            }
+        }
 
         @Override
         public int getSourceActions(JComponent c) {
-            return COPY_OR_MOVE;
+            return TransferHandler.MOVE;
         }
 
         @Override
@@ -372,6 +417,16 @@ public class DraggableTreePanel extends JScrollPane {
             if (!canImport(support)) {
                 return false;
             }
+            if (importSourceTree == ImportSourceTree.TARGET_TREE) {
+                return importDataFromTargetTree(support);
+            }
+            if (importSourceTree == ImportSourceTree.SOURCE_TREE) {
+                return importDataFromSourceTree(support);
+            }
+            return false;
+        }
+
+        private boolean importDataFromSourceTree(TransferSupport support) {
             if (!canBeMoved()) {
                 return false;
             }
@@ -395,7 +450,67 @@ public class DraggableTreePanel extends JScrollPane {
             }
             return false;
         }
+
+        private boolean importDataFromTargetTree(TransferSupport support) {
+            JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
+            TreePath dropLocationPath = dropLocation.getPath();
+
+            DbImportTreeNode dropLocationParentNode = (DbImportTreeNode) dropLocationPath.getLastPathComponent();
+            Transferable transferable = support.getTransferable();
+
+            int dropIndex = dropLocation.getChildIndex();
+            if (dropIndex == -1) {
+                dropIndex = dropLocationParentNode.getChildCount();
+            }
+
+            DbImportTreeNode[] nodes = null;
+            try {
+                for (DataFlavor dataFlavor : transferable.getTransferDataFlavors()) {
+                    nodes = (DbImportTreeNode[]) transferable.getTransferData(dataFlavor);
+                }
+                if (nodes != null) {
+                    for (DbImportTreeNode node : nodes) {
+                        if (checkDropPossibility(dropLocationParentNode, node)) return false;
+                        model.insertNodeInto(node, dropLocationParentNode, dropIndex++);
+                    }
+                    targetTree.expandPath(dropLocationPath);
+                    DbImportSorter.syncUserObjectItems(dropLocationParentNode);
+                    model.reload(dropLocationParentNode);
+                    projectController.setDirty(true);
+                    return true;
+                }
+            } catch (IOException | UnsupportedFlavorException e) {
+                return false;
+            }
+            return false;
+        }
+
+        private boolean checkDropPossibility(DbImportTreeNode dropLocationParentNode, DbImportTreeNode node) {
+            // Don't allow a node to be dropped onto itself
+            if (node == dropLocationParentNode) {
+                return true;
+            }
+            // Don't allow a node to be dropped onto one of its descendants
+            for (DbImportTreeNode childNode : node.getChildNodes()) {
+                if (isNodeAncestor(childNode, dropLocationParentNode)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        private boolean isNodeAncestor(DbImportTreeNode node1, DbImportTreeNode node2) {
+            if (node2 == null) {
+                return false;
+            }
+            if (node2.getParent() == node1) {
+                return true;
+            }
+            return isNodeAncestor(node1, node2.getParent());
+        }
     }
+
 
     private class SourceTreeSelectionListener implements TreeSelectionListener {
         @Override
@@ -417,5 +532,10 @@ public class DraggableTreePanel extends JScrollPane {
                 moveButton.setEnabled(false);
             }
         }
+    }
+
+    private enum ImportSourceTree {
+        TARGET_TREE,
+        SOURCE_TREE
     }
 }

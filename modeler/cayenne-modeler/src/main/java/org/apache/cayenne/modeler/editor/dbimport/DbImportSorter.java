@@ -61,7 +61,7 @@ public class DbImportSorter {
         childNodes.forEach(node::add);
     }
 
-    private static void syncUserObjectItems(DbImportTreeNode parentNode) {
+    public static void syncUserObjectItems(DbImportTreeNode parentNode) {
 
         Object userObject = parentNode.getUserObject();
 
