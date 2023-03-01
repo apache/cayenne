@@ -509,7 +509,7 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             ObjectContext context1 = runtime.newContext();
             CompoundPainting o1 = context1.newObject(CompoundPainting.class);
             o1.setArtistName("A1");
-            o1.setEstimatedPrice(new BigDecimal(1d));
+            o1.setEstimatedPrice(BigDecimal.valueOf(1));
             o1.setGalleryName("G1");
             o1.setPaintingTitle("P1");
             o1.setTextReview("T1");
@@ -524,7 +524,7 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             CompoundPainting o2 = SelectById.query(CompoundPainting.class, id).selectFirst(context2);
 
             o2.setArtistName("AX1");
-            o2.setEstimatedPrice(new BigDecimal(2d));
+            o2.setEstimatedPrice(BigDecimal.valueOf(2));
             o2.setGalleryName("XG1");
             o2.setPaintingTitle("PX1");
             o2.setTextReview("TX1");
@@ -538,7 +538,7 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
             CompoundPainting o3 = SelectById.query(CompoundPainting.class, id).selectFirst(context3);
 
             assertEquals("AX1", o3.getArtistName());
-            assertEquals("2.00", o3.getEstimatedPrice().toPlainString());
+            assertEquals(0, BigDecimal.valueOf(2).compareTo(o3.getEstimatedPrice()));
             assertEquals("XG1", o3.getGalleryName());
             assertEquals("PX1", o3.getPaintingTitle());
             assertEquals("TX1", o3.getTextReview());

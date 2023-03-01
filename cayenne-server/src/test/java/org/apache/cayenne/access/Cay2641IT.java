@@ -35,6 +35,8 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+import org.testcontainers.shaded.org.hamcrest.MatcherAssert;
+import org.testcontainers.shaded.org.hamcrest.Matchers;
 
 import java.sql.Types;
 import java.util.List;
@@ -78,8 +80,8 @@ public class Cay2641IT extends ServerCase {
         String sql = translator.getSql();
         assertFalse(sql.contains("t0.NAME"));
 
-        String string = "SELECT t0.SURNAME, t0.ID FROM ArtistLazy t0";
-        assertEquals(sql, string);
+        String pattern = "SELECT t0.SURNAME( c0)?, t0.ID( c1)? FROM ArtistLazy t0";
+        MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
 
         ColumnSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
         translator = new DefaultSelectTranslator(select, adapter, context.getEntityResolver());
@@ -118,8 +120,9 @@ public class Cay2641IT extends ServerCase {
         String sql = translator.getSql();
         assertFalse(sql.contains("t0.NAME"));
 
-        String string = "SELECT t0.ARTIST_ID, t0.ID, t1.ID, t1.SURNAME FROM PaintingLazy t0 LEFT JOIN ArtistLazy t1 ON t0.ARTIST_ID = t1.ID";
-        assertEquals(sql, string);
+        String pattern = "SELECT t0.ARTIST_ID( c0)?, t0.ID( c1)?, t1.ID( c2)?, t1.SURNAME( c3)?"
+                + " FROM PaintingLazy t0 LEFT JOIN ArtistLazy t1 ON t0.ARTIST_ID = t1.ID";
+        MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
     }
 
     @Test

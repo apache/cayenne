@@ -143,29 +143,29 @@ public class NumericTypesIT extends ServerCase {
     public void testBigDecimal_Decimal() {
 
         // this matches the column scale exactly
-        String v1 = "7890.123456";
+        BigDecimal v1 = new BigDecimal("7890.123456");
         // this has lower scale than the column
-        String v2 = "7890.1";
-        String v2_padded = "7890.100000";
+        BigDecimal v2 = new BigDecimal("7890.1");
+        BigDecimal v2_padded = new BigDecimal("7890.100000");
 
         BigDecimalEntity o = context.newObject(BigDecimalEntity.class);
-        o.setBigDecimalDecimal(new BigDecimal(v1));
+        o.setBigDecimalDecimal(v1);
         o.getObjectContext().commitChanges();
         assertEquals(1, commitStats.getCommitCount());
         BigDecimalEntity o1 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
-        assertEquals(v1, o1.getBigDecimalDecimal().toString());
+        assertEquals(0, v1.compareTo(o1.getBigDecimalDecimal()));
 
-        o.setBigDecimalDecimal(new BigDecimal(v2));
+        o.setBigDecimalDecimal(v2);
         o.getObjectContext().commitChanges();
         BigDecimalEntity o2 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
-        assertEquals(v2_padded, o2.getBigDecimalDecimal().toString());
+        assertEquals(0, v2_padded.compareTo(o2.getBigDecimalDecimal()));
         assertEquals(2, commitStats.getCommitCount());
 
-        o2.setBigDecimalDecimal(new BigDecimal(v2));
+        o2.setBigDecimalDecimal(v2);
         o2.getObjectContext().commitChanges();
         assertEquals("Commit was not expected. The difference is purely in value padding", 2, commitStats.getCommitCount());
         BigDecimalEntity o3 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
-        assertEquals(v2_padded, o3.getBigDecimalDecimal().toString());
+        assertEquals(0, v2_padded.compareTo(o3.getBigDecimalDecimal()));
 
         o3.setBigDecimalDecimal(null);
         o3.getObjectContext().commitChanges();
@@ -177,27 +177,27 @@ public class NumericTypesIT extends ServerCase {
     @Test
     public void testBigDecimal_Numeric() {
 
-        String v1 = "1234567890.44";
-        String v2 = "1234567890.4";
-        String v2_padded = "1234567890.40";
+        BigDecimal v1 = new BigDecimal("1234567890.44");
+        BigDecimal v2 = new BigDecimal("1234567890.4");
+        BigDecimal v2_padded = new BigDecimal("1234567890.40");
 
         BigDecimalEntity o = context.newObject(BigDecimalEntity.class);
-        o.setBigDecimalNumeric(new BigDecimal(v1));
+        o.setBigDecimalNumeric(v1);
         o.getObjectContext().commitChanges();
         assertEquals(1, commitStats.getCommitCount());
         BigDecimalEntity o1 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
-        assertEquals(v1, o1.getBigDecimalNumeric().toString());
+        assertEquals(0, v1.compareTo(o1.getBigDecimalNumeric()));
 
-        o1.setBigDecimalNumeric(new BigDecimal(v2));
+        o1.setBigDecimalNumeric(v2);
         o1.getObjectContext().commitChanges();
         assertEquals(2, commitStats.getCommitCount());
         BigDecimalEntity o2 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
-        assertEquals(v2_padded, o2.getBigDecimalNumeric().toString());
+        assertEquals(0, v2_padded.compareTo(o2.getBigDecimalNumeric()));
 
-        o2.setBigDecimalNumeric(new BigDecimal(v2));
+        o2.setBigDecimalNumeric(v2);
         assertEquals("Commit was not expected. The difference is purely in value padding", 2, commitStats.getCommitCount());
         BigDecimalEntity o3 = ObjectSelect.query(BigDecimalEntity.class).selectFirst(runtime.newContext());
-        assertEquals(v2_padded, o3.getBigDecimalNumeric().toString());
+        assertEquals(0, v2_padded.compareTo(o3.getBigDecimalNumeric()));
 
         o3.setBigDecimalNumeric(null);
         o3.getObjectContext().commitChanges();

@@ -44,8 +44,9 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         DbEntity artist = getDbEntity("ARTIST");
         DbAttribute a = getDbAttribute(artist, "ARTIST_ID");
         assertNotNull(a);
-        if(accessStackAdapter.onlyGenericNumberType()) {
-            assertEquals(Types.INTEGER, a.getType());
+        if (accessStackAdapter.onlyGenericNumberType()) {
+            // All integer types are mapped to NUMERIC in Oracle DB.
+            assertEquals(Types.NUMERIC, a.getType());
         } else {
             assertEquals(Types.BIGINT, a.getType());
         }
@@ -105,15 +106,27 @@ public class AttributeLoaderIT extends BaseLoaderIT {
         // check varchar
         assertEquals(msgForTypeMismatch(Types.VARCHAR, varcharAttr), Types.VARCHAR, varcharAttr.getType());
         assertEquals(255, varcharAttr.getMaxLength());
+
         // check integer
-        assertEquals(msgForTypeMismatch(Types.INTEGER, integerAttr), Types.INTEGER, integerAttr.getType());
+        // All integer types are mapped to NUMERIC in Oracle DB.
+        if (accessStackAdapter.onlyGenericNumberType()) {
+            assertEquals(msgForTypeMismatch(Types.NUMERIC, integerAttr), Types.NUMERIC, integerAttr.getType());
+        } else {
+            assertEquals(msgForTypeMismatch(Types.INTEGER, integerAttr), Types.INTEGER, integerAttr.getType());
+        }
+
         // check float
         assertTrue(msgForTypeMismatch(Types.FLOAT, floatAttr), Types.FLOAT == floatAttr.getType()
                 || Types.DOUBLE == floatAttr.getType() || Types.REAL == floatAttr.getType());
 
         // check smallint
-        assertTrue(msgForTypeMismatch(Types.SMALLINT, smallintAttr), Types.SMALLINT == smallintAttr.getType()
-                || Types.INTEGER == smallintAttr.getType());
+        // All integer types are mapped to NUMERIC in Oracle DB.
+        if (accessStackAdapter.onlyGenericNumberType()) {
+            assertEquals(msgForTypeMismatch(Types.NUMERIC, smallintAttr), Types.NUMERIC, smallintAttr.getType());
+        } else {
+            assertTrue(msgForTypeMismatch(Types.SMALLINT, smallintAttr),
+                       Types.SMALLINT == smallintAttr.getType() || Types.INTEGER == smallintAttr.getType());
+        }
     }
 
     private void assertGenerated() {

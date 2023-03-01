@@ -31,6 +31,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -39,6 +40,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -311,7 +313,10 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(2, artists.size());
 		assertEquals(1, artists.get(0).length);
 		assertTrue(artists.get(0) instanceof Object[]);
-		assertTrue(artists.get(0)[0] instanceof Long);
+
+        // TODO: JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
+        Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
+        assertThat(artists.get(0)[0], instanceOf(idType));
 	}
 
 	@Test
@@ -325,7 +330,10 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(2, artists.size());
 		assertEquals(2, artists.get(0).length);
 		assertTrue(artists.get(0) instanceof Object[]);
-		assertTrue(artists.get(0)[0] instanceof Long);
+
+        // JDBC's BIGINT matches Oracle's NUMERIC, which matches BigDecimal.
+        Class<?> idType = unitDbAdapter instanceof OracleUnitDbAdapter ? BigDecimal.class : Long.class;
+		assertThat(artists.get(0)[0], instanceOf(idType));
 	}
 
 	@Test

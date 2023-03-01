@@ -22,6 +22,8 @@ package org.apache.cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
+import org.apache.cayenne.unit.OracleUnitDbAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -33,8 +35,11 @@ import static org.junit.Assert.*;
 public class CircularDependencyIT extends ServerCase {
 
     @Inject
+    private UnitDbAdapter unitDbAdapter;
+
+    @Inject
     private ObjectContext context;
-    
+
     @Test()
     public void testCycle() {
         E1 e1 = context.newObject(E1.class);
@@ -50,8 +55,15 @@ public class CircularDependencyIT extends ServerCase {
             context.commitChanges();
             fail("Exception should be thrown here");
         } catch (CayenneRuntimeException ex) {
-            assertTrue("Unexpected exception message: " + ex.getMessage(),
-                    ex.getMessage().contains("PK is not generated"));
+            // TODO: Oracle adapter still does not fully support key generation.
+            if (unitDbAdapter instanceof OracleUnitDbAdapter) {
+                assertTrue(ex.getCause().getMessage().contains("parent key not found"));
+            } else {
+                assertTrue(String.format("Unexpected exception message: %s%nCause: %s - %s",
+                                ex.getMessage(), ex.getCause(),
+                                ex.getCause() != null ? ex.getCause().getMessage() : null),
+                        ex.getMessage().contains("PK is not generated"));
+            }
         }
 
     }

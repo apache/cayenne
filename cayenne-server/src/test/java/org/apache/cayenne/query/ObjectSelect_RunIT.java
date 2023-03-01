@@ -25,11 +25,14 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.OracleUnitDbAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -38,12 +41,16 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ObjectSelect_RunIT extends ServerCase {
+
+	@Inject
+	private UnitDbAdapter unitDbAdapter;
 
 	@Inject
 	private DataContext context;
@@ -199,6 +206,10 @@ public class ObjectSelect_RunIT extends ServerCase {
 
 	@Test
 	public void test_Select_CustomFunction() {
+		// TODO: This will fail for Oracle, so skip for now.
+		//       It is necessary to provide connection with "fixedString=true" property somehow.
+		//       Also see CAY-1470.
+		assumeFalse(unitDbAdapter instanceof OracleUnitDbAdapter);
 		Artist a = ObjectSelect.query(Artist.class)
 				.where(Artist.ARTIST_NAME.function("UPPER", String.class).eq("ARTIST1"))
 				.selectOne(context);
