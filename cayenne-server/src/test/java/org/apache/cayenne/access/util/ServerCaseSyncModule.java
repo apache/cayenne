@@ -16,23 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.unit;
+package org.apache.cayenne.access.util;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.DefaultScope;
 
-public class DbSyncCaseModule implements Module {
-    protected DefaultScope testScope;
-
-    public DbSyncCaseModule(DefaultScope testScope) {
-        this.testScope = testScope;
-    }
-
+public class ServerCaseSyncModule implements Module {
     @Override
     public void configure(Binder binder) {
-        binder.bind(ServerRuntime.class).toProvider(DbSyncServerRuntimeProvider.class).in(
-                testScope);
+        ServerModule.extend(binder).syncContexts();
     }
 }

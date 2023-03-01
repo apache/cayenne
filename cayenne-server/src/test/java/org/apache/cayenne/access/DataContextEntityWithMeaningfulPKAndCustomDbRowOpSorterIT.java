@@ -19,18 +19,24 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCaseCustomSorter;
+import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 @UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
-public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends ServerCaseCustomSorter {
+@InjectExtraModules(extraModules = {DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT.CustomServerCase.class})
+public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends ServerCase {
     @Inject
     private DataContext context;
 
@@ -75,5 +81,14 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends S
         dep2.setToMeaningfulPK(obj2);
         dep2.setPk(10);
         context.commitChanges();
+    }
+
+    protected static class CustomServerCase implements Module {
+        public CustomServerCase() {}
+
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class);
+        }
     }
 }

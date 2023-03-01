@@ -21,13 +21,15 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.util.ServerCaseSyncModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
+import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
@@ -37,7 +39,8 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class NestedDataContextPeerEventsIT extends ServerCaseContextsSync {
+@InjectExtraModules(extraModules = {ServerCaseSyncModule.class})
+public class NestedDataContextPeerEventsIT extends ServerCase {
 
 	@Inject
 	private DataContext context;

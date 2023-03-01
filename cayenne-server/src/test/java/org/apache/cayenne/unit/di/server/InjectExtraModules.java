@@ -33,7 +33,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation provides the ability to add additional modules in declarative way
  *
- * @since 4.3
+ * @since 5.0
  */
 public @interface InjectExtraModules {
     Class[] extraModules() default {};

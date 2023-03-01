@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * @since 4.3
+ * @since 5.0
  */
 public class ServerCaseExtraModulesProperties {
     protected Class[] extraModules;

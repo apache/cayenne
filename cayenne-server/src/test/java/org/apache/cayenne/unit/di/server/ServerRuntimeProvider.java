@@ -41,7 +41,6 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
     private ServerCaseExtraModulesProperties extraModulesProperties;
     private ServerCaseDataSourceFactory dataSourceFactory;
     private UnitDbAdapter unitDbAdapter;
-
     private Provider<DbAdapter> dbAdapterProvider;
 
     public ServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
