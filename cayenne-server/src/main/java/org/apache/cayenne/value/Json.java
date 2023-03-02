@@ -39,7 +39,7 @@ public class Json {
      * @throws MalformedJsonException if json is empty or blank
      */
     public Json(String json) {
-        if (json.isBlank()) {
+        if (isBlank(json)) {
             throw new MalformedJsonException("Unexpected EOF");
         }
         this.json = json;
@@ -65,5 +65,14 @@ public class Json {
     @Override
     public String toString() {
         return "JSON value: " + json;
+    }
+
+    private static boolean isBlank(String json) {
+        for (char character : json.toCharArray()) {
+            if (!Character.isWhitespace(character)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
