@@ -19,11 +19,11 @@
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="ENTITY2">
-		<db-attribute name="ENTITY1_ID" type="INTEGER"/>
+		<db-attribute name="ENTITY1_ID" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="ENTITY3">
-		<db-attribute name="ENTITY2_ID" type="INTEGER"/>
+		<db-attribute name="ENTITY2_ID" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
 	</db-entity>
 	<db-entity name="FLATTENED_CIRCULAR">
