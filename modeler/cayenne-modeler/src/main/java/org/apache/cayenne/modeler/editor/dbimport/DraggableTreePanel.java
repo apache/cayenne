@@ -38,6 +38,7 @@ import org.apache.cayenne.modeler.action.dbimport.AddIncludeColumnAction;
 import org.apache.cayenne.modeler.action.dbimport.AddIncludeProcedureAction;
 import org.apache.cayenne.modeler.action.dbimport.AddIncludeTableAction;
 import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
+import org.apache.cayenne.modeler.action.dbimport.DragAndDropNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveImportNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveInvertNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.TreeManipulationAction;
@@ -360,7 +361,6 @@ public class DraggableTreePanel extends JScrollPane {
 
     private class TargetTreeTransferHandler extends TransferHandler {
         private DbImportTreeNode sourceParentNode;
-        DbImportModel model = (DbImportModel) targetTree.getModel();
 
         @Override
         protected Transferable createTransferable(JComponent c) {
@@ -398,6 +398,7 @@ public class DraggableTreePanel extends JScrollPane {
         @Override
         protected void exportDone(JComponent source, Transferable data, int action) {
             if (importSourceTree == ImportSourceTree.TARGET_TREE && sourceParentNode != null) {
+                DbImportModel model = (DbImportModel) targetTree.getModel();
                 model.reload(sourceParentNode);
             }
         }
@@ -409,6 +410,18 @@ public class DraggableTreePanel extends JScrollPane {
 
         @Override
         public boolean canImport(TransferSupport support) {
+            JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
+            DbImportTreeNode dropLocationParentNode = (DbImportTreeNode) dropLocation.getPath().getLastPathComponent();
+
+            List<Class<?>> allowedItemsList = insertableLevels.get(dropLocationParentNode.getUserObject().getClass());
+            DbImportTreeNode[] nodes = getNodesFromSupport(support);
+            if (nodes != null && allowedItemsList != null) {
+                for (DbImportTreeNode node : nodes) {
+                    if (!allowedItemsList.contains(node.getUserObject().getClass())) {
+                        return false;
+                    }
+                }
+            }
             return support.isDrop();
         }
 
@@ -430,16 +443,8 @@ public class DraggableTreePanel extends JScrollPane {
             if (!canBeMoved()) {
                 return false;
             }
-            Transferable transferable = support.getTransferable();
-            DbImportTreeNode[] transferData = null;
-            try {
-                for (DataFlavor dataFlavor : transferable.getTransferDataFlavors()) {
-                    transferData = (DbImportTreeNode[]) transferable.getTransferData(dataFlavor);
-                }
-            } catch (IOException | UnsupportedFlavorException e) {
-                return false;
-            }
-            if (transferData != null) {
+            DbImportTreeNode[] nodes = getNodesFromSupport(support);
+            if (nodes != null) {
                 MoveImportNodeAction action = projectController.getApplication().getActionManager()
                         .getAction(MoveImportNodeAction.class);
                 action.setSourceTree(sourceTree);
@@ -453,64 +458,36 @@ public class DraggableTreePanel extends JScrollPane {
 
         private boolean importDataFromTargetTree(TransferSupport support) {
             JTree.DropLocation dropLocation = (JTree.DropLocation) support.getDropLocation();
-            TreePath dropLocationPath = dropLocation.getPath();
+            DbImportTreeNode dropLocationParentNode = (DbImportTreeNode) dropLocation.getPath().getLastPathComponent();
 
-            DbImportTreeNode dropLocationParentNode = (DbImportTreeNode) dropLocationPath.getLastPathComponent();
-            Transferable transferable = support.getTransferable();
-
-            int dropIndex = dropLocation.getChildIndex();
-            if (dropIndex == -1) {
-                dropIndex = dropLocationParentNode.getChildCount();
+            DbImportTreeNode[] nodes = getNodesFromSupport(support);
+            if (nodes != null) {
+                DragAndDropNodeAction action = projectController.getApplication().getActionManager()
+                        .getAction(DragAndDropNodeAction.class);
+                action.setDropLocationParentNode(dropLocationParentNode);
+                action.setSourceParentNode(sourceParentNode);
+                action.setDropLocation(dropLocation);
+                action.setNodes(nodes);
+                action.setTree(targetTree);
+                action.performAction(null);
+                return true;
             }
+            return false;
+        }
 
+        private DbImportTreeNode[] getNodesFromSupport(TransferSupport support) {
+            Transferable transferable = support.getTransferable();
             DbImportTreeNode[] nodes = null;
             try {
                 for (DataFlavor dataFlavor : transferable.getTransferDataFlavors()) {
                     nodes = (DbImportTreeNode[]) transferable.getTransferData(dataFlavor);
                 }
-                if (nodes != null) {
-                    for (DbImportTreeNode node : nodes) {
-                        if (checkDropPossibility(dropLocationParentNode, node)) return false;
-                        model.insertNodeInto(node, dropLocationParentNode, dropIndex++);
-                    }
-                    targetTree.expandPath(dropLocationPath);
-                    DbImportSorter.syncUserObjectItems(dropLocationParentNode);
-                    model.reload(dropLocationParentNode);
-                    projectController.setDirty(true);
-                    return true;
-                }
             } catch (IOException | UnsupportedFlavorException e) {
-                return false;
+                return null;
             }
-            return false;
-        }
-
-        private boolean checkDropPossibility(DbImportTreeNode dropLocationParentNode, DbImportTreeNode node) {
-            // Don't allow a node to be dropped onto itself
-            if (node == dropLocationParentNode) {
-                return true;
-            }
-            // Don't allow a node to be dropped onto one of its descendants
-            for (DbImportTreeNode childNode : node.getChildNodes()) {
-                if (isNodeAncestor(childNode, dropLocationParentNode)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-        private boolean isNodeAncestor(DbImportTreeNode node1, DbImportTreeNode node2) {
-            if (node2 == null) {
-                return false;
-            }
-            if (node2.getParent() == node1) {
-                return true;
-            }
-            return isNodeAncestor(node1, node2.getParent());
+            return nodes;
         }
     }
-
 
     private class SourceTreeSelectionListener implements TreeSelectionListener {
         @Override
