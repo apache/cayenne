@@ -21,7 +21,6 @@ package org.apache.cayenne.access.flush;
 
 import java.io.Serializable;
 
-import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 
 /**
@@ -32,23 +31,7 @@ import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 class IdGenerationMarker implements Serializable, InternalUnsupportedTypeFactory.Marker {
     private static final long serialVersionUID = -5339942931435878094L;
 
-    private final int id;
-
-    IdGenerationMarker(ObjectId id) {
-        this.id = id.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        IdGenerationMarker that = (IdGenerationMarker) o;
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return id;
+    IdGenerationMarker() {
     }
 
     @Override
