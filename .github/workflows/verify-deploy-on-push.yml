@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: verify and deploy
+name: verify and deploy 5.0
 
 on: push
 

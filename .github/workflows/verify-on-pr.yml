@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: verify PR
+name: verify PR 5.0
 
 on: pull_request
 
