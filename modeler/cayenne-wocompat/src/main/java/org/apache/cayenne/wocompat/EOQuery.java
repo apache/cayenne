@@ -30,6 +30,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -252,6 +254,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 		private static final String OBJ_C = ":"; // Objective-C syntax addition.
 
 		private static Map<String, Integer> selectorToExpressionBridge;
+		private static final Logger logger = LoggerFactory.getLogger(EOFetchSpecificationParser.class);
 
 		/**
 		 * selectorToExpressionBridge is just a mapping of EOModeler's selector
@@ -483,7 +486,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 				try {
 					keyExp = entity.translateToDbPath(keyExp);
 				} catch (Exception dbpathEx) {
-					return null;
+					logger.warn("Couldn't find " + keyExp + " in " + entity.getName() + " in EOModel");
 				}
 			}
 
@@ -494,6 +497,7 @@ public class EOQuery<T> extends SelectQuery<T> {
 				exp.setOperand(1, comparisonValue);
 				return exp;
 			} catch (ExpressionException e) {
+				logger.warn(e.getUnlabeledMessage());
 				return null;
 			}
 		}
