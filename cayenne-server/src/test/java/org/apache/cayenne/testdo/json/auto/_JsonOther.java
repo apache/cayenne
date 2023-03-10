@@ -25,10 +25,7 @@ import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.BaseDataObject;
 import org.apache.cayenne.exp.property.BaseProperty;
-import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.exp.property.SelfProperty;
-import org.apache.cayenne.testdo.json.JsonOther;
 import org.apache.cayenne.value.Json;
 
 /**
@@ -41,9 +38,6 @@ public abstract class _JsonOther extends BaseDataObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final SelfProperty<JsonOther> SELF = PropertyFactory.createSelf(JsonOther.class);
-
-    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "JsonOther", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final BaseProperty<Json> DATA = PropertyFactory.createBase("data", Json.class);

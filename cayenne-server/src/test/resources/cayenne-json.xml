@@ -17,9 +17,9 @@
    specific language governing permissions and limitations
    under the License.
 -->
-<domain xmlns="http://cayenne.apache.org/schema/11/domain"
+<domain xmlns="http://cayenne.apache.org/schema/10/domain"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/domain https://cayenne.apache.org/schema/11/domain.xsd"
-	 project-version="11">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/domain https://cayenne.apache.org/schema/10/domain.xsd"
+	 project-version="10">
 	<map name="json"/>
 </domain>
