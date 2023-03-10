@@ -51,8 +51,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -89,9 +91,9 @@ public class SchemaBuilder {
 
 	// hardcoded dependent entities that should be excluded
 	// if LOBs are not supported
-	private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = Set.of("CLOB_DETAIL");
+	private static final Set<String> EXTRA_EXCLUDED_FOR_NO_LOB = new HashSet<>(Arrays.asList("CLOB_DETAIL"));
 
-	private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = Set.of("JSON_OTHER");
+	private static final Set<String> EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON = new HashSet<>(Arrays.asList("JSON_OTHER"));
 
 	private ServerCaseDataSourceFactory dataSourceFactory;
 	private UnitDbAdapter unitDbAdapter;
@@ -283,7 +285,7 @@ public class SchemaBuilder {
 					excludedEntities.add(entity);
 					continue;
 				}
-				Set<Integer> lobTypes = Set.of(Types.BLOB, Types.CLOB, Types.NCLOB);
+				Set<Integer> lobTypes = new HashSet<>(Arrays.asList(Types.BLOB, Types.CLOB, Types.NCLOB));
 				boolean hasLob = entity.getAttributes().stream()
 						.map(DbAttribute::getType)
 						.anyMatch(lobTypes::contains);
@@ -303,7 +305,8 @@ public class SchemaBuilder {
 
 			// check for BIN PK
 			if (excludeBinaryPK) {
-				Set<Integer> binaryTypes = Set.of(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY);
+				Set<Integer> binaryTypes = new HashSet<>(Arrays.asList(Types.BINARY, Types.VARBINARY,
+																	   Types.LONGVARBINARY));
 				boolean hasBinaryPK = entity.getAttributes().stream()
 						.filter(attribute -> attribute.isPrimaryKey() || attribute.isForeignKey())
 						.map(DbAttribute::getType)
