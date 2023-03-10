@@ -40,6 +40,7 @@ public class EffectiveOpIdTest {
         EffectiveOpId effectiveOpId2 = new EffectiveOpId("test", Collections.singletonMap("pk", ObjectIdValueSupplier.getFor(id1, "pk")));
 
         assertEquals(effectiveOpId1, effectiveOpId2);
+        assertNotEquals(id1.getReplacementIdMap().get("pk"), IdGenerationMarker.marker());
     }
 
 }

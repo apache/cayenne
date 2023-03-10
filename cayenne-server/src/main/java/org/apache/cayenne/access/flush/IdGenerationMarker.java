@@ -31,10 +31,8 @@ import org.apache.cayenne.access.types.InternalUnsupportedTypeFactory;
 class IdGenerationMarker implements Serializable, InternalUnsupportedTypeFactory.Marker {
     private static final long serialVersionUID = -5339942931435878094L;
 
-    private final static IdGenerationMarker INSTANCE = new IdGenerationMarker();
-
     static IdGenerationMarker marker() {
-        return INSTANCE;
+        return new IdGenerationMarker();
     }
 
     private IdGenerationMarker() {
