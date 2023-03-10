@@ -16,6 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.testdo.json;
 
 import org.apache.cayenne.testdo.json.auto._JsonOther;
