@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -83,8 +84,8 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     }
 
     private static List<ObjAttributeWrapper> wrapObjAttributes(Collection<ObjAttribute> attributes) {
-        List<ObjAttributeWrapper>  wrappedAttributes = new ArrayList<>();
-        for(ObjAttribute attr : attributes) {
+        List<ObjAttributeWrapper> wrappedAttributes = new ArrayList<>();
+        for (ObjAttribute attr : attributes) {
             wrappedAttributes.add(new ObjAttributeWrapper(attr));
         }
         return wrappedAttributes;
@@ -122,7 +123,9 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                 : null;
     }
 
-    /** Refreshes DbEntity to current db entity within ObjEntity. */
+    /**
+     * Refreshes DbEntity to current db entity within ObjEntity.
+     */
     public void resetDbEntity() {
         if (dbEntity == entity.getDbEntity()) {
             return;
@@ -196,12 +199,10 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         if (dbAttribute == null) {
             if (!attribute.isInherited() && attribute.getEntity().isAbstract()) {
                 return attribute.getDbAttributePath();
-            }
-            else {
+            } else {
                 return null;
             }
-        }
-        else if (attribute.getDbAttributePath() != null && attribute.getDbAttributePath().contains(".")) {
+        } else if (attribute.getDbAttributePath() != null && attribute.getDbAttributePath().contains(".")) {
             return attribute.getDbAttributePath();
         }
         return dbAttribute.getName();
@@ -213,20 +214,15 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
             if (!(attribute.getValue() instanceof EmbeddedAttribute)) {
                 try {
                     type = TypesMapping.getSqlTypeByJava(attribute.getJavaClass());
-                    // have to catch the exception here to make sure that
-                    // exceptional situations
-                    // (class doesn't exist, for example) don't prevent the gui
-                    // from properly updating.
-                }
-                catch (CayenneRuntimeException cre) {
+                    // have to catch the exception here to make sure that exceptional situations
+                    // (class doesn't exist, for example) don't prevent the gui from properly updating.
+                } catch (CayenneRuntimeException | DIRuntimeException cre) {
                     return null;
                 }
-            }
-            else {
+            } else {
                 return null;
             }
-        }
-        else {
+        } else {
             type = dbAttribute.getType();
         }
         return TypesMapping.getSqlNameByType(type);
@@ -251,7 +247,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
      */
     @Override
     public void resetModel() {
-        for(ObjAttributeWrapper attribute : objectList) {
+        for (ObjAttributeWrapper attribute : objectList) {
             attribute.resetEdits();
         }
     }    
@@ -261,7 +257,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
      */
     @Override
     public boolean isValid() {
-        for(ObjAttributeWrapper attribute : getObjectList()) {
+        for (ObjAttributeWrapper attribute : getObjectList()) {
             if (!attribute.isValid()) {
                 return false;
             }
@@ -348,7 +344,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         // If db attribute exist, associate it with obj attribute
         if (value != null) {
 
-            if (ProjectUtil.isDbAttributePathCorrect(dbEntity,value.toString())) {
+            if (ProjectUtil.isDbAttributePathCorrect(dbEntity, value.toString())) {
                 attribute.setDbAttributePath(value.toString());
             } else {
                 attribute.setDbAttributePath(null);
@@ -452,7 +448,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
         }
     }
 
-    private class ObjAttributeTableComparator implements Comparator<ObjAttributeWrapper>{
+    private class ObjAttributeTableComparator implements Comparator<ObjAttributeWrapper> {
 
         private final int sortCol;
 
