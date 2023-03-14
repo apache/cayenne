@@ -38,18 +38,20 @@ import java.util.Collections;
 public class ServerRuntimeProvider implements Provider<ServerRuntime> {
 
     private ServerCaseProperties properties;
+    private ServerCaseExtraModulesProperties extraModulesProperties;
     private ServerCaseDataSourceFactory dataSourceFactory;
     private UnitDbAdapter unitDbAdapter;
-
     private Provider<DbAdapter> dbAdapterProvider;
 
     public ServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
             @Inject ServerCaseProperties properties,
+            @Inject ServerCaseExtraModulesProperties extraModulesProperties,
             @Inject Provider<DbAdapter> dbAdapterProvider,
             @Inject UnitDbAdapter unitDbAdapter) {
 
         this.dataSourceFactory = dataSourceFactory;
         this.properties = properties;
+        this.extraModulesProperties = extraModulesProperties;
         this.dbAdapterProvider = dbAdapterProvider;
         this.unitDbAdapter = unitDbAdapter;
     }
@@ -64,6 +66,8 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
         }
 
         Collection<Module> modules = new ArrayList<>(getExtraModules());
+
+        modules.addAll(extraModulesProperties.getExtraModules());
 
         return ServerRuntime.builder()
                         .addConfig(configurationLocation)

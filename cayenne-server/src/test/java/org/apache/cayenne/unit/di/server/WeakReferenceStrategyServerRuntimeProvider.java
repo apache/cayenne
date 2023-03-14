@@ -33,9 +33,10 @@ public class WeakReferenceStrategyServerRuntimeProvider extends ServerRuntimePro
 
     public WeakReferenceStrategyServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
                                                       @Inject ServerCaseProperties properties,
+                                                      @Inject ServerCaseExtraModulesProperties extraModulesProperties,
                                                       @Inject Provider<DbAdapter> dbAdapterProvider,
                                                       @Inject UnitDbAdapter unitDbAdapter) {
-        super(dataSourceFactory, properties, dbAdapterProvider, unitDbAdapter);
+        super(dataSourceFactory, properties, extraModulesProperties, dbAdapterProvider, unitDbAdapter);
     }
 
     @Override

@@ -28,6 +28,9 @@ public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager 
     @Inject
     protected Provider<ServerCaseProperties> propertiesProvider;
 
+    @Inject
+    protected Provider<ServerCaseExtraModulesProperties> extraModulesPropertiesProvider;
+
     public ServerCaseLifecycleManager(DefaultScope scope) {
         super(scope);
     }
@@ -39,8 +42,14 @@ public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager 
         UseServerRuntime runtimeName = testCase.getClass().getAnnotation(
                 UseServerRuntime.class);
 
+        InjectExtraModules injectExtraModules = testCase.getClass().getAnnotation(
+                InjectExtraModules.class);
+
         String location = runtimeName != null ? runtimeName.value() : null;
         propertiesProvider.get().setConfigurationLocation(location);
+
+        Class[] modules = injectExtraModules != null ? injectExtraModules.extraModules() : new Class[]{};
+        extraModulesPropertiesProvider.get().setExtraModules(modules);
 
         super.setUp(testCase);
     }

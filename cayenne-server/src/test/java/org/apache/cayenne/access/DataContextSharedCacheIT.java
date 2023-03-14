@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.access.util.ServerCaseSyncModule;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -35,7 +36,8 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
+import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.Before;
@@ -48,7 +50,8 @@ import static org.junit.Assert.*;
  * DataDomain.
  */
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextSharedCacheIT extends ServerCaseContextsSync {
+@InjectExtraModules(extraModules = {ServerCaseSyncModule.class})
+public class DataContextSharedCacheIT extends ServerCase {
 
     @Inject
     private DataContext context;

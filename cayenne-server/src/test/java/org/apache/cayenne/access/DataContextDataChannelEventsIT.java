@@ -22,13 +22,15 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.util.ServerCaseSyncModule;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
+import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.EventUtil;
 import org.junit.Test;
@@ -40,7 +42,8 @@ import static org.junit.Assert.assertTrue;
  * Tests that DataContext sends DataChannel events.
  */
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextDataChannelEventsIT extends ServerCaseContextsSync {
+@InjectExtraModules(extraModules = {ServerCaseSyncModule.class})
+public class DataContextDataChannelEventsIT extends ServerCase {
 
     @Inject
     private DataContext context;

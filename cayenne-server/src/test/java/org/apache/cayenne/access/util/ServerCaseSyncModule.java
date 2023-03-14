@@ -16,35 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.access.util;
 
-package org.apache.cayenne.gen;
-
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.DefaultScope;
-import org.apache.cayenne.gen.mock.CustomPropertyDescriptor;
-import org.apache.cayenne.unit.di.UnitTestLifecycleManager;
-import org.apache.cayenne.unit.di.server.ServerCaseExtraModulesProperties;
-import org.apache.cayenne.unit.di.server.ServerCaseLifecycleManager;
-import org.apache.cayenne.unit.di.server.ServerCaseProperties;
 
-/**
- * @since 4.2
- */
-public class CgenCaseModule implements Module {
-
-    protected DefaultScope testScope;
-
-    public CgenCaseModule(DefaultScope testScope) {
-        this.testScope = testScope;
-    }
+public class ServerCaseSyncModule implements Module {
     @Override
     public void configure(Binder binder) {
-        binder.bind(UnitTestLifecycleManager.class).toInstance(new ServerCaseLifecycleManager(testScope));
-        binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
-        binder.bind(ServerCaseExtraModulesProperties.class).to(ServerCaseExtraModulesProperties.class).in(testScope);
-
-        CgenModule.contributeUserProperties(binder)
-                .add(CustomPropertyDescriptor.class);
+        ServerModule.extend(binder).syncContexts();
     }
 }

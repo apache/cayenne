@@ -19,24 +19,34 @@
 
 package org.apache.cayenne.jcache;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.cache.NestedQueryCache;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.jcache.unit.JCacheCase;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.cache.CacheManager;
+
+import java.net.URISyntaxException;
+
 import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneJCacheModuleIT extends JCacheCase {
+@InjectExtraModules(extraModules = {CayenneJCacheModuleIT.CustomServerCase.class})
+public class CayenneJCacheModuleIT extends ServerCase {
 
     @Inject
     private DBHelper dbHelper;
@@ -81,5 +91,24 @@ public class CayenneJCacheModuleIT extends JCacheCase {
         runtime.getDataDomain().getQueryCache().removeGroup("g1");
         assertEquals(4, g1.select(context).size());
         assertEquals(4, g2.select(context).size());
+    }
+
+    protected static class CustomServerCase implements Module {
+        public CustomServerCase() {}
+
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(CacheManager.class).toProvider(JCacheManagerProvider.class);
+            binder.bind(JCacheConfigurationFactory.class).to(JCacheDefaultConfigurationFactory.class);
+            binder.bind(QueryCache.class).to(JCacheQueryCache.class);
+
+            String configURI;
+            try {
+                configURI = getClass().getResource("/eh-cache.xml").toURI().toString();
+            } catch (URISyntaxException e) {
+                throw new CayenneRuntimeException("Unable to resolve ehcache config resource URI.");
+            }
+            JCacheModule.extend(binder).setJCacheProviderConfig(configURI);
+        }
     }
 }

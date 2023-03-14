@@ -16,23 +16,34 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.dbsync.unit;
+package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.DefaultScope;
 
-public class DbSyncCaseModule implements Module {
-    protected DefaultScope testScope;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
 
-    public DbSyncCaseModule(DefaultScope testScope) {
-        this.testScope = testScope;
+/**
+ * @since 5.0
+ */
+public class ServerCaseExtraModulesProperties {
+    protected Class[] extraModules;
+
+    public Collection<? extends Module> getExtraModules() {
+        Collection<Module> result = new ArrayList<>();
+        for (Class extraModule : extraModules) {
+            try {
+                result.add((Module) extraModule.getConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException |
+                     InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
     }
 
-    @Override
-    public void configure(Binder binder) {
-        binder.bind(ServerRuntime.class).toProvider(DbSyncServerRuntimeProvider.class).in(
-                testScope);
+    public void setExtraModules(Class[] extraModules) {
+        this.extraModules = extraModules;
     }
 }
