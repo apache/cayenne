@@ -18,19 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.access.translator.ParameterBinding;
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.log.Slf4jJdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@ExtraModules(CAY2723IT.CustomLogModule.class)
 public class CAY2723IT extends ServerCase {
     @Inject
     private DataContext context;
@@ -63,6 +73,40 @@ public class CAY2723IT extends ServerCase {
 
         // here should be only single insert of the painting object
         int queryCounter = queryInterceptor.runWithQueryCounter(() -> context.commitChanges());
-        assertEquals(1, queryCounter);
+        assertEquals("", 1, queryCounter);
+    }
+
+    public static class CustomLogger extends Slf4jJdbcEventLogger {
+
+        private static final Logger logger = LoggerFactory.getLogger(JdbcEventLogger.class);
+
+        public CustomLogger(@Inject RuntimeProperties runtimeProperties) {
+            super(runtimeProperties);
+        }
+
+        @Override
+        public void log(String message) {
+            if (message != null) {
+                logger.error("\t>>>>>\t" + message);
+            }
+        }
+
+        @Override
+        public void logQuery(String sql, ParameterBinding[] bindings) {
+            StringBuilder buffer = new StringBuilder("\t>>>>>\t")
+                    .append(sql)
+                    .append(" ");
+            appendParameters(buffer, "bind", bindings);
+            if (buffer.length() > 0) {
+                logger.error(buffer.toString());
+            }
+        }
+    }
+
+    public static class CustomLogModule implements Module {
+        @Override
+        public void configure(Binder binder) {
+            binder.bind(JdbcEventLogger.class).to(CustomLogger.class);
+        }
     }
 }
