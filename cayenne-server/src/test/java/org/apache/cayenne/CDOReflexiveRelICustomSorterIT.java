@@ -23,7 +23,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -38,7 +38,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-@InjectExtraModules(extraModules = {CDOReflexiveRelICustomSorterIT.CustomServerCase.class})
+@ExtraModules(CDOReflexiveRelICustomSorterIT.GraphSorterModule.class)
 public class CDOReflexiveRelICustomSorterIT extends ServerCase {
     @Inject
     private ObjectContext context;
@@ -194,9 +194,7 @@ public class CDOReflexiveRelICustomSorterIT extends ServerCase {
         context.commitChanges();
     }
 
-    protected static class CustomServerCase implements Module {
-        public CustomServerCase() {}
-
+    public static class GraphSorterModule implements Module {
         @Override
         public void configure(Binder binder) {
             binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class);

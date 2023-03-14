@@ -20,30 +20,28 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.di.Module;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * @since 5.0
  */
-public class ServerCaseExtraModulesProperties {
-    protected Class[] extraModules;
+public class ServerCaseExtraModules {
+    protected Class<?>[] extraModules;
 
     public Collection<? extends Module> getExtraModules() {
         Collection<Module> result = new ArrayList<>();
-        for (Class extraModule : extraModules) {
+        for (Class<?> extraModule : extraModules) {
             try {
                 result.add((Module) extraModule.getConstructor().newInstance());
-            } catch (InstantiationException | IllegalAccessException |
-                     InvocationTargetException | NoSuchMethodException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
         return result;
     }
 
-    public void setExtraModules(Class[] extraModules) {
+    public void setExtraModules(Class<?>[] extraModules) {
         this.extraModules = extraModules;
     }
 }

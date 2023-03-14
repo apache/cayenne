@@ -35,7 +35,7 @@ public class ServerRuntimeProviderContextsSync extends ServerRuntimeProvider {
 
     public ServerRuntimeProviderContextsSync(@Inject ServerCaseDataSourceFactory dataSourceFactory,
                                              @Inject ServerCaseProperties properties,
-                                             @Inject ServerCaseExtraModulesProperties extraModulesProperties,
+                                             @Inject ServerCaseExtraModules extraModulesProperties,
                                              @Inject Provider<DbAdapter> dbAdapterProvider,
                                              @Inject UnitDbAdapter unitDbAdapter) {
         super(dataSourceFactory, properties, extraModulesProperties, dbAdapterProvider, unitDbAdapter);

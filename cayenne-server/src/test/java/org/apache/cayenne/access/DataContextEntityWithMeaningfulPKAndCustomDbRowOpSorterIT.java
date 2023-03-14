@@ -29,19 +29,17 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
 
 @UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
-@InjectExtraModules(extraModules = {DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT.CustomServerCase.class})
+@ExtraModules(DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT.GraphSorterModule.class)
 public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends ServerCase {
-    @Inject
-    private DataContext context;
 
     @Inject
-    private ServerRuntime runtime;
+    private DataContext context;
 
     @Test
     public void testInsertDelete() {
@@ -83,9 +81,7 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends S
         context.commitChanges();
     }
 
-    protected static class CustomServerCase implements Module {
-        public CustomServerCase() {}
-
+    public static class GraphSorterModule implements Module {
         @Override
         public void configure(Binder binder) {
             binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class);

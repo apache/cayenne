@@ -36,7 +36,7 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
  * DataDomain.
  */
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-@InjectExtraModules(extraModules = {ServerCaseSyncModule.class})
+@ExtraModules(ServerCaseSyncModule.class)
 public class DataContextSharedCacheIT extends ServerCase {
 
     @Inject

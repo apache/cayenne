@@ -262,7 +262,7 @@ public class ServerCaseModule implements Module {
         binder.bind(EntityResolver.class).toProvider(ServerCaseEntityResolverProvider.class).in(testScope);
         binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(testScope);
         binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
-        binder.bind(ServerCaseExtraModulesProperties.class).to(ServerCaseExtraModulesProperties.class).in(testScope);
+        binder.bind(ServerCaseExtraModules.class).to(ServerCaseExtraModules.class).in(testScope);
         binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProvider.class).in(testScope);
         binder.bind(ObjectContext.class).toProvider(ServerCaseObjectContextProvider.class).withoutScope();
         binder.bind(DataContext.class).toProvider(ServerCaseDataContextProvider.class).withoutScope();

@@ -46,7 +46,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -64,7 +64,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-@InjectExtraModules(extraModules = {DbSyncModule.class})
+@ExtraModules(DbSyncModule.class)
 public abstract class MergeCase extends ServerCase {
 
     @Inject

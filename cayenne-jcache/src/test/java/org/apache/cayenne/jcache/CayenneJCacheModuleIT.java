@@ -32,7 +32,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
@@ -41,11 +41,12 @@ import org.junit.Test;
 import javax.cache.CacheManager;
 
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-@InjectExtraModules(extraModules = {CayenneJCacheModuleIT.CustomServerCase.class})
+@ExtraModules(CayenneJCacheModuleIT.EhCacheModule.class)
 public class CayenneJCacheModuleIT extends ServerCase {
 
     @Inject
@@ -93,9 +94,7 @@ public class CayenneJCacheModuleIT extends ServerCase {
         assertEquals(4, g2.select(context).size());
     }
 
-    protected static class CustomServerCase implements Module {
-        public CustomServerCase() {}
-
+    public static class EhCacheModule implements Module {
         @Override
         public void configure(Binder binder) {
             binder.bind(CacheManager.class).toProvider(JCacheManagerProvider.class);
@@ -104,7 +103,7 @@ public class CayenneJCacheModuleIT extends ServerCase {
 
             String configURI;
             try {
-                configURI = getClass().getResource("/eh-cache.xml").toURI().toString();
+                configURI = Objects.requireNonNull(getClass().getResource("/eh-cache.xml")).toURI().toString();
             } catch (URISyntaxException e) {
                 throw new CayenneRuntimeException("Unable to resolve ehcache config resource URI.");
             }

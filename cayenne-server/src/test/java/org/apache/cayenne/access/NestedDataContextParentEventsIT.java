@@ -26,7 +26,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-@InjectExtraModules(extraModules = {ServerCaseSyncModule.class})
+@ExtraModules(ServerCaseSyncModule.class)
 public class NestedDataContextParentEventsIT extends ServerCase {
 
     @Inject

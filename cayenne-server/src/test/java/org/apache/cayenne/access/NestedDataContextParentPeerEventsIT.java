@@ -27,7 +27,7 @@ import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.relationships_child_master.Child;
 import org.apache.cayenne.testdo.relationships_child_master.Master;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.InjectExtraModules;
+import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.RELATIONSHIPS_CHILD_MASTER_PROJECT)
-@InjectExtraModules(extraModules = {ServerCaseSyncModule.class})
+@ExtraModules(ServerCaseSyncModule.class)
 public class NestedDataContextParentPeerEventsIT extends ServerCase {
 
     @Inject
