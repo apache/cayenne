@@ -59,6 +59,10 @@ public class CAY2723IT extends ServerCase {
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("test_warmup");
         context.commitChanges();
+
+        painting = context.newObject(Painting.class);
+        painting.setPaintingTitle("test_warmup");
+        context.commitChanges();
     }
 
     @Test
