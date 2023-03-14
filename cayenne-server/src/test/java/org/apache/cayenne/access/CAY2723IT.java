@@ -32,10 +32,13 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.util.Util;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -73,7 +76,7 @@ public class CAY2723IT extends ServerCase {
 
         // here should be only single insert of the painting object
         int queryCounter = queryInterceptor.runWithQueryCounter(() -> context.commitChanges());
-        assertEquals("", 1, queryCounter);
+        assertEquals(1, queryCounter);
     }
 
     public static class CustomLogger extends Slf4jJdbcEventLogger {
@@ -100,6 +103,28 @@ public class CAY2723IT extends ServerCase {
             if (buffer.length() > 0) {
                 logger.error(buffer.toString());
             }
+        }
+
+        @Override
+        public void logQueryError(Throwable th) {
+            if (th != null) {
+                th = Util.unwindException(th);
+            }
+
+            logger.error("*** error.", th);
+
+            if (th instanceof SQLException) {
+                SQLException sqlException = ((SQLException) th).getNextException();
+                while (sqlException != null) {
+                    logger.error("*** nested SQL error.", sqlException);
+                    sqlException = sqlException.getNextException();
+                }
+            }
+        }
+
+        @Override
+        public boolean isLoggable() {
+            return true;
         }
     }
 
