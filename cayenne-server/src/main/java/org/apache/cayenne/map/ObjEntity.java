@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -142,8 +141,8 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         }
 
         // divide attributes by type
-        LinkedHashMap<String, Attribute> embAttributes = new LinkedHashMap<>();
-        LinkedHashMap<String, Attribute> objAttributes = new LinkedHashMap<>();
+        TreeMap<String, Attribute> embAttributes = new TreeMap<>();
+        TreeMap<String, Attribute> objAttributes = new TreeMap<>();
 
         attributes.forEach((key, value) -> {
             if (value instanceof EmbeddedAttribute) {
@@ -154,8 +153,8 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         });
 
         // store attributes
-        encoder.nested(new TreeMap<>(embAttributes), delegate);
-        encoder.nested(new TreeMap<>(objAttributes), delegate);
+        encoder.nested(embAttributes, delegate);
+        encoder.nested(objAttributes, delegate);
 
         for (Map.Entry<String, String> override : attributeOverrides.entrySet()) {
             encoder.start("attribute-override")
