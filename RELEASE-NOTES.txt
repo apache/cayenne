@@ -53,4 +53,5 @@ CAY-2774 Overriding service ordering in DI List causes DIRuntimeException
 CAY-2782 Modeler: save button becomes active on DataMap comment field focus
 CAY-2783 DbEntity to ObjEntity synchronization should check mandatory flag for primitive java types
 CAY-2792 Fix Insertion Order For Reflexive DataObjects
+CAY-2800 Modeler saves map.xml files with schema ordering error
 CAY-2801 Incorrect equals() implementation in IdGenerationMarker could cause data missing in the commit
