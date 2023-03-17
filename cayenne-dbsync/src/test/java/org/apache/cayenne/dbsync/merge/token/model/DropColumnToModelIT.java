@@ -151,6 +151,7 @@ public class DropColumnToModelIT extends MergeCase {
 		rel2To1.setSourceEntity(dbEntity2);
 		rel2To1.setTargetEntityName(dbEntity1);
 		rel2To1.setToMany(false);
+		rel2To1.setFK(true);
 		rel2To1.addJoin(new DbJoin(rel2To1, e2col2.getName(), e1col1.getName()));
 		dbEntity2.addRelationship(rel2To1);
 		assertSame(rel1To2, rel2To1.getReverseRelationship());
