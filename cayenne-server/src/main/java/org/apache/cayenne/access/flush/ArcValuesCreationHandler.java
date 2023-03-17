@@ -191,7 +191,7 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
             } else {
                 // case 2 and 3
                 processDelete = false;
-                if(dbRelationship.isToDependentPK()) {
+                if(!dbRelationship.isFK()) {
                     valueToUse = ObjectIdValueSupplier.getFor(srcId, join.getSourceName());
                     rowOp = factory.getOrCreate(dbRelationship.getTargetEntity(), targetId, DbRowOpType.UPDATE);
                     attribute = join.getTarget();

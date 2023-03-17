@@ -321,7 +321,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
                 return false;
             }
             DbRelationship reverseRelationship = dbRelationship.getReverseRelationship();
-            return !reverseRelationship.isToDependentPK();
+            return reverseRelationship.isFK();
         }
 
         return true;
@@ -378,7 +378,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * Returns true if underlying DbRelationships point to dependent entity.
      */
     public boolean isToDependentEntity() {
-        return (getDbRelationships().get(0)).isToDependentPK();
+        return !(getDbRelationships().get(0)).isFK();
     }
 
     /**

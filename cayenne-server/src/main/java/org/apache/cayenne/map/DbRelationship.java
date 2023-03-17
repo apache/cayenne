@@ -42,11 +42,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     // The columns through which the join is implemented.
     protected List<DbJoin> joins = new ArrayList<>(2);
 
-    // Is relationship from source to target points to dependent primary
-    // key (primary key column of destination table that is also a FK to the
-    // source
-    // column)
-    protected boolean toDependentPK;
+    protected boolean isFK;
 
     public DbRelationship() {
         super();
@@ -77,7 +73,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
             encoder.attribute("target", getTargetEntityName());
         }
 
-        encoder.attribute("fk", isFK() && isValidForDepPk());
+        encoder.attribute("fk", isFK() && isValidForFk());
         encoder.attribute("toMany", isToMany());
 
         encoder.nested(getJoins(), delegate);
@@ -146,14 +142,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
         DbRelationship reverse = new DbRelationship();
         reverse.setSourceEntity(targetEntity);
         reverse.setTargetEntityName(getSourceEntity().getName());
-
-        // TODO: andrus 12/24/2007 - one more case to handle - set reverse
-        // toDepPK = true
-        // if this relationship toDepPK is false, but the entities are joined on
-        // a PK...
-        // on the other hand, these can still be two independent entities...
-
-        if (isToDependentPK() && !toMany && joins.size() == targetEntity.getPrimaryKeys().size()) {
+        if (!isFK() && !toMany && joins.size() == targetEntity.getPrimaryKeys().size()) {
             reverse.setToMany(false);
         } else {
             reverse.setToMany(!toMany);
@@ -258,16 +247,11 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     /**
-     * Returns <code>true</code> if a method <code>isToDependentPK</code> of
-     * reverse relationship of this relationship returns <code>true</code>.
+     * Returns <code>true</code> if a method <code>isFK</code> of
+     * reverse relationship of this relationship returns <code>false</code>.
      */
     public boolean isToMasterPK() {
-        if (isToMany() || isToDependentPK()) {
-            return false;
-        }
-
-        DbRelationship revRel = getReverseRelationship();
-        return revRel != null && revRel.isToDependentPK();
+        return !isToMany() && isFK();
     }
     
     /**
@@ -278,28 +262,21 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      * @since 4.0
      */
     public boolean isSourceIndependentFromTargetChange() {
-        // note - call "isToPK" at the end of the chain, since
-        // if it is to a dependent PK, we still should return true...
-        return isToMany() || isToDependentPK() || !isToPK();
+        return !isFK();
     }
 
-    /**
-     * Returns <code>true</code> if relationship from source to target points to
-     * dependent primary key. Dependent PK is a primary key column of the
-     * destination table that is also a FK to the source column.
-     */
-    public boolean isToDependentPK() {
-        return toDependentPK;
+    public boolean isFK() {
+        return isFK;
     }
 
-    public void setToDependentPK(boolean toDependentPK) {
-        this.toDependentPK = toDependentPK;
+    public void setFK(boolean FK) {
+        this.isFK = FK;
     }
 
     /**
      * @since 1.1
      */
-    public boolean isValidForDepPk() {
+    public boolean isValidForFk() {
         // handle case with no joins
         if (getJoins().size() == 0) {
             return false;
