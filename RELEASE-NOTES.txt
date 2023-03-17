@@ -23,6 +23,7 @@ CAY-2729 Unable to use custom templates from a folder at upper level then datama
 CAY-2730 Duplicating lines in a cgen config saved to datamap.xml
 CAY-2731 Exception when setting a CLOB on H2 v2.0.202
 CAY-2736 Can't use function names as a path in a string-based expression
+CAY-2800 Modeler saves map.xml files with schema ordering error
 
 ----------------------------------
 Release: 4.1.1

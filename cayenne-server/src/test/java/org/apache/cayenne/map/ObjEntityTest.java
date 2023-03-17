@@ -55,6 +55,32 @@ public class ObjEntityTest {
                 "</obj-entity>" + ls, out.toString());
     }
 
+    @Test
+    public void testAttributeOrder() {
+        ObjEntity entity = new ObjEntity("X");
+        entity.setClassName("org.example.Xc");
+
+        entity.addAttribute(new ObjAttribute("a2", "java.lang.String", entity));
+        entity.addAttribute(new ObjAttribute("a1", "int", entity));
+
+        entity.addAttribute(new EmbeddedAttribute("a3", "long", entity));
+
+        // relationships are saved outside the entity, so should be ignored in this test
+        entity.addRelationship(new ObjRelationship("r1"));
+
+        StringWriter out = new StringWriter();
+        XMLEncoder encoder = new XMLEncoder(new PrintWriter(out));
+        entity.encodeAsXML(encoder, new EncoderDummyVisitor());
+
+        String ls = System.lineSeparator();
+
+        assertEquals("<obj-entity name=\"X\" className=\"org.example.Xc\">" + ls +
+                "<embedded-attribute name=\"a3\" type=\"long\"/>" + ls +
+                "<obj-attribute name=\"a1\" type=\"int\"/>" + ls +
+                "<obj-attribute name=\"a2\" type=\"java.lang.String\"/>" + ls +
+                "</obj-entity>" + ls, out.toString());
+    }
+
     private class EncoderDummyVisitor extends BaseConfigurationNodeVisitor<Object> {
         @Override
         public Object visitObjEntity(ObjEntity entity) {
