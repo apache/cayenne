@@ -87,10 +87,10 @@ public class RelationshipLoader extends AbstractLoader {
 
             createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
 
-            boolean toDependentPK = isToDependentPK(forwardRelationship);
-            boolean toMany = isToMany(toDependentPK, fkEntity, forwardRelationship);
+            boolean fk = isFK(forwardRelationship);
+            boolean toMany = isToMany(fk, fkEntity, forwardRelationship);
 
-            forwardRelationship.setToDependentPK(toDependentPK);
+            forwardRelationship.setFK(fk);
             forwardRelationship.setToMany(toMany);
 
             // set relationship names only after their joins are ready ...
@@ -146,11 +146,11 @@ public class RelationshipLoader extends AbstractLoader {
         }
     }
 
-    private boolean isToMany(boolean toDependentPK, DbEntity fkEntity, DbRelationship forwardRelationship) {
-        return !toDependentPK || fkEntity.getPrimaryKeys().size() != forwardRelationship.getJoins().size();
+    private boolean isToMany(boolean isFK, DbEntity fkEntity, DbRelationship forwardRelationship) {
+        return !isFK || fkEntity.getPrimaryKeys().size() != forwardRelationship.getJoins().size();
     }
 
-    private boolean isToDependentPK(DbRelationship forwardRelationship) {
+    private boolean isFK(DbRelationship forwardRelationship) {
         for (DbJoin dbJoin : forwardRelationship.getJoins()) {
             if (!dbJoin.getTarget().isPrimaryKey()) {
                 return false;

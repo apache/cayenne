@@ -80,7 +80,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
         return new AddRelationshipToDb(entity, rel) {
             @Override
             public List<String> createSql(DbAdapter adapter) {
-                if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
+                if (rel.isToMasterPK()) {
 
                     DbEntity source = (DbEntity) rel.getSourceEntity();
                     QuotingStrategy context = adapter.getQuotingStrategy();
