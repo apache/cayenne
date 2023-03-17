@@ -140,8 +140,21 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
             encoder.start("qualifier").nested(qualifier, delegate).end();
         }
 
+        // divide attributes by type
+        TreeMap<String, Attribute> embAttributes = new TreeMap<>();
+        TreeMap<String, Attribute> objAttributes = new TreeMap<>();
+
+        attributes.forEach((key, value) -> {
+            if (value instanceof EmbeddedAttribute) {
+                embAttributes.put(key, value);
+            } else {
+                objAttributes.put(key, value);
+            }
+        });
+
         // store attributes
-        encoder.nested(new TreeMap<>(attributes), delegate);
+        encoder.nested(embAttributes, delegate);
+        encoder.nested(objAttributes, delegate);
 
         for (Map.Entry<String, String> override : attributeOverrides.entrySet()) {
             encoder.start("attribute-override")
