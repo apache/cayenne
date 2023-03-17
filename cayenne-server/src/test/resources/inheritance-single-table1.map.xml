@@ -53,22 +53,22 @@
 	<db-relationship name="role" source="GROUP_MEMBERS" target="ROLES">
 		<db-attribute-pair source="role_id" target="id"/>
 	</db-relationship>
-	<db-relationship name="group" source="GROUP_PROPERTIES" target="ROLES">
+	<db-relationship name="group" source="GROUP_PROPERTIES" target="ROLES" fk="true">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
 	<db-relationship name="group_members" source="ROLES" target="GROUP_MEMBERS" toMany="true">
 		<db-attribute-pair source="id" target="group_id"/>
 	</db-relationship>
-	<db-relationship name="group_properties" source="ROLES" target="GROUP_PROPERTIES" toDependentPK="true">
+	<db-relationship name="group_properties" source="ROLES" target="GROUP_PROPERTIES">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
 	<db-relationship name="role_groups" source="ROLES" target="GROUP_MEMBERS" toMany="true">
 		<db-attribute-pair source="id" target="role_id"/>
 	</db-relationship>
-	<db-relationship name="user_properties" source="ROLES" target="USER_PROPERTIES" toDependentPK="true">
+	<db-relationship name="user_properties" source="ROLES" target="USER_PROPERTIES">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
-	<db-relationship name="user" source="USER_PROPERTIES" target="ROLES">
+	<db-relationship name="user" source="USER_PROPERTIES" target="ROLES" fk="true">
 		<db-attribute-pair source="id" target="id"/>
 	</db-relationship>
 	<obj-relationship name="groupMembers" source="Group" target="Role" deleteRule="Nullify" db-relationship-path="group_members.role"/>

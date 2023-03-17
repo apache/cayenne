@@ -54,7 +54,7 @@
 	</obj-entity>
 	<obj-entity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" dbEntityName="MT_TABLE4"/>
 	<obj-entity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" dbEntityName="MT_TABLE5"/>
-	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4">
+	<db-relationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4" fk="true">
 		<db-attribute-pair source="TABLE4_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5">
@@ -72,7 +72,7 @@
 	<db-relationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
 		<db-attribute-pair source="TABLE3_ID" target="TABLE3_ID"/>
 	</db-relationship>
-	<db-relationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toDependentPK="true" toMany="true">
+	<db-relationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toMany="true">
 		<db-attribute-pair source="ID" target="TABLE4_ID"/>
 	</db-relationship>
 	<db-relationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">

@@ -56,7 +56,7 @@
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 		<obj-attribute name="type" type="int" db-attribute-path="TYPE"/>
 	</obj-entity>
-	<db-relationship name="root" source="EMBED_CHILD" target="EMBED_ROOT">
+	<db-relationship name="root" source="EMBED_CHILD" target="EMBED_ROOT" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="untitledRel" source="EMBED_ENTITY1" target="EMBED_ENTITY2" toMany="true">
@@ -65,7 +65,7 @@
 	<db-relationship name="untitledRel" source="EMBED_ENTITY2" target="EMBED_ENTITY1">
 		<db-attribute-pair source="ENTITY1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="child" source="EMBED_ROOT" target="EMBED_CHILD" toDependentPK="true">
+	<db-relationship name="child" source="EMBED_ROOT" target="EMBED_CHILD">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="embedEntity2s" source="EmbedEntity1" target="EmbedEntity2" deleteRule="Deny" db-relationship-path="untitledRel"/>

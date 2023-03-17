@@ -22,16 +22,16 @@
 	<obj-entity name="Song" className="org.apache.cayenne.testdo.relationships_many_to_many_join.Song" dbEntityName="X_SONG">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="SONG_NAME"/>
 	</obj-entity>
-	<db-relationship name="songAuthor" source="X_AUTHOR" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
+	<db-relationship name="songAuthor" source="X_AUTHOR" target="X_SONGAUTHOR" toMany="true">
 		<db-attribute-pair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</db-relationship>
-	<db-relationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
+	<db-relationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toMany="true">
 		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
 	</db-relationship>
-	<db-relationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR">
+	<db-relationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR" fk="true">
 		<db-attribute-pair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</db-relationship>
-	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG">
+	<db-relationship name="song" source="X_SONGAUTHOR" target="X_SONG" fk="true">
 		<db-attribute-pair source="SONG_ID" target="SONG_ID"/>
 	</db-relationship>
 	<obj-relationship name="authors" source="Song" target="Author" collection-type="java.util.Set" deleteRule="Cascade" db-relationship-path="songAuthor.author"/>

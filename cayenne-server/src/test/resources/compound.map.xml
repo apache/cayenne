@@ -86,17 +86,17 @@
 		<db-attribute-pair source="KEY1" target="F_KEY1"/>
 		<db-attribute-pair source="KEY2" target="F_KEY2"/>
 	</db-relationship>
-	<db-relationship name="lines" source="compound_order" target="compound_order_line" toDependentPK="true" toMany="true">
+	<db-relationship name="lines" source="compound_order" target="compound_order_line" toMany="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 	</db-relationship>
-	<db-relationship name="info" source="compound_order_line" target="compound_order_line_info" toDependentPK="true">
+	<db-relationship name="info" source="compound_order_line" target="compound_order_line_info">
 		<db-attribute-pair source="order_number" target="order_number"/>
 		<db-attribute-pair source="order_line_number" target="order_line_number"/>
 	</db-relationship>
-	<db-relationship name="order" source="compound_order_line" target="compound_order">
+	<db-relationship name="order" source="compound_order_line" target="compound_order" fk="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 	</db-relationship>
-	<db-relationship name="line" source="compound_order_line_info" target="compound_order_line">
+	<db-relationship name="line" source="compound_order_line_info" target="compound_order_line" fk="true">
 		<db-attribute-pair source="order_number" target="order_number"/>
 		<db-attribute-pair source="order_line_number" target="order_line_number"/>
 	</db-relationship>

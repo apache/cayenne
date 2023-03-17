@@ -63,16 +63,16 @@
 	<obj-entity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.CayenneDataObject">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M">
+	<db-relationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" fk="true">
 		<db-attribute-pair source="PROPAGATED_PK" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
+	<db-relationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toMany="true">
 		<db-attribute-pair source="ID" target="PROPAGATED_PK"/>
 	</db-relationship>
-	<db-relationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST">
+	<db-relationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" fk="true">
 		<db-attribute-pair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
 	</db-relationship>
-	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true">
+	<db-relationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP">
 		<db-attribute-pair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
 	</db-relationship>
 	<db-relationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">

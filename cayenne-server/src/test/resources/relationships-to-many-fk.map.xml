@@ -32,13 +32,13 @@
 	<db-relationship name="root" source="TO_MANY_FKDEP" target="TO_MANY_FKROOT">
 		<db-attribute-pair source="DEP_ID" target="FK_ID"/>
 	</db-relationship>
-	<db-relationship name="root2" source="TO_MANY_FKDEP" target="TO_MANY_ROOT2">
+	<db-relationship name="root2" source="TO_MANY_FKDEP" target="TO_MANY_ROOT2" fk="true">
 		<db-attribute-pair source="OTHER_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="deps" source="TO_MANY_FKROOT" target="TO_MANY_FKDEP" toMany="true">
 		<db-attribute-pair source="FK_ID" target="DEP_ID"/>
 	</db-relationship>
-	<db-relationship name="deps" source="TO_MANY_ROOT2" target="TO_MANY_FKDEP" toDependentPK="true" toMany="true">
+	<db-relationship name="deps" source="TO_MANY_ROOT2" target="TO_MANY_FKDEP" toMany="true">
 		<db-attribute-pair source="ID" target="OTHER_ID"/>
 	</db-relationship>
 	<obj-relationship name="root" source="ToManyFkDep" target="ToManyFkRoot" db-relationship-path="root"/>

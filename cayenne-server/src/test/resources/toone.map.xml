@@ -12,10 +12,10 @@
 	</db-entity>
 	<obj-entity name="TooneDep" className="org.apache.cayenne.testdo.toone.TooneDep" dbEntityName="TOONE_DEP"/>
 	<obj-entity name="TooneMaster" className="org.apache.cayenne.testdo.toone.TooneMaster" dbEntityName="TOONE_MASTER"/>
-	<db-relationship name="toMaster" source="TOONE_DEP" target="TOONE_MASTER">
+	<db-relationship name="toMaster" source="TOONE_DEP" target="TOONE_MASTER" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="toDependent" source="TOONE_MASTER" target="TOONE_DEP" toDependentPK="true">
+	<db-relationship name="toDependent" source="TOONE_MASTER" target="TOONE_DEP">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="toMaster" source="TooneDep" target="TooneMaster" deleteRule="Nullify" db-relationship-path="toMaster"/>
