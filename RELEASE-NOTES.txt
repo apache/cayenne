@@ -24,6 +24,7 @@ CAY-2790 EOModel import: NPE importing EOFetchSpecification
 CAY-2792 Fix Insertion Order For Reflexive DataObjects
 CAY-2794 Fix Incorrect JavaType for Vertical-Inheritance Attributes
 CAY-2796 Cayenne custom json formatter produces invalid json
+CAY-2800 Modeler saves map.xml files with schema ordering error
 CAY-2801 Incorrect equals() implementation in IdGenerationMarker could cause data missing in the commit
 
 ----------------------------------
