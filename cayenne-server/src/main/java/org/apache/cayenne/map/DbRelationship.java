@@ -77,7 +77,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
             encoder.attribute("target", getTargetEntityName());
         }
 
-        encoder.attribute("toDependentPK", isToDependentPK() && isValidForDepPk());
+        encoder.attribute("fk", isFK() && isValidForDepPk());
         encoder.attribute("toMany", isToMany());
 
         encoder.nested(getJoins(), delegate);
