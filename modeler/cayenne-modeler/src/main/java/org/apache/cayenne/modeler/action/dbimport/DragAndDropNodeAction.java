@@ -66,9 +66,8 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
 
     private int calculateDropIndex() {
         int index = dropLocation.getChildIndex();
-        //check is our node moving inside a one node
+        //node moving inside a one node
         if (sourceParentNode == dropLocationParentNode) {
-
             int childCount = dropLocationParentNode.getChildCount();
             int childIndex = dropLocation.getChildIndex();
             if (childIndex == childCount) {
@@ -76,8 +75,13 @@ public class DragAndDropNodeAction extends TreeManipulationAction {
             }
         }
         //If target node is collapsed
-        if (index == -1) {
+        if (index == -1 && sourceParentNode != dropLocationParentNode) {
             index = dropLocationParentNode.getChildCount();
+        }
+
+        //If the target node is an expanded parent node, we place the node in the first position
+        if (index == -1 && sourceParentNode == dropLocationParentNode) {
+            index = 0;
         }
         return index;
     }
