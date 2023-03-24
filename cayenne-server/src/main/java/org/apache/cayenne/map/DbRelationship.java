@@ -278,20 +278,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      */
     public boolean isValidForFk() {
         // handle case with no joins
-        if (getJoins().size() == 0) {
-            return false;
-        }
-
-        for (DbJoin join : getJoins()) {
-            DbAttribute target = join.getTarget();
-            DbAttribute source = join.getSource();
-
-            if (target != null && !target.isPrimaryKey() || source != null && !source.isPrimaryKey()) {
-                return false;
-            }
-        }
-
-        return true;
+        return getJoins().size() != 0;
     }
 
     /**

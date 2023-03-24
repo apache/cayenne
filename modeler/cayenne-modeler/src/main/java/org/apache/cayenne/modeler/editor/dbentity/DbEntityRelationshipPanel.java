@@ -233,7 +233,7 @@ public class DbEntityRelationshipPanel extends JPanel implements DbEntityDisplay
         targetCombo = Application.getWidgetFactory().createComboBox();
         AutoCompletion.enable(targetCombo);
 
-        table.getColumnModel().getColumn(DbRelationshipTableModel.TO_DEPENDENT_KEY)
+        table.getColumnModel().getColumn(DbRelationshipTableModel.FK)
                 .setCellRenderer(new CheckBoxCellRenderer());
 
         targetCombo.setRenderer(CellRenderers.entityListRendererWithIcons(entity.getDataMap()));
