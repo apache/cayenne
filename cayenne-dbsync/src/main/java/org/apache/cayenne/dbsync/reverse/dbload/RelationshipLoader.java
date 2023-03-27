@@ -76,6 +76,7 @@ public class RelationshipLoader extends AbstractLoader {
             DbRelationship forwardRelationship = new DbRelationship();
             forwardRelationship.setSourceEntity(pkEntity);
             forwardRelationship.setTargetEntityName(fkEntity);
+            forwardRelationship.setFK(false);
 
             // TODO: dirty and non-transparent... using DbRelationshipDetected for the benefit of the merge package.
             // This info is available from joins....
@@ -84,14 +85,10 @@ public class RelationshipLoader extends AbstractLoader {
             reverseRelationship.setSourceEntity(fkEntity);
             reverseRelationship.setTargetEntityName(pkEntity);
             reverseRelationship.setToMany(false);
-
+            reverseRelationship.setFK(true);
             createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
 
-            boolean fk = isFK(forwardRelationship);
-            boolean toMany = isToMany(fk, fkEntity, forwardRelationship);
-
-            forwardRelationship.setFK(fk);
-            forwardRelationship.setToMany(toMany);
+            forwardRelationship.setToMany(isToMany(fkEntity,forwardRelationship));
 
             // set relationship names only after their joins are ready ...
             // generator logic is based on relationship state...
@@ -146,18 +143,13 @@ public class RelationshipLoader extends AbstractLoader {
         }
     }
 
-    private boolean isToMany(boolean isFK, DbEntity fkEntity, DbRelationship forwardRelationship) {
-        return !isFK || fkEntity.getPrimaryKeys().size() != forwardRelationship.getJoins().size();
-    }
-
-    private boolean isFK(DbRelationship forwardRelationship) {
-        for (DbJoin dbJoin : forwardRelationship.getJoins()) {
-            if (!dbJoin.getTarget().isPrimaryKey()) {
-                return false;
+    private boolean isToMany(DbEntity fkEntity, DbRelationship forwardRelationship) {
+        for (DbJoin join : forwardRelationship.getJoins()) {
+            if (!join.getSource().isPrimaryKey() || !join.getTarget().isPrimaryKey()) {
+                return true;
             }
         }
-
-        return true;
+        return fkEntity.getPrimaryKeys().size() != forwardRelationship.getJoins().size();
     }
 
     private void createAndAppendJoins(Set<ExportedKey> exportedKeys, DbEntity pkEntity, DbEntity fkEntity,
