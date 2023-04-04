@@ -27,7 +27,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -179,6 +184,79 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
 
         assertTrue(defaultPackageSeen);
         assertEquals(1, elements);
+    }
+
+    @Test
+    public void testToDepPkToFkUpgrade() throws Exception {
+        List<String> resources = Arrays.asList( "fkTestmap-1.map.xml","fkTestmap-2.map.xml");
+        List<Document> documents = processAllDataMapDomes(resources);
+        Document fkTestmap_1 = documents.get(0);
+        Document fkTestmap_2 = documents.get(1);
+
+        Element rootMap_1 = fkTestmap_1.getDocumentElement();
+        NodeList dbRelationshipsMap_1 = rootMap_1.getElementsByTagName("db-relationship");
+
+        Element rootMap_2 = fkTestmap_2.getDocumentElement();
+        NodeList dbRelationshipsMap_2 = rootMap_2.getElementsByTagName("db-relationship");
+
+        for (int i = 0; i < dbRelationshipsMap_1.getLength(); i++) {
+            NamedNodeMap attributes = dbRelationshipsMap_1.item(i).getAttributes();
+            String name = attributes.getNamedItem("name").getNodeValue();
+            Node fk = attributes.getNamedItem("fk");
+            switch (name) {
+                case "reverse_several_matching_joins":
+                case "noReverse_fk":
+                case "joinsAnotherOrder":
+                case "toDepPk":
+                case "nPk_Pk":
+                case "toDepPK_toDepPK":
+                    assertNotNull(fk);
+                    assertEquals(fk.getNodeValue(), "true");
+                    break;
+
+                case "nPk_nPk":
+                case "reverse_nPk_nPk":
+                case "noReverse_notFk":
+                case "reverse_nPk_Pk":
+                case "reverse_PK_PK":
+                case "PK_PK":
+                case "several_matching_joins":
+                case "reverse_toDepPK_toDepPK":
+                    assertNull(fk);
+                    break;
+            }
+        }
+
+        for (int i = 0; i < dbRelationshipsMap_2.getLength(); i++) {
+            NamedNodeMap attributes = dbRelationshipsMap_2.item(i).getAttributes();
+            String name = attributes.getNamedItem("name").getNodeValue();
+            Node fk = attributes.getNamedItem("fk");
+            switch (name) {
+                case "reverse_reverseInAnotherDatamap":
+                case "reverse_reverseInAnotherDatamapToDepPK":
+                    assertNotNull(fk);
+                    assertEquals(fk.getNodeValue(), "true");
+                    break;
+            }
+        }
+
+        for (int i = 0; i < dbRelationshipsMap_1.getLength(); i++) {
+            NamedNodeMap attributes = dbRelationshipsMap_1.item(i).getAttributes();
+            String name = attributes.getNamedItem("name").getNodeValue();
+            Node toDepPK = attributes.getNamedItem("toDependentPK");
+            switch (name) {
+                case "reverse_toDepPk":
+                case "reverseInAnotherDatamapToDepPK":
+                case "toDepPK_toDepPK":
+                case "reverse_toDepPK_toDepPK":
+                    assertNull(toDepPK);
+                    break;
+            }
+        }
+
+        assertEquals(18, dbRelationshipsMap_1.getLength());
+        assertEquals(2, dbRelationshipsMap_2.getLength());
+
     }
 
     @Test

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?><data-map>
+
+	<db-entity name="A1">
+		<db-attribute name="AAA" type="INTEGER"  isMandatory="true"/>
+		<db-attribute name="CCC" type="INTEGER"  isMandatory="true"/>
+	</db-entity>
+	<db-entity name="B1">
+		<db-attribute name="BBB" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="DDD" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+
+	<db-entity name="A2">
+		<db-attribute name="AAA" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="B2">
+		<db-attribute name="BBB" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+
+	<db-entity name="A3">
+		<db-attribute name="CCC" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="B3">
+		<db-attribute name="DDD" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+
+	<db-entity name="A4">
+		<db-attribute name="AAA" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+
+	<db-entity name="A6">
+		<db-attribute name="AAA" type="INTEGER"  isMandatory="true"/>
+		<db-attribute name="CCC" type="INTEGER"  isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="EEE" type="INTEGER"  isMandatory="true"/>
+	</db-entity>
+	<db-entity name="B6">
+		<db-attribute name="BBB" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="DDD" type="INTEGER" isMandatory="true"/>
+		<db-attribute name="FFF" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+
+	<db-entity name="A7">
+		<db-attribute name="AAA" type="INTEGER"  isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="B7">
+		<db-attribute name="BBB" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+
+	<db-entity name="A8">
+		<db-attribute name="AAA" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="B8">
+		<db-attribute name="BBB" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+	</db-entity>
+
+	<db-entity name="A9">
+		<db-attribute name="AAA" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+	<db-entity name="B9">
+		<db-attribute name="BBB" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+
+
+
+	<db-relationship name="noReverse_fk" source="A1" target="B1" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+
+	<db-relationship name="noReverse_notFk" source="A1" target="B1">
+		<db-attribute-pair source="CCC" target="DDD"/>
+	</db-relationship>
+
+	<db-relationship name="nPk_Pk" source="A2" target="B2" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+	<db-relationship name="reverse_nPk_Pk" source="B2" target="A2">
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+	<db-relationship name="joinsAnotherOrder" source="A3" target="B3" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+		<db-attribute-pair source="CCC" target="DDD"/>
+	</db-relationship>
+	<db-relationship name="reverse_joinsAnotherOrder" source="B3" target="A3">
+		<db-attribute-pair source="DDD" target="CCC"/>
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+	<db-relationship name="reverseInAnotherDatamap" source="A4" target="B4" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+
+	<db-relationship name="toDepPk" source="A2" target="B2" toMany="true" >
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+	<db-relationship name="reverse_toDepPk" source="B2" target="A2" toDependentPK="true">
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+	<db-relationship name="reverseInAnotherDatamapToDepPK" source="A5" target="B5" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+
+	<db-relationship name="several_matching_joins" source="A6" target="B6" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+		<db-attribute-pair source="CCC" target="DDD"/>
+		<db-attribute-pair source="EEE" target="FFF"/>
+	</db-relationship>
+	<db-relationship name="reverse_several_matching_joins" source="B6" target="A6">
+		<db-attribute-pair source="BBB" target="AAA"/>
+		<db-attribute-pair source="FFF" target="EEE"/>
+		<db-attribute-pair source="DDD" target="CCC"/>
+	</db-relationship>
+
+	<db-relationship name="PK_PK" source="A7" target="B7" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+	<db-relationship name="reverse_PK_PK" source="B7" target="A7">
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+	<db-relationship name="toDepPK_toDepPK" source="A8" target="B8" toDependentPK="true" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+	<db-relationship name="reverse_toDepPK_toDepPK" source="B8" target="A8" toDependentPK="true">
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+	<db-relationship name="nPk_nPk" source="A9" target="B9" toMany="true">
+		<db-attribute-pair source="AAA" target="BBB"/>
+	</db-relationship>
+	<db-relationship name="reverse_nPk_nPk" source="B9" target="A9">
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+</data-map>
