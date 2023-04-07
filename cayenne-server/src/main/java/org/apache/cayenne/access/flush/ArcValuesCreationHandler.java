@@ -172,8 +172,8 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
 
             // We manage 3 cases here:
             // 1. PK -> FK: just propagate value from PK and to FK
-            // 2. PK -> PK: check isToDep flag and set dependent one
-            // 3. NON-PK -> FK (not supported fully for now, see CAY-2488): also check isToDep flag,
+            // 2. PK -> PK: check isFk flag and set dependent one
+            // 3. NON-PK -> FK (not supported fully for now, see CAY-2488): also check isFk flag,
             //    but get value from DbRow, not ObjID
             if(srcPK != targetPK) {
                 // case 1

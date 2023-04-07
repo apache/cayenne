@@ -274,7 +274,6 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
         // when PK is unset, we need to fix some derived flags
         if (!flag) {
-//TODO OOOOOO
             attr.setGenerated(false);
 
             Collection<DbRelationship> relationships = ProjectUtil
@@ -285,27 +284,14 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
             if (relationships.size() > 0) {
                 relationships.removeIf(relationship -> !relationship.isFK());
 
-                // filtered only those that are to dep PK
+                // filtered only those that are isFk
                 if (relationships.size() > 0) {
-                 /*   String message = (relationships.size() == 1)
-                            ? "Fix \"Foreign key\" relationship using this attribute?"
-                            : "Fix " + relationships.size()
-                                     + " \"Foreign key\" relationships using this attribute?";
-                    */
-
-
                     StringBuilder message = new StringBuilder("Removing an attribute can affect the following relationships:\n");
                     for (DbRelationship relationship : relationships) {
                         message.append(relationship.getName()).append("\n");
                     }
                     message.append("It would be a good idea to check them after making the change. Continue?");
 
-
-                /*    JOptionPane.showMessageDialog(Application.getFrame()
-                            , message
-                            , "Warning"
-                            , JOptionPane.PLAIN_MESSAGE);
-*/
                     int answer = JOptionPane.showConfirmDialog(
                             Application.getFrame(),
                             message.toString(),
@@ -316,11 +302,6 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                         // no action needed
                         return false;
                     }
-
-                /*    // fix target relationships
-                    for (DbRelationship relationship : relationships) {
-                        relationship.setFK(false);
-                    }*/
                 }
             }
         }

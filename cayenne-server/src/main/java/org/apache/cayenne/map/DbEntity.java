@@ -423,7 +423,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
                     }
             }
 
-            // check toDep PK for reverse relationships
+            // check isFk for reverse relationships
             for (DbRelationship rel : getRelationships()) {
                 DbRelationship reverse = rel.getReverseRelationship();
                 if(reverse != null && reverse.isFK() && !reverse.isValidForFk()) {
