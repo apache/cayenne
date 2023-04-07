@@ -20,7 +20,7 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
-import org.apache.cayenne.project.upgrade.utils.ToDepPkToFkUpdater;
+import org.apache.cayenne.project.upgrade.handlers.v11.ToDepPkToFkUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -37,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
