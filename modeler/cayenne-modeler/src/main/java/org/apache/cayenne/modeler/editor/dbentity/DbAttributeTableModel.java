@@ -53,12 +53,12 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
     protected DbEntity entity;
 
     public DbAttributeTableModel(DbEntity entity, ProjectController mediator,
-            Object eventSource) {
+                                 Object eventSource) {
         this(entity, mediator, eventSource, new ArrayList<>(entity.getAttributes()));
     }
 
     public DbAttributeTableModel(DbEntity entity, ProjectController mediator,
-            Object eventSource, List<DbAttribute> objectList) {
+                                 Object eventSource, List<DbAttribute> objectList) {
         super(mediator, eventSource, objectList);
         this.entity = entity;
     }
@@ -71,11 +71,11 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
         return DB_ATTRIBUTE_TYPE;
     }
 
-    public int lengthColumnId(){
+    public int lengthColumnId() {
         return DB_ATTRIBUTE_MAX;
     }
 
-    public int scaleColumnId(){
+    public int scaleColumnId() {
         return DB_ATTRIBUTE_SCALE;
     }
 
@@ -176,7 +176,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                 e.setOldName(attr.getName());
                 attr.setName((String) newVal);
                 attr.getEntity().dbAttributeChanged(e);
-                
+
                 fireTableCellUpdated(row, col);
                 break;
             case DB_ATTRIBUTE_TYPE:
@@ -274,7 +274,6 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
         // when PK is unset, we need to fix some derived flags
         if (!flag) {
-
             attr.setGenerated(false);
 
             Collection<DbRelationship> relationships = ProjectUtil
@@ -283,26 +282,25 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
                     .addAll(ProjectUtil.getRelationshipsUsingAttributeAsSource(attr));
 
             if (relationships.size() > 0) {
-                relationships.removeIf(relationship -> !relationship.isToDependentPK());
+                relationships.removeIf(relationship -> !relationship.isFK());
 
-                // filtered only those that are to dep PK
+                // filtered only those that are isFk
                 if (relationships.size() > 0) {
-                    String message = (relationships.size() == 1)
-                            ? "Fix \"To Dep PK\" relationship using this attribute?"
-                            : "Fix " + relationships.size()
-                                     + " \"To Dep PK\" relationships using this attribute?";
+                    StringBuilder message = new StringBuilder("Removing an attribute can affect the following relationships:\n");
+                    for (DbRelationship relationship : relationships) {
+                        message.append(relationship.getName()).append("\n");
+                    }
+                    message.append("It would be a good idea to check them after making the change. Continue?");
 
                     int answer = JOptionPane.showConfirmDialog(
                             Application.getFrame(),
-                            message);
-                    if (answer != JOptionPane.YES_OPTION) {
+                            message.toString(),
+                            "Warning",
+                            JOptionPane.OK_CANCEL_OPTION,
+                            JOptionPane.WARNING_MESSAGE);
+                    if (answer != JOptionPane.OK_OPTION) {
                         // no action needed
                         return false;
-                    }
-
-                    // fix target relationships
-                    for (DbRelationship relationship : relationships) {
-                        relationship.setToDependentPK(false);
                     }
                 }
             }
@@ -345,7 +343,7 @@ public class DbAttributeTableModel extends CayenneTableModel<DbAttribute> {
 
     @Override
     public void sortByColumn(int sortCol, boolean isAscent) {
-        switch(sortCol){
+        switch (sortCol) {
             case DB_ATTRIBUTE_NAME:
                 sortByElementProperty("name", isAscent);
                 break;

@@ -20,6 +20,7 @@
 package org.apache.cayenne.project.upgrade.handlers;
 
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.apache.cayenne.project.upgrade.handlers.v11.ToDepPkToFkUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -85,6 +86,12 @@ public class UpgradeHandler_V11 implements UpgradeHandler {
         dropObjEntityClientInfo(upgradeUnit);
         updateCgenConfig(upgradeUnit);
         updateDbImportConfig(upgradeUnit);
+    }
+
+    @Override
+    public void processAllDataMapDomes(List<UpgradeUnit> dataMapUnits) {
+        ToDepPkToFkUpdater fkUpdater = new ToDepPkToFkUpdater();
+        fkUpdater.update(dataMapUnits);
     }
 
     private void upgradeComments(UpgradeUnit upgradeUnit) {

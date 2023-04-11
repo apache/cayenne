@@ -87,8 +87,8 @@ class ManyToManyCandidateEntity {
         boolean isNotHaveAttributes = joinEntity.getAttributes().size() == 0;
 
         return isNotHaveAttributes
-                && reverseRelationship1 != null && reverseRelationship1.isToDependentPK()
-                && reverseRelationship2 != null && reverseRelationship2.isToDependentPK()
+                && reverseRelationship1 != null && !reverseRelationship1.isFK()
+                && reverseRelationship2 != null && !reverseRelationship2.isFK()
                 && entity1 != null && entity2 != null;
     }
 

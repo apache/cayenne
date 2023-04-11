@@ -79,7 +79,7 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
         dbRelationship.setSourceEntity(source);
         dbRelationship.setTargetEntityName(attributes.getValue("target"));
         dbRelationship.setToMany(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("toMany")));
-        dbRelationship.setToDependentPK(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("toDependentPK")));
+        dbRelationship.setFK(DataMapHandler.TRUE.equalsIgnoreCase(attributes.getValue("fk")));
 
         source.addRelationship(dbRelationship);
     }
@@ -89,6 +89,11 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
         join.setSourceName(attributes.getValue("source"));
         join.setTargetName(attributes.getValue("target"));
         dbRelationship.addJoin(join);
+        if (!dbRelationship.isFK() && join.getTarget() != null) {
+            if (join.getTarget().isPrimaryKey() && !join.getSource().isPrimaryKey()) {
+                dbRelationship.setFK(true);
+            }
+        }
     }
 
     public DbRelationship getDbRelationship() {

@@ -252,7 +252,7 @@ public class DataMapMergerTest {
             dbEntity("table2").attributes(
                 dbAttr("attr01").typeInt().primaryKey(),
                 dbAttr("attr02").typeInt())
-        ).join("rel", "table1.attr01", "table2.attr01")
+        ).join("rel", "table1.attr01", "table2.attr01", true)
          .build();
 
         DataMap db = dataMap().with(
@@ -287,8 +287,8 @@ public class DataMapMergerTest {
                 dbAttr("attr01").typeInt().primaryKey(),
                 dbAttr("attr02").typeInt().primaryKey(),
                 dbAttr("attr03").typeInt().primaryKey())
-        ).join("rel", "table1.attr01", "table2.attr01")
-         .join("rel1", "table1.attr01", "table2.attr03")
+        ).join("rel", "table1.attr01", "table2.attr01",true)
+         .join("rel1", "table1.attr01", "table2.attr03",false)
          .build();
 
         DataMap db = dataMap().with(
@@ -300,8 +300,8 @@ public class DataMapMergerTest {
                 dbAttr("attr01").typeInt().primaryKey(),
                 dbAttr("attr02").typeInt().primaryKey(),
                 dbAttr("attr03").typeInt().primaryKey())
-        ).join("rel", "table1.attr01", "table2.attr02")
-         .join("rel1", "table1.attr01", "table2.attr03")
+        ).join("rel", "table1.attr01", "table2.attr02",true)
+         .join("rel1", "table1.attr01", "table2.attr03",false)
          .build();
 
 
@@ -329,7 +329,7 @@ public class DataMapMergerTest {
                         dbAttr("attr01").typeInt().primaryKey(),
                         dbAttr("attr02").typeInt().primaryKey(),
                         dbAttr("attr03").typeInt().primaryKey())
-        ).join("rel", "TABLE1.attr01", "table2.attr01").build();
+        ).join("rel", "TABLE1.attr01", "table2.attr01",true).build();
 
         DataMap db = dataMap().with(
                 dbEntity("table1").attributes(
@@ -340,7 +340,7 @@ public class DataMapMergerTest {
                         dbAttr("attr01").typeInt().primaryKey(),
                         dbAttr("attr02").typeInt().primaryKey(),
                         dbAttr("attr03").typeInt().primaryKey())
-        ).join("rel", "table1.attr01", "table2.attr01").build();
+        ).join("rel", "table1.attr01", "table2.attr01",false).build();
 
 
         List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
@@ -358,7 +358,7 @@ public class DataMapMergerTest {
                         dbAttr("attr01").typeInt().primaryKey(),
                         dbAttr("attr02").typeInt().primaryKey(),
                         dbAttr("attr03").typeInt().primaryKey())
-        ).join("rel", "table1.ATTR01", "table2.attr01").build();
+        ).join("rel", "table1.ATTR01", "table2.attr01",true).build();
 
         DataMap db = dataMap().with(
                 dbEntity("table1").attributes(
@@ -369,7 +369,7 @@ public class DataMapMergerTest {
                         dbAttr("attr01").typeInt().primaryKey(),
                         dbAttr("attr02").typeInt().primaryKey(),
                         dbAttr("attr03").typeInt().primaryKey())
-        ).join("rel", "table1.attr01", "table2.attr01").build();
+        ).join("rel", "table1.attr01", "table2.attr01",false).build();
 
 
         List<MergerToken> tokens = dbMerger().createMergeTokens(existing, db);
@@ -397,7 +397,7 @@ public class DataMapMergerTest {
             dbEntity("table2").attributes(
                 dbAttr("attr01").typeInt().primaryKey(),
                 dbAttr("attr02").typeInt())
-        ).join("rel", "table1.attr01", "table2.attr01")
+        ).join("rel", "table1.attr01", "table2.attr01",true)
          .build();
 
 

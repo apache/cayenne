@@ -361,11 +361,11 @@ public class DbGenerator {
 			}
 
 			// create an FK CONSTRAINT only if the relationship is to PK
-			// and if this is not a dependent PK
+			// and if this is FK
 
 			// create UNIQUE CONSTRAINT on FK if reverse relationship is to-one
 
-			if (rel.isToPK() && !rel.isToDependentPK()) {
+			if (rel.isToPK() && rel.isFK()) {
 
 				if (getAdapter().supportsUniqueConstraints()) {
 

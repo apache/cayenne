@@ -99,16 +99,16 @@
 	<db-relationship name="toEntity2" source="ENTITY3" target="ENTITY2">
 		<db-attribute-pair source="ENTITY2_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+	<db-relationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toMany="true">
 		<db-attribute-pair source="ID" target="SIDE2_ID"/>
 	</db-relationship>
-	<db-relationship name="side2s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+	<db-relationship name="side2s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toMany="true">
 		<db-attribute-pair source="ID" target="SIDE1_ID"/>
 	</db-relationship>
-	<db-relationship name="side1" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
+	<db-relationship name="side1" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR" fk="true">
 		<db-attribute-pair source="SIDE1_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="side2" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
+	<db-relationship name="side2" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR" fk="true">
 		<db-attribute-pair source="SIDE2_ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="complexJoins" source="FLATTENED_TEST_1" target="COMPLEX_JOIN" toMany="true">

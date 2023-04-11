@@ -19,25 +19,10 @@
 
 package org.apache.cayenne.modeler.dialog;
 
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.table.TableColumn;
-import java.awt.Component;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -54,6 +39,23 @@ import org.apache.cayenne.modeler.util.ModelerUtil;
 import org.apache.cayenne.modeler.util.combo.AutoCompletion;
 import org.apache.cayenne.project.extension.info.ObjectInfo;
 import org.apache.cayenne.util.Util;
+
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.TableColumn;
+import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * @since 4.2
@@ -125,15 +127,15 @@ public class DbRelationshipDialog extends CayenneController {
         view.getTargetEntities().setModel(targetComboBoxModel);
 
         view.getSourceName().setText(relationship.getSourceEntityName());
-        view.getToDepPk().setSelected(relationship.isToDependentPK());
+        view.getFK().setSelected(relationship.isFK());
         view.getToMany().setSelected(relationship.isToMany());
 
         view.getNameField().setText(relationship.getName());
-        if(reverseRelationship != null) {
+        if (reverseRelationship != null) {
             view.getReverseName().setText(reverseRelationship.getName());
         }
 
-        if(relationship.getTargetEntity() == null) {
+        if (relationship.getTargetEntity() == null) {
             enableOptions(false);
         } else {
             enableInfo();
@@ -147,10 +149,10 @@ public class DbRelationshipDialog extends CayenneController {
 
     private void initController() {
         view.getTargetEntities().addActionListener(action -> {
-            DbEntity selectedItem = ((TargetComboBoxModel)view.getTargetEntities().getModel()).selected;
-            if(relationship.getTargetEntityName() == null) {
+            DbEntity selectedItem = ((TargetComboBoxModel) view.getTargetEntities().getModel()).selected;
+            if (relationship.getTargetEntityName() == null) {
                 relationship.setTargetEntityName(selectedItem.getName());
-            } else if(!relationship.getTargetEntityName().equals(selectedItem.getName())){
+            } else if (!relationship.getTargetEntityName().equals(selectedItem.getName())) {
                 if (WarningDialogByDbTargetChange.showWarningDialog(projectController, relationship)) {
                     // clear joins...
                     relationship.removeAllJoins();
@@ -158,8 +160,8 @@ public class DbRelationshipDialog extends CayenneController {
                 } else {
                     view.getTargetEntities().setSelectedItem(relationship.getTargetEntityName());
                 }
-                relationship.setToDependentPK(false);
-                view.getToDepPk().setSelected(relationship.isValidForDepPk());
+                relationship.setFK(false);
+                view.getFK().setSelected(relationship.isValidForFk());
                 projectController.fireDbRelationshipEvent(new RelationshipEvent(this, relationship, relationship.getSourceEntity()));
             }
             enableInfo();
@@ -183,12 +185,12 @@ public class DbRelationshipDialog extends CayenneController {
             DbJoin join = model.getJoin(row);
 
             relationship.removeJoin(join);
-            if(relationship.isValidForDepPk()) {
-                view.getToDepPk().setEnabled(true);
+            if (relationship.isValidForFk()) {
+                view.getFK().setEnabled(true);
             } else {
-                view.getToDepPk().setEnabled(false);
-                view.getToDepPk().setSelected(false);
-                relationship.setToDependentPK(false);
+                view.getFK().setEnabled(false);
+                view.getFK().setSelected(false);
+                relationship.setFK(false);
             }
 
             model.removeRow(join);
@@ -206,27 +208,35 @@ public class DbRelationshipDialog extends CayenneController {
             view.setVisible(false);
         });
 
-        view.addWindowListener(new WindowAdapter()
-        {
+        view.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 view.setCancelPressed(true);
             }
         });
 
-        view.getToDepPk().setEnabled(relationship.isValidForDepPk());
-        view.getToDepPk().addActionListener(selected -> {
-            boolean isSelected = view.getToDepPk().isSelected();
+        view.getFK().setEnabled(relationship.isValidForFk());
+        view.getFK().addActionListener(selected -> {
+            boolean isSelected = view.getFK().isSelected();
             DbRelationship reverseRelationship = relationship.getReverseRelationship();
-            if(reverseRelationship != null && reverseRelationship.isToDependentPK() && isSelected) {
-                boolean setToDepPk = JOptionPane.showConfirmDialog(Application.getFrame(), "Unset reverse relationship's \"To Dep PK\" setting?",
-                        "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
-                relationship.setToDependentPK(setToDepPk);
-                reverseRelationship.setToDependentPK(!setToDepPk);
+            if (reverseRelationship != null) {
+                boolean isOKAnswer = JOptionPane.showConfirmDialog(Application.getFrame()
+                        , isSelected ? "Foreign key will be unset in reverse relationship" : "Foreign key will be set in reverse relationship"
+                        , "Warning"
+                        , JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
+                if (isOKAnswer) {
+                    relationship.setFK(isSelected);
+                    reverseRelationship.setFK(!isSelected);
+                } else {
+                    relationship.setFK(!isSelected);
+                    reverseRelationship.setFK(isSelected);
+                    view.getFK().setSelected(!isSelected);
+                }
             } else {
-                relationship.setToDependentPK(view.getToDepPk().isSelected());
+                relationship.setFK(isSelected);
             }
         });
+
     }
 
     private void enableInfo() {
@@ -236,12 +246,21 @@ public class DbRelationshipDialog extends CayenneController {
                 projectController, this, true));
 
         view.getTable().getModel().addTableModelListener(change -> {
-            if(change.getLastRow() != Integer.MAX_VALUE) {
-                if(relationship.isValidForDepPk()) {
-                    view.getToDepPk().setEnabled(true);
-                } else {
-                    view.getToDepPk().setEnabled(false);
+            if (!isEventRowDeletion(change)) {
+                if (relationship.getReverseRelationship() == null) {
+                    for (DbJoin join : relationship.getJoins()) {
+                        if (!relationship.isFK()) {
+                            DbAttribute target = join.getTarget();
+                            DbAttribute source = join.getSource();
+
+                            if (target != null && source != null && target.isPrimaryKey() && !source.isPrimaryKey()) {
+                                relationship.setFK(true);
+                                view.getFK().setSelected(true);
+                            }
+                        }
+                    }
                 }
+                view.getFK().setEnabled(relationship.isValidForFk());
             }
         });
 
@@ -260,6 +279,10 @@ public class DbRelationshipDialog extends CayenneController {
         targetColumn.setCellEditor(Application.getWidgetFactory().createCellEditor(comboBox));
 
         view.getTablePreferences().bind(view.getTable(), null, null, null, DbJoinTableModel.SOURCE, true);
+    }
+
+    private boolean isEventRowDeletion(TableModelEvent change) {
+        return change.getLastRow() == Integer.MAX_VALUE;
     }
 
     private void enableOptions(boolean enable) {
@@ -313,11 +336,11 @@ public class DbRelationshipDialog extends CayenneController {
                 if (relationship.getSourceEntity() == relationship.getTargetEntity()) {
                     projectController
                             .fireDbRelationshipEvent(
-                            new RelationshipEvent(
-                                    this,
-                                    reverseRelationship,
-                                    reverseRelationship.getSourceEntity(),
-                                    MapEvent.ADD));
+                                    new RelationshipEvent(
+                                            this,
+                                            reverseRelationship,
+                                            reverseRelationship.getSourceEntity(),
+                                            MapEvent.ADD));
                 }
             } else {
                 handleNameUpdate(reverseRelationship, view.getReverseName().getText().trim());
@@ -327,8 +350,8 @@ public class DbRelationshipDialog extends CayenneController {
             reverseRelationship.setJoins(reverseJoins);
 
             // check if joins map to a primary key of this entity
-            if (!relationship.isToDependentPK() && reverseRelationship.isValidForDepPk()) {
-                reverseRelationship.setToDependentPK(true);
+            if (!relationship.isFK() && reverseRelationship.isValidForFk()) {
+                reverseRelationship.setFK(true);
             }
         }
 
@@ -336,7 +359,7 @@ public class DbRelationshipDialog extends CayenneController {
     }
 
     private void handleNameUpdate(DbRelationship relationship, String userInputName) {
-        if(Util.nullSafeEquals(relationship.getName(), userInputName)) {
+        if (Util.nullSafeEquals(relationship.getName(), userInputName)) {
             return;
         }
 
@@ -353,7 +376,7 @@ public class DbRelationshipDialog extends CayenneController {
 
         projectController
                 .fireDbRelationshipEvent(
-                new RelationshipEvent(this, relationship, relationship.getSourceEntity(), oldName));
+                        new RelationshipEvent(this, relationship, relationship.getSourceEntity(), oldName));
     }
 
     private Collection<DbJoin> getReverseJoins() {
@@ -380,7 +403,7 @@ public class DbRelationshipDialog extends CayenneController {
     }
 
     private void fireDbRelationshipEvent(boolean isCreate) {
-        if(!isCreate) {
+        if (!isCreate) {
             projectController
                     .fireDbRelationshipEvent(
                             new RelationshipEvent(this, relationship, relationship.getSourceEntity(), MapEvent.CHANGE));
@@ -388,7 +411,7 @@ public class DbRelationshipDialog extends CayenneController {
             Application.getInstance().getUndoManager().addEdit(undo);
         } else {
             DbEntity dbEntity = relationship.getSourceEntity();
-            if(dbEntity.getRelationship(relationship.getName()) == null) {
+            if (dbEntity.getRelationship(relationship.getName()) == null) {
                 dbEntity.addRelationship(relationship);
             }
 
@@ -421,7 +444,7 @@ public class DbRelationshipDialog extends CayenneController {
         }
 
         private String getTitle(DbEntity entity) {
-            if(entity == null) {
+            if (entity == null) {
                 return "";
             }
             return relationship.getSourceEntity().getDataMap() == entity.getDataMap()
@@ -441,8 +464,8 @@ public class DbRelationshipDialog extends CayenneController {
 
         @Override
         public void setSelectedItem(Object anItem) {
-            String title = (String)anItem;
-            if(title != null) {
+            String title = (String) anItem;
+            if (title != null) {
                 int spacer = title.indexOf(' ');
                 if (spacer != -1) {
                     title = title.substring(0, spacer);

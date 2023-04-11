@@ -137,14 +137,13 @@ class DbRelationshipValidator extends ConfigurationNodeValidator {
     }
 
     private void checkOnGeneratedStrategyConflict(DbRelationship relationship, ValidationResult validationResult) {
-        if (relationship.isToDependentPK()) {
-            Collection<DbAttribute> attributes = relationship.getTargetEntity().getGeneratedAttributes();
-            for (DbAttribute attribute : attributes) {
-                if (attribute.isGenerated()) {
+        if (relationship.isFK()) {
+            for (DbJoin join : relationship.getJoins()) {
+                if (join.getSource().isGenerated()) {
                     addFailure(
                             validationResult,
                             relationship,
-                            "'To Dep Pk' incompatible with Database-Generated on '%s' relationship",
+                            "'FK' incompatible with Database-Generated on '%s' relationship",
                             toString(relationship));
                 }
             }

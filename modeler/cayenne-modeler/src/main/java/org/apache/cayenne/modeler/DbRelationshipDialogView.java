@@ -46,7 +46,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
 
     private JTextField name;
     private JComboBox<String> targetEntities;
-    private JCheckBox toDepPk;
+    private JCheckBox fK;
     private JCheckBox toMany;
     private JTextField comment;
     private JLabel sourceName;
@@ -71,7 +71,7 @@ public class DbRelationshipDialogView extends CayenneDialog {
     private void initView() {
         name = new JTextField(25);
         targetEntities = new JComboBox<>();
-        toDepPk = new JCheckBox();
+        fK = new JCheckBox();
         toMany = new JCheckBox();
         comment = new JTextField(25);
 
@@ -114,8 +114,8 @@ public class DbRelationshipDialogView extends CayenneDialog {
         builder.addLabel("Target Entity:", cc.xy(1, 7));
         builder.add(targetEntities, cc.xywh(3, 7, 1, 1));
 
-        builder.addLabel("To Dep PK:", cc.xy(1, 9));
-        builder.add(toDepPk, cc.xywh(3, 9, 1, 1));
+        builder.addLabel("Foreign key:", cc.xy(1, 9));
+        builder.add(fK, cc.xywh(3, 9, 1, 1));
 
         builder.addLabel("To Many:", cc.xy(1, 11));
         builder.add(toMany, cc.xywh(3, 11, 1, 1));
@@ -165,8 +165,8 @@ public class DbRelationshipDialogView extends CayenneDialog {
         return targetEntities;
     }
 
-    public JCheckBox getToDepPk() {
-        return toDepPk;
+    public JCheckBox getFK() {
+        return fK;
     }
 
     public JCheckBox getToMany() {

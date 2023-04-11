@@ -170,16 +170,16 @@
 		<qualifier><![CDATA[discriminator = "IvSub3"]]></qualifier>
 		<pre-persist method-name="onPrePersist"/>
 	</obj-entity>
-	<db-relationship name="sub1" source="IV1_ROOT" target="IV1_SUB1" toDependentPK="true">
+	<db-relationship name="sub1" source="IV1_ROOT" target="IV1_SUB1">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="root" source="IV1_SUB1" target="IV1_ROOT">
+	<db-relationship name="root" source="IV1_SUB1" target="IV1_ROOT" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="sub1" source="IV2_ROOT" target="IV2_SUB1" toDependentPK="true">
+	<db-relationship name="sub1" source="IV2_ROOT" target="IV2_SUB1">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="root" source="IV2_SUB1" target="IV2_ROOT">
+	<db-relationship name="root" source="IV2_SUB1" target="IV2_ROOT" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="x" source="IV2_SUB1" target="IV2_X">
@@ -191,28 +191,28 @@
 	<db-relationship name="children" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="true">
 		<db-attribute-pair source="ID" target="PARENT_ID"/>
 	</db-relationship>
-	<db-relationship name="concrete" source="IV_ABSTRACT" target="IV_CONCRETE" toDependentPK="true">
+	<db-relationship name="concrete" source="IV_ABSTRACT" target="IV_CONCRETE">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="parent" source="IV_ABSTRACT" target="IV_ABSTRACT">
 		<db-attribute-pair source="PARENT_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="impl" source="IV_BASE" target="IV_IMPL" toDependentPK="true">
+	<db-relationship name="impl" source="IV_BASE" target="IV_IMPL">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="impl" source="IV_BASE_WITH_LOCK" target="IV_IMPL_WITH_LOCK" toDependentPK="true">
+	<db-relationship name="impl" source="IV_BASE_WITH_LOCK" target="IV_IMPL_WITH_LOCK">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT">
+	<db-relationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="sub1" source="IV_GEN_KEY_ROOT" target="IV_GEN_KEY_SUB" toDependentPK="true">
+	<db-relationship name="sub1" source="IV_GEN_KEY_ROOT" target="IV_GEN_KEY_SUB">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="root" source="IV_GEN_KEY_SUB" target="IV_GEN_KEY_ROOT">
+	<db-relationship name="root" source="IV_GEN_KEY_SUB" target="IV_GEN_KEY_ROOT" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="base" source="IV_IMPL" target="IV_BASE">
+	<db-relationship name="base" source="IV_IMPL" target="IV_BASE" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="other1" source="IV_IMPL" target="IV_OTHER">
@@ -221,7 +221,7 @@
 	<db-relationship name="other2" source="IV_IMPL" target="IV_OTHER">
 		<db-attribute-pair source="OTHER2_ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="base" source="IV_IMPL_WITH_LOCK" target="IV_BASE_WITH_LOCK">
+	<db-relationship name="base" source="IV_IMPL_WITH_LOCK" target="IV_BASE_WITH_LOCK" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
 	<db-relationship name="other1" source="IV_IMPL_WITH_LOCK" target="IV_OTHER">
@@ -236,28 +236,28 @@
 	<db-relationship name="ivSub3s" source="IV_ROOT" target="IV_SUB3" toMany="true">
 		<db-attribute-pair source="ID" target="IV_ROOT_ID"/>
 	</db-relationship>
-	<db-relationship name="sub1" source="IV_ROOT" target="IV_SUB1" toDependentPK="true">
+	<db-relationship name="sub1" source="IV_ROOT" target="IV_SUB1">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="sub2" source="IV_ROOT" target="IV_SUB2" toDependentPK="true">
+	<db-relationship name="sub2" source="IV_ROOT" target="IV_SUB2">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="sub3" source="IV_ROOT" target="IV_SUB3" toDependentPK="true">
+	<db-relationship name="sub3" source="IV_ROOT" target="IV_SUB3">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="master" source="IV_SUB1" target="IV_ROOT">
+	<db-relationship name="master" source="IV_SUB1" target="IV_ROOT" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1" toDependentPK="true">
+	<db-relationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1">
+	<db-relationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="master" source="IV_SUB2" target="IV_ROOT">
+	<db-relationship name="master" source="IV_SUB2" target="IV_ROOT" fk="true">
 		<db-attribute-pair source="ID" target="ID"/>
 	</db-relationship>
-	<db-relationship name="ivRoot1" source="IV_SUB3" target="IV_ROOT">
+	<db-relationship name="ivRoot1" source="IV_SUB3" target="IV_ROOT" fk="true">
 		<db-attribute-pair source="IV_ROOT_ID" target="ID"/>
 	</db-relationship>
 	<obj-relationship name="x" source="Iv2Sub1" target="Iv2X" deleteRule="Nullify" db-relationship-path="sub1.x"/>

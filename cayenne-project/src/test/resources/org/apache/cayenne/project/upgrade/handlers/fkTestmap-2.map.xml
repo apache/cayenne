@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><data-map>
+
+	<db-entity name="B4">
+		<db-attribute name="BBB" type="INTEGER" isMandatory="true"/>
+	</db-entity>
+
+	<db-relationship name="reverse_reverseInAnotherDatamap" source="B4" target="A4" toMany="true">
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+	<db-relationship name="reverse_reverseInAnotherDatamapToDepPk" source="B5" target="A5" toMany="true">
+		<db-attribute-pair source="BBB" target="AAA"/>
+	</db-relationship>
+
+
+</data-map>
