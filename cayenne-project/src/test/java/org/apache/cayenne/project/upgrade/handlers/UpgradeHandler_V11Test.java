@@ -209,17 +209,16 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
                 case "joinsAnotherOrder":
                 case "toDepPk":
                 case "nPk_Pk":
+                case "nPk_nPk":
+                case "PK_PK":
                 case "toDepPK_toDepPK":
                     assertNotNull(fk);
                     assertEquals(fk.getNodeValue(), "true");
                     break;
-
-                case "nPk_nPk":
-                case "reverse_nPk_nPk":
                 case "noReverse_notFk":
                 case "reverse_nPk_Pk":
+                case "reverse_nPk_nPk":
                 case "reverse_PK_PK":
-                case "PK_PK":
                 case "several_matching_joins":
                 case "reverse_toDepPK_toDepPK":
                     assertNull(fk);
