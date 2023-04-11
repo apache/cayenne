@@ -39,6 +39,7 @@ CAY-2788 DbImport: Add fallback option for the batch attribute loader
 CAY-2795 Add unit tests for the Json type
 CAY-2802 Upgrade Gradle to 7.6.1
 CAY-2803 Test infrastructure: declarative custom DI modules in ServerCase
+CAY-2805 Stop calling exp parser internally
 
 Bug Fixes:
 

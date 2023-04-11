@@ -161,7 +161,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         final String prefix;
         if (jointRoot != this) {
-            Expression objectPath = ExpressionFactory.exp(getPath(jointRoot));
+            Expression objectPath = ExpressionFactory.pathExp(getPath(jointRoot));
             ASTPath translated = (ASTPath) ((PrefetchProcessorNode) jointRoot)
                     .getResolver()
                     .getEntity()
