@@ -77,7 +77,7 @@ class PrefetchNodeStage implements TranslationStage {
         boolean warnPrefetchWithLimit = false;
 
         for(PrefetchTreeNode node : prefetch.adjacentJointNodes()) {
-            Expression prefetchExp = ExpressionFactory.exp(node.getPath());
+            Expression prefetchExp = ExpressionFactory.pathExp(node.getPath());
             ASTDbPath dbPrefetch = (ASTDbPath) objEntity.translateToDbPath(prefetchExp);
             final String dbPath = dbPrefetch.getPath();
             DbEntity dbEntity = objEntity.getDbEntity();
@@ -124,10 +124,16 @@ class PrefetchNodeStage implements TranslationStage {
         PathTranslator pathTranslator = context.getPathTranslator();
         PrefetchSelectQuery<?> prefetchSelectQuery = (PrefetchSelectQuery<?>) select;
         for(String prefetchPath: prefetchSelectQuery.getResultPaths()) {
-            ASTDbPath pathExp = (ASTDbPath) context.getMetadata().getClassDescriptor().getEntity()
-                    .translateToDbPath(ExpressionFactory.exp(prefetchPath));
+            String path;
+            if(prefetchPath.startsWith(ASTDbPath.DB_PREFIX)) {
+                path = prefetchPath.substring(ASTDbPath.DB_PREFIX.length());
+            } else {
+                Expression exp = ExpressionFactory.pathExp(prefetchPath);
+                ASTDbPath pathExp = (ASTDbPath) context.getMetadata().getClassDescriptor().getEntity()
+                        .translateToDbPath(exp);
+                path = pathExp.getPath();
+            }
 
-            String path = pathExp.getPath();
             PathTranslationResult result = pathTranslator
                     .translatePath(context.getMetadata().getDbEntity(), path);
             result.getDbRelationship().ifPresent(r -> {
