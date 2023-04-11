@@ -20,6 +20,8 @@
 package org.apache.cayenne.project.upgrade.handlers.v11;
 
 import org.apache.cayenne.project.upgrade.UpgradeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -35,6 +37,8 @@ public class ToDepPkToFkUpdater {
     private static final String DB_RELATIONSHIP_TAG = "db-relationship";
     private static final String DB_ENTITY_TAG = "db-entity";
     private static final String DB_ATTRIBUTE_PAIR_TAG = "db-attribute-pair";
+
+    private static final Logger logger = LoggerFactory.getLogger(ToDepPkToFkUpdater.class);
 
     public void update(List<UpgradeUnit> units) {
 
@@ -85,42 +89,56 @@ public class ToDepPkToFkUpdater {
     }
 
     private void setFk(Element relationship, Element reverseRelationship, List<NodeList> combinedDbEntityList) {
+
+        Node sourceEntity = getDbEntityByJoinDirection(combinedDbEntityList, relationship, "source");
+        Node targetEntity = getDbEntityByJoinDirection(combinedDbEntityList, relationship, "target");
+
         NodeList pairNodes = relationship.getElementsByTagName(DB_ATTRIBUTE_PAIR_TAG);
         for (int i = 0; i < pairNodes.getLength(); i++) {
-            String joinSource = pairNodes.item(i).getAttributes().getNamedItem("source").getNodeValue();
-            String joinTarget = pairNodes.item(i).getAttributes().getNamedItem("target").getNodeValue();
-
-            NamedNodeMap relationshipAttrs = relationship.getAttributes();
-
-            String sourceEntityName = relationshipAttrs.getNamedItem("source").getNodeValue();
-            String targetEntityName = relationshipAttrs.getNamedItem("target").getNodeValue();
-
-            Node sourceEntity = getDbEntityByName(combinedDbEntityList, sourceEntityName);
-            Node targetEntity = getDbEntityByName(combinedDbEntityList, targetEntityName);
-
             if (sourceEntity != null && targetEntity != null) {
+                Node currentNode = pairNodes.item(i);
 
-                boolean sourceIsPrimaryKey = isPrimaryKey(joinSource, sourceEntity.getChildNodes());
-                boolean targetIsPrimaryKey = isPrimaryKey(joinTarget, targetEntity.getChildNodes());
+                boolean sourceIsPK = isPrimaryKey(sourceEntity, currentNode, "source");
+                boolean targetIsPK = isPrimaryKey(targetEntity, currentNode, "target");
 
-                if (sourceIsPrimaryKey != targetIsPrimaryKey) {
-                    if (reverseRelationship != null && sourceIsPrimaryKey) {
-                        reverseRelationship.setAttribute(FK_TAG, "true");
-                    }
-                    if (reverseRelationship != null && !sourceIsPrimaryKey) {
-                        relationship.setAttribute(FK_TAG, "true");
-                    }
-
-                    if (reverseRelationship == null && !sourceIsPrimaryKey) {
-                        relationship.setAttribute(FK_TAG, "true");
-                    }
+                if (sourceIsPK != targetIsPK) {
+                    handleDefinedFkCase(relationship, reverseRelationship, sourceIsPK);
                     return;
+                } else {
+                    handleUndefinedFkCase(relationship, reverseRelationship, pairNodes, i);
                 }
             }
         }
     }
 
-    private boolean isPrimaryKey(String joinName, NodeList childNodes) {
+    private void handleUndefinedFkCase(Element relationship, Element reverseRelationship, NodeList pairNodes, int i) {
+        //Check is this last join, which means there are no joins where fk direction is defined and this
+        // relationship has both side.
+        if (isLastJoinPair(pairNodes, i) && reverseRelationship != null) {
+            relationship.setAttribute(FK_TAG, "true");
+            logger.warn(String.format("Foreign key in relationships pair %s and %s was undefined. FK = true was set in the %s by default"
+                    , relationship.getAttribute("name")
+                    , reverseRelationship.getAttribute("name")
+                    , relationship.getAttribute("name")));
+        }
+    }
+
+    private void handleDefinedFkCase(Element relationship, Element reverseRelationship, boolean sourceIsPK) {
+        if (sourceIsPK && reverseRelationship != null) {
+            reverseRelationship.setAttribute(FK_TAG, "true");
+        }
+        if (!sourceIsPK) {
+            relationship.setAttribute(FK_TAG, "true");
+        }
+    }
+
+    private boolean isLastJoinPair(NodeList pairNodes, int i) {
+        return i == pairNodes.getLength() - 1;
+    }
+
+    private boolean isPrimaryKey(Node entity, Node node, String joinDirection) {
+        String joinName = node.getAttributes().getNamedItem(joinDirection).getNodeValue();
+        NodeList childNodes = entity.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);
             if (item.getAttributes() != null) {
@@ -136,7 +154,9 @@ public class ToDepPkToFkUpdater {
         return false;
     }
 
-    private Node getDbEntityByName(List<NodeList> combinedDbEntityList, String searchedEntityName) {
+    private Node getDbEntityByJoinDirection(List<NodeList> combinedDbEntityList, Element relationship, String joinDirection) {
+        NamedNodeMap relationshipAttrs = relationship.getAttributes();
+        String searchedEntityName = relationshipAttrs.getNamedItem(joinDirection).getNodeValue();
         for (NodeList list : combinedDbEntityList) {
             for (int i = 0; i < list.getLength(); i++) {
                 String entityName = list.item(i).getAttributes().getNamedItem("name").getNodeValue();
