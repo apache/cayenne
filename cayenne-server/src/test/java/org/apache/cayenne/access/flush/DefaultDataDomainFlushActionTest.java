@@ -92,6 +92,35 @@ public class DefaultDataDomainFlushActionTest {
     }
 
     @Test
+    public void mergeSameObjectsId_ReplacementId() {
+        ObjectId id1  = ObjectId.of("db:test2");
+        id1.getReplacementIdMap().put("id", 1);
+        ObjectId id2  = ObjectId.of("db:test");
+        id2.getReplacementIdMap().put("id", 1);
+        ObjectId id3  = ObjectId.of("db:test");
+        id3.getReplacementIdMap().put("id", 1);
+        ObjectId id4  = ObjectId.of("db:test");
+        id4.getReplacementIdMap().put("id", 2);
+
+        DbEntity test = mockEntity("test");
+        DbEntity test2 = mockEntity("test2");
+        BaseDbRowOp[] op = new BaseDbRowOp[4];
+        op[0] = new InsertDbRowOp(mockObject(id1),  test2, id1); // +
+        op[1] = new InsertDbRowOp(mockObject(id2),  test,  id2); // -
+        op[2] = new DeleteDbRowOp(mockObject(id3),  test,  id3); // -
+        op[3] = new UpdateDbRowOp(mockObject(id4),  test,  id4); // +
+
+        DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
+        when(action.mergeSameObjectIds((List<DbRowOp>) any(List.class))).thenCallRealMethod();
+
+        Collection<DbRowOp> merged = action.mergeSameObjectIds(new ArrayList<>(Arrays.asList(op)));
+        assertEquals(3, merged.size());
+
+        assertThat(merged, hasItems(op[0], op[2], op[3]));
+        assertThat(merged, not(hasItem(sameInstance(op[1]))));
+    }
+
+    @Test
     public void createQueries() {
         ObjectId id1  = ObjectId.of("test",  "id", 1);
         ObjectId id2  = ObjectId.of("test",  "id", 2);

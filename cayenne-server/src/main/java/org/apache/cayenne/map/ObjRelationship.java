@@ -196,8 +196,8 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         ObjEntity source = getSourceEntity();
 
         for (ObjRelationship relationship : target.getRelationships()) {
-
-            if (relationship.getTargetEntity() != source) {
+            ObjEntity maybeSameSource = relationship.getTargetEntity();
+            if (maybeSameSource != source && !source.isSubentityOf(maybeSameSource)) {
                 continue;
             }
 
@@ -306,9 +306,8 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
             return true;
         }
 
-        // entities with qualifiers may result in filtering even existing target
-        // rows, so
-        // such relationships are optional
+        // entities with qualifiers may result in filtering even existing target rows,
+        // so such relationships are optional
         if (isQualifiedEntity(getTargetEntity())) {
             return true;
         }

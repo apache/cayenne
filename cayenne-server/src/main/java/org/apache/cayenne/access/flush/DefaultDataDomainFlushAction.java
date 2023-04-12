@@ -41,6 +41,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
+import org.apache.cayenne.access.flush.operation.OpIdFactory;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -130,7 +131,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
     protected List<DbRowOp> mergeSameObjectIds(List<DbRowOp> dbRowOps) {
         Map<ObjectId, DbRowOp> index = new HashMap<>(dbRowOps.size());
         // new EffectiveOpId()
-        dbRowOps.forEach(row -> index.merge(row.getChangeId(), row, new DbRowOpMerger()));
+        dbRowOps.forEach(row -> index.merge(OpIdFactory.idForOperation(row.getChangeId()), row, new DbRowOpMerger()));
         // reuse list
         dbRowOps.clear();
         dbRowOps.addAll(index.values());
