@@ -119,7 +119,7 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
     }
 
     public Class<?> getJavaClass() {
-        return objAttribute.getJavaClass();
+        return objAttribute.getClass();
     }
 
     public String getType() {

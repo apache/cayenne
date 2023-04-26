@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -216,7 +215,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
                     type = TypesMapping.getSqlTypeByJava(attribute.getJavaClass());
                     // have to catch the exception here to make sure that exceptional situations
                     // (class doesn't exist, for example) don't prevent the gui from properly updating.
-                } catch (CayenneRuntimeException | DIRuntimeException cre) {
+                } catch (CayenneRuntimeException cre) {
                     return null;
                 }
             } else {
