@@ -103,8 +103,7 @@ public class Java8TimeIT extends ServerCase {
 
 		assertNotNull(testRead.getTime());
 		assertEquals(LocalTime.class, testRead.getTime().getClass());
-		assertEquals(localTime.toSecondOfDay(), testRead.getTime().toSecondOfDay());
-
+		assertEquals(localTime.get(ChronoField.MILLI_OF_DAY), testRead.getTime().get(ChronoField.MILLI_OF_DAY));
 	}
 
 	@Test
