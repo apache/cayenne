@@ -103,7 +103,7 @@ H2 types mapping
        <db-type name="STRUCT"/>
    </jdbc-type>
    <jdbc-type name="TIME">
-       <db-type name="TIME(3)"/>
+       <db-type name="TIME"/>
    </jdbc-type>
    <jdbc-type name="TIMESTAMP">
        <db-type name="TIMESTAMP"/>
