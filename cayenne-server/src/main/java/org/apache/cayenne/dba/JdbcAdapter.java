@@ -32,7 +32,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ParameterBinding;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.EJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
@@ -247,10 +246,21 @@ public class JdbcAdapter implements DbAdapter {
      *
      * @since 4.0
      */
+    @Override
     public boolean typeSupportsLength(int type) {
         return type == Types.BINARY || type == Types.CHAR || type == Types.NCHAR || type == Types.NVARCHAR
                 || type == Types.LONGNVARCHAR || type == Types.DECIMAL || type == Types.DOUBLE || type == Types.FLOAT
                 || type == Types.NUMERIC || type == Types.REAL || type == Types.VARBINARY || type == Types.VARCHAR;
+    }
+
+    /**
+     * Returns true if supplied type can have a scale attribute as a part of
+     * column definition
+     */
+    @Override
+    public boolean typeSupportsScale(int type) {
+        return type == Types.DECIMAL || type == Types.DOUBLE || type == Types.REAL || type == Types.NUMERIC
+                || type == Types.TIME || type == Types.TIMESTAMP;
     }
 
     /**
@@ -342,21 +352,21 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     public static String sizeAndPrecision(DbAdapter adapter, DbAttribute column) {
-        if (!adapter.typeSupportsLength(column.getType())) {
+        if (!adapter.typeSupportsLength(column.getType()) && !adapter.typeSupportsScale(column.getType())) {
             return "";
         }
 
         int len = column.getMaxLength();
-        int scale = TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT ? column.getScale()
-                : -1;
-
-        // sanity check
-        if (scale > len) {
-            scale = -1;
-        }
+        int scale = TypesMapping.isDateTime(column.getType())
+                    || TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT
+                ? column.getScale() : -1;
 
         if (len > 0) {
-            return "(" + len + (scale >= 0 ? ", " + scale : "") + ")";
+            return "(" + len + (scale >= 0 && len > scale ? ", " + scale : "") + ")";
+        }
+
+        if (scale >= 0 && TypesMapping.isDateTime(column.getType())) {
+            return "(" + scale + ")";
         }
 
         return "";

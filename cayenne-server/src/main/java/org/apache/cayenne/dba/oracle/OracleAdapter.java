@@ -300,6 +300,11 @@ public class OracleAdapter extends JdbcAdapter {
 		return SYSTEM_SCHEMAS;
 	}
 
+	@Override
+	public boolean typeSupportsScale(int type) {
+		return type != Types.TIME && super.typeSupportsScale(type);
+	}
+
 	/**
 	 * @since 3.0
 	 */

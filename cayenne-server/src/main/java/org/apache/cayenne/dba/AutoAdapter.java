@@ -154,6 +154,11 @@ public class AutoAdapter implements DbAdapter {
 	}
 
 	@Override
+	public boolean typeSupportsScale(int type) {
+		return getAdapter().typeSupportsScale(type);
+	}
+
+	@Override
 	public Collection<String> dropTableStatements(DbEntity table) {
 		return getAdapter().dropTableStatements(table);
 	}

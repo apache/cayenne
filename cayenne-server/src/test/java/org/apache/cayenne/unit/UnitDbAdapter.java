@@ -422,4 +422,11 @@ public class UnitDbAdapter {
     public boolean supportsNullComparison() {
         return true;
     }
+
+    /**
+     * Returns true if the target database has time type with fractional seconds.
+     */
+    public boolean supportsPreciseTime() {
+        return true;
+    }
 }

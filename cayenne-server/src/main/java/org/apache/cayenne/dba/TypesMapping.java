@@ -27,6 +27,7 @@ import java.math.BigInteger;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -308,6 +309,10 @@ public class TypesMapping {
 	 */
 	public static boolean isDecimal(int type) {
 		return type == DECIMAL || type == DOUBLE || type == FLOAT || type == REAL || type == NUMERIC;
+	}
+
+	public static boolean isDateTime(int type) {
+		return type == TIME || type == TIMESTAMP;
 	}
 
 	/**

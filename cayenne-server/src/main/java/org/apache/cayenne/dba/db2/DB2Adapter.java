@@ -133,6 +133,11 @@ public class DB2Adapter extends JdbcAdapter {
         return type == Types.LONGVARCHAR || type == Types.LONGVARBINARY || super.typeSupportsLength(type);
     }
 
+    @Override
+    public boolean typeSupportsScale(int type) {
+        return type != Types.TIME && super.typeSupportsScale(type);
+    }
+
     /**
      * @since 4.2
      */
