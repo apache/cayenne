@@ -23,7 +23,7 @@
 	</db-entity>
 	<db-entity name="LOCAL_TIME_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
-		<db-attribute name="TimeField" type="TIME"/>
+		<db-attribute name="TimeField" type="TIME" scale="3"/>
 	</db-entity>
 	<db-entity name="PERIOD_TEST">
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
