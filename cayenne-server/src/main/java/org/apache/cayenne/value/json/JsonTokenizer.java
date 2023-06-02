@@ -439,6 +439,7 @@ final class JsonTokenizer {
                             position++;
                             continue;
                         case 'u':
+                            position++;
                             for(int i=0; i<4; i++) {
                                 char next = data[position + i];
                                 if ((next < '0' || next > '9')
@@ -446,14 +447,14 @@ final class JsonTokenizer {
                                         && (next < 'A' || next > 'F')
                                 ) {
                                     throw new MalformedJsonException("Unknown escape sequence "
-                                            + String.valueOf(data, position - 1, position + 4) + " at position " + position);
+                                            + String.valueOf(data, position - 1, 4) + " at position " + position);
                                 }
                             }
                             position += 4;
                             continue;
                         default:
                             throw new MalformedJsonException("Unknown escape sequence "
-                                    + String.valueOf(data, position - 1, position) + " at position " + position);
+                                    + String.valueOf(data, position - 1, 1) + " at position " + position);
                     }
                 case '"':
                     return new JsonToken(TokenType.STRING, startPosition, position++);
