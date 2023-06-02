@@ -77,4 +77,9 @@ public class DerbyUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsNullComparison() {
         return false;
     }
+
+    @Override
+    public boolean supportsPreciseTime() {
+        return false;
+    }
 }

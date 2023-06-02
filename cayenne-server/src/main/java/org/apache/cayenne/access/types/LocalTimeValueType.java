@@ -20,7 +20,12 @@
 package org.apache.cayenne.access.types;
 
 import java.sql.Time;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /**
  * @since 4.0
@@ -39,12 +44,16 @@ public class LocalTimeValueType implements ValueObjectType<LocalTime, Time> {
 
     @Override
     public LocalTime toJavaObject(Time value) {
-        return value.toLocalTime();
+        Instant instant = Instant.ofEpochMilli(value.getTime());
+        return LocalTime.ofInstant(instant, ZoneId.systemDefault());
     }
 
     @Override
     public Time fromJavaObject(LocalTime object) {
-        return Time.valueOf(object);
+        LocalDateTime epochDateTime = object.atDate(LocalDate.EPOCH);
+        ZonedDateTime zonedDateTime = epochDateTime.atZone(ZoneId.systemDefault());
+        long epochMillis = zonedDateTime.toInstant().toEpochMilli();
+        return new Time(epochMillis);
     }
 
     @Override

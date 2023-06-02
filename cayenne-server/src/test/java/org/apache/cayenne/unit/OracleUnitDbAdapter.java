@@ -150,4 +150,9 @@ public class OracleUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsSerializableTransactionIsolation() {
         return true;
     }
+
+    @Override
+    public boolean supportsPreciseTime() {
+        return false;
+    }
 }

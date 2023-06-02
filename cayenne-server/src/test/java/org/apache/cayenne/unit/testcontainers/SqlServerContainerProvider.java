@@ -28,6 +28,7 @@ public class SqlServerContainerProvider extends TestContainerProvider {
     @Override
     JdbcDatabaseContainer<?> createContainer(DockerImageName dockerImageName) {
         return new MSSQLServerContainer<>(dockerImageName)
+                .withUrlParam("sendTimeAsDatetime", "false")
                 .acceptLicense();
     }
 

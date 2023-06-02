@@ -110,6 +110,8 @@ public interface DbAdapter {
 
 	boolean typeSupportsLength(int type);
 
+	boolean typeSupportsScale(int type);
+
 	/**
 	 * Returns a collection of SQL statements needed to drop a database table.
 	 *

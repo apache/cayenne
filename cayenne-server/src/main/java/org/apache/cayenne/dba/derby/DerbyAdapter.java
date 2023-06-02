@@ -165,6 +165,11 @@ public class DerbyAdapter extends JdbcAdapter {
         }
     }
 
+    @Override
+    public boolean typeSupportsScale(int type) {
+        return type != Types.TIME && super.typeSupportsScale(type);
+    }
+
     /**
      * @since 4.2
      */

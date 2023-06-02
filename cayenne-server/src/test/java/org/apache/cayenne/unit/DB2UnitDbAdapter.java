@@ -73,4 +73,9 @@ public class DB2UnitDbAdapter extends UnitDbAdapter {
     public boolean supportsSelectBooleanExpression() {
         return false;
     }
+
+    @Override
+    public boolean supportsPreciseTime() {
+        return false;
+    }
 }
