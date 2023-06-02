@@ -82,7 +82,7 @@ public class JsonTypeIT extends ServerCase {
                          "    \"friends\": [\n" +
                          "      {\n" +
                          "        \"id\": 0,\n" +
-                         "        \"name\": \"Guzman Kemp\"\n" +
+                         "        \"name\": \"Guzman K\\u0450mp\"\n" +
                          "      },\n" +
                          "      {\n" +
                          "        \"id\": 1,\n" +

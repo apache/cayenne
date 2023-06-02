@@ -57,3 +57,4 @@ CAY-2783 DbEntity to ObjEntity synchronization should check mandatory flag for p
 CAY-2792 Fix Insertion Order For Reflexive DataObjects
 CAY-2800 Modeler saves map.xml files with schema ordering error
 CAY-2801 Incorrect equals() implementation in IdGenerationMarker could cause data missing in the commit
+CAY-2806 Incorrect processing of unicode escape syntax in JSON

@@ -204,6 +204,11 @@ public class JsonTokenizerTest {
         token = tokenizer.nextToken();
         assertEquals(JsonTokenizer.TokenType.STRING, token.type);
         assertEquals("test\\\\test\\\\test", token.toString());
+
+        tokenizer = new JsonTokenizer("\"\\uaaaa \\uffff \\uAAAA \\uFFFF \\u0000 \\u9999\"");
+        token = tokenizer.nextToken();
+        assertEquals(JsonTokenizer.TokenType.STRING, token.type);
+        assertEquals("\\uaaaa \\uffff \\uAAAA \\uFFFF \\u0000 \\u9999", token.toString());
     }
 
     @Test(expected = MalformedJsonException.class)
