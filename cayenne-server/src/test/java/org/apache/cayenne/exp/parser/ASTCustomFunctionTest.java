@@ -39,6 +39,14 @@ public class ASTCustomFunctionTest {
         assertEquals("fn(\"MY_FUNCTION\", 1, \"abc\")", exp.toString());
     }
 
+    @Test
+    public void testCustomFunctionAsFunctionArg() {
+        Expression exp = ExpressionFactory.exp("length(fn('MY_FUNCTION', 1, 'abc'))");
+        assertTrue(exp instanceof ASTFunctionCall);
+
+        assertEquals("length(fn(\"MY_FUNCTION\", 1, \"abc\"))", exp.toString());
+    }
+
     @Test(expected = ExpressionException.class)
     public void testEvaluate() {
         new ASTCustomFunction("test").evaluate(new Object());

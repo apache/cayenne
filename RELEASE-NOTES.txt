@@ -16,6 +16,7 @@ Changes/New Features:
 Bug Fixes:
 
 CAY-2806 Incorrect processing of unicode escape syntax in JSON
+CAY-2809 Cayenne Expression grammar doesn't allow custom function as an argument for string functions
 
 ----------------------------------
 Release: 4.2
