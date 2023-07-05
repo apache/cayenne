@@ -151,6 +151,10 @@ void stringParameter() : {}
         pathExpression()
     |
         stringExpression()
+    |
+        customFunction()
+    |
+        customOperator()
 }
 
 void stringLiteral() :  {}
