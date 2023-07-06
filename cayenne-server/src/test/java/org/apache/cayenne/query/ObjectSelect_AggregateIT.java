@@ -162,6 +162,21 @@ public class ObjectSelect_AggregateIT extends ServerCase {
     }
 
     @Test
+    public void testGroupByOp() throws Exception {
+        List<Object[]> count = ObjectSelect.query(Artist.class)
+                .columns(
+                        Artist.ARTIST_NAME.count(),
+                        Artist.DATE_OF_BIRTH.dayOfMonth().add(1).alias("op")
+                )
+                .orderBy(Artist.DATE_OF_BIRTH.asc())
+                .select(context);
+        assertEquals(5L, count.size());
+        assertEquals(4L, count.get(1)[0]);
+
+
+    }
+
+    @Test
     public void testSelectRelationshipCount() throws Exception {
         long count = ObjectSelect.query(Artist.class)
                 .column(Artist.PAINTING_ARRAY.count())
