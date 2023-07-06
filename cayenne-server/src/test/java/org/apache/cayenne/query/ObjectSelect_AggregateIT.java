@@ -35,6 +35,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -57,6 +58,9 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 
     @Inject
     private DBHelper dbHelper;
+
+    @Inject
+    private UnitDbAdapter dbAdapter;
 
     // Format: d/m/YY
     DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
@@ -163,6 +167,9 @@ public class ObjectSelect_AggregateIT extends ServerCase {
 
     @Test
     public void testGroupByOp() throws Exception {
+        if(!dbAdapter.supportsExpressionInHaving()) {
+            return;
+        }
         List<Object[]> count = ObjectSelect.query(Artist.class)
                 .columns(
                         Artist.ARTIST_NAME.count(),
@@ -172,8 +179,6 @@ public class ObjectSelect_AggregateIT extends ServerCase {
                 .select(context);
         assertEquals(5L, count.size());
         assertEquals(4L, count.get(1)[0]);
-
-
     }
 
     @Test
