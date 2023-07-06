@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
+import org.apache.cayenne.access.sqlbuilder.NodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 
 /**
@@ -39,17 +40,43 @@ public class AliasedNode extends Node {
 
     @Override
     public QuotingAppendable append(QuotingAppendable buffer) {
+        if(skipContent()) {
+            buffer.append(' ').append(alias);
+        }
         return buffer;
     }
 
     @Override
+    public void visit(NodeTreeVisitor visitor) {
+        if(skipContent()) {
+            visitor.onNodeStart(this);
+            visitor.onNodeEnd(this);
+            return;
+        }
+        super.visit(visitor);
+    }
+
+    @Override
     public void appendChildrenEnd(QuotingAppendable buffer) {
-        super.appendChildrenEnd(buffer);
-        buffer.append(' ').append(alias);
+        if(skipContent()){
+            return;
+        }
+        buffer.append(" AS ").append(alias);
     }
 
     public String getAlias() {
         return alias;
     }
 
+    private boolean skipContent() {
+        // check if parent is of type RESULT
+        Node parent = getParent();
+        while(parent != null) {
+            if(parent.getType() == NodeType.RESULT) {
+                return false;
+            }
+            parent = parent.getParent();
+        }
+        return true;
+    }
 }
