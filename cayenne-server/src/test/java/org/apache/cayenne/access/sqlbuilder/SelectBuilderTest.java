@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.sqlbuilder;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SelectNode;
 import org.apache.cayenne.map.DbEntity;
@@ -99,6 +100,40 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
         Node node = builder.build();
         assertThat(node, instanceOf(SelectNode.class));
         assertSQL("SELECT a FROM b WHERE ( a = 123 ) AND ( c < d )", node);
+    }
+
+
+    @Test
+    public void testValidSelectCaseWhen() {
+        SelectBuilder builder = new SelectBuilder(column("OrderID"), column("Quantity"),
+                caseWhen()
+                        .when(column("Quantity").gt(value(30)).and(column("Quantity").lt(value(100))))
+                        .then(value("The quantity from 30 to 100"))
+                        .when(column("Quantity").eq(value(30)))
+                        .then(value("The quantity is 30"))
+                        .elseResult(value("The quantity is under 30"))
+                        .as("QuantityText"))
+                .from(table("OrderDetails"));
+
+        Node node = builder.build();
+        assertThat(node, instanceOf(SelectNode.class));
+        assertSQL("SELECT OrderID, Quantity, " +
+                "CASE " +
+                    "WHEN ( ( Quantity > 30 ) AND ( Quantity < 100 ) ) THEN 'The quantity from 30 to 100' " +
+                    "WHEN ( Quantity = 30 ) THEN 'The quantity is 30' " +
+                    "ELSE 'The quantity is under 30' " +
+                    "END AS QuantityText " +
+                "FROM OrderDetails", node);
+    }
+
+    @Test(expected = CayenneRuntimeException.class)
+    public void testInvalidSelectCaseWhen() {
+        select(column("OrderID"), column("Quantity"),
+                caseWhen()
+                        .when(column("Quantity").gt(value(30)))
+                        .then(value("The quantity is greater than 30"))
+                        .when(column("Quantity").eq(value(30))))
+                .from(table("OrderDetails"));
     }
 
     @Test

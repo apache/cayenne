@@ -73,6 +73,10 @@ public final class SQLBuilder {
         return new ColumnNodeBuilder(null, column);
     }
 
+    public static CaseWhenBuilder caseWhen() {
+        return new CaseWhenBuilder();
+    }
+
     public static JoinNodeBuilder join(NodeBuilder table) {
         return new JoinNodeBuilder(JoinType.INNER, table);
     }
