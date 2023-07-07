@@ -26,7 +26,6 @@ import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
  */
 public class WhenNode extends Node {
 
-
     @Override
     public QuotingAppendable append(QuotingAppendable buffer) {
         return buffer.append(" WHEN");

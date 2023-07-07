@@ -19,19 +19,12 @@
 
 package org.apache.cayenne.access.sqlbuilder.sqltree;
 
-import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 
 /**
  * @since 5.0
  */
 public class ElseNode extends Node {
-
-    private NodeBuilder result;
-
-    public ElseNode(NodeBuilder result) {
-        this.result = result;
-    }
 
     @Override
     public QuotingAppendable append(QuotingAppendable buffer) {
@@ -40,6 +33,6 @@ public class ElseNode extends Node {
 
     @Override
     public Node copy() {
-        return new ElseNode(result);
+        return new ElseNode();
     }
 }

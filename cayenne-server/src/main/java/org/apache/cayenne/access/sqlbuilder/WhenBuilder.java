@@ -18,7 +18,7 @@ class WhenBuilder implements NodeBuilder {
 
     CaseWhenBuilder then(NodeBuilder result) {
         this.result = result;
-        builder.getNodes().add(build().addChild(result.build()));
+        builder.getNodeBuilders().add(this);
         return builder;
     }
     @Override
@@ -26,6 +26,8 @@ class WhenBuilder implements NodeBuilder {
         if(result == null) {
             throw new CayenneRuntimeException("\"Then\" result must be defined after the \"When\" condition ");
         }
-        return new ThenNode(result);
+        ThenNode thenNode = new ThenNode();
+        thenNode.addChild(result.build());
+        return thenNode;
     }
 }

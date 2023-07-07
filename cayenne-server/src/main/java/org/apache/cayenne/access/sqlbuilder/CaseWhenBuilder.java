@@ -12,28 +12,30 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.aliased;
 
 class CaseWhenBuilder implements NodeBuilder {
 
-    protected final Node root;
-    protected List<Node> nodes;
+    private final Node root;
+    private final List<NodeBuilder> nodeBuilders;
+    private NodeBuilder elseBuilder;
 
     public CaseWhenBuilder() {
         this.root = new CaseNode();
-        this.nodes = new ArrayList<>();
+        this.nodeBuilders = new ArrayList<>();
     }
 
-
-    public WhenBuilder when (NodeBuilder... params) {
-        for(NodeBuilder next : params) {
+    public WhenBuilder when(NodeBuilder param) {
+        nodeBuilders.add(() -> {
             WhenNode whenNode = new WhenNode();
-            whenNode.addChild(next.build());
-            nodes.add(whenNode);
-        }
+            whenNode.addChild(param.build());
+            return whenNode;
+        });
         return new WhenBuilder(this);
     }
 
     public CaseWhenBuilder elseResult(NodeBuilder result) {
-        ElseNode elseNode = new ElseNode(result);
-        elseNode.addChild(result.build());
-        nodes.add(elseNode);
+        elseBuilder = () -> {
+            ElseNode elseNode = new ElseNode();
+            elseNode.addChild(result.build());
+            return elseNode;
+        };
         return this;
     }
 
@@ -43,13 +45,16 @@ class CaseWhenBuilder implements NodeBuilder {
 
     @Override
     public Node build() {
-        for (Node node : nodes) {
-            root.addChild(node);
+        for (NodeBuilder builder : nodeBuilders) {
+            root.addChild(builder.build());
+        }
+        if (elseBuilder != null){
+            root.addChild(elseBuilder.build());
         }
         return root;
     }
 
-    List<Node> getNodes() {
-        return nodes;
+    List<NodeBuilder> getNodeBuilders() {
+        return nodeBuilders;
     }
 }

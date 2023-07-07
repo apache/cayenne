@@ -73,8 +73,8 @@ public final class SQLBuilder {
         return new ColumnNodeBuilder(null, column);
     }
 
-    public static CaseWhenBuilder caseWhen() {
-        return new CaseWhenBuilder();
+    public static WhenBuilder caseWhen(NodeBuilder param) {
+        return new CaseWhenBuilder().when(param);
     }
 
     public static JoinNodeBuilder join(NodeBuilder table) {

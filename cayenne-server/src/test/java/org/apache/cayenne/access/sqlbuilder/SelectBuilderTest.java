@@ -102,16 +102,14 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
         assertSQL("SELECT a FROM b WHERE ( a = 123 ) AND ( c < d )", node);
     }
 
-
     @Test
     public void testValidSelectCaseWhen() {
         SelectBuilder builder = new SelectBuilder(column("OrderID"), column("Quantity"),
-                caseWhen()
-                        .when(column("Quantity").gt(value(30)).and(column("Quantity").lt(value(100))))
+                caseWhen(column("Quantity").gt(value(30)).and(column("Quantity").lt(value(100))))
                         .then(value("The quantity from 30 to 100"))
+                        .elseResult(value("The quantity is under 30"))
                         .when(column("Quantity").eq(value(30)))
                         .then(value("The quantity is 30"))
-                        .elseResult(value("The quantity is under 30"))
                         .as("QuantityText"))
                 .from(table("OrderDetails"));
 
@@ -129,8 +127,7 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
     @Test(expected = CayenneRuntimeException.class)
     public void testInvalidSelectCaseWhen() {
         select(column("OrderID"), column("Quantity"),
-                caseWhen()
-                        .when(column("Quantity").gt(value(30)))
+                caseWhen(column("Quantity").gt(value(30)))
                         .then(value("The quantity is greater than 30"))
                         .when(column("Quantity").eq(value(30))))
                 .from(table("OrderDetails"));
