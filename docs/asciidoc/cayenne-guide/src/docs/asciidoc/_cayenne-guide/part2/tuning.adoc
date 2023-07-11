@@ -101,7 +101,7 @@ different prefetches.
 `<<sqlselect,SQLSelect>>` query supports "JOINT" and "DISJOINT_BY_ID". It does not work with "DISJOINT", as the query does not provide
 enough information to Cayenne to build dependent prefetch queries. So "DISJOINT" will result in exception. "JOINT"
 prefetching requires a bit of effort shaping the SQL to include the right columns in the result and label them properly
-to be convertable into object properties. The main rules to follow are:
+to be convertible into object properties. The main rules to follow are:
 
 * Include _all_ columns from the root entity and every prefetched entity.
 * Label each prefetched entity columns as "dbRelationship.column".
@@ -138,7 +138,7 @@ Converting result set data to Persistent objects and registering these objects i
  operation comparable to the time spent running the query (and frequently exceeding it). Internally Cayenne builds the result as a list of DataRows,
  that are later converted to objects. Skipping the last step and using data in the form of DataRows can significantly increase performance.
 
-DataRow is a simply a map of values keyed by their DB column name. It is a ubiqutous representation of DB data used internally by Cayenne.
+DataRow is a simply a map of values keyed by their DB column name. It is a ubiquitous representation of DB data used internally by Cayenne.
 And it can be quite usable as is in the application in many cases. So performance sensitive selects should consider
 DataRows - it saves memory and CPU cycles. All selecting queries support DataRows option, e.g.:
 
