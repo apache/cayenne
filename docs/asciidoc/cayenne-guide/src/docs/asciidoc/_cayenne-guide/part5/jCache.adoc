@@ -52,7 +52,7 @@ ServerRuntime.builder()
                     .contributeJCacheProviderConfig(binder, "cache-config.xml"));
 ----
 
-Also JCache module supports contribution of preconfigured cache manager.
+Also JCache module supports contribution of pre-configured cache manager.
 
 [source, java]
 ----

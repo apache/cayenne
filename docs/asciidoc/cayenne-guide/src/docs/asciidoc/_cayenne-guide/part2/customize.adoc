@@ -26,7 +26,7 @@ Cayenne DI probably has ~80% of the features expected in a DI container and has 
 
 ===== DI Bindings API
 
-To have a working DI container, we need three things: service interfaces and classes, a module that describes service bindings, a container that loads the module, and resolves the depedencies. Let's start with service interfaces and classes:
+To have a working DI container, we need three things: service interfaces and classes, a module that describes service bindings, a container that loads the module, and resolves the dependencies. Let's start with service interfaces and classes:
 
 [source, Java]
 ----
@@ -150,7 +150,7 @@ binder.bind(Key.get(Service2.class, "i2")).to(Service2Impl.class);
 ----
 
 
-Another types of confiuguration that can be bound in the container are lists and maps. They will be discussed in the following chapters.
+Another types of configuration that can be bound in the container are lists and maps. They will be discussed in the following chapters.
 
 ===== Service Lifecycle
 
@@ -176,7 +176,7 @@ can be created as instances of `org.apache.cayenne.di.spi.DefaultScope` with sta
 
 ===== Overriding Services
 
-Cayenne DI allows to override services already definied in the current module, or more commonly - some other module
+Cayenne DI allows to override services already defined in the current module, or more commonly - some other module
 in the the same container. Actually there's no special API to override a service, you'd just bind the service key again
 with a new implementation or provider. The last binding for a key takes precedence. This means that the order of modules is important when configuring a container.
 The built-in Cayenne injector ensures that Cayenne standard modules are loaded first, followed by optional user extension modules.
@@ -223,7 +223,7 @@ $ java -Dcayenne.server.contexts_sync_strategy=false ...
 ----
 
 A second one is to contribute a property to `o.a.c.configuration.DefaultRuntimeProperties.properties` map (see the next section on how to do that).
-This map contains the default property values and can accept application-specific values, overrding the defaults.
+This map contains the default property values and can accept application-specific values, overriding the defaults.
 
 Note that if a property value is a name of a Java class, when this Java class is instantiated by Cayenne,
 the container performs injection of instance variables. So even the dynamically specified Java classes can use @Inject annotation to get a hold of other Cayenne services.
@@ -242,7 +242,7 @@ DbAdapterDetector to a `o.a.c.configuration.server.DefaultDbAdapterFactory.detec
 ----
 public class MyDbAdapterDetector implements DbAdapterDetector {
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        // check if we support this database and retun custom adapter
+        // check if we support this database and return custom adapter
         ...
     }
 }

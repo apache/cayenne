@@ -34,7 +34,7 @@ DataMap are referenced by name in the root descriptor:
 <map name="datamap"/>
 ----
 
-Map files are resolved by Cayenne by appending ".map.xml" extension to the map name, and resolving the resulting string relative to the root descriptor URI. The following sections discuss varios ORM model objects, without regards to their XML representation. XML format details are really unimportant to the Cayenne users.
+Map files are resolved by Cayenne by appending ".map.xml" extension to the map name, and resolving the resulting string relative to the root descriptor URI. The following sections discuss various ORM model objects, without regards to their XML representation. XML format details are really unimportant to the Cayenne users.
 
 ==== DataMap
 
