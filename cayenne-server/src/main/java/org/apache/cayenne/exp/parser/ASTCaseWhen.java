@@ -17,27 +17,49 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.sqlbuilder.sqltree;
+package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.exp.Expression;
 
 /**
+ * "CaseWhen" expression.
+ * 
  * @since 5.0
  */
-public class CaseNode extends Node {
+public class ASTCaseWhen extends SimpleNode {
 
-    @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
-        return buffer.append(" CASE");
-    }
+	public ASTCaseWhen (Object ... nodes) {
+		super(0);
+		for (int i = 0; i < nodes.length; i++) {
+			jjtAddChild((Node) nodes[i], i);
+		}
+		connectChildren();
+	}
 
-    @Override
-    public Node copy() {
-        return new CaseNode();
-    }
 
-    @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
-            buffer.append(" END");
-    }
+	public ASTCaseWhen(int id) {
+		super(id);
+	}
+
+	@Override
+	public Expression shallowCopy() {
+		return new ASTCaseWhen(id);
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "case";
+	}
+
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		return null;
+	}
+
+	@Override
+	public int getType() {
+		return Expression.CASE_WHEN;
+	}
+
+
 }

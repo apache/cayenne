@@ -17,27 +17,56 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.sqlbuilder.sqltree;
+package org.apache.cayenne.exp.parser;
 
-import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionException;
 
 /**
+ * "When" expression.
+ * 
  * @since 5.0
  */
-public class CaseNode extends Node {
+public class ASTWhen extends AggregateConditionNode {
 
-    @Override
-    public QuotingAppendable append(QuotingAppendable buffer) {
-        return buffer.append(" CASE");
-    }
+	public ASTWhen(Object ... nodes) {
+		super(0);
+		for (int i = 0; i < nodes.length; i++) {
+			jjtAddChild((Node) nodes[i], i);
+		}
+		connectChildren();
+	}
 
-    @Override
-    public Node copy() {
-        return new CaseNode();
-    }
 
-    @Override
-    public void appendChildrenEnd(QuotingAppendable buffer) {
-            buffer.append(" END");
-    }
+	public ASTWhen(int id) {
+		super(id);
+	}
+
+	@Override
+	public Expression shallowCopy() {
+		return new ASTWhen(id);
+	}
+
+	@Override
+	protected String getExpressionOperator(int index) {
+		return "when";
+	}
+
+	@Override
+	protected Object evaluateNode(Object o) throws Exception {
+		return Boolean.TRUE;
+	}
+
+	@Override
+	public int getType() {
+		return Expression.WHEN;
+	}
+
+	@Override
+	public void jjtSetParent(Node n) {
+		if (!(n instanceof ASTCaseWhen)){
+			throw new ExpressionException(expName() + ": invalid parent");
+		}
+		parent = n;
+	}
 }
