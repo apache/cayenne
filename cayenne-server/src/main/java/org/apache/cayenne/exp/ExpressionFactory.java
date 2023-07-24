@@ -31,9 +31,11 @@ import org.apache.cayenne.exp.parser.ASTBitwiseNot;
 import org.apache.cayenne.exp.parser.ASTBitwiseOr;
 import org.apache.cayenne.exp.parser.ASTBitwiseRightShift;
 import org.apache.cayenne.exp.parser.ASTBitwiseXor;
+import org.apache.cayenne.exp.parser.ASTCaseWhen;
 import org.apache.cayenne.exp.parser.ASTDbIdPath;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTDivide;
+import org.apache.cayenne.exp.parser.ASTElse;
 import org.apache.cayenne.exp.parser.ASTEnclosingObject;
 import org.apache.cayenne.exp.parser.ASTEqual;
 import org.apache.cayenne.exp.parser.ASTExists;
@@ -62,7 +64,9 @@ import org.apache.cayenne.exp.parser.ASTPath;
 import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.ASTSubtract;
+import org.apache.cayenne.exp.parser.ASTThen;
 import org.apache.cayenne.exp.parser.ASTTrue;
+import org.apache.cayenne.exp.parser.ASTWhen;
 import org.apache.cayenne.exp.parser.ExpressionParser;
 import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
 import org.apache.cayenne.exp.parser.JavaCharStream;
@@ -1492,5 +1496,43 @@ public class ExpressionFactory {
 	 */
 	public static Expression any(ColumnSelect<?> subquery) {
 		return new ASTAny(new ASTSubquery(subquery));
+	}
+
+	private static Expression when(Expression ... expressions) {
+		return new ASTWhen(expressions);
+	}
+
+	private static Expression then(Expression ... expressions) {
+		return new ASTThen(expressions);
+	}
+
+	private static Expression caseDefault(Expression ... expressions) {
+		return new ASTElse(expressions);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static Expression caseWhen(List <Expression> whenExp, List <Expression> thenExp ) {
+		return caseWhen(whenExp,thenExp,null);
+	}
+
+	/**
+	 * @since 5.0
+	 */
+	public static Expression caseWhen(List<Expression> whenExp, List<Expression> thenExp, Expression caseDefault) {
+		if (whenExp.size() == thenExp.size()) {
+			List<Expression> expressions = new ArrayList<>();
+			for (int i = 0; i < whenExp.size(); i++) {
+				expressions.add (when(whenExp.get(i)));
+				expressions.add(then(thenExp.get(i)));
+			}
+			if (caseDefault != null) {
+				expressions.add(caseDefault(caseDefault));
+			}
+			return new ASTCaseWhen(expressions.toArray());
+		} else {
+			throw new ExpressionException("Each member in the \"When\"-\"Then\" pairs must be defined");
+		}
 	}
 }

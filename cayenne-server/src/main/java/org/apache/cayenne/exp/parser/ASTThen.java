@@ -41,6 +41,9 @@ public class ASTThen extends SimpleNode {
 		super(id);
 	}
 
+	/**
+	 * Creates a copy of this expression node, without copying children.
+	 */
 	@Override
 	public Expression shallowCopy() {
 		return new ASTThen(id);
