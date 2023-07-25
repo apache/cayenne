@@ -19,9 +19,13 @@
 
 package org.apache.cayenne.exp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.exp.parser.ASTLike;
+import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
+import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.ASTTrim;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,13 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.exp.parser.ASTLike;
-import org.apache.cayenne.exp.parser.ASTLikeIgnoreCase;
-import org.apache.cayenne.exp.parser.ASTObjPath;
-import org.apache.cayenne.exp.parser.ASTTrim;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class ExpressionFactoryTest {
 
@@ -579,6 +577,26 @@ public class ExpressionFactoryTest {
 
 		Expression path = (Expression) exp.getOperand(0);
 		assertEquals(Expression.DBID_PATH, path.getType());
+	}
+
+	@Test
+	public void testExp_StringLiteral_SingleQuoted() {
+		assertEquals("p = \"a\"", ExpressionFactory.exp("p = 'a'").toString());
+		assertEquals("p = \"\\\\\"", ExpressionFactory.exp("p = '\\\\'").toString());
+		assertEquals("p = \"+\"", ExpressionFactory.exp("p = '+'").toString());
+		assertEquals("p = \"\\'\"", ExpressionFactory.exp("p = '\\''").toString());
+		assertEquals("p = \"\\\"\"", ExpressionFactory.exp("p = '\"'").toString());
+		assertEquals("p = \"/\"", ExpressionFactory.exp("p = '/'").toString());
+	}
+
+	@Test
+	public void testExp_StringLiteral_DoubleQuoted() {
+		assertEquals("p = \"a\"", ExpressionFactory.exp("p = \"a\"").toString());
+		assertEquals("p = \"\\\\\"", ExpressionFactory.exp("p = \"\\\\\"").toString());
+		assertEquals("p = \"+\"", ExpressionFactory.exp("p = \"+\"").toString());
+		assertEquals("p = \"\\'\"", ExpressionFactory.exp("p = \"\\'\"").toString());
+		assertEquals("p = \"\\\"\"", ExpressionFactory.exp("p = \"\\\"\"").toString());
+		assertEquals("p = \"/\"", ExpressionFactory.exp("p = \"/\"").toString());
 	}
 
 	public static class Bean {
