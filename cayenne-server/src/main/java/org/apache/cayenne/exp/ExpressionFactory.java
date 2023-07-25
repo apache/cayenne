@@ -1502,12 +1502,12 @@ public class ExpressionFactory {
 		return new ASTWhen(expressions);
 	}
 
-	private static Expression then(Expression ... expressions) {
-		return new ASTThen(expressions);
+	private static Expression then(Expression expression) {
+		return new ASTThen(expression);
 	}
 
-	private static Expression caseDefault(Expression ... expressions) {
-		return new ASTElse(expressions);
+	private static Expression caseDefault(Expression expression) {
+		return new ASTElse(expression);
 	}
 
 	/**
@@ -1527,10 +1527,12 @@ public class ExpressionFactory {
 				expressions.add (when(whenExp.get(i)));
 				expressions.add(then(thenExp.get(i)));
 			}
+			boolean hasDefault = false;
 			if (caseDefault != null) {
 				expressions.add(caseDefault(caseDefault));
+				hasDefault = true;
 			}
-			return new ASTCaseWhen(expressions.toArray());
+			return new ASTCaseWhen(hasDefault, expressions.toArray());
 		} else {
 			throw new ExpressionException("Each member in the \"When\"-\"Then\" pairs must be defined");
 		}

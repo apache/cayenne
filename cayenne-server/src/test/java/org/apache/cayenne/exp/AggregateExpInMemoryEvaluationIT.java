@@ -40,7 +40,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.apache.cayenne.exp.ExpressionFactory.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class AggregateExpInMemoryEvaluationIT extends ServerCase {
@@ -160,6 +162,77 @@ public class AggregateExpInMemoryEvaluationIT extends ServerCase {
 
         Object avg2 = avgExp.evaluate(artists.get(2));
         assertEquals(95.0, avg2);
+    }
+
+    @Test
+    public void testCaseWhenFirstCondition() {
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .select(context);
+
+
+        Expression caseWhenFirstCondition = caseWhen(
+                List.of((betweenExp("paintingArray.estimatedPrice", 0, 50)),
+                        (betweenExp("paintingArray.estimatedPrice", 51, 100))),
+                List.of((pathExp("artistName")),
+                        (pathExp("dateOfBirth"))),
+                pathExp("paintingArray.estimatedPrice"));
+
+        Object resultFirstCondition = caseWhenFirstCondition.evaluate(artists.get(0));
+        assertEquals("artist1", resultFirstCondition);
+    }
+
+    @Test
+    public void testCaseWhenSecondCondition() {
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .select(context);
+
+        Expression caseWhenSecondCondition = caseWhen(
+                List.of((betweenExp("paintingArray.estimatedPrice", 0, 49)),
+                        (betweenExp("paintingArray.estimatedPrice", 51, 100))),
+                List.of((pathExp("artistName")),
+                        (pathExp("dateOfBirth"))),
+                pathExp("paintingArray.estimatedPrice"));
+
+        Object resultSecondCondition = caseWhenSecondCondition.evaluate(artists.get(0));
+        assertEquals("Mon Jan 02 00:00:00 CET 2017", resultSecondCondition.toString());
+    }
+
+    @Test
+    public void testCaseWhenDefaultCondition() {
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .select(context);
+
+        Expression caseWhenDefaultCondition = caseWhen(
+                List.of((betweenExp("paintingArray.estimatedPrice", 0, 1)),
+                        (betweenExp("paintingArray.estimatedPrice", 2, 3))),
+                List.of((pathExp("artistName")),
+                        (pathExp("dateOfBirth"))),
+                pathExp("paintingArray.estimatedPrice"));
+
+        List<BigDecimal> resultDefaultCondition = (List<BigDecimal>) caseWhenDefaultCondition.evaluate(artists.get(0));
+        assertEquals(4, resultDefaultCondition.size());
+        assertEquals(new BigDecimal("50.00"), resultDefaultCondition.get(0));
+    }
+
+    @Test
+    public void testCaseWhenNoResultNoDefault() {
+        List<Artist> artists = ObjectSelect.query(Artist.class)
+                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .select(context);
+
+        Expression caseWhenNoResultNoDefault = caseWhen(
+                List.of((betweenExp("paintingArray.estimatedPrice", 0, 1))),
+                List.of((pathExp("dateOfBirth"))));
+
+        Object resultNoResultNoDefault = caseWhenNoResultNoDefault.evaluate(artists.get(0));
+        assertNull(resultNoResultNoDefault);
     }
 
 }

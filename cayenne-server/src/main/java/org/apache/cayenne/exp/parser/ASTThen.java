@@ -28,11 +28,9 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTThen extends SimpleNode {
 
-	public ASTThen(Object ... nodes) {
+	public ASTThen(Object node) {
 		super(0);
-		for (int i = 0; i < nodes.length; i++) {
-			jjtAddChild((Node) nodes[i], i);
-		}
+		jjtAddChild((Node) node, 0);
 		connectChildren();
 	}
 
@@ -56,7 +54,7 @@ public class ASTThen extends SimpleNode {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		return null;
+		return evaluateChild(0, o);
 	}
 
 	@Override

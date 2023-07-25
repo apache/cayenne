@@ -21,6 +21,7 @@ package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * "When" expression.
@@ -54,7 +55,14 @@ public class ASTWhen extends AggregateConditionNode {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		return Boolean.TRUE;
+		if (jjtGetNumChildren() == 0) {
+			return Boolean.FALSE;
+		}
+		Object value = evaluateChild(0, o);
+		if (ConversionUtil.toBoolean(value)) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
 	}
 
 	@Override

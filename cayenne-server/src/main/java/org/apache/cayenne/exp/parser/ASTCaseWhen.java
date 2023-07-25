@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.util.ConversionUtil;
 
 /**
  * "CaseWhen" expression.
@@ -28,14 +29,16 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTCaseWhen extends SimpleNode {
 
-	public ASTCaseWhen (Object ... nodes) {
+	private boolean hasDefault;
+
+	public ASTCaseWhen (boolean hasDefault, Object ... nodes) {
 		super(0);
 		for (int i = 0; i < nodes.length; i++) {
 			jjtAddChild((Node) nodes[i], i);
 		}
 		connectChildren();
+		this.hasDefault = hasDefault;
 	}
-
 
 	public ASTCaseWhen(int id) {
 		super(id);
@@ -56,6 +59,19 @@ public class ASTCaseWhen extends SimpleNode {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
+		int numChildren = jjtGetNumChildren();
+		if (numChildren == 0) {
+			return null;
+		}
+		for (int i = 0; i < numChildren - 1; i = i + 2) {
+			Object evaluatedWhen = evaluateChild(i, o);
+			if (ConversionUtil.toBoolean(evaluatedWhen)) {
+				return evaluateChild(i + 1, o);
+			}
+		}
+		if (hasDefault) {
+			return evaluateChild(numChildren - 1, o);
+		}
 		return null;
 	}
 
@@ -63,6 +79,5 @@ public class ASTCaseWhen extends SimpleNode {
 	public int getType() {
 		return Expression.CASE_WHEN;
 	}
-
 
 }

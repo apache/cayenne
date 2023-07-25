@@ -28,11 +28,9 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTElse extends SimpleNode {
 
-	public ASTElse(Object ... nodes) {
+	public ASTElse(Object node) {
 		super(0);
-		for (int i = 0; i < nodes.length; i++) {
-			jjtAddChild((Node) nodes[i], i);
-		}
+		jjtAddChild((Node) node, 0);
 		connectChildren();
 	}
 
@@ -53,7 +51,7 @@ public class ASTElse extends SimpleNode {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		return null;
+		return evaluateChild(0, o);
 	}
 
 	@Override
