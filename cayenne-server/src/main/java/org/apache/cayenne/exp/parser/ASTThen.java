@@ -21,6 +21,9 @@ package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * "Then" expression.
  * 
@@ -60,6 +63,11 @@ public class ASTThen extends SimpleNode {
 	@Override
 	public int getType() {
 		return Expression.THEN;
+	}
+
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		throw new UnsupportedOperationException("EJBQL 'then' is not supported");
 	}
 
 

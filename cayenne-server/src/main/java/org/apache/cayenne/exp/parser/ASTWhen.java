@@ -23,6 +23,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.util.ConversionUtil;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * "When" expression.
  * 
@@ -76,5 +79,10 @@ public class ASTWhen extends AggregateConditionNode {
 			throw new ExpressionException(expName() + ": invalid parent");
 		}
 		parent = n;
+	}
+
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		throw new UnsupportedOperationException("EJBQL 'when' is not supported");
 	}
 }

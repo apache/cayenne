@@ -21,6 +21,9 @@ package org.apache.cayenne.exp.parser;
 
 import org.apache.cayenne.exp.Expression;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * "Else" expression.
  * 
@@ -57,6 +60,11 @@ public class ASTElse extends SimpleNode {
 	@Override
 	public int getType() {
 		return Expression.ELSE;
+	}
+
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		throw new UnsupportedOperationException("EJBQL 'else' is not supported");
 	}
 
 

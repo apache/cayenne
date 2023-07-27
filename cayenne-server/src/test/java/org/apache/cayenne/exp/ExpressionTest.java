@@ -475,4 +475,12 @@ public class ExpressionTest {
 						(betweenExp("estimatedPrice", 10, 20))),
 				List.of((pathExp("paintingDescription"))));
 	}
+
+	@Test (expected = UnsupportedOperationException.class)
+	public void testAppendAsEJBQLCaseWhen() throws IOException {
+		Expression caseWhen = ExpressionFactory.caseWhen(
+				List.of(ExpressionFactory.betweenExp("x",1,2)),
+				List.of(ExpressionFactory.pathExp("x")));
+		caseWhen.appendAsEJBQL(null, null, "x");
+	}
 }

@@ -22,6 +22,9 @@ package org.apache.cayenne.exp.parser;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.util.ConversionUtil;
 
+import java.io.IOException;
+import java.util.List;
+
 /**
  * "CaseWhen" expression.
  * 
@@ -80,4 +83,8 @@ public class ASTCaseWhen extends SimpleNode {
 		return Expression.CASE_WHEN;
 	}
 
+	@Override
+	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
+		throw new UnsupportedOperationException("EJBQL 'case when' is not supported");
+	}
 }
