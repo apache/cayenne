@@ -243,7 +243,7 @@ class QualifierTranslator implements TraversalHandler {
                 if (scalarVal instanceof Collection || scalarVal.getClass().isArray()) {
                     throw new CayenneRuntimeException("%s %s",ERR_MSG_ARRAYS_NOT_SUPPORTED, node.getClass().getName());
                 } else {
-                    objectNode(node, null);
+                    objectNode(scalarVal, null);
                 }
                 return null;
         }
@@ -419,7 +419,7 @@ class QualifierTranslator implements TraversalHandler {
         }
 
         ValueNodeBuilder valueNodeBuilder = value(leaf)
-                .needBinding(needBinding(leaf, parentNode))
+                .needBinding(needBinding(parentNode))
                 .attribute(findDbAttribute(parentNode));
         if(parentNode != null && parentNode.getType() == Expression.LIST) {
             valueNodeBuilder.array(true);
@@ -430,8 +430,8 @@ class QualifierTranslator implements TraversalHandler {
         nextNode.setParent(currentNode);
     }
 
-    private boolean needBinding(Object leaf, Expression parentNode) {
-        return !(parentNode == null && leaf instanceof ASTScalar) ;
+    private boolean needBinding(Expression parentNode) {
+        return (parentNode != null) ;
     }
 
     protected DbAttribute findDbAttribute(Expression node) {

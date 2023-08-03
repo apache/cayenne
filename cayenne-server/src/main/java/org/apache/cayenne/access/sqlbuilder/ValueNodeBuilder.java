@@ -29,7 +29,7 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
-    private final Object value;
+    private Object value;
 
     private DbAttribute attribute;
 
@@ -53,9 +53,6 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
     @Override
     public Node build() {
-        if (value instanceof ASTScalar){
-            return new ValueNode(((ASTScalar) value).getValue(), isArray, attribute, needBinding);
-        }
         return new ValueNode(value, isArray, attribute, needBinding);
     }
 
