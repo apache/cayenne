@@ -75,6 +75,7 @@ CAY-2801 Incorrect equals() implementation in IdGenerationMarker could cause dat
 CAY-2806 Incorrect processing of unicode escape syntax in JSON
 CAY-2809 Cayenne Expression grammar doesn't allow custom function as an argument for string functions
 CAY-2810 Can't use custom operator expression with aggregate functions
+CAY-2811 Incorrect SQL building using ColumnQuery with ASTScalar
 CAY-2813 Regression: Constants.CI_PROPERTY flag is no longer working for MySQL
 CAY-2815 Incorrect translation of aliased expression
 CAY-2827 Saved data-source XML data doesn't correspond to the XSD schema
