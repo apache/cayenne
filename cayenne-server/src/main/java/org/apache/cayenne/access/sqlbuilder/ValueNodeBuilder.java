@@ -21,6 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
+import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -33,6 +34,8 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
     private DbAttribute attribute;
 
     private boolean isArray;
+
+    private boolean needBinding;
 
     ValueNodeBuilder(Object value) {
         this.value = value;
@@ -50,6 +53,14 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
     @Override
     public Node build() {
-        return new ValueNode(value, isArray, attribute);
+        if (value instanceof ASTScalar){
+            return new ValueNode(((ASTScalar) value).getValue(), isArray, attribute, needBinding);
+        }
+        return new ValueNode(value, isArray, attribute, needBinding);
+    }
+
+    public ValueNodeBuilder needBinding(boolean needBinding) {
+        this.needBinding = needBinding;
+        return this;
     }
 }

@@ -158,7 +158,7 @@ public class OracleSQLTreeProcessor extends BaseSQLTreeProcessor {
     private InNode newSliceNode(InNode child, Node arg, ValueNode valueNode, Object slice) {
         InNode nextNode = new InNode(child.isNot());
         nextNode.addChild(arg.deepCopy());
-        nextNode.addChild(new ValueNode(slice, valueNode.isArray(), valueNode.getAttribute()));
+        nextNode.addChild(new ValueNode(slice, valueNode.isArray(), valueNode.getAttribute(), valueNode.isNeedBinding()));
         return nextNode;
     }
 

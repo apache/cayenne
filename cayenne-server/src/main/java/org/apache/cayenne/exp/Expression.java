@@ -204,7 +204,12 @@ public abstract class Expression implements Serializable, XMLSerializable {
 	 */
 	public static final int ANY = 55;
 
-	protected int type;
+	/**
+	 * @since 5.0
+	 */
+	public static final int SCALAR = 56;
+
+	protected int type = -1;
 
 	/**
 	 * Returns a map of path aliases for this expression. It returns a non-empty
