@@ -35,7 +35,7 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
     private boolean isArray;
 
-    private boolean needBinding;
+    private boolean needBinding = true;
 
     ValueNodeBuilder(Object value) {
         this.value = value;
