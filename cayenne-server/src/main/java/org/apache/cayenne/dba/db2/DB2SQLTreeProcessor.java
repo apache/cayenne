@@ -50,7 +50,7 @@ public class DB2SQLTreeProcessor extends BaseSQLTreeProcessor {
 
     @Override
     protected void onValueNode(Node parent, ValueNode child, int index) {
-        Node replacement = new DerbyValueNode(child.getValue(), child.isArray(), child.getAttribute());
+        Node replacement = new DerbyValueNode(child.getValue(), child.isArray(), child.getAttribute(), child.isNeedBinding());
         replaceChild(parent, index, replacement, false);
     }
 

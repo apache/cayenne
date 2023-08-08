@@ -49,14 +49,6 @@ public class ValueNode extends Node {
         this.needBinding = needBinding;
     }
 
-    public ValueNode(Object value, boolean isArray, DbAttribute attribute) {
-        super(NodeType.VALUE);
-        this.value = value;
-        this.isArray = isArray;
-        this.attribute = attribute;
-        this.needBinding = true;
-    }
-
     public Object getValue() {
         return value;
     }

@@ -21,7 +21,6 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
-import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
