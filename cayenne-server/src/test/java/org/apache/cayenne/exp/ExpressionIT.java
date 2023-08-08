@@ -41,7 +41,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -156,18 +155,6 @@ public class ExpressionIT extends ServerCase {
             }
         }
 		assertEquals(1, artists.size());
-	}
-
-	/**
-	 * We are waiting invalid SQL here:
-	 * 	data type of expression is not boolean in statement
-	 * 	[SELECT RTRIM(t0.ARTIST_NAME), t0.DATE_OF_BIRTH, t0.ARTIST_ID FROM ARTIST t0 WHERE 'abc']
-	 */
-	@Test
-	public void testSelectWithScalarAsWhereCondition() {
-		ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class).where(ExpressionFactory.wrapScalarValue("abc"));
-		CayenneRuntimeException exception = assertThrows(CayenneRuntimeException.class, () -> objectSelect.select(context));
-		assertTrue(exception.getMessage().contains("Query exception."));
 	}
 
 }

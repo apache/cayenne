@@ -26,7 +26,6 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTAsterisk;
-import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.*;
 import org.apache.cayenne.query.ObjectSelect;
@@ -34,7 +33,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -533,53 +531,6 @@ public class QualifierTranslatorTest {
             assertThat(right.getChild(1), instanceOf(ValueNode.class));
             assertEquals(Boolean.TRUE, ((ValueNode)right.getChild(1)).getValue());
         }
-    }
-
-    @Test
-    public void translateStringScalar() {
-        Expression scalarValue = ExpressionFactory.wrapScalarValue("abc");
-        Node translate = translator.translate(scalarValue);
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
-        translate.visit(visitor);
-        assertThat(scalarValue, instanceOf(ASTScalar.class));
-        assertEquals(" 'abc'",visitor.getSQLString());
-    }
-
-    @Test
-    public void translateNumberScalar() {
-        Expression scalarValue = ExpressionFactory.wrapScalarValue(123);
-        Node translate = translator.translate(scalarValue);
-        SQLGenerationVisitor visitor = new SQLGenerationVisitor(new StringBuilderAppendable());
-        translate.visit(visitor);
-        assertThat(scalarValue, instanceOf(ASTScalar.class));
-        assertEquals(" 123",visitor.getSQLString());
-    }
-
-    @Test
-    public void needBindingValueNode() {
-        Expression scalarValue = ExpressionFactory.wrapScalarValue(123);
-        Node translatedNode = translator.translate(scalarValue);
-        assertTrue(translatedNode instanceof ValueNode);
-        assertFalse(((ValueNode)translatedNode).isNeedBinding());
-    }
-
-    @Test
-    public void translateArrayScalar() {
-        Expression value = ExpressionFactory.wrapScalarValue( new int[]{ 1,2,3,4,5,6,7,8,9,10 } );
-        CayenneRuntimeException exception = assertThrows(
-                CayenneRuntimeException.class,
-                () -> translator.translate(value)
-        );
-        assertTrue(exception.getMessage().contains(QualifierTranslator.ERR_MSG_ARRAYS_NOT_SUPPORTED));
-    }
-
-    @Test
-    public void translateCollectionScalar() {
-        Expression value = ExpressionFactory.wrapScalarValue(List.of(1,2,3));
-        CayenneRuntimeException exception = assertThrows(CayenneRuntimeException.class,
-                () -> translator.translate(value)
-        );
-        assertTrue(exception.getMessage().contains(QualifierTranslator.ERR_MSG_ARRAYS_NOT_SUPPORTED));
     }
 
     private Node translate(String s) {
