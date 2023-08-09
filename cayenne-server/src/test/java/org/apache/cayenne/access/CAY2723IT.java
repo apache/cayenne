@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
@@ -36,6 +37,9 @@ public class CAY2723IT extends ServerCase {
     private DataContext context;
 
     @Inject
+    private ServerRuntime runtime;
+
+    @Inject
     private DataChannelInterceptor queryInterceptor;
 
     /**
@@ -44,14 +48,17 @@ public class CAY2723IT extends ServerCase {
     @Before
     public void warmup() {
         // try to trigger PK generator. so it wouldn't random fail the actual test
-        for(int i=0; i<20; i++) {
-            int queryCounter = queryInterceptor.runWithQueryCounter(() -> {
-                Painting painting = context.newObject(Painting.class);
-                painting.setPaintingTitle("test_warmup");
-                context.commitChanges();
-            });
+        for (int i = 0; i < 20; i++) {
+            int queryCounter = queryInterceptor.runWithQueryCounter(() ->
+                    runtime.performInTransaction(() -> {
+                        Painting painting = context.newObject(Painting.class);
+                        painting.setPaintingTitle("test_warmup");
+                        context.commitChanges();
+                        return null;
+                    })
+            );
             // PK generator triggered, we are ready
-            if(queryCounter > 1) {
+            if (queryCounter > 1) {
                 return;
             }
         }
