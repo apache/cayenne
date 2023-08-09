@@ -48,7 +48,7 @@ public class DerbySQLTreeProcessor extends BaseSQLTreeProcessor {
 
     @Override
     protected void onValueNode(Node parent, ValueNode child, int index) {
-        replaceChild(parent, index, new DerbyValueNode(child.getValue(), child.isArray(), child.getAttribute()));
+        replaceChild(parent, index, new DerbyValueNode(child.getValue(), child.isArray(), child.getAttribute(), child.isNeedBinding()));
     }
 
     @Override

@@ -28,11 +28,13 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
-    private final Object value;
+    private Object value;
 
     private DbAttribute attribute;
 
     private boolean isArray;
+
+    private boolean needBinding = true;
 
     ValueNodeBuilder(Object value) {
         this.value = value;
@@ -50,6 +52,11 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
     @Override
     public Node build() {
-        return new ValueNode(value, isArray, attribute);
+        return new ValueNode(value, isArray, attribute, needBinding);
+    }
+
+    public ValueNodeBuilder needBinding(boolean needBinding) {
+        this.needBinding = needBinding;
+        return this;
     }
 }

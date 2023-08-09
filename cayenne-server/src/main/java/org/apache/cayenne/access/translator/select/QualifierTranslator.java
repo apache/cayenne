@@ -35,6 +35,7 @@ import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTFullObject;
 import org.apache.cayenne.exp.parser.ASTFunctionCall;
 import org.apache.cayenne.exp.parser.ASTObjPath;
+import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
@@ -60,6 +61,8 @@ class QualifierTranslator implements TraversalHandler {
     private final Deque<Node> nodeStack;
 
     private Node currentNode;
+
+    static final String ERR_MSG_ARRAYS_NOT_SUPPORTED = "Arrays are not supported as a arguments in";
 
     QualifierTranslator(TranslatorContext context) {
         this.context = context;
@@ -232,8 +235,18 @@ class QualifierTranslator implements TraversalHandler {
                 } else {
                     return null;
                 }
+            case SCALAR:
+                if (parentNode != null){
+                    throw new CayenneRuntimeException("Incorrect state, a node %s can't have parent here", node.getClass().getName());
+                }
+                Object scalarVal = ((ASTScalar) node).getValue();
+                if (scalarVal instanceof Collection || scalarVal.getClass().isArray()) {
+                    throw new CayenneRuntimeException("%s %s",ERR_MSG_ARRAYS_NOT_SUPPORTED, node.getClass().getName());
+                } else {
+                    objectNode(scalarVal, null);
+                }
+                return null;
         }
-
         return null;
     }
 
@@ -374,6 +387,7 @@ class QualifierTranslator implements TraversalHandler {
             case BITWISE_AND: case BITWISE_LEFT_SHIFT: case BITWISE_OR: case BITWISE_RIGHT_SHIFT: case BITWISE_XOR:
             case OR: case AND: case LESS_THAN: case LESS_THAN_EQUAL_TO: case GREATER_THAN: case GREATER_THAN_EQUAL_TO:
             case TRUE: case FALSE: case ASTERISK: case EXISTS: case NOT_EXISTS: case SUBQUERY: case ENCLOSING_OBJECT: case FULL_OBJECT:
+            case SCALAR:
                 return true;
         }
         return false;
@@ -397,12 +411,17 @@ class QualifierTranslator implements TraversalHandler {
         if(expressionsToSkip.contains(parentNode)) {
             return;
         }
-        if(parentNode.getType() == OBJ_PATH || parentNode.getType() == DB_PATH || parentNode.getType() == DBID_PATH) {
+        if (parentNode != null &&
+                (parentNode.getType() == OBJ_PATH
+                || parentNode.getType() == DB_PATH
+                || parentNode.getType() == DBID_PATH)) {
             return;
         }
 
-        ValueNodeBuilder valueNodeBuilder = value(leaf).attribute(findDbAttribute(parentNode));
-        if(parentNode.getType() == Expression.LIST) {
+        ValueNodeBuilder valueNodeBuilder = value(leaf)
+                .needBinding(needBinding(parentNode))
+                .attribute(findDbAttribute(parentNode));
+        if(parentNode != null && parentNode.getType() == Expression.LIST) {
             valueNodeBuilder.array(true);
         }
         Node nextNode = valueNodeBuilder.build();
@@ -411,7 +430,14 @@ class QualifierTranslator implements TraversalHandler {
         nextNode.setParent(currentNode);
     }
 
+    private boolean needBinding(Expression parentNode) {
+        return (parentNode != null) ;
+    }
+
     protected DbAttribute findDbAttribute(Expression node) {
+        if (node == null){
+            return null;
+        }
         if(node.getType() == Expression.LIST) {
             if (node instanceof SimpleNode) {
                 Expression parent = (Expression) ((SimpleNode) node).jjtGetParent();

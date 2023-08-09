@@ -49,7 +49,7 @@ public class FirebirdSQLTreeProcessor extends BaseSQLTreeProcessor {
 
     @Override
     protected void onValueNode(Node parent, ValueNode child, int index) {
-        replaceChild(parent, index, new ValueNode(child.getValue(), child.isArray(), child.getAttribute()) {
+        replaceChild(parent, index, new ValueNode(child.getValue(), child.isArray(), child.getAttribute(), child.isNeedBinding()) {
             @Override
             protected void appendStringValue(QuotingAppendable buffer, CharSequence value) {
                 buffer.append("CAST(");
@@ -134,7 +134,7 @@ public class FirebirdSQLTreeProcessor extends BaseSQLTreeProcessor {
     private InNode newSliceNode(InNode child, Node arg, ValueNode valueNode, Object slice) {
         InNode nextNode = new InNode(child.isNot());
         nextNode.addChild(arg.deepCopy());
-        nextNode.addChild(new ValueNode(slice, valueNode.isArray(), valueNode.getAttribute()));
+        nextNode.addChild(new ValueNode(slice, valueNode.isArray(), valueNode.getAttribute(), valueNode.isNeedBinding()));
         return nextNode;
     }
 

@@ -39,12 +39,14 @@ public class ValueNode extends Node {
     private final boolean isArray;
     // Used as hint for type of this value
     private final DbAttribute attribute;
+    private final boolean needBinding;
 
-    public ValueNode(Object value, boolean isArray, DbAttribute attribute) {
+    public ValueNode(Object value, boolean isArray, DbAttribute attribute, boolean needBinding) {
         super(NodeType.VALUE);
         this.value = value;
         this.isArray = isArray;
         this.attribute = attribute;
+        this.needBinding = needBinding;
     }
 
     public Object getValue() {
@@ -117,7 +119,7 @@ public class ValueNode extends Node {
         if(value == null) {
             return;
         }
-        if(buffer.getContext() == null) {
+        if(buffer.getContext() == null || !needBinding) {
             buffer.append(' ').append(value.toString());
         } else {
             buffer.append(" ?");
@@ -126,7 +128,7 @@ public class ValueNode extends Node {
     }
 
     protected void appendStringValue(QuotingAppendable buffer, CharSequence value) {
-        if(buffer.getContext() == null) {
+        if(buffer.getContext() == null || !needBinding) {
             buffer.append(" '").append(value).append("'");
         } else {
             // value can't be null here
@@ -267,6 +269,10 @@ public class ValueNode extends Node {
 
     @Override
     public Node copy() {
-        return new ValueNode(value, isArray, attribute);
+        return new ValueNode(value, isArray, attribute, needBinding);
+    }
+
+    public boolean isNeedBinding() {
+        return needBinding;
     }
 }

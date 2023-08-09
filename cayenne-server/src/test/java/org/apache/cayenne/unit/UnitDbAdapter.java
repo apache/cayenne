@@ -422,4 +422,12 @@ public class UnitDbAdapter {
     public boolean supportsNullComparison() {
         return true;
     }
+
+    /**
+     * Support for select like this:
+     * SELECT t0.ARTIST_NAME FROM ARTIST t0 WHERE 'abc'
+     */
+    public boolean supportScalarAsExpression(){
+        return false;
+    }
 }
