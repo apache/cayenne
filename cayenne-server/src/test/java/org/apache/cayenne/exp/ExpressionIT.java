@@ -165,6 +165,9 @@ public class ExpressionIT extends ServerCase {
 	 */
 	@Test
 	public void testSelectWithScalarAsWhereCondition() {
+		if (adapter.supportScalarAsExpression()){
+			return;
+		}
 		ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class).where(ExpressionFactory.wrapScalarValue("abc"));
 		CayenneRuntimeException exception = assertThrows(CayenneRuntimeException.class, () -> objectSelect.select(context));
 		assertTrue(exception.getMessage().contains("Query exception."));

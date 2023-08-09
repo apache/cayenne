@@ -130,4 +130,9 @@ public class MySQLUnitDbAdapter extends UnitDbAdapter {
     public boolean supportsGeneratedKeysDrop() {
         return true;
     }
+
+    @Override
+    public boolean supportScalarAsExpression() {
+        return true;
+    }
 }
