@@ -39,7 +39,7 @@ import java.util.List;
 
 import static org.apache.cayenne.exp.ExpressionFactory.betweenExp;
 import static org.apache.cayenne.exp.ExpressionFactory.caseWhen;
-import static org.apache.cayenne.exp.ExpressionFactory.pathExp;
+import static org.apache.cayenne.exp.ExpressionFactory.wrapScalarValue;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class CaseWhenIT extends ServerCase {
@@ -65,24 +65,24 @@ public class CaseWhenIT extends ServerCase {
         Expression caseWhenNoDefault = caseWhen(
                 List.of((betweenExp("estimatedPrice", 0, 9)),
                         (betweenExp("estimatedPrice", 10, 20))),
-                List.of((pathExp("paintingTitle")),
-                        (pathExp("paintingDescription"))));
+                List.of((wrapScalarValue("firstThenResult")),
+                        (wrapScalarValue("secondThenResult"))));
 
         StringProperty<String> propertyNoDefault = PropertyFactory.createString(caseWhenNoDefault, String.class);
         String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(context);
-        Assert.assertEquals("Oil on linen, 79.5 x 79.5 cm", result);
+        Assert.assertEquals("secondThenResult", result);
     }
 
     @Test
     public void caseWhenDefaultExpressionFactoryTest() {
         Expression caseWhenNoDefault = caseWhen(
                 List.of(betweenExp("estimatedPrice", 0, 14)),
-                List.of(pathExp("paintingDescription")),
-                pathExp("paintingTitle"));
+                List.of((wrapScalarValue("firstThenResult"))),
+                wrapScalarValue("defaultResult"));
 
         StringProperty<String> propertyNoDefault = PropertyFactory.createString(caseWhenNoDefault, String.class);
         String result = ObjectSelect.columnQuery(Painting.class, propertyNoDefault).selectFirst(context);
-        Assert.assertEquals("Black square", result);
+        Assert.assertEquals("defaultResult", result.trim());
 
     }
 
