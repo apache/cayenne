@@ -19,12 +19,7 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.sqlbuilder.sqltree.OpExpressionNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.TrimmingColumnNode;
-import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.*;
 import org.apache.cayenne.access.translator.select.BaseSQLTreeProcessor;
 
 /**
@@ -34,7 +29,8 @@ public class HSQLTreeProcessor extends BaseSQLTreeProcessor {
 
     @Override
     protected void onValueNode(Node parent, ValueNode child, int index) {
-        replaceChild(parent, index, new ValueNode(child.getValue(), child.isArray(), child.getAttribute(), false));
+        boolean needBinding = !(parent instanceof ThenNode || parent instanceof ElseNode);
+        replaceChild(parent, index, new ValueNode(child.getValue(), child.isArray(), child.getAttribute(), needBinding));
     }
 
     @Override
