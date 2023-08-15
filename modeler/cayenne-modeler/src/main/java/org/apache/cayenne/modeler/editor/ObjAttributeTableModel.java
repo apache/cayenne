@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.editor;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -209,20 +210,26 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
 
     private String getDBAttributeType(ObjAttributeWrapper attribute, DbAttribute dbAttribute) {
         int type;
-        if (dbAttribute == null) {
-            if (!(attribute.getValue() instanceof EmbeddedAttribute)) {
+        if (dbAttribute != null) {
+            type = dbAttribute.getType();
+        } else {
+            if (attribute.getValue() instanceof EmbeddedAttribute) {
+                return null;
+            } else {
                 try {
-                    type = TypesMapping.getSqlTypeByJava(attribute.getJavaClass());
+                    Class<?> objAttributeClass;
+                    try {
+                        objAttributeClass = attribute.getObjAttributeClass();
+                    } catch (DIRuntimeException e) {
+                        return null;
+                    }
+                    type = TypesMapping.getSqlTypeByJava(objAttributeClass);
                     // have to catch the exception here to make sure that exceptional situations
                     // (class doesn't exist, for example) don't prevent the gui from properly updating.
                 } catch (CayenneRuntimeException cre) {
                     return null;
                 }
-            } else {
-                return null;
             }
-        } else {
-            type = dbAttribute.getType();
         }
         return TypesMapping.getSqlNameByType(type);
     }
@@ -273,32 +280,23 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
     }
 
     private void setObjAttributeType(ObjAttributeWrapper attribute, Object value) {
-        String oldType = attribute.getType();
         String newType = value != null ? value.toString() : null;
-
         attribute.setType(newType);
-        if (oldType == null || newType == null) {
+
+        if (Arrays.asList(ModelerUtil.getRegisteredTypeNames()).contains(newType) || newType == null) {
             return;
         }
 
-        String[] registeredTypes = ModelerUtil.getRegisteredTypeNames();
-        Collection<String> registeredTypesList = Arrays.asList(registeredTypes);
-        if (registeredTypesList.contains(oldType) == registeredTypesList.contains(newType)) {
-            return;
+        ObjAttribute attributeNew;
+        if (mediator.getEmbeddableNamesInCurrentDataDomain().contains(newType)) {
+            attributeNew = new EmbeddedAttribute();
+            attributeNew.setDbAttributePath(null);
+        } else {
+            attributeNew = new ObjAttribute();
+            attributeNew.setDbAttributePath(attribute.getDbAttributePath());
         }
 
         ObjEntity entity = attribute.getEntity();
-
-        ObjAttribute attributeNew;
-        if (registeredTypesList.contains(newType) ||
-                !mediator.getEmbeddableNamesInCurrentDataDomain().contains(newType)) {
-            attributeNew = new ObjAttribute();
-            attributeNew.setDbAttributePath(attribute.getDbAttributePath());
-        } else {
-            attributeNew = new EmbeddedAttribute();
-            attributeNew.setDbAttributePath(null);
-        }
-
         attributeNew.setName(attribute.getName());
         attributeNew.setEntity(entity);
         attributeNew.setParent(attribute.getParent());
