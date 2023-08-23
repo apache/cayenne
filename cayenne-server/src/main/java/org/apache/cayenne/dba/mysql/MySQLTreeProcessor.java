@@ -38,14 +38,18 @@ import org.apache.cayenne.value.Wkt;
  */
 public class MySQLTreeProcessor extends TypeAwareSQLTreeProcessor {
 
-    private static final MySQLTreeProcessor INSTANCE = new MySQLTreeProcessor();
+    private static final MySQLTreeProcessor INSTANCE_CI = new MySQLTreeProcessor(true);
+    private static final MySQLTreeProcessor INSTANCE_CS = new MySQLTreeProcessor(false);
 
-    public static MySQLTreeProcessor getInstance() {
-        return INSTANCE;
+    public static MySQLTreeProcessor getInstance(boolean caseInsensitiveCollations) {
+        return caseInsensitiveCollations ? INSTANCE_CI : INSTANCE_CS;
     }
 
-    protected MySQLTreeProcessor() {
-        registerProcessor(NodeType.LIKE, (ChildProcessor<LikeNode>) this::onLikeNode);
+    protected MySQLTreeProcessor(boolean ciCollations) {
+        if(ciCollations) {
+            // For case insensitive collations we need to use `LIKE BINARY` operator to keep strict `LIKE` semantics
+            registerProcessor(NodeType.LIKE, (ChildProcessor<LikeNode>) this::onLikeNode);
+        }
         registerProcessor(NodeType.LIMIT_OFFSET, (ChildProcessor<LimitOffsetNode>) this::onLimitOffsetNode);
         registerProcessor(NodeType.FUNCTION, (ChildProcessor<FunctionNode>) this::onFunctionNode);
 

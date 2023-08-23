@@ -112,7 +112,7 @@ public class MySQLAdapter extends JdbcAdapter {
      */
 	@Override
 	public SQLTreeProcessor getSqlTreeProcessor() {
-		return MySQLTreeProcessor.getInstance();
+		return MySQLTreeProcessor.getInstance(caseInsensitiveCollations);
 	}
 
 	/**
