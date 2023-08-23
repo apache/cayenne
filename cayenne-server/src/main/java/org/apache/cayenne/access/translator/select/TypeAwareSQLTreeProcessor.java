@@ -92,7 +92,8 @@ public class TypeAwareSQLTreeProcessor extends SimpleNodeTreeVisitor implements 
 
     protected DbAttribute getColumnAttribute(ColumnNode node) {
         DbAttribute attribute = node.getAttribute();
-        if(attribute.getType() == Types.OTHER
+        if(attribute != null
+                && attribute.getType() == Types.OTHER
                 && node.getParent() != null
                 && node.getParent().getType() == NodeType.RESULT) {
             return attribute;

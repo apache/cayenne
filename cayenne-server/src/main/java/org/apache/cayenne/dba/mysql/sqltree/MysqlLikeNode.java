@@ -36,7 +36,7 @@ public class MysqlLikeNode extends LikeNode {
         if (not) {
             buffer.append(" NOT");
         }
-        buffer.append(" LIKE BINARY ");
+        buffer.append(" LIKE BINARY");
     }
 
     @Override
