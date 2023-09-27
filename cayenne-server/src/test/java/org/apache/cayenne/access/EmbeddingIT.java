@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -359,5 +360,15 @@ public class EmbeddingIT extends ServerCase {
         }
 
         context.commitChanges();
+    }
+
+    @Test
+    public void testQueryWithBatchIterator() throws Exception {
+        createSelectDataSet2();
+        try (ResultBatchIterator<EmbedEntity1> iterator = ObjectSelect.query(EmbedEntity1.class)
+                .batchIterator(context, 2)) {
+            assertNotNull(iterator.next().get(0).getEmbedded2());
+        }
+
     }
 }

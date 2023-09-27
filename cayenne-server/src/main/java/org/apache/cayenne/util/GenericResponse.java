@@ -101,6 +101,11 @@ public class GenericResponse implements QueryResponse, Serializable {
         return results.get(currentIndex - 1) instanceof List;
     }
 
+    @Override
+    public boolean isIterator() {
+        return false;
+    }
+
     public boolean next() {
         return ++currentIndex <= results.size();
     }

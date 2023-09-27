@@ -69,6 +69,11 @@ public interface QueryResponse {
     boolean isList();
 
     /**
+     * Returns whether current response  is an iterator
+     */
+    boolean isIterator();
+
+    /**
      * Returns a List under the current iterator position. Use {@link #isList()} to check
      * the result type before calling this method.
      */

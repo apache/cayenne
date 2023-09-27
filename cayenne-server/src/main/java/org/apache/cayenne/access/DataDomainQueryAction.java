@@ -39,6 +39,7 @@ import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
+import org.apache.cayenne.query.IteratedQueryDecorator;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -50,7 +51,10 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.GenericResponse;
+import org.apache.cayenne.util.IteratedQueryResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
 
@@ -72,7 +76,7 @@ import java.util.function.Function;
  * 
  * @since 1.2
  */
-class DataDomainQueryAction implements QueryRouter, OperationObserver {
+public class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     static final boolean DONE = true;
 
@@ -89,6 +93,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     Map<QueryEngine, Collection<Query>> queriesByNode;
     Map<Query, Query> queriesByExecutedQueries;
     boolean noObjectConversion;
+    private IteratedQueryResponse iteratedQueryResponse;
 
     /*
      * A constructor for the "new" way of performing a query via 'execute' with
@@ -119,12 +124,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     QueryResponse execute() {
 
         // run chain...
-        if (interceptOIDQuery() != DONE) {
-            if (interceptRelationshipQuery() != DONE) {
-                if (interceptRefreshQuery() != DONE) {
-                    if (interceptSharedCache() != DONE) {
-                        if (interceptDataDomainQuery() != DONE) {
-                            runQueryInTransaction();
+        if (interceptIteratedQuery() != DONE) {
+            if (interceptOIDQuery() != DONE) {
+                if (interceptRelationshipQuery() != DONE) {
+                    if (interceptRefreshQuery() != DONE) {
+                        if (interceptSharedCache() != DONE) {
+                            if (interceptDataDomainQuery() != DONE) {
+                                runQueryInTransaction();
+                            }
                         }
                     }
                 }
@@ -136,6 +143,37 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         return response;
+    }
+
+    private boolean interceptIteratedQuery() {
+        if (query instanceof IteratedQueryDecorator) {
+            performIteratedQuery();
+            return DONE;
+        }
+        return !DONE;
+    }
+
+    private void performIteratedQuery() {
+        Transaction tx = BaseTransaction.getThreadTransaction();
+        if (tx != null) {
+            runIteratedQuery(tx);
+        } else {
+            tx = context.getTransactionFactory().createTransaction();
+            BaseTransaction.bindThreadTransaction(tx);
+            try {
+                runIteratedQuery(tx);
+            } catch (Exception e) {
+                throw new CayenneRuntimeException(e);
+            } finally {
+                BaseTransaction.bindThreadTransaction(null);
+                if (tx.isRollbackOnly()) {
+                    try {
+                        tx.rollback();
+                    } catch (Exception rollbackEx) {
+                    }
+                }
+            }
+        }
     }
 
     private boolean interceptDataDomainQuery() {
@@ -471,45 +509,95 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void interceptObjectConversion() {
+    private void runIteratedQuery(Transaction tx){
+        // reset
+        this.fullResponse = null;
+        this.response = null;
+        this.queriesByNode = null;
+        this.queriesByExecutedQueries = null;
 
-        if (context != null) {
-            List mainRows = response.firstList(); // List<DataRow> or List<Object[]>
-            if (mainRows != null && !mainRows.isEmpty()) {
+        // whether this is null or not will driver further decisions on how to process prefetched rows
+        this.prefetchResultsByPath = metadata.getPrefetchTree() != null && !metadata.isFetchingDataRows()
+                ? new HashMap<>() : null;
 
-                ObjectConversionStrategy<?> converter;
+        // categorize queries by node and by "executable" query...
+        query.route(this, domain.getEntityResolver(), null);
 
-                if(metadata.isFetchingDataRows()) {
-                    converter = new IdentityConversionStrategy();
-                } else {
-                    List<Object> rsMapping = metadata.getResultSetMapping();
-                    if (rsMapping == null) {
-                        converter = new SingleObjectConversionStrategy();
-                    } else {
-                        if (metadata.isSingleResultSetMapping()) {
-                            if (rsMapping.get(0) instanceof EntityResultSegment) {
-                                converter = new SingleObjectConversionStrategy();
-                        } else if(rsMapping.get(0) instanceof EmbeddableResultSegment) {
-                            converter = new SingleEmbeddableConversionStrategy();
-                            } else {
-                                converter = new SingleScalarConversionStrategy();
-                            }
-                        } else {
-                            converter = new MixedConversionStrategy();
-                        }
-                    }
-                }
-
-                if(metadata.getResultMapper() != null) {
-                    converter = new MapperConversionStrategy(converter);
-                }
-
-                converter.convert(mainRows);
-                // rewind response after firstList() call
-                response.reset();
+        // run categorized queries
+        if (queriesByNode != null) {
+            for (Map.Entry<QueryEngine, Collection<Query>> entry : queriesByNode.entrySet()) {
+                QueryEngine nextNode = entry.getKey();
+                Collection<Query> nodeQueries = entry.getValue();
+                nextNode.performQueries(nodeQueries, this);
             }
         }
+
+        wrapResponseIteratorWithTransactionDecorator(tx);
+        this.fullResponse = iteratedQueryResponse;
+        this.response = iteratedQueryResponse;
+    }
+
+    private void wrapResponseIteratorWithTransactionDecorator(Transaction tx){
+        ResultIterator iterator = iteratedQueryResponse.getIterator();
+        TransactionResultIteratorDecorator decorator = new TransactionResultIteratorDecorator<>(iterator, tx);
+        iteratedQueryResponse.setIterator(decorator);
+    }
+
+    private void wrapResponseIteratorWithConverterDecorator(ObjectConversionStrategy<?, ?> converter) {
+        ResultIterator<?> iterator = ((IteratedQueryResponse) response).getIterator();
+        ResultIteratorConverterDecorator decorator = new ResultIteratorConverterDecorator(iterator, converter);
+        ((IteratedQueryResponse) response).setIterator(decorator);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void interceptObjectConversion() {
+        if (context != null) {
+            ObjectConversionStrategy<?,?> converter = getConverter();
+            if (response.isIterator()) {
+                wrapResponseIteratorWithConverterDecorator(converter);
+            } else {
+                List mainRows = response.firstList(); // List<DataRow> or List<Object[]>
+                if (mainRows != null && !mainRows.isEmpty()) {
+                    converter.convert(mainRows);
+                    rewindResponseAfterFirstListCall();
+                }
+            }
+        }
+    }
+
+
+    private void rewindResponseAfterFirstListCall() {
+        response.reset();
+    }
+
+    private ObjectConversionStrategy<?,?> getConverter() {
+        ObjectConversionStrategy<?,?> converter;
+
+        if(metadata.isFetchingDataRows()) {
+            converter = new IdentityConversionStrategy();
+        } else {
+            List<Object> rsMapping = metadata.getResultSetMapping();
+            if (rsMapping == null) {
+                converter = new SingleObjectConversionStrategy();
+            } else {
+                if (metadata.isSingleResultSetMapping()) {
+                    if (rsMapping.get(0) instanceof EntityResultSegment) {
+                        converter = new SingleObjectConversionStrategy();
+                } else if(rsMapping.get(0) instanceof EmbeddableResultSegment) {
+                    converter = new SingleEmbeddableConversionStrategy();
+                    } else {
+                        converter = new SingleScalarConversionStrategy();
+                    }
+                } else {
+                    converter = new MixedConversionStrategy();
+                }
+            }
+        }
+
+        if(metadata.getResultMapper() != null) {
+            converter = new MapperConversionStrategy(converter);
+        }
+        return converter;
     }
 
     @Override
@@ -604,7 +692,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @Override
     public void nextRows(Query q, ResultIterator<?> it) {
-        throw new CayenneRuntimeException("Invalid attempt to fetch a cursor.");
+        iteratedQueryResponse = new IteratedQueryResponse(it);
+        // exclude prefetched rows in the main result
+        if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery) {
+            PrefetchSelectQuery prefetchQuery = (PrefetchSelectQuery) query;
+            prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), (List<?>) it);
+        } else {
+            this.fullResponse = iteratedQueryResponse;
+        }
     }
 
     @Override
@@ -630,12 +725,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @Override
     public boolean isIteratedResult() {
-        return false;
+        return (query instanceof IteratedQueryDecorator);
     }
 
-    abstract class ObjectConversionStrategy<T> {
-
+     abstract class ObjectConversionStrategy<T, R> {
         abstract void convert(List<T> mainRows);
+
+        abstract R convert(T t);
 
         protected PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
                 List<DataRow> normalizedRows) {
@@ -676,11 +772,30 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow> {
+    class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow, Object> {
 
         @Override
-        void convert(List<DataRow> mainRows) {
+        public void convert(List<DataRow> mainRows) {
 
+            PrefetchProcessorNode node = getPrefetchProcessorNode(mainRows);
+            List<Persistent> objects = node.getObjects();
+            updateResponse(mainRows, objects != null ? objects : new ArrayList<>(1));
+
+            // apply POST_LOAD callback
+            LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
+
+            if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
+                performPostLoadCallbacks(node, callbackRegistry);
+            }
+        }
+
+        @Override
+         Object convert(DataRow dataRow) {
+            PrefetchProcessorNode node = getPrefetchProcessorNode(Collections.singletonList(dataRow));
+            return node.getObjects().get(0);
+        }
+
+        private PrefetchProcessorNode getPrefetchProcessorNode(List<DataRow> mainRows) {
             PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
 
             List<Object> rsMapping = metadata.getResultSetMapping();
@@ -694,27 +809,25 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     : resultSegment.getClassDescriptor();
 
             PrefetchProcessorNode node = toResultsTree(descriptor, prefetchTree, mainRows);
-            List<Persistent> objects = node.getObjects();
-            updateResponse(mainRows, objects != null ? objects : new ArrayList<>(1));
-
-            // apply POST_LOAD callback
-            LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
-
-            if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                performPostLoadCallbacks(node, callbackRegistry);
-            }
+            return node;
         }
     }
 
-    class SingleScalarConversionStrategy extends ObjectConversionStrategy<Object> {
+    class SingleScalarConversionStrategy extends ObjectConversionStrategy<Object, Object> {
 
         @Override
         void convert(List<Object> mainRows) {
             // noop... scalars require no further processing
         }
+
+        @Override
+        Object convert(Object o) {
+            return o;
+            // noop... scalars require no further processing
+        }
     }
 
-    class SingleEmbeddableConversionStrategy extends ObjectConversionStrategy<DataRow> {
+    class SingleEmbeddableConversionStrategy extends ObjectConversionStrategy<DataRow, Object> {
 
         @Override
         void convert(List<DataRow> mainRows) {
@@ -734,9 +847,15 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             });
             updateResponse(mainRows, result);
         }
+
+        @Override
+        Object convert(DataRow dataRow) {
+            convert(Collections.singletonList(dataRow));
+            return dataRow;
+        }
     }
 
-    class MixedConversionStrategy extends ObjectConversionStrategy<Object[]> {
+    class MixedConversionStrategy extends ObjectConversionStrategy<Object[], Object[]> {
 
         protected PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
                 List<Object[]> rows, int position) {
@@ -828,24 +947,38 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 }
             }
         }
+
+        @Override
+        Object[] convert(Object[] objectsArray) {
+            List<Object[]> objects = new ArrayList<>();
+            objects.add(objectsArray);
+            convert(objects);
+            return objectsArray;
+        }
     }
 
-    private class IdentityConversionStrategy extends ObjectConversionStrategy<Object> {
+    private class IdentityConversionStrategy extends ObjectConversionStrategy<Object, Object> {
         @Override
-        void convert(List<Object> mainRows) {
+        void convert(List mainRows) {
+            //noop
+        }
+
+        @Override
+        public Object convert(Object object) {
+            return object;
         }
     }
 
     /**
      * Conversion strategy that uses mapper function to map raw result
      */
-    private class MapperConversionStrategy extends ObjectConversionStrategy<Object> {
+    private class MapperConversionStrategy extends ObjectConversionStrategy<Object, Object> {
 
         private final Function<Object, ?> mapper;
-        private final ObjectConversionStrategy<Object> parentStrategy;
+        private final ObjectConversionStrategy<Object, Object> parentStrategy;
 
         @SuppressWarnings({"unchecked", "rawtypes"})
-        MapperConversionStrategy(ObjectConversionStrategy<?> parentStrategy) {
+        MapperConversionStrategy(ObjectConversionStrategy<?, ?> parentStrategy) {
             this.mapper = (Function)metadata.getResultMapper();
             this.parentStrategy = (ObjectConversionStrategy)parentStrategy;
         }
@@ -854,6 +987,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         void convert(List<Object> mainRows) {
             parentStrategy.convert(mainRows);
             mainRows.replaceAll(mapper::apply);
+        }
+
+        @Override
+        Object convert(Object object) {
+            return mapper.apply(parentStrategy.convert(object));
         }
     }
 

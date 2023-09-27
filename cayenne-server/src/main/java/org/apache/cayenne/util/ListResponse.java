@@ -64,6 +64,11 @@ public class ListResponse implements QueryResponse, Serializable {
         return true;
     }
 
+    @Override
+    public boolean isIterator() {
+        return false;
+    }
+
     public List currentList() {
         if (currentIndex != 1) {
             throw new IndexOutOfBoundsException("Past iteration end: " + currentIndex);

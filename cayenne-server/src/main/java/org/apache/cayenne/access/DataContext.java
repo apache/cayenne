@@ -65,6 +65,7 @@ import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
+import org.apache.cayenne.util.IteratedQueryResponse;
 import org.apache.cayenne.util.ResultIteratorIterator;
 import org.apache.cayenne.util.Util;
 
@@ -796,18 +797,8 @@ public class DataContext extends BaseContext {
     @SuppressWarnings("unchecked")
     @Override
     public <T> ResultIterator<T> iterator(final Select<T> query) {
-        final ResultIterator<?> rows = performIteratedQuery(query);
-        final QueryMetadata md = query.getMetaData(getEntityResolver());
-
-        if (md.isFetchingDataRows() || isObjectArrayResult(md)) {
-            // no need to convert result
-            return (ResultIterator<T>) rows;
-        } else {
-            // this is a bit optimized version of 'objectFromDataRow' with
-            // resolver cached for reuse... still the rest is pretty suboptimal
-            final ObjectResolver resolver = new ObjectResolver(this, md.getClassDescriptor(), true);
-            return new DataRowResultIterator(rows, resolver);
-        }
+        IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query);
+        return (ResultIterator<T>) performQuery(queryDecorator).get(0);
     }
 
     /**
@@ -937,11 +928,16 @@ public class DataContext extends BaseContext {
      * 
      * @return A list of DataObjects or a DataRows, depending on the value
      *         returned by {@link QueryMetadata#isFetchingDataRows()}.
+     *         Сan also return an iterator if the query is an instance of iteratedQuery.
      */
     @Override
     @SuppressWarnings("unchecked")
     public List performQuery(Query query) {
         query = nonNullDelegate().willPerformQuery(this, query);
+        if (query instanceof IteratedQueryDecorator){
+            IteratedQueryResponse queryResponse = (IteratedQueryResponse) (onQuery(this, query));
+            return Collections.singletonList(queryResponse.getIterator());
+        }
         if (query == null) {
             return new ArrayList<>(1);
         }
@@ -1028,7 +1024,7 @@ public class DataContext extends BaseContext {
      * @since 1.1
      */
     public List<?> performQuery(String queryName, Map parameters, boolean expireCachedLists) {
-        return performQuery(expireCachedLists ?
+        return (List<?>) performQuery(expireCachedLists ?
                 MappedSelect.query(queryName).params(parameters).forceNoCache() :
                 MappedSelect.query(queryName).params(parameters));
     }
@@ -1176,7 +1172,7 @@ public class DataContext extends BaseContext {
         super.fireDataChannelChanged(postedBy, changes);
     }
 
-    private TransactionFactory getTransactionFactory() {
+    TransactionFactory getTransactionFactory() {
         attachToRuntimeIfNeeded();
         return transactionFactory;
     }
