@@ -61,7 +61,7 @@ public class AliasedNode extends Node {
         if(skipContent()){
             return;
         }
-        buffer.append(" AS ").append(alias);
+        buffer.append(" ").append(alias);
     }
 
     public String getAlias() {
@@ -76,6 +76,13 @@ public class AliasedNode extends Node {
                 return false;
             }
             parent = parent.getParent();
+        }
+
+        // check if we have subselect as a child
+        for(Node child : children) {
+            if(child.getType() == NodeType.SELECT) {
+                return false;
+            }
         }
         return true;
     }

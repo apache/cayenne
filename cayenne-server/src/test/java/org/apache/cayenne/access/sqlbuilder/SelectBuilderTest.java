@@ -123,11 +123,11 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                 )
                 .groupBy(table("a").column("ARTIST_ID"))
                 .having(not(count(table("p").column("PAINTING_TITLE")).gt(value(3))))
-                .orderBy(column("p_count").desc(), column("a_id").asc())
+                .orderBy(count(table("p").column("PAINTING_TITLE")).as("p_count").desc(), column("a_id").asc())
                 .build();
         assertThat(node, instanceOf(SelectNode.class));
         assertSQL("SELECT DISTINCT" +
-                    " a.ARTIST_ID a_id, COUNT( p.PAINTING_TITLE ) AS p_count" +
+                    " a.ARTIST_ID a_id, COUNT( p.PAINTING_TITLE ) p_count" +
                 " FROM ARTIST a" +
                 " LEFT JOIN PAINTING p ON ( a.ARTIST_ID = p.ARTIST_ID ) AND ( p.ESTIMATED_PRICE > 10 )" +
                 " WHERE ( ( ( a.ARTIST_NAME = 'Picasso' )" +

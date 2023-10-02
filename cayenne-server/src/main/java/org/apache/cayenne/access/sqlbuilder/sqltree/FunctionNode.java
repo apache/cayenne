@@ -89,7 +89,7 @@ public class FunctionNode extends Node {
         }
 
         if (alias != null) {
-            buffer.append(" AS ").appendQuoted(alias);
+            buffer.append(" ").appendQuoted(alias);
         }
     }
 
