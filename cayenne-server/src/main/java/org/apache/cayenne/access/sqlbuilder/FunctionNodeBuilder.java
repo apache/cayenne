@@ -42,6 +42,14 @@ public class FunctionNodeBuilder implements ExpressionTrait {
         return this;
     }
 
+    public OrderingNodeBuilder desc() {
+        return new OrderingNodeBuilder(this).desc();
+    }
+
+    public OrderingNodeBuilder asc() {
+        return new OrderingNodeBuilder(this).asc();
+    }
+
     @Override
     public Node build() {
         Node functionNode = new FunctionNode(functionName, alias, true);

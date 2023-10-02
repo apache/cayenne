@@ -45,4 +45,9 @@ public class SelectNode extends Node {
     public Node copy() {
         return new SelectNode();
     }
+
+    @Override
+    public NodeType getType() {
+        return NodeType.SELECT;
+    }
 }

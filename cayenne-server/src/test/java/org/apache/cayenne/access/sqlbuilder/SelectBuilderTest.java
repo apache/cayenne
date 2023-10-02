@@ -120,7 +120,7 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                     "WHEN ( ( Quantity > 30 ) AND ( Quantity < 100 ) ) THEN 'The quantity from 30 to 100' " +
                     "WHEN ( Quantity = 30 ) THEN 'The quantity is 30' " +
                     "ELSE 'The quantity is under 30' " +
-                    "END AS QuantityText " +
+                    "END QuantityText " +
                 "FROM OrderDetails", node);
     }
 
@@ -131,6 +131,29 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                         .then(value("The quantity is greater than 30"))
                         .when(column("Quantity").eq(value(30))))
                 .from(table("OrderDetails"));
+    }
+
+    @Test
+    public void testQueryAlias() {
+        SelectBuilder innerSelect = select(table("p").column("PAINTING_TITLE"))
+                .from(table("PAINTING").as("p"));
+        Node node = select(table("t").column("*"))
+                .from(aliased(innerSelect, "t"))
+                .build();
+
+        assertThat(node, instanceOf(SelectNode.class));
+        assertSQL("SELECT t.* FROM (SELECT p.PAINTING_TITLE FROM PAINTING p) t", node);
+    }
+
+    @Test
+    public void testFunctionAlias() {
+        Node node = select(function("test", table("p").column("PAINTING_TITLE")).as("f"))
+                .from(table("PAINTING").as("p"))
+                .orderBy(function("test", table("p").column("PAINTING_TITLE")).as("f"))
+                .build();
+
+        assertThat(node, instanceOf(SelectNode.class));
+        assertSQL("SELECT test( p.PAINTING_TITLE ) f FROM PAINTING p ORDER BY f", node);
     }
 
     @Test
@@ -155,11 +178,11 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
                 )
                 .groupBy(table("a").column("ARTIST_ID"))
                 .having(not(count(table("p").column("PAINTING_TITLE")).gt(value(3))))
-                .orderBy(column("p_count").desc(), column("a_id").asc())
+                .orderBy(count(table("p").column("PAINTING_TITLE")).as("p_count").desc(), column("a_id").asc())
                 .build();
         assertThat(node, instanceOf(SelectNode.class));
         assertSQL("SELECT DISTINCT" +
-                    " a.ARTIST_ID a_id, COUNT( p.PAINTING_TITLE ) AS p_count" +
+                    " a.ARTIST_ID a_id, COUNT( p.PAINTING_TITLE ) p_count" +
                 " FROM ARTIST a" +
                 " LEFT JOIN PAINTING p ON ( a.ARTIST_ID = p.ARTIST_ID ) AND ( p.ESTIMATED_PRICE > 10 )" +
                 " WHERE ( ( ( a.ARTIST_NAME = 'Picasso' )" +
