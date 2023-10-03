@@ -57,7 +57,7 @@ public abstract class AggregateConditionNode extends SimpleNode {
 		// no children or a single child
 		switch (condition.getOperandCount()) {
 		case 1:
-			if (condition instanceof ASTNot) {
+			if (isConditionWithOneOperandValid(condition)) {
 				return condition;
 			} else {
 				return condition.getOperand(0);
@@ -67,6 +67,10 @@ public abstract class AggregateConditionNode extends SimpleNode {
 		default:
 			return condition;
 		}
+	}
+
+	private boolean isConditionWithOneOperandValid(AggregateConditionNode condition) {
+		return condition instanceof ASTNot || condition instanceof ASTWhen;
 	}
 
 	@Override
