@@ -76,23 +76,23 @@ import java.util.function.Function;
  * 
  * @since 1.2
  */
-public class DataDomainQueryAction implements QueryRouter, OperationObserver {
+class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
-    static final boolean DONE = true;
+    private static final boolean DONE = true;
 
-    final DataContext context;
-    final DataDomain domain;
+    private final DataContext context;
+    private final DataDomain domain;
     final Query query;
-    final QueryMetadata metadata;
-    final AdhocObjectFactory objectFactory;
+    private final QueryMetadata metadata;
+    private final AdhocObjectFactory objectFactory;
 
-    DataRowStore cache;
-    QueryResponse response;
-    GenericResponse fullResponse;
-    Map<String, List<?>> prefetchResultsByPath;
-    Map<QueryEngine, Collection<Query>> queriesByNode;
-    Map<Query, Query> queriesByExecutedQueries;
-    boolean noObjectConversion;
+    private DataRowStore cache;
+    private QueryResponse response;
+    private GenericResponse fullResponse;
+    private Map<String, List<?>> prefetchResultsByPath;
+    private Map<QueryEngine, Collection<Query>> queriesByNode;
+    private Map<Query, Query> queriesByExecutedQueries;
+    private boolean noObjectConversion;
     private IteratedQueryResponse iteratedQueryResponse;
 
     /*
