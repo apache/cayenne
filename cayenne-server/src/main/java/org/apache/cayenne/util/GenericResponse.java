@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.ResultIterator;
 
 /**
  * A simple serializable implementation of QueryResponse.
@@ -79,6 +80,11 @@ public class GenericResponse implements QueryResponse, Serializable {
         return null;
     }
 
+    @Override
+    public ResultIterator firstIterator() {
+        return null;
+    }
+
     public int[] firstUpdateCount() {
         for (reset(); next();) {
             if (!isList()) {
@@ -91,6 +97,11 @@ public class GenericResponse implements QueryResponse, Serializable {
 
     public List currentList() {
         return (List) results.get(currentIndex - 1);
+    }
+
+    @Override
+    public ResultIterator currentIterator() {
+        return null;
     }
 
     public int[] currentUpdateCount() {

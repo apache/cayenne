@@ -538,13 +538,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private void wrapResponseIteratorWithTransactionDecorator(Transaction tx){
-        ResultIterator iterator = iteratedQueryResponse.getIterator();
+        ResultIterator<?> iterator = iteratedQueryResponse.currentIterator();
         TransactionResultIteratorDecorator decorator = new TransactionResultIteratorDecorator<>(iterator, tx);
         iteratedQueryResponse.setIterator(decorator);
     }
 
     private void wrapResponseIteratorWithConverterDecorator(ObjectConversionStrategy<?, ?> converter) {
-        ResultIterator<?> iterator = ((IteratedQueryResponse) response).getIterator();
+        ResultIterator<?> iterator = response.currentIterator();
         ResultIteratorConverterDecorator decorator = new ResultIteratorConverterDecorator(iterator, converter);
         ((IteratedQueryResponse) response).setIterator(decorator);
     }

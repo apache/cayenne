@@ -936,7 +936,7 @@ public class DataContext extends BaseContext {
         query = nonNullDelegate().willPerformQuery(this, query);
         if (query instanceof IteratedQueryDecorator){
             IteratedQueryResponse queryResponse = (IteratedQueryResponse) (onQuery(this, query));
-            return Collections.singletonList(queryResponse.getIterator());
+            return Collections.singletonList(queryResponse.currentIterator());
         }
         if (query == null) {
             return new ArrayList<>(1);

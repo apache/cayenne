@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.ResultIterator;
 
 /**
  * A QueryResponse optimized to hold a single object or data row list.
@@ -77,6 +78,11 @@ public class ListResponse implements QueryResponse, Serializable {
         return objectList;
     }
 
+    @Override
+    public ResultIterator<?> currentIterator() {
+        return null;
+    }
+
     public int[] currentUpdateCount() {
         throw new IllegalStateException("Current object is not an update count");
     }
@@ -92,6 +98,11 @@ public class ListResponse implements QueryResponse, Serializable {
 
     public List firstList() {
         return objectList;
+    }
+
+    @Override
+    public ResultIterator firstIterator() {
+        return null;
     }
 
     public int[] firstUpdateCount() {
