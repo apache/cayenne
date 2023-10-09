@@ -59,7 +59,7 @@ public class IteratedQueryResponse extends GenericResponse {
     }
 
     @Override
-    public ResultIterator<?> currentIterator() {
+    public ResultIterator currentIterator() {
         return iterator;
     }
 

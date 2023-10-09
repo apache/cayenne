@@ -23,14 +23,15 @@ import org.apache.cayenne.ResultIterator;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
-public class ResultIteratorConverterDecorator implements ResultIterator {
+ class ResultIteratorConverterDecorator implements ResultIterator {
     private final ResultIterator iterator;
     private final DataDomainQueryAction.ObjectConversionStrategy converter;
 
-    public ResultIteratorConverterDecorator(ResultIterator iterator, DataDomainQueryAction.ObjectConversionStrategy converter) {
-        this.iterator = iterator;
-        this.converter = converter;
+     ResultIteratorConverterDecorator(ResultIterator iterator, DataDomainQueryAction.ObjectConversionStrategy converter) {
+        this.iterator = Objects.requireNonNull(iterator);
+        this.converter = Objects.requireNonNull(converter);
     }
 
     @Override
@@ -45,10 +46,7 @@ public class ResultIteratorConverterDecorator implements ResultIterator {
 
     @Override
     public Object nextRow() {
-        if (converter != null) {
-            return converter.convert(iterator.nextRow());
-        }
-        return iterator.nextRow();
+        return converter.convert(iterator.nextRow());
     }
 
     @Override
@@ -63,32 +61,16 @@ public class ResultIteratorConverterDecorator implements ResultIterator {
 
     @Override
     public Iterator iterator() {
-        return new IteratorConverterDecorator(iterator,converter);
+        return new Iterator() {
+            @Override
+            public boolean hasNext() {
+                return iterator.hasNextRow();
+            }
+
+            @Override
+            public Object next() {
+                return converter.convert(iterator.nextRow());
+            }
+        };
     }
-
-}
-
-class IteratorConverterDecorator implements Iterator{
-    private final ResultIterator iterator;
-    private final DataDomainQueryAction.ObjectConversionStrategy converter;
-
-    public IteratorConverterDecorator(ResultIterator iterator, DataDomainQueryAction.ObjectConversionStrategy converter) {
-        this.iterator = iterator;
-        this.converter = converter;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return iterator.hasNextRow();
-    }
-
-    @Override
-    public Object next() {
-        if (converter != null) {
-            return converter.convert(iterator.nextRow());
-        }
-        return iterator.nextRow();
-    }
-
-
-}
+ }

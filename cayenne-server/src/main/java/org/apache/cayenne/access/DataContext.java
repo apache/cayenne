@@ -798,7 +798,9 @@ public class DataContext extends BaseContext {
     @Override
     public <T> ResultIterator<T> iterator(final Select<T> query) {
         IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query);
-        return (ResultIterator<T>) performQuery(queryDecorator).get(0);
+        queryDecorator = (IteratedQueryDecorator) nonNullDelegate().willPerformQuery(this, queryDecorator);
+        IteratedQueryResponse queryResponse = (IteratedQueryResponse) (onQuery(this, queryDecorator));
+        return queryResponse.currentIterator();
     }
 
     /**
@@ -934,10 +936,6 @@ public class DataContext extends BaseContext {
     @SuppressWarnings("unchecked")
     public List performQuery(Query query) {
         query = nonNullDelegate().willPerformQuery(this, query);
-        if (query instanceof IteratedQueryDecorator){
-            IteratedQueryResponse queryResponse = (IteratedQueryResponse) (onQuery(this, query));
-            return Collections.singletonList(queryResponse.currentIterator());
-        }
         if (query == null) {
             return new ArrayList<>(1);
         }
