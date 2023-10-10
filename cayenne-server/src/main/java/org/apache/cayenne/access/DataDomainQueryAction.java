@@ -57,6 +57,8 @@ import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.IteratedQueryResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,10 +80,12 @@ import java.util.function.Function;
  */
 class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataDomainQueryAction.class);
+
     private static final boolean DONE = true;
 
     private final DataContext context;
-    private final DataDomain domain;
+    final DataDomain domain;
     final Query query;
     private final QueryMetadata metadata;
     private final AdhocObjectFactory objectFactory;
@@ -147,6 +151,16 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private boolean interceptIteratedQuery() {
         if (query instanceof IteratedQueryDecorator) {
+            if (metadata.getPrefetchTree() != null) {
+                for (PrefetchTreeNode prefetchTreeNode : metadata.getPrefetchTree().getChildren()) {
+                    if (prefetchTreeNode.isDisjointPrefetch()) {
+                        throw new CayenneRuntimeException("\"Disjoint\" semantic doesn't work with iterator. Use \"Joint\" instead");
+                    }
+                    if (prefetchTreeNode.isDisjointByIdPrefetch()){
+                        LOGGER.warn("A separate select query will be created for each iterated item");
+                    }
+                }
+            }
             performIteratedQuery();
             return DONE;
         }
