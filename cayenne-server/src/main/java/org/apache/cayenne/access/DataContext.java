@@ -65,8 +65,6 @@ import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
-import org.apache.cayenne.util.IteratedQueryResponse;
-import org.apache.cayenne.util.ResultIteratorIterator;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -181,7 +179,7 @@ public class DataContext extends BaseContext {
             return (DataDomain) channel;
         }
 
-        List response = channel.onQuery(this, new DataDomainQuery()).firstList();
+        List<?> response = channel.onQuery(this, new DataDomainQuery()).firstList();
 
         if (response != null && response.size() > 0 && response.get(0) instanceof DataDomain) {
             return (DataDomain) response.get(0);
@@ -278,7 +276,7 @@ public class DataContext extends BaseContext {
         // guess target collection size
         Collection<Object> objects = new ArrayList<>(len > 100 ? len / 2 : len);
 
-        Iterator it = getObjectStore().getObjectIterator();
+        Iterator<?> it = getObjectStore().getObjectIterator();
         while (it.hasNext()) {
             Persistent object = (Persistent) it.next();
             int state = object.getPersistenceState();
@@ -421,7 +419,7 @@ public class DataContext extends BaseContext {
         return new ObjectResolver(this, descriptor, true).synchronizedObjectsFromDataRows(dataRows);
     }
 
-    private List objectsFromDataRowsFromParentContext(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
+    private List <?> objectsFromDataRowsFromParentContext(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
         return getChannel().onQuery(this, new ObjectsFromDataRowsQuery(descriptor, dataRows)).firstList();
     }
 
@@ -569,9 +567,9 @@ public class DataContext extends BaseContext {
 
                     Object value = property.readProperty(persistent);
                     @SuppressWarnings("unchecked")
-                    Collection<Map.Entry> collection = (value instanceof Map)
+                    Collection<Map.Entry<?,?>> collection = (value instanceof Map)
                             ? ((Map) value).entrySet()
-                            : (Collection) value;
+                            : (Collection<Map.Entry<?, ?>>) value;
 
                     for (Object target : collection) {
                         if (target instanceof Persistent) {
@@ -613,7 +611,7 @@ public class DataContext extends BaseContext {
      * 
      * @see #invalidateObjects(Collection)
      */
-    public void unregisterObjects(Collection dataObjects) {
+    public void unregisterObjects(Collection<?> dataObjects) {
         getObjectStore().objectsUnregistered(dataObjects);
     }
 
@@ -872,7 +870,7 @@ public class DataContext extends BaseContext {
                 if (tx.isRollbackOnly()) {
                     try {
                         tx.rollback();
-                    } catch (Exception rollbackEx) {
+                    } catch (Exception ignored) {
                     }
                 }
             }
@@ -884,7 +882,7 @@ public class DataContext extends BaseContext {
     /**
      * Runs an iterated query in a transactional context provided by the caller.
      */
-    ResultIterator internalPerformIteratedQuery(Query query) {
+    ResultIterator <?> internalPerformIteratedQuery(Query query) {
         // note that for now DataChannel API does not support cursors (aka
         // ResultIterator), so we have to go directly to the DataDomain.
         IteratedSelectObserver observer = new IteratedSelectObserver();
@@ -933,14 +931,13 @@ public class DataContext extends BaseContext {
      *         Сan also return an iterator if the query is an instance of iteratedQuery.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public List performQuery(Query query) {
         query = nonNullDelegate().willPerformQuery(this, query);
         if (query == null) {
             return new ArrayList<>(1);
         }
 
-        List result = onQuery(this, query).firstList();
+        List<?> result = onQuery(this, query).firstList();
         return result != null ? result : new ArrayList<>(1);
     }
 
@@ -1021,7 +1018,7 @@ public class DataContext extends BaseContext {
      *            is required in case a query uses caching.
      * @since 1.1
      */
-    public List<?> performQuery(String queryName, Map parameters, boolean expireCachedLists) {
+    public List<?> performQuery(String queryName, Map <String,?>parameters, boolean expireCachedLists) {
         return (List<?>) performQuery(expireCachedLists ?
                 MappedSelect.query(queryName).params(parameters).forceNoCache() :
                 MappedSelect.query(queryName).params(parameters));
@@ -1183,57 +1180,6 @@ public class DataContext extends BaseContext {
     @Deprecated
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
-    }
-
-    /**
-     * ResultIterator that can convert DataRow to Persistent object on the fly.
-     */
-    static class DataRowResultIterator<T> implements ResultIterator<T> {
-
-        final ResultIterator<?> rows;
-        ObjectResolver resolver;
-
-        DataRowResultIterator(ResultIterator<?> rows, ObjectResolver resolver) {
-            this.rows = rows;
-            this.resolver = resolver;
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return new ResultIteratorIterator<>(this);
-        }
-
-        @Override
-        public List<T> allRows() {
-            List<T> list = new ArrayList<>();
-            while (hasNextRow()) {
-                list.add(nextRow());
-            }
-            return list;
-        }
-
-        @Override
-        public boolean hasNextRow() {
-            return rows.hasNextRow();
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public T nextRow() {
-            DataRow row = (DataRow) rows.nextRow();
-            List<T> objects = (List<T>) resolver.synchronizedObjectsFromDataRows(Collections.singletonList(row));
-            return objects.get(0);
-        }
-
-        @Override
-        public void skipRow() {
-            rows.skipRow();
-        }
-
-        @Override
-        public void close() {
-            rows.close();
-        }
     }
 
 }

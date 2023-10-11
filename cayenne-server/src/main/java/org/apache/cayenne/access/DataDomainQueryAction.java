@@ -183,7 +183,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 if (tx.isRollbackOnly()) {
                     try {
                         tx.rollback();
-                    } catch (Exception rollbackEx) {
+                    } catch (Exception ignored) {
                     }
                 }
             }
