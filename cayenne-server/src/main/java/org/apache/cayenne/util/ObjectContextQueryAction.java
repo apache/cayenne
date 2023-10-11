@@ -34,12 +34,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.ObjectIdQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.RelationshipQuery;
+import org.apache.cayenne.query.*;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -87,12 +82,13 @@ public abstract class ObjectContextQueryAction {
      * Worker method that performs internal query.
      */
     public QueryResponse execute() {
-
-        if (interceptOIDQuery() != DONE) {
-            if (interceptRelationshipQuery() != DONE) {
-                if (interceptRefreshQuery() != DONE) {
-                    if (interceptLocalCache() != DONE) {
-                        executePostCache();
+        if (interceptIteratedQuery() != DONE) {
+            if (interceptOIDQuery() != DONE) {
+                if (interceptRelationshipQuery() != DONE) {
+                    if (interceptRefreshQuery() != DONE) {
+                        if (interceptLocalCache() != DONE) {
+                            executePostCache();
+                        }
                     }
                 }
             }
@@ -100,6 +96,14 @@ public abstract class ObjectContextQueryAction {
 
         interceptObjectConversion();
         return response;
+    }
+
+    private boolean interceptIteratedQuery() {
+        if (query instanceof IteratedQueryDecorator) {
+            runQuery();
+            return DONE;
+        }
+        return !DONE;
     }
 
     private void executePostCache() {

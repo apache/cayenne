@@ -796,27 +796,11 @@ public class DataContext extends BaseContext {
     @Override
     public <T> ResultIterator<T> iterator(final Select<T> query) {
         IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query);
-        queryDecorator = (IteratedQueryDecorator) nonNullDelegate().willPerformQuery(this, queryDecorator);
-        IteratedQueryResponse queryResponse = (IteratedQueryResponse) (onQuery(this, queryDecorator));
-        return queryResponse.currentIterator();
+        Query queryToRun = nonNullDelegate().willPerformQuery(this, queryDecorator);
+        QueryResponse queryResponse = (onQuery(this, queryToRun));
+        return (ResultIterator<T>) queryResponse.currentIterator();
     }
 
-    /**
-     * This method repeats logic of DataDomainQueryAction.interceptObjectConversion() method.
-     * The difference is that iterator(or batchIterator) doesn't support "mixed" results.
-     */
-    private boolean isObjectArrayResult(QueryMetadata md) {
-        List<Object> resultMapping = md.getResultSetMapping();
-        if(resultMapping == null) {
-            return false;
-        }
-
-        if (md.isSingleResultSetMapping()) {
-            return !(resultMapping.get(0) instanceof EntityResultSegment);
-        } else {
-            return true;
-        }
-    }
 
     /**
      * Performs a single database select query returning result as a

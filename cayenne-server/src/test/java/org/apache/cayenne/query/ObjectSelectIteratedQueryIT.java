@@ -32,6 +32,7 @@ import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -137,6 +138,17 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
         try (ResultBatchIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class)
                 .prefetch(Painting.TO_ARTIST.disjoint())
+                .batchIterator(context, 3)) {
+            iterator.next();
+        }
+    }
+
+    @Ignore
+    @Test(expected = CayenneRuntimeException.class)
+    public void queryPaginationWithBatchIterator() {
+        try (ResultBatchIterator<Painting> iterator = ObjectSelect
+                .query(Painting.class)
+                .pageSize(2)
                 .batchIterator(context, 3)) {
             iterator.next();
         }

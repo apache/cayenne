@@ -151,20 +151,28 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private boolean interceptIteratedQuery() {
         if (query instanceof IteratedQueryDecorator) {
-            if (metadata.getPrefetchTree() != null) {
-                for (PrefetchTreeNode prefetchTreeNode : metadata.getPrefetchTree().getChildren()) {
-                    if (prefetchTreeNode.isDisjointPrefetch()) {
-                        throw new CayenneRuntimeException("\"Disjoint\" semantic doesn't work with iterator. Use \"Joint\" instead");
-                    }
-                    if (prefetchTreeNode.isDisjointByIdPrefetch()){
-                        LOGGER.warn("A separate select query will be created for each iterated item");
-                    }
-                }
-            }
+            validateIteratedQuery();
             performIteratedQuery();
             return DONE;
         }
         return !DONE;
+    }
+
+    private void validateIteratedQuery() {
+        System.out.println("Validate");
+    /*    if (metadata.getPageSize() != 0){
+            throw new CayenneRuntimeException("Pagination is not supported with iterator");
+        }*/
+        if (metadata.getPrefetchTree() != null) {
+            for (PrefetchTreeNode prefetchTreeNode : metadata.getPrefetchTree().getChildren()) {
+                if (prefetchTreeNode.isDisjointPrefetch()) {
+                    throw new CayenneRuntimeException("\"Disjoint\" semantic doesn't work with iterator. Use \"Joint\" instead");
+                }
+                if (prefetchTreeNode.isDisjointByIdPrefetch()){
+                    LOGGER.warn("A separate select query will be created for each iterated item");
+                }
+            }
+        }
     }
 
     private void performIteratedQuery() {
@@ -553,14 +561,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private void wrapResponseIteratorWithTransactionDecorator(Transaction tx){
         ResultIterator<?> iterator = iteratedQueryResponse.currentIterator();
-        TransactionResultIteratorDecorator decorator = new TransactionResultIteratorDecorator<>(iterator, tx);
+        TransactionResultIteratorDecorator<?> decorator = new TransactionResultIteratorDecorator<>(iterator, tx);
         iteratedQueryResponse.setIterator(decorator);
     }
 
     private void wrapResponseIteratorWithConverterDecorator(ObjectConversionStrategy<?, ?> converter) {
         ResultIterator<?> iterator = response.currentIterator();
         ResultIteratorConverterDecorator decorator = new ResultIteratorConverterDecorator(iterator, converter);
-        ((IteratedQueryResponse) response).setIterator(decorator);
+        iteratedQueryResponse.setIterator(decorator);
     }
 
     @SuppressWarnings("unchecked")
@@ -822,8 +830,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     ? metadata.getClassDescriptor()
                     : resultSegment.getClassDescriptor();
 
-            PrefetchProcessorNode node = toResultsTree(descriptor, prefetchTree, mainRows);
-            return node;
+            return toResultsTree(descriptor, prefetchTree, mainRows);
         }
     }
 
