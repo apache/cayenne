@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import java.util.Collection;
 
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
@@ -60,10 +61,18 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
         return ExpressionFactory.matchExp(getExpression(), id);
     }
 
+    /**
+     ** @deprecated in favor of {@link #idsInCollection(Collection)}
+     */
+    @Deprecated (since = "5.0")
     public Expression inId(Collection<Object> ids) {
         return ExpressionFactory.inExp(getExpression(), ids);
     }
 
+    /**
+     ** @deprecated in favor of {@link #idsIn(Object...)}
+     */
+    @Deprecated (since = "5.0")
     public Expression inId(Object firstId, Object... moreIds) {
         Object[] ids = new Object[moreIds.length + 1];
         ids[0] = firstId;
@@ -71,20 +80,58 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
         return ExpressionFactory.inExp(getExpression(), ids);
     }
 
+    /**
+     * @since 5.0
+     */
+    public Expression idsInCollection(Collection<?> ids){
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    /**
+     * @since 5.0
+     */
+    public Expression idsIn(Object... ids){
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
     public Expression neqId(Object id) {
         return ExpressionFactory.noMatchExp(getExpression(), id);
     }
 
+    /**
+     ** @deprecated in favor of {@link #idsNotInCollection(Collection)}
+     */
+    @Deprecated (since = "5.0")
     public Expression ninId(Collection<Object> ids) {
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
 
+    /**
+     ** @deprecated in favor of {@link #idsNotIn(Object...)}
+     */
+    @Deprecated (since = "5.0")
     public Expression ninId(Object firstId, Object... moreIds) {
         Object[] ids = new Object[moreIds.length + 1];
         ids[0] = firstId;
         System.arraycopy(moreIds, 0, ids, 1, moreIds.length);
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
+
+    /**
+     * @since 5.0
+     */
+    public Expression idsNotInCollection(Collection<?> ids){
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+    /**
+     * @since 5.0
+     */
+    public Expression idsNotIn(Object... ids){
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+
 
 
     /**

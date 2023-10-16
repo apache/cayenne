@@ -114,8 +114,9 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
     }
 
     /**
-     * @return An expression for finding objects with given id set
+     ** @deprecated in favor of {@link #idsIn(Object...)}
      */
+    @Deprecated(since = "5.0")
     public Expression containsId(Object firstId, Object... moreId) {
 
         int moreValuesLength = moreId != null ? moreId.length : 0;
@@ -131,9 +132,25 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
     }
 
     /**
-     * @return An expression for finding objects with given id set.
+     * @return An expression for finding objects with given id set
+     * @since 5.0
      */
+    public Expression idsIn(Object... ids) {return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    /**
+     ** @deprecated in favor of {@link #idsInCollection(Collection)}
+     */
+    @Deprecated(since = "5.0")
     public Expression containsId(Collection<Object> ids) {
+        return ExpressionFactory.inExp(getExpression(), ids);
+    }
+
+    /**
+     * @return An expression for finding objects with given id set.
+     * @since 5.0
+     */
+    public Expression idsInCollection(Collection<?> ids) {
         return ExpressionFactory.inExp(getExpression(), ids);
     }
 
@@ -146,8 +163,9 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
     }
 
     /**
-     * @return An expression for finding objects without given id set.
+     ** @deprecated in favor of {@link #idsNotIn(Object...)}
      */
+    @Deprecated(since = "5.0")
     public Expression notContainsId(Object firstId, Object... moreId) {
 
         int moreValuesLength = moreId != null ? moreId.length : 0;
@@ -164,8 +182,24 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
 
     /**
      * @return An expression for finding objects without given id set.
+     * @since 5.0
      */
+    public Expression idsNotIn(Object... ids) {return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+    /**
+     ** @deprecated in favor of {@link #idsNotInCollection(Collection)}
+     */
+    @Deprecated(since = "5.0")
     public Expression notContainsId(Collection<Object> ids) {
+        return ExpressionFactory.notInExp(getExpression(), ids);
+    }
+
+    /**
+     * @return An expression for finding objects without given id set.
+     * @since 5.0
+     */
+    public Expression idsNotInCollection(Collection<?> ids) {
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
 
