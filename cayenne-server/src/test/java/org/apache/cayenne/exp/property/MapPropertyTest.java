@@ -108,6 +108,30 @@ public class MapPropertyTest {
     }
 
     @Test
+    public void idsInVararg() {
+        Expression exp = property.idsIn(1, 2, 3);
+        assertEquals(ExpressionFactory.exp("path in (1,2,3)"), exp);
+    }
+
+    @Test
+    public void idsInCollection() {
+        Expression exp = property.idsInCollection(Arrays.asList(1, 2, 3));
+        assertEquals(ExpressionFactory.exp("path in (1,2,3)"), exp);
+    }
+
+    @Test
+    public void idsNotInVararg() {
+        Expression exp = property.idsNotIn(1, 2, 3);
+        assertEquals(ExpressionFactory.exp("path not in (1,2,3)"), exp);
+    }
+
+    @Test
+    public void idsNotInCollection() {
+        Expression exp = property.idsNotInCollection(Arrays.asList(1, 2, 3));
+        assertEquals(ExpressionFactory.exp("path not in (1,2,3)"), exp);
+    }
+
+    @Test
     public void containsManyIdCollection() {
         Expression exp = property.containsId(Arrays.asList(1, 2, 3));
         assertEquals(ExpressionFactory.exp("path in (1,2,3)"), exp);
