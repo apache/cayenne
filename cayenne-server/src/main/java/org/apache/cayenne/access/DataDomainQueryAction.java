@@ -159,10 +159,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private void validateIteratedQuery() {
-        System.out.println("Validate");
-    /*    if (metadata.getPageSize() != 0){
+        if (metadata.getPageSize() > 0){
             throw new CayenneRuntimeException("Pagination is not supported with iterator");
-        }*/
+        }
         if (metadata.getPrefetchTree() != null) {
             for (PrefetchTreeNode prefetchTreeNode : metadata.getPrefetchTree().getChildren()) {
                 if (prefetchTreeNode.isDisjointPrefetch()) {
