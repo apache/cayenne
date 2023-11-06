@@ -34,8 +34,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -120,7 +118,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     @Test
     public void dataRowQueryWithBatchIterator() {
         try (ResultBatchIterator<?> iterator = SQLSelect
-                .dataRowQuery("SELECT * FROM PAINTING")
+                .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .batchIterator(context, 5)) {
             int count = 0;
             int paintingCounter = 0;
@@ -140,7 +138,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     @Test
     public void dataRowQueryWithIterator() {
         try (ResultIterator<?> iterator = SQLSelect
-                .dataRowQuery("SELECT * FROM PAINTING")
+                .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .iterator(context)) {
             int count = 0;
             int paintingCounter = 0;
@@ -158,7 +156,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     @Test
     public void QueryWithBatchIterator() {
         try (ResultBatchIterator<Painting> iterator = SQLSelect
-                .query(Painting.class,"SELECT * FROM PAINTING")
+                .query(Painting.class,"SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .batchIterator(context, 5)) {
             int count = 0;
             int paintingCounter = 0;
@@ -177,7 +175,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     @Test
     public void QueryWithIterator() {
         try (ResultIterator<Painting> iterator = SQLSelect
-                .query(Painting.class, "SELECT * FROM PAINTING")
+                .query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .iterator(context)) {
             int count = 0;
             int paintingCounter = 0;
@@ -196,7 +194,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     @Test
     public void MappingWithBatchIterator() {
         try (ResultBatchIterator<DTO> iterator = SQLSelect
-                .columnQuery( "SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
+                .columnQuery( "SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING ORDER BY PAINTING_ID")
                 .map(this::toDto)
                 .batchIterator(context, 5))  {
             int count = 0;
@@ -219,7 +217,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     @Test
     public void MappingWithIterator() {
         try (ResultIterator<DTO> iterator = SQLSelect
-                .columnQuery("SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING")
+                .columnQuery("SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING ORDER BY PAINTING_ID")
                 .map(this::toDto)
                 .iterator(context)) {
             int count = 0;
@@ -245,7 +243,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
         private final Long estimatedPrice;
 
         public DTO(Object[] data) {
-            this.title = "dto_" + (String) data[0];
+            this.title = "dto_" + data[0];
             this.estimatedPrice = ((Number) data[1]).longValue();
         }
 
