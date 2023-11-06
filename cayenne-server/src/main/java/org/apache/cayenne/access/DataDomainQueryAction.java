@@ -726,10 +726,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     @Override
     public void nextGeneratedRows(Query query, ResultIterator<?> keys, List<ObjectId> idsToUpdate) {
         if (keys != null) {
-            try {
+            try (keys) {
                 nextRows(query, keys.allRows());
-            } finally {
-                keys.close();
             }
         }
     }
@@ -979,7 +977,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private class IdentityConversionStrategy extends ObjectConversionStrategy<Object, Object> {
         @Override
-        void convert(List mainRows) {
+        void convert(List<Object> mainRows) {
             //noop
         }
 

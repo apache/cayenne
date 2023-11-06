@@ -797,7 +797,7 @@ public class DataContext extends BaseContext {
     public <T> ResultIterator<T> iterator(final Select<T> query) {
         IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query);
         Query queryToRun = nonNullDelegate().willPerformQuery(this, queryDecorator);
-        QueryResponse queryResponse = (onQuery(this, queryToRun));
+        QueryResponse queryResponse = onQuery(this, queryToRun);
         return (ResultIterator<T>) queryResponse.currentIterator();
     }
 
@@ -816,8 +816,7 @@ public class DataContext extends BaseContext {
      * {@link #iterate(Select, org.apache.cayenne.ResultIteratorCallback)} to
      * get access to objects.
      */
-    // TODO: deprecate once all selecting queries start implementing Select<T>
-    // interface
+    // TODO: deprecate once all selecting queries start implementing Select<T> interface
     @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) {
 
