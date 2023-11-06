@@ -117,18 +117,17 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
 
     @Test
     public void dataRowQueryWithBatchIterator() {
-        try (ResultBatchIterator<?> iterator = SQLSelect
+        try (ResultBatchIterator<DataRow> iterator = SQLSelect
                 .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
+                .upperColumnNames()
                 .batchIterator(context, 5)) {
             int count = 0;
-            int paintingCounter = 0;
             while (iterator.hasNext()) {
                 count++;
-                List<?> rows = iterator.next();
-                for (Object row : rows) {
-                    paintingCounter++;
-                    Painting painting = context.objectFromDataRow(Painting.class, (DataRow) row);
-                    assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
+                List<DataRow> rows = iterator.next();
+                for (DataRow row : rows) {
+                    assertEquals("painting" + row.get(Painting.PAINTING_ID_PK_COLUMN),
+                            row.get("PAINTING_TITLE"));
                 }
             }
             assertEquals(4, count);
@@ -137,26 +136,26 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
 
     @Test
     public void dataRowQueryWithIterator() {
-        try (ResultIterator<?> iterator = SQLSelect
+        try (ResultIterator<DataRow> iterator = SQLSelect
                 .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
+                .upperColumnNames()
                 .iterator(context)) {
             int count = 0;
-            int paintingCounter = 0;
             while (iterator.hasNextRow()) {
                 count++;
-                paintingCounter++;
-                Object row = iterator.nextRow();
-                Painting painting = context.objectFromDataRow(Painting.class, (DataRow) row);
-                assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
+                DataRow row = iterator.nextRow();
+                assertEquals("painting" + row.get(Painting.PAINTING_ID_PK_COLUMN),
+                        row.get("PAINTING_TITLE"));
             }
             assertEquals(20, count);
         }
     }
 
     @Test
-    public void QueryWithBatchIterator() {
+    public void queryWithBatchIterator() {
         try (ResultBatchIterator<Painting> iterator = SQLSelect
                 .query(Painting.class,"SELECT * FROM PAINTING ORDER BY PAINTING_ID")
+                .upperColumnNames()
                 .batchIterator(context, 5)) {
             int count = 0;
             int paintingCounter = 0;
@@ -173,9 +172,10 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     }
 
     @Test
-    public void QueryWithIterator() {
+    public void queryWithIterator() {
         try (ResultIterator<Painting> iterator = SQLSelect
                 .query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_ID")
+                .upperColumnNames()
                 .iterator(context)) {
             int count = 0;
             int paintingCounter = 0;
@@ -192,7 +192,7 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     //MapperConversationStrategy
     //MixedConversationStrategy
     @Test
-    public void MappingWithBatchIterator() {
+    public void mappingWithBatchIterator() {
         try (ResultBatchIterator<DTO> iterator = SQLSelect
                 .columnQuery( "SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING ORDER BY PAINTING_ID")
                 .map(this::toDto)
@@ -215,9 +215,10 @@ public class SQLSelectIteratedQueryIT extends ServerCase {
     //MapperConversationStrategy
     //MixedConversationStrategy
     @Test
-    public void MappingWithIterator() {
+    public void mappingWithIterator() {
         try (ResultIterator<DTO> iterator = SQLSelect
                 .columnQuery("SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING ORDER BY PAINTING_ID")
+                .upperColumnNames()
                 .map(this::toDto)
                 .iterator(context)) {
             int count = 0;
