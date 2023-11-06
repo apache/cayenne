@@ -86,6 +86,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
         try (ResultBatchIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class)
                 .prefetch(Painting.TO_ARTIST.joint())
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .batchIterator(context, 10)) {
             int count = 0;
             while (iterator.hasNext()) {
@@ -97,7 +98,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
                     assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
                 }
             }
-            assertEquals(2,count);
+            assertEquals(2, count);
         }
     }
 
@@ -106,16 +107,17 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
         try (ResultIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class)
                 .prefetch(Painting.TO_ARTIST.joint())
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .iterator(context)) {
             int count = 0;
             while (iterator.hasNextRow()) {
                 count++;
                 Painting painting = iterator.nextRow();
-                    //noinspection ConstantConditions
-                    assertTrue(painting instanceof Painting);
-                    assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
+                //noinspection ConstantConditions
+                assertTrue(painting instanceof Painting);
+                assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
             }
-            assertEquals(20,count);
+            assertEquals(20, count);
         }
     }
 
@@ -156,6 +158,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
         try (ResultIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class)
                 .prefetch(Painting.TO_ARTIST.disjointById())
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .iterator(context)) {
             int count = 0;
             while (iterator.hasNextRow()) {
@@ -165,15 +168,16 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
                 assertTrue(painting instanceof Painting);
                 assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
             }
-            assertEquals(20,count);
+            assertEquals(20, count);
         }
     }
 
     @Test
     public void queryPrefetchJointWithBatchIterator() {
         try (ResultBatchIterator<Painting> iterator = ObjectSelect
-                .query(Painting.class,"Painting")
+                .query(Painting.class, "Painting")
                 .prefetch(Painting.TO_ARTIST.joint())
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .batchIterator(context, 5)) {
             int count = 0;
             int paintingCounter = 0;
@@ -195,6 +199,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
         try (ResultIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class, "Painting")
                 .prefetch(Painting.TO_ARTIST.joint())
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .iterator(context)) {
             int count = 0;
             int paintingCounter = 0;
@@ -213,6 +218,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
     public void mappingWithBatchIterator() {
         try (ResultBatchIterator<DTO> iterator = ObjectSelect
                 .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.ESTIMATED_PRICE)
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .map(this::toDto)
                 .batchIterator(context, 5)) {
             int count = 0;
@@ -226,7 +232,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
                 }
             }
             assertEquals(5, iterator.getBatchSize());
-            assertEquals(4,count);
+            assertEquals(4, count);
         }
     }
 
@@ -234,6 +240,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
     public void mappingWithIterator() {
         try (ResultIterator<DTO> iterator = ObjectSelect
                 .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.ESTIMATED_PRICE)
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .map(this::toDto)
                 .iterator(context)) {
             int count = 0;
@@ -252,6 +259,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
     public void dataRowQueryWithBatchIterator() {
         try (ResultBatchIterator<?> iterator = ObjectSelect
                 .dataRowQuery(Painting.class)
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .batchIterator(context, 5)) {
             int count = 0;
             int paintingCounter = 0;
@@ -272,6 +280,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
     public void dataRowQueryWithIterator() {
         try (ResultIterator<?> iterator = ObjectSelect
                 .dataRowQuery(Painting.class)
+                .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .iterator(context)) {
             int count = 0;
             int paintingCounter = 0;
@@ -290,6 +299,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
     public void dbQueryWithIterator() {
         try (ResultIterator<?> iterator = ObjectSelect
                 .dbQuery("PAINTING")
+                .orderBy("db:" + Painting.PAINTING_ID_PK_COLUMN)
                 .iterator(context)) {
             int count = 0;
             int paintingCounter = 0;
@@ -308,6 +318,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
     public void dbQueryWithBatchIterator() {
         try (ResultBatchIterator<?> iterator = ObjectSelect
                 .dbQuery("PAINTING")
+                .orderBy("db:" + Painting.PAINTING_ID_PK_COLUMN)
                 .batchIterator(context, 5)) {
             int count = 0;
             int paintingCounter = 0;
@@ -342,7 +353,7 @@ public class ObjectSelectIteratedQueryIT extends ServerCase {
         private final Long estimatedPrice;
 
         public DTO(Object[] data) {
-            this.title = "dto_" + (String) data[0];
+            this.title = "dto_" + data[0];
             this.estimatedPrice = ((Number) data[1]).longValue();
         }
 

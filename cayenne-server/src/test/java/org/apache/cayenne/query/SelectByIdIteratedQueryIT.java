@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
@@ -38,7 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
@@ -84,15 +84,14 @@ public class SelectByIdIteratedQueryIT extends ServerCase {
     public void queryWithButchIterator() {
         try (ResultBatchIterator<Painting> iterator = SelectById
                 .query(Painting.class, Arrays.asList(1,2,3,4,5,6))
-                .batchIterator(context, 3)){
+                .batchIterator(context, 4)){
             int count = 0;
-            int paintingCounter = 0;
             while (iterator.hasNext()) {
                 count++;
                 List<Painting> paintingList = iterator.next();
                 for (Painting painting : paintingList) {
-                    paintingCounter++;
-                    assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
+                    assertEquals("painting" + Cayenne.longPKForObject(painting),
+                            painting.getPaintingTitle());
                 }
             }
             assertEquals(2, count);
@@ -105,12 +104,11 @@ public class SelectByIdIteratedQueryIT extends ServerCase {
                 .query(Painting.class, Arrays.asList(1,2,3,4,5,6))
                 .iterator(context)){
             int count = 0;
-            int paintingCounter = 0;
             while (iterator.hasNextRow()) {
                 count++;
                 Painting painting = iterator.nextRow();
-                paintingCounter++;
-                assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
+                assertEquals("painting" + Cayenne.longPKForObject(painting),
+                        painting.getPaintingTitle());
             }
             assertEquals(6, count);
         }
@@ -118,18 +116,16 @@ public class SelectByIdIteratedQueryIT extends ServerCase {
 
     @Test
     public void dataRowQueryWithBatchIterator() {
-        try (ResultBatchIterator<?> iterator = SelectById
+        try (ResultBatchIterator<DataRow> iterator = SelectById
                 .dataRowQuery(Painting.class, 1, 2,3,4,5,6)
-                .batchIterator(context, 3)) {
+                .batchIterator(context, 4)) {
             int count = 0;
-            int paintingCounter = 0;
             while (iterator.hasNext()) {
                 count++;
-                List<?> rows = iterator.next();
-                for (Object row : rows) {
-                    paintingCounter++;
-                    Painting painting = context.objectFromDataRow(Painting.class, (DataRow) row);
-                    assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
+                List<DataRow> rows = iterator.next();
+                for (DataRow row : rows) {
+                    assertEquals("painting" + row.get(Painting.PAINTING_ID_PK_COLUMN),
+                            row.get("PAINTING_TITLE"));
                 }
             }
             assertEquals(2, count);
@@ -138,17 +134,15 @@ public class SelectByIdIteratedQueryIT extends ServerCase {
 
     @Test
     public void dataRowQueryWithIterator() {
-        try (ResultIterator<?> iterator = SelectById
+        try (ResultIterator<DataRow> iterator = SelectById
                 .dataRowQuery(Painting.class, 1, 2,3,4,5,6)
                 .iterator(context)) {
             int count = 0;
-            int paintingCounter = 0;
             while (iterator.hasNextRow()) {
                 count++;
-                paintingCounter++;
-                Object row = iterator.nextRow();
-                Painting painting = context.objectFromDataRow(Painting.class, (DataRow) row);
-                assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
+                DataRow row = iterator.nextRow();
+                assertEquals("painting" + row.get(Painting.PAINTING_ID_PK_COLUMN),
+                        row.get("PAINTING_TITLE"));
             }
             assertEquals(6, count);
         }
