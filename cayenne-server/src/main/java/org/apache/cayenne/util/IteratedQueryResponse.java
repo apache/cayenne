@@ -21,20 +21,19 @@ package org.apache.cayenne.util;
 
 import org.apache.cayenne.ResultIterator;
 
-import java.util.List;
-
 /**
  * Implementation of QueryResponse for iterated query.
  *
  * @since 5.0
  */
 public class IteratedQueryResponse extends GenericResponse {
-    private ResultIterator iterator;
-    public IteratedQueryResponse(ResultIterator iterator) {
+    private ResultIterator<?> iterator;
+
+    public IteratedQueryResponse(ResultIterator<?> iterator) {
         this.iterator = iterator;
     }
 
-    public void setIterator(ResultIterator iterator) {
+    public void setIterator(ResultIterator<?> iterator) {
         this.iterator = iterator;
     }
 
@@ -44,28 +43,13 @@ public class IteratedQueryResponse extends GenericResponse {
     }
 
     @Override
-    public boolean isList() {
-        return false;
-    }
-
-    @Override
     public boolean isIterator() {
         return true;
     }
 
     @Override
-    public List<?> currentList() {
-        return null;
-    }
-
-    @Override
-    public ResultIterator currentIterator() {
+    public ResultIterator<?> currentIterator() {
         return iterator;
-    }
-
-    @Override
-    public int[] currentUpdateCount() {
-        return new int[0];
     }
 
     @Override
@@ -74,17 +58,8 @@ public class IteratedQueryResponse extends GenericResponse {
     }
 
     @Override
-    public List firstList() {
-        return null;
-    }
-
-    @Override
     public ResultIterator<?> firstIterator() {
         return iterator;
     }
 
-    @Override
-    public int[] firstUpdateCount() {
-        return new int[0];
-    }
 }

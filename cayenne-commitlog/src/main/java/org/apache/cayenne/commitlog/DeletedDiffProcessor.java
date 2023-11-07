@@ -62,7 +62,7 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 		QueryResponse result = channel.onQuery(null, query);
 
 		@SuppressWarnings("unchecked")
-		List<DataRow> rows = result.firstList();
+		List<DataRow> rows = (List<DataRow>)result.firstList();
 
 		if (rows.isEmpty()) {
 			LOGGER.warn("No DB snapshot for object to be deleted, no changes will be recorded. ID: " + id);

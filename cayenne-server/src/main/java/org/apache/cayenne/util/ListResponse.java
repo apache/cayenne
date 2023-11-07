@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.ResultIterator;
 
 /**
  * A QueryResponse optimized to hold a single object or data row list.
@@ -34,7 +33,7 @@ import org.apache.cayenne.ResultIterator;
  */
 public class ListResponse implements QueryResponse, Serializable {
 
-    protected List objectList;
+    protected List<?> objectList;
 
     protected transient int currentIndex;
 
@@ -42,14 +41,14 @@ public class ListResponse implements QueryResponse, Serializable {
      * Creates an empty response.
      */
     public ListResponse() {
-        this.objectList = new ArrayList(1);
+        this.objectList = new ArrayList<>(1);
     }
 
     public ListResponse(Object object) {
         this.objectList = Collections.singletonList(object);
     }
 
-    public ListResponse(List objectList) {
+    public ListResponse(List<?> objectList) {
         this.objectList = objectList;
     }
 
@@ -65,22 +64,12 @@ public class ListResponse implements QueryResponse, Serializable {
         return true;
     }
 
-    @Override
-    public boolean isIterator() {
-        return false;
-    }
-
-    public List currentList() {
+    public List<?> currentList() {
         if (currentIndex != 1) {
             throw new IndexOutOfBoundsException("Past iteration end: " + currentIndex);
         }
 
         return objectList;
-    }
-
-    @Override
-    public ResultIterator<?> currentIterator() {
-        return null;
     }
 
     public int[] currentUpdateCount() {
@@ -96,16 +85,8 @@ public class ListResponse implements QueryResponse, Serializable {
         currentIndex = 0;
     }
 
-    public List firstList() {
+    public List<?> firstList() {
         return objectList;
     }
 
-    @Override
-    public ResultIterator firstIterator() {
-        return null;
-    }
-
-    public int[] firstUpdateCount() {
-        return new int[0];
-    }
 }

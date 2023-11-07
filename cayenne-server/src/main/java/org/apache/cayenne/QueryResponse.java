@@ -66,27 +66,35 @@ public interface QueryResponse {
     /**
      * Returns whether current iteration result is a list or an update count.
      */
-    boolean isList();
+    default boolean isList() {
+        return false;
+    }
 
     /**
      * Returns whether current response  is an iterator
      *
      * @since 5.0
      */
-    boolean isIterator();
+    default boolean isIterator() {
+        return false;
+    }
 
     /**
      * Returns a List under the current iterator position. Use {@link #isList()} to check
      * the result type before calling this method.
      */
-    List<?> currentList();
+    default List<?> currentList() {
+        return null;
+    }
 
     /**
      * Returns a current iterator.
      *
      * @since 5.0
      */
-    ResultIterator<?> currentIterator();
+    default ResultIterator<?> currentIterator() {
+        return null;
+    }
 
     /**
      * Returns an update count under the current iterator position. Returned value is an
@@ -94,7 +102,9 @@ public interface QueryResponse {
      * an int[1]. Use {@link #isList()} to check the result type before calling this
      * method.
      */
-    int[] currentUpdateCount();
+    default int[] currentUpdateCount() {
+        return null;
+    }
 
     /**
      * Rewinds response iterator to the next result, returning true if it is available.
@@ -111,8 +121,9 @@ public interface QueryResponse {
      * null if the query has no lists. Note that this method resets current iterator to an
      * undefined state.
      */
-    @SuppressWarnings("rawtypes")
-    List firstList();
+    default List<?> firstList() {
+        return null;
+    }
 
     /**
      * A utility method for quickly retrieving the Iterator in the response. Returns
@@ -120,12 +131,15 @@ public interface QueryResponse {
      *
      * @since 5.0
      */
-    @SuppressWarnings("rawtypes")
-    ResultIterator firstIterator();
+    default ResultIterator<?> firstIterator() {
+        return null;
+    }
 
     /**
      * A utility method for quickly retrieving the first update count from the response.
      * Note that this method resets current iterator to an undefined state.
      */
-    int[] firstUpdateCount();
+    default int[] firstUpdateCount() {
+        return null;
+    }
 }

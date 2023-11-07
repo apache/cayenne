@@ -28,12 +28,12 @@ import org.apache.cayenne.ResultIterator;
 
 /**
  * A simple serializable implementation of QueryResponse.
- * 
+ *
  * @since 1.2
  */
 public class GenericResponse implements QueryResponse, Serializable {
 
-    protected List results;
+    protected List<Object> results;
 
     protected transient int currentIndex;
 
@@ -41,37 +41,39 @@ public class GenericResponse implements QueryResponse, Serializable {
      * Creates an empty BaseResponse.
      */
     public GenericResponse() {
-        results = new ArrayList();
+        results = new ArrayList<>();
     }
 
     /**
      * Creates a BaseResponse with a single result list.
      */
-    public GenericResponse(List list) {
-        results = new ArrayList(1);
+    public GenericResponse(List<?> list) {
+        results = new ArrayList<>(1);
         addResultList(list);
     }
 
     /**
      * Creates a response that it a shallow copy of another response.
      */
+    @SuppressWarnings("unused")
     public GenericResponse(QueryResponse response) {
-
-        results = new ArrayList(response.size());
+        results = new ArrayList<>(response.size());
 
         response.reset();
         while (response.next()) {
             if (response.isList()) {
                 addResultList(response.currentList());
-            }
-            else {
+            } else if (response.isIterator()) {
+                addResultIterator(response.currentIterator());
+            } else {
                 addBatchUpdateCount(response.currentUpdateCount());
             }
         }
     }
 
-    public List firstList() {
-        for (reset(); next();) {
+    @Override
+    public List<?> firstList() {
+        for (reset(); next(); ) {
             if (isList()) {
                 return currentList();
             }
@@ -81,12 +83,19 @@ public class GenericResponse implements QueryResponse, Serializable {
     }
 
     @Override
-    public ResultIterator firstIterator() {
+    public ResultIterator<?> firstIterator() {
+        for (reset(); next(); ) {
+            if (isIterator()) {
+                return currentIterator();
+            }
+        }
+
         return null;
     }
 
+    @Override
     public int[] firstUpdateCount() {
-        for (reset(); next();) {
+        for (reset(); next(); ) {
             if (!isList()) {
                 return currentUpdateCount();
             }
@@ -95,37 +104,43 @@ public class GenericResponse implements QueryResponse, Serializable {
         return null;
     }
 
-    public List currentList() {
-        return (List) results.get(currentIndex - 1);
+    @Override
+    public List<?> currentList() {
+        return (List<?>) results.get(currentIndex - 1);
     }
 
     @Override
-    public ResultIterator currentIterator() {
-        return null;
+    public ResultIterator<?> currentIterator() {
+        return (ResultIterator<?>) results.get(currentIndex - 1);
     }
 
+    @Override
     public int[] currentUpdateCount() {
         return (int[]) results.get(currentIndex - 1);
     }
 
+    @Override
     public boolean isList() {
         return results.get(currentIndex - 1) instanceof List;
     }
 
     @Override
     public boolean isIterator() {
-        return false;
+        return results.get(currentIndex - 1) instanceof ResultIterator;
     }
 
+    @Override
     public boolean next() {
         return ++currentIndex <= results.size();
     }
 
+    @Override
     public void reset() {
         // use a zero-based index, not -1, as this will simplify serialization handling
         currentIndex = 0;
     }
 
+    @Override
     public int size() {
         return results.size();
     }
@@ -138,20 +153,25 @@ public class GenericResponse implements QueryResponse, Serializable {
     }
 
     public void addBatchUpdateCount(int[] resultCount) {
-
         if (resultCount != null) {
             results.add(resultCount);
         }
     }
 
     public void addUpdateCount(int resultCount) {
-        results.add(new int[] {
-            resultCount
-        });
+        results.add(new int[]{resultCount});
     }
 
-    public void addResultList(List list) {
-        this.results.add(list);
+    public void addResultList(List<?> list) {
+        results.add(list);
+    }
+
+    /**
+     * @param iterator to add as a result
+     * @since 5.0
+     */
+    public void addResultIterator(ResultIterator<?> iterator) {
+        results.add(iterator);
     }
 
     /**
