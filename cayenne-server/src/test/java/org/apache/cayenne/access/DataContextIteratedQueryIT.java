@@ -186,6 +186,20 @@ public class DataContextIteratedQueryIT extends ServerCase {
     }
 
     @Test
+    public void testContextIterator() throws Exception {
+        createArtistsAndPaintingsDataSet();
+        try (ResultIterator<Artist> it = context
+                .iterator(ObjectSelect.query(Artist.class))) {
+            while (it.hasNextRow()) {
+                Artist artist =  it.nextRow();
+                List<Painting> paintings = artist.getPaintingArray();
+                assertNotNull(paintings);
+                assertEquals("Expected one painting for artist: " + artist, 1, paintings.size());
+            }
+        }
+    }
+
+    @Test
     public void testPerformIteratedQuery_CommitWithinIterator() throws Exception {
         createArtistsAndPaintingsDataSet();
 

@@ -20,8 +20,10 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -76,6 +78,29 @@ public class MappedQueryIT extends ServerCase {
                 .param("name", "artist14").select(context).get(0);
         assertNotNull(a);
         assertEquals("artist14", a.getArtistName());
+    }
+
+    @Test
+    public void testButchIterator() throws Exception {
+        createArtistsDataSet();
+
+        try (ResultBatchIterator<Artist> iterator = MappedSelect
+                .query("ParameterizedQueryWithSharedCache", Artist.class)
+                .param("name", "artist14")
+                .batchIterator(context, 1)) {
+            int count = 0;
+            while (iterator.hasNext()) {
+                count++;
+                List<Artist> artists = iterator.next();
+                for (Artist artist : artists) {
+                    //noinspection ConstantConditions
+                    assertTrue(artist instanceof Artist);
+                    assertEquals("artist14", artist.readPropertyDirectly("artistName"));
+                }
+            }
+            assertEquals(1,count);
+        }
+
     }
 
     @Test

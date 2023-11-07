@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.ResultIterator;
 
 /**
  * A QueryResponse optimized to hold a single object or data row list.
@@ -64,12 +65,22 @@ public class ListResponse implements QueryResponse, Serializable {
         return true;
     }
 
+    @Override
+    public boolean isIterator() {
+        return false;
+    }
+
     public List currentList() {
         if (currentIndex != 1) {
             throw new IndexOutOfBoundsException("Past iteration end: " + currentIndex);
         }
 
         return objectList;
+    }
+
+    @Override
+    public ResultIterator<?> currentIterator() {
+        return null;
     }
 
     public int[] currentUpdateCount() {
@@ -87,6 +98,11 @@ public class ListResponse implements QueryResponse, Serializable {
 
     public List firstList() {
         return objectList;
+    }
+
+    @Override
+    public ResultIterator firstIterator() {
+        return null;
     }
 
     public int[] firstUpdateCount() {

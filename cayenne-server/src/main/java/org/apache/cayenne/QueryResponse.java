@@ -69,10 +69,24 @@ public interface QueryResponse {
     boolean isList();
 
     /**
+     * Returns whether current response  is an iterator
+     *
+     * @since 5.0
+     */
+    boolean isIterator();
+
+    /**
      * Returns a List under the current iterator position. Use {@link #isList()} to check
      * the result type before calling this method.
      */
     List<?> currentList();
+
+    /**
+     * Returns a current iterator.
+     *
+     * @since 5.0
+     */
+    ResultIterator<?> currentIterator();
 
     /**
      * Returns an update count under the current iterator position. Returned value is an
@@ -99,6 +113,15 @@ public interface QueryResponse {
      */
     @SuppressWarnings("rawtypes")
     List firstList();
+
+    /**
+     * A utility method for quickly retrieving the Iterator in the response. Returns
+     * null if the query has no iterator.
+     *
+     * @since 5.0
+     */
+    @SuppressWarnings("rawtypes")
+    ResultIterator firstIterator();
 
     /**
      * A utility method for quickly retrieving the first update count from the response.
