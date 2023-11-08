@@ -23,6 +23,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.function.Function;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 
@@ -56,6 +58,8 @@ public class PojoMapper<T> implements Function<Object[], T> {
         }
 
         Field[] declaredFields = type.getDeclaredFields();
+        java.util.Arrays.sort(declaredFields, Comparator.comparing(Field::getName));
+        
         this.setters = new MethodHandle[declaredFields.length];
         int i = 0;
         for(Field field : declaredFields) {
