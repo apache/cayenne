@@ -798,9 +798,8 @@ public class DataContext extends BaseContext {
         IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query);
         Query queryToRun = nonNullDelegate().willPerformQuery(this, queryDecorator);
         QueryResponse queryResponse = onQuery(this, queryToRun);
-        return (ResultIterator<T>) queryResponse.currentIterator();
+        return (ResultIterator<T>) queryResponse.firstIterator();
     }
-
 
     /**
      * Performs a single database select query returning result as a

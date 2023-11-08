@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 public class ListResponseTest {
 
     @Test
-    public void testCreation() throws Exception {
+    public void testCreation() {
 
         Object object = new Object();
         ListResponse r = new ListResponse(object);
@@ -55,11 +55,22 @@ public class ListResponseTest {
     }
 
     @Test
+    public void testNext() {
+        List<Integer> result = List.of(1, 2, 3);
+        ListResponse r = new ListResponse(result);
+
+        assertTrue(r.next());
+        assertTrue(r.isList());
+        assertEquals(result, r.currentList());
+        assertFalse(r.next());
+    }
+
+    @Test
     public void testSerialization() throws Exception {
 
         ListResponse r = new ListResponse(67);
 
-        ListResponse sr = (ListResponse) Util.cloneViaSerialization(r);
+        ListResponse sr = Util.cloneViaSerialization(r);
         assertNotNull(sr);
         assertEquals(1, sr.size());
 

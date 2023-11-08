@@ -25,18 +25,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
- class ResultIteratorConverterDecorator implements ResultIterator {
-    private final ResultIterator iterator;
-    private final DataDomainQueryAction.ObjectConversionStrategy converter;
+class ResultIteratorConverterDecorator<T, R> implements ResultIterator<R> {
+    private final ResultIterator<T> iterator;
+    private final DataDomainQueryAction.ObjectConversionStrategy<T, R> converter;
 
-     ResultIteratorConverterDecorator(ResultIterator iterator, DataDomainQueryAction.ObjectConversionStrategy converter) {
+    ResultIteratorConverterDecorator(ResultIterator<T> iterator, DataDomainQueryAction.ObjectConversionStrategy<T, R> converter) {
         this.iterator = Objects.requireNonNull(iterator);
         this.converter = Objects.requireNonNull(converter);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List allRows() {
-        return iterator.allRows();
+    public List<R> allRows() {
+        List<T> mainRows = iterator.allRows();
+        converter.convert(mainRows);
+        return (List<R>) mainRows;
     }
 
     @Override
@@ -45,7 +48,7 @@ import java.util.Objects;
     }
 
     @Override
-    public Object nextRow() {
+    public R nextRow() {
         return converter.convert(iterator.nextRow());
     }
 
@@ -60,17 +63,17 @@ import java.util.Objects;
     }
 
     @Override
-    public Iterator iterator() {
-        return new Iterator() {
+    public Iterator<R> iterator() {
+        return new Iterator<>() {
             @Override
             public boolean hasNext() {
                 return iterator.hasNextRow();
             }
 
             @Override
-            public Object next() {
+            public R next() {
                 return converter.convert(iterator.nextRow());
             }
         };
     }
- }
+}

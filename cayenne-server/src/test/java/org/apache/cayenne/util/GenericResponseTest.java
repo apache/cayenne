@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 public class GenericResponseTest {
 
     @Test
-    public void testCreation() throws Exception {
+    public void testCreation() {
         List list = new ArrayList();
         list.add(new HashMap());
 
@@ -55,6 +55,18 @@ public class GenericResponseTest {
 
         assertEquals(list, r.currentList());
 
+        assertFalse(r.next());
+    }
+
+    @Test
+    public void testNext() {
+        List<Integer> result = List.of(1, 2, 3);
+        GenericResponse r = new GenericResponse();
+        r.addResultList(result);
+
+        assertTrue(r.next());
+        assertTrue(r.isList());
+        assertEquals(result, r.currentList());
         assertFalse(r.next());
     }
 
