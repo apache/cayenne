@@ -574,7 +574,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private void interceptObjectConversion() {
         if (context != null) {
             ObjectConversionStrategy<?,?> converter = getConverter();
-            if (response.isIterator()) {
+            ResultIterator<?> iterator = response.firstIterator();
+            if (iterator != null) {
                 wrapResponseIteratorWithConverterDecorator(converter);
             } else {
                 List mainRows = response.firstList(); // List<DataRow> or List<Object[]>
