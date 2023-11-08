@@ -94,7 +94,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private GenericResponse fullResponse;
     private Map<String, List<?>> prefetchResultsByPath;
     private Map<QueryEngine, Collection<Query>> queriesByNode;
-    private Map<Query, Query> queriesByExecutedQueries;
     private boolean noObjectConversion;
 
     /*
@@ -210,11 +209,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             ObjectIdQuery oidQuery = (ObjectIdQuery) query;
             ObjectId oid = oidQuery.getObjectId();
 
-            // special handling of temp ids... Return an empty list immediately
-            // so that
-            // upstream code could throw FaultFailureException, etc. Don't
-            // attempt to
-            // translate and run the query. See for instance CAY-1651
+            // special handling of temp ids...
+            // Return an empty list immediately so that upstream code could throw FaultFailureException, etc.
+            // Don't attempt to translate and run the query. See for instance CAY-1651
             if (oid.isTemporary() && !oid.isReplacementIdAttached()) {
                 response = new ListResponse();
                 return DONE;
@@ -501,7 +498,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         this.fullResponse = new GenericResponse();
         this.response = this.fullResponse;
         this.queriesByNode = null;
-        this.queriesByExecutedQueries = null;
 
         // whether this is null or not will driver further decisions on how to process prefetched rows
         this.prefetchResultsByPath = metadata.getPrefetchTree() != null && !metadata.isFetchingDataRows()
@@ -586,7 +582,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @Override
     public void route(QueryEngine engine, Query query, Query substitutedQuery) {
-
         Collection<Query> queries = null;
         if (queriesByNode == null) {
             queriesByNode = new HashMap<>();
@@ -600,16 +595,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         queries.add(query);
-
-        // handle case when routing resulted in an "executable" query different from the original query.
-        if (substitutedQuery != null && substitutedQuery != query) {
-
-            if (queriesByExecutedQueries == null) {
-                queriesByExecutedQueries = new HashMap<>();
-            }
-
-            queriesByExecutedQueries.put(query, substitutedQuery);
-        }
     }
 
     @Override
