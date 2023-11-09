@@ -139,9 +139,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             }
         }
 
-        if (!noObjectConversion) {
-            interceptObjectConversion();
-        }
+        interceptObjectConversion();
 
         return response;
     }
@@ -528,7 +526,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void interceptObjectConversion() {
-        if (context == null) {
+        if (noObjectConversion()) {
             return;
         }
 
@@ -548,6 +546,12 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             }
         }
         response.reset();
+    }
+
+    private boolean noObjectConversion() {
+        return context == null
+                || noObjectConversion
+                || metadata.getPageSize() > 0;
     }
 
     private ObjectConversionStrategy<?, ?> getConverter() {

@@ -83,17 +83,32 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
         tArtist.insert(33025, "artist25");
     }
 
+    private SimpleIdIncrementalFaultList<?> prepareList(int pageSize) throws Exception {
+        createArtistsDataSet();
+
+        ObjectSelect<Artist> query = Artist.SELF.query()
+                // make sure total number of objects is not dividable
+                // by the page size, to test the last smaller page
+                .pageSize(pageSize)
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc());
+        // we need manually fill data here
+        List<Long> ids = Artist.SELF.columnQuery(Artist.ARTIST_ID_PK_PROPERTY)
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .select(context);
+
+        return new SimpleIdIncrementalFaultList<>(context, query, 10000, ids);
+    }
+
     @Test
     public void testRemoveDeleted() throws Exception {
         createArtistsDataSet();
 
-        // DataContext context = createDataContext();
-
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .pageSize(10);
-        SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<Artist>(
+        ObjectSelect<Artist> query = Artist.SELF.query().pageSize(10);
+        SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<>(
                 context,
-                query, 10000);
+                query,
+                10000,
+                Artist.SELF.columnQuery(Artist.ARTIST_ID_PK_PROPERTY).select(context));
 
         assertEquals(25, list.size());
 
@@ -103,17 +118,6 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
 
         list.remove(0);
         assertEquals(24, list.size());
-    }
-
-    private SimpleIdIncrementalFaultList<?> prepareList(int pageSize) throws Exception {
-        createArtistsDataSet();
-
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                // make sure total number of objects is not divisable
-                // by the page size, to test the last smaller page
-                .pageSize(pageSize)
-                .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
-        return new SimpleIdIncrementalFaultList<>(context, query, 10000);
     }
 
     @Test
@@ -173,7 +177,11 @@ public class SimpleIdIncrementalFaultListIT extends ServerCase {
 
         SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<>(
                 context,
-                q, 10000);
+                q,
+                10000,
+                Artist.SELF.columnQuery(Artist.ARTIST_ID_PK_PROPERTY)
+                        .orderBy(Artist.ARTIST_NAME.asc())
+                        .select(context));
 
         assertSame(newArtist, list.get(25));
     }

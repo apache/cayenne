@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -104,35 +105,48 @@ class DataContextQueryAction extends ObjectContextQueryAction {
     @Override
     protected boolean interceptPaginatedQuery() {
         if (metadata.getPageSize() > 0) {
-            Integer maxIdQualifierSize = actingDataContext.getParentDataDomain().getMaxIdQualifierSize();
-            List<?> paginatedList;
-            List<Object> rsMapping = metadata.getResultSetMapping();
-            boolean mixedResults = false;
-            if(rsMapping != null) {
-                if(rsMapping.size() > 1) {
-                    mixedResults = true;
-                } else if(rsMapping.size() == 1) {
-                    mixedResults = !(rsMapping.get(0) instanceof EntityResultSegment)
-                            || !metadata.isSingleResultSetMapping();
-                }
-            }
+            // this will select raw ids
+            runQuery();
 
-            if(mixedResults) {
-                paginatedList = new MixedResultIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize);
-            } else {
-                DbEntity dbEntity = metadata.getDbEntity();
-                if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
-                    paginatedList = new SimpleIdIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize);
-                } else {
-                    paginatedList = new IncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize);
-                }
-            }
+            List<?> rawIds = response.firstList();
+            int maxIdQualifierSize = actingDataContext.getParentDataDomain().getMaxIdQualifierSize();
+            IncrementalFaultList<?> paginatedList = createIncrementalFaultList(rawIds, maxIdQualifierSize);
 
+            // replace result with a paginated list that will deal with id-to-object resolution
             response = new ListResponse(paginatedList);
             return DONE;
         }
 
         return !DONE;
+    }
+
+    private IncrementalFaultList<?> createIncrementalFaultList(List<?> rawIds, int maxIdQualifierSize) {
+        // just a sanity check
+        Objects.requireNonNull(rawIds, "Trying to execute paginated query that is not a select query");
+        if(isMixedResultsForPaginatedQuery()) {
+            return new MixedResultIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize, rawIds);
+        } else {
+            DbEntity dbEntity = metadata.getDbEntity();
+            if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
+                return new SimpleIdIncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize, rawIds);
+            } else {
+                return new IncrementalFaultList<>(actingDataContext, query, maxIdQualifierSize, rawIds);
+            }
+        }
+    }
+
+    private boolean isMixedResultsForPaginatedQuery() {
+        boolean mixedResults = false;
+        List<Object> rsMapping = metadata.getResultSetMapping();
+        if(rsMapping != null) {
+            if(rsMapping.size() > 1) {
+                mixedResults = true;
+            } else if(rsMapping.size() == 1) {
+                mixedResults = !(rsMapping.get(0) instanceof EntityResultSegment)
+                        || !metadata.isSingleResultSetMapping();
+            }
+        }
+        return mixedResults;
     }
 
     @Override

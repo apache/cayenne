@@ -19,6 +19,7 @@
 package org.apache.cayenne.access;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Persistent;
@@ -38,8 +39,8 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 
     protected DbAttribute pk;
 
-    SimpleIdIncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
-        super(dataContext, query, maxFetchSize);
+    SimpleIdIncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize, List<?> data) {
+        super(dataContext, query, maxFetchSize, data);
 
         Collection<DbAttribute> pks = rootEntity.getDbEntity().getPrimaryKeys();
         if (pks.size() != 1) {

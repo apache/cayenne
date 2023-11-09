@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
@@ -58,20 +57,18 @@ import java.util.NoSuchElementException;
  */
 public class IncrementalFaultList<E> implements List<E>, Serializable {
 
-	protected int pageSize;
+	protected final int pageSize;
 	protected final List elements;
-	protected DataContext dataContext;
-	protected ObjEntity rootEntity;
-	protected int unfetchedObjects;
+	protected final DataContext dataContext;
+	protected final ObjEntity rootEntity;
+	protected volatile int unfetchedObjects;
 
 	/**
 	 * Stores a hint allowing to distinguish data rows from unfetched ids when
 	 * the query fetches data rows.
 	 */
-	protected int idWidth;
-
-	IncrementalListHelper helper;
-	protected QueryMetadata metadata;
+	protected final int idWidth;
+	protected final QueryMetadata metadata;
 
 	/**
 	 * Defines the upper limit on the size of fetches. This is needed to avoid
@@ -79,15 +76,13 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 */
 	protected int maxFetchSize;
 
-	// Don't confuse this with the JDBC ResultSet fetch size setting - this
-	// controls
-	// the where clause generation that is necessary to fetch specific records a
-	// page
-	// at a time. Some JDBC Drivers/Databases may have limits on statement
-	// length
-	// or complexity of the where clause - e.g., PostgreSQL having a default
-	// limit of
-	// 10,000 nested expressions.
+	IncrementalListHelper helper;
+
+	// Don't confuse this with the JDBC ResultSet fetch size setting -
+	// this controls the where clause generation that is necessary to fetch specific records a
+	// page at a time. Some JDBC Drivers/Databases may have limits on statement
+	// length or complexity of the where clause - e.g., PostgreSQL having a default
+	// limit of 10,000 nested expressions.
 
 	/**
 	 * Creates a new IncrementalFaultList using a given DataContext and query.
@@ -101,7 +96,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @param maxFetchSize
 	 *            maximum number of fetches in one query
 	 */
-	public IncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
+	IncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize, List<?> data) {
 		this.metadata = query.getMetaData(dataContext.getEntityResolver());
 		if (metadata.getPageSize() <= 0) {
 			throw new CayenneRuntimeException("Not a paginated query; page size: " + metadata.getPageSize());
@@ -116,12 +111,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 		}
 
 		this.idWidth = metadata.getDbEntity().getPrimaryKeys().size();
-
-		List<Object> elementsUnsynced = new ArrayList<>();
-		fillIn(query, elementsUnsynced);
-		this.elements = Collections.synchronizedList(elementsUnsynced);
-
 		this.maxFetchSize = maxFetchSize;
+		// make a copy of data, as we need to modify content of this list later
+		this.elements = Collections.synchronizedList(new ArrayList<>(data));
+		this.unfetchedObjects = elements.size();
 	}
 
 	/**
@@ -147,18 +140,20 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * fully resolved. For the rest of the list, only ObjectIds are read.
 	 * 
 	 * @since 3.0
+	 * @deprecated since 5.0, does nothing
 	 */
+	@Deprecated(forRemoval = true)
 	protected void fillIn(final Query query, List<Object> elementsList) {
+	}
 
-		elementsList.clear();
+	/**
+	 * Sets initial data (i.e. list of ObjectIds) for this FaultList
+	 *
+	 * @param elementsList initial data to fill this list with
+	 * @since 5.0
+	 */
+	public void fillIn(List<?> elementsList) {
 
-		try (ResultIterator<?> it = dataContext.performIteratedQuery(query)) {
-			while (it.hasNextRow()) {
-				elementsList.add(it.nextRow());
-			}
-		}
-
-		unfetchedObjects = elementsList.size();
 	}
 
 	/**
@@ -173,6 +168,9 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * (DataObject or DataRows depending on the query type).
 	 */
 	private void validateListObject(Object object) throws IllegalArgumentException {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
 
 		// I am not sure if such a check makes sense???
 
@@ -195,6 +193,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	protected void resolveInterval(int fromIndex, int toIndex) {
 		if (fromIndex >= toIndex) {
 			return;
+		}
+
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
 		}
 
 		synchronized (elements) {
@@ -295,7 +297,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			throw new CayenneRuntimeException("Expected %d objects, retrieved %d", ids.size(), objects.size());
 		}
 
-		// We have less objects then ids
+		// We have fewer objects than ids
 		// check that we are really missing some ids and throw an exception in that case
 		StringBuilder buffer = null;
 		boolean first = true;
@@ -409,9 +411,13 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * next().
 	 */
 	public Iterator<E> iterator() {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		// by virtue of get(index)'s implementation, resolution of ids into
 		// objects will occur on pageSize boundaries as necessary.
-		return new Iterator<E>() {
+		return new Iterator<>() {
 
 			int listIndex = 0;
 
@@ -459,6 +465,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.Collection#addAll(Collection)
 	 */
 	public boolean addAll(Collection<? extends E> c) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.addAll(c);
 		}
@@ -468,6 +478,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.List#addAll(int, Collection)
 	 */
 	public boolean addAll(int index, Collection<? extends E> c) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.addAll(index, c);
 		}
@@ -477,6 +491,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.Collection#clear()
 	 */
 	public void clear() {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			elements.clear();
 		}
@@ -486,6 +504,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.Collection#contains(Object)
 	 */
 	public boolean contains(Object o) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.contains(o);
 		}
@@ -495,12 +517,20 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.Collection#containsAll(Collection)
 	 */
 	public boolean containsAll(Collection<?> c) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.containsAll(c);
 		}
 	}
 
 	public E get(int index) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			Object o = elements.get(index);
 
@@ -527,6 +557,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.Collection#isEmpty()
 	 */
 	public boolean isEmpty() {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.isEmpty();
 		}
@@ -537,6 +571,10 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	}
 
 	public E remove(int index) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			// have to resolve the page to return correct object
 			E object = get(index);
@@ -546,18 +584,30 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	}
 
 	public boolean remove(Object o) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.remove(o);
 		}
 	}
 
 	public boolean removeAll(Collection<?> c) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.removeAll(c);
 		}
 	}
 
 	public boolean retainAll(Collection<?> c) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.retainAll(c);
 		}
@@ -578,12 +628,20 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @see java.util.Collection#size()
 	 */
 	public int size() {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			return elements.size();
 		}
 	}
 
 	public List<E> subList(int fromIndex, int toIndex) {
+		if(elements == null) {
+			throw new IllegalStateException("IncrementalFaultList is not initialized");
+		}
+
 		synchronized (elements) {
 			resolveInterval(fromIndex, toIndex);
 			return elements.subList(fromIndex, toIndex);

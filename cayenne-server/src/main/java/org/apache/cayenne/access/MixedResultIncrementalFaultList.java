@@ -70,8 +70,8 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
      * @param query        Main query used to retrieve data. Must have "pageSize"
      *                     property set to a value greater than zero.
      */
-    MixedResultIncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize) {
-        super(dataContext, query, maxFetchSize);
+    MixedResultIncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize, List<?> data) {
+        super(dataContext, query, maxFetchSize, data);
     }
 
     @Override
@@ -89,25 +89,13 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
             }
         }
 
-        // if there is no entities in this results,
-        // than all data is already there and we don't need to resolve any objects
+        // if there is no entities in these results,
+        // then all data is already there, and we don't need to resolve any objects
         if(indexToEntity.isEmpty()) {
             return new ScalarArrayListHelper();
         } else {
             return new MixedArrayListHelper();
         }
-    }
-
-    @Override
-    protected void fillIn(final Query query, List<Object> elementsList) {
-        elementsList.clear();
-        try (ResultIterator it = dataContext.performIteratedQuery(query)) {
-            while (it.hasNextRow()) {
-                elementsList.add(it.nextRow());
-            }
-        }
-
-        unfetchedObjects = elementsList.size();
     }
 
     @Override

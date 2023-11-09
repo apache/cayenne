@@ -27,6 +27,8 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -41,7 +43,7 @@ public class IncrementalFaultListIT extends ServerCase {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.pageSize(10);
 
-		IncrementalFaultList<Artist> i1 = new IncrementalFaultList<Artist>(context, query, 10);
+		IncrementalFaultList<Artist> i1 = new IncrementalFaultList<Artist>(context, query, 10, List.of());
 		IncrementalFaultList<Artist> i2 = Util.cloneViaSerialization(i1);
 
 		assertNotNull(i2);

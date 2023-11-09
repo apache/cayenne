@@ -64,8 +64,11 @@ public class SimpleIdIncrementalFaultListDataRowsIT extends ServerCase {
         createArtistsDataSet();
 
         ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class)
-                .pageSize(6).orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
-        list = new SimpleIdIncrementalFaultList<>(context, q, 10000);
+                .pageSize(6).orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc());
+        List<Long> select = Artist.SELF.columnQuery(Artist.ARTIST_ID_PK_PROPERTY)
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .select(context);
+        list = new SimpleIdIncrementalFaultList<>(context, q, 10000, select);
     }
 
     protected void createArtistsDataSet() throws Exception {
