@@ -146,6 +146,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private boolean interceptIteratedQuery() {
         if (query instanceof IteratedQueryDecorator) {
+            noObjectConversion = ((IteratedQueryDecorator) query).isFetchingDataRows();
             validateIteratedQuery();
             performIteratedQuery();
             return DONE;

@@ -792,84 +792,45 @@ public class DataContext extends BaseContext {
 
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Performs a single database select query returning result as a {@link ResultIterator}.
+     * <p>
+     * It is caller's responsibility to explicitly close the {@link ResultIterator}.
+     * A failure to do so will result in a <b>database connection not being released</b>.
+     * Another side effect of an open {@link ResultIterator} is that an internal Cayenne transaction
+     * that originated in this method stays open until the iterator is closed.
+     * So users should normally close the iterator within the same thread that opened it.
+     * <p>
+     */
     @Override
     public <T> ResultIterator<T> iterator(final Select<T> query) {
-        IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query);
-        Query queryToRun = nonNullDelegate().willPerformQuery(this, queryDecorator);
-        QueryResponse queryResponse = onQuery(this, queryToRun);
-        return (ResultIterator<T>) queryResponse.firstIterator();
+        return performIteratedQueryInternal(query, false);
     }
 
     /**
-     * Performs a single database select query returning result as a
-     * ResultIterator. It is caller's responsibility to explicitly close the
-     * ResultIterator. A failure to do so will result in a database connection
-     * not being released. Another side effect of an open ResultIterator is that
-     * an internal Cayenne transaction that originated in this method stays open
-     * until the iterator is closed. So users should normally close the iterator
-     * within the same thread that opened it.
+     * Performs a single database select query returning result as a {@link ResultIterator}.
      * <p>
-     * Note that 'performIteratedQuery' always returns ResultIterator over
-     * DataRows. Use
-     * {@link #iterate(Select, org.apache.cayenne.ResultIteratorCallback)} to
-     * get access to objects.
+     * It is caller's responsibility to explicitly close the {@link ResultIterator}.
+     * A failure to do so will result in a <b>database connection not being released</b>.
+     * Another side effect of an open {@link ResultIterator} is that an internal Cayenne transaction
+     * that originated in this method stays open until the iterator is closed.
+     * So users should normally close the iterator within the same thread that opened it.
+     * <p>
+     * Note that {@code performIteratedQuery} always returns {@link ResultIterator} over DataRows.
+     * <p>
+     * Use {@link #iterate(Select, org.apache.cayenne.ResultIteratorCallback)} to get access to objects.
      */
-    // TODO: deprecate once all selecting queries start implementing Select<T> interface
     @SuppressWarnings({ "rawtypes" })
     public ResultIterator performIteratedQuery(Query query) {
-
-        if (BaseTransaction.getThreadTransaction() != null) {
-            return internalPerformIteratedQuery(query);
-        } else {
-
-
-            // can't use TransactionManger here as it would attempt to commit the transaction at the end...
-
-            // manually manage a transaction, so that a ResultIterator wrapper
-            // could close it when it is done.
-            Transaction tx = getTransactionFactory().createTransaction();
-            BaseTransaction.bindThreadTransaction(tx);
-
-            ResultIterator<?> result;
-            try {
-                result = internalPerformIteratedQuery(query);
-            } catch (Exception e) {
-
-                tx.setRollbackOnly();
-                throw new CayenneRuntimeException(e);
-            } finally {
-
-                // unbind thread tx before returning to the caller. Transaction will be managed internally by the
-                // ResultIterator and should not get in the way of other DB operations that may be performed
-                // within the iterator....
-
-                // TODO: there was an older comment about Ingres breaking when we unbind thread transaction
-                // before closing the iterator. As we have no test environment for ingres, we can't
-                // confirm this here...
-                BaseTransaction.bindThreadTransaction(null);
-
-                if (tx.isRollbackOnly()) {
-                    try {
-                        tx.rollback();
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-
-            return new TransactionResultIteratorDecorator<>(result, tx);
-        }
+        return performIteratedQueryInternal(query, true);
     }
 
-    /**
-     * Runs an iterated query in a transactional context provided by the caller.
-     */
-    ResultIterator <?> internalPerformIteratedQuery(Query query) {
-        // note that for now DataChannel API does not support cursors (aka
-        // ResultIterator), so we have to go directly to the DataDomain.
-        IteratedSelectObserver observer = new IteratedSelectObserver();
-        getParentDataDomain().performQueries(Collections.singletonList(query), observer);
-        return observer.getResultIterator();
+    @SuppressWarnings("unchecked")
+    private <T> ResultIterator<T> performIteratedQueryInternal(Query query, boolean fetchDataRows) {
+        IteratedQueryDecorator queryDecorator = new IteratedQueryDecorator(query, fetchDataRows);
+        Query queryToRun = nonNullDelegate().willPerformQuery(this, queryDecorator);
+        QueryResponse queryResponse = onQuery(this, queryToRun);
+        return (ResultIterator<T>)queryResponse.firstIterator();
     }
 
     /**

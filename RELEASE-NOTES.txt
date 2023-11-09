@@ -41,6 +41,7 @@ CAY-2802 Upgrade Gradle to 7.6.1
 CAY-2803 Test infrastructure: declarative custom DI modules in ServerCase
 CAY-2805 Stop calling exp parser internally
 CAY-2817 Pagination flow refactoring
+CAY-2819 DataContext.performIteratedQuery() method should be unified with iterator() method
 
 Bug Fixes:
 

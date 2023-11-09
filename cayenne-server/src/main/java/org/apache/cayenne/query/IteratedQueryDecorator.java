@@ -21,12 +21,19 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.map.EntityResolver;
 
-public class IteratedQueryDecorator implements Query{
+/**
+ * A simple decorator for an iterated query.
+ * @see org.apache.cayenne.access.DataContext#iterator(Select)
+ * @since 5.0
+ */
+public class IteratedQueryDecorator implements Query {
 
     private final Query query;
+    private final boolean fetchDataRows;
 
-    public IteratedQueryDecorator(Query query) {
+    public IteratedQueryDecorator(Query query, boolean fetchDataRows) {
         this.query = query;
+        this.fetchDataRows = fetchDataRows;
     }
 
     @Override
@@ -36,7 +43,7 @@ public class IteratedQueryDecorator implements Query{
 
     @Override
     public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        query.route(router,resolver,substitutedQuery);
+        query.route(router, resolver, substitutedQuery);
     }
 
     @Override
@@ -46,5 +53,9 @@ public class IteratedQueryDecorator implements Query{
 
     public Query getQuery() {
         return query;
+    }
+
+    public boolean isFetchingDataRows() {
+        return fetchDataRows;
     }
 }
