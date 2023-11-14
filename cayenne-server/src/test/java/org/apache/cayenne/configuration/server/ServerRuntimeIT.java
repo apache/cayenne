@@ -25,7 +25,6 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionListener;
-import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -48,26 +47,18 @@ public class ServerRuntimeIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
-    class DefaultListenerImpl implements TransactionListener{
+    static class DefaultListenerImpl implements TransactionListener {
 
         @Override
         public void willCommit(Transaction tx) {
-
         }
 
         @Override
         public void willRollback(Transaction tx) {
-
         }
 
         @Override
         public void willAddConnection(Transaction tx, String connectionName, Connection connection) {
-
-        }
-
-        @Override
-        public Connection decorateConnection(Transaction tx, Connection connection) {
-            return connection;
         }
     }
 
@@ -75,18 +66,13 @@ public class ServerRuntimeIT extends ServerCase {
     public void testPerformInTransaction_Local_Callback() {
 
         TransactionListener callback = mock(DefaultListenerImpl.class);
-        when(callback.decorateConnection(any(Transaction.class),any(Connection.class))).thenCallRealMethod();
+        when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
 
-        Artist a = runtime.performInTransaction(new TransactionalOperation<Artist>() {
-
-            @Override
-            public Artist perform() {
-
-                Artist localArtist = runtime.newContext().newObject(Artist.class);
-                localArtist.setArtistName("A1");
-                localArtist.getObjectContext().commitChanges();
-                return localArtist;
-            }
+        Artist a = runtime.performInTransaction(() -> {
+            Artist localArtist = runtime.newContext().newObject(Artist.class);
+            localArtist.setArtistName("A1");
+            localArtist.getObjectContext().commitChanges();
+            return localArtist;
         }, callback);
 
         assertEquals("A1", a.getArtistName());
@@ -94,25 +80,20 @@ public class ServerRuntimeIT extends ServerCase {
         verify(callback).willCommit(any(Transaction.class));
         verify(callback).willAddConnection(any(Transaction.class), any(String.class), any(Connection.class));
         verify(callback, times(0)).willRollback(any(Transaction.class));
-        verify(callback).decorateConnection(any(Transaction.class),any(Connection.class));
+        verify(callback).decorateConnection(any(Transaction.class), any(Connection.class));
     }
 
     @Test
     public void testPerformInTransaction_Local_Callback_Rollback() {
 
         TransactionListener callback = mock(TransactionListener.class);
-        when(callback.decorateConnection(any(Transaction.class),any(Connection.class))).thenCallRealMethod();
+        when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
 
         try {
-            runtime.performInTransaction(new TransactionalOperation<Artist>() {
-
-                @Override
-                public Artist perform() {
-
-                    Artist localArtist = runtime.newContext().newObject(Artist.class);
-                    localArtist.getObjectContext().commitChanges();
-                    return localArtist;
-                }
+            runtime.performInTransaction(() -> {
+                Artist localArtist = runtime.newContext().newObject(Artist.class);
+                localArtist.getObjectContext().commitChanges();
+                return localArtist;
             }, callback);
 
             fail("Exception expected");
@@ -128,21 +109,18 @@ public class ServerRuntimeIT extends ServerCase {
         assertEquals(0, ObjectSelect.query(Artist.class).selectCount(context));
 
         try {
-            runtime.performInTransaction(new TransactionalOperation<Object>() {
-                @Override
-                public Object perform() {
-                    // Default PK batch size is 20
-                    for (int i = 0; i < 30; i++) {
-                        Artist artist = context.newObject(Artist.class);
-                        artist.setArtistName("test" + i);
-                        context.commitChanges();
-                    }
-
-                    // this should fail with validation error
-                    context.newObject(Artist.class);
+            runtime.performInTransaction(() -> {
+                // Default PK batch size is 20
+                for (int i = 0; i < 30; i++) {
+                    Artist artist = context.newObject(Artist.class);
+                    artist.setArtistName("test" + i);
                     context.commitChanges();
-                    return null;
                 }
+
+                // this should fail with validation error
+                context.newObject(Artist.class);
+                context.commitChanges();
+                return null;
             });
         } catch (Exception ignored) {
         }
