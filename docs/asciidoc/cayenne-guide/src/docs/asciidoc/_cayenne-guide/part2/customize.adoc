@@ -346,7 +346,7 @@ ServerRuntime runtime = ServerRuntime.builder()
 ----
 
 More examples of implementation you can find in
-https://github.com/apache/cayenne/blob/master/cayenne-server/src/main/java/org/apache/cayenne/access/types/LocalDateValueType.java[cayenne-server].
+https://github.com/apache/cayenne/blob/master/cayenne/src/main/java/org/apache/cayenne/access/types/LocalDateValueType.java[cayenne core].
 
 ===== Extended Types
 

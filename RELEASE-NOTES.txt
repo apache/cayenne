@@ -44,6 +44,7 @@ CAY-2814 Select query iterator() and batchIterator() methods return incorrect re
 CAY-2817 Pagination flow refactoring
 CAY-2819 DataContext.performIteratedQuery() method should be unified with iterator() method
 CAY-2821 Change development versioning schema
+CAY-2822 Rename `cayenne-server` module to `cayenne`
 
 Bug Fixes:
 

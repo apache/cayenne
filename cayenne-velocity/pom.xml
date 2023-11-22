@@ -36,7 +36,7 @@
         <!-- Compile dependencies -->
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-server</artifactId>
+            <artifactId>cayenne</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-server</artifactId>
+            <artifactId>cayenne</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>

@@ -39,7 +39,10 @@ as an example) :
       .build();
 Two things to note here: (1) a module-specific extender is created using an "extend(Binder)" method of the module, and
 (2) an extender does not produce a Module, instead it adds services directly to the Binder. So it is usually invoked
-within a lambda that produces a Module, or within an app <odule.
+within a lambda that produces a Module, or within an app Module.
+
+* Per CAY-2822 `cayenne-server` module is renamed to `cayenne`, so you need to change
+that accordingly in your build scripts
 
 UPGRADING TO 4.2.M2
 

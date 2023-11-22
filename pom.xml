@@ -51,6 +51,7 @@
 	<url>https://cayenne.apache.org/</url>
 	<modules>
 		<module>build-tools</module>
+		<module>cayenne</module>
 		<module>cayenne-ant</module>
 		<module>cayenne-cache-invalidation</module>
 		<module>cayenne-cgen</module>
@@ -63,7 +64,6 @@
 		<module>cayenne-lifecycle</module>
 		<module>cayenne-project</module>
 		<module>cayenne-project-compatibility</module>
-		<module>cayenne-server</module>
 		<module>cayenne-velocity</module>
 		<module>cayenne-osgi</module>
 		<module>maven-plugins</module>

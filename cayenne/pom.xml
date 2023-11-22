@@ -24,9 +24,9 @@
 		<artifactId>cayenne-parent</artifactId>
 		<version>5.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>cayenne-server</artifactId>
-	<name>cayenne-server: Cayenne Server</name>
-	<description>Cayenne Server</description>
+	<artifactId>cayenne</artifactId>
+	<name>cayenne: Cayenne Core</name>
+	<description>Apache Cayenne core module</description>
 	<packaging>jar</packaging>
 	
 	<dependencies>
@@ -168,7 +168,7 @@
 					<!--
 						src/main/jjtree/org/apache/cayenne/exp/parser for now is generated
 						outside of Maven with JavaCC command line tools (maybe we should do the same for EJBQL) :
-							$ cd cayenne-server/src/main/jjtree/org/apache/cayenne/exp/parser
+							$ cd cayenne/src/main/jjtree/org/apache/cayenne/exp/parser
 						# Parser grammar out of tree grammar:
 							$ ~/javacc-5.0/bin/jjtree ExpressionParser.jjt
 						# Parser java code:

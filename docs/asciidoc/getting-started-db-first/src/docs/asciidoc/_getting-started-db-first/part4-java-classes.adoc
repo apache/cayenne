@@ -47,7 +47,7 @@ Note that Cayenne code is unrecognized, that's because we need to include Cayenn
     <dependencies>
         <dependency>
             <groupId>org.apache.cayenne</groupId>
-            <artifactId>cayenne-server</artifactId>
+            <artifactId>cayenne</artifactId>
             <version>${cayenne.version}</version>
         </dependency>
     </dependencies>

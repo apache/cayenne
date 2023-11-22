@@ -65,6 +65,7 @@
 		<dependencySet>
 			<outputDirectory>${content.dir}/lib/</outputDirectory>
 			<includes>
+				<include>org.apache.cayenne:cayenne</include>
 				<include>org.apache.cayenne:cayenne-ant</include>
 				<include>org.apache.cayenne:cayenne-cache-invalidation</include>
 				<include>org.apache.cayenne:cayenne-cgen</include>
@@ -77,13 +78,12 @@
 				<include>org.apache.cayenne:cayenne-osgi</include>
 				<include>org.apache.cayenne:cayenne-project</include>
 				<include>org.apache.cayenne:cayenne-project-compatibility</include>
-				<include>org.apache.cayenne:cayenne-server</include>
 				<include>org.apache.cayenne:cayenne-velocity</include>
 			</includes>
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>${content.dir}/lib/third-party/</outputDirectory>
-			<!-- Include only a minimal set of dependencies to run cayenne-server and ant tasks -->
+			<!-- Include only a minimal set of dependencies to run cayenne and ant tasks -->
 			<includes>
 				<include>org.slf4j:slf4j-api</include>
 			</includes>

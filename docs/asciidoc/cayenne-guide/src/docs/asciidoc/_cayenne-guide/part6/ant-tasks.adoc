@@ -24,12 +24,12 @@ in the project, use the following Antlib:
 <typedef resource="org/apache/cayenne/tools/antlib.xml">
    <classpath>
    		<fileset dir="lib" >
+			<include name="cayenne-*.jar" />
 			<include name="cayenne-ant-*.jar" />
 			<include name="cayenne-cgen-*.jar" />
 			<include name="cayenne-dbsync-*.jar" />
 			<include name="cayenne-di-*.jar" />
 			<include name="cayenne-project-*.jar" />
-			<include name="cayenne-server-*.jar" />
 			<include name="commons-collections-*.jar" />
 			<include name="commons-lang-*.jar" />
 			<include name="slf4j-api-*.jar" />
