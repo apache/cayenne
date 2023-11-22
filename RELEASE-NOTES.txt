@@ -8,7 +8,7 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
-Release: 5.0.M1
+Release: 5.0-M1
 Date:
 ----------------------------------
 Changes/New Features:
@@ -43,6 +43,7 @@ CAY-2805 Stop calling exp parser internally
 CAY-2814 Select query iterator() and batchIterator() methods return incorrect results
 CAY-2817 Pagination flow refactoring
 CAY-2819 DataContext.performIteratedQuery() method should be unified with iterator() method
+CAY-2821 Change development versioning schema
 
 Bug Fixes:
 
