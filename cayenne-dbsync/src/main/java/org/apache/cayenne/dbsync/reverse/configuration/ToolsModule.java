@@ -114,7 +114,7 @@ public class ToolsModule implements Module {
 
         new ToolsProjectModuleExtender(binder).initAllExtensions();
 
-        new ToolsServerModuleExtender(binder)
+        new ToolsCoreModuleExtender(binder)
                 .initAllExtensions()
 
                 .addAdapterDetector(FirebirdSniffer.class)

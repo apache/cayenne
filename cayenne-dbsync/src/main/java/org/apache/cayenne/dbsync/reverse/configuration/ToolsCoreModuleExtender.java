@@ -22,10 +22,10 @@ package org.apache.cayenne.dbsync.reverse.configuration;
 import org.apache.cayenne.configuration.server.CoreModuleExtender;
 import org.apache.cayenne.di.Binder;
 
-// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ServerModuleExtender.
-class ToolsServerModuleExtender extends CoreModuleExtender {
+// this class exists so that ToolsModule can call "initAllExtensions()" that is protected in CoreModuleExtender.
+class ToolsCoreModuleExtender extends CoreModuleExtender {
 
-    public ToolsServerModuleExtender(Binder binder) {
+    public ToolsCoreModuleExtender(Binder binder) {
         super(binder);
     }
 
