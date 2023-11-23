@@ -23,9 +23,8 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -57,7 +56,7 @@ public class DataContextSerializationIT extends ServerCase {
     protected DataContext context;
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
 
     @Inject
     protected DBHelper dbHelper;

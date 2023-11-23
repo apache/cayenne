@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.unit;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.crypto.transformer.bytes.Header;
+import org.apache.cayenne.runtime.CayenneRuntime;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -75,7 +75,7 @@ public class CryptoUnitUtils {
         return out.toByteArray();
     }
 
-    public static byte[] decrypt_AES_CBC(byte[] source, ServerRuntime runtime) {
+    public static byte[] decrypt_AES_CBC(byte[] source, CayenneRuntime runtime) {
 
         try {
 

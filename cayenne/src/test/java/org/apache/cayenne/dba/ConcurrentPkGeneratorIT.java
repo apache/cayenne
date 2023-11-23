@@ -20,12 +20,12 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -50,7 +50,7 @@ import static org.junit.Assert.fail;
 public class ConcurrentPkGeneratorIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
 	@Inject
 	private UnitDbAdapter unitDbAdapter;

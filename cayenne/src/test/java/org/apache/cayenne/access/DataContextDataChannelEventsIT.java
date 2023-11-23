@@ -23,9 +23,9 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelListener;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.util.ServerCaseSyncModule;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -52,7 +52,7 @@ public class DataContextDataChannelEventsIT extends ServerCase {
     private DataContext peer;
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Test
     public void testCommitEvent() throws Exception {

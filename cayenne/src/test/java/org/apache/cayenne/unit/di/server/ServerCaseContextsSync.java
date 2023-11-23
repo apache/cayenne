@@ -19,11 +19,11 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.DICase;
 import org.junit.Before;
 
@@ -41,7 +41,7 @@ public class ServerCaseContextsSync extends DICase {
         injector = DIBootstrap.createInjector(
                 new ServerCaseModule(testScope),
                 binder -> {
-                    binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProviderContextsSync.class).in(testScope);
+                    binder.bind(CayenneRuntime.class).toProvider(CayenneRuntimeProviderContextsSync.class).in(testScope);
                     ServerModule.extend(binder).syncContexts();
                 });
         injector.getInstance(SchemaBuilder.class).rebuildSchema();

@@ -24,12 +24,12 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -56,7 +56,7 @@ import static org.junit.Assert.fail;
 public class DataDomainIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Inject
     private JdbcEventLogger logger;

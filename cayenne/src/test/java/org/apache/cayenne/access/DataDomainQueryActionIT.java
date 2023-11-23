@@ -24,11 +24,11 @@ import java.util.List;
 import org.apache.cayenne.cache.MockQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -45,7 +45,7 @@ public class DataDomainQueryActionIT extends ServerCase {
     private DataContext context;
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @After
     public void tearDown() {

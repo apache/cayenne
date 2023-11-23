@@ -27,9 +27,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -54,7 +54,7 @@ public class TransactionIsolationIT extends ServerCase {
     DataContext context;
 
     @Inject
-    ServerRuntime runtime;
+    CayenneRuntime runtime;
 
     @Inject
     UnitDbAdapter unitDbAdapter;

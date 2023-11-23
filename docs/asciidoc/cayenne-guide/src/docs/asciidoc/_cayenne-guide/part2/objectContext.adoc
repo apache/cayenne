@@ -17,7 +17,7 @@
 
 ==== ObjectContext
 
-ObjectContext is an interface that users normally work with to access the database. It provides the API to execute database operations and to manage persistent objects. A context is obtained from the ServerRuntime:
+ObjectContext is an interface that users normally work with to access the database. It provides the API to execute database operations and to manage persistent objects. A context is obtained from the CayenneRuntime:
 
 [source, java]
 ----
@@ -186,7 +186,7 @@ Nesting is useful to create isolated object editing areas (child contexts) that 
 
 In theory, Cayenne supports any number of nesting levels; however, applications should generally stay with one or two levels, as deep hierarchies will almost certainly degrade the performance of the deeply-nested child contexts. This is due to the fact that each context in a nesting chain has to update its own objects during most operations.
 
-To create a nested context, use an instance of ServerRuntime, passing it the desired parent:
+To create a nested context, use an instance of CayenneRuntime, passing it the desired parent:
 
 [source, java]
 ----
@@ -268,7 +268,7 @@ application-managed transactions.
 
 If you are using Spring, EJB or another environment that manages transactions, you’ll likely need to switch the Cayenne runtime into "external transactions mode". This is done by setting the DI configuration property defined in `Constants.SERVER_EXTERNAL_TX_PROPERTY` (see Appendix A). If this property is set to "true", Cayenne assumes that JDBC Connections obtained by runtime, whenever that might happen, are all coming from a transactional DataSource managed by the container. In this case, Cayenne does not attempt to commit or roll back the connections, leaving it up to the container to do that when appropriate.
 
-In the second scenario, an application might need to define its own transaction scope that spans more than one Cayenne operation. E.g. two sequential commits that need to be rolled back together in case of failure. This can be done via the `ServerRuntime.performInTransaction` method:
+In the second scenario, an application might need to define its own transaction scope that spans more than one Cayenne operation. E.g. two sequential commits that need to be rolled back together in case of failure. This can be done via the `CayenneRuntime.performInTransaction` method:
 
 [source, java]
 ----

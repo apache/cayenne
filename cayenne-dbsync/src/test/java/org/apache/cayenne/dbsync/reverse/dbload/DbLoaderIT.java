@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.dbload;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.naming.NoStemStemmer;
@@ -28,6 +27,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -53,7 +53,7 @@ public class DbLoaderIT extends ServerCase {
     private static final DbLoaderConfiguration CONFIG = new DbLoaderConfiguration();
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Inject
     private DbAdapter adapter;

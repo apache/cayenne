@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.ejbql;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
@@ -26,6 +25,7 @@ import org.apache.cayenne.ejbql.EJBQLParser;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 public class EJBQLSelectTranslatorIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Inject
     private DbAdapter adapter;

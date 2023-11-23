@@ -22,8 +22,8 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.util.ServerCaseSyncModule;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -46,7 +46,7 @@ public class NestedDataContextPeerEventsIT extends ServerCase {
 	private DataContext context;
 
 	@Inject
-	private ServerRuntime runtime;
+	private CayenneRuntime runtime;
 
     @Test
 	public void testPeerObjectUpdatedTempOID() throws Exception {

@@ -16,10 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.ServerModuleExtender;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
@@ -33,19 +37,19 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * A convenience class to assemble custom ServerRuntime. It allows to easily
+ * A convenience class to assemble custom {@link CayenneRuntime}. It allows to easily
  * configure custom modules, multiple config locations, or quickly create a
- * global DataSource.
+ * global {@link DataSource}.
  *
- * @since 4.0
+ * @since 5.0 renamed from ServerRuntimeBuilder and moved to {@code org.apache.cayenne.runtime} package
  */
-public class ServerRuntimeBuilder {
+public class CayenneRuntimeBuilder {
 
     static final String DEFAULT_NAME = "cayenne";
 
-    private String name;
-    private Collection<String> configs;
-    private List<Module> modules;
+    private final String name;
+    private final Collection<String> configs;
+    private final List<Module> modules;
     private DataSourceFactory dataSourceFactory;
     private String jdbcUrl;
     private String jdbcDriver;
@@ -59,10 +63,10 @@ public class ServerRuntimeBuilder {
 
     /**
      * Creates a builder with a fixed name of the DataDomain of the resulting
-     * ServerRuntime. Specifying explicit name is often needed for consistency
+     * CayenneRuntime. Specifying explicit name is often needed for consistency
      * in runtimes merged from multiple configs, each having its own name.
      */
-    protected ServerRuntimeBuilder(String name) {
+    protected CayenneRuntimeBuilder(String name) {
         this.configs = new LinkedHashSet<>();
         this.modules = new ArrayList<>();
         this.name = name;
@@ -70,13 +74,13 @@ public class ServerRuntimeBuilder {
     }
 
     /**
-     * Disables DI module auto-loading. By default auto-loading is enabled based on
-     * {@link org.apache.cayenne.di.spi.ModuleLoader} service provider inetrface. If you decide to disable auto-loading,
-     * make sure you provide all the modules that you need.
+     * Disables DI module auto-loading.
+     * By default, auto-loading is enabled based on {@link ModuleLoader} service provider interface.
+     * If you decide to disable auto-loading, make sure you provide all the modules that you need.
      *
      * @return this builder instance.
      */
-    public ServerRuntimeBuilder disableModulesAutoLoading() {
+    public CayenneRuntimeBuilder disableModulesAutoLoading() {
         this.autoLoadModules = false;
         return this;
     }
@@ -88,26 +92,15 @@ public class ServerRuntimeBuilder {
      *
      * @see DataSourceBuilder
      */
-    public ServerRuntimeBuilder dataSource(DataSource dataSource) {
+    public CayenneRuntimeBuilder dataSource(DataSource dataSource) {
         this.dataSourceFactory = new FixedDataSourceFactory(dataSource);
-        return this;
-    }
-
-    /**
-     * Sets JNDI location for the default DataSource. If the mapping contains no
-     * DataNodes, and the DataSource is set with this method, the builder would
-     * create a single default DataNode.
-     */
-    @Deprecated
-    public ServerRuntimeBuilder jndiDataSource(String location) {
-        this.dataSourceFactory = new FixedJNDIDataSourceFactory(location);
         return this;
     }
 
     /**
      * Sets a database URL for the default DataSource.
      */
-    public ServerRuntimeBuilder url(String url) {
+    public CayenneRuntimeBuilder url(String url) {
         this.jdbcUrl = url;
         return this;
     }
@@ -115,8 +108,7 @@ public class ServerRuntimeBuilder {
     /**
      * Sets a driver Java class for the default DataSource.
      */
-    public ServerRuntimeBuilder jdbcDriver(String driver) {
-        // TODO: guess the driver from URL
+    public CayenneRuntimeBuilder jdbcDriver(String driver) {
         this.jdbcDriver = driver;
         return this;
     }
@@ -127,12 +119,12 @@ public class ServerRuntimeBuilder {
      * @param validationQuery a SQL string that returns some result. It will be used to
      *                        validate connections in the pool.
      */
-    public ServerRuntimeBuilder validationQuery(String validationQuery) {
+    public CayenneRuntimeBuilder validationQuery(String validationQuery) {
         this.validationQuery = validationQuery;
         return this;
     }
 
-    public ServerRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
+    public CayenneRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
         this.maxQueueWaitTime = maxQueueWaitTime;
         return this;
     }
@@ -140,7 +132,7 @@ public class ServerRuntimeBuilder {
     /**
      * Sets a user name for the default DataSource.
      */
-    public ServerRuntimeBuilder user(String user) {
+    public CayenneRuntimeBuilder user(String user) {
         this.jdbcUser = user;
         return this;
     }
@@ -148,49 +140,49 @@ public class ServerRuntimeBuilder {
     /**
      * Sets a password for the default DataSource.
      */
-    public ServerRuntimeBuilder password(String password) {
+    public CayenneRuntimeBuilder password(String password) {
         this.jdbcPassword = password;
         return this;
     }
 
-    public ServerRuntimeBuilder minConnections(int minConnections) {
+    public CayenneRuntimeBuilder minConnections(int minConnections) {
         this.jdbcMinConnections = minConnections;
         return this;
     }
 
-    public ServerRuntimeBuilder maxConnections(int maxConnections) {
+    public CayenneRuntimeBuilder maxConnections(int maxConnections) {
         this.jdbcMaxConnections = maxConnections;
         return this;
     }
 
-    public ServerRuntimeBuilder addConfig(String configurationLocation) {
+    public CayenneRuntimeBuilder addConfig(String configurationLocation) {
         configs.add(configurationLocation);
         return this;
     }
 
-    public ServerRuntimeBuilder addConfigs(String... configurationLocations) {
+    public CayenneRuntimeBuilder addConfigs(String... configurationLocations) {
         if (configurationLocations != null) {
             configs.addAll(Arrays.asList(configurationLocations));
         }
         return this;
     }
 
-    public ServerRuntimeBuilder addConfigs(Collection<String> configurationLocations) {
+    public CayenneRuntimeBuilder addConfigs(Collection<String> configurationLocations) {
         configs.addAll(configurationLocations);
         return this;
     }
 
-    public ServerRuntimeBuilder addModule(Module module) {
+    public CayenneRuntimeBuilder addModule(Module module) {
         modules.add(module);
         return this;
     }
 
-    public ServerRuntimeBuilder addModules(Collection<Module> modules) {
+    public CayenneRuntimeBuilder addModules(Collection<Module> modules) {
         this.modules.addAll(modules);
         return this;
     }
 
-    public ServerRuntime build() {
+    public CayenneRuntime build() {
 
         Collection<Module> allModules = new ArrayList<>();
 
@@ -203,7 +195,7 @@ public class ServerRuntimeBuilder {
         // builder modules override default, auto-loaded and custom modules...
         allModules.addAll(builderModules());
 
-        return new ServerRuntime(allModules);
+        return new CayenneRuntime(allModules);
     }
 
     private Collection<? extends Module> autoLoadedModules() {

@@ -22,9 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -35,7 +35,7 @@ import org.junit.Test;
 public class EJBQLParser_CompileIT extends ServerCase {
 
 	@Inject
-	protected ServerRuntime runtime;
+	protected CayenneRuntime runtime;
 
 	private EJBQLParser parser;
 	private EntityResolver resolver;

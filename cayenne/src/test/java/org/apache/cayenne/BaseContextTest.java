@@ -19,7 +19,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;

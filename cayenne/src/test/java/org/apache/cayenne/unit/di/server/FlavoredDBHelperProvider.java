@@ -20,11 +20,11 @@ package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 
 public class FlavoredDBHelperProvider implements Provider<DBHelper> {
@@ -35,13 +35,13 @@ public class FlavoredDBHelperProvider implements Provider<DBHelper> {
     @Inject
     // injecting provider to make this provider independent from scoping of
     // ServerRuntime
-    protected Provider<ServerRuntime> serverRuntimeProvider;
+    protected Provider<CayenneRuntime> runtimeProvider;
 
     @Inject
     protected DbAdapter adapter;
 
     public DBHelper get() throws ConfigurationException {
-        DataChannel channel = serverRuntimeProvider.get().getChannel();
+        DataChannel channel = runtimeProvider.get().getChannel();
         DataMap firstMap = channel.getEntityResolver().getDataMaps().iterator().next();
         return new FlavoredDBHelper(dataSourceFactory.getSharedDataSource(), adapter.getQuotingStrategy(), firstMap);
     }

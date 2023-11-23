@@ -31,13 +31,13 @@ import java.util.Collection;
 /**
  * @since 4.1
  */
-public class ServerRuntimeProviderContextsSync extends ServerRuntimeProvider {
+public class CayenneRuntimeProviderContextsSync extends CayenneRuntimeProvider {
 
-    public ServerRuntimeProviderContextsSync(@Inject ServerCaseDataSourceFactory dataSourceFactory,
-                                             @Inject ServerCaseProperties properties,
-                                             @Inject ServerCaseExtraModules extraModulesProperties,
-                                             @Inject Provider<DbAdapter> dbAdapterProvider,
-                                             @Inject UnitDbAdapter unitDbAdapter) {
+    public CayenneRuntimeProviderContextsSync(@Inject ServerCaseDataSourceFactory dataSourceFactory,
+                                              @Inject ServerCaseProperties properties,
+                                              @Inject ServerCaseExtraModules extraModulesProperties,
+                                              @Inject Provider<DbAdapter> dbAdapterProvider,
+                                              @Inject UnitDbAdapter unitDbAdapter) {
         super(dataSourceFactory, properties, extraModulesProperties, dbAdapterProvider, unitDbAdapter);
     }
 

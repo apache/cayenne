@@ -19,9 +19,9 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.access.UnitTestDomain;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.DataChannelSyncStats;
 import org.apache.cayenne.unit.di.UnitTestClosure;
@@ -29,12 +29,12 @@ import org.apache.cayenne.unit.di.UnitTestClosure;
 public class ServerCaseDataChannelInterceptor implements DataChannelInterceptor {
 
     @Inject
-    // injecting provider to make this provider independent from scoping of ServerRuntime
-    protected Provider<ServerRuntime> serverRuntimeProvider;
+    // injecting provider to make this provider independent from scoping of CayenneRuntime
+    protected Provider<CayenneRuntime> runtimeProvider;
 
     public void runWithQueriesBlocked(UnitTestClosure closure) {
 
-        UnitTestDomain channel = (UnitTestDomain) serverRuntimeProvider
+        UnitTestDomain channel = (UnitTestDomain) runtimeProvider
                 .get()
                 .getChannel();
 
@@ -48,7 +48,7 @@ public class ServerCaseDataChannelInterceptor implements DataChannelInterceptor 
     }
 
     public int runWithQueryCounter(UnitTestClosure closure) {
-        UnitTestDomain channel = (UnitTestDomain) serverRuntimeProvider.get().getChannel();
+        UnitTestDomain channel = (UnitTestDomain) runtimeProvider.get().getChannel();
         ServerCaseDataNode node = (ServerCaseDataNode)channel.getDataNodes().iterator().next();
 
         int start = node.getQueriesCount();

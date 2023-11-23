@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -30,6 +29,7 @@ import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
 public class DataContextSQLTemplateIT extends ServerCase {
 
 	@Inject
-	private ServerRuntime runtime;
+	private CayenneRuntime runtime;
 
 	@Inject
 	protected DataContext context;

@@ -22,7 +22,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.di.Inject;
@@ -31,6 +30,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertSame;
 public class DataContextDecoratedStackIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Test
     public void testCommitDecorated() {

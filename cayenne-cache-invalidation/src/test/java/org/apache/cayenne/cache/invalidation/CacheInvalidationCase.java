@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.cache.invalidation;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.After;
@@ -28,7 +28,7 @@ import org.junit.Before;
 
 public abstract class CacheInvalidationCase {
 
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
 
     protected TableHelper e1;
 
@@ -56,8 +56,8 @@ public abstract class CacheInvalidationCase {
         };
     }
 
-    protected ServerRuntimeBuilder configureCayenne() {
-        return ServerRuntime.builder()
+    protected CayenneRuntimeBuilder configureCayenne() {
+        return CayenneRuntime.builder()
                 .addModule(b -> extend(CacheInvalidationModule.extend(b)))
                 .addModule(buildCustomModule())
                 .addConfig("cayenne-lifecycle.xml");

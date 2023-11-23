@@ -24,9 +24,9 @@ import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
@@ -54,7 +54,7 @@ public class VerticalInheritanceMultipleAttributesIT extends ServerCase {
     protected DBHelper dbHelper;
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
 
     TableHelper ivOtherTable, ivBaseTable, ivImplTable;
 

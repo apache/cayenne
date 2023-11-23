@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;

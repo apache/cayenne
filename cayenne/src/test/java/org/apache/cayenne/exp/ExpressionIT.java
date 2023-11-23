@@ -22,9 +22,9 @@ package org.apache.cayenne.exp;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
@@ -51,7 +51,7 @@ public class ExpressionIT extends ServerCase {
 	private ObjectContext context;
 
 	@Inject
-	private ServerRuntime runtime;
+	private CayenneRuntime runtime;
 
 	@Inject
     private UnitDbAdapter adapter;

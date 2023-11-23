@@ -20,9 +20,9 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.things.Bag;
@@ -51,7 +51,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
     protected DataContext context;
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Inject
     protected DBHelper dbHelper;

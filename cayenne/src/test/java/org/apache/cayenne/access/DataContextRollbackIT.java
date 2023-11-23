@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -44,7 +44,7 @@ public class DataContextRollbackIT extends ServerCase {
     private DataContext context;
 
     @Inject
-    private ServerRuntime serverRuntime;
+    private CayenneRuntime runtime;
 
     @Test
     public void testRollbackNew() {
@@ -86,7 +86,7 @@ public class DataContextRollbackIT extends ServerCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = (DataContext) serverRuntime.newContext();
+        DataContext freshContext = (DataContext) runtime.newContext();
         assertNotSame(this.context, freshContext);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
@@ -118,7 +118,7 @@ public class DataContextRollbackIT extends ServerCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been persisted to the db
 
-        DataContext freshContext = (DataContext) serverRuntime.newContext();
+        DataContext freshContext = (DataContext) runtime.newContext();
         assertNotSame(this.context, freshContext);
 
         List<?> queryResults = ObjectSelect.query(Artist.class)
@@ -151,7 +151,7 @@ public class DataContextRollbackIT extends ServerCase {
         assertEquals(1, artist.getPaintingArray().size());
         context.commitChanges();
 
-        DataContext freshContext = (DataContext) serverRuntime.newContext();
+        DataContext freshContext = (DataContext) runtime.newContext();
         assertNotSame(this.context, freshContext);
 
         List<?> queryResults = ObjectSelect.query(Painting.class)
@@ -182,7 +182,7 @@ public class DataContextRollbackIT extends ServerCase {
         // The commit should have made no changes, so
         // perform a fetch to ensure that this artist hasn't been deleted from the db
 
-        DataContext freshContext = (DataContext) serverRuntime.newContext();
+        DataContext freshContext = (DataContext) runtime.newContext();
         assertNotSame(this.context, freshContext);
 
         List<?> queryResults = ObjectSelect.query(Artist.class)
@@ -210,7 +210,7 @@ public class DataContextRollbackIT extends ServerCase {
         context.commitChanges();
 
         // .. and ensure that the correct data is in the db
-        DataContext freshContext = (DataContext) serverRuntime.newContext();
+        DataContext freshContext = (DataContext) runtime.newContext();
         assertNotSame(this.context, freshContext);
 
         List<?> queryResults = ObjectSelect.query(Artist.class)

@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertSame;
 public class NestedDataContextLocalCacheIT extends ServerCase {
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
 
     @Inject
     private DataContext context;

@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 public class ResultDirectiveIT extends ServerCase {
 
 	@Inject
-	private ServerRuntime runtime;
+	private CayenneRuntime runtime;
 
 	@Inject
 	protected DBHelper dbHelper;

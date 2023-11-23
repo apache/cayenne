@@ -45,6 +45,7 @@ CAY-2817 Pagination flow refactoring
 CAY-2819 DataContext.performIteratedQuery() method should be unified with iterator() method
 CAY-2821 Change development versioning schema
 CAY-2822 Rename `cayenne-server` module to `cayenne`
+CAY-2823 Merge `ServerRuntime` back to `CayenneRuntime` and deprecate it
 
 Bug Fixes:
 

@@ -25,7 +25,7 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
  * <p>DataMap XML file extension mechanics.</p>
  * <p>
  *     Can be used to enhance datamap.map.xml files with additional (really random) information.
- *     By default extensions not used by {@link org.apache.cayenne.configuration.server.ServerRuntime}
+ *     By default extensions not used by {@link org.apache.cayenne.runtime.CayenneRuntime}
  *     so they can safely store big chunks of data.
  * </p>
  * <p>

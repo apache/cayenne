@@ -16,27 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataSourceFactory;
 
-import org.apache.cayenne.access.DataDomain;
-import org.junit.Test;
+import javax.sql.DataSource;
 
-public class SyntheticNodeDataDomainProviderTest {
+/**
+ * @since 4.0
+ */
+class FixedDataSourceFactory implements DataSourceFactory {
 
-	@Test
-	public void testCreateSyntheticDataNodeName() {
+    private final DataSource dataSource;
 
-		DataDomain ddMock = mock(DataDomain.class);
+    public FixedDataSourceFactory(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
-		SyntheticNodeDataDomainProvider p = new SyntheticNodeDataDomainProvider();
-		assertEquals("cayenne", p.createSyntheticDataNodeName(ddMock));
-
-		when(ddMock.getName()).thenReturn("n");
-		assertEquals("n", p.createSyntheticDataNodeName(ddMock));
-	}
-
+    @Override
+    public DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception {
+        return dataSource;
+    }
 }

@@ -21,11 +21,11 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -45,7 +45,7 @@ public class BaseLoaderIT extends ServerCase {
     protected DbAdapter adapter;
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
 
     @Inject
     protected ServerCaseDataSourceFactory dataSourceFactory;

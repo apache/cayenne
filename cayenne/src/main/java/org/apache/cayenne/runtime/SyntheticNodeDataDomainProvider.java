@@ -16,12 +16,13 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.map.DataMap;
 
 /**
@@ -55,11 +56,10 @@ class SyntheticNodeDataDomainProvider extends DataDomainProvider {
 
 	protected String createSyntheticDataNodeName(DataDomain domain) {
 
-		// using Domain's name for the node name.. distinguishing nodes by name
-		// may be useful in case of multiple stacks used in the same
-		// transaction...
+		// using Domain's name for the node name..
+		// distinguishing nodes by name may be useful in case of multiple stacks used in the same transaction...
 
-		return domain.getName() != null ? domain.getName() : ServerRuntimeBuilder.DEFAULT_NAME;
+		return domain.getName() != null ? domain.getName() : CayenneRuntimeBuilder.DEFAULT_NAME;
 	}
 
 }

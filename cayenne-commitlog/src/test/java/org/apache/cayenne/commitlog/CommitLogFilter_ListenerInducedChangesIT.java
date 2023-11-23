@@ -29,8 +29,8 @@ import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.unit.AuditableServerCase;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
 import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -54,7 +54,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableServerCas
 	protected CommitLogListener mockListener;
 
 	@Override
-	protected ServerRuntimeBuilder configureCayenne() {
+	protected CayenneRuntimeBuilder configureCayenne() {
 		this.mockListener = mock(CommitLogListener.class);
 		return super.configureCayenne().addModule(
 				b -> CommitLogModule.extend(b).addListener(mockListener));

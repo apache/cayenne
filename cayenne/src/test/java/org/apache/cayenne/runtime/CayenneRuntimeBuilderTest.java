@@ -16,9 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.junit.After;
@@ -33,9 +34,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
-public class ServerRuntimeBuilderTest {
+public class CayenneRuntimeBuilderTest {
 
-	private ServerRuntime runtime;
+	private CayenneRuntime runtime;
 
 	@After
 	public void stopRuntime() {
@@ -52,12 +53,12 @@ public class ServerRuntimeBuilderTest {
 	public void test_NoLocation() {
 
 		// this is meaningless (no DataSource), but should work...
-		runtime = new ServerRuntimeBuilder(null).build();
+		runtime = new CayenneRuntimeBuilder(null).build();
 
 		List<String> locations = runtime.getInjector().getInstance(
 				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-		assertEquals(Arrays.asList(), locations);
+		assertEquals(List.of(), locations);
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(2, modules.size());
@@ -67,12 +68,12 @@ public class ServerRuntimeBuilderTest {
 	@Test
 	public void test_SingleLocation() {
 
-		runtime = new ServerRuntimeBuilder(null).addConfig("xxxx").build();
+		runtime = new CayenneRuntimeBuilder(null).addConfig("xxxx").build();
 
 		List<String> locations = runtime.getInjector().getInstance(
 				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-		assertEquals(Arrays.asList("xxxx"), locations);
+		assertEquals(List.of("xxxx"), locations);
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(2, modules.size());
@@ -83,7 +84,7 @@ public class ServerRuntimeBuilderTest {
 	@Test
 	public void test_MultipleLocations() {
 
-		runtime = new ServerRuntimeBuilder(null).addConfigs("xxxx", "yyyy").build();
+		runtime = new CayenneRuntimeBuilder(null).addConfigs("xxxx", "yyyy").build();
 
 		List<String> locations = runtime.getInjector().getInstance(
 				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
@@ -100,7 +101,7 @@ public class ServerRuntimeBuilderTest {
 
 		Module m = mock(Module.class);
 
-		runtime = new ServerRuntimeBuilder(null).addModule(m).build();
+		runtime = new CayenneRuntimeBuilder(null).addModule(m).build();
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
@@ -111,13 +112,13 @@ public class ServerRuntimeBuilderTest {
 
 	@Test
 	public void test_UnnamedDomain_NoLocation() {
-		runtime = new ServerRuntimeBuilder(null).build();
+		runtime = new CayenneRuntimeBuilder(null).build();
 		assertEquals("cayenne", runtime.getDataDomain().getName());
 	}
 
 	@Test
 	public void test_NamedDomain_NoLocation() {
-		runtime = new ServerRuntimeBuilder("myd").build();
+		runtime = new CayenneRuntimeBuilder("myd").build();
 		assertEquals("myd", runtime.getDataDomain().getName());
 	}
 }

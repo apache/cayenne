@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -39,10 +39,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ServerRuntimeIT extends ServerCase {
+public class CayenneRuntimeIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Inject
     private ObjectContext context;

@@ -22,6 +22,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
  * @since 4.0
+ * @deprecated since 5.0
  */
 @Deprecated
 class FixedJNDIDataSourceFactory extends JNDIDataSourceFactory {

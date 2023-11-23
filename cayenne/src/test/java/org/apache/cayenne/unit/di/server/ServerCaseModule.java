@@ -37,7 +37,6 @@ import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
 import org.apache.cayenne.configuration.server.ServerModuleExtender;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -89,6 +88,7 @@ import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.DB2UnitDbAdapter;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
@@ -131,10 +131,10 @@ public class ServerCaseModule implements Module {
     public void configure(Binder binder) {
 
         // these are the objects injectable in unit tests that subclass from
-        // ServerCase. Note that ServerRuntimeProvider creates ServerRuntime
+        // ServerCase. Note that CayenneRuntimeProvider creates CayenneRuntime
         // instances complete with their own DI injectors, independent of the
-        // unit test injector. ServerRuntime injector contents are customized
-        // inside ServerRuntimeProvider.
+        // unit test injector. CayenneRuntime injector contents are customized
+        // inside CayenneRuntimeProvider.
 
         binder.bindMap(String.class, UnitDbAdapterProvider.TEST_ADAPTERS_MAP)
                 .put(FirebirdAdapter.class.getName(), FirebirdUnitDbAdapter.class.getName())
@@ -263,7 +263,7 @@ public class ServerCaseModule implements Module {
         binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).in(testScope);
         binder.bind(ServerCaseProperties.class).to(ServerCaseProperties.class).in(testScope);
         binder.bind(ServerCaseExtraModules.class).to(ServerCaseExtraModules.class).in(testScope);
-        binder.bind(ServerRuntime.class).toProvider(ServerRuntimeProvider.class).in(testScope);
+        binder.bind(CayenneRuntime.class).toProvider(CayenneRuntimeProvider.class).in(testScope);
         binder.bind(ObjectContext.class).toProvider(ServerCaseObjectContextProvider.class).withoutScope();
         binder.bind(DataContext.class).toProvider(ServerCaseDataContextProvider.class).withoutScope();
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class).in(testScope);

@@ -44,6 +44,8 @@ within a lambda that produces a Module, or within an app Module.
 * Per CAY-2822 `cayenne-server` module is renamed to `cayenne`, so you need to change
 that accordingly in your build scripts
 
+* Per CAY-2823 `ServerRuntime` is deprecated. You should change your code to use `org.apache.cayenne.runtime.CayenneRuntime` instead.
+
 UPGRADING TO 4.2.M2
 
 * Per CAY-2659 All batch translators (`InsertBatchTranslator`, `UpdateBatchTranslator`, etc.) are updated to the new SQLBuilder utility.

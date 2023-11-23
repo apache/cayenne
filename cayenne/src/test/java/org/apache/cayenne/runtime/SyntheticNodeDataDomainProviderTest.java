@@ -16,32 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration;
+package org.apache.cayenne.runtime;
 
-import org.apache.cayenne.di.Injector;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.apache.cayenne.access.DataDomain;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
+public class SyntheticNodeDataDomainProviderTest {
 
-public class CayenneRuntimeTest {
+	@Test
+	public void testCreateSyntheticDataNodeName() {
 
-    @Test
-    public void testBindThreadInjector() {
+		DataDomain ddMock = mock(DataDomain.class);
 
-        Injector injector = mock(Injector.class);
+		SyntheticNodeDataDomainProvider p = new SyntheticNodeDataDomainProvider();
+		assertEquals("cayenne", p.createSyntheticDataNodeName(ddMock));
 
-        assertNull(CayenneRuntime.getThreadInjector());
+		when(ddMock.getName()).thenReturn("n");
+		assertEquals("n", p.createSyntheticDataNodeName(ddMock));
+	}
 
-        try {
-            CayenneRuntime.bindThreadInjector(injector);
-            assertSame(injector, CayenneRuntime.getThreadInjector());
-        }
-        finally {
-            CayenneRuntime.bindThreadInjector(null);
-        }
-
-        assertNull(CayenneRuntime.getThreadInjector());
-    }
 }

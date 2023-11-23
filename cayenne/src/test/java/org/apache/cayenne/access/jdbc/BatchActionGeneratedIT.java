@@ -21,12 +21,12 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 public class BatchActionGeneratedIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Inject
     private AdhocObjectFactory objectFactory;

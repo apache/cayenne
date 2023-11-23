@@ -27,7 +27,6 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.configuration.server.ServerModuleExtender;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -44,6 +43,7 @@ import org.apache.cayenne.event.MockEventBridgeProvider;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.Slf4jJdbcEventLogger;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -62,7 +62,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
 
     @Test
     public void testGetDataRowStore() {
-        ServerRuntime runtime = getUnitTestInjector().getInstance(ServerRuntime.class);
+        CayenneRuntime runtime = getUnitTestInjector().getInstance(CayenneRuntime.class);
         DataRowStore dataStore = runtime.getInjector().getInstance(DataRowStoreFactory.class)
                 .createDataRowStore("test");
 

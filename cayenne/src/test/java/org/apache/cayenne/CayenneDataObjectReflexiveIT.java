@@ -19,8 +19,8 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.reflexive.Other;
 import org.apache.cayenne.testdo.reflexive.Reflexive;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -37,7 +37,7 @@ public class CayenneDataObjectReflexiveIT extends ServerCase {
     private ObjectContext context;
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Test
     public void addReflexiveParentAndChild() {

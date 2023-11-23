@@ -18,17 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Module;
-import org.apache.cayenne.tx.TransactionDescriptor;
-import org.apache.cayenne.tx.TransactionListener;
-import org.apache.cayenne.tx.TransactionManager;
-import org.apache.cayenne.tx.TransactionalOperation;
+import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Object representing Cayenne stack. Serves as an entry point to Cayenne for user applications and a factory of ObjectContexts.
@@ -37,166 +32,40 @@ import java.util.Collection;
  * ServerRuntime is the default Cayenne stack that you should be using in all apps with the exception of client-side ROP.</p>
  *
  * @since 3.1
+ * @deprecated since 5.0, use {@link CayenneRuntime} class instead
  */
+@Deprecated(forRemoval = true)
 public class ServerRuntime extends CayenneRuntime {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerRuntime.class);
+
     /**
-     * Creates a builder of ServerRuntime.
+     * Creates a builder of CayenneRuntime.
      *
-     * @return a builder of ServerRuntime.
+     * @return a builder of CayenneRuntime.
      * @since 4.0
+     * @deprecated since 5.0, use {@link CayenneRuntime#builder()} instead
      */
-    public static ServerRuntimeBuilder builder() {
-        return new ServerRuntimeBuilder(null);
+    @Deprecated
+    public static CayenneRuntimeBuilder builder() {
+        LOGGER.warn("ServerRuntime is deprecated, use CayenneRuntime instead");
+        return CayenneRuntime.builder();
     }
 
     /**
-     * Creates a builder of ServerRuntime.
+     * Creates a builder of CayenneRuntime.
      *
      * @param name optional symbolic name of the created runtime.
-     * @return a named builder of ServerRuntime.
+     * @return a named builder of CayenneRuntime.
+     * @deprecated since 5.0, use {@link CayenneRuntime#builder(String)} instead
      */
-    public static ServerRuntimeBuilder builder(String name) {
-        return new ServerRuntimeBuilder(name);
+    @Deprecated
+    public static CayenneRuntimeBuilder builder(String name) {
+        LOGGER.warn("ServerRuntime is deprecated, use CayenneRuntime instead");
+        return CayenneRuntime.builder(name);
     }
 
-    /**
-     * Creates a server runtime configuring it with a standard set of services
-     * contained in {@link ServerModule}. CayenneServerModule is created with
-     * one or more 'configurationLocations'. An optional array of extra modules
-     * may contain service overrides and/or user services.
-     *
-     * @since 4.0
-     */
-    protected ServerRuntime(Collection<Module> modules) {
-        super(modules);
-    }
-
-    /**
-     * Runs provided operation wrapped in a single transaction. Transaction
-     * handling delegated to the internal {@link TransactionManager}. Nested
-     * calls to 'performInTransaction' are safe and attached to the same
-     * in-progress transaction. TransactionalOperation can be some arbitrary
-     * user code, which most often than not will consist of multiple Cayenne
-     * operations.
-     *
-     * @since 4.0
-     */
-    public <T> T performInTransaction(TransactionalOperation<T> op) {
-        TransactionManager tm = injector.getInstance(TransactionManager.class);
-        return tm.performInTransaction(op);
-    }
-
-    /**
-     * Runs provided operation wrapped in a single transaction. Transaction
-     * handling delegated to the internal {@link TransactionManager}. Nested
-     * calls to 'performInTransaction' are safe and attached to the same
-     * in-progress transaction. TransactionalOperation can be some arbitrary
-     * user code, which most often than not will consist of multiple Cayenne
-     * operations.
-     *
-     * @since 4.0
-     */
-    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback) {
-        TransactionManager tm = injector.getInstance(TransactionManager.class);
-        return tm.performInTransaction(op, callback);
-    }
-
-    /**
-     * Runs provided operation wrapped in a single transaction. Transaction
-     * handling delegated to the internal {@link TransactionManager}. Nested
-     * calls to 'performInTransaction' are safe and attached to the same
-     * in-progress transaction. TransactionalOperation can be some arbitrary
-     * user code, which most often than not will consist of multiple Cayenne
-     * operations.
-     *
-     * @param op         an operation to perform within the transaction.
-     * @param descriptor describes additional transaction parameters
-     * @param <T> result type
-     * @return a value returned by the "op" operation.
-     *
-     * @since 4.2
-     */
-    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionDescriptor descriptor) {
-        TransactionManager tm = injector.getInstance(TransactionManager.class);
-        return tm.performInTransaction(op, descriptor);
-    }
-
-    /**
-     * Runs provided operation wrapped in a single transaction. Transaction
-     * handling delegated to the internal {@link TransactionManager}. Nested
-     * calls to 'performInTransaction' are safe and attached to the same
-     * in-progress transaction. TransactionalOperation can be some arbitrary
-     * user code, which most often than not will consist of multiple Cayenne
-     * operations.
-     *
-     * @param op         an operation to perform within the transaction.
-     * @param callback   a callback to notify as transaction progresses through stages.
-     * @param descriptor describes additional transaction parameters
-     * @param <T> returned value type
-     * @return a value returned by the "op" operation.
-     *
-     * @since 4.2
-     */
-    public <T> T performInTransaction(TransactionalOperation<T> op, TransactionListener callback, TransactionDescriptor descriptor) {
-        TransactionManager tm = injector.getInstance(TransactionManager.class);
-        return tm.performInTransaction(op, callback, descriptor);
-    }
-
-    /**
-     * Returns the main runtime DataDomain. Note that by default the returned
-     * DataDomain is the same as the main DataChannel returned by
-     * {@link #getChannel()}. Although users may redefine DataChannel provider
-     * in the DI registry, for instance to decorate this DataDomain with a
-     * custom wrapper.
-     */
-    public DataDomain getDataDomain() {
-        return injector.getInstance(DataDomain.class);
-    }
-
-    /**
-     * Returns a default DataSource for this runtime. If no default DataSource
-     * exists, an exception is thrown.
-     *
-     * @since 4.0
-     */
-    public DataSource getDataSource() {
-        DataDomain domain = getDataDomain();
-        DataNode defaultNode = domain.getDefaultNode();
-        if (defaultNode == null) {
-
-            int s = domain.getDataNodes().size();
-            if (s == 0) {
-                throw new IllegalStateException("No DataSources configured");
-            } else {
-                throw new IllegalArgumentException(
-                        "No default DataSource configured. You can get explicitly named DataSource by using 'getDataSource(String)'");
-            }
-        }
-
-        return defaultNode.getDataSource();
-    }
-
-    /**
-     * Provides access to the JDBC DataSource assigned to a given DataNode. A
-     * null argument will work if there's only one DataNode configured.
-     * <p>
-     * Normally Cayenne applications don't need to access DataSource or any
-     * other JDBC code directly, however in some unusual conditions it may be
-     * needed, and this method provides a shortcut to raw JDBC.
-     */
-    public DataSource getDataSource(String dataNodeName) {
-        DataDomain domain = getDataDomain();
-
-        if (dataNodeName == null) {
-            return getDataSource();
-        }
-
-        DataNode node = domain.getDataNode(dataNodeName);
-        if (node == null) {
-            throw new IllegalArgumentException("Unknown DataNode name: " + dataNodeName);
-        }
-
-        return node.getDataSource();
+    private ServerRuntime() {
+        super(Collections.emptyList());
     }
 }

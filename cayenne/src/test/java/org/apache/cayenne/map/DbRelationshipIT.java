@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertSame;
 public class DbRelationshipIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     protected DbEntity artistEnt;
     protected DbEntity paintingEnt;

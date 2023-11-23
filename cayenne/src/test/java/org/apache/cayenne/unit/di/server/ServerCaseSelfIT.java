@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -32,10 +32,10 @@ import static org.junit.Assert.assertSame;
 public class ServerCaseSelfIT extends ServerCase {
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
     
     @Inject
-    protected Provider<ServerRuntime> runtimeProvider;
+    protected Provider<CayenneRuntime> runtimeProvider;
 
     @Inject
     protected ServerCaseProperties properties;
@@ -46,7 +46,7 @@ public class ServerCaseSelfIT extends ServerCase {
         assertNotNull(properties);
         assertEquals(CayenneProjects.TESTMAP_PROJECT, properties.getConfigurationLocation());
 
-        ServerRuntime local = this.runtime;
+        CayenneRuntime local = this.runtime;
         assertNotNull(local);
         assertSame(local, runtimeProvider.get());
 

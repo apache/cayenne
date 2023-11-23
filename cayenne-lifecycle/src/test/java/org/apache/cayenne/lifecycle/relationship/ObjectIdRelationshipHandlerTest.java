@@ -20,11 +20,11 @@ package org.apache.cayenne.lifecycle.relationship;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.lifecycle.db.E1;
 import org.apache.cayenne.lifecycle.db.UuidRoot1;
 import org.apache.cayenne.lifecycle.id.IdCoder;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.After;
@@ -37,14 +37,14 @@ import static org.junit.Assert.assertSame;
 
 public class ObjectIdRelationshipHandlerTest {
 
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     private TableHelper rootTable;
     private TableHelper e1Table;
 
     @Before
     public void setUp() throws Exception {
-        runtime = ServerRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
+        runtime = CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml").build();
 
         // a filter is required to invalidate root objects after commit
         ObjectIdRelationshipFilter filter = new ObjectIdRelationshipFilter();

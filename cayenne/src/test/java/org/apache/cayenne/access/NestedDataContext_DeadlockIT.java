@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
@@ -44,7 +44,7 @@ public class NestedDataContext_DeadlockIT extends ServerCase {
 	private DataContext parent;
 
 	@Inject
-	private ServerRuntime runtime;
+	private CayenneRuntime runtime;
 
 	@Inject
 	protected DBHelper dbHelper;

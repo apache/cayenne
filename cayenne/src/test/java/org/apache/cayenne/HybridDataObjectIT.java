@@ -20,11 +20,11 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.hybrid.HybridEntity1;
 import org.apache.cayenne.testdo.hybrid.HybridEntity2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -47,7 +47,7 @@ public class HybridDataObjectIT extends ServerCase {
     private DataContext context;
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     @Test
     public void testCreateNew() {

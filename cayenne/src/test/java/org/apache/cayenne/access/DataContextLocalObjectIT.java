@@ -22,8 +22,8 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -57,7 +57,7 @@ public class DataContextLocalObjectIT extends ServerCase {
     private DataChannelInterceptor interceptor;
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     private TableHelper tArtist;
 

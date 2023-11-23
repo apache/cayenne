@@ -17,7 +17,7 @@
 Note that the collection keys below are defined as constants in `org.apache.cayenne.configuration.Constants` interface.
 
 [#serviceCollections.table.table-bordered]
-.Service Collection Keys Present in ServerRuntime
+.Service Collection Keys Present in CayenneRuntime
 [cols="3,2,3"]
 |===
 |Collection Property |Type |Description

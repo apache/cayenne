@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.runtime.CayenneRuntime;
 
 public class WeakReferenceStrategyServerCaseModule extends ServerCaseModule {
 
@@ -31,6 +31,6 @@ public class WeakReferenceStrategyServerCaseModule extends ServerCaseModule {
     @Override
     public void configure(Binder binder){
         super.configure(binder);
-        binder.bind(ServerRuntime.class).toProvider(WeakReferenceStrategyServerRuntimeProvider.class).in(testScope);
+        binder.bind(CayenneRuntime.class).toProvider(WeakReferenceStrategyCayenneRuntimeProvider.class).in(testScope);
     }
 }

@@ -19,9 +19,9 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -53,7 +53,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
     protected DataChannelInterceptor queryInterceptor;
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
     
     private TableHelper tArtist;
     private TableHelper tPainting;

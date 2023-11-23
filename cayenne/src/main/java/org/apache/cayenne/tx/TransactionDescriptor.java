@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  *  <li> custom connection to use in a transaction
  * </ul>
  * @see TransactionManager#performInTransaction(TransactionalOperation, TransactionDescriptor)
- * @see org.apache.cayenne.configuration.server.ServerRuntime#performInTransaction(TransactionalOperation, TransactionDescriptor)
+ * @see org.apache.cayenne.runtime.CayenneRuntime#performInTransaction(TransactionalOperation, TransactionDescriptor)
  * @since 4.1
  */
 public class TransactionDescriptor {

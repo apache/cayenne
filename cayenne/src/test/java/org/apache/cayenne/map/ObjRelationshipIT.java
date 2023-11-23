@@ -28,10 +28,10 @@ import java.util.List;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
 public class ObjRelationshipIT extends ServerCase {
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
 
     private DbEntity artistDBEntity;
     private DbEntity artistExhibitDBEntity;

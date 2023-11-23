@@ -70,11 +70,11 @@ public class CustomInvalidationHandler implements InvalidationHandler {
 }
 ----
 
-Now we'll set up it's usage by `ServerRuntime`:
+Now we'll set up it's usage by `CayenneRuntime`:
 
 [source, java]
 ----
-ServerRuntime.builder()
+CayenneRuntime.builder()
         .addModule(CacheInvalidationModule.extend()
                 // optionally you can disable @CacheGroups annotation processing
                 .noCacheGroupsHandler()

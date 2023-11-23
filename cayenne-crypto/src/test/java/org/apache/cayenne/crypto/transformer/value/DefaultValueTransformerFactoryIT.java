@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public class DefaultValueTransformerFactoryIT {
 
     @BeforeClass
     public static void beforeClass() throws Exception {
-        ServerRuntime runtime = ServerRuntime.builder().addConfig("cayenne-crypto.xml").build();
+        CayenneRuntime runtime = CayenneRuntime.builder().addConfig("cayenne-crypto.xml").build();
         t1 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE1");
         t2 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE2");
         t3 = runtime.getChannel().getEntityResolver().getDbEntity("TABLE3");

@@ -20,9 +20,10 @@
 package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.di.spi.ModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 
 /**
- * This interface implementations will be used by {@link ServerRuntimeBuilder} to auto-load server modules.
+ * This interface implementations will be used by {@link CayenneRuntimeBuilder} to auto-load server modules.
  * @since 4.0
  */
 public interface CayenneServerModuleProvider extends ModuleProvider {

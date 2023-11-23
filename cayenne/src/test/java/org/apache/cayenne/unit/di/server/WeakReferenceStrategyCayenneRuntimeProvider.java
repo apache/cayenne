@@ -29,13 +29,13 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class WeakReferenceStrategyServerRuntimeProvider extends ServerRuntimeProvider {
+public class WeakReferenceStrategyCayenneRuntimeProvider extends CayenneRuntimeProvider {
 
-    public WeakReferenceStrategyServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
-                                                      @Inject ServerCaseProperties properties,
-                                                      @Inject ServerCaseExtraModules extraModulesProperties,
-                                                      @Inject Provider<DbAdapter> dbAdapterProvider,
-                                                      @Inject UnitDbAdapter unitDbAdapter) {
+    public WeakReferenceStrategyCayenneRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
+                                                       @Inject ServerCaseProperties properties,
+                                                       @Inject ServerCaseExtraModules extraModulesProperties,
+                                                       @Inject Provider<DbAdapter> dbAdapterProvider,
+                                                       @Inject UnitDbAdapter unitDbAdapter) {
         super(dataSourceFactory, properties, extraModulesProperties, dbAdapterProvider, unitDbAdapter);
     }
 

@@ -98,7 +98,7 @@ A listener is simply some application class that has one or more annotated callb
 }
 ----
 
-Notice that the example above contains an annotation on the callback method that defines the type of the event this method should be called for. Before we go into annotation details, we'll show how to create and register a listener with Cayenne. It is always a user responsibility to register desired application listeners, usually right after ServerRuntime is started. Here is an example:
+Notice that the example above contains an annotation on the callback method that defines the type of the event this method should be called for. Before we go into annotation details, we'll show how to create and register a listener with Cayenne. It is always a user responsibility to register desired application listeners, usually right after CayenneRuntime is started. Here is an example:
 
 First let's define 2 simple listeners.
 
@@ -130,7 +130,7 @@ Ignore the annotations for a minute. The important point here is that the listen
 
 [source, Java]
 ----
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
        // ..
        .addModule(binder ->
             ServerModule.contributeDomainListeners()
@@ -254,7 +254,7 @@ Now since this is both a filter and a listener, it needs to be registered as suc
 [source, Java]
 ----
 // this will also add filter as a listener
-ServerRuntime runtime = ServerRuntime.builder()
+CayenneRuntime runtime = CayenneRuntime.builder()
         // ..
         .addModule(b ->
                 ServerModule.contributeDomainSyncFilters(b)

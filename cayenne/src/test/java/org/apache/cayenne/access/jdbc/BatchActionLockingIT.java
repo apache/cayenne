@@ -26,7 +26,6 @@ import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
@@ -35,6 +34,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.mock;
 public class BatchActionLockingIT extends ServerCase {
 
 	@Inject
-	protected ServerRuntime runtime;
+	protected CayenneRuntime runtime;
 
 	@Inject
 	private Injector injector;

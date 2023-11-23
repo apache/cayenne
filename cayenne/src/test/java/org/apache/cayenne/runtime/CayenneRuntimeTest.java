@@ -16,15 +16,14 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
@@ -36,10 +35,8 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -47,7 +44,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ServerRuntimeTest {
+public class CayenneRuntimeTest {
 
     @Test
     public void testPerformInTransaction() {
@@ -59,7 +56,7 @@ public class ServerRuntimeTest {
 
         Module module = binder -> binder.bind(TransactionFactory.class).toInstance(txFactory);
 
-        ServerRuntime runtime = ServerRuntime.builder().addConfig("xxxx").addModule(module).build();
+        CayenneRuntime runtime = CayenneRuntime.builder().addConfig("xxxx").addModule(module).build();
         try {
 
             final Object expectedResult = new Object();
@@ -86,7 +83,7 @@ public class ServerRuntimeTest {
 
         Module m2 = binder -> configured[1] = true;
 
-        ServerRuntime runtime = new ServerRuntime(asList(m1, m2));
+        CayenneRuntime runtime = new CayenneRuntime(asList(m1, m2));
 
         Collection<Module> modules = runtime.getModules();
         assertEquals(2, modules.size());
@@ -118,7 +115,7 @@ public class ServerRuntimeTest {
 
         Module module = binder -> binder.bind(DataChannel.class).toInstance(channel);
 
-        ServerRuntime runtime = new ServerRuntime(Collections.singleton(module));
+        CayenneRuntime runtime = new CayenneRuntime(Collections.singleton(module));
         assertSame(channel, runtime.getChannel());
     }
 
@@ -138,8 +135,26 @@ public class ServerRuntimeTest {
 
         Module module = binder -> binder.bind(ObjectContextFactory.class).toInstance(factory);
 
-        ServerRuntime runtime = new ServerRuntime(Collections.singleton(module));
+        CayenneRuntime runtime = new CayenneRuntime(Collections.singleton(module));
         assertSame(context, runtime.newContext());
         assertSame(context, runtime.newContext());
+    }
+
+    @Test
+    public void testBindThreadInjector() {
+
+        Injector injector = mock(Injector.class);
+
+        assertNull(CayenneRuntime.getThreadInjector());
+
+        try {
+            CayenneRuntime.bindThreadInjector(injector);
+            assertSame(injector, CayenneRuntime.getThreadInjector());
+        }
+        finally {
+            CayenneRuntime.bindThreadInjector(null);
+        }
+
+        assertNull(CayenneRuntime.getThreadInjector());
     }
 }

@@ -24,12 +24,12 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
@@ -67,7 +67,7 @@ public class NumericTypesIT extends ServerCase {
     protected DataContext context1;
 
     @Inject
-    protected ServerRuntime runtime;
+    protected CayenneRuntime runtime;
 
     @Inject
     protected DBHelper dbHelper;

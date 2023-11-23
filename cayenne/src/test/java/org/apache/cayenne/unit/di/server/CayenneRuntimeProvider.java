@@ -23,19 +23,19 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.DataNodeFactory;
 import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class ServerRuntimeProvider implements Provider<ServerRuntime> {
+public class CayenneRuntimeProvider implements Provider<CayenneRuntime> {
 
     private ServerCaseProperties properties;
     private ServerCaseExtraModules extraModules;
@@ -43,11 +43,11 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
     private UnitDbAdapter unitDbAdapter;
     private Provider<DbAdapter> dbAdapterProvider;
 
-    public ServerRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
-            @Inject ServerCaseProperties properties,
-            @Inject ServerCaseExtraModules extraModules,
-            @Inject Provider<DbAdapter> dbAdapterProvider,
-            @Inject UnitDbAdapter unitDbAdapter) {
+    public CayenneRuntimeProvider(@Inject ServerCaseDataSourceFactory dataSourceFactory,
+                                  @Inject ServerCaseProperties properties,
+                                  @Inject ServerCaseExtraModules extraModules,
+                                  @Inject Provider<DbAdapter> dbAdapterProvider,
+                                  @Inject UnitDbAdapter unitDbAdapter) {
 
         this.dataSourceFactory = dataSourceFactory;
         this.properties = properties;
@@ -57,7 +57,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
     }
 
     @Override
-    public ServerRuntime get() throws ConfigurationException {
+    public CayenneRuntime get() throws ConfigurationException {
 
         String configurationLocation = properties.getConfigurationLocation();
         if (configurationLocation == null) {
@@ -68,7 +68,7 @@ public class ServerRuntimeProvider implements Provider<ServerRuntime> {
         Collection<Module> modules = new ArrayList<>(getExtraModules());
         modules.addAll(extraModules.getExtraModules());
 
-        return ServerRuntime.builder()
+        return CayenneRuntime.builder()
                         .addConfig(configurationLocation)
                         .addModules(modules)
                         .build();

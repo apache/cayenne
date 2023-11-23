@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -43,7 +43,7 @@ public class DbGeneratorIT extends ServerCase {
     private DbAdapter adapter;
 
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
     
     @Inject
     private JdbcEventLogger logger;

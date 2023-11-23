@@ -20,7 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.exp.ValueInjector;

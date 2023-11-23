@@ -20,7 +20,6 @@ package org.apache.cayenne.dbsync.merge;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.DbSyncModule;
@@ -43,6 +42,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
@@ -72,11 +72,11 @@ public abstract class MergeCase extends ServerCase {
     @Inject
     protected DataNode node;
     protected DataMap map;
-    private Logger logger = LoggerFactory.getLogger(MergeCase.class);
+    private final Logger logger = LoggerFactory.getLogger(MergeCase.class);
     @Inject
     private DBHelper dbHelper;
     @Inject
-    private ServerRuntime runtime;
+    private CayenneRuntime runtime;
     @Inject
     protected UnitDbAdapter accessStackAdapter;
     @Inject

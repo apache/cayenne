@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.commitlog.unit;
 
-import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
+import org.apache.cayenne.runtime.CayenneRuntime;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.junit.After;
@@ -27,7 +27,7 @@ import org.junit.Before;
 
 public class FlattenedServerCase {
 
-	protected ServerRuntime runtime;
+	protected CayenneRuntime runtime;
 
 	protected TableHelper e3;
 	protected TableHelper e4;
@@ -48,8 +48,8 @@ public class FlattenedServerCase {
 
 	}
 
-	protected ServerRuntimeBuilder configureCayenne() {
-		return ServerRuntime.builder().addConfig("cayenne-lifecycle.xml");
+	protected CayenneRuntimeBuilder configureCayenne() {
+		return CayenneRuntime.builder().addConfig("cayenne-lifecycle.xml");
 	}
 
 	@After

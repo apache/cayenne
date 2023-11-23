@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -44,18 +44,18 @@ import org.junit.Test;
 
 @SuppressWarnings("deprecation")
 @UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ServerRuntimeBuilderIT extends ServerCase {
+public class CayenneRuntimeBuilderIT extends ServerCase {
 
 	@Inject
 	private DBHelper dbHelper;
 
 	@Inject
-	private ServerRuntime runtime;
+	private CayenneRuntime runtime;
 
 	@Inject
 	private DataSourceDescriptor dsi;
 
-	private ServerRuntime localRuntime;
+	private CayenneRuntime localRuntime;
 	private DataSource dataSource;
 
 	@After
@@ -82,7 +82,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	@Test
 	public void testConfigFree_WithDBParams() {
 
-		localRuntime = new ServerRuntimeBuilder(null).jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl())
+		localRuntime = new CayenneRuntimeBuilder(null).jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl())
 				.password(dsi.getPassword()).user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
 
 		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
@@ -92,7 +92,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	@Test
 	public void tesConfigFree_WithDBParams() {
 
-		localRuntime = new ServerRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT)
+		localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT)
 				.jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl()).password(dsi.getPassword())
 				.user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
 
@@ -109,7 +109,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	@Test
 	public void testConfigFree_WithDataSource() {
 
-		localRuntime = new ServerRuntimeBuilder(null).dataSource(dataSource).build();
+		localRuntime = new CayenneRuntimeBuilder(null).dataSource(dataSource).build();
 
 		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
 		assertEquals(2, result.size());
@@ -118,7 +118,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	@Test
 	public void testNoNodeConfig_WithDataSource() {
 
-		localRuntime = new ServerRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).dataSource(dataSource)
+		localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).dataSource(dataSource)
 				.build();
 
 		DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
@@ -133,7 +133,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 
 	@Test
 	public void test_UnnamedDomain_MultiLocation() {
-		localRuntime = new ServerRuntimeBuilder(null).addConfigs(CayenneProjects.TESTMAP_PROJECT,
+		localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.TESTMAP_PROJECT,
 				CayenneProjects.EMBEDDABLE_PROJECT).build();
 
 		assertEquals("cayenne", localRuntime.getDataDomain().getName());
@@ -141,7 +141,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 
 	@Test
 	public void test_NamedDomain_MultiLocation() {
-		localRuntime = new ServerRuntimeBuilder("myd").addConfigs(CayenneProjects.TESTMAP_PROJECT,
+		localRuntime = new CayenneRuntimeBuilder("myd").addConfigs(CayenneProjects.TESTMAP_PROJECT,
 				CayenneProjects.EMBEDDABLE_PROJECT).build();
 		assertEquals("myd", localRuntime.getDataDomain().getName());
 	}
@@ -151,7 +151,7 @@ public class ServerRuntimeBuilderIT extends ServerCase {
 	 */
 	@Test
 	public void test_UnnamedDomain_CustomNameProjectFile() {
-		localRuntime = new ServerRuntimeBuilder(null).addConfigs(CayenneProjects.CUSTOM_NAME_PROJECT).build();
+		localRuntime = new CayenneRuntimeBuilder(null).addConfigs(CayenneProjects.CUSTOM_NAME_PROJECT).build();
 		assertEquals("cayenne", localRuntime.getDataDomain().getName());
 
 		ObjectContext context = localRuntime.newContext();

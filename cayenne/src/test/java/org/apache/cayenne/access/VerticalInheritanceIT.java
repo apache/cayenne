@@ -20,12 +20,12 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.*;
@@ -53,7 +53,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	protected DBHelper dbHelper;
 
 	@Inject
-	protected ServerRuntime runtime;
+	protected CayenneRuntime runtime;
 
     @Test
 	public void testInsert_Root() throws Exception {

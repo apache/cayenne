@@ -25,8 +25,8 @@ import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.db.AuditableChild1x;
 import org.apache.cayenne.commitlog.model.*;
 import org.apache.cayenne.commitlog.unit.AuditableServerCase;
-import org.apache.cayenne.configuration.server.ServerRuntimeBuilder;
 import org.apache.cayenne.query.SelectById;
+import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -43,7 +43,7 @@ public class CommitLogFilterIT extends AuditableServerCase {
     protected CommitLogListener mockListener;
 
     @Override
-    protected ServerRuntimeBuilder configureCayenne() {
+    protected CayenneRuntimeBuilder configureCayenne() {
         this.mockListener = mock(CommitLogListener.class);
         return super.configureCayenne()
                 .addModule(b -> CommitLogModule.extend(b).addListener(mockListener));
