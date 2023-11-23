@@ -23,7 +23,6 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -34,7 +33,7 @@ import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -44,7 +43,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class MappedQueryIT extends ServerCase {
 
     @Inject

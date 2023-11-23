@@ -32,14 +32,14 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataObjectDescriptorFactoryIT extends ServerCase {
 
     @Inject

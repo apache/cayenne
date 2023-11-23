@@ -21,11 +21,9 @@ package org.apache.cayenne.unit.di.server;
 
 public class CayenneProjects {
 
-    // known runtimes... unit tests may reuse these with @UseServerRuntime
-    // annotation or
-    // can define their own on the fly (TODO: how would that work with the
-    // global schema
-    // setup?)
+    // known runtimes... unit tests may reuse these with @UseCayenneRuntime
+    // annotation or can define their own on the fly
+    // (TODO: how would that work with the global schema setup?)
     public static final String ARRAY_TYPE_PROJECT = "cayenne-array-type.xml";
     public static final String BINARY_PK_PROJECT = "cayenne-binary-pk.xml";
     public static final String CAY_2032 = "cayenne-cay-2032.xml";

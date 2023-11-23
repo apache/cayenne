@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Special test cases per CAY-1378, CAY-1379.
  */
-@UseServerRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
+@UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class SingleTableInheritance1IT extends ServerCase {
 
     @Inject

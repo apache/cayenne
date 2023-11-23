@@ -26,12 +26,12 @@ import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CircularDependencyIT extends ServerCase {
 
     @Inject

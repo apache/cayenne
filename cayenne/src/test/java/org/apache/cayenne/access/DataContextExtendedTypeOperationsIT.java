@@ -29,12 +29,12 @@ import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.extended_type.StringET1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.EXTENDED_TYPE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.EXTENDED_TYPE_PROJECT)
 public class DataContextExtendedTypeOperationsIT extends ServerCase {
 
     @Inject

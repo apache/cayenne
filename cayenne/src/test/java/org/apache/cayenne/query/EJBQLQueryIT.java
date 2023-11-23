@@ -39,7 +39,7 @@ import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +51,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class EJBQLQueryIT extends ServerCase {
 
     @Inject

@@ -27,14 +27,14 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CAY_191IT extends ServerCase {
     
     @Inject

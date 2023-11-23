@@ -38,7 +38,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -52,7 +52,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(CayenneProjects.LOCKING_PROJECT)
+@UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
 public class BatchActionLockingIT extends ServerCase {
 
 	@Inject

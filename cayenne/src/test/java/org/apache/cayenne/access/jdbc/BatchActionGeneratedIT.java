@@ -30,14 +30,14 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(CayenneProjects.GENERATED_PROJECT)
+@UseCayenneRuntime(CayenneProjects.GENERATED_PROJECT)
 public class BatchActionGeneratedIT extends ServerCase {
 
     @Inject

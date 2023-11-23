@@ -27,10 +27,10 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationshi
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Song;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT)
 public class ManyToManyJoinIT extends ServerCase {
 
     @Inject

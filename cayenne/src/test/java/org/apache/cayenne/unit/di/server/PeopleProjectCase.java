@@ -23,7 +23,7 @@ import java.sql.Types;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class PeopleProjectCase extends ServerCase {
 
 	@Inject

@@ -25,7 +25,7 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.testdo.annotation.ArtistAnnotation;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 
@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 /**
  * @since 4.2
  */
-@UseServerRuntime(CayenneProjects.ANNOTATION)
+@UseCayenneRuntime(CayenneProjects.ANNOTATION)
 public class AnnotationIT extends ServerCase {
 
     @Inject

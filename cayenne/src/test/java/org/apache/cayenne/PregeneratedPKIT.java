@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertNotNull;
 // TODO: 1/16/2006 - the algorithm used to generate the PK may be included in
 // DataObjectUtils to pull the PK on demand. A caveat - we need to analyze DataObject in
 // question to see if a PK is numeric and not propagated.
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PregeneratedPKIT extends ServerCase {
 
     @Inject

@@ -31,12 +31,12 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
+@UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class DataObjectDescriptorFactory_InheritanceMapsIT extends ServerCase {
 
     @Inject

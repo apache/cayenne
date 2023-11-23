@@ -31,7 +31,7 @@ import org.apache.cayenne.testdo.date_time.CalendarEntity;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests Date handling in Cayenne.
  */
-@UseServerRuntime(CayenneProjects.DATE_TIME_PROJECT)
+@UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
 public class DateTimeTypesIT extends ServerCase {
 
     @Inject

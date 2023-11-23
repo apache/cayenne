@@ -30,7 +30,7 @@ import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
 @Deprecated
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DefaultBatchTranslatorIT extends ServerCase {
 
     @Inject

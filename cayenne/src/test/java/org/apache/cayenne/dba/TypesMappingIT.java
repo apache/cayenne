@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -41,7 +41,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.EMPTY_PROJECT)
+@UseCayenneRuntime(CayenneProjects.EMPTY_PROJECT)
 public class TypesMappingIT extends ServerCase {
 
     @Inject

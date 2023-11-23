@@ -28,14 +28,14 @@ import org.apache.cayenne.testdo.primitive.PrimitivesTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.PRIMITIVE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.PRIMITIVE_PROJECT)
 public class PrimitiveAttributesIT extends ServerCase {
 
     @Inject

@@ -31,7 +31,7 @@ import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -41,7 +41,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ProcedureCallIT extends ServerCase {
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";

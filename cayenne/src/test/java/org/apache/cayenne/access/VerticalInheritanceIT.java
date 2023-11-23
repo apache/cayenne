@@ -31,7 +31,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -43,7 +43,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
+@UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 public class VerticalInheritanceIT extends ServerCase {
 
 	@Inject

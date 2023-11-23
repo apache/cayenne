@@ -35,7 +35,7 @@ import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
+@UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
 public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
 
     @Inject

@@ -38,7 +38,7 @@ import org.apache.cayenne.testdo.java8.LocalTimeTestEntity;
 import org.apache.cayenne.testdo.java8.PeriodTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@UseServerRuntime(CayenneProjects.JAVA8)
+@UseCayenneRuntime(CayenneProjects.JAVA8)
 public class Java8TimeIT extends ServerCase {
 
 	@Inject

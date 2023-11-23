@@ -34,12 +34,11 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest3;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -47,7 +46,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_DELETE_RULES_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_DELETE_RULES_PROJECT)
 public class DeleteRulesIT extends ServerCase {
 
     @Inject

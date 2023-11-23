@@ -26,10 +26,10 @@ import org.apache.cayenne.testdo.db2.CrossdbM2E2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(CayenneProjects.MULTINODE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.MULTINODE_PROJECT)
 public class DataContextCrossDBIT extends ServerCase {
 
     @Inject

@@ -26,14 +26,14 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.array_type.ArrayTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 
-@UseServerRuntime(CayenneProjects.ARRAY_TYPE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.ARRAY_TYPE_PROJECT)
 public class DataContextArrayTypeIT extends ServerCase {
 
     @Inject

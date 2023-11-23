@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.PeopleProjectCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.PEOPLE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.PEOPLE_PROJECT)
 public class AshwoodEntitySorter_InheritanceIT extends PeopleProjectCase {
 
 	@Inject

@@ -26,7 +26,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @since 4.2
  */
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
 public class ObjPathProcessorIT3 extends ServerCase {
 
     @Inject

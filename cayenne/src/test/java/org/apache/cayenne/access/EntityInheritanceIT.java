@@ -25,12 +25,12 @@ import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 import org.apache.cayenne.testdo.inheritance.SubEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.INHERITANCE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.INHERITANCE_PROJECT)
 public class EntityInheritanceIT extends ServerCase {
 
     @Inject

@@ -39,7 +39,7 @@ public class ServerCaseLifecycleManager extends DefaultUnitTestLifecycleManager 
     public <T> void setUp(T testCase) {
 
         // init current runtime
-        UseServerRuntime runtimeName = testCase.getClass().getAnnotation(UseServerRuntime.class);
+        UseCayenneRuntime runtimeName = testCase.getClass().getAnnotation(UseCayenneRuntime.class);
         ExtraModules extraModules = testCase.getClass().getAnnotation(ExtraModules.class);
 
         String location = runtimeName != null

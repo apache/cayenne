@@ -25,13 +25,13 @@ import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class MeaningfulFKIT extends ServerCase {
 
     @Inject

@@ -25,12 +25,12 @@ import org.apache.cayenne.testdo.reflexive.Other;
 import org.apache.cayenne.testdo.reflexive.Reflexive;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.REFLEXIVE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.REFLEXIVE_PROJECT)
 public class CayenneDataObjectReflexiveIT extends ServerCase {
 
     @Inject

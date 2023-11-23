@@ -34,7 +34,7 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
+@UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
 
     @Inject

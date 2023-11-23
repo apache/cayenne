@@ -38,7 +38,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
  * Test suite for testing behavior of multiple DataContexts that share the same underlying
  * DataDomain.
  */
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(ServerCaseSyncModule.class)
 public class DataContextSharedCacheIT extends ServerCase {
 

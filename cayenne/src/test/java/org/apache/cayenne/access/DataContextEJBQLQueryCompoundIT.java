@@ -30,7 +30,7 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
+@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class DataContextEJBQLQueryCompoundIT extends ServerCase {
 
 	@Inject

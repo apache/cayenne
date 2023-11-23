@@ -30,7 +30,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2666.CAY2666;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * @since 4.2
  */
-@UseServerRuntime(CayenneProjects.CAY_2666)
+@UseCayenneRuntime(CayenneProjects.CAY_2666)
 public class Cay2666IT extends ServerCase {
 
     @Inject

@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.slf4j.Logger;
 import org.junit.After;
 import org.junit.Before;
@@ -47,7 +47,7 @@ import org.mockito.stubbing.Answer;
 import org.mockito.stubbing.OngoingStubbing;
 import org.slf4j.LoggerFactory;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ManagedPoolingDataSourceIT {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ManagedPoolingDataSourceIT.class);

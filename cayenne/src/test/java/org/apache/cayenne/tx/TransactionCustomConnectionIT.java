@@ -27,7 +27,7 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.*;
  * @see BaseTransaction,TransactionDescriptor
  * @since 4.2
  */
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class TransactionCustomConnectionIT extends ServerCase {
 
     private final Logger logger = LoggerFactory.getLogger(TransactionIsolationIT.class);

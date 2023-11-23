@@ -30,12 +30,12 @@ import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 import org.apache.cayenne.testdo.testmap.annotations.Tag2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
+@UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
 public class LifecycleCallbackRegistry_InheritanceIT extends ServerCase {
 
     @Inject

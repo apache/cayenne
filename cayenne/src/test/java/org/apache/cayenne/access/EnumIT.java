@@ -34,14 +34,14 @@ import org.apache.cayenne.testdo.enum_test.EnumEntity2;
 import org.apache.cayenne.testdo.enum_test.EnumEntity3;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-@UseServerRuntime(CayenneProjects.ENUM_PROJECT)
+@UseCayenneRuntime(CayenneProjects.ENUM_PROJECT)
 public class EnumIT extends ServerCase {
 
     @Inject

@@ -29,7 +29,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @since 4.1
  */
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataContextConcurrencyIT extends ServerCase {
 
     private static final Logger logger = LoggerFactory.getLogger(DataContextConcurrencyIT.class);

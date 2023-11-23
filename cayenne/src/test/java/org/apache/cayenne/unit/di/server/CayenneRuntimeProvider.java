@@ -62,7 +62,7 @@ public class CayenneRuntimeProvider implements Provider<CayenneRuntime> {
         String configurationLocation = properties.getConfigurationLocation();
         if (configurationLocation == null) {
             throw new NullPointerException("Null 'configurationLocation', "
-                    + "annotate your test case with @UseServerRuntime");
+                    + "annotate your test case with @UseCayenneRuntime");
         }
 
         Collection<Module> modules = new ArrayList<>(getExtraModules());

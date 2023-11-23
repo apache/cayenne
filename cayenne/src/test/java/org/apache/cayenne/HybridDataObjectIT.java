@@ -29,7 +29,7 @@ import org.apache.cayenne.testdo.hybrid.HybridEntity1;
 import org.apache.cayenne.testdo.hybrid.HybridEntity2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNull;
 /**
  * @since 4.1
  */
-@UseServerRuntime(CayenneProjects.HYBRID_DATA_OBJECT_PROJECT)
+@UseCayenneRuntime(CayenneProjects.HYBRID_DATA_OBJECT_PROJECT)
 public class HybridDataObjectIT extends ServerCase {
 
     @Inject

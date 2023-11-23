@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToMa
 import org.apache.cayenne.testdo.relationships_collection_to_many.CollectionToManyTarget;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_COLLECTION_TO_MANY_PROJECT)
 public class CayenneDataObjectSetToManyCollectionIT extends ServerCase {
 
 	@Inject

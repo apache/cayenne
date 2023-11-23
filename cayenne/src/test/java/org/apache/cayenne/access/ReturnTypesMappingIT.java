@@ -35,7 +35,7 @@ import org.apache.cayenne.unit.PostgresUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -47,7 +47,7 @@ import static org.junit.Assume.assumeTrue;
 /**
  * Test Types mapping for selected columns
  */
-@UseServerRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
 public class ReturnTypesMappingIT extends ServerCase {
 
     @Inject

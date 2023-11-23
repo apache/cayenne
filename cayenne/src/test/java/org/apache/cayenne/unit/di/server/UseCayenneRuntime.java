@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface UseServerRuntime {
+public @interface UseCayenneRuntime {
 
     String value();
 }

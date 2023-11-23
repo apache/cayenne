@@ -30,14 +30,14 @@ import org.apache.cayenne.testdo.misc_types.SerializableEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(CayenneProjects.MISC_TYPES_PROJECT)
+@UseCayenneRuntime(CayenneProjects.MISC_TYPES_PROJECT)
 public class MiscTypesIT extends ServerCase {
 
     @Inject

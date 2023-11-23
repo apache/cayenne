@@ -30,7 +30,7 @@ import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  */
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_CLOB_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_CLOB_PROJECT)
 public class CAY_115IT extends ServerCase {
 
     @Inject

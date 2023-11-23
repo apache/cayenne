@@ -26,7 +26,7 @@ import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
  * really heavy EventBridge (JavaGroupsBridge implementation) inside DataRowStore
  * and this behaviour is not anyhow tested here nor it affects existing tests.
  */
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class DataRowStoreIT extends ServerCase {
 
     private DataRowStore cache;

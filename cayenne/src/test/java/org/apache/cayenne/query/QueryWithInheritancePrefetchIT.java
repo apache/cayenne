@@ -32,7 +32,7 @@ import org.apache.cayenne.testdo.inheritance_with_enum.Type;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @since 4.1
  */
-@UseServerRuntime(CayenneProjects.INHERITANCE_WITH_ENUM_PROJECT)
+@UseCayenneRuntime(CayenneProjects.INHERITANCE_WITH_ENUM_PROJECT)
 public class QueryWithInheritancePrefetchIT extends ServerCase {
 
     @Inject

@@ -28,7 +28,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2032.Team;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @since 4.0
  */
-@UseServerRuntime(CayenneProjects.CAY_2032)
+@UseCayenneRuntime(CayenneProjects.CAY_2032)
 public class Cay2032IT extends ServerCase {
 
     @Inject

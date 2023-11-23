@@ -27,7 +27,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertSame;
  */
 // TODO: this is really a qualifier translator general test...
 // need to find an appropriate place in unit tests..
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
 public class CAY_194IT extends ServerCase {
 
     @Inject

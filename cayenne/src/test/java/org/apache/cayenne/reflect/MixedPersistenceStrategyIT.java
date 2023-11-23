@@ -29,7 +29,7 @@ import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStra
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests conflicts between field and map-based persistence.
  */
-@UseServerRuntime(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT)
+@UseCayenneRuntime(CayenneProjects.MIXED_PERSISTENCE_STRATEGY_PROJECT)
 public class MixedPersistenceStrategyIT extends ServerCase {
 
     @Inject

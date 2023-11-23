@@ -42,13 +42,13 @@ import org.apache.cayenne.testdo.soft_delete.SoftDelete;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(CayenneProjects.SOFT_DELETE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.SOFT_DELETE_PROJECT)
 public class SoftDeleteBatchTranslatorIT extends ServerCase {
 
     @Inject

@@ -27,14 +27,14 @@ import org.apache.cayenne.testdo.json.JsonVarchar;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.apache.cayenne.value.Json;
 import org.junit.Test;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.JSON_PROJECT)
+@UseCayenneRuntime(CayenneProjects.JSON_PROJECT)
 public class JsonTypeIT extends ServerCase {
 
     @Inject

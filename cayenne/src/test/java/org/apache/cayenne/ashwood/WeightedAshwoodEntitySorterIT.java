@@ -27,13 +27,13 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.WEIGHTED_SORT_PROJECT)
+@UseCayenneRuntime(CayenneProjects.WEIGHTED_SORT_PROJECT)
 public class WeightedAshwoodEntitySorterIT extends ServerCase {
 
     @Inject

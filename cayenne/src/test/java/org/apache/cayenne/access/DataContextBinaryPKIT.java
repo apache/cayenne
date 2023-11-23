@@ -27,13 +27,13 @@ import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(CayenneProjects.BINARY_PK_PROJECT)
+@UseCayenneRuntime(CayenneProjects.BINARY_PK_PROJECT)
 public class DataContextBinaryPKIT extends ServerCase {
 
     @Inject

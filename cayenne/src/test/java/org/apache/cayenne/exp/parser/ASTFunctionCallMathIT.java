@@ -29,7 +29,7 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -37,7 +37,7 @@ import static junit.framework.TestCase.assertEquals;
 /**
  * @since 4.0
  */
-@UseServerRuntime(CayenneProjects.TABLE_PRIMITIVES_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TABLE_PRIMITIVES_PROJECT)
 public class ASTFunctionCallMathIT extends ServerCase {
 
     @Inject

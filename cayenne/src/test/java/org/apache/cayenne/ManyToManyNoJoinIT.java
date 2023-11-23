@@ -23,12 +23,12 @@ import org.apache.cayenne.testdo.relationships_activity.Activity;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.sql.Date;
 
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_ACTIVITY_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_ACTIVITY_PROJECT)
 public class ManyToManyNoJoinIT extends ServerCase {
 
     @Inject

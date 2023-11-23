@@ -28,13 +28,13 @@ import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(CayenneProjects.LOB_PROJECT)
+@UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class SelectActionIT extends ServerCaseContextsSync {
 
     @Inject

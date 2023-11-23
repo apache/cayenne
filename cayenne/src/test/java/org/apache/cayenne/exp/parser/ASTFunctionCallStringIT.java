@@ -31,7 +31,7 @@ import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -41,7 +41,7 @@ import static org.junit.Assume.assumeFalse;
 /**
  * @since 4.0
  */
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class ASTFunctionCallStringIT extends ServerCase {
 
     @Inject

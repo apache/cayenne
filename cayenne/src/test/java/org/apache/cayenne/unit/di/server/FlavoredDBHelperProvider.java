@@ -33,8 +33,7 @@ public class FlavoredDBHelperProvider implements Provider<DBHelper> {
     protected ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
-    // injecting provider to make this provider independent from scoping of
-    // ServerRuntime
+    // injecting provider to make this provider independent of scoping of CayenneRuntime
     protected Provider<CayenneRuntime> runtimeProvider;
 
     @Inject

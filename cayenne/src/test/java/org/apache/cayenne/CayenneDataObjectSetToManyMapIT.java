@@ -25,7 +25,7 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-@UseServerRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
+@UseCayenneRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
 public class CayenneDataObjectSetToManyMapIT extends ServerCase {
 
     @Inject

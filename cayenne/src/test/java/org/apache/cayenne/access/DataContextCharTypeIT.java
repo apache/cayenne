@@ -27,12 +27,12 @@ import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
 public class DataContextCharTypeIT extends ServerCase {
 
     @Inject

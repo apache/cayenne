@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests the behavior of one-to-one relationship where to-one is pointing to an FK.
  */
-@UseServerRuntime(CayenneProjects.RELATIONSHIPS_TO_ONE_FK_PROJECT)
+@UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_TO_ONE_FK_PROJECT)
 public class CDOOneToOneFKIT extends ServerCase {
 
     @Inject

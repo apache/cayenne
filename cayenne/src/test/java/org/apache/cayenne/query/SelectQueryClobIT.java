@@ -28,14 +28,14 @@ import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.LOB_PROJECT)
+@UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class SelectQueryClobIT extends ServerCase {
 
     @Inject

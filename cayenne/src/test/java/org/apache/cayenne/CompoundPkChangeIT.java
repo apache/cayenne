@@ -24,12 +24,12 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-@UseServerRuntime(CayenneProjects.COMPOUND_PROJECT)
+@UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
 public class CompoundPkChangeIT extends ServerCase {
 
     private static final String key1v1 = "-key1-v1-";

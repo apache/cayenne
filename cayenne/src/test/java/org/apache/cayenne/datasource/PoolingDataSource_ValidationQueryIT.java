@@ -22,12 +22,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.datasource.PoolingDataSourceParameters;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(CayenneProjects.TESTMAP_PROJECT)
+@UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 public class PoolingDataSource_ValidationQueryIT extends BasePoolingDataSourceIT {
 
 	@Override

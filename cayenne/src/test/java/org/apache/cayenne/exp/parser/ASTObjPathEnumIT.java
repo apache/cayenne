@@ -24,13 +24,13 @@ import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@UseServerRuntime(CayenneProjects.ENUM_PROJECT)
+@UseCayenneRuntime(CayenneProjects.ENUM_PROJECT)
 public class ASTObjPathEnumIT extends ServerCase {
 
     @Inject

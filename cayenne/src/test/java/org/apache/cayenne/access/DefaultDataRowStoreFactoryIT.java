@@ -50,14 +50,14 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@UseServerRuntime(CayenneProjects.MULTI_TIER_PROJECT)
+@UseCayenneRuntime(CayenneProjects.MULTI_TIER_PROJECT)
 public class DefaultDataRowStoreFactoryIT extends ServerCase {
 
     @Test

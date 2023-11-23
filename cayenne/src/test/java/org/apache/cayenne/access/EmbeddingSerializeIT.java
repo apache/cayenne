@@ -31,7 +31,7 @@ import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-@UseServerRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
+@UseCayenneRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
 public class EmbeddingSerializeIT extends ServerCase {
 
     @Inject

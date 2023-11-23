@@ -31,7 +31,7 @@ import org.apache.cayenne.unit.DerbyUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-@UseServerRuntime(CayenneProjects.QUALIFIED_PROJECT)
+@UseCayenneRuntime(CayenneProjects.QUALIFIED_PROJECT)
 public class ConcurrentPkGeneratorIT extends ServerCase {
 
     @Inject

@@ -30,10 +30,10 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ExtraModules;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
-@UseServerRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
+@UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
 @ExtraModules(DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT.GraphSorterModule.class)
 public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT extends ServerCase {
 

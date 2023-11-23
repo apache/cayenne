@@ -22,7 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-@UseServerRuntime(CayenneProjects.SUS_PROJECT)
+@UseCayenneRuntime(CayenneProjects.SUS_PROJECT)
 public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
     @Test

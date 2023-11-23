@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.unsupported_distinct_types.Customer;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@UseServerRuntime(CayenneProjects.UNSUPPORTED_DISTINCT_TYPES_PROJECT)
+@UseCayenneRuntime(CayenneProjects.UNSUPPORTED_DISTINCT_TYPES_PROJECT)
 public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
 
     @Inject

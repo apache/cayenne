@@ -33,7 +33,7 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @since 4.1
  */
-@UseServerRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
+@UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
 public class VerticalInheritanceMultipleAttributesIT extends ServerCase {
 
     @Inject
