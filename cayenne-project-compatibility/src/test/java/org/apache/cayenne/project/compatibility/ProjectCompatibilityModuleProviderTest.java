@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.project.compatibility;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -30,6 +30,6 @@ public class ProjectCompatibilityModuleProviderTest {
 
     @Test
     public void testServerAutoLoadable() {
-        ModuleProviderChecker.testProviderPresent(ProjectCompatibilityModuleProvider.class, CayenneServerModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(ProjectCompatibilityModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

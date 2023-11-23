@@ -17,28 +17,28 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.jcache;
+package org.apache.cayenne.velocity;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Module;
 
 /**
- * @since 4.0
+ * @since 4.1
  */
-public class JCacheServerModuleProvider implements CayenneServerModuleProvider {
+public class VelocityModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {
-        return new JCacheModule();
+        return new VelocityModule();
     }
 
     @Override
     public Class<? extends Module> moduleType() {
-        return JCacheModule.class;
+        return VelocityModule.class;
     }
 
     @Override

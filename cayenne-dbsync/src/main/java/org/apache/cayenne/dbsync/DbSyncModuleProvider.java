@@ -18,7 +18,7 @@
  */
 package org.apache.cayenne.dbsync;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.di.Module;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ import java.util.Collections;
  *
  * @since 4.0
  */
-public class DbSyncServerModuleProvider implements CayenneServerModuleProvider {
+public class DbSyncModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {

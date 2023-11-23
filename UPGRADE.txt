@@ -46,6 +46,9 @@ that accordingly in your build scripts
 
 * Per CAY-2823 `ServerRuntime` is deprecated. You should change your code to use `org.apache.cayenne.runtime.CayenneRuntime` instead.
 
+* Per CAY-2824 `CayenneServerModuleProvider` renamed to `CayenneRuntimeModuleProvider` and moved to `org.apache.cayenne.runtime` package.
+If you are using auto-loading mechanism for your custom modules you need to change `META-INF.services` reference accordingly.
+
 * Per CAY-2826 `ServerModule` renamed to `CoreModule`
 
 UPGRADING TO 4.2.M2

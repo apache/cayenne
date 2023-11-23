@@ -19,6 +19,7 @@
 package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +30,7 @@ import java.util.Collections;
  * @since 4.0 introduced
  * @since 5.0 renamed from MainCayenneServerModuleProvider
  */
-public class CoreModuleProvider implements CayenneServerModuleProvider {
+public class CoreModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {

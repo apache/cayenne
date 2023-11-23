@@ -17,14 +17,15 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.di.spi.ModuleProvider;
-import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 
 /**
- * This interface implementations will be used by {@link CayenneRuntimeBuilder} to auto-load server modules.
- * @since 4.0
+ * This interface implementations will be used by {@link CayenneRuntimeBuilder} to auto-load runtime modules.
+ *
+ * @since 4.0 introduced
+ * @since 5.0 renamed from CayenneServerModuleProvider to CayenneRuntimeModuleProvider
  */
-public interface CayenneServerModuleProvider extends ModuleProvider {
+public interface CayenneRuntimeModuleProvider extends ModuleProvider {
 }

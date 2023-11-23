@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.velocity.VelocityServerModuleProvider
+org.apache.cayenne.velocity.VelocityModuleProvider

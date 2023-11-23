@@ -22,7 +22,7 @@ package org.apache.cayenne.project.compatibility;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.ProjectModule;
@@ -30,7 +30,7 @@ import org.apache.cayenne.project.ProjectModule;
 /**
  * @since 4.1
  */
-public class ProjectCompatibilityModuleProvider implements CayenneServerModuleProvider {
+public class ProjectCompatibilityModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {

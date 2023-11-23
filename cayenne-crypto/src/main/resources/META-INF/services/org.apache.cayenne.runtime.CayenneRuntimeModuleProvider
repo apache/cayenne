@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.crypto.CryptoServerModuleProvider
+org.apache.cayenne.crypto.CryptoModuleProvider

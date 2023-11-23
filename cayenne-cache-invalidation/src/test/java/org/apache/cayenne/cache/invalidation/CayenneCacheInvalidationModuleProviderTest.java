@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.cache.invalidation;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -27,6 +27,6 @@ public class CayenneCacheInvalidationModuleProviderTest {
 
     @Test
     public void testAutoLoadable() {
-        ModuleProviderChecker.testProviderPresent(CacheInvalidationModuleProvider.class, CayenneServerModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(CacheInvalidationModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

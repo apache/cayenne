@@ -18,6 +18,7 @@
  */
 package org.apache.cayenne.configuration.server;
 
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.unit.util.ModuleProviderChecker;
 import org.junit.Test;
 
@@ -25,6 +26,6 @@ public class CoreModuleProviderTest {
 
     @Test
     public void testProviderPresent() {
-        ModuleProviderChecker.testProviderPresent(CoreModuleProvider.class, CayenneServerModuleProvider.class);
+        ModuleProviderChecker.testProviderPresent(CoreModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

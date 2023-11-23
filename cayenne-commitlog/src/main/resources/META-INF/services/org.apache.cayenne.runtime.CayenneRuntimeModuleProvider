@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.project.ProjectServerModuleProvider
+org.apache.cayenne.commitlog.CommitLogModuleProvider

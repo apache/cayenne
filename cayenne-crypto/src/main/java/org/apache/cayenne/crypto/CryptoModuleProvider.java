@@ -21,14 +21,14 @@ package org.apache.cayenne.crypto;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Module;
 
 /**
  * @since 4.0
  */
-public class CryptoServerModuleProvider implements CayenneServerModuleProvider {
+public class CryptoModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {

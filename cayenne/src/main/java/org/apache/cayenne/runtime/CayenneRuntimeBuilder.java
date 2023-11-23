@@ -20,7 +20,6 @@ package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
 import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.CoreModuleExtender;
@@ -199,7 +198,7 @@ public class CayenneRuntimeBuilder {
     }
 
     private Collection<? extends Module> autoLoadedModules() {
-        return new ModuleLoader().load(CayenneServerModuleProvider.class);
+        return new ModuleLoader().load(CayenneRuntimeModuleProvider.class);
     }
 
     private Collection<? extends Module> defaultModules() {

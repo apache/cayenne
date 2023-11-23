@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.commitlog.CommitLogServerModuleProvider
+org.apache.cayenne.dbsync.DbSyncModuleProvider

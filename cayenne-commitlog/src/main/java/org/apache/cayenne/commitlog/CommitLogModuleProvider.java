@@ -22,14 +22,14 @@ package org.apache.cayenne.commitlog;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
 import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Module;
 
 /**
  * @since 4.0
  */
-public class CommitLogServerModuleProvider implements CayenneServerModuleProvider {
+public class CommitLogModuleProvider implements CayenneRuntimeModuleProvider {
 
     @Override
     public Module module() {

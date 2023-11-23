@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.dbsync.DbSyncServerModuleProvider
+org.apache.cayenne.jcache.JCacheModuleProvider
