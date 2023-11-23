@@ -19,26 +19,26 @@
 package org.apache.cayenne.configuration.server;
 
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.ModuleProvider;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * ServerModule auto-loading facility.
+ * CoreModule auto-loading facility.
  *
- * @since 4.0
+ * @since 4.0 introduced
+ * @since 5.0 renamed from MainCayenneServerModuleProvider
  */
-public class MainCayenneServerModuleProvider implements CayenneServerModuleProvider {
+public class CoreModuleProvider implements CayenneServerModuleProvider {
 
     @Override
     public Module module() {
-        return new ServerModule();
+        return new CoreModule();
     }
 
     @Override
     public Class<? extends Module> moduleType() {
-        return ServerModule.class;
+        return CoreModule.class;
     }
 
     @Override

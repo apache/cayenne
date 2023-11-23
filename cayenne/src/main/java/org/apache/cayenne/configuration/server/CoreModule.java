@@ -132,21 +132,22 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * A DI module containing all Cayenne server runtime configuration.
+ * A DI module containing all Cayenne runtime configuration.
  *
- * @since 3.1
+ * @since 3.1 introduced
+ * @since 5.0 renamed from ServerModule
  */
-public class ServerModule implements Module {
+public class CoreModule implements Module {
 
     private static final int DEFAULT_MAX_ID_QUALIFIER_SIZE = 10000;
 
     /**
-     * Returns an extender object that allows the app to customize the ServerModule services.
+     * Returns an extender object that allows the app to customize the CoreModule services.
      *
      * @since 5.0
      */
-    public static ServerModuleExtender extend(Binder b) {
-        return new ServerModuleExtender(b);
+    public static CoreModuleExtender extend(Binder b) {
+        return new CoreModuleExtender(b);
     }
 
     /**
@@ -327,11 +328,11 @@ public class ServerModule implements Module {
     }
 
     /**
-     * Creates a new {@link ServerModule}.
+     * Creates a new {@link CoreModule}.
      *
      * @since 4.0
      */
-    public ServerModule() {
+    public CoreModule() {
     }
 
     public void configure(Binder binder) {

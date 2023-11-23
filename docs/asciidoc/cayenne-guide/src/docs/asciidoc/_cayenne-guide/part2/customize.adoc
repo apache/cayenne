@@ -250,7 +250,7 @@ public class MyDbAdapterDetector implements DbAdapterDetector {
 
 [source, Java]
 ----
-ServerModule.contributeAdapterDetectors(binder)
+CoreModule.contributeAdapterDetectors(binder)
     .add(MyDbAdapterDetector.class);
 ----
 
@@ -263,7 +263,7 @@ So it is easy to redefine a built-in service in Cayenne by rebinding desired imp
 To do that, first we need to know what those services to redefine are.
 While we describe some of them in the following sections, the best way to get a full list
 is to check the source code of the Cayenne version you are using and
-namely look in `org.apache.cayenne.configuration.server.ServerModule` - the main built-in module in Cayenne.
+namely look in `org.apache.cayenne.configuration.server.CoreModule` - the main built-in module in Cayenne.
 
 Now an example of overriding `JdbcEventLogger` service. The default implementation of this service
 is provided by `Slf4jJdbcEventLogger`. But if we want to use `FormattedSlf4jJdbcEventLogger`
@@ -340,7 +340,7 @@ Last step is to register this new type in `CayenneRuntime`:
 CayenneRuntime runtime = CayenneRuntime.builder()
     .addConfig("cayenne-project.xml")
     .addModule(binder ->
-        ServerModule.contributeValueObjectTypes(binder)
+        CoreModule.contributeValueObjectTypes(binder)
             .add(MoneyValueObjectType.class))
     .build();
 ----
@@ -432,7 +432,7 @@ public class DoubleArrayType implements ExtendedType {
 CayenneRuntime runtime = CayenneRuntime.builder()
                 .addConfig("cayenne-project.xml")
                 .addModule(binder ->
-                    ServerModule.contributeUserTypes(binder)
+                    CoreModule.contributeUserTypes(binder)
                         .add(new DoubleArrayType()))
                 .build();
 ----

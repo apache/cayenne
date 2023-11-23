@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access.util;
 
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 
 public class ServerCaseSyncModule implements Module {
     @Override
     public void configure(Binder binder) {
-        ServerModule.extend(binder).syncContexts();
+        CoreModule.extend(binder).syncContexts();
     }
 }

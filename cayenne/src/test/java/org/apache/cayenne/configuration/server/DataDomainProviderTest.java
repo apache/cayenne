@@ -172,7 +172,7 @@ public class DataDomainProviderTest {
             b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
 
-            ServerModule.extend(b)
+            CoreModule.extend(b)
                     .initAllExtensions()
 
                     .addAdapterDetector(FirebirdSniffer.class)

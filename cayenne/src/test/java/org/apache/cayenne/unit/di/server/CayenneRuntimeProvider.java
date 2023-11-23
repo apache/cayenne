@@ -21,8 +21,8 @@ package org.apache.cayenne.unit.di.server;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.configuration.server.DataNodeFactory;
-import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
@@ -83,7 +83,7 @@ public class CayenneRuntimeProvider implements Provider<CayenneRuntime> {
         @Override
         public void configure(Binder binder) {
 
-            // these are the objects overriding standard ServerModule definitions or
+            // these are the objects overriding standard CoreModule definitions or
             // dependencies needed by such overrides
 
             binder.bind(DbAdapter.class).toProviderInstance(dbAdapterProvider);
@@ -91,7 +91,7 @@ public class CayenneRuntimeProvider implements Provider<CayenneRuntime> {
             binder.bind(DataNodeFactory.class).to(ServerCaseDataNodeFactory.class);
             binder.bind(UnitDbAdapter.class).toInstance(unitDbAdapter);
 
-            ServerModule.extend(binder)
+            CoreModule.extend(binder)
                     // Use soft references instead of default weak.
                     // Should remove problems with random-failing tests (those that are GC-sensitive).
                     .setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");

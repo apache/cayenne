@@ -34,9 +34,9 @@ import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.configuration.server.CoreModuleExtender;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.configuration.server.PkGeneratorFactoryProvider;
-import org.apache.cayenne.configuration.server.ServerModuleExtender;
 import org.apache.cayenne.configuration.xml.DataChannelMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
@@ -241,7 +241,7 @@ public class ServerCaseModule implements Module {
 
         // this factory is a hack that allows to inject to DbAdapters loaded outside of
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever is placed
-        // in the ServerModule is ignored
+        // in the CoreModule is ignored
         binder.bind(BatchTranslatorFactory.class).toProvider(ServerCaseBatchQueryBuilderFactoryProvider.class);
         binder.bind(DataChannelInterceptor.class).to(ServerCaseDataChannelInterceptor.class);
         binder.bind(SQLTemplateCustomizer.class).toProvider(SQLTemplateCustomizerProvider.class);
@@ -270,14 +270,14 @@ public class ServerCaseModule implements Module {
         binder.bind(DBCleaner.class).toProvider(DBCleanerProvider.class).in(testScope);
     }
 
-    // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in ServerModuleExtender.
-    static class ServerCaseModuleExtender extends ServerModuleExtender {
+    // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in CoreModuleExtender.
+    static class ServerCaseModuleExtender extends CoreModuleExtender {
         public ServerCaseModuleExtender(Binder binder) {
             super(binder);
         }
 
         @Override
-        protected ServerModuleExtender initAllExtensions() {
+        protected CoreModuleExtender initAllExtensions() {
             return super.initAllExtensions();
         }
     }

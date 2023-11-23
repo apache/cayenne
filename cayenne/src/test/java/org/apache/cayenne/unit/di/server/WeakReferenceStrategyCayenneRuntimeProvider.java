@@ -19,7 +19,7 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
@@ -42,7 +42,7 @@ public class WeakReferenceStrategyCayenneRuntimeProvider extends CayenneRuntimeP
     @Override
     protected Collection<? extends Module> getExtraModules() {
         Collection<Module> modules = new ArrayList<>(super.getExtraModules());
-        modules.add(b -> ServerModule.extend(b).setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "weak"));
+        modules.add(b -> CoreModule.extend(b).setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "weak"));
         return modules;
     }
 }

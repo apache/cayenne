@@ -33,12 +33,12 @@ import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.tx.TransactionFilter;
 
 /**
- * A builder of extensions for {@link ServerModule}.
+ * A builder of extensions for {@link CoreModule}.
  *
- * @see ServerModule#extend(Binder)
+ * @see CoreModule#extend(Binder)
  * @since 5.0
  */
-public class ServerModuleExtender {
+public class CoreModuleExtender {
 
     private final Binder binder;
 
@@ -54,11 +54,11 @@ public class ServerModuleExtender {
     private ListBuilder<ExtendedTypeFactory> extendedTypeFactories;
     private ListBuilder<ValueObjectType> valueObjectTypes;
 
-    protected ServerModuleExtender(Binder binder) {
+    protected CoreModuleExtender(Binder binder) {
         this.binder = binder;
     }
 
-    protected ServerModuleExtender initAllExtensions() {
+    protected CoreModuleExtender initAllExtensions() {
         contributeProperties();
         contributeProjectLocations();
         contributeAdapterDetectors();
@@ -76,7 +76,7 @@ public class ServerModuleExtender {
     /**
      * Sets Cayenne runtime property. Property names known to Cayenne are defined in the {@link Constants} interface.
      */
-    public ServerModuleExtender setProperty(String key, Object value) {
+    public CoreModuleExtender setProperty(String key, Object value) {
         contributeProperties().put(key, value != null ? value.toString() : null);
         return this;
     }
@@ -84,7 +84,7 @@ public class ServerModuleExtender {
     /**
      * Configures the stack to synchronize data between ObjectContexts. This is false by default.
      */
-    public ServerModuleExtender syncContexts() {
+    public CoreModuleExtender syncContexts() {
         contributeProperties().put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "true");
         return this;
     }
@@ -92,7 +92,7 @@ public class ServerModuleExtender {
     /**
      * Sets transaction management to either external. By default, transactions are internally managed by Cayenne.
      */
-    public ServerModuleExtender externalTransactions() {
+    public CoreModuleExtender externalTransactions() {
         contributeProperties().put(Constants.SERVER_EXTERNAL_TX_PROPERTY, "true");
         return this;
     }
@@ -102,7 +102,7 @@ public class ServerModuleExtender {
      *
      * @param size max size of snapshot cache
      */
-    public ServerModuleExtender snapshotCacheSize(int size) {
+    public CoreModuleExtender snapshotCacheSize(int size) {
         contributeProperties().put(Constants.SNAPSHOT_CACHE_SIZE_PROPERTY, Integer.toString(size));
         return this;
     }
@@ -110,7 +110,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom project location.
      */
-    public ServerModuleExtender addProjectLocation(String location) {
+    public CoreModuleExtender addProjectLocation(String location) {
         contributeProjectLocations().add(location);
         return this;
     }
@@ -118,7 +118,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom PK generator per DbAdapter
      */
-    public ServerModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, PkGenerator pkGenerator) {
+    public CoreModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, PkGenerator pkGenerator) {
         contributePkGenerators().put(adapter.getName(), pkGenerator);
         return this;
     }
@@ -126,7 +126,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom PK generator per DbAdapter
      */
-    public ServerModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, Class<? extends PkGenerator> pkGeneratorType) {
+    public CoreModuleExtender addPkGenerator(Class<? extends DbAdapter> adapter, Class<? extends PkGenerator> pkGeneratorType) {
         contributePkGenerators().put(adapter.getName(), pkGeneratorType);
         return this;
     }
@@ -134,7 +134,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom query filter to the end of the existing filter list
      */
-    public ServerModuleExtender addQueryFilter(DataChannelQueryFilter queryFilter) {
+    public CoreModuleExtender addQueryFilter(DataChannelQueryFilter queryFilter) {
         contributeQueryFilters().add(queryFilter);
         return this;
     }
@@ -142,7 +142,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom query filter to the end of the existing filter list
      */
-    public ServerModuleExtender addQueryFilter(Class<? extends DataChannelQueryFilter> queryFilterType) {
+    public CoreModuleExtender addQueryFilter(Class<? extends DataChannelQueryFilter> queryFilterType) {
         contributeQueryFilters().add(queryFilterType);
         return this;
     }
@@ -150,7 +150,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom sync filter.
      */
-    public ServerModuleExtender addSyncFilter(DataChannelSyncFilter syncFilter) {
+    public CoreModuleExtender addSyncFilter(DataChannelSyncFilter syncFilter) {
         contributeSyncFilters().add(syncFilter);
         return this;
     }
@@ -158,7 +158,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom sync filter.
      */
-    public ServerModuleExtender addSyncFilter(Class<? extends DataChannelSyncFilter> syncFilterType) {
+    public CoreModuleExtender addSyncFilter(Class<? extends DataChannelSyncFilter> syncFilterType) {
         contributeSyncFilters().add(syncFilterType);
         return this;
     }
@@ -167,7 +167,7 @@ public class ServerModuleExtender {
      * Adds a custom sync filter. Depending on the "includeInTransaction" parameter value it is added either
      * before or after the {@link TransactionFilter}.
      */
-    public ServerModuleExtender addSyncFilter(DataChannelSyncFilter syncFilter, boolean includeInTransaction) {
+    public CoreModuleExtender addSyncFilter(DataChannelSyncFilter syncFilter, boolean includeInTransaction) {
         if (includeInTransaction) {
             contributeSyncFilters().insertBefore(syncFilter, TransactionFilter.class);
         } else {
@@ -181,7 +181,7 @@ public class ServerModuleExtender {
      * Adds a custom sync filter. Depending on the "includeInTransaction" parameter value it is added either
      * before or after the {@link TransactionFilter}.
      */
-    public ServerModuleExtender addSyncFilter(Class<? extends DataChannelSyncFilter> syncFilterType, boolean includeInTransaction) {
+    public CoreModuleExtender addSyncFilter(Class<? extends DataChannelSyncFilter> syncFilterType, boolean includeInTransaction) {
         if (includeInTransaction) {
             contributeSyncFilters().insertBefore(syncFilterType, TransactionFilter.class);
         } else {
@@ -194,7 +194,7 @@ public class ServerModuleExtender {
     /**
      * Registers an annotated event listener.
      */
-    public ServerModuleExtender addListener(Object listener) {
+    public CoreModuleExtender addListener(Object listener) {
         contributeListeners().add(listener);
         return this;
     }
@@ -202,7 +202,7 @@ public class ServerModuleExtender {
     /**
      * Registers an annotated event listener of a given type
      */
-    public ServerModuleExtender addListenerType(Class<?> listenerType) {
+    public CoreModuleExtender addListenerType(Class<?> listenerType) {
         contributeListeners().add(listenerType);
         return this;
     }
@@ -210,7 +210,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom DbAdapterDetector
      */
-    public ServerModuleExtender addAdapterDetector(DbAdapterDetector adapterDetector) {
+    public CoreModuleExtender addAdapterDetector(DbAdapterDetector adapterDetector) {
         contributeAdapterDetectors().add(adapterDetector);
         return this;
     }
@@ -218,7 +218,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom DbAdapterDetector
      */
-    public ServerModuleExtender addAdapterDetector(Class<? extends DbAdapterDetector> adapterDetectorType) {
+    public CoreModuleExtender addAdapterDetector(Class<? extends DbAdapterDetector> adapterDetectorType) {
         contributeAdapterDetectors().add(adapterDetectorType);
         return this;
     }
@@ -227,7 +227,7 @@ public class ServerModuleExtender {
      * Adds a default adapter-agnostic ExtendedType. "Default" types are loaded before adapter-provided or "user"
      * types, so they may be overridden by those.
      */
-    public ServerModuleExtender addDefaultExtendedType(ExtendedType<?> type) {
+    public CoreModuleExtender addDefaultExtendedType(ExtendedType<?> type) {
         contributeDefaultExtendedTypes().add(type);
         return this;
     }
@@ -236,7 +236,7 @@ public class ServerModuleExtender {
      * Adds a default adapter-agnostic ExtendedType. "Default" types are loaded before adapter-provided or "user"
      * types, so they may be overridden by those.
      */
-    public ServerModuleExtender addDefaultExtendedType(Class<? extends ExtendedType<?>> type) {
+    public CoreModuleExtender addDefaultExtendedType(Class<? extends ExtendedType<?>> type) {
         contributeDefaultExtendedTypes().add(type);
         return this;
     }
@@ -245,7 +245,7 @@ public class ServerModuleExtender {
      * Adds an adapter-agnostic ExtendedType. "User" types are loaded after default and adapter-provided types and
      * can override those.
      */
-    public ServerModuleExtender addUserExtendedType(ExtendedType<?> type) {
+    public CoreModuleExtender addUserExtendedType(ExtendedType<?> type) {
         contributeUserExtendedTypes().add(type);
         return this;
     }
@@ -254,7 +254,7 @@ public class ServerModuleExtender {
      * Adds an adapter-agnostic ExtendedType. "User" types are loaded after default and adapter-provided types and
      * can override those.
      */
-    public ServerModuleExtender addUserExtendedType(Class<? extends ExtendedType<?>> type) {
+    public CoreModuleExtender addUserExtendedType(Class<? extends ExtendedType<?>> type) {
         contributeUserExtendedTypes().add(type);
         return this;
     }
@@ -262,7 +262,7 @@ public class ServerModuleExtender {
     /**
      * Adds an ExtendedTypeFactory used for dynamic extended type creation.
      */
-    public ServerModuleExtender addExtendedTypeFactory(ExtendedTypeFactory factory) {
+    public CoreModuleExtender addExtendedTypeFactory(ExtendedTypeFactory factory) {
         contributeExtendedTypeFactories().add(factory);
         return this;
     }
@@ -270,7 +270,7 @@ public class ServerModuleExtender {
     /**
      * Adds an ExtendedTypeFactory used for dynamic extended type creation.
      */
-    public ServerModuleExtender addExtendedTypeFactory(Class<? extends ExtendedTypeFactory> factoryType) {
+    public CoreModuleExtender addExtendedTypeFactory(Class<? extends ExtendedTypeFactory> factoryType) {
         contributeExtendedTypeFactories().add(factoryType);
         return this;
     }
@@ -278,7 +278,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom {@link ValueObjectType}.
      */
-    public ServerModuleExtender addValueObjectType(ValueObjectType<?, ?> type) {
+    public CoreModuleExtender addValueObjectType(ValueObjectType<?, ?> type) {
         contributeValueObjectTypes().add(type);
         return this;
     }
@@ -286,7 +286,7 @@ public class ServerModuleExtender {
     /**
      * Adds a custom {@link ValueObjectType}.
      */
-    public ServerModuleExtender addValueObjectType(Class<? extends ValueObjectType<?, ?>> type) {
+    public CoreModuleExtender addValueObjectType(Class<? extends ValueObjectType<?, ?>> type) {
         contributeValueObjectTypes().add(type);
         return this;
     }

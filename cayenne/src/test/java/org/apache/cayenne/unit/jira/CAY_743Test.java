@@ -19,7 +19,7 @@
 package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -35,12 +35,12 @@ public class CAY_743Test {
     @Test
     public void testLoad2MapsWithCrossMapInheritance() throws Exception {
 
-        Injector injector = DIBootstrap.createInjector(new ServerModule(
+        Injector injector = DIBootstrap.createInjector(new CoreModule(
                 ){
             @Override
             public void configure(Binder binder) {
                 super.configure(binder);
-                ServerModule.extend(binder).addProjectLocation("cay743/cayenne-domain.xml");
+                CoreModule.extend(binder).addProjectLocation("cay743/cayenne-domain.xml");
             }
         });
 

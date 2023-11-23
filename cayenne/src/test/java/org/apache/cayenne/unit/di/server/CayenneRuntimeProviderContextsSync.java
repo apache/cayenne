@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;
@@ -44,7 +44,7 @@ public class CayenneRuntimeProviderContextsSync extends CayenneRuntimeProvider {
     @Override
     protected Collection<? extends Module> getExtraModules() {
         Collection<Module> modules = new ArrayList<>(super.getExtraModules());
-        modules.add(binder -> ServerModule.extend(binder).syncContexts());
+        modules.add(binder -> CoreModule.extend(binder).syncContexts());
         return modules;
     }
 }

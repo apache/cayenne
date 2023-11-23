@@ -356,7 +356,7 @@ public class MyModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        ServerModule.contributeProperties(binder)
+        CoreModule.contributeProperties(binder)
             .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false");
     }
 }

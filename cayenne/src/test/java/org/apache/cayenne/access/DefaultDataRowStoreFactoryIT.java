@@ -25,8 +25,8 @@ import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DefaultDbRowOpSorter;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.configuration.server.ServerModuleExtender;
+import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.server.CoreModuleExtender;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -84,7 +84,7 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
             binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             binder.bind(EventBridge.class).toProvider(NoopEventBridgeProvider.class);
             binder.bind(DataRowStoreFactory.class).to(DefaultDataRowStoreFactory.class);
-            ServerModule.extend(binder).snapshotCacheSize(CACHE_SIZE);
+            CoreModule.extend(binder).snapshotCacheSize(CACHE_SIZE);
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
@@ -124,13 +124,13 @@ public class DefaultDataRowStoreFactoryIT extends ServerCase {
         assertEquals(dataStore.getEventBridge().getClass(), MockEventBridge.class);
     }
 
-    static class TestExtender extends ServerModuleExtender {
+    static class TestExtender extends CoreModuleExtender {
         public TestExtender(Binder binder) {
             super(binder);
         }
 
         @Override
-        protected ServerModuleExtender initAllExtensions() {
+        protected CoreModuleExtender initAllExtensions() {
             return super.initAllExtensions();
         }
     }

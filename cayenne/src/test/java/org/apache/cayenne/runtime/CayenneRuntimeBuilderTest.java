@@ -19,7 +19,7 @@
 package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.junit.After;
@@ -62,7 +62,7 @@ public class CayenneRuntimeBuilderTest {
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(2, modules.size());
-		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
+		assertThat(modules.iterator().next(), instanceOf(CoreModule.class));
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class CayenneRuntimeBuilderTest {
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(2, modules.size());
-		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
+		assertThat(modules.iterator().next(), instanceOf(CoreModule.class));
 
 	}
 
@@ -93,7 +93,7 @@ public class CayenneRuntimeBuilderTest {
 
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
-		assertThat(modules.iterator().next(), instanceOf(ServerModule.class));
+		assertThat(modules.iterator().next(), instanceOf(CoreModule.class));
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class CayenneRuntimeBuilderTest {
 		Collection<Module> modules = runtime.getModules();
 		assertEquals(3, modules.size());
 		Module[] array = modules.toArray(new Module[3]);
-		assertThat(array[0], instanceOf(ServerModule.class));
+		assertThat(array[0], instanceOf(CoreModule.class));
 		assertSame(m, array[1]);
 	}
 

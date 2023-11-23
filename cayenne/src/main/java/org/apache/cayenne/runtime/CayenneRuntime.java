@@ -23,7 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -121,8 +121,8 @@ public class CayenneRuntime {
     }
 
     /**
-     * Creates a server runtime configuring it with a standard set of services
-     * contained in {@link ServerModule}. CayenneServerModule is created with
+     * Creates a runtime configuring it with a standard set of services
+     * contained in {@link CoreModule}. CoreModule is created with
      * one or more 'configurationLocations'. An optional array of extra modules
      * may contain service overrides and/or user services.
      */

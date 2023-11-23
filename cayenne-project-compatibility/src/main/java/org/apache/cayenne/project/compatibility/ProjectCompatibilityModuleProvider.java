@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.project.ProjectModule;
 
@@ -46,6 +46,6 @@ public class ProjectCompatibilityModuleProvider implements CayenneServerModulePr
     public Collection<Class<? extends Module>> overrides() {
         // compatibility module overrides XML loaders defined in ServerModule and
         // upgrade services from ProjectModule
-        return Arrays.asList(ServerModule.class, ProjectModule.class);
+        return Arrays.asList(CoreModule.class, ProjectModule.class);
     }
 }

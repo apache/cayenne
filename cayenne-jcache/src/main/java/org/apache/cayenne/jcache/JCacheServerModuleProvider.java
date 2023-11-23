@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
-import org.apache.cayenne.configuration.server.ServerModule;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.Module;
 
 /**
@@ -43,6 +43,6 @@ public class JCacheServerModuleProvider implements CayenneServerModuleProvider {
 
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        return Collections.singletonList(ServerModule.class);
+        return Collections.singletonList(CoreModule.class);
     }
 }

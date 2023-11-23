@@ -76,7 +76,7 @@ public class DefaultDbAdapterFactoryTest {
         dataSource.setupConnection(connection);
 
         Module testModule = binder -> {
-            ServerModule.extend(binder).initAllExtensions();
+            CoreModule.extend(binder).initAllExtensions();
 
             binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
@@ -104,7 +104,7 @@ public class DefaultDbAdapterFactoryTest {
 
         Module testModule = b -> {
 
-            ServerModule.extend(b).initAllExtensions();
+            CoreModule.extend(b).initAllExtensions();
 
             b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
@@ -139,7 +139,7 @@ public class DefaultDbAdapterFactoryTest {
         List<DbAdapterDetector> detectors = new ArrayList<>();
 
         Module testModule = b -> {
-            ServerModule.extend(b).initAllExtensions();
+            CoreModule.extend(b).initAllExtensions();
 
             b.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             b.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);
@@ -181,7 +181,7 @@ public class DefaultDbAdapterFactoryTest {
         dataSource.setupConnection(connection);
 
         Module testModule = binder -> {
-            ServerModule.extend(binder).initAllExtensions();
+            CoreModule.extend(binder).initAllExtensions();
 
             binder.bind(PkGenerator.class).to(JdbcPkGenerator.class);
             binder.bind(PkGeneratorFactoryProvider.class).to(PkGeneratorFactoryProvider.class);

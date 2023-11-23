@@ -133,7 +133,7 @@ Ignore the annotations for a minute. The important point here is that the listen
 CayenneRuntime runtime = CayenneRuntime.builder()
        // ..
        .addModule(binder ->
-            ServerModule.contributeDomainListeners()
+            CoreModule.contributeDomainListeners()
                 .add(Listener1.class)
                 .add(new Listener2())
        )
@@ -257,7 +257,7 @@ Now since this is both a filter and a listener, it needs to be registered as suc
 CayenneRuntime runtime = CayenneRuntime.builder()
         // ..
         .addModule(b ->
-                ServerModule.contributeDomainSyncFilters(b)
+                CoreModule.contributeDomainSyncFilters(b)
                         .add(CommittedObjectCounter.class)
         )
         // ..

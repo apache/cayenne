@@ -46,6 +46,8 @@ that accordingly in your build scripts
 
 * Per CAY-2823 `ServerRuntime` is deprecated. You should change your code to use `org.apache.cayenne.runtime.CayenneRuntime` instead.
 
+* Per CAY-2826 `ServerModule` renamed to `CoreModule`
+
 UPGRADING TO 4.2.M2
 
 * Per CAY-2659 All batch translators (`InsertBatchTranslator`, `UpdateBatchTranslator`, etc.) are updated to the new SQLBuilder utility.

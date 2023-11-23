@@ -21,9 +21,9 @@ package org.apache.cayenne.runtime;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.CayenneServerModuleProvider;
+import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.ServerModule;
-import org.apache.cayenne.configuration.server.ServerModuleExtender;
+import org.apache.cayenne.configuration.server.CoreModuleExtender;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
@@ -203,7 +203,7 @@ public class CayenneRuntimeBuilder {
     }
 
     private Collection<? extends Module> defaultModules() {
-        return Collections.singleton(new ServerModule());
+        return Collections.singleton(new CoreModule());
     }
 
     private Collection<? extends Module> builderModules() {
@@ -212,7 +212,7 @@ public class CayenneRuntimeBuilder {
 
         if (!configs.isEmpty()) {
             modules.add(binder -> {
-                ServerModuleExtender extender = ServerModule.extend(binder);
+                CoreModuleExtender extender = CoreModule.extend(binder);
                 configs.forEach(extender::addProjectLocation);
             });
         }
@@ -228,7 +228,7 @@ public class CayenneRuntimeBuilder {
         if (nameOverride != null) {
 
             final String finalNameOverride = nameOverride;
-            modules.add(binder -> ServerModule.extend(binder).setProperty(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride));
+            modules.add(binder -> CoreModule.extend(binder).setProperty(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride));
         }
 
         if (dataSourceFactory != null) {
@@ -243,7 +243,7 @@ public class CayenneRuntimeBuilder {
         else if (jdbcUrl != null && jdbcDriver != null) {
             modules.add(binder -> {
                 binder.bind(DataDomain.class).toProvider(SyntheticNodeDataDomainProvider.class);
-                ServerModuleExtender extender = ServerModule.extend(binder)
+                CoreModuleExtender extender = CoreModule.extend(binder)
                         .setProperty(Constants.JDBC_DRIVER_PROPERTY, jdbcDriver)
                         .setProperty(Constants.JDBC_URL_PROPERTY, jdbcUrl);
 
