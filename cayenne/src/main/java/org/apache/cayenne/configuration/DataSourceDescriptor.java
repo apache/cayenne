@@ -110,12 +110,12 @@ public class DataSourceDescriptor implements Serializable, XMLSerializable {
         encoder.start("data-source")
                 .start("driver").attribute("value", jdbcDriver).end()
                 .start("url").attribute("value", dataSourceUrl).end()
-                .start("login")
-                    .attribute("userName", userName)
-                    .attribute("password", password).end()
                 .start("connectionPool")
                     .attribute("min", minConnections)
                     .attribute("max", maxConnections).end()
+                .start("login")
+                    .attribute("userName", userName)
+                    .attribute("password", password).end()
                 .end();
     }
 
