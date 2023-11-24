@@ -482,7 +482,7 @@ public class DataMapView extends JPanel {
 
     public void updateNamesAfterSaving(ProjectSavedEvent e) {
         DataMap currentDataMap = eventController.getCurrentDataMap();
-        if(!currentDataMap.getLocation().equals(location.getText())) {
+        if(currentDataMap != null && !currentDataMap.getLocation().equals(location.getText())) {
             location.setText(currentDataMap.getLocation());
         }
     }
