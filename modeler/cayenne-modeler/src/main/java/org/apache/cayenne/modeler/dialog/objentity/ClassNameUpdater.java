@@ -69,9 +69,8 @@ public class ClassNameUpdater extends CayenneController {
         if (askForUpdate) {
             // start dialog
             view = new ClassNameUpdaterView();
-            view.getServerClass().setVisible(true);
-            view.getServerClass().setSelected(true);
-            view.getServerClass().setText("Change Class Name to '" + suggestedName + "'");
+            view.getClassName()
+                    .setText("Update class name to " + suggestedName + " to match current entity name?");
 
             initBindings(suggestedName);
 
@@ -114,14 +113,11 @@ public class ClassNameUpdater extends CayenneController {
         return DataMap.getNameWithPackage(pkg, entityName);
     }
 
-    protected void initBindings(final String suggestedServerName) {
+    protected void initBindings(final String suggestedName) {
 
         view.getUpdateButton().addActionListener(e -> {
-            if (view.getServerClass().isSelected()) {
-                entity.setClassName(suggestedServerName);
-                updatePerformed = true;
-            }
-
+            entity.setClassName(suggestedName);
+            updatePerformed = true;
             view.dispose();
         });
 
