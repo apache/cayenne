@@ -30,9 +30,9 @@ import org.apache.cayenne.testdo.oneway.OnewayTable1;
 import org.apache.cayenne.testdo.oneway.OnewayTable2;
 import org.apache.cayenne.testdo.oneway.OnewayTable3;
 import org.apache.cayenne.testdo.oneway.OnewayTable4;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.ONEWAY_PROJECT)
-public class OneWayRelationshipsIT extends ServerCase {
+public class OneWayRelationshipsIT extends RuntimeCase {
 
 	@Inject
 	private ObjectContext context;

@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  * @since 4.1
  */
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextConcurrencyIT extends ServerCase {
+public class DataContextConcurrencyIT extends RuntimeCase {
 
     private static final Logger logger = LoggerFactory.getLogger(DataContextConcurrencyIT.class);
 

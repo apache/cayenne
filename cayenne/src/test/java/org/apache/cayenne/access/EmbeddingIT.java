@@ -31,9 +31,9 @@ import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
 import org.apache.cayenne.testdo.embeddable.EmbedRoot;
 import org.apache.cayenne.testdo.embeddable.Embeddable1;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.EMBEDDABLE_PROJECT)
-public class EmbeddingIT extends ServerCase {
+public class EmbeddingIT extends RuntimeCase {
     
     @Inject
     protected ObjectContext context;

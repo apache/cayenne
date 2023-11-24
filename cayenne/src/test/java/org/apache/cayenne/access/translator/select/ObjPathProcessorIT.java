@@ -24,9 +24,9 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
  * @since 4.2
  */
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-public class ObjPathProcessorIT extends ServerCase {
+public class ObjPathProcessorIT extends RuntimeCase {
 
     @Inject
     protected ObjectContext context;

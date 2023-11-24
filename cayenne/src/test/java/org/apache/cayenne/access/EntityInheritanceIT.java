@@ -23,15 +23,15 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.inheritance.BaseEntity;
 import org.apache.cayenne.testdo.inheritance.RelatedEntity;
 import org.apache.cayenne.testdo.inheritance.SubEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_PROJECT)
-public class EntityInheritanceIT extends ServerCase {
+public class EntityInheritanceIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

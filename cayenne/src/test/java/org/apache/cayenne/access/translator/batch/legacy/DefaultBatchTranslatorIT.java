@@ -28,9 +28,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.BatchQueryRow;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 
 @Deprecated
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DefaultBatchTranslatorIT extends ServerCase {
+public class DefaultBatchTranslatorIT extends RuntimeCase {
 
     @Inject
     private AdhocObjectFactory objectFactory;

@@ -24,14 +24,14 @@ import java.util.Date;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.access.util.ServerCaseSyncModule;
+import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ExtraModules;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,8 +42,8 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(ServerCaseSyncModule.class)
-public class DataContextDelegateSharedCacheIT extends ServerCase {
+@ExtraModules(RuntimeCaseSyncModule.class)
+public class DataContextDelegateSharedCacheIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

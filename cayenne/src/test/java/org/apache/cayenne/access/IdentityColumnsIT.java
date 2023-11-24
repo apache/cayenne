@@ -40,9 +40,9 @@ import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.testdo.generated.GeneratedF1;
 import org.apache.cayenne.testdo.generated.GeneratedF2;
 import org.apache.cayenne.testdo.generated.GeneratedReflexive;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,7 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.GENERATED_PROJECT)
-public class IdentityColumnsIT extends ServerCase {
+public class IdentityColumnsIT extends RuntimeCase {
 
     @Inject
     protected ObjectContext context;

@@ -34,9 +34,9 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.ListResponse;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataDomainFiltersIT extends ServerCase {
+public class DataDomainFiltersIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

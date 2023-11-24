@@ -24,9 +24,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.Calendar;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
-public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends ServerCase {
+public class DataContextEJBQLDateTimeFunctionalExpressionsIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

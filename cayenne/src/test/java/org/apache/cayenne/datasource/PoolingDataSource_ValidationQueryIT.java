@@ -22,8 +22,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)

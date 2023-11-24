@@ -22,10 +22,10 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.MockSerializable;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -42,10 +42,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.EMPTY_PROJECT)
-public class TypesMappingIT extends ServerCase {
+public class TypesMappingIT extends RuntimeCase {
 
     @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+    private RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @Test
     public void testGetSqlTypeByJava() throws Exception {

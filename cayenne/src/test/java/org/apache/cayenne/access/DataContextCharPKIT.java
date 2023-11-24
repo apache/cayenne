@@ -23,9 +23,9 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.List;
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class DataContextCharPKIT extends ServerCase {
+public class DataContextCharPKIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

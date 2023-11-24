@@ -21,8 +21,8 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.Collections;

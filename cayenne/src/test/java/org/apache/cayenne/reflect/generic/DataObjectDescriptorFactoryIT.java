@@ -30,9 +30,9 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -40,7 +40,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataObjectDescriptorFactoryIT extends ServerCase {
+public class DataObjectDescriptorFactoryIT extends RuntimeCase {
 
     @Inject
     private EntityResolver resolver;

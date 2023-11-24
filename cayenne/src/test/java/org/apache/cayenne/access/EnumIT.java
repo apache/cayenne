@@ -32,9 +32,9 @@ import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
 import org.apache.cayenne.testdo.enum_test.EnumEntity2;
 import org.apache.cayenne.testdo.enum_test.EnumEntity3;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.ENUM_PROJECT)
-public class EnumIT extends ServerCase {
+public class EnumIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

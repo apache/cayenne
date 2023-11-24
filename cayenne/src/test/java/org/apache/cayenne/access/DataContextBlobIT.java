@@ -26,16 +26,16 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.BlobTestEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
-public class DataContextBlobIT extends ServerCase {
+public class DataContextBlobIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

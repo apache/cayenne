@@ -22,16 +22,16 @@ package org.apache.cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PersistenceByReachabilityIT extends ServerCase {
+public class PersistenceByReachabilityIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

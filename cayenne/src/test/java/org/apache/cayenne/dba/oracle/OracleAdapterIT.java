@@ -24,9 +24,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.sql.Types;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
-public class OracleAdapterIT extends ServerCase {
+public class OracleAdapterIT extends RuntimeCase {
 
     @Inject
     private CayenneRuntime runtime;

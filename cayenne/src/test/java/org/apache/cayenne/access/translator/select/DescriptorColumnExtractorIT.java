@@ -25,9 +25,9 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DescriptorColumnExtractorIT extends ServerCase {
+public class DescriptorColumnExtractorIT extends RuntimeCase {
     @Inject
     private ObjectContext context;
 

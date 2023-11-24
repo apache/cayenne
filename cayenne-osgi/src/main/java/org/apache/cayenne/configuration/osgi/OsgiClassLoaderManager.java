@@ -32,14 +32,14 @@ public class OsgiClassLoaderManager implements ClassLoaderManager {
     private static final String CAYENNE_DI_PACKAGE_SUFFIX = "/di";
 
     private ClassLoader applicationClassLoader;
-    private ClassLoader cayenneServerClassLoader;
+    private ClassLoader cayenneRuntimeClassLoader;
     private ClassLoader cayenneDiClassLoader;
     private Map<String, ClassLoader> perResourceClassLoaders;
 
     public OsgiClassLoaderManager(ClassLoader applicationClassLoader, Map<String, ClassLoader> perResourceClassLoaders) {
         this.applicationClassLoader = applicationClassLoader;
         this.cayenneDiClassLoader = Injector.class.getClassLoader();
-        this.cayenneServerClassLoader = OsgiClassLoaderManager.class.getClassLoader();
+        this.cayenneRuntimeClassLoader = OsgiClassLoaderManager.class.getClassLoader();
         this.perResourceClassLoaders = perResourceClassLoaders;
     }
 
@@ -52,8 +52,9 @@ public class OsgiClassLoaderManager implements ClassLoaderManager {
         String normalizedName = resourceName.charAt(0) == '/' ? resourceName.substring(1) : resourceName;
         if (normalizedName.startsWith(CAYENNE_PACKAGE)) {
 
-            return (normalizedName.substring(CAYENNE_PACKAGE.length()).startsWith(CAYENNE_DI_PACKAGE_SUFFIX)) ? cayenneDiClassLoader()
-                    : cayenneServerClassLoader();
+            return (normalizedName.substring(CAYENNE_PACKAGE.length()).startsWith(CAYENNE_DI_PACKAGE_SUFFIX))
+                    ? cayenneDiClassLoader()
+                    : cayenneRuntimeClassLoader();
         }
 
         return resourceClassLoader(resourceName);
@@ -68,7 +69,7 @@ public class OsgiClassLoaderManager implements ClassLoaderManager {
         return cayenneDiClassLoader;
     }
 
-    protected ClassLoader cayenneServerClassLoader() {
-        return cayenneServerClassLoader;
+    protected ClassLoader cayenneRuntimeClassLoader() {
+        return cayenneRuntimeClassLoader;
     }
 }

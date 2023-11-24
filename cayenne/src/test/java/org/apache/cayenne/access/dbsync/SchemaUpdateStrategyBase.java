@@ -25,7 +25,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SchemaUpdateStrategyBase extends ServerCase {
+public class SchemaUpdateStrategyBase extends RuntimeCase {
 
 	@Inject
 	protected ObjectContext context;

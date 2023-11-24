@@ -23,9 +23,9 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class NestedDataContextValidationIT extends ServerCase {
+public class NestedDataContextValidationIT extends RuntimeCase {
 
     @Inject
     protected CayenneRuntime runtime;

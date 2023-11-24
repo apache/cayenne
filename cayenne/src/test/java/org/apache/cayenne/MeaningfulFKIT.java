@@ -23,16 +23,16 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
-public class MeaningfulFKIT extends ServerCase {
+public class MeaningfulFKIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

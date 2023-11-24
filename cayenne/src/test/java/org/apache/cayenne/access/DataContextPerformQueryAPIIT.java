@@ -32,9 +32,9 @@ import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextPerformQueryAPIIT extends ServerCase {
+public class DataContextPerformQueryAPIIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

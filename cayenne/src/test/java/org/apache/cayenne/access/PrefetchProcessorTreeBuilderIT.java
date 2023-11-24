@@ -32,9 +32,9 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PrefetchProcessorTreeBuilderIT extends ServerCase {
+public class PrefetchProcessorTreeBuilderIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

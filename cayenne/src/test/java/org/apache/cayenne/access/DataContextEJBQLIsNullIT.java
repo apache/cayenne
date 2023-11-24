@@ -26,9 +26,9 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,7 +38,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextEJBQLIsNullIT extends ServerCase {
+public class DataContextEJBQLIsNullIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

@@ -29,9 +29,9 @@ import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.date_time.CalendarEntity;
 import org.apache.cayenne.testdo.date_time.DateTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  * Tests Date handling in Cayenne.
  */
 @UseCayenneRuntime(CayenneProjects.DATE_TIME_PROJECT)
-public class DateTimeTypesIT extends ServerCase {
+public class DateTimeTypesIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

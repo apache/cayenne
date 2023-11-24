@@ -32,9 +32,9 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextPrefetchMultistepIT extends ServerCase {
+public class DataContextPrefetchMultistepIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

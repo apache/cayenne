@@ -31,9 +31,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 @UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
-public class OptimisticLockingIT extends ServerCase {
+public class OptimisticLockingIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

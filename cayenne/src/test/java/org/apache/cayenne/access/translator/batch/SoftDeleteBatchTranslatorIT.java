@@ -40,16 +40,16 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.soft_delete.SoftDelete;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.SOFT_DELETE_PROJECT)
-public class SoftDeleteBatchTranslatorIT extends ServerCase {
+public class SoftDeleteBatchTranslatorIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

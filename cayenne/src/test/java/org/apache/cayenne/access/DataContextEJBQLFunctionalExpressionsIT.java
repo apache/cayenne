@@ -27,9 +27,9 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.List;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 // TODO: renamed as it fails on DB's like Derby. See CAY-1480. 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextEJBQLFunctionalExpressionsIT extends ServerCase {
+public class DataContextEJBQLFunctionalExpressionsIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

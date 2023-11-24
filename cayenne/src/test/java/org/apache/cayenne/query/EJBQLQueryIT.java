@@ -37,9 +37,9 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +52,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EJBQLQueryIT extends ServerCase {
+public class EJBQLQueryIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

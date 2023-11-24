@@ -41,7 +41,7 @@ public class OsgiClassLoaderManagerTest {
             }
 
             @Override
-            protected ClassLoader cayenneServerClassLoader() {
+            protected ClassLoader cayenneRuntimeClassLoader() {
                 return serverCl;
             }
         };

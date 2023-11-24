@@ -28,9 +28,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_clob.ClobMaster;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 /**
  */
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_CLOB_PROJECT)
-public class CAY_115IT extends ServerCase {
+public class CAY_115IT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

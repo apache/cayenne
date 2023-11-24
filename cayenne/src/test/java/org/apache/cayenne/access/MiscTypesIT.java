@@ -28,9 +28,9 @@ import org.apache.cayenne.testdo.misc_types.ArraysEntity;
 import org.apache.cayenne.testdo.misc_types.CharacterEntity;
 import org.apache.cayenne.testdo.misc_types.SerializableEntity;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 @UseCayenneRuntime(CayenneProjects.MISC_TYPES_PROJECT)
-public class MiscTypesIT extends ServerCase {
+public class MiscTypesIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

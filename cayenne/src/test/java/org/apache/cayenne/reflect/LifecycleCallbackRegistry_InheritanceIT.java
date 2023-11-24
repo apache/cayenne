@@ -28,15 +28,15 @@ import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 import org.apache.cayenne.testdo.testmap.annotations.Tag2;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
-public class LifecycleCallbackRegistry_InheritanceIT extends ServerCase {
+public class LifecycleCallbackRegistry_InheritanceIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

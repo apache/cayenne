@@ -30,9 +30,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2641.ArtistLazy;
 import org.apache.cayenne.testdo.cay_2641.DatamapLazy;
 import org.apache.cayenne.testdo.cay_2641.PaintingLazy;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 import org.testcontainers.shaded.org.hamcrest.MatcherAssert;
@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
  * @since 4.2
  */
 @UseCayenneRuntime(CayenneProjects.CAY_2641)
-public class Cay2641IT extends ServerCase {
+public class Cay2641IT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

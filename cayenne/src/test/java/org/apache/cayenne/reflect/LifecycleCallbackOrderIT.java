@@ -28,15 +28,15 @@ import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.LIFECYCLE_CALLBACKS_ORDER_PROJECT)
-public class LifecycleCallbackOrderIT extends ServerCase {
+public class LifecycleCallbackOrderIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

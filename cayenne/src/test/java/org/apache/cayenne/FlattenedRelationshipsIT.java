@@ -35,9 +35,9 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest4;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.validation.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  * Test case for objects with flattened relationships.
  */
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
-public class FlattenedRelationshipsIT extends ServerCase {
+public class FlattenedRelationshipsIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

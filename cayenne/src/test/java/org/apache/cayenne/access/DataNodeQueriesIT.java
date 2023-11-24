@@ -26,9 +26,9 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataNodeQueriesIT extends ServerCase {
+public class DataNodeQueriesIT extends RuntimeCase {
 
     @Inject
     protected DataNode node;

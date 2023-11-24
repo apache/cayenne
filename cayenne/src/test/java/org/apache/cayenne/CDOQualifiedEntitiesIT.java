@@ -30,9 +30,9 @@ import org.apache.cayenne.testdo.qualified.Qualified2;
 import org.apache.cayenne.testdo.qualified.Qualified3;
 import org.apache.cayenne.testdo.qualified.Qualified4;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.QUALIFIED_PROJECT)
-public class CDOQualifiedEntitiesIT extends ServerCase {
+public class CDOQualifiedEntitiesIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

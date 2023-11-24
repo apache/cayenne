@@ -24,13 +24,13 @@ import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.MULTINODE_PROJECT)
-public class DataContextCrossDBIT extends ServerCase {
+public class DataContextCrossDBIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

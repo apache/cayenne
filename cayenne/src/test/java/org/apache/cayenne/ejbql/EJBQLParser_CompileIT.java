@@ -25,14 +25,14 @@ import static org.junit.Assert.assertSame;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EJBQLParser_CompileIT extends ServerCase {
+public class EJBQLParser_CompileIT extends RuntimeCase {
 
 	@Inject
 	protected CayenneRuntime runtime;

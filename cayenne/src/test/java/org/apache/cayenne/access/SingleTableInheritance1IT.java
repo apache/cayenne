@@ -24,9 +24,9 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  * Special test cases per CAY-1378, CAY-1379.
  */
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
-public class SingleTableInheritance1IT extends ServerCase {
+public class SingleTableInheritance1IT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

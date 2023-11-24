@@ -30,7 +30,7 @@ import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
-import org.apache.cayenne.commitlog.unit.AuditableServerCase;
+import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.Before;
@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class CommitLogFilter_FilteredIT extends AuditableServerCase {
+public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 	protected ObjectContext context;
 	protected CommitLogListener mockListener;

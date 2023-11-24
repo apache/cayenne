@@ -24,9 +24,9 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
 // DataObjectUtils to pull the PK on demand. A caveat - we need to analyze DataObject in
 // question to see if a PK is numeric and not propagated.
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PregeneratedPKIT extends ServerCase {
+public class PregeneratedPKIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

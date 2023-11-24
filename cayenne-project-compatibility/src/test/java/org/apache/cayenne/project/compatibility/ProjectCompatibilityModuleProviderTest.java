@@ -29,7 +29,7 @@ import org.junit.Test;
 public class ProjectCompatibilityModuleProviderTest {
 
     @Test
-    public void testServerAutoLoadable() {
+    public void testAutoLoadable() {
         ModuleProviderChecker.testProviderPresent(ProjectCompatibilityModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

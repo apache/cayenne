@@ -26,7 +26,7 @@ import org.apache.cayenne.testdo.inheritance_people.Employee;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.PeopleProjectCase;
+import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.junit.Before;
 import org.junit.Test;
 

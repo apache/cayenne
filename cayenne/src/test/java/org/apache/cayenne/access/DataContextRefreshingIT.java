@@ -31,9 +31,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertNull;
  * prefetching.
  */
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextRefreshingIT extends ServerCase {
+public class DataContextRefreshingIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

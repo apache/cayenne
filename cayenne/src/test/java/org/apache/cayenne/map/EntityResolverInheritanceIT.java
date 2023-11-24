@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.di.server.PeopleProjectCase;
+import org.apache.cayenne.unit.di.runtime.PeopleProjectCase;
 import org.junit.Test;
 
 public class EntityResolverInheritanceIT extends PeopleProjectCase {

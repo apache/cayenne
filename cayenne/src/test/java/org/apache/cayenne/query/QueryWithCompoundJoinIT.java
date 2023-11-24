@@ -28,9 +28,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
  * @since 4.0
  */
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class QueryWithCompoundJoinIT extends ServerCase {
+public class QueryWithCompoundJoinIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

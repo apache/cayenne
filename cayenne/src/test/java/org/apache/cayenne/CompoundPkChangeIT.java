@@ -22,15 +22,15 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class CompoundPkChangeIT extends ServerCase {
+public class CompoundPkChangeIT extends RuntimeCase {
 
     private static final String key1v1 = "-key1-v1-";
     private static final String key2v1 = "-key2-v1-";

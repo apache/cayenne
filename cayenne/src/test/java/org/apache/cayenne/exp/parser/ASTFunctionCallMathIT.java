@@ -27,9 +27,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.table_primitives.TablePrimitives;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -38,7 +38,7 @@ import static junit.framework.TestCase.assertEquals;
  * @since 4.0
  */
 @UseCayenneRuntime(CayenneProjects.TABLE_PRIMITIVES_PROJECT)
-public class ASTFunctionCallMathIT extends ServerCase {
+public class ASTFunctionCallMathIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

@@ -36,9 +36,9 @@ import org.apache.cayenne.testdo.java8.LocalDateTestEntity;
 import org.apache.cayenne.testdo.java8.LocalDateTimeTestEntity;
 import org.apache.cayenne.testdo.java8.LocalTimeTestEntity;
 import org.apache.cayenne.testdo.java8.PeriodTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @UseCayenneRuntime(CayenneProjects.JAVA8)
-public class Java8TimeIT extends ServerCase {
+public class Java8TimeIT extends RuntimeCase {
 
 	@Inject
 	private DataContext context;

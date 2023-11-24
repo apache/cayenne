@@ -31,9 +31,9 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.QUOTED_IDENTIFIERS_PROJECT)
-public class QuotedIdentifiersIT extends ServerCase {
+public class QuotedIdentifiersIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

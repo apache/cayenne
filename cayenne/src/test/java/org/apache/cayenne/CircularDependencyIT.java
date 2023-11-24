@@ -24,15 +24,15 @@ import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_PROJECT)
-public class CircularDependencyIT extends ServerCase {
+public class CircularDependencyIT extends RuntimeCase {
 
     @Inject
     private UnitDbAdapter unitDbAdapter;

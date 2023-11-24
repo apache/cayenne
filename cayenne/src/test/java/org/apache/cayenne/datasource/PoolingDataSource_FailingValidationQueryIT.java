@@ -24,13 +24,13 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class PoolingDataSource_FailingValidationQueryIT extends ServerCase {
+public class PoolingDataSource_FailingValidationQueryIT extends RuntimeCase {
 
 	@Inject
 	private DataSourceDescriptor dataSourceInfo;

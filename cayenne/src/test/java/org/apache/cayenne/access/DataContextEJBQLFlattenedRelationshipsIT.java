@@ -26,9 +26,9 @@ import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_FLATTENED_PROJECT)
-public class DataContextEJBQLFlattenedRelationshipsIT extends ServerCase {
+public class DataContextEJBQLFlattenedRelationshipsIT extends RuntimeCase {
 
     @Inject
     protected ObjectContext context;

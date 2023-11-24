@@ -29,9 +29,9 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.OracleUnitDbAdapter;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -42,7 +42,7 @@ import static org.junit.Assume.assumeFalse;
  * @since 4.0
  */
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ASTFunctionCallStringIT extends ServerCase {
+public class ASTFunctionCallStringIT extends RuntimeCase {
 
     @Inject
     private UnitDbAdapter unitDbAdapter;

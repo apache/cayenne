@@ -25,9 +25,9 @@ import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.testdo.json.JsonOther;
 import org.apache.cayenne.testdo.json.JsonVarchar;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.value.Json;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.JSON_PROJECT)
-public class JsonTypeIT extends ServerCase {
+public class JsonTypeIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

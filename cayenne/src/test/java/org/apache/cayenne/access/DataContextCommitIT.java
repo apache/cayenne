@@ -34,13 +34,13 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.NullTestEntity;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextCommitIT extends ServerCase {
+public class DataContextCommitIT extends RuntimeCase {
 
 	@Inject
 	private DataContext context;

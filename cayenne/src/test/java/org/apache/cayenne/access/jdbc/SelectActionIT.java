@@ -21,21 +21,24 @@ package org.apache.cayenne.access.jdbc;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.DataContextSharedCacheEmpiricIT;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
-public class SelectActionIT extends ServerCaseContextsSync {
+@ExtraModules(DataContextSharedCacheEmpiricIT.SyncContextsModule.class)
+public class SelectActionIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

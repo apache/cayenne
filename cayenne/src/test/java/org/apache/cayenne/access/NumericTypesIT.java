@@ -42,9 +42,9 @@ import org.apache.cayenne.testdo.numeric_types.LongEntity;
 import org.apache.cayenne.testdo.numeric_types.SmallintTestEntity;
 import org.apache.cayenne.testdo.numeric_types.TinyintTestEntity;
 import org.apache.cayenne.unit.di.CommitStats;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
  *
  */
 @UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
-public class NumericTypesIT extends ServerCase {
+public class NumericTypesIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

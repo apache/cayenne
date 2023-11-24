@@ -29,7 +29,7 @@ import org.junit.Test;
 public class VelocityModuleProviderTest {
 
     @Test
-    public void testServerAutoLoadable() {
+    public void testAutoLoadable() {
         ModuleProviderChecker.testProviderPresent(VelocityModuleProvider.class, CayenneRuntimeModuleProvider.class);
     }
 }

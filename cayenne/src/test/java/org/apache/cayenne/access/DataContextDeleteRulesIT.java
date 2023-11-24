@@ -39,16 +39,16 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 // TODO: redefine all test cases in terms of entities in "relationships" map
 // and merge this test case with DeleteRulesTst that inherits
 // from RelationshipTestCase.
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextDeleteRulesIT extends ServerCase {
+public class DataContextDeleteRulesIT extends RuntimeCase {
 
 	@Inject
 	private DataContext context;

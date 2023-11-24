@@ -27,15 +27,15 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.extended_type.StringET1;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.EXTENDED_TYPE_PROJECT)
-public class DataContextExtendedTypeOperationsIT extends ServerCase {
+public class DataContextExtendedTypeOperationsIT extends RuntimeCase {
 
     @Inject
     protected ObjectContext context;

@@ -26,9 +26,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Customer;
 import org.apache.cayenne.testdo.unsupported_distinct_types.Product;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.UNSUPPORTED_DISTINCT_TYPES_PROJECT)
-public class SelectActionWithUnsupportedDistinctTypesIT extends ServerCase {
+public class SelectActionWithUnsupportedDistinctTypesIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

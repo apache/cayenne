@@ -30,9 +30,9 @@ import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.Thing;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.THINGS_PROJECT)
-public class DataContextDisjointByIdPrefetch_ExtrasIT extends ServerCase {
+public class DataContextDisjointByIdPrefetch_ExtrasIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

@@ -25,16 +25,16 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.BINARY_PK_PROJECT)
-public class DataContextBinaryPKIT extends ServerCase {
+public class DataContextBinaryPKIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

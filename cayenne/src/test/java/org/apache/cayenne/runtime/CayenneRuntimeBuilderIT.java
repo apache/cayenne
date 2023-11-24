@@ -35,16 +35,16 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneRuntimeBuilderIT extends ServerCase {
+public class CayenneRuntimeBuilderIT extends RuntimeCase {
 
 	@Inject
 	private DBHelper dbHelper;

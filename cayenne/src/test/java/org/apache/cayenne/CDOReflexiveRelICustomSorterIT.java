@@ -23,7 +23,7 @@ import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.di.server.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -31,15 +31,15 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(CDOReflexiveRelICustomSorterIT.GraphSorterModule.class)
-public class CDOReflexiveRelICustomSorterIT extends ServerCase {
+public class CDOReflexiveRelICustomSorterIT extends RuntimeCase {
     @Inject
     private ObjectContext context;
 

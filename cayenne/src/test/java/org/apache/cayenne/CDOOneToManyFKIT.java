@@ -24,9 +24,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertSame;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at partial solution
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_TO_MANY_FK_PROJECT)
-public class CDOOneToManyFKIT extends ServerCase {
+public class CDOOneToManyFKIT extends RuntimeCase {
 
     @Inject
     protected DataContext context;

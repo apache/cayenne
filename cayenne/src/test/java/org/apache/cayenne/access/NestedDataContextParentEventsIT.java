@@ -20,15 +20,15 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.access.util.ServerCaseSyncModule;
+import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ExtraModules;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -37,8 +37,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-@ExtraModules(ServerCaseSyncModule.class)
-public class NestedDataContextParentEventsIT extends ServerCase {
+@ExtraModules(RuntimeCaseSyncModule.class)
+public class NestedDataContextParentEventsIT extends RuntimeCase {
 
     @Inject
     protected CayenneRuntime runtime;

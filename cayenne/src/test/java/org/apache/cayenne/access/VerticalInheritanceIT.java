@@ -29,9 +29,9 @@ import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.*;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -44,7 +44,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-public class VerticalInheritanceIT extends ServerCase {
+public class VerticalInheritanceIT extends RuntimeCase {
 
 	@Inject
 	protected ObjectContext context;

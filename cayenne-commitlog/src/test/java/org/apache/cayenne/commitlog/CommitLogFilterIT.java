@@ -24,7 +24,7 @@ import org.apache.cayenne.commitlog.db.Auditable1;
 import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.db.AuditableChild1x;
 import org.apache.cayenne.commitlog.model.*;
-import org.apache.cayenne.commitlog.unit.AuditableServerCase;
+import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.SelectById;
 import org.apache.cayenne.runtime.CayenneRuntimeBuilder;
 import org.junit.Before;
@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class CommitLogFilterIT extends AuditableServerCase {
+public class CommitLogFilterIT extends AuditableRuntimeCase {
 
     protected ObjectContext context;
     protected CommitLogListener mockListener;

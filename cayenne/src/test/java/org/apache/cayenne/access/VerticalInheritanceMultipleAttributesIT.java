@@ -31,9 +31,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
  * @since 4.1
  */
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-public class VerticalInheritanceMultipleAttributesIT extends ServerCase {
+public class VerticalInheritanceMultipleAttributesIT extends RuntimeCase {
 
     @Inject
     protected ObjectContext context;

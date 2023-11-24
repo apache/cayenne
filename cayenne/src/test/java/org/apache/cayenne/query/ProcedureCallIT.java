@@ -29,9 +29,9 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -42,7 +42,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ProcedureCallIT extends ServerCase {
+public class ProcedureCallIT extends RuntimeCase {
 
     public static final String UPDATE_STORED_PROCEDURE = "cayenne_tst_upd_proc";
     public static final String UPDATE_STORED_PROCEDURE_NOPARAM = "cayenne_tst_upd_proc2";

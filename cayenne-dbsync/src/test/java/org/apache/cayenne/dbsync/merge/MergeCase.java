@@ -45,11 +45,11 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ExtraModules;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.slf4j.Logger;
 import org.junit.Before;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
 @ExtraModules(DbSyncModule.class)
-public abstract class MergeCase extends ServerCase {
+public abstract class MergeCase extends RuntimeCase {
 
     @Inject
     protected EntityResolver resolver;
@@ -80,7 +80,7 @@ public abstract class MergeCase extends ServerCase {
     @Inject
     protected UnitDbAdapter accessStackAdapter;
     @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+    private RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @Override
     public void cleanUpDB() throws Exception {

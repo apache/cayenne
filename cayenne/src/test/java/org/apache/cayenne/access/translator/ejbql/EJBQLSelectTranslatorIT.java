@@ -26,9 +26,9 @@ import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.runtime.CayenneRuntime;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class EJBQLSelectTranslatorIT extends ServerCase {
+public class EJBQLSelectTranslatorIT extends RuntimeCase {
 
     @Inject
     private CayenneRuntime runtime;

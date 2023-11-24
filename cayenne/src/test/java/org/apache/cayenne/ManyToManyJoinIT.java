@@ -25,13 +25,13 @@ import org.apache.cayenne.testdo.relationships_many_to_many_join.Author;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationship;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.SelfRelationshipSub;
 import org.apache.cayenne.testdo.relationships_many_to_many_join.Song;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_MANY_TO_MANY_JOIN_PROJECT)
-public class ManyToManyJoinIT extends ServerCase {
+public class ManyToManyJoinIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

@@ -22,9 +22,9 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataObjectSerializationIT extends ServerCase {
+public class DataObjectSerializationIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

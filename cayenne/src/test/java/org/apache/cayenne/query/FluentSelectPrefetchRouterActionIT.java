@@ -26,16 +26,16 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class FluentSelectPrefetchRouterActionIT extends ServerCase {
+public class FluentSelectPrefetchRouterActionIT extends RuntimeCase {
 
     @Inject
     private EntityResolver resolver;

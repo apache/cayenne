@@ -44,10 +44,10 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextIT extends ServerCase {
+public class DataContextIT extends RuntimeCase {
 
 	@Inject
 	protected DataContext context;
@@ -79,7 +79,7 @@ public class DataContextIT extends ServerCase {
 	protected DataChannelInterceptor queryInterceptor;
 
 	@Inject
-	protected ServerCaseDataSourceFactory dataSourceFactory;
+	protected RuntimeCaseDataSourceFactory dataSourceFactory;
 
 	protected TableHelper tArtist;
 	protected TableHelper tExhibit;

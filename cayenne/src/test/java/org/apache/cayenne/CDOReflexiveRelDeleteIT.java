@@ -21,14 +21,14 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CDOReflexiveRelDeleteIT extends ServerCase {
+public class CDOReflexiveRelDeleteIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

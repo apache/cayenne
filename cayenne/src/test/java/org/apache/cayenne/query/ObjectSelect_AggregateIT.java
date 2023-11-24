@@ -36,9 +36,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -51,7 +51,7 @@ import static org.junit.Assert.assertEquals;
  * @since 4.0
  */
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class ObjectSelect_AggregateIT extends ServerCase {
+public class ObjectSelect_AggregateIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

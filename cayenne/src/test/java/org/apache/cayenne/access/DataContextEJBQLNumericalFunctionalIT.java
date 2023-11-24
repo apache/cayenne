@@ -33,9 +33,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.numeric_types.BigDecimalEntity;
 import org.apache.cayenne.testdo.numeric_types.BigIntegerEntity;
 import org.apache.cayenne.testdo.numeric_types.BooleanTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.NUMERIC_TYPES_PROJECT)
-public class DataContextEJBQLNumericalFunctionalIT extends ServerCase {
+public class DataContextEJBQLNumericalFunctionalIT extends RuntimeCase {
 
     @Inject
     protected DBHelper dbHelper;

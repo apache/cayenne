@@ -22,9 +22,9 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataNodeIT extends ServerCase {
+public class DataNodeIT extends RuntimeCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;

@@ -30,9 +30,9 @@ import org.apache.cayenne.testdo.inheritance_with_enum.Root;
 import org.apache.cayenne.testdo.inheritance_with_enum.Sub;
 import org.apache.cayenne.testdo.inheritance_with_enum.Type;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertTrue;
  * @since 4.1
  */
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_WITH_ENUM_PROJECT)
-public class QueryWithInheritancePrefetchIT extends ServerCase {
+public class QueryWithInheritancePrefetchIT extends RuntimeCase {
 
     @Inject
     private CayenneRuntime runtime;

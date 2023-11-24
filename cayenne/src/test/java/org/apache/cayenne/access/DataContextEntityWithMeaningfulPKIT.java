@@ -32,9 +32,9 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPk;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkDep2;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.MEANINGFUL_PK_PROJECT)
-public class DataContextEntityWithMeaningfulPKIT extends ServerCase {
+public class DataContextEntityWithMeaningfulPKIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

@@ -25,7 +25,10 @@ import java.util.List;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectStoreFactory;
+import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
@@ -33,9 +36,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCaseContextsSync;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.ExtraModules;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +49,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
+@ExtraModules(DataContextSharedCacheEmpiricIT.SyncContextsModule.class)
+public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
 
     private static final String NEW_NAME = "versionX";
 
@@ -171,5 +176,12 @@ public class DataContextSharedCacheEmpiricIT extends ServerCaseContextsSync {
             }
         };
         helper.runTest(3000);
+    }
+
+    public static class SyncContextsModule implements Module {
+        @Override
+        public void configure(Binder binder) {
+            CoreModule.extend(binder).syncContexts();
+        }
     }
 }

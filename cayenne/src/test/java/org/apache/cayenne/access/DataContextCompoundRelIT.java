@@ -26,9 +26,9 @@ import org.apache.cayenne.testdo.compound.CompoundOrder;
 import org.apache.cayenne.testdo.compound.CompoundOrderLine;
 import org.apache.cayenne.testdo.compound.CompoundOrderLineInfo;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.List;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
  * Testing relationships with compound keys.
  */
 @UseCayenneRuntime(CayenneProjects.COMPOUND_PROJECT)
-public class DataContextCompoundRelIT extends ServerCase {
+public class DataContextCompoundRelIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

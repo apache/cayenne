@@ -28,9 +28,9 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2666.CAY2666;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ import static org.junit.Assert.assertNotEquals;
  * @since 4.2
  */
 @UseCayenneRuntime(CayenneProjects.CAY_2666)
-public class Cay2666IT extends ServerCase {
+public class Cay2666IT extends RuntimeCase {
 
     @Inject
     private DataContext context;

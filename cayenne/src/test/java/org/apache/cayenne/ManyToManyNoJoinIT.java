@@ -21,15 +21,15 @@ package org.apache.cayenne;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.relationships_activity.Activity;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.sql.Date;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_ACTIVITY_PROJECT)
-public class ManyToManyNoJoinIT extends ServerCase {
+public class ManyToManyNoJoinIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

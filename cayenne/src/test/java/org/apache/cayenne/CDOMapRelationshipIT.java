@@ -28,9 +28,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.map_to_many.IdMapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToManyTarget;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
-public class CDOMapRelationshipIT extends ServerCase {
+public class CDOMapRelationshipIT extends RuntimeCase {
 
     @Inject
     protected ObjectContext context;

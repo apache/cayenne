@@ -44,7 +44,7 @@ public class ProjectCompatibilityModuleProvider implements CayenneRuntimeModuleP
 
     @Override
     public Collection<Class<? extends Module>> overrides() {
-        // compatibility module overrides XML loaders defined in ServerModule and
+        // compatibility module overrides XML loaders defined in CoreModule and
         // upgrade services from ProjectModule
         return Arrays.asList(CoreModule.class, ProjectModule.class);
     }

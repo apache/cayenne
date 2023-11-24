@@ -46,20 +46,20 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 import org.junit.Before;
 import org.junit.Test;
 
 @SuppressWarnings("deprecation")
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class SQLTemplateActionIT extends ServerCase {
+public class SQLTemplateActionIT extends RuntimeCase {
 
 	@Inject
-	protected ServerCaseDataSourceFactory dataSourceFactory;
+	protected RuntimeCaseDataSourceFactory dataSourceFactory;
 
 	@Inject
 	protected DataNode node;

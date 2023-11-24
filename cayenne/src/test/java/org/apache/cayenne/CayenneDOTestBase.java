@@ -24,11 +24,11 @@ import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.server.ServerCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 
 import java.util.List;
 
-public abstract class CayenneDOTestBase extends ServerCase {
+public abstract class CayenneDOTestBase extends RuntimeCase {
 
     public static final String artistName = "artist with one painting";
     public static final String galleryName = "my gallery";

@@ -28,9 +28,9 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -42,13 +42,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @UseCayenneRuntime(CayenneProjects.MULTI_TIER_PROJECT)
-public class EntityResolverClassDescriptorIT extends ServerCase {
+public class EntityResolverClassDescriptorIT extends RuntimeCase {
 
     @Inject
     private CayenneRuntime runtime;
 
     @Test
-    public void testServerDescriptorCaching() {
+    public void testDescriptorCaching() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 
@@ -63,7 +63,7 @@ public class EntityResolverClassDescriptorIT extends ServerCase {
     }
 
     @Test
-    public void testServerDescriptorFactory() {
+    public void testDescriptorFactory() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
 

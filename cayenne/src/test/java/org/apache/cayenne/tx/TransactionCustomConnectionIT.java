@@ -25,9 +25,9 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.*;
  * @since 4.2
  */
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class TransactionCustomConnectionIT extends ServerCase {
+public class TransactionCustomConnectionIT extends RuntimeCase {
 
     private final Logger logger = LoggerFactory.getLogger(TransactionIsolationIT.class);
 

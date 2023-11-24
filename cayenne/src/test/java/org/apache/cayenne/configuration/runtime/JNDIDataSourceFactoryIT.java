@@ -23,9 +23,9 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.unit.JNDISetup;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import javax.naming.InitialContext;
@@ -36,7 +36,7 @@ import static org.junit.Assert.fail;
 
 @Deprecated
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class JNDIDataSourceFactoryIT extends ServerCase {
+public class JNDIDataSourceFactoryIT extends RuntimeCase {
     
     @Inject
     private Injector injector;

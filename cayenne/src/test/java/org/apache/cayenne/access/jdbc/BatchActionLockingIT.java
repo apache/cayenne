@@ -36,9 +36,9 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -53,7 +53,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.LOCKING_PROJECT)
-public class BatchActionLockingIT extends ServerCase {
+public class BatchActionLockingIT extends RuntimeCase {
 
 	@Inject
 	protected CayenneRuntime runtime;

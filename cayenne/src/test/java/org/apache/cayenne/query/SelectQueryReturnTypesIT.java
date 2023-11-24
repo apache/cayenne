@@ -34,9 +34,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.return_types.ReturnTypesMap1;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
 
 import java.util.List;
@@ -44,7 +44,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.RETURN_TYPES_PROJECT)
-public class SelectQueryReturnTypesIT extends ServerCase {
+public class SelectQueryReturnTypesIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

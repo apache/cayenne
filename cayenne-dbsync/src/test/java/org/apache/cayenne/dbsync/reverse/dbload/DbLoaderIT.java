@@ -29,10 +29,10 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.unit.UnitDbAdapter;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.RuntimeCaseDataSourceFactory;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertTrue;
  * All tests have been moved to corresponding loaders tests.
  */
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DbLoaderIT extends ServerCase {
+public class DbLoaderIT extends RuntimeCase {
 
     private static final DbLoaderConfiguration CONFIG = new DbLoaderConfiguration();
 
@@ -59,7 +59,7 @@ public class DbLoaderIT extends ServerCase {
     private DbAdapter adapter;
 
     @Inject
-    private ServerCaseDataSourceFactory dataSourceFactory;
+    private RuntimeCaseDataSourceFactory dataSourceFactory;
 
     @Inject
     private UnitDbAdapter accessStackAdapter;

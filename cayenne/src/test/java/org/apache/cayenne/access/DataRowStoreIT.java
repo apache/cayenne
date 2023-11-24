@@ -24,9 +24,9 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.unit.di.server.CayenneProjects;
-import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseCayenneRuntime;
+import org.apache.cayenne.unit.di.runtime.CayenneProjects;
+import org.apache.cayenne.unit.di.runtime.RuntimeCase;
+import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.After;
 import org.junit.Test;
 
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
  * and this behaviour is not anyhow tested here nor it affects existing tests.
  */
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataRowStoreIT extends ServerCase {
+public class DataRowStoreIT extends RuntimeCase {
 
     private DataRowStore cache;
 
