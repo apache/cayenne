@@ -19,7 +19,7 @@
 package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory;
+import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -138,7 +138,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
 
     /**
      * Returns extra DataNodeDescriptor parameters. This property is often used by custom
-     * {@link org.apache.cayenne.configuration.server.DataSourceFactory} to configure a DataSource. E.g. JNDIDataSourceFactory may
+     * {@link org.apache.cayenne.configuration.runtime.DataSourceFactory} to configure a DataSource. E.g. JNDIDataSourceFactory may
      * treat parameters String as a JNDI location of the DataSource, etc.
      */
     public String getParameters() {
@@ -147,7 +147,7 @@ public class DataNodeDescriptor implements ConfigurationNode, XMLSerializable,
 
     /**
      * Sets extra DataNodeDescriptor parameters. This property is often used by custom
-     * {@link org.apache.cayenne.configuration.server.DataSourceFactory} to configure a DataSource. E.g. JNDIDataSourceFactory may
+     * {@link org.apache.cayenne.configuration.runtime.DataSourceFactory} to configure a DataSource. E.g. JNDIDataSourceFactory may
      * treat parameters String as a JNDI location of the DataSource, etc.
      */
     public void setParameters(String parameters) {

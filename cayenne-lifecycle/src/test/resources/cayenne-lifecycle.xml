@@ -3,7 +3,7 @@
 	 project-version="11">
 	<map name="lifecycle-map"/>
 	<node name="lifecycle-db"
-		 factory="org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory"
+		 factory="org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory"
 		 schema-update-strategy="org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy">
 		<map-ref name="lifecycle-map"/>
 		<data-source>

@@ -19,7 +19,7 @@
 package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 
 import javax.sql.DataSource;
 

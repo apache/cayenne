@@ -47,6 +47,7 @@ CAY-2821 Change development versioning schema
 CAY-2822 Rename `cayenne-server` module to `cayenne`
 CAY-2823 Merge `ServerRuntime` back to `CayenneRuntime` and deprecate it
 CAY-2824 Rename CayenneServerModuleProvider to CayenneRuntimeModuleProvider
+CAY-2825 Rename package `o.a.c.configuration.server` to `o.a.c.configuration.runtime`
 CAY-2826 Rename `ServerModule` to `CoreModule`
 
 Bug Fixes:

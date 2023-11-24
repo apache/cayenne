@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.util;
 
-import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 

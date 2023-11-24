@@ -16,25 +16,26 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.configuration.runtime;
 
-package org.apache.cayenne.configuration.server;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
-import org.apache.cayenne.dba.PerAdapterProvider;
-import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.di.Inject;
-
-import java.util.Map;
+import org.apache.cayenne.dba.DbAdapter;
 
 /**
- * Per-adapter provider of PkGenerators
- *
- * @since 4.1
+ * A factory interface providing DbAdapter based on JDBC metadata. It allows custom
+ * DbAdapters to contribute database detection algorithms to
+ * {@link DefaultDbAdapterFactory}.
+ * 
+ * @since 3.1
  */
-public class PkGeneratorFactoryProvider extends PerAdapterProvider<PkGenerator> {
+public interface DbAdapterDetector {
 
-    public PkGeneratorFactoryProvider(
-            @Inject Map<String, PkGenerator> perAdapterValues,
-            @Inject PkGenerator defaultValue) {
-        super(perAdapterValues, defaultValue);
-    }
+    /**
+     * Returns an instance of DbAdapter if the factory detects that it knows how to handle
+     * the database or null if the database is not known to the factory, thus allowing
+     * multiple factories to be chained.
+     */
+    DbAdapter createAdapter(DatabaseMetaData md) throws SQLException;
 }

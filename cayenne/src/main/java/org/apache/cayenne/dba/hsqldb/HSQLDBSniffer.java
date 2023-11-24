@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.hsqldb;
 
-import org.apache.cayenne.configuration.server.DbAdapterDetector;
+import org.apache.cayenne.configuration.runtime.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;

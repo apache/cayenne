@@ -16,17 +16,20 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.access.DataNode;
+import javax.sql.DataSource;
+
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 
 /**
- * A factory for creating DataNodes from descriptors.
- * 
- * @since 4.0
+ * @since 3.1
  */
-public interface DataNodeFactory {
+public interface DataSourceFactory {
 
-    DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception;
+    /**
+     * Returns DataSource object based on the configuration provided in the
+     * "nodeDescriptor".
+     */
+    DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception;
 }

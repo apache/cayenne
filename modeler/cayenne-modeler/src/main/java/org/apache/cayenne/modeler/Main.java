@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;

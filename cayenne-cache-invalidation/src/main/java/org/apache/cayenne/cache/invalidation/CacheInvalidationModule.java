@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.cache.invalidation;
 
-import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;

@@ -16,26 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.configuration.runtime;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 
+import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.dba.DbAdapter;
 
 /**
- * A factory interface providing DbAdapter based on JDBC metadata. It allows custom
- * DbAdapters to contribute database detection algorithms to
- * {@link DefaultDbAdapterFactory}.
- * 
  * @since 3.1
  */
-public interface DbAdapterDetector {
+public interface DbAdapterFactory {
 
     /**
      * Returns an instance of DbAdapter if the factory detects that it knows how to handle
-     * the database or null if the database is not known to the factory, thus allowing
-     * multiple factories to be chained.
+     * the database.
      */
-    DbAdapter createAdapter(DatabaseMetaData md) throws SQLException;
+    DbAdapter createAdapter(DataNodeDescriptor nodeDescriptor, DataSource dataSource) throws Exception;
 }

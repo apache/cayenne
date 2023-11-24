@@ -19,7 +19,7 @@
 package org.apache.cayenne.unit.di.server;
 
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Module;

@@ -19,7 +19,7 @@
 package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.junit.After;

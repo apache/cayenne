@@ -19,7 +19,7 @@
 package org.apache.cayenne.unit.jira;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;

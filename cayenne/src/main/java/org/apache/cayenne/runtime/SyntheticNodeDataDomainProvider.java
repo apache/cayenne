@@ -22,7 +22,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DataDomainProvider;
+import org.apache.cayenne.configuration.runtime.DataDomainProvider;
 import org.apache.cayenne.map.DataMap;
 
 /**

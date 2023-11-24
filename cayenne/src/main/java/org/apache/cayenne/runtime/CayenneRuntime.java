@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.ObjectContextFactory;
-import org.apache.cayenne.configuration.server.CoreModule;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -52,8 +51,8 @@ import java.util.Objects;
  * }
  * </pre>
  *
- * @since 5.0 is repurposed as a single implementation of Cayenne runtime and moved to {@code org.apache.cayenne.runtime} package.
- * @since 3.1
+ * @since 3.1 is introduced
+ * @since 5.0 is repurposed as a single implementation of Cayenne runtime and moved to {@link org.apache.cayenne.runtime} package.
  *
  * @see #builder()
  * @see #builder(String)
@@ -68,7 +67,7 @@ public class CayenneRuntime {
      *
      * @since 3.1
      */
-    protected static final ThreadLocal<Injector> threadInjector = new ThreadLocal<Injector>();
+    protected static final ThreadLocal<Injector> threadInjector = new ThreadLocal<>();
 
     /**
      * Binds a DI {@link Injector} bound to the current thread. It is primarily
@@ -122,7 +121,7 @@ public class CayenneRuntime {
 
     /**
      * Creates a runtime configuring it with a standard set of services
-     * contained in {@link CoreModule}. CoreModule is created with
+     * contained in {@link org.apache.cayenne.configuration.runtime.CoreModule}. CoreModule is created with
      * one or more 'configurationLocations'. An optional array of extra modules
      * may contain service overrides and/or user services.
      */
@@ -280,8 +279,7 @@ public class CayenneRuntime {
      * to release some resources a chance to do that.
      */
     // the following annotation is for environments that manage CayenneRuntimes
-    // within
-    // another DI registry (e.g. unit tests)
+    // within another DI registry (e.g. unit tests)
     @BeforeScopeEnd
     public void shutdown() {
         injector.shutdown();

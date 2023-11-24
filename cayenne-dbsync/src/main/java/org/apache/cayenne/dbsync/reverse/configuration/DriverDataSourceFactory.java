@@ -25,7 +25,7 @@ import javax.sql.DataSource;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataSourceDescriptor;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.datasource.DriverDataSource;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;

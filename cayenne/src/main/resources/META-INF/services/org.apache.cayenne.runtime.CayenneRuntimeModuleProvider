@@ -17,4 +17,4 @@
 #  under the License.
 ##################################################################
 
-org.apache.cayenne.configuration.server.CoreModuleProvider
+org.apache.cayenne.configuration.runtime.CoreModuleProvider

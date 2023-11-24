@@ -16,20 +16,25 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.configuration.server;
 
-import javax.sql.DataSource;
+package org.apache.cayenne.configuration.runtime;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
+import org.apache.cayenne.dba.PerAdapterProvider;
+import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.di.Inject;
+
+import java.util.Map;
 
 /**
- * @since 3.1
+ * Per-adapter provider of PkGenerators
+ *
+ * @since 4.1
  */
-public interface DataSourceFactory {
+public class PkGeneratorFactoryProvider extends PerAdapterProvider<PkGenerator> {
 
-    /**
-     * Returns DataSource object based on the configuration provided in the
-     * "nodeDescriptor".
-     */
-    DataSource getDataSource(DataNodeDescriptor nodeDescriptor) throws Exception;
+    public PkGeneratorFactoryProvider(
+            @Inject Map<String, PkGenerator> perAdapterValues,
+            @Inject PkGenerator defaultValue) {
+        super(perAdapterValues, defaultValue);
+    }
 }

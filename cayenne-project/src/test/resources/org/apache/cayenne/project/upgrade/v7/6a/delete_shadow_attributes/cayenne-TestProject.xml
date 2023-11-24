@@ -4,7 +4,7 @@
 	<map name="testProjectMap2"/>
 
 	<node name="testProjectNode"
-		 factory="org.apache.cayenne.configuration.server.XMLPoolingDataSourceFactory"
+		 factory="org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory"
 		 schema-update-strategy="org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy"
 		>
 		<map-ref name="testProjectMap1"/>

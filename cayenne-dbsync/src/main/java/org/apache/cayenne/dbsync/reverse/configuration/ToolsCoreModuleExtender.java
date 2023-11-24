@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import org.apache.cayenne.configuration.server.CoreModuleExtender;
+import org.apache.cayenne.configuration.runtime.CoreModuleExtender;
 import org.apache.cayenne.di.Binder;
 
 // this class exists so that ToolsModule can call "initAllExtensions()" that is protected in CoreModuleExtender.

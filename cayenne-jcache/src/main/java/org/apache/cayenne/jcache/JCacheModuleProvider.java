@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;
-import org.apache.cayenne.configuration.server.CoreModule;
+import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Module;
 
 /**

@@ -20,9 +20,9 @@ package org.apache.cayenne.runtime;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.server.CoreModule;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
-import org.apache.cayenne.configuration.server.CoreModuleExtender;
+import org.apache.cayenne.configuration.runtime.CoreModule;
+import org.apache.cayenne.configuration.runtime.DataSourceFactory;
+import org.apache.cayenne.configuration.runtime.CoreModuleExtender;
 import org.apache.cayenne.datasource.DataSourceBuilder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;

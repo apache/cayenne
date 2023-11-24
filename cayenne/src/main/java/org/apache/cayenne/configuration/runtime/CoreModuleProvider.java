@@ -16,7 +16,7 @@
  *    specific language governing permissions and limitations
  *    under the License.
  */
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.configuration.runtime;
 
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.runtime.CayenneRuntimeModuleProvider;

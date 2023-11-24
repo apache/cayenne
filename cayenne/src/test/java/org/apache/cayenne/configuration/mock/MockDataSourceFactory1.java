@@ -21,7 +21,7 @@ package org.apache.cayenne.configuration.mock;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
+import org.apache.cayenne.configuration.runtime.DataSourceFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 
