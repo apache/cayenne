@@ -33,7 +33,7 @@ public class DefaultTransactionFactory implements TransactionFactory {
     protected JdbcEventLogger jdbcEventLogger;
 
     public DefaultTransactionFactory(@Inject RuntimeProperties properties, @Inject JdbcEventLogger jdbcEventLogger) {
-        this.externalTransactions = properties.getBoolean(Constants.SERVER_EXTERNAL_TX_PROPERTY, false);
+        this.externalTransactions = properties.getBoolean(Constants.EXTERNAL_TX_PROPERTY, false);
         this.jdbcEventLogger = jdbcEventLogger;
     }
 

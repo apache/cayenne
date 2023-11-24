@@ -60,7 +60,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
 	protected List<DbAdapterDetector> detectors;
 
-	public DefaultDbAdapterFactory(@Inject(Constants.SERVER_ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
+	public DefaultDbAdapterFactory(@Inject(Constants.ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
 		if (detectors == null) {
 			throw new NullPointerException("Null detectors list");
 		}

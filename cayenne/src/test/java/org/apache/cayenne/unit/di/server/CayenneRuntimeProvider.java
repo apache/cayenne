@@ -94,7 +94,7 @@ public class CayenneRuntimeProvider implements Provider<CayenneRuntime> {
             CoreModule.extend(binder)
                     // Use soft references instead of default weak.
                     // Should remove problems with random-failing tests (those that are GC-sensitive).
-                    .setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
+                    .setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, "soft");
 
             // map DataSources for all test DataNode names
             binder.bind(ServerCaseDataSourceFactory.class).toInstance(dataSourceFactory);

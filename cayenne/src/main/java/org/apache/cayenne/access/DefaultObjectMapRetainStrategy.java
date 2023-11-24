@@ -47,7 +47,7 @@ public class DefaultObjectMapRetainStrategy implements ObjectMapRetainStrategy {
     }
 
     public Map<Object, Persistent> createObjectMap() {
-        String strategy = runtimeProperties.get(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY);
+        String strategy = runtimeProperties.get(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY);
 
         if (strategy == null || WEAK_RETAIN_STRATEGY.equals(strategy)) {
             return new WeakValueMap<>();

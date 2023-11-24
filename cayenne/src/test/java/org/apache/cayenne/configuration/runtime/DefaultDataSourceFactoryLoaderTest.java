@@ -56,7 +56,7 @@ public class DefaultDataSourceFactoryLoaderTest {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
-            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(MockResourceLocator.class);
+            binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(MockResourceLocator.class);
             binder.bind(RuntimeProperties.class).toInstance(mock(RuntimeProperties.class));
             binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         };
@@ -115,7 +115,7 @@ public class DefaultDataSourceFactoryLoaderTest {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
-            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(MockResourceLocator.class);
+            binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(MockResourceLocator.class);
             binder.bind(RuntimeProperties.class).toInstance(properties);
             binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         };
@@ -160,7 +160,7 @@ public class DefaultDataSourceFactoryLoaderTest {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(ResourceLocator.class).to(MockResourceLocator.class);
-            binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(MockResourceLocator.class);
+            binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(MockResourceLocator.class);
             binder.bind(RuntimeProperties.class).toInstance(properties);
             binder.bind(JdbcEventLogger.class).to(Slf4jJdbcEventLogger.class);
         };

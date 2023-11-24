@@ -218,7 +218,7 @@ public class DataDomainProviderTest {
             };
 
             b.bind(ResourceLocator.class).toInstance(locator);
-            b.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).toInstance(locator);
+            b.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).toInstance(locator);
             b.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             b.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
             b.bind(DataChannelDescriptorLoader.class).toInstance(testLoader);

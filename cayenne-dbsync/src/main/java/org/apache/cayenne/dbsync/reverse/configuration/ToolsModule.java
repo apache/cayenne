@@ -152,7 +152,7 @@ public class ToolsModule implements Module {
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-        binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+        binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
         binder.bind(BatchTranslatorFactory.class).to(DefaultBatchTranslatorFactory.class);

@@ -160,7 +160,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0")
     public static void useExternalTransactions(Binder binder, boolean useExternal) {
-        extend(binder).setProperty(Constants.SERVER_EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
+        extend(binder).setProperty(Constants.EXTERNAL_TX_PROPERTY, String.valueOf(useExternal));
     }
 
     /**
@@ -186,7 +186,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0")
     public static ListBuilder<String> contributeProjectLocations(Binder binder) {
-        return binder.bindList(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST);
+        return binder.bindList(String.class, Constants.PROJECT_LOCATIONS_LIST);
     }
 
     /**
@@ -227,7 +227,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0")
     public static ListBuilder<Object> contributeDomainListeners(Binder binder) {
-        return binder.bindList(Object.class, Constants.SERVER_DOMAIN_LISTENERS_LIST);
+        return binder.bindList(Object.class, Constants.DOMAIN_LISTENERS_LIST);
     }
 
     /**
@@ -241,7 +241,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0")
     public static ListBuilder<DbAdapterDetector> contributeAdapterDetectors(Binder binder) {
-        return binder.bindList(DbAdapterDetector.class, Constants.SERVER_ADAPTER_DETECTORS_LIST);
+        return binder.bindList(DbAdapterDetector.class, Constants.ADAPTER_DETECTORS_LIST);
     }
 
     /**
@@ -283,7 +283,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0")
     public static ListBuilder<ExtendedTypeFactory> contributeTypeFactories(Binder binder) {
-        return binder.bindList(ExtendedTypeFactory.class, Constants.SERVER_TYPE_FACTORIES_LIST);
+        return binder.bindList(ExtendedTypeFactory.class, Constants.TYPE_FACTORIES_LIST);
     }
 
     /**
@@ -298,7 +298,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0")
     public static ListBuilder<ExtendedType> contributeDefaultTypes(Binder binder) {
-        return binder.bindList(ExtendedType.class, Constants.SERVER_DEFAULT_TYPES_LIST);
+        return binder.bindList(ExtendedType.class, Constants.DEFAULT_TYPES_LIST);
     }
 
     /**
@@ -313,7 +313,7 @@ public class CoreModule implements Module {
      */
     @Deprecated(since = "5.0")
     public static ListBuilder<ExtendedType> contributeUserTypes(Binder binder) {
-        return binder.bindList(ExtendedType.class, Constants.SERVER_USER_TYPES_LIST);
+        return binder.bindList(ExtendedType.class, Constants.USER_TYPES_LIST);
     }
 
     /**
@@ -340,8 +340,8 @@ public class CoreModule implements Module {
         extend(binder).initAllExtensions()
 
                 // global stack properties
-                .setProperty(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, DEFAULT_MAX_ID_QUALIFIER_SIZE)
-                .setProperty(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false")
+                .setProperty(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, DEFAULT_MAX_ID_QUALIFIER_SIZE)
+                .setProperty(Constants.CONTEXTS_SYNC_PROPERTY, "false")
 
                 // known DbAdapter detectors in reverse order of popularity.
                 .addAdapterDetector(FirebirdSniffer.class)
@@ -441,7 +441,7 @@ public class CoreModule implements Module {
 
         // a locator of resources, such as XML descriptors
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-        binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+        binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
 
         // a global properties object
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);

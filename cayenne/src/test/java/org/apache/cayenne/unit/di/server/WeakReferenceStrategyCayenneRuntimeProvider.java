@@ -42,7 +42,7 @@ public class WeakReferenceStrategyCayenneRuntimeProvider extends CayenneRuntimeP
     @Override
     protected Collection<? extends Module> getExtraModules() {
         Collection<Module> modules = new ArrayList<>(super.getExtraModules());
-        modules.add(b -> CoreModule.extend(b).setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "weak"));
+        modules.add(b -> CoreModule.extend(b).setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, "weak"));
         return modules;
     }
 }

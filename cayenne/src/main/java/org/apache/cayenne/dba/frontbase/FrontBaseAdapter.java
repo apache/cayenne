@@ -69,10 +69,10 @@ import org.apache.cayenne.resource.ResourceLocator;
 public class FrontBaseAdapter extends JdbcAdapter {
 
 	public FrontBaseAdapter(@Inject RuntimeProperties runtimeProperties,
-			@Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
-			@Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
-			@Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
-			@Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator,
+			@Inject(Constants.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+			@Inject(Constants.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+			@Inject(Constants.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+			@Inject(Constants.RESOURCE_LOCATOR) ResourceLocator resourceLocator,
 			@Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
 		super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator, valueObjectTypeRegistry);
 		setSupportsBatchUpdates(true);

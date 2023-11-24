@@ -112,7 +112,7 @@ public class DefaultDbAdapterFactoryTest {
             b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-            b.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+            b.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
             b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             b.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
 
@@ -147,7 +147,7 @@ public class DefaultDbAdapterFactoryTest {
             b.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             b.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             b.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-            b.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+            b.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
             b.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
             b.bind(BatchTranslatorFactory.class).toInstance(mock(BatchTranslatorFactory.class));
 

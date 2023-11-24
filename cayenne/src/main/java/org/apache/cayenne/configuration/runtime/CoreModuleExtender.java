@@ -85,7 +85,7 @@ public class CoreModuleExtender {
      * Configures the stack to synchronize data between ObjectContexts. This is false by default.
      */
     public CoreModuleExtender syncContexts() {
-        contributeProperties().put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "true");
+        contributeProperties().put(Constants.CONTEXTS_SYNC_PROPERTY, "true");
         return this;
     }
 
@@ -93,7 +93,7 @@ public class CoreModuleExtender {
      * Sets transaction management to either external. By default, transactions are internally managed by Cayenne.
      */
     public CoreModuleExtender externalTransactions() {
-        contributeProperties().put(Constants.SERVER_EXTERNAL_TX_PROPERTY, "true");
+        contributeProperties().put(Constants.EXTERNAL_TX_PROPERTY, "true");
         return this;
     }
 
@@ -293,7 +293,7 @@ public class CoreModuleExtender {
 
     private ListBuilder<String> contributeProjectLocations() {
         if (projectLocations == null) {
-            projectLocations = binder.bindList(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST);
+            projectLocations = binder.bindList(String.class, Constants.PROJECT_LOCATIONS_LIST);
         }
         return projectLocations;
     }
@@ -321,7 +321,7 @@ public class CoreModuleExtender {
 
     private ListBuilder<Object> contributeListeners() {
         if (listeners == null) {
-            listeners = binder.bindList(Object.class, Constants.SERVER_DOMAIN_LISTENERS_LIST);
+            listeners = binder.bindList(Object.class, Constants.DOMAIN_LISTENERS_LIST);
         }
         return listeners;
     }
@@ -329,7 +329,7 @@ public class CoreModuleExtender {
     private ListBuilder<DbAdapterDetector> contributeAdapterDetectors() {
         if (adapterDetectors == null) {
             adapterDetectors = binder.bindList(DbAdapterDetector.class,
-                                               Constants.SERVER_ADAPTER_DETECTORS_LIST);
+                                               Constants.ADAPTER_DETECTORS_LIST);
         }
         return adapterDetectors;
     }
@@ -337,7 +337,7 @@ public class CoreModuleExtender {
     private ListBuilder<ExtendedType> contributeDefaultExtendedTypes() {
         if (defaultExtendedTypes == null) {
             defaultExtendedTypes = binder.bindList(ExtendedType.class,
-                                                   Constants.SERVER_DEFAULT_TYPES_LIST);
+                                                   Constants.DEFAULT_TYPES_LIST);
         }
         return defaultExtendedTypes;
     }
@@ -345,7 +345,7 @@ public class CoreModuleExtender {
     private ListBuilder<ExtendedType> contributeUserExtendedTypes() {
         if (userExtendedTypes == null) {
             userExtendedTypes = binder.bindList(ExtendedType.class,
-                                                Constants.SERVER_USER_TYPES_LIST);
+                                                Constants.USER_TYPES_LIST);
         }
         return userExtendedTypes;
     }
@@ -353,7 +353,7 @@ public class CoreModuleExtender {
     private ListBuilder<ExtendedTypeFactory> contributeExtendedTypeFactories() {
         if (extendedTypeFactories == null) {
             extendedTypeFactories = binder.bindList(ExtendedTypeFactory.class,
-                                                    Constants.SERVER_TYPE_FACTORIES_LIST);
+                                                    Constants.TYPE_FACTORIES_LIST);
         }
         return extendedTypeFactories;
     }

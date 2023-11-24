@@ -37,7 +37,7 @@ public class EventManagerProvider implements Provider<EventManager> {
 
     @Override
     public EventManager get() throws ConfigurationException {
-        boolean sync = properties.getBoolean(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, false);
+        boolean sync = properties.getBoolean(Constants.CONTEXTS_SYNC_PROPERTY, false);
 
         return sync ? new DefaultEventManager() : new NoopEventManager();
     }

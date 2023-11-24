@@ -815,7 +815,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 	 * Cayenne when generating such queries. The default is 10000. It can be
 	 * changed either by calling {@link #setMaxIdQualifierSize(int)} or changing
 	 * the value for property
-	 * {@link Constants#SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY}.
+	 * {@link Constants#MAX_ID_QUALIFIER_SIZE_PROPERTY}.
 	 *
 	 * @since 3.1
 	 */

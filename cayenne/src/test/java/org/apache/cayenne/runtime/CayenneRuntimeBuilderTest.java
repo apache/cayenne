@@ -56,7 +56,7 @@ public class CayenneRuntimeBuilderTest {
 		runtime = new CayenneRuntimeBuilder(null).build();
 
 		List<String> locations = runtime.getInjector().getInstance(
-				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+				Key.getListOf(String.class, Constants.PROJECT_LOCATIONS_LIST));
 
 		assertEquals(List.of(), locations);
 
@@ -71,7 +71,7 @@ public class CayenneRuntimeBuilderTest {
 		runtime = new CayenneRuntimeBuilder(null).addConfig("xxxx").build();
 
 		List<String> locations = runtime.getInjector().getInstance(
-				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+				Key.getListOf(String.class, Constants.PROJECT_LOCATIONS_LIST));
 
 		assertEquals(List.of("xxxx"), locations);
 
@@ -87,7 +87,7 @@ public class CayenneRuntimeBuilderTest {
 		runtime = new CayenneRuntimeBuilder(null).addConfigs("xxxx", "yyyy").build();
 
 		List<String> locations = runtime.getInjector().getInstance(
-				Key.getListOf(String.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+				Key.getListOf(String.class, Constants.PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 

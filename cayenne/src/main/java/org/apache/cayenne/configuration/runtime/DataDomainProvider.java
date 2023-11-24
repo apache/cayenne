@@ -83,10 +83,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
 	@Inject
 	protected List<DataChannelSyncFilter> syncFilters;
 
-	@Inject(Constants.SERVER_DOMAIN_LISTENERS_LIST)
+	@Inject(Constants.DOMAIN_LISTENERS_LIST)
 	protected List<Object> listeners;
 
-	@Inject(Constants.SERVER_PROJECT_LOCATIONS_LIST)
+	@Inject(Constants.PROJECT_LOCATIONS_LIST)
 	protected List<String> locations;
 
 	@Inject
@@ -126,7 +126,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
 		DataDomain dataDomain = createDataDomain(descriptor.getName());
 
-		dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
+		dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
 
 		dataDomain.setQueryCache(new NestedQueryCache(queryCache));
 		dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
@@ -189,7 +189,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
 	protected DataChannelDescriptor loadDescriptor() {
 		DataChannelDescriptor descriptor = locations.isEmpty() ? new DataChannelDescriptor() : loadDescriptorFromConfigs();
 
-		String nameOverride = runtimeProperties.get(Constants.SERVER_DOMAIN_NAME_PROPERTY);
+		String nameOverride = runtimeProperties.get(Constants.DOMAIN_NAME_PROPERTY);
 		if (nameOverride != null) {
 			descriptor.setName(nameOverride);
 		}

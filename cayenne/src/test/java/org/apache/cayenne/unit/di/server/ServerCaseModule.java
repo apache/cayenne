@@ -160,7 +160,7 @@ public class ServerCaseModule implements Module {
 
                 // Use soft references instead of default weak.
                 // Should remove problems with random-failing tests (those that are GC-sensitive).
-                .setProperty(Constants.SERVER_OBJECT_RETAIN_STRATEGY_PROPERTY, "soft")
+                .setProperty(Constants.OBJECT_RETAIN_STRATEGY_PROPERTY, "soft")
 
                 .addPkGenerator(DB2Adapter.class, DB2PkGenerator.class)
                 .addPkGenerator(DerbyAdapter.class, DerbyPkGenerator.class)
@@ -249,7 +249,7 @@ public class ServerCaseModule implements Module {
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-        binder.bind(Key.get(ResourceLocator.class, Constants.SERVER_RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
+        binder.bind(Key.get(ResourceLocator.class, Constants.RESOURCE_LOCATOR)).to(ClassLoaderResourceLocator.class);
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);

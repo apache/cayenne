@@ -227,7 +227,7 @@ public class CayenneRuntimeBuilder {
         if (nameOverride != null) {
 
             final String finalNameOverride = nameOverride;
-            modules.add(binder -> CoreModule.extend(binder).setProperty(Constants.SERVER_DOMAIN_NAME_PROPERTY, finalNameOverride));
+            modules.add(binder -> CoreModule.extend(binder).setProperty(Constants.DOMAIN_NAME_PROPERTY, finalNameOverride));
         }
 
         if (dataSourceFactory != null) {
