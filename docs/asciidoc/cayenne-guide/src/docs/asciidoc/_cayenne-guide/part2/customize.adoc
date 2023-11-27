@@ -236,7 +236,7 @@ The map value will be ignored. This way Cayenne runtime can be reconfigured duri
 Cayenne can be extended by adding custom objects to named maps or lists bound in DI. We are calling these lists/maps "service collections".
 A service collection allows things like appending a custom strategy to a list of built-in strategies.
 E.g. an application that needs to install a custom DbAdapter for some database type may contribute an instance of custom
-DbAdapterDetector to a `o.a.c.configuration.server.DefaultDbAdapterFactory.detectors` list:
+DbAdapterDetector to a `o.a.c.configuration.runtime.DefaultDbAdapterFactory.detectors` list:
 
 [source, Java]
 ----

@@ -165,7 +165,7 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="SubPainting" superEntityName="Painting" abstract="true" serverOnly="true" className="org.apache.cayenne.testdo.testmap.SubPainting" lock-type="optimistic">
+	<obj-entity name="SubPainting" superEntityName="Painting" abstract="true" className="org.apache.cayenne.testdo.testmap.SubPainting" lock-type="optimistic">
 		<attribute-override name="paintingTitle" db-attribute-path="PAINTING_TITLE"/>
 	</obj-entity>
 	<db-relationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">
