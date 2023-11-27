@@ -20,11 +20,11 @@
 package org.apache.cayenne.access;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.runtime.CoreModule;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Inject;
@@ -58,9 +58,6 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
     private CayenneRuntime runtime;
 
     @Inject
-    private ObjectStoreFactory objectStoreFactory;
-
-    @Inject
     private DBHelper dbHelper;
 
     private DataContext c1;
@@ -70,16 +67,17 @@ public class DataContextSharedCacheEmpiricIT extends RuntimeCase {
 
     @Before
     public void setUp() throws Exception {
+
         eventManager = new DefaultEventManager();
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
-                new DefaultRuntimeProperties(Collections.<String, String>emptyMap()),
+                new DefaultRuntimeProperties(Collections.emptyMap()),
                 eventManager);
 
         c1 = new DataContext(runtime.getDataDomain(),
-                objectStoreFactory.createObjectStore(cache));
+                new ObjectStore(cache, new HashMap<>()));
         c2 = new DataContext(runtime.getDataDomain(),
-                objectStoreFactory.createObjectStore(cache));
+                new ObjectStore(cache, new HashMap<>()));
 
         // prepare a single artist record
         TableHelper tArtist = new TableHelper(dbHelper, "ARTIST");
