@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @since 3.1
  * @deprecated since 5.0, unused by Cayenne
  */
-@Deprecated
+@Deprecated(since = "5.0")
 public class JNDIDataSourceFactory implements DataSourceFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JNDIDataSourceFactory.class);

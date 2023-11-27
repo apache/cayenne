@@ -34,7 +34,7 @@ import org.apache.cayenne.query.BatchQueryRow;
  * @since 4.0
  * @deprecated since 4.2
  */
-@Deprecated
+@Deprecated(since = "4.2")
 public abstract class DefaultBatchTranslator implements BatchTranslator {
 
     protected BatchQuery query;

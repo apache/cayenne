@@ -34,7 +34,7 @@ import java.util.Collections;
  * @since 3.1
  * @deprecated since 5.0, use {@link CayenneRuntime} class instead
  */
-@Deprecated(forRemoval = true)
+@Deprecated(since = "5.0", forRemoval = true)
 public class ServerRuntime extends CayenneRuntime {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerRuntime.class);
@@ -46,7 +46,7 @@ public class ServerRuntime extends CayenneRuntime {
      * @since 4.0
      * @deprecated since 5.0, use {@link CayenneRuntime#builder()} instead
      */
-    @Deprecated
+    @Deprecated(since = "5.0", forRemoval = true)
     public static CayenneRuntimeBuilder builder() {
         LOGGER.warn("ServerRuntime is deprecated, use CayenneRuntime instead");
         return CayenneRuntime.builder();
@@ -59,7 +59,7 @@ public class ServerRuntime extends CayenneRuntime {
      * @return a named builder of CayenneRuntime.
      * @deprecated since 5.0, use {@link CayenneRuntime#builder(String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "5.0", forRemoval = true)
     public static CayenneRuntimeBuilder builder(String name) {
         LOGGER.warn("ServerRuntime is deprecated, use CayenneRuntime instead");
         return CayenneRuntime.builder(name);

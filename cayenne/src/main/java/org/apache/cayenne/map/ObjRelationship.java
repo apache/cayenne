@@ -662,11 +662,10 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Recalculates a new readonly value based on the underlying
-     * DbRelationships.
+     * Recalculates a new readonly value based on the underlying DbRelationships.
      * @deprecated since 4.2
      */
-    @Deprecated
+    @Deprecated(since = "4.2")
     public void recalculateReadOnlyValue() {
         // not flattened, always read/write
         if (dbRelationships.size() < 2) {

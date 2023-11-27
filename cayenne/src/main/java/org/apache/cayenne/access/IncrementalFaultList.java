@@ -142,7 +142,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * @since 3.0
 	 * @deprecated since 5.0, does nothing
 	 */
-	@Deprecated(forRemoval = true)
+	@Deprecated(since = "5.0", forRemoval = true)
 	protected void fillIn(final Query query, List<Object> elementsList) {
 	}
 

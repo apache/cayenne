@@ -228,6 +228,7 @@ public interface Constants {
     /**
      * @deprecated since 5.0, use {@link #MAX_ID_QUALIFIER_SIZE_PROPERTY}
      */
+    @Deprecated(since = "5.0", forRemoval = true)
     String SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY = MAX_ID_QUALIFIER_SIZE_PROPERTY;
 
     /**
