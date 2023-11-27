@@ -345,7 +345,7 @@ So we've made a good case for disabling synchronization in most webapps. To do t
 
 [source]
 ----
-$ java -Dcayenne.server.contexts_sync_strategy=false
+$ java -Dcayenne.contexts_sync_strategy=false
 ----
 
 Or by changing the standard properties Map in a custom extensions module:

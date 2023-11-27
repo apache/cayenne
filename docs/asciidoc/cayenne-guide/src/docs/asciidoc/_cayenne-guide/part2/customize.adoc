@@ -219,7 +219,7 @@ There are two ways to set service properties. The most obvious one is to pass it
 
 [source]
 ----
-$ java -Dcayenne.server.contexts_sync_strategy=false ...
+$ java -Dcayenne.contexts_sync_strategy=false ...
 ----
 
 A second one is to contribute a property to `o.a.c.configuration.DefaultRuntimeProperties.properties` map (see the next section on how to do that).
