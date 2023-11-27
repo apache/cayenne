@@ -42,7 +42,7 @@ public interface Constants {
      * objects that can discover the type of current database and install the
      * correct DbAdapter in runtime.
      */
-    String ADAPTER_DETECTORS_LIST = "cayenne.server.adapter_detectors";
+    String ADAPTER_DETECTORS_LIST = "cayenne.adapter_detectors";
 
     /**
      * @deprecated since 5.0, use {@link #ADAPTER_DETECTORS_LIST}
@@ -55,7 +55,7 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addListener(Object)
      */
-    String DOMAIN_LISTENERS_LIST = "cayenne.server.domain_listeners";
+    String DOMAIN_LISTENERS_LIST = "cayenne.domain_listeners";
 
     /**
      * @deprecated since 5.0, use {@link #DOMAIN_LISTENERS_LIST}
@@ -67,7 +67,7 @@ public interface Constants {
      * A DI container key for the List&lt;String&gt; storing locations of the
      * one of more project configuration files.
      */
-    String PROJECT_LOCATIONS_LIST = "cayenne.server.project_locations";
+    String PROJECT_LOCATIONS_LIST = "cayenne.project_locations";
 
     /**
      * @deprecated since 5.0, use {@link #PROJECT_LOCATIONS_LIST}
@@ -81,7 +81,7 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addDefaultExtendedType(ExtendedType)
      */
-    String DEFAULT_TYPES_LIST = "cayenne.server.default_types";
+    String DEFAULT_TYPES_LIST = "cayenne.default_types";
 
     /**
      * @deprecated since 5.0, use {@link #DEFAULT_TYPES_LIST}
@@ -95,7 +95,7 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addUserExtendedType(ExtendedType)
      */
-    String USER_TYPES_LIST = "cayenne.server.user_types";
+    String USER_TYPES_LIST = "cayenne.user_types";
 
     /**
      * @deprecated since 5.0, use {@link #USER_TYPES_LIST}
@@ -109,7 +109,7 @@ public interface Constants {
      *
      * @see org.apache.cayenne.configuration.runtime.CoreModuleExtender#addExtendedTypeFactory(Class)
      */
-    String TYPE_FACTORIES_LIST = "cayenne.server.type_factories";
+    String TYPE_FACTORIES_LIST = "cayenne.type_factories";
 
     /**
      * @deprecated since 5.0, use {@link #TYPE_FACTORIES_LIST}
@@ -120,7 +120,7 @@ public interface Constants {
     /**
      * A DI container key for binding {@link org.apache.cayenne.resource.ResourceLocator}
      */
-    String RESOURCE_LOCATOR = "cayenne.server.resource_locator";
+    String RESOURCE_LOCATOR = "cayenne.resource_locator";
 
     /**
      * @deprecated since 5.0, use {@link #RESOURCE_LOCATOR}
@@ -172,7 +172,7 @@ public interface Constants {
      *
      * @since 4.0
      */
-    String DOMAIN_NAME_PROPERTY = "cayenne.server.domain.name";
+    String DOMAIN_NAME_PROPERTY = "cayenne.domain.name";
 
     /**
      * @deprecated since 5.0, use {@link #DOMAIN_NAME_PROPERTY}
@@ -184,7 +184,7 @@ public interface Constants {
      * A boolean property defining whether cross-contexts synchronization is
      * enabled. Possible values are "true" or "false".
      */
-    String CONTEXTS_SYNC_PROPERTY = "cayenne.server.contexts_sync_strategy";
+    String CONTEXTS_SYNC_PROPERTY = "cayenne.contexts_sync_strategy";
 
     /**
      * @deprecated since 5.0, use {@link #CONTEXTS_SYNC_PROPERTY}
@@ -196,7 +196,7 @@ public interface Constants {
      * A String property that defines how ObjectContexts should retain cached
      * committed objects. Possible values are "weak", "soft", "hard".
      */
-    String OBJECT_RETAIN_STRATEGY_PROPERTY = "cayenne.server.object_retain_strategy";
+    String OBJECT_RETAIN_STRATEGY_PROPERTY = "cayenne.object_retain_strategy";
 
     /**
      * @deprecated since 5.0, use {@link #CONTEXTS_SYNC_PROPERTY}
@@ -208,7 +208,7 @@ public interface Constants {
      * A boolean property that defines whether runtime should use external
      * transactions. Possible values are "true" or "false".
      */
-    String EXTERNAL_TX_PROPERTY = "cayenne.server.external_tx";
+    String EXTERNAL_TX_PROPERTY = "cayenne.external_tx";
 
     /**
      * @deprecated since 5.0, use {@link #EXTERNAL_TX_PROPERTY}
@@ -223,7 +223,7 @@ public interface Constants {
      * DISJOINT_BY_ID prefetch processing. This is needed to avoid where clause
      * size limitations and memory usage efficiency.
      */
-    String MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.server.max_id_qualifier_size";
+    String MAX_ID_QUALIFIER_SIZE_PROPERTY = "cayenne.max_id_qualifier_size";
 
     /**
      * @deprecated since 5.0, use {@link #MAX_ID_QUALIFIER_SIZE_PROPERTY}
@@ -244,7 +244,7 @@ public interface Constants {
      *
      * @since 4.0
      */
-    String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.server.query_execution_time_logging_threshold";
+    String QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY = "cayenne.query_execution_time_logging_threshold";
 
     /**
      * Snapshot cache max size
