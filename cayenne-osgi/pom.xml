@@ -79,7 +79,7 @@
                         <!-- TODO: export package filters. -->
                         <configuration>
                             <instructions>
-                                <Require-Bundle>org.apache.cayenne.server</Require-Bundle>
+                                <Require-Bundle>org.apache.cayenne</Require-Bundle>
                             </instructions>
                         </configuration>
                     </execution>
