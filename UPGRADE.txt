@@ -54,6 +54,9 @@ fix your imports accordingly.
 
 * Per CAY-2826 `ServerModule` renamed to `CoreModule`
 
+* Per CAY-2828 `server` prefix removed from the names of runtime properties and named collections defined in `org.apache.cayenne.configuration.Constants`.
+You should change references in code, and in any scripts that could use them as system properties.
+
 UPGRADING TO 4.2.M2
 
 * Per CAY-2659 All batch translators (`InsertBatchTranslator`, `UpdateBatchTranslator`, etc.) are updated to the new SQLBuilder utility.
