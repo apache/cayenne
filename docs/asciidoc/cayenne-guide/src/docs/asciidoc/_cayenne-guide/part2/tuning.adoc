@@ -75,7 +75,7 @@ but it requires (1+N) SQL statements to be executed, where N is the number of pr
 *Disjoint-by-ID prefetch semantics* is a variation of disjoint prefetch where related objects are matched against a set
 of IDs derived from the fetched main objects (or intermediate objects in a multi-step prefetch). Cayenne limits the
 size of the generated WHERE clause, as most DBs can't parse arbitrary large SQL. So prefetch queries are broken into
-smaller queries. The size of is controlled by the DI property `Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY`
+smaller queries. The size of is controlled by the DI property `Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY`
 (the default number of conditions in the generated WHERE clause is 10000).
 Cayenne will generate (1 + N * M) SQL statements for each query using disjoint-by-ID prefetches,
 where N is the number of relationships to prefetch, and M is the number of queries for a given prefetch
@@ -341,7 +341,7 @@ This is unacceptable in most situations.
 - Synchronization will interfere with optimistic locking.
 
 So we've made a good case for disabling synchronization in most webapps. To do that, set to "false" the following DI property -
-`Constants.SERVER_CONTEXTS_SYNC_PROPERTY`, using one of the standard Cayenne DI approaches. E.g. from command line:
+`Constants.CONTEXTS_SYNC_PROPERTY`, using one of the standard Cayenne DI approaches. E.g. from command line:
 
 [source]
 ----
@@ -357,7 +357,7 @@ public class MyModule implements Module {
     @Override
     public void configure(Binder binder) {
         CoreModule.contributeProperties(binder)
-            .put(Constants.SERVER_CONTEXTS_SYNC_PROPERTY, "false");
+            .put(Constants.CONTEXTS_SYNC_PROPERTY, "false");
     }
 }
 ----

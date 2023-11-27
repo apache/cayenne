@@ -33,7 +33,7 @@ CayenneRuntime encapsulates a single Cayenne stack. Most applications will just 
 ----
 Module extensions = binder ->
       CoreModule.contributeProperties(binder)
-            .put(Constants.SERVER_EXTERNAL_TX_PROPERTY, "true");
+            .put(Constants.EXTERNAL_TX_PROPERTY, "true");
 CayenneRuntime runtime = CayenneRuntime.builder()
       .addConfig("com/example/cayenne-project.xml")
       .addModule(extensions)
