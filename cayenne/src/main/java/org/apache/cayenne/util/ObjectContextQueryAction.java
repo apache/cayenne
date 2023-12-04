@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.EntityInheritanceTree;
@@ -321,7 +321,7 @@ public abstract class ObjectContextQueryAction {
                          * nested contexts).
                          */
                         if (((Persistent) object).getPersistenceState() == PersistenceState.NEW
-                                && !(actingContext.getChannel() instanceof BaseContext)) {
+                                && !(actingContext.getChannel() instanceof ObjectContext)) {
                             this.response = new ListResponse();
                             return DONE;
                         }
@@ -389,7 +389,7 @@ public abstract class ObjectContextQueryAction {
      * @since 3.0
      */
     protected QueryCache getQueryCache() {
-        return ((BaseContext) actingContext).getQueryCache();
+        return ((DataContext) actingContext).getQueryCache();
     }
 
     /**
