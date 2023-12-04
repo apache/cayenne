@@ -18,11 +18,8 @@
  ****************************************************************/
 
 /**
- * This is a deprecated package that contained runtime creation code
+ * API related to {@link org.apache.cayenne.runtime.CayenneRuntime} creation.
  *
- * @deprecated since 5.0
- * @see org.apache.cayenne.configuration.runtime
- * @see org.apache.cayenne.runtime
+ * @since 5.0
  */
-@Deprecated(since = "5.0")
-package org.apache.cayenne.configuration.server;
+package org.apache.cayenne.runtime;
