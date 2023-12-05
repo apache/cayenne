@@ -24,5 +24,5 @@
  * @see org.apache.cayenne.configuration.runtime
  * @see org.apache.cayenne.runtime
  */
-@Deprecated(since = "5.0")
+//@Deprecated(since = "5.0") // Java 11 seems fails to compile this annotation
 package org.apache.cayenne.configuration.server;
