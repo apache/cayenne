@@ -578,22 +578,14 @@ public class DataContext implements ObjectContext {
                         "Error resolving fault, more than one row exists in the database for ObjectId: " + oid);
             }
 
-            // 5/28/2013 - Commented out this block to allow for modifying
-            // objects in the postLoad callback
+            // 5/28/2013 - Commented out this block to allow for modifying objects in the postLoad callback
             // sanity check...
             // if (object.getPersistenceState() != PersistenceState.COMMITTED) {
-            //
-            // String state =
-            // PersistenceState.persistenceStateName(object.getPersistenceState());
-            //
-            // // TODO: andrus 4/13/2006, modified and deleted states are
-            // // possible due to
-            // // a race condition, should we handle them here?
-            // throw new
-            // FaultFailureException("Error resolving fault for ObjectId: " +
-            // oid + " and state (" + state
-            // +
-            // "). Possible cause - matching row is missing from the database.");
+            //     String state = PersistenceState.persistenceStateName(object.getPersistenceState());
+            //     // andrus 4/13/2006, modified and deleted states are possible due to a race condition,
+            //     // should we handle them here?
+            //     throw new FaultFailureException("Error resolving fault for ObjectId: " + oid + " and state (" + state
+            //             + "). Possible cause - matching row is missing from the database.");
             // }
         }
 
@@ -603,12 +595,9 @@ public class DataContext implements ObjectContext {
                     object.getObjectId().getEntityName());
             PropertyDescriptor propertyDescriptor = classDescriptor.getProperty(property);
 
-            // If we don't have a property descriptor, there's not much we can
-            // do.
-            // Let the caller know that the specified property could not be
-            // found and list
-            // all of the properties that could be so the caller knows what can
-            // be used.
+            // If we don't have a property descriptor, there's not much we can do.
+            // Let the caller know that the specified property could not be found and list
+            // all of the properties that could be so the caller knows what can be used.
             if (propertyDescriptor == null) {
                 final StringBuilder errorMessage = new StringBuilder();
 
@@ -671,13 +660,9 @@ public class DataContext implements ObjectContext {
      * @since 3.0
      */
     public List objectsFromDataRows(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
-        // TODO: If data row cache is not available it means that current data
-        // context is
-        // child. We need to redirect this method call to parent data context as
-        // an
-        // internal query. It is not obvious and has some overhead. Redesign for
-        // nested
-        // contexts should be done.
+        // TODO: If data row cache is not available it means that current data context is child.
+        //       We need to redirect this method call to parent data context as an internal query.
+        //       It is not obvious and has some overhead. Redesign for nested contexts should be done.
         if (getObjectStore().getDataRowCache() == null) {
             return objectsFromDataRowsFromParentContext(descriptor, dataRows);
         }
