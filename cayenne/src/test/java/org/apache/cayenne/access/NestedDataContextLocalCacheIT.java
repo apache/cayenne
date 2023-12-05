@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
@@ -52,14 +51,14 @@ public class NestedDataContextLocalCacheIT extends RuntimeCase {
 
         ObjectContext child1 = runtime.newContext(context);
 
-        assertNull(((BaseContext) child1).getQueryCache().get(
+        assertNull(((DataContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
         assertNull(context.getQueryCache().get(
                 query.getMetaData(context.getEntityResolver())));
 
         List<?> results = child1.performQuery(query);
-        assertSame(results, ((BaseContext) child1).getQueryCache().get(
+        assertSame(results, ((DataContext) child1).getQueryCache().get(
                 query.getMetaData(child1.getEntityResolver())));
 
         assertNull(context.getQueryCache().get(

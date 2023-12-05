@@ -23,48 +23,59 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
+import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.access.util.IteratedSelectObserver;
+import org.apache.cayenne.ResultIteratorCallback;
+import org.apache.cayenne.cache.NestedQueryCache;
+import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
+import org.apache.cayenne.exp.ValueInjector;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
+import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.*;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
+import org.apache.cayenne.util.ObjectContextGraphAction;
 import org.apache.cayenne.util.Util;
 
 /**
@@ -73,11 +84,67 @@ import org.apache.cayenne.util.Util;
  * changes to persistent objects that are registered with the context, are not
  * visible to the users of other contexts.
  */
-public class DataContext extends BaseContext {
+public class DataContext implements ObjectContext {
+
+    /**
+     * A holder of a ObjectContext bound to the current thread.
+     *
+     * @since 3.0
+     */
+    protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<ObjectContext>();
+
+    /**
+     * Returns the ObjectContext bound to the current thread.
+     *
+     * @since 3.0
+     * @return the ObjectContext associated with caller thread.
+     * @throws IllegalStateException
+     *             if there is no ObjectContext bound to the current thread.
+     */
+    public static ObjectContext getThreadObjectContext() throws IllegalStateException {
+        ObjectContext context = threadObjectContext.get();
+        if (context == null) {
+            throw new IllegalStateException("Current thread has no bound ObjectContext.");
+        }
+
+        return context;
+    }
+
+    /**
+     * Binds a ObjectContext to the current thread. ObjectContext can later be
+     * retrieved by users in the same thread by calling
+     * {@link #getThreadObjectContext}. Using null parameter will
+     * unbind currently bound ObjectContext.
+     *
+     * @since 3.0
+     */
+    public static void bindThreadObjectContext(ObjectContext context) {
+        threadObjectContext.set(context);
+    }
+
 
     private DataContextDelegate delegate;
-    protected boolean usingSharedSnaphsotCache;
+    protected boolean usingSharedSnapshotCache;
     protected ObjectStore objectStore;
+
+    /**
+     * Graph action that handles property changes
+     *
+     * @since 3.1
+     */
+    protected ObjectContextGraphAction graphAction;
+
+    /**
+     * Stores user defined properties associated with this DataContext.
+     *
+     * @since 3.0
+     */
+    protected volatile Map<String, Object> userProperties;
+
+    // transient variables that should be reinitialized on deserialization from the registry
+    protected transient DataChannel channel;
+    protected transient QueryCache queryCache;
+    protected transient EntityResolver entityResolver;
 
     /**
      * @deprecated since 4.0 used in a method that itself should be deprecated,
@@ -87,6 +154,8 @@ public class DataContext extends BaseContext {
     protected transient TransactionFactory transactionFactory;
 
     protected transient DataContextMergeHandler mergeHandler;
+
+    protected boolean validatingObjectsOnCommit = true;
 
     /**
      * Creates a new DataContext that is not attached to the Cayenne stack.
@@ -102,6 +171,8 @@ public class DataContext extends BaseContext {
      */
     public DataContext(DataChannel channel, ObjectStore objectStore) {
 
+        graphAction = new ObjectContextGraphAction(this);
+
         // inject self as parent context
         if (objectStore != null) {
             this.objectStore = objectStore;
@@ -114,24 +185,66 @@ public class DataContext extends BaseContext {
 
         if (objectStore != null) {
             DataDomain domain = getParentDataDomain();
-            this.usingSharedSnaphsotCache = domain != null
+            this.usingSharedSnapshotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
         }
     }
 
-    @Override
+    /**
+     * Checks whether this context is attached to Cayenne runtime stack and if
+     * not, attempts to attach itself to the runtime using Injector returned
+     * from the call to {@link CayenneRuntime#getThreadInjector()}. If thread
+     * Injector is not available and the context is not attached, throws
+     * CayenneRuntimeException.
+     * <p>
+     * This method is called internally by the context before access to
+     * transient variables to allow the context to attach to the stack lazily
+     * following deserialization.
+     *
+     * @return true if the context successfully attached to the thread runtime,
+     *         false - if it was already attached.
+     * @since 3.1
+     */
+    protected boolean attachToRuntimeIfNeeded() {
+        if (channel != null) {
+            return false;
+        }
+
+        Injector injector = CayenneRuntime.getThreadInjector();
+        if (injector == null) {
+            throw new CayenneRuntimeException("Can't attach to Cayenne runtime. "
+                    + "Null injector returned from CayenneRuntime.getThreadInjector()");
+        }
+
+        attachToRuntime(injector);
+        return true;
+    }
+
+    /**
+     * Attaches this context to the CayenneRuntime whose Injector is passed as
+     * an argument to this method.
+     *
+     * @since 3.1
+     */
     protected void attachToRuntime(Injector injector) {
-        super.attachToRuntime(injector);
+        attachToChannel(injector.getInstance(DataChannel.class));
+        setQueryCache(new NestedQueryCache(injector.getInstance(QueryCache.class)));
         this.transactionFactory = injector.getInstance(TransactionFactory.class);
     }
 
     /**
+     * Attaches to a provided DataChannel.
+     *
      * @since 3.1
      */
-    @Override
     protected void attachToChannel(DataChannel channel) {
 
-        super.attachToChannel(channel);
+        if (channel == null) {
+            throw new NullPointerException("Null channel");
+        }
+
+        setChannel(channel);
+        setEntityResolver(channel.getEntityResolver());
 
         if (mergeHandler != null) {
             mergeHandler.setActive(false);
@@ -150,7 +263,7 @@ public class DataContext extends BaseContext {
             EventUtil.listenForChannelEvents(channel, mergeHandler);
         }
 
-        if (!usingSharedSnaphsotCache && getObjectStore() != null) {
+        if (!usingSharedSnapshotCache && getObjectStore() != null) {
             DataRowStore cache = getObjectStore().getDataRowCache();
 
             if (cache != null) {
@@ -158,6 +271,35 @@ public class DataContext extends BaseContext {
             }
         }
     }
+
+    @Override
+    public DataChannel getChannel() {
+        attachToRuntimeIfNeeded();
+        return channel;
+    }
+
+    /**
+     * Sets a new DataChannel for this context.
+     *
+     * @since 3.1
+     */
+    public void setChannel(DataChannel channel) {
+        this.channel = channel;
+    }
+
+    @Override
+    public EntityResolver getEntityResolver() {
+        attachToRuntimeIfNeeded();
+        return entityResolver;
+    }
+
+    /**
+     * @since 3.1
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
+
 
     /**
      * Returns a DataDomain used by this DataContext. DataDomain is looked up in
@@ -251,6 +393,42 @@ public class DataContext extends BaseContext {
         return getObjectStore().objectsInState(PersistenceState.DELETED);
     }
 
+    @Override
+    public void deleteObject(Object object) throws DeleteDenyException {
+        deleteObjects(object);
+    }
+
+    /**
+     * @since 3.1
+     */
+    @Override
+    public <T> void deleteObjects(T... objects) throws DeleteDenyException {
+        if (objects == null || objects.length == 0) {
+            return;
+        }
+
+        ObjectContextDeleteAction action = new ObjectContextDeleteAction(this);
+
+        for (Object object : objects) {
+            action.performDelete((Persistent) object);
+        }
+    }
+
+    @Override
+    public void deleteObjects(Collection<?> objects) throws DeleteDenyException {
+        if (objects.isEmpty()) {
+            return;
+        }
+
+        ObjectContextDeleteAction action = new ObjectContextDeleteAction(this);
+
+        // Make a copy to iterate over to avoid ConcurrentModificationException.
+        List<Object> copy = new ArrayList<>(objects);
+        for (Object object : copy) {
+            action.performDelete((Persistent) object);
+        }
+    }
+
     /**
      * Returns a list of objects that are registered with this DataContext and
      * have a state PersistenceState.MODIFIED
@@ -288,6 +466,90 @@ public class DataContext extends BaseContext {
         }
 
         return objects;
+    }
+
+    public QueryCache getQueryCache() {
+        attachToRuntimeIfNeeded();
+        return queryCache;
+    }
+
+    /**
+     * Sets a QueryCache to be used for storing cached query results.
+     */
+    public void setQueryCache(QueryCache queryCache) {
+        this.queryCache = queryCache;
+    }
+
+    /**
+     * Returns EventManager associated with the ObjectStore.
+     *
+     * @since 1.2
+     */
+    @Override
+    public EventManager getEventManager() {
+        return channel != null ? channel.getEventManager() : null;
+    }
+
+    /**
+     * @since 1.2
+     */
+    protected void fireDataChannelCommitted(Object postedBy, GraphDiff changes) {
+        EventManager manager = getEventManager();
+
+        if (manager != null) {
+            GraphEvent e = new GraphEvent(this, postedBy, changes);
+            manager.postEvent(e, DataChannel.GRAPH_FLUSHED_SUBJECT);
+        }
+    }
+
+    /**
+     * @since 1.2
+     */
+    protected void fireDataChannelRolledback(Object postedBy, GraphDiff changes) {
+        EventManager manager = getEventManager();
+
+        if (manager != null) {
+            GraphEvent e = new GraphEvent(this, postedBy, changes);
+            manager.postEvent(e, DataChannel.GRAPH_ROLLEDBACK_SUBJECT);
+        }
+    }
+
+    /**
+     * @since 3.1
+     */
+    @Override
+    public <T extends Persistent> T localObject(T objectFromAnotherContext) {
+
+        if (objectFromAnotherContext == null) {
+            throw new NullPointerException("Null object argument");
+        }
+
+        ObjectId id = objectFromAnotherContext.getObjectId();
+
+        // first look for the ID in the local GraphManager
+        synchronized (getGraphManager()) {
+            @SuppressWarnings("unchecked")
+            T localObject = (T) getGraphManager().getNode(id);
+            if (localObject != null) {
+                return localObject;
+            }
+
+            // create a hollow object, optimistically assuming that the ID we got from
+            // 'objectFromAnotherContext' is a valid ID either in the parent context or in the DB.
+            // This essentially defers possible FaultFailureExceptions.
+
+            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
+            @SuppressWarnings("unchecked")
+            T persistent = (T) descriptor.createObject();
+
+            persistent.setObjectContext(this);
+            persistent.setObjectId(id);
+            persistent.setPersistenceState(PersistenceState.HOLLOW);
+
+            getGraphManager().registerNode(id, persistent);
+
+            return persistent;
+        }
     }
 
     /**
@@ -397,6 +659,107 @@ public class DataContext extends BaseContext {
         }
 
         return snapshot;
+    }
+
+    @Override
+    public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
+        if (object.getPersistenceState() == PersistenceState.HOLLOW) {
+
+            ObjectId oid = object.getObjectId();
+            List<?> objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
+
+            if (objects.size() == 0) {
+                throw new FaultFailureException(
+                        "Error resolving fault, no matching row exists in the database for ObjectId: " + oid);
+            } else if (objects.size() > 1) {
+                throw new FaultFailureException(
+                        "Error resolving fault, more than one row exists in the database for ObjectId: " + oid);
+            }
+
+            // 5/28/2013 - Commented out this block to allow for modifying
+            // objects in the postLoad callback
+            // sanity check...
+            // if (object.getPersistenceState() != PersistenceState.COMMITTED) {
+            //
+            // String state =
+            // PersistenceState.persistenceStateName(object.getPersistenceState());
+            //
+            // // TODO: andrus 4/13/2006, modified and deleted states are
+            // // possible due to
+            // // a race condition, should we handle them here?
+            // throw new
+            // FaultFailureException("Error resolving fault for ObjectId: " +
+            // oid + " and state (" + state
+            // +
+            // "). Possible cause - matching row is missing from the database.");
+            // }
+        }
+
+        // resolve relationship fault
+        if (lazyFaulting && property != null) {
+            ClassDescriptor classDescriptor = getEntityResolver().getClassDescriptor(
+                    object.getObjectId().getEntityName());
+            PropertyDescriptor propertyDescriptor = classDescriptor.getProperty(property);
+
+            // If we don't have a property descriptor, there's not much we can
+            // do.
+            // Let the caller know that the specified property could not be
+            // found and list
+            // all of the properties that could be so the caller knows what can
+            // be used.
+            if (propertyDescriptor == null) {
+                final StringBuilder errorMessage = new StringBuilder();
+
+                errorMessage.append(String.format("Property '%s' is not declared for entity '%s'.", property, object
+                        .getObjectId().getEntityName()));
+
+                errorMessage.append(" Declared properties are: ");
+
+                // Grab each of the declared properties.
+                final List<String> properties = new ArrayList<>();
+                classDescriptor.visitProperties(new PropertyVisitor() {
+                    @Override
+                    public boolean visitAttribute(final AttributeProperty property) {
+                        properties.add(property.getName());
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean visitToOne(final ToOneProperty property) {
+                        properties.add(property.getName());
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean visitToMany(final ToManyProperty property) {
+                        properties.add(property.getName());
+
+                        return true;
+                    }
+                });
+
+                // Now add the declared property names to the error message.
+                boolean first = true;
+                for (String declaredProperty : properties) {
+                    if (first) {
+                        errorMessage.append(String.format("'%s'", declaredProperty));
+
+                        first = false;
+                    } else {
+                        errorMessage.append(String.format(", '%s'", declaredProperty));
+                    }
+                }
+
+                errorMessage.append(".");
+
+                throw new CayenneRuntimeException(errorMessage.toString());
+            }
+
+            // this should trigger fault resolving
+            propertyDescriptor.readProperty(object);
+        }
     }
 
     /**
@@ -605,6 +968,44 @@ public class DataContext extends BaseContext {
     }
 
     /**
+     * If ObjEntity qualifier is set, asks it to inject initial value to an
+     * object. Also performs all Persistent initialization operations
+     */
+    protected void injectInitialValue(Object obj) {
+        // must follow this exact order of property initialization per CAY-653,
+        // i.e. have
+        // the id and the context in place BEFORE setPersistence is called
+
+        Persistent object = (Persistent) obj;
+
+        object.setObjectContext(this);
+        object.setPersistenceState(PersistenceState.NEW);
+
+        GraphManager graphManager = getGraphManager();
+        synchronized (graphManager) {
+            graphManager.registerNode(object.getObjectId(), object);
+            graphManager.nodeCreated(object.getObjectId());
+        }
+
+        ObjEntity entity;
+        try {
+            entity = getEntityResolver().getObjEntity(object.getClass());
+        } catch (CayenneRuntimeException ex) {
+            // ObjEntity cannot be fetched, ignored
+            entity = null;
+        }
+
+        if (entity != null) {
+            if (entity.getDeclaredQualifier() instanceof ValueInjector) {
+                ((ValueInjector) entity.getDeclaredQualifier()).injectValue(object);
+            }
+        }
+
+        // invoke callbacks
+        getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
+    }
+
+    /**
      * Unregisters a Collection of DataObjects from the DataContext and the
      * underlying ObjectStore. This operation also unsets DataContext for
      * each object and changes its state to TRANSIENT.
@@ -613,6 +1014,34 @@ public class DataContext extends BaseContext {
      */
     public void unregisterObjects(Collection<?> dataObjects) {
         getObjectStore().objectsUnregistered(dataObjects);
+    }
+
+    @Override
+    public void invalidateObjects(Collection<?> objects) {
+
+        // don't allow null collections as a matter of coding discipline
+        if (objects == null) {
+            throw new NullPointerException("Null collection of objects to invalidate");
+        }
+
+        if (!objects.isEmpty()) {
+            performGenericQuery(new RefreshQuery(objects));
+        }
+    }
+
+    /**
+     * @since 3.1
+     */
+    @Override
+    public <T> void invalidateObjects(T... objects) {
+        if (objects != null && objects.length > 0) {
+            performGenericQuery(new RefreshQuery(Arrays.asList(objects)));
+        }
+    }
+
+    @Override
+    public void propertyChanged(Persistent object, String property, Object oldValue, Object newValue) {
+        graphAction.handlePropertyChange(object, property, oldValue, newValue);
     }
 
     /**
@@ -685,7 +1114,6 @@ public class DataContext extends BaseContext {
         flushToParent(true);
     }
 
-    @Override
     protected GraphDiff onContextFlush(ObjectContext originatingContext, GraphDiff changes, boolean cascade) {
 
         boolean childContext = this != originatingContext && changes != null;
@@ -793,6 +1221,54 @@ public class DataContext extends BaseContext {
     }
 
     /**
+     * @since 4.0
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> select(Select<T> query) {
+        return performQuery(query);
+    }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public <T> T selectOne(Select<T> query) {
+        List<T> objects = select(query);
+
+        if (objects.size() == 0) {
+            return null;
+        } else if (objects.size() > 1) {
+            throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
+        }
+
+        return objects.get(0);
+    }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public <T> T selectFirst(Select<T> query) {
+        List<T> objects = select(query);
+
+        return (objects == null || objects.isEmpty()) ? null : objects.get(0);
+    }
+
+    /**
+     * @since 4.0
+     */
+    @Override
+    public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
+
+        try (ResultIterator<T> it = iterator(query);) {
+            for (T t : it) {
+                callback.next(t);
+            }
+        }
+    }
+
+    /**
      * Performs a single database select query returning result as a {@link ResultIterator}.
      * <p>
      * It is caller's responsibility to explicitly close the {@link ResultIterator}.
@@ -894,6 +1370,25 @@ public class DataContext extends BaseContext {
         return new DataContextQueryAction(this, context, query).execute();
     }
 
+    @Override
+    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+        switch (syncType) {
+            case DataChannel.ROLLBACK_CASCADE_SYNC:
+                return onContextRollback();
+            case DataChannel.FLUSH_NOCASCADE_SYNC:
+                return onContextFlush(originatingContext, changes, false);
+            case DataChannel.FLUSH_CASCADE_SYNC:
+                return onContextFlush(originatingContext, changes, true);
+            default:
+                throw new CayenneRuntimeException("Unrecognized SyncMessage type: %d", syncType);
+        }
+    }
+
+    GraphDiff onContextRollback() {
+        rollbackChanges();
+        return new CompoundDiff();
+    }
+
     /**
      * Performs a single database query that does not select rows. Returns an
      * array of update counts.
@@ -941,7 +1436,7 @@ public class DataContext extends BaseContext {
      * @since 1.1
      */
     public List<?> performQuery(String queryName, boolean expireCachedLists) {
-        return performQuery(queryName, Collections.EMPTY_MAP, expireCachedLists);
+        return performQuery(queryName, Collections.emptyMap(), expireCachedLists);
     }
 
     /**
@@ -974,14 +1469,14 @@ public class DataContext extends BaseContext {
      * @since 1.1
      */
     public boolean isUsingSharedSnapshotCache() {
-        return usingSharedSnaphsotCache;
+        return usingSharedSnapshotCache;
     }
 
     /**
      * @since 3.1
      */
     public void setUsingSharedSnapshotCache(boolean flag) {
-        this.usingSharedSnaphsotCache = flag;
+        this.usingSharedSnapshotCache = flag;
     }
 
     // ---------------------------------------------
@@ -1103,11 +1598,16 @@ public class DataContext extends BaseContext {
 
     }
 
-    // this completely meaningless override is needed to expose the method as
-    // package-private ... is there a better way?
-    @Override
+    /**
+     * @since 1.2
+     */
     protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
-        super.fireDataChannelChanged(postedBy, changes);
+        EventManager manager = getEventManager();
+
+        if (manager != null) {
+            GraphEvent e = new GraphEvent(this, postedBy, changes);
+            manager.postEvent(e, DataChannel.GRAPH_CHANGED_SUBJECT);
+        }
     }
 
     TransactionFactory getTransactionFactory() {
@@ -1123,6 +1623,95 @@ public class DataContext extends BaseContext {
     @Deprecated
     public void setTransactionFactory(TransactionFactory transactionFactory) {
         this.transactionFactory = transactionFactory;
+    }
+
+    @Override
+    public <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size) {
+        return new ResultBatchIterator<T>(iterator(query), size);
+    }
+
+    /**
+     * Returns whether this ObjectContext performs object validation before
+     * commit is executed.
+     *
+     * @since 1.1
+     */
+    public boolean isValidatingObjectsOnCommit() {
+        return validatingObjectsOnCommit;
+    }
+
+    /**
+     * Sets the property defining whether this ObjectContext should perform
+     * object validation before commit is executed.
+     *
+     * @since 1.1
+     */
+    public void setValidatingObjectsOnCommit(boolean flag) {
+        this.validatingObjectsOnCommit = flag;
+    }
+
+    /**
+     * Returns a map of user-defined properties associated with this
+     * DataContext.
+     *
+     * @since 3.0
+     */
+    protected Map<String, Object> getUserProperties() {
+
+        // as not all users will take advantage of properties, creating the
+        // map on demand to keep the context lean...
+        if (userProperties == null) {
+            synchronized (this) {
+                if (userProperties == null) {
+                    userProperties = new ConcurrentHashMap<>();
+                }
+            }
+        }
+
+        return userProperties;
+    }
+
+    /**
+     * Returns a user-defined property previously set via 'setUserProperty'.
+     * Note that it is a caller responsibility to synchronize access to
+     * properties.
+     *
+     * @since 3.0
+     */
+    @Override
+    public Object getUserProperty(String key) {
+        return getUserProperties().get(key);
+    }
+
+    /**
+     * Sets a user-defined property. Note that it is a caller responsibility to
+     * synchronize access to properties.
+     *
+     * @since 3.0
+     */
+    @Override
+    public void setUserProperty(String key, Object value) {
+        getUserProperties().put(key, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 5.0
+     */
+    @Override
+    public void removeUserProperty(String key) {
+        getUserProperties().remove(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 5.0
+     */
+    @Override
+    public void clearUserProperties() {
+        getUserProperties().clear();
     }
 
 }

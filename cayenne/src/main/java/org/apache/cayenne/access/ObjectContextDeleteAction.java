@@ -17,13 +17,18 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne;
+package org.apache.cayenne.access;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DeleteDenyException;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.LifecycleEvent;
