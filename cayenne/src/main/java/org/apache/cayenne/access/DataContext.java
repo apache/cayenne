@@ -36,7 +36,6 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DeleteDenyException;
-import org.apache.cayenne.Fault;
 import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -57,13 +56,9 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.*;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -386,7 +381,7 @@ public class DataContext implements ObjectContext {
 
     /**
      * Returns a list of objects that are registered with this DataContext and
-     * have a state PersistenceState.DELETED
+     * have a state {@link PersistenceState#DELETED}
      */
     @Override
     public Collection<?> deletedObjects() {
@@ -422,16 +417,15 @@ public class DataContext implements ObjectContext {
 
         ObjectContextDeleteAction action = new ObjectContextDeleteAction(this);
 
-        // Make a copy to iterate over to avoid ConcurrentModificationException.
-        List<Object> copy = new ArrayList<>(objects);
-        for (Object object : copy) {
+        // Make a copy to iterate over to avoid ConcurrentModificationException
+        for (Object object : List.copyOf(objects)) {
             action.performDelete((Persistent) object);
         }
     }
 
     /**
      * Returns a list of objects that are registered with this DataContext and
-     * have a state PersistenceState.MODIFIED
+     * have a state {@link PersistenceState#MODIFIED}
      */
     @Override
     public Collection<?> modifiedObjects() {
@@ -453,7 +447,6 @@ public class DataContext implements ObjectContext {
 
         // guess target collection size
         Collection<Object> objects = new ArrayList<>(len > 100 ? len / 2 : len);
-
         Iterator<?> it = getObjectStore().getObjectIterator();
         while (it.hasNext()) {
             Persistent object = (Persistent) it.next();
@@ -553,112 +546,21 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Returns a DataRow reflecting current, possibly uncommitted, object state.
+     * Returns a {@link DataRow} reflecting current, possibly uncommitted, object state.
      * <p>
      * <strong>Warning:</strong> This method will return a partial snapshot if
      * an object or one of its related objects that propagate their keys to this
      * object have temporary ids. DO NOT USE this method if you expect a DataRow
      * to represent a complete object state.
      * </p>
-     * 
+     *
+     * @param object persistent object to create snapshot for
+     * @return current snapshot of the persistent object
      * @since 1.1
      */
     public DataRow currentSnapshot(final Persistent object) {
-
-        // for a HOLLOW object return snapshot from cache
-        if (object.getPersistenceState() == PersistenceState.HOLLOW && object.getObjectContext() != null) {
-
-            return getObjectStore().getSnapshot(object.getObjectId());
-        }
-
-        ObjEntity entity = getEntityResolver().getObjEntity(object);
-        final ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
-        final DataRow snapshot = new DataRow(10);
-        snapshot.setEntityName(entity.getName());
-
-        descriptor.visitProperties(new PropertyVisitor() {
-
-            public boolean visitAttribute(AttributeProperty property) {
-                ObjAttribute objAttr = property.getAttribute();
-
-                // processing compound attributes correctly
-                snapshot.put(objAttr.getDbAttributePath(), property.readPropertyDirectly(object));
-                return true;
-            }
-
-            public boolean visitToMany(ToManyProperty property) {
-                // do nothing
-                return true;
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                ObjRelationship rel = property.getRelationship();
-
-                // if target doesn't propagates its key value, skip it
-                if (rel.isSourceIndependentFromTargetChange()) {
-                    return true;
-                }
-
-                Object targetObject = property.readPropertyDirectly(object);
-                if (targetObject == null) {
-                    return true;
-                }
-
-                // if target is Fault, get id attributes from stored snapshot
-                // to avoid unneeded fault triggering
-                if (targetObject instanceof Fault) {
-                    DataRow storedSnapshot = getObjectStore().getSnapshot(object.getObjectId());
-                    if (storedSnapshot == null) {
-                        throw new CayenneRuntimeException("No matching objects found for ObjectId %s"
-                                + ". Object may have been deleted externally.", object.getObjectId());
-                    }
-
-                    DbRelationship dbRel = rel.getDbRelationships().get(0);
-                    for (DbJoin join : dbRel.getJoins()) {
-                        String key = join.getSourceName();
-                        snapshot.put(key, storedSnapshot.get(key));
-                    }
-
-                    return true;
-                }
-
-                // target is resolved and we have an FK->PK to it,
-                // so extract it from target...
-                Persistent target = (Persistent) targetObject;
-                Map<String, Object> idParts = target.getObjectId().getIdSnapshot();
-
-                // this may happen in uncommitted objects - see the warning in
-                // the JavaDoc
-                // of
-                // this method.
-                if (idParts.isEmpty()) {
-                    return true;
-                }
-
-                DbRelationship dbRel = rel.getDbRelationships().get(0);
-                Map<String, Object> fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
-                snapshot.putAll(fk);
-                return true;
-            }
-        });
-
-        // process object id map
-        // we should ignore any object id values if a corresponding attribute
-        // is a part of relationship "toMasterPK", since those values have been
-        // set above when db relationships where processed.
-        Map<String, Object> thisIdParts = object.getObjectId().getIdSnapshot();
-        if (thisIdParts != null) {
-
-            // put only those that do not exist in the map
-            for (Map.Entry<String, Object> entry : thisIdParts.entrySet()) {
-                String nextKey = entry.getKey();
-                if (!snapshot.containsKey(nextKey)) {
-                    snapshot.put(nextKey, entry.getValue());
-                }
-            }
-        }
-
-        return snapshot;
+        return new DataContextSnapshotBuilder(getEntityResolver(), getObjectStore(), object)
+                .build();
     }
 
     @Override
@@ -877,8 +779,7 @@ public class DataContext implements ObjectContext {
      * all transient persistent objects attached to this object via
      * relationships.
      * <p>
-     * <i>Note that since 3.0 this method takes Object as an argument instead of
-     * a {@link DataObject}.</i>
+     * <i>Note that since 3.0 this method takes Object as an argument instead of a {@link DataObject}.</i>
      * 
      * @param object
      *            new object that needs to be made persistent.
@@ -918,8 +819,7 @@ public class DataContext implements ObjectContext {
         injectInitialValue(object);
 
         // now we need to find all arc changes, inject missing value holders and
-        // pull in
-        // all transient connected objects
+        // pull in all transient connected objects
 
         descriptor.visitProperties(new PropertyVisitor() {
 
@@ -968,8 +868,8 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * If ObjEntity qualifier is set, asks it to inject initial value to an
-     * object. Also performs all Persistent initialization operations
+     * If ObjEntity qualifier is set, asks it to inject initial value to an object.
+     * Also performs all Persistent initialization operations
      */
     protected void injectInitialValue(Object obj) {
         // must follow this exact order of property initialization per CAY-653,
@@ -1006,9 +906,8 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Unregisters a Collection of DataObjects from the DataContext and the
-     * underlying ObjectStore. This operation also unsets DataContext for
-     * each object and changes its state to TRANSIENT.
+     * Unregisters a Collection of DataObjects from the DataContext and the underlying ObjectStore.
+     * This operation also unsets DataContext for each object and changes its state to {@link PersistenceState#TRANSIENT}
      * 
      * @see #invalidateObjects(Collection)
      */
@@ -1071,10 +970,7 @@ public class DataContext implements ObjectContext {
         if (objectStore.hasChanges()) {
             GraphDiff diff = getObjectStore().getChanges();
 
-            // call channel with changes BEFORE reverting them, so that any
-            // interceptors
-            // could record them
-
+            // call channel with changes BEFORE reverting them, so that any interceptors could record them
             if (channel != null) {
                 channel.onSync(this, diff, DataChannel.ROLLBACK_CASCADE_SYNC);
             }
@@ -1094,8 +990,7 @@ public class DataContext implements ObjectContext {
      * channel is a DataContext, it updates its objects with this context's
      * changes, without a database update. If it is a DataDomain (the most
      * common case), the changes are written to the database. To cause cascading
-     * commit all the way to the database, one must use {@link #commitChanges()}
-     * .
+     * commit all the way to the database, one must use {@link #commitChanges()} .
      * 
      * @since 1.2
      * @see #commitChanges()
@@ -1163,27 +1058,17 @@ public class DataContext implements ObjectContext {
                 try {
                     parentChanges = getChannel().onSync(this, changes, syncType);
 
-                    // note that this is a hack resulting from a fix to
-                    // CAY-766... To
-                    // support
-                    // valid object state in PostPersist callback,
-                    // 'postprocessAfterCommit' is
-                    // invoked by DataDomain.onSync(..). Unless the parent is
-                    // DataContext,
-                    // and
-                    // this method is not invoked!! As a result, PostPersist
-                    // will contain
-                    // temp
-                    // ObjectIds in nested contexts and perm ones in flat
-                    // contexts.
+                    // note that this is a hack resulting from a fix to CAY-766...
+                    // To support valid object state in PostPersist callback,
+                    // 'postprocessAfterCommit' is invoked by DataDomain.onSync(..).
+                    // Unless the parent is DataContext, and this method is not invoked!! As a result, PostPersist
+                    // will contain temp ObjectIds in nested contexts and perm ones in flat contexts.
                     // Pending better callback design .....
                     if (objectStore.hasChanges()) {
                         objectStore.postprocessAfterCommit(parentChanges);
                     }
 
-                    // this event is caught by peer nested DataContexts to
-                    // synchronize the
-                    // state
+                    // this event is caught by peer nested DataContexts to synchronize the state
                     fireDataChannelCommitted(this, changes);
                 }
                 // "catch" is needed to unwrap OptimisticLockExceptions
@@ -1198,10 +1083,7 @@ public class DataContext implements ObjectContext {
                 }
             }
 
-            // merge changes from parent as well as changes caused by lifecycle
-            // event
-            // callbacks/listeners...
-
+            // merge changes from parent as well as changes caused by lifecycle event callbacks/listeners...
             CompoundDiff diff = new CompoundDiff();
 
             diff.addAll(objectStore.getLifecycleEventInducedChanges());
@@ -1209,8 +1091,7 @@ public class DataContext implements ObjectContext {
                 diff.add(parentChanges);
             }
 
-            // this event is caught by child DataContexts to update temporary
-            // ObjectIds with permanent
+            // this event is caught by child DataContexts to update temporary ObjectIds with permanent
             if (!diff.isNoop()) {
                 fireDataChannelCommitted(getChannel(), diff);
             }
@@ -1496,11 +1377,6 @@ public class DataContext implements ObjectContext {
 
     // serialization support
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-
-        // TODO: most of this should be in the superclass, especially the code
-        // connecting
-        // super transient ivars
-
         // read non-transient properties
         in.defaultReadObject();
 
@@ -1510,12 +1386,10 @@ public class DataContext implements ObjectContext {
             objectStore.setDataRowCache(cache);
         }
 
-        // CayenneDataObjects have a transient DataContext
-        // because at deserialize time the datacontext may need to be different
-        // than the one at serialize time (for programmer defined reasons).
-        // So, when a DataObject is resurrected because it's DataContext was
-        // serialized, it will then set the objects DataContext to the correct
-        // one
+        // CayenneDataObjects have a transient DataContext because at deserialize time
+        // the DataContext may need to be different from the one at serialize time (for programmer defined reasons).
+        // So, when a DataObject is resurrected because it's DataContext was serialized,
+        // it will then set the objects DataContext to the correct one.
         // If deserialized "otherwise", it will not have a DataContext.
 
         synchronized (getObjectStore()) {
@@ -1526,11 +1400,8 @@ public class DataContext implements ObjectContext {
             }
         }
 
-        // ... deferring initialization of transient properties of this context
-        // till first
-        // access, so that it can attach to Cayenne runtime using appropriate
-        // thread
-        // injector.
+        // ... deferring initialization of transient properties of this context till first access,
+        // so that it can attach to Cayenne runtime using appropriate thread injector.
     }
 
     /**
@@ -1556,13 +1427,9 @@ public class DataContext implements ObjectContext {
             throw new IllegalArgumentException("Null ObjectId");
         }
 
-        // have to synchronize almost the entire method to prevent multiple
-        // threads from
-        // messing up dataobjects per CAY-845. Originally only parts of "else"
-        // were
-        // synchronized, but we had to expand the lock scope to ensure
-        // consistent
-        // behavior.
+        // have to synchronize almost the entire method to prevent multiple threads from
+        // messing up DataObjects per CAY-845. Originally only parts of "else" were synchronized,
+        // but we had to expand the lock scope to ensure consistent behavior.
         synchronized (getGraphManager()) {
             Persistent cachedObject = (Persistent) getGraphManager().getNode(id);
 
@@ -1571,12 +1438,9 @@ public class DataContext implements ObjectContext {
 
                 int state = cachedObject.getPersistenceState();
 
-                // TODO: Andrus, 1/24/2006 implement smart merge for modified
-                // objects...
+                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
                 if (state != PersistenceState.MODIFIED && state != PersistenceState.DELETED) {
-
                     ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
-
                     descriptor.injectValueHolders(cachedObject);
                 }
 
