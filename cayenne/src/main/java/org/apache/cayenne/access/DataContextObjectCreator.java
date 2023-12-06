@@ -42,7 +42,7 @@ import java.util.Map;
  */
 class DataContextObjectCreator {
 
-    private final DataContext context;
+    final DataContext context;
 
     DataContextObjectCreator(DataContext context) {
         this.context = context;

@@ -278,4 +278,11 @@ public class DataContextSerializationIT extends RuntimeCase {
         assertEquals("artist2", deserializedArtist.getArtistName());
         assertSame(deserializedContext, deserializedArtist.getObjectContext());
     }
+
+    @Test
+    public void testSerializeObjectCreator() throws Exception {
+        DataContext deserializedContext = Util.cloneViaSerialization(context);
+        assertNotNull(deserializedContext.objectCreator);
+        assertSame(deserializedContext, deserializedContext.objectCreator.context);
+    }
 }

@@ -145,7 +145,7 @@ public class DataContext implements ObjectContext {
 
     protected boolean validatingObjectsOnCommit = true;
 
-    protected final DataContextObjectCreator objectCreator;
+    protected transient DataContextObjectCreator objectCreator;
 
     /**
      * Creates a new DataContext that is not attached to the Cayenne stack.
@@ -1182,6 +1182,8 @@ public class DataContext implements ObjectContext {
                 object.setObjectContext(this);
             }
         }
+
+        objectCreator = new DataContextObjectCreator(this);
 
         // ... deferring initialization of transient properties of this context till first access,
         // so that it can attach to Cayenne runtime using appropriate thread injector.
