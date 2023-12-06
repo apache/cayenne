@@ -51,6 +51,7 @@ CAY-2825 Rename package `o.a.c.configuration.server` to `o.a.c.configuration.run
 CAY-2826 Rename `ServerModule` to `CoreModule`
 CAY-2828 Rename values in `org.apache.cayenne.configuration.Constants`
 CAY-2829 Merge `BaseContext` with `DataContext` and deprecate it
+CAY-2830 Cleanup `DataContext` code
 
 Bug Fixes:
 
