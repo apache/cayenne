@@ -18,7 +18,7 @@ installed) a minimally needed set of software to build a Cayenne application.
 
 === Install Java
 
-Obviously, JDK has to be installed. Cayenne 4.2 requires JDK 1.8 or newer.
+Obviously, JDK has to be installed. Cayenne 5.0 requires JDK 11 or newer.
 
 === Install IntelliJ IDEA
 

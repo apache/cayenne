@@ -48,8 +48,8 @@ The resulting POM should look like this:
 
     <properties>
         <cayenne.version>{project-version}</cayenne.version> <!--1-->
-        <maven.compiler.source>1.8</maven.compiler.source> <!--2-->
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source> <!--2-->
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -61,7 +61,7 @@ The resulting POM should look like this:
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.36</version>
         </dependency>
     </dependencies>
 </project>

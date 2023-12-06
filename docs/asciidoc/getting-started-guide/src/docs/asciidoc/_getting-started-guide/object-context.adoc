@@ -67,8 +67,8 @@ jars:
 ----
 <dependency>
    <groupId>org.apache.derby</groupId>
-   <artifactId>derby</artifactId>
-   <version>10.13.1.1</version>
+    <artifactId>derby</artifactId>
+    <version>10.14.2.0</version>
 </dependency>
 ----
 Now we are ready to run. Right click the "Main" class in IDEA and select "Run 'Main.main()'".

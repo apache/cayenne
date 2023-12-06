@@ -80,14 +80,14 @@ The following piece of XML needs to be added to the `<dependencies>...</dependen
 [source,xml]
 ----
 <dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>6.0.5</version>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>8.2.0</version>
 </dependency>
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-simple</artifactId>
-    <version>1.7.25</version>
+    <version>1.7.36</version>
 </dependency>
 ----
 NOTE: Cayenne uses Slf4j logging API, here we will use simple backend that prints everything to console
