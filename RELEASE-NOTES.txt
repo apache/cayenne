@@ -52,6 +52,7 @@ CAY-2826 Rename `ServerModule` to `CoreModule`
 CAY-2828 Rename values in `org.apache.cayenne.configuration.Constants`
 CAY-2829 Merge `BaseContext` with `DataContext` and deprecate it
 CAY-2830 Cleanup `DataContext` code
+CAY-2831 Upgrade Gradle to 8.5
 
 Bug Fixes:
 
