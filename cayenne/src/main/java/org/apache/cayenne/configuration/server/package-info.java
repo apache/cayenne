@@ -18,11 +18,13 @@
  ****************************************************************/
 
 /**
- * This is a deprecated package that contained runtime creation code
+ * This is a deprecated package that contained runtime creation code.
+ * <p>
+ * See <a href="https://issues.apache.org/jira/browse/CAY-2820">JIRA</a> for details.
  *
  * @deprecated since 5.0
  * @see org.apache.cayenne.configuration.runtime
  * @see org.apache.cayenne.runtime
  */
-//@Deprecated(since = "5.0") // Java 11 seems fails to compile this annotation
+// Java 11 doesn't allow to use @Deprecated annotation here
 package org.apache.cayenne.configuration.server;
