@@ -67,7 +67,7 @@ The resulting POM should look like this:
 </project>
 ----
 <1> Here you can specify the version of Cayenne you are actually using
-<2> Tell Maven to support Java 8
+<2> Tell Maven to support Java 11
 
 Your computer must be connected to the internet. Once you edit the `pom.xml`, IDEA
 will download the needed Cayenne jar file and add it to the project build path. As a

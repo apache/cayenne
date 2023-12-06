@@ -53,7 +53,7 @@ Note that Cayenne code is unrecognized, that's because we need to include Cayenn
     </dependencies>
 ----
 
-Additionally we need to tell `Maven compiler plugin` that our code uses Java 8: 
+Additionally we need to tell `Maven compiler plugin` that our code uses Java 11:
 [source,xml]
 ----
 <build>
