@@ -49,23 +49,16 @@ import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
-import org.apache.cayenne.exp.ValueInjector;
-import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.*;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.util.EventUtil;
@@ -152,6 +145,8 @@ public class DataContext implements ObjectContext {
 
     protected boolean validatingObjectsOnCommit = true;
 
+    protected final DataContextObjectCreator objectCreator;
+
     /**
      * Creates a new DataContext that is not attached to the Cayenne stack.
      */
@@ -167,6 +162,7 @@ public class DataContext implements ObjectContext {
     public DataContext(DataChannel channel, ObjectStore objectStore) {
 
         graphAction = new ObjectContextGraphAction(this);
+        objectCreator = new DataContextObjectCreator(this);
 
         // inject self as parent context
         if (objectStore != null) {
@@ -566,10 +562,8 @@ public class DataContext implements ObjectContext {
     @Override
     public void prepareForAccess(Persistent object, String property, boolean lazyFaulting) {
         if (object.getPersistenceState() == PersistenceState.HOLLOW) {
-
             ObjectId oid = object.getObjectId();
             List<?> objects = performQuery(new ObjectIdQuery(oid, false, ObjectIdQuery.CACHE));
-
             if (objects.size() == 0) {
                 throw new FaultFailureException(
                         "Error resolving fault, no matching row exists in the database for ObjectId: " + oid);
@@ -577,16 +571,7 @@ public class DataContext implements ObjectContext {
                 throw new FaultFailureException(
                         "Error resolving fault, more than one row exists in the database for ObjectId: " + oid);
             }
-
-            // 5/28/2013 - Commented out this block to allow for modifying objects in the postLoad callback
-            // sanity check...
-            // if (object.getPersistenceState() != PersistenceState.COMMITTED) {
-            //     String state = PersistenceState.persistenceStateName(object.getPersistenceState());
-            //     // andrus 4/13/2006, modified and deleted states are possible due to a race condition,
-            //     // should we handle them here?
-            //     throw new FaultFailureException("Error resolving fault for ObjectId: " + oid + " and state (" + state
-            //             + "). Possible cause - matching row is missing from the database.");
-            // }
+            // here once was a sanity check for the COMMITTED state, that was faulty due to the race condition
         }
 
         // resolve relationship fault
@@ -597,55 +582,13 @@ public class DataContext implements ObjectContext {
 
             // If we don't have a property descriptor, there's not much we can do.
             // Let the caller know that the specified property could not be found and list
-            // all of the properties that could be so the caller knows what can be used.
+            // all the properties that could be so the caller knows what can be used.
             if (propertyDescriptor == null) {
-                final StringBuilder errorMessage = new StringBuilder();
-
-                errorMessage.append(String.format("Property '%s' is not declared for entity '%s'.", property, object
-                        .getObjectId().getEntityName()));
-
-                errorMessage.append(" Declared properties are: ");
-
-                // Grab each of the declared properties.
-                final List<String> properties = new ArrayList<>();
-                classDescriptor.visitProperties(new PropertyVisitor() {
-                    @Override
-                    public boolean visitAttribute(final AttributeProperty property) {
-                        properties.add(property.getName());
-
-                        return true;
-                    }
-
-                    @Override
-                    public boolean visitToOne(final ToOneProperty property) {
-                        properties.add(property.getName());
-
-                        return true;
-                    }
-
-                    @Override
-                    public boolean visitToMany(final ToManyProperty property) {
-                        properties.add(property.getName());
-
-                        return true;
-                    }
-                });
-
-                // Now add the declared property names to the error message.
-                boolean first = true;
-                for (String declaredProperty : properties) {
-                    if (first) {
-                        errorMessage.append(String.format("'%s'", declaredProperty));
-
-                        first = false;
-                    } else {
-                        errorMessage.append(String.format(", '%s'", declaredProperty));
-                    }
-                }
-
-                errorMessage.append(".");
-
-                throw new CayenneRuntimeException(errorMessage.toString());
+                List<String> properties = new CollectingNamePropertyVisitor().allProperties(classDescriptor);
+                String errorMessage = String.format("Property '%s' is not declared for entity '%s'.",
+                        property, object.getObjectId().getEntityName()) +
+                        " Declared properties are: '" + String.join("', '", properties) + "'.";
+                throw new CayenneRuntimeException(errorMessage);
             }
 
             // this should trigger fault resolving
@@ -712,16 +655,7 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public <T> T newObject(Class<T> persistentClass) {
-        if (persistentClass == null) {
-            throw new NullPointerException("Null 'persistentClass'");
-        }
-
-        ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
-        if (entity == null) {
-            throw new IllegalArgumentException("Class is not mapped with Cayenne: " + persistentClass.getName());
-        }
-
-        return (T) newObject(entity.getName());
+        return objectCreator.newObject(persistentClass);
     }
 
     /**
@@ -736,27 +670,7 @@ public class DataContext implements ObjectContext {
      * @since 3.0
      */
     public Persistent newObject(String entityName) {
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
-        if (descriptor == null) {
-            throw new IllegalArgumentException("Invalid entity name: " + entityName);
-        }
-
-        Persistent object;
-        try {
-            object = (Persistent) descriptor.createObject();
-        } catch (Exception ex) {
-            throw new CayenneRuntimeException("Error instantiating object.", ex);
-        }
-
-        // this will initialize to-many lists
-        descriptor.injectValueHolders(object);
-
-        // NOTE: the order of initialization of persistence artifacts below is important - do not change it lightly
-        object.setObjectId(ObjectId.of(entityName));
-
-        injectInitialValue(object);
-
-        return object;
+        return objectCreator.newObject(entityName);
     }
 
     /**
@@ -771,123 +685,7 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public void registerNewObject(Object object) {
-        if (object == null) {
-            throw new NullPointerException("Can't register null object.");
-        }
-
-        ObjEntity entity = getEntityResolver().getObjEntity((Persistent) object);
-        if (entity == null) {
-            throw new IllegalArgumentException("Can't find ObjEntity for Persistent class: "
-                    + object.getClass().getName() + ", class is likely not mapped.");
-        }
-
-        final Persistent persistent = (Persistent) object;
-
-        // sanity check - maybe already registered
-        if (persistent.getObjectId() != null) {
-            if (persistent.getObjectContext() == this) {
-                // already registered, just ignore
-                return;
-            } else if (persistent.getObjectContext() != null) {
-                throw new IllegalStateException("Persistent is already registered with another DataContext. "
-                        + "Try using 'localObjects()' instead.");
-            }
-        } else {
-            persistent.setObjectId(ObjectId.of(entity.getName()));
-        }
-
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
-        if (descriptor == null) {
-            throw new IllegalArgumentException("Invalid entity name: " + entity.getName());
-        }
-
-        injectInitialValue(object);
-
-        // now we need to find all arc changes, inject missing value holders and
-        // pull in all transient connected objects
-
-        descriptor.visitProperties(new PropertyVisitor() {
-
-            public boolean visitToMany(ToManyProperty property) {
-                property.injectValueHolder(persistent);
-
-                if (!property.isFault(persistent)) {
-
-                    Object value = property.readProperty(persistent);
-                    @SuppressWarnings("unchecked")
-                    Collection<Map.Entry<?,?>> collection = (value instanceof Map)
-                            ? ((Map) value).entrySet()
-                            : (Collection<Map.Entry<?, ?>>) value;
-
-                    for (Object target : collection) {
-                        if (target instanceof Persistent) {
-                            Persistent targetDO = (Persistent) target;
-
-                            // make sure it is registered
-                            registerNewObject(targetDO);
-                            getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
-                        }
-                    }
-                }
-                return true;
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                Object target = property.readPropertyDirectly(persistent);
-
-                if (target instanceof Persistent) {
-
-                    Persistent targetDO = (Persistent) target;
-
-                    // make sure it is registered
-                    registerNewObject(targetDO);
-                    getObjectStore().arcCreated(persistent.getObjectId(), targetDO.getObjectId(), new ArcId(property));
-                }
-                return true;
-            }
-
-            public boolean visitAttribute(AttributeProperty property) {
-                return true;
-            }
-        });
-    }
-
-    /**
-     * If ObjEntity qualifier is set, asks it to inject initial value to an object.
-     * Also performs all Persistent initialization operations
-     */
-    protected void injectInitialValue(Object obj) {
-        // must follow this exact order of property initialization per CAY-653,
-        // i.e. have
-        // the id and the context in place BEFORE setPersistence is called
-
-        Persistent object = (Persistent) obj;
-
-        object.setObjectContext(this);
-        object.setPersistenceState(PersistenceState.NEW);
-
-        GraphManager graphManager = getGraphManager();
-        synchronized (graphManager) {
-            graphManager.registerNode(object.getObjectId(), object);
-            graphManager.nodeCreated(object.getObjectId());
-        }
-
-        ObjEntity entity;
-        try {
-            entity = getEntityResolver().getObjEntity(object.getClass());
-        } catch (CayenneRuntimeException ex) {
-            // ObjEntity cannot be fetched, ignored
-            entity = null;
-        }
-
-        if (entity != null) {
-            if (entity.getDeclaredQualifier() instanceof ValueInjector) {
-                ((ValueInjector) entity.getDeclaredQualifier()).injectValue(object);
-            }
-        }
-
-        // invoke callbacks
-        getEntityResolver().getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
+        objectCreator.registerNewObject(object);
     }
 
     /**
