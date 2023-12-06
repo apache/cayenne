@@ -104,7 +104,7 @@ When the application runs, all HTTP requests matching the filter url-pattern hav
 
 [source, java]
 ----
- ObjectContext context = BaseContext.getThreadObjectContext();
+ ObjectContext context = DataContext.getThreadObjectContext();
 ----
 
 Of course, the ObjectContext scope and other behavior of the Cayenne runtime can be customized via dependency injection. For this, another filter init parameter called "extra-modules" is used. "extra-modules" is a comma- or space-separated list of class names, with each class implementing Module interface. These optional custom modules are loaded after the the standard ones, which allows users to override all standard definitions.
