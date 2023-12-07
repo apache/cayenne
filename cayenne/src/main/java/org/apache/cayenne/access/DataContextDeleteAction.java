@@ -45,11 +45,11 @@ import org.apache.cayenne.reflect.ToOneProperty;
  * 
  * @since 1.2
  */
-class ObjectContextDeleteAction {
+class DataContextDeleteAction {
 
     private ObjectContext context;
 
-    ObjectContextDeleteAction(ObjectContext context) {
+    DataContextDeleteAction(ObjectContext context) {
         this.context = context;
     }
 

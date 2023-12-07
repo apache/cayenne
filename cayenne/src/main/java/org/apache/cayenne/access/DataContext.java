@@ -398,7 +398,7 @@ public class DataContext implements ObjectContext {
             return;
         }
 
-        ObjectContextDeleteAction action = new ObjectContextDeleteAction(this);
+        DataContextDeleteAction action = new DataContextDeleteAction(this);
 
         for (Object object : objects) {
             action.performDelete((Persistent) object);
@@ -411,7 +411,7 @@ public class DataContext implements ObjectContext {
             return;
         }
 
-        ObjectContextDeleteAction action = new ObjectContextDeleteAction(this);
+        DataContextDeleteAction action = new DataContextDeleteAction(this);
 
         // Make a copy to iterate over to avoid ConcurrentModificationException
         for (Object object : List.copyOf(objects)) {
