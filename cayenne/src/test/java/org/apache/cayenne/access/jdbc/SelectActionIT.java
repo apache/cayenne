@@ -21,14 +21,12 @@ package org.apache.cayenne.access.jdbc;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataContextSharedCacheEmpiricIT;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
-import org.apache.cayenne.unit.di.runtime.ExtraModules;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
 import org.junit.Test;
@@ -37,7 +35,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
-@ExtraModules(DataContextSharedCacheEmpiricIT.SyncContextsModule.class)
 public class SelectActionIT extends RuntimeCase {
 
     @Inject
@@ -80,28 +77,22 @@ public class SelectActionIT extends RuntimeCase {
     }
 
     protected void insertClobDb() {
-        ClobTestEntity obj;
         for (int i = 0; i < 80; i++) {
+            ClobTestEntity obj = context.newObject(ClobTestEntity.class);
             if (i < 20) {
-                obj = (ClobTestEntity) context.newObject("ClobTestEntity");
                 obj.setClobCol("a1" + i);
-                insertClobRel(obj);
-            }
-            else {
-                obj = (ClobTestEntity) context.newObject("ClobTestEntity");
+            } else {
                 obj.setClobCol("a2");
-                insertClobRel(obj);
             }
+            insertClobRel(obj);
         }
 
         context.commitChanges();
     }
 
     protected void insertClobRel(ClobTestEntity clobId) {
-        ClobTestRelation obj;
-
         for (int i = 0; i < 20; i++) {
-            obj = (ClobTestRelation) context.newObject("ClobTestRelation");
+            ClobTestRelation obj = context.newObject(ClobTestRelation.class);
             obj.setValue(100);
             obj.setClobId(clobId);
         }
