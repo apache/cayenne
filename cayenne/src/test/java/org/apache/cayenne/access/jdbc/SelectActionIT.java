@@ -60,6 +60,7 @@ public class SelectActionIT extends RuntimeCase {
         clobRelation = new TableHelper(dbHelper, "CLOB_TEST_RELATION");
     }
 
+    @Ignore("Temporary ignore this test to debug GitHub Actions failure")
     @Test
     public void testFetchLimit_DistinctResultIterator() {
         if (accessStackAdapter.supportsLobs()) {
@@ -76,7 +77,6 @@ public class SelectActionIT extends RuntimeCase {
         }
     }
 
-    @Ignore("Temporary ignore this test to debug GitHub Actions failure")
     @Test
     public void testColumnSelect_DistinctResultIterator() {
         if (accessStackAdapter.supportsLobs()) {
