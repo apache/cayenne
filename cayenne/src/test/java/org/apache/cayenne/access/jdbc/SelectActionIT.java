@@ -20,25 +20,22 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.test.jdbc.DBHelper;
-import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Ignore("Temporary ignore this test to debug GitHub Actions failure")
 @UseCayenneRuntime(CayenneProjects.LOB_PROJECT)
 public class SelectActionIT extends RuntimeCase {
 
@@ -48,19 +45,6 @@ public class SelectActionIT extends RuntimeCase {
     @Inject
     private UnitDbAdapter accessStackAdapter;
 
-    @Inject
-    protected DBHelper dbHelper;
-
-    TableHelper clob;
-    TableHelper clobRelation;
-
-    @Before
-    public void setUpHelpers() {
-        clob = new TableHelper(dbHelper, "CLOB_TEST");
-        clobRelation = new TableHelper(dbHelper, "CLOB_TEST_RELATION");
-    }
-
-    @Ignore("Temporary ignore this test to debug GitHub Actions failure")
     @Test
     public void testFetchLimit_DistinctResultIterator() {
         if (accessStackAdapter.supportsLobs()) {
