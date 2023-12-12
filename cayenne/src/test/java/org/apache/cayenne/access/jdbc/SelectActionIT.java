@@ -20,6 +20,7 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.List;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
@@ -85,9 +86,9 @@ public class SelectActionIT extends RuntimeCase {
                 obj.setClobCol("a2");
             }
             insertClobRel(obj);
+            context.commitChanges();
+            System.out.println("Inserted CLOB with ID: " + Cayenne.longPKForObject(obj));
         }
-
-        context.commitChanges();
     }
 
     protected void insertClobRel(ClobTestEntity clobId) {
