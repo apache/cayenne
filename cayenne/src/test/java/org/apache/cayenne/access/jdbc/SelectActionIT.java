@@ -24,12 +24,15 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.lob.ClobTestEntity;
 import org.apache.cayenne.testdo.lob.ClobTestRelation;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -44,8 +47,20 @@ public class SelectActionIT extends RuntimeCase {
     @Inject
     private UnitDbAdapter accessStackAdapter;
 
+    @Inject
+    protected DBHelper dbHelper;
+
+    TableHelper clob;
+    TableHelper clobRelation;
+
+    @Before
+    public void setUpHelpers() {
+        clob = new TableHelper(dbHelper, "CLOB_TEST");
+        clobRelation = new TableHelper(dbHelper, "CLOB_TEST_RELATION");
+    }
+
     @Test
-    public void testFetchLimit_DistinctResultIterator() {
+    public void testFetchLimit_DistinctResultIterator() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();
@@ -61,7 +76,7 @@ public class SelectActionIT extends RuntimeCase {
     }
 
     @Test
-    public void testColumnSelect_DistinctResultIterator() {
+    public void testColumnSelect_DistinctResultIterator() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();
@@ -77,7 +92,9 @@ public class SelectActionIT extends RuntimeCase {
         }
     }
 
-    protected void insertClobDb() {
+    protected void insertClobDb() throws Exception {
+        clobRelation.deleteAll();
+        clob.deleteAll();
         for (int i = 0; i < 80; i++) {
             ClobTestEntity obj = context.newObject(ClobTestEntity.class);
             if (i < 20) {
