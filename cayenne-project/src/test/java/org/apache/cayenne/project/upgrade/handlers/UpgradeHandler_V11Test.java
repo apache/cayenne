@@ -50,6 +50,12 @@ public class UpgradeHandler_V11Test extends BaseUpgradeHandlerTest {
         assertEquals("11", root.getAttribute("project-version"));
         assertEquals("http://cayenne.apache.org/schema/11/domain", root.getAttribute("xmlns"));
         assertEquals(2, root.getElementsByTagName("map").getLength());
+
+        NodeList nodes = document.getElementsByTagName("node");
+        assertEquals(1, nodes.getLength());
+
+        Element node = (Element)nodes.item(0);
+        assertEquals("org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory", node.getAttribute("factory"));
     }
 
     @Test

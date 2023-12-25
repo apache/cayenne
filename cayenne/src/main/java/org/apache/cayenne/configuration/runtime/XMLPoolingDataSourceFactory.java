@@ -41,8 +41,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @since 3.1
  */
-// TODO: this factory does not read XML anymore, should we rename it to
-// something else?
+// TODO: this factory does not read XML anymore, should we rename it to something else?
 public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 
 	private static final Logger logger = LoggerFactory.getLogger(XMLPoolingDataSourceFactory.class);
