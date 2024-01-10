@@ -32,5 +32,5 @@ public interface XMLSerializable {
      * 
      * @since 1.1
      */
-    void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate);
+    void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate);
 }

@@ -89,7 +89,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
 
     @Override
     public ObjEntity getSourceEntity() {
-        return (ObjEntity) super.getSourceEntity();
+        return super.getSourceEntity();
     }
 
     /**
@@ -105,7 +105,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
         ObjEntity source = getSourceEntity();
         if (source == null) {
             return;
@@ -759,7 +759,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     @Override
     public boolean isMandatory() {
         refreshFromDeferredPath();
-        if (dbRelationships.size() == 0) {
+        if (dbRelationships.isEmpty()) {
             return false;
         }
 

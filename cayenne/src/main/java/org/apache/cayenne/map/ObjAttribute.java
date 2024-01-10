@@ -104,7 +104,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
         encoder.start("obj-attribute")
                 .attribute("name", getName())
                 .attribute("type", getType())
@@ -236,7 +236,6 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
         return getDbPathIterator(getEntity());
     }
 
-    @SuppressWarnings("unchecked")
     public Iterator<CayenneMapEntry> getDbPathIterator(ObjEntity entity) {
         if (dbAttributePath == null) {
             return Collections.emptyIterator();
@@ -264,8 +263,8 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
     }
 
     /**
-     * Returns the the name of the mapped DbAttribute. This value is the same as
-     * "dbAttributePath" for regular attributes mapped to columns. It is equql
+     * Returns the name of the mapped DbAttribute. This value is the same as
+     * "dbAttributePath" for regular attributes mapped to columns. It is equal
      * to the last path component for the flattened attributes.
      */
     public String getDbAttributeName() {

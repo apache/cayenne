@@ -57,7 +57,7 @@ public abstract class Attribute<E extends Entity<E, A, R>, A extends Attribute<E
     }
 
     @Override
-    public abstract void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate);
+    public abstract void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate);
 
     /**
      * Returns parent entity that holds this attribute.

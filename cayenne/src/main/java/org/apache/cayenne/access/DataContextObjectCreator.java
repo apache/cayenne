@@ -192,7 +192,6 @@ class DataContextObjectCreator {
      * If ObjEntity qualifier is set, asks it to inject initial value to an object.
      * Also performs all Persistent initialization operations
      */
-    @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     protected void injectInitialValue(Object obj) {
         // must follow this exact order of property initialization per CAY-653,
         // i.e. have the id and the context in place BEFORE setPersistence is called
