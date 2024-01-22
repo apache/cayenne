@@ -24,6 +24,7 @@ CAY-2730 Duplicating lines in a cgen config saved to datamap.xml
 CAY-2731 Exception when setting a CLOB on H2 v2.0.202
 CAY-2736 Can't use function names as a path in a string-based expression
 CAY-2800 Modeler saves map.xml files with schema ordering error
+CAY-2808 Modeler 4.1.1 can't save on Windows
 
 ----------------------------------
 Release: 4.1.1
