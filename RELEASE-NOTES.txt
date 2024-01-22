@@ -34,11 +34,13 @@ CAY-2760 ObjectContext.userProperties need a way to clear properties
 CAY-2761 Modeler: Editor for the cgen templates
 CAY-2766 Modeler: Improving the work with velocity templates for class generation
 CAY-2767 Modeler: upgrade deprecated code in custom components
+CAY-2771 Switch to GitHub actions
 CAY-2773 Switch master to "5.0"
 CAY-2776 Upgrade Gradle to 7.6
 CAY-2780 Modeler: Multiple configurations for classes generation
 CAY-2781 Enable 'Create PK properties' by default in the cgen configuration
 CAY-2784 Remove 'Use Java primitive types' option from dbimport
+CAY-2785 Modeler: improve folder selection for cgen
 CAY-2788 DbImport: Add fallback option for the batch attribute loader
 CAY-2795 Add unit tests for the Json type
 CAY-2802 Upgrade Gradle to 7.6.1
@@ -76,6 +78,9 @@ CAY-2774 Overriding service ordering in DI List causes DIRuntimeException
 CAY-2777 Reverse relationship is not set with single table inheritance
 CAY-2782 Modeler: save button becomes active on DataMap comment field focus
 CAY-2783 DbEntity to ObjEntity synchronization should check mandatory flag for primitive java types
+CAY-2786 Modeler: field outputDir work incorrect
+CAY-2789 MalformedJsonException thrown when reading manually edited JSON data in Postgres
+CAY-2790 EOModel import: NPE importing EOFetchSpecification
 CAY-2792 Fix Insertion Order For Reflexive DataObjects
 CAY-2800 Modeler saves map.xml files with schema ordering error
 CAY-2801 Incorrect equals() implementation in IdGenerationMarker could cause data missing in the commit
