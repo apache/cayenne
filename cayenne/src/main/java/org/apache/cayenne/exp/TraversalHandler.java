@@ -30,10 +30,11 @@ public interface TraversalHandler {
      * Called during traversal after a child of expression
      * has been visited. 
      */
-    public void finishedChild(
+    default void finishedChild(
         Expression node,
         int childIndex,
-        boolean hasMoreChildren);
+        boolean hasMoreChildren) {
+    }
   
     /** 
      * Called during the traversal before an expression node children
@@ -41,7 +42,8 @@ public interface TraversalHandler {
      * 
      * @since 1.1
      */
-    public void startNode(Expression node, Expression parentNode);
+    default void startNode(Expression node, Expression parentNode) {
+    }
     
     /** 
      * Called during the traversal after an expression node children
@@ -49,11 +51,13 @@ public interface TraversalHandler {
      * 
      * @since 1.1
      */
-    public void endNode(Expression node, Expression parentNode);
+    default void endNode(Expression node, Expression parentNode) {
+    }
     
     /** 
      * Called during the traversal when a leaf non-expression node 
      * is encountered.
      */
-    public void objectNode(Object leaf, Expression parentNode);
+    default void objectNode(Object leaf, Expression parentNode) {
+    }
 }

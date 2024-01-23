@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.TraversalHelper;
+import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -222,7 +222,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
             final Map<String, ObjAttribute> attributes = new HashMap<>();
             final DbEntity dbEntity = descriptor.getEntity().getDbEntity();
 
-            qualifier.traverse(new TraversalHelper() {
+            qualifier.traverse(new TraversalHandler() {
 
                 @Override
                 public void startNode(Expression node, Expression parentNode) {

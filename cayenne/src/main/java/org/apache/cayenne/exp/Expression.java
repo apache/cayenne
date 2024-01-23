@@ -813,7 +813,7 @@ public abstract class Expression implements Serializable, XMLSerializable {
 
 	}
 
-	final class InPlaceParamReplacer extends TraversalHelper {
+	final class InPlaceParamReplacer implements TraversalHandler {
 
 		private Object[] parameters;
 		private int i;

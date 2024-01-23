@@ -473,10 +473,6 @@ class QualifierTranslator implements TraversalHandler {
         return result.getLastAttribute();
     }
 
-    @Override
-    public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
-    }
-
     private String expToStr(int type) {
         switch (type) {
             case AND:

@@ -30,7 +30,7 @@ import org.junit.Assert;
  * Class that collects statistics of expression traversal.
  */
 public class TstTraversalHandler implements TraversalHandler {
-	protected List<Object> treeFlatView = new ArrayList<Object>();
+	protected List<Object> treeFlatView = new ArrayList<>();
 	protected int children;
 	protected int nodes;
 	protected int nodesStarted;
@@ -58,10 +58,6 @@ public class TstTraversalHandler implements TraversalHandler {
 		Assert.assertEquals(nodesStarted, nodes);
 	}
 
-	public List<Object> getTreeFlatView() {
-		return treeFlatView;
-	}
-
 	public void traverseExpression(Expression exp) {
 		reset();
 		exp.traverse(this);
@@ -84,10 +80,6 @@ public class TstTraversalHandler implements TraversalHandler {
 
 	public int getNodes() {
 		return nodes;
-	}
-
-	public int getNodesStarted() {
-		return nodesStarted;
 	}
 
 	public int getLeafs() {
