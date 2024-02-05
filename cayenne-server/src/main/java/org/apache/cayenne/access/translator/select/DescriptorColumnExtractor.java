@@ -128,7 +128,11 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
                 }
                 if (count > 1) {
                     // it was a flattened attribute, so need to keep full path info
-                    String dataRowKey = result.getAttributePaths().get(i) + "." + dbAttribute.getName();
+                    String attributePath = result.getAttributePaths().get(i);
+                    if (attributePath.startsWith(PREFETCH_PREFIX)) {
+                        attributePath = attributePath.substring(PREFETCH_PREFIX.length());
+                    }
+                    String dataRowKey = attributePath + "." + dbAttribute.getName();
                     resultNodeDescriptor.setDataRowKey(dataRowKey);
                     addEntityResultField(dataRowKey);
                 } else {

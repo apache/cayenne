@@ -6,9 +6,11 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImplWithLock;
 
@@ -25,11 +27,13 @@ public abstract class _IvOther extends BaseDataObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
+    public static final EntityProperty<IvBase> BASE = PropertyFactory.createEntity("base", IvBase.class);
     public static final ListProperty<IvImpl> IMPLS = PropertyFactory.createList("impls", IvImpl.class);
     public static final ListProperty<IvImplWithLock> IMPLS_WITH_LOCK = PropertyFactory.createList("implsWithLock", IvImplWithLock.class);
 
     protected String name;
 
+    protected Object base;
     protected Object impls;
     protected Object implsWithLock;
 
@@ -41,6 +45,14 @@ public abstract class _IvOther extends BaseDataObject {
     public String getName() {
         beforePropertyRead("name");
         return this.name;
+    }
+
+    public void setBase(IvBase base) {
+        setToOneTarget("base", base, true);
+    }
+
+    public IvBase getBase() {
+        return (IvBase)readProperty("base");
     }
 
     public void addToImpls(IvImpl obj) {
@@ -78,6 +90,8 @@ public abstract class _IvOther extends BaseDataObject {
         switch(propName) {
             case "name":
                 return this.name;
+            case "base":
+                return this.base;
             case "impls":
                 return this.impls;
             case "implsWithLock":
@@ -96,6 +110,9 @@ public abstract class _IvOther extends BaseDataObject {
         switch (propName) {
             case "name":
                 this.name = (String)val;
+                break;
+            case "base":
+                this.base = val;
                 break;
             case "impls":
                 this.impls = val;
@@ -120,6 +137,7 @@ public abstract class _IvOther extends BaseDataObject {
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
         out.writeObject(this.name);
+        out.writeObject(this.base);
         out.writeObject(this.impls);
         out.writeObject(this.implsWithLock);
     }
@@ -128,6 +146,7 @@ public abstract class _IvOther extends BaseDataObject {
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
         this.name = (String)in.readObject();
+        this.base = in.readObject();
         this.impls = in.readObject();
         this.implsWithLock = in.readObject();
     }
