@@ -94,3 +94,4 @@ CAY-2811 Incorrect SQL building using ColumnQuery with ASTScalar
 CAY-2813 Regression: Constants.CI_PROPERTY flag is no longer working for MySQL
 CAY-2815 Incorrect translation of aliased expression
 CAY-2827 Saved data-source XML data doesn't correspond to the XSD schema
+CAY-2840 Vertical Inheritance: Missing subclass attributes with joint prefetch
