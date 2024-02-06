@@ -42,7 +42,7 @@ public class MysqlContainerProvider extends TestContainerProvider {
 
     @Override
     String getDockerImage() {
-        return "mysql:8";
+        return "mysql:8.2";
     }
 
     @Override
