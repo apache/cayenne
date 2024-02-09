@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
@@ -205,8 +206,19 @@ class HierarchicalObjectResolver {
 
         private void createDisjointByIdPrefetchQualifier(String pathPrefix, PrefetchSelectQuery<?> currentQuery,
                                                          List<DbJoin> joins, Set<List<Object>> values) {
-            Expression allJoinsQualifier;
-            if(currentQuery != null) {
+            if (currentQuery == null) return;
+
+             // Use an IN clause for the list of prefetch IDs, when the
+             // join ON clause only has one predicate with many values.
+             // Results in SQL:  ... targetField IN ( ?, ?, ?, .... )
+            if (joins.size() == 1 && values.size() > 1) {
+                currentQuery.and( ExpressionFactory.inDbExp(
+                    pathPrefix + joins.get(0).getTargetName(),
+                    values.stream().flatMap(List::stream).collect(Collectors.toSet())
+                ));
+            } else { // Handle a single value or compound prefetch ID predicates
+            	// SQL: ... (field1=? and field2=? ...) OR (field1=? and field2=? ...) etc
+            	Expression allJoinsQualifier;
                 Expression[] qualifiers = new Expression[values.size()];
                 int i = 0;
                 for(List<Object> joinValues : values) {
