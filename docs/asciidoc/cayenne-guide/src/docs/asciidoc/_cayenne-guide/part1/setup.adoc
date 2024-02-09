@@ -27,11 +27,11 @@ include::../var.adoc[]
 |Cayenne Version |Java Version |Status
 
 |4.2
-|Java 1.8 or newer
-|Release Candidate
+|Java 8 or newer
+|Stable
 
 |4.1
-|Java 1.8 or newer
+|Java 8 or newer
 |Stable
 
 |4.0
