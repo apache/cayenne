@@ -118,7 +118,7 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
         objAttribute.setParent(parent);
     }
 
-    public Class<?> getJavaClass() {
+    public Class<?> getObjAttributeClass() {
         return objAttribute.getJavaClass();
     }
 
