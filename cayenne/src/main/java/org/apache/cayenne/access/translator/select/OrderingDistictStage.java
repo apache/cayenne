@@ -19,18 +19,14 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.OrderingNodeBuilder;
-import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.query.Ordering;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
 /**
- * @since 4.2
+ * @since 4.2.1
  */
-class OrderingStage implements TranslationStage {
+class OrderingDistictStage extends OrderingAbstractStage {
 
     @Override
     public void perform(TranslatorContext context) {
@@ -38,26 +34,18 @@ class OrderingStage implements TranslationStage {
             return;
         }
 
-        QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
-        for(Ordering ordering : context.getQuery().getOrderings()) {
-            processOrdering(qualifierTranslator, context, ordering);
+        if (isDistinct(context)) {
+            // If query is DISTINCT then we need to add the order column as a result column
+            QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
+            for(Ordering ordering : context.getQuery().getOrderings()) {
+                processOrdering(qualifierTranslator, context, ordering);
+            }
         }
     }
 
-    private void processOrdering(QualifierTranslator qualifierTranslator, TranslatorContext context, Ordering ordering) {
-        Expression exp = ordering.getSortSpec();
-        Node translatedNode = qualifierTranslator.translate(exp);
-
-        NodeBuilder nodeBuilder = node(translatedNode);
-        if(ordering.isCaseInsensitive()) {
-            nodeBuilder = function("UPPER", nodeBuilder);
-        }
-
-        OrderingNodeBuilder orderingNodeBuilder = order(nodeBuilder);
-        if(ordering.isDescending()) {
-            orderingNodeBuilder.desc();
-        }
-        context.getSelectBuilder().orderBy(orderingNodeBuilder);
+    private boolean isDistinct(TranslatorContext context) {
+        return !context.isDistinctSuppression()
+            && (context.getQuery().isDistinct()
+            || context.getTableTree().hasToManyJoin());
     }
-
 }

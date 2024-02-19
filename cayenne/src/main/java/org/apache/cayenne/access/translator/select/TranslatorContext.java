@@ -32,11 +32,13 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.translator.DbAttributeBinding;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
+import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
 
 /**
@@ -95,6 +97,8 @@ public class TranslatorContext implements SQLGenerationContext {
     private String finalSQL;
     // suppress DISTINCT clause
     private boolean distinctSuppression;
+
+    private Boolean hasAggregate;
 
     // index of a last result node of a root entity
     private int rootSegmentEnd;
@@ -194,6 +198,30 @@ public class TranslatorContext implements SQLGenerationContext {
 
     public QuotingStrategy getQuotingStrategy() {
         return quotingStrategy;
+    }
+
+    boolean hasAggregate() {
+        if(hasAggregate != null) return hasAggregate;
+
+        if(getQuery().getHavingQualifier() != null) {
+            return (hasAggregate = true);
+        }
+
+        for(ResultNodeDescriptor resultNode : getResultNodeList()) {
+            if(resultNode.isAggregate()) {
+                return (hasAggregate = true);
+            }
+        }
+
+        if(getQuery().getOrderings() != null) {
+            for(Ordering ordering : getQuery().getOrderings()) {
+                if(ordering.getSortSpec() instanceof ASTAggregateFunctionCall) {
+                    return (hasAggregate = true);
+                }
+            }
+        }
+
+        return (hasAggregate = false);
     }
 
     void setDistinctSuppression(boolean distinctSuppression) {

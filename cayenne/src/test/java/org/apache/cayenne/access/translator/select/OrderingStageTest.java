@@ -76,6 +76,7 @@ public class OrderingStageTest {
                         .withDbEntity(dbEntity)
                         .withObjEntity(objEntity)
                         .build())
+                .withDistinct( true )
                 .build();
         context = new MockTranslatorContext(wrapper);
     }
@@ -107,5 +108,17 @@ public class OrderingStageTest {
         ColumnNode columnNode = (ColumnNode)child.getChild(0).getChild(0);
         assertEquals("path", columnNode.getColumn());
         assertEquals("Node { DESC}", child.getChild(0).getChild(1).toString());
+    }
+    
+    @Test
+    public void testNoDuplicateColumnsWhenDistinct() {
+        ColumnExtractorStage columnStage = new ColumnExtractorStage();
+        columnStage.perform(context);
+
+        OrderingStage orderingStage = new OrderingStage();
+        orderingStage.perform(context);
+
+        assertTrue(context.getQuery().isDistinct());
+        assertEquals(1, context.getResultNodeList().size());
     }
 }

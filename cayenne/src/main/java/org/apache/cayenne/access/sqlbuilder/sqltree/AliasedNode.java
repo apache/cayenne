@@ -80,7 +80,7 @@ public class AliasedNode extends Node {
 
         // check if we have subselect as a child
         for(Node child : children) {
-            if(child.getType() == NodeType.SELECT) {
+            if(child != null && child.getType() == NodeType.SELECT) {
                 return false;
             }
         }

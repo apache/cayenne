@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -94,6 +95,20 @@ class TableTree {
 
     public int getNodeCount() {
         return tableNodes.size() + 1;
+    }
+
+    boolean hasToManyJoin() {
+        if(getNodeCount() <= 1) {
+            return false;
+        }
+
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        visit(node -> {
+            if(node.getRelationship() != null && node.getRelationship().isToMany()) {
+                atomicBoolean.set(true);
+            }
+        });
+        return atomicBoolean.get();
     }
 
     public void visit(TableNodeVisitor visitor) {
