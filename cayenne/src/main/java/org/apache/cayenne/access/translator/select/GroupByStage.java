@@ -19,9 +19,6 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
-import org.apache.cayenne.query.Ordering;
-
 /**
  * @since 4.2
  */
@@ -29,7 +26,7 @@ class GroupByStage implements TranslationStage {
 
     @Override
     public void perform(TranslatorContext context) {
-        if (!hasAggregate(context)) {
+        if (!context.hasAggregate()) {
             return;
         }
 
@@ -41,25 +38,4 @@ class GroupByStage implements TranslationStage {
         }
     }
 
-    private boolean hasAggregate(TranslatorContext context) {
-        if(context.getQuery().getHavingQualifier() != null) {
-            return true;
-        }
-
-        for(ResultNodeDescriptor resultNode : context.getResultNodeList()) {
-            if(resultNode.isAggregate()) {
-                return true;
-            }
-        }
-
-        if(context.getQuery().getOrderings() != null) {
-            for(Ordering ordering : context.getQuery().getOrderings()) {
-                if(ordering.getSortSpec() instanceof ASTAggregateFunctionCall) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 }

@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.sql.Types;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @since 4.2
@@ -55,7 +54,7 @@ class DistinctStage implements TranslationStage {
         }
 
         // query forcing distinct or query have joins (qualifier or prefetch)
-        if(!context.getQuery().isDistinct() && !hasToManyJoin(context)) {
+        if(!context.getQuery().isDistinct() && !context.getTableTree().hasToManyJoin()) {
             return;
         }
 
@@ -68,19 +67,5 @@ class DistinctStage implements TranslationStage {
             }
         }
         context.getSelectBuilder().distinct();
-    }
-
-    private boolean hasToManyJoin(TranslatorContext context) {
-        if(context.getTableTree().getNodeCount() <= 1) {
-            return false;
-        }
-
-        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-        context.getTableTree().visit(node -> {
-            if(node.getRelationship() != null && node.getRelationship().isToMany()) {
-                atomicBoolean.set(true);
-            }
-        });
-        return atomicBoolean.get();
     }
 }
