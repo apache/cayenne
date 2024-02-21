@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.ObjRelationship;
 
 /**
@@ -30,7 +31,7 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
     protected String complimentaryReverseArcName;
     protected ClassDescriptor targetDescriptor;
     protected ObjRelationship relationship;
-    protected String reverseDbPath;
+    protected CayennePath reverseDbPath;
 
     public BaseArcProperty(ClassDescriptor owner, ClassDescriptor targetDescriptor, Accessor accessor,
             String reverseName) {
@@ -53,7 +54,7 @@ public abstract class BaseArcProperty extends BaseProperty implements ArcPropert
             reverseDbPath = relationship.getReverseDbRelationshipPath();
         }
 
-        return reverseDbPath;
+        return reverseDbPath.value();
     }
 
     public ObjRelationship getRelationship() {

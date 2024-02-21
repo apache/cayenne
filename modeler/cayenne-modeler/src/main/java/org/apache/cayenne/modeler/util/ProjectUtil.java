@@ -238,8 +238,9 @@ public class ProjectUtil {
             // check individual attributes
             for (ObjAttribute att : entity.getAttributes()) {
 
-                // If flattenet atribute
-                String dbAttributePath = att.getDbAttributePath();
+                // If flattened attribute
+                // TODO: Perfect candidate for CayennePath usage
+                String dbAttributePath = att.getDbAttributePath().value();
                 if (dbAttributePath != null
                         && dbAttributePath.contains(".")) {
                     String[] pathSplit = dbAttributePath.split("\\.");
@@ -250,14 +251,14 @@ public class ProjectUtil {
                         boolean isTruePath = isDbAttributePathCorrect(dbEnt, dbAttributePath);
 
                         if (!isTruePath) {
-                            att.setDbAttributePath(null);
+                            att.setDbAttributePath((String)null);
                         }
                     }
                 } else {
                     DbAttribute dbAtt = att.getDbAttribute();
                     if (dbAtt != null) {
                         if (dbEnt.getAttribute(dbAtt.getName()) != dbAtt) {
-                            att.setDbAttributePath(null);
+                            att.setDbAttributePath((String)null);
                         }
                     }
                 }
@@ -321,7 +322,7 @@ public class ProjectUtil {
         for (ObjAttribute objAttr : entity.getAttributeMap().values()) {
             DbAttribute dbAttr = objAttr.getDbAttribute();
             if (null != dbAttr) {
-                objAttr.setDbAttributePath(null);
+                objAttr.setDbAttributePath((String)null);
             }
         }
 

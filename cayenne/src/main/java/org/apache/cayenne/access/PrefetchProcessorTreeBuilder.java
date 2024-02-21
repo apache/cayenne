@@ -22,6 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
@@ -42,11 +43,11 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
     private ClassDescriptor descriptor;
     private List<DataRow> mainResultRows;
-    private Map<String, List<?>> extraResultsByPath;
+    private Map<CayennePath, List<?>> extraResultsByPath;
     private Map<ObjectId, Persistent> seen;
 
     PrefetchProcessorTreeBuilder(HierarchicalObjectResolver objectTreeResolver, List<DataRow> mainResultRows,
-                                 Map<String, List<?>> extraResultsByPath) {
+                                 Map<CayennePath, List<?>> extraResultsByPath) {
         this.context = objectTreeResolver.context;
         this.queryMetadata = objectTreeResolver.queryMetadata;
         this.mainResultRows = mainResultRows;

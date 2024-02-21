@@ -25,6 +25,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 
 /**
  * Property that represents to-many relationship mapped on {@link List}.
@@ -39,14 +41,14 @@ import org.apache.cayenne.exp.parser.ASTPath;
 public class ListProperty<V extends Persistent> extends CollectionProperty<V, List<V>> {
 
     /**
-     * Constructs a new property with the given name and expression
+     * Constructs a new property with the given path and expression
      *
-     * @param name           of the property (will be used as alias for the expression)
+     * @param path           of the property (will be used as alias for the expression)
      * @param expression     expression for property
      * @param entityType     type of related entity
      */
-    protected ListProperty(String name, Expression expression, Class<V> entityType) {
-        super(name, expression, List.class, entityType);
+    protected ListProperty(CayennePath path, Expression expression, Class<V> entityType) {
+        super(path, expression, List.class, entityType);
     }
 
     /**
@@ -54,7 +56,7 @@ public class ListProperty<V extends Persistent> extends CollectionProperty<V, Li
      */
     @Override
     public ListProperty<V> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createList(exp.getPath(), exp, this.getEntityType());
     }
 
@@ -63,15 +65,23 @@ public class ListProperty<V extends Persistent> extends CollectionProperty<V, Li
      */
     @Override
     public ListProperty<V> outer() {
-        return getName().endsWith("+")
-                ? this
-                : PropertyFactory.createList(getName() + "+", getEntityType());
+        CayennePathSegment last = getPath().last();
+        if (last.isOuterJoin()) {
+            return this;
+        } else {
+            CayennePath outerPath = getPath().parent().dot(last.outer());
+            return PropertyFactory.createList(outerPath, getEntityType());
+        }
     }
 
     /**
      * @return property that will be translated relative to parent query
      */
     public ListProperty<V> enclosing() {
-        return PropertyFactory.createList(null, ExpressionFactory.enclosingObjectExp(getExpression()), getEntityType());
+        return PropertyFactory.createList(
+                CayennePath.EMPTY_PATH,
+                ExpressionFactory.enclosingObjectExp(getExpression()),
+                getEntityType()
+        );
     }
 }

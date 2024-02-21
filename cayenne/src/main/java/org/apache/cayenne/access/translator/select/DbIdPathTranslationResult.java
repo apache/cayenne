@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 
@@ -32,16 +33,16 @@ import org.apache.cayenne.map.DbRelationship;
  */
 class DbIdPathTranslationResult implements PathTranslationResult {
 
-    private final String path;
+    private final CayennePath path;
     private final DbAttribute pk;
 
-    DbIdPathTranslationResult(String path, DbAttribute pk) {
+    DbIdPathTranslationResult(CayennePath path, DbAttribute pk) {
         this.path = Objects.requireNonNull(path);
         this.pk = Objects.requireNonNull(pk);
     }
 
     @Override
-    public String getFinalPath() {
+    public CayennePath getFinalPath() {
         return path;
     }
 
@@ -56,7 +57,7 @@ class DbIdPathTranslationResult implements PathTranslationResult {
     }
 
     @Override
-    public List<String> getAttributePaths() {
+    public List<CayennePath> getAttributePaths() {
         return Collections.singletonList(path);
     }
 }

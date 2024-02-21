@@ -39,6 +39,7 @@ import org.apache.cayenne.exp.parser.ASTScalar;
 import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.PatternMatchNode;
 import org.apache.cayenne.exp.parser.SimpleNode;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -154,17 +155,17 @@ class QualifierTranslator implements TraversalHandler {
                 return new LikeNode(patternMatchNode.isIgnoringCase(), not, patternMatchNode.getEscapeChar());
 
             case OBJ_PATH:
-                String path = (String)node.getOperand(0);
+                CayennePath path = (CayennePath)node.getOperand(0);
                 PathTranslationResult result = pathTranslator.translatePath(context.getMetadata().getObjEntity(), path);
                 return processPathTranslationResult(node, parentNode, result);
 
             case DB_PATH:
-                String dbPath = (String)node.getOperand(0);
+                CayennePath dbPath = (CayennePath)node.getOperand(0);
                 PathTranslationResult dbResult = pathTranslator.translatePath(context.getMetadata().getDbEntity(), dbPath);
                 return processPathTranslationResult(node, parentNode, dbResult);
 
             case DBID_PATH:
-                String dbIdPath = (String)node.getOperand(0);
+                CayennePath dbIdPath = (CayennePath)node.getOperand(0);
                 PathTranslationResult dbIdResult = pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), dbIdPath);
                 return processPathTranslationResult(node, parentNode, dbIdResult);
 
@@ -230,7 +231,7 @@ class QualifierTranslator implements TraversalHandler {
                         throw new CayenneRuntimeException("Unable to translate reference on entity with more than one PK.");
                     }
                     DbAttribute attribute = dbAttributes.iterator().next();
-                    String alias = context.getTableTree().aliasForAttributePath(attribute.getName());
+                    String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
                     return table(alias).column(attribute).build();
                 } else {
                     return null;
@@ -361,7 +362,7 @@ class QualifierTranslator implements TraversalHandler {
         ExpressionNodeBuilder expressionNodeBuilder = null;
         ExpressionNodeBuilder eq;
 
-        String path = result.getLastAttributePath();
+        CayennePath path = result.getLastAttributePath();
         String alias = context.getTableTree().aliasForPath(path);
 
         for (DbAttribute attribute : result.getDbAttributes()) {

@@ -103,7 +103,7 @@ public class ColumnDescriptor {
      */
     public ColumnDescriptor(ObjAttribute objAttribute, DbAttribute dbAttribute, String columnAlias) {
         this(dbAttribute, columnAlias);
-        this.dataRowKey = objAttribute.getDbAttributePath();
+        this.dataRowKey = objAttribute.getDbAttributePath().value();
         this.javaClass = objAttribute.getType();
     }
 

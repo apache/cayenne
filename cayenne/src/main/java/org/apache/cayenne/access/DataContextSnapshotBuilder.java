@@ -91,7 +91,7 @@ class DataContextSnapshotBuilder implements PropertyVisitor {
     public boolean visitAttribute(AttributeProperty property) {
         ObjAttribute objAttr = property.getAttribute();
         // processing compound attributes correctly
-        snapshot.put(objAttr.getDbAttributePath(), property.readPropertyDirectly(object));
+        snapshot.put(objAttr.getDbAttributePath().value(), property.readPropertyDirectly(object));
         return true;
     }
 

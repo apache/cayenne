@@ -24,6 +24,7 @@ import java.util.Collection;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +41,8 @@ public class ListPropertyTest {
 
     @Before
     public void createProperty() {
-        property = new ListProperty<>("path", null, Artist.class);
-        property1 = new ListProperty<>("path.artist", null, Artist.class);
+        property = new ListProperty<>(CayennePath.of("path"), null, Artist.class);
+        property1 = new ListProperty<>(CayennePath.of("path.artist"), null, Artist.class);
     }
 
 

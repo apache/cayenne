@@ -33,7 +33,7 @@ class ExpressionUtils {
         }
 
         String[] pathSegments = path.split("\\.");
-        Map<String, String> aliasMap = new HashMap<>();
+        Map<String, String> aliasMap = new HashMap<>(pathSegments.length);
         for (int i = 0; i < pathSegments.length; i++) {
             if (pathSegments[i].contains("#")) {
                 String[] splitSegment = pathSegments[i].split("#");

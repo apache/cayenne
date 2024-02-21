@@ -67,6 +67,7 @@ import org.apache.cayenne.exp.parser.ExpressionParser;
 import org.apache.cayenne.exp.parser.ExpressionParserTokenManager;
 import org.apache.cayenne.exp.parser.JavaCharStream;
 import org.apache.cayenne.exp.parser.SimpleNode;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.FluentSelect;
@@ -331,7 +332,7 @@ public class ExpressionFactory {
 			return new ASTTrue();
 		}
 
-		Function<Object, ASTPath> pathProvider;
+		Function<String, ASTPath> pathProvider;
 		if (path.startsWith(ASTDbPath.DB_PREFIX)) {
 			pathProvider = ASTDbPath::new;
 			path = path.substring(ASTDbPath.DB_PREFIX.length());
@@ -353,8 +354,7 @@ public class ExpressionFactory {
 			String splitChunk = splitEnd > 0 ? path.substring(split + 1, splitEnd) : path.substring(split + 1);
 
 			// fix the path - replace split with dot if it's in the middle, or
-			// strip it if
-			// it's in the beginning
+			// strip it if it's in the beginning
 			path = split == 0 ? path.substring(1) : path.replace(SPLIT_SEPARATOR, '.');
 
 			int i = 0;
@@ -1210,30 +1210,62 @@ public class ExpressionFactory {
 
 	/**
 	 * @param pathSpec a String "obj:" path.
-	 * @since 4.0
 	 * @return a new "obj:" path expression for the specified String path.
+	 * @since 4.0
 	 */
 	public static Expression pathExp(String pathSpec) {
 		return new ASTObjPath(pathSpec);
 	}
 
 	/**
+	 * @param path a path value.
+	 * @return a new "obj:" path expression for the specified path.
+	 * @since 5.0
+	 */
+	public static Expression pathExp(CayennePath path) {
+		return new ASTObjPath(path);
+	}
+
+	/**
 	 * @param pathSpec a String db: path.
-	 * @since 4.0
 	 * @return a new "db:" path expression for the specified String path.
+	 *
+	 * @since 4.0
 	 */
 	public static Expression dbPathExp(String pathSpec) {
 		return new ASTDbPath(pathSpec);
 	}
 
 	/**
+	 * @param path a path value
+	 * @return a new "db:" path expression for the specified path.
+	 *
+	 * @since 5.0
+	 */
+	public static Expression dbPathExp(CayennePath path) {
+		return new ASTDbPath(path);
+	}
+
+	/**
 	 * @param pathSpec a String "dbid:" path
-	 * @return a new "dbid:" path expressiob fofr the specified String path
+	 * @return a new "dbid:" path expression for the specified String path
+	 *
 	 * @since 4.2
 	 */
 	public static Expression dbIdPathExp(String pathSpec) {
 		return new ASTDbIdPath(pathSpec);
 	}
+
+	/**
+	 * @param pathSpec a "dbid:" path value
+	 * @return a new "dbid:" path expression for the specified path
+	 *
+	 * @since 5.0
+	 */
+	public static Expression dbIdPathExp(CayennePath pathSpec) {
+		return new ASTDbIdPath(pathSpec);
+	}
+
 
 	/**
 	 * A convenience shortcut for boolean true expression.

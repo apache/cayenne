@@ -30,7 +30,7 @@ public class ExpressionUtilsTest {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b.c.d");
 
-        assertEquals("a.b.c.d", path.getPath());
+        assertEquals("a.b.c.d", path.getPath().value());
         assertEquals(0, path.getPathAliases().size());
     }
 
@@ -39,7 +39,7 @@ public class ExpressionUtilsTest {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b+.c+.d");
 
-        assertEquals("a.b+.c+.d", path.getPath());
+        assertEquals("a.b+.c+.d", path.getPath().value());
         assertEquals(0, path.getPathAliases().size());
     }
 
@@ -48,7 +48,7 @@ public class ExpressionUtilsTest {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b.c#p1.d#p2");
 
-        assertEquals("a.b.p1.p2", path.getPath());
+        assertEquals("a.b.p1.p2", path.getPath().value());
         assertEquals(2, path.getPathAliases().size());
         assertEquals("c", path.getPathAliases().get("p1"));
         assertEquals("d", path.getPathAliases().get("p2"));
@@ -59,7 +59,7 @@ public class ExpressionUtilsTest {
         ASTPath path = new ASTObjPath();
         ExpressionUtils.parsePath(path, "a.b+.c#p1+.d#p2");
 
-        assertEquals("a.b+.p1.p2", path.getPath());
+        assertEquals("a.b+.p1.p2", path.getPath().value());
         assertEquals(2, path.getPathAliases().size());
         assertEquals("c+", path.getPathAliases().get("p1"));
         assertEquals("d", path.getPathAliases().get("p2"));

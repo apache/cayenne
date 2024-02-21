@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
@@ -75,6 +76,11 @@ public class MockDataObject implements DataObject {
     }
 
     public Object readNestedProperty(String path) {
+        return null;
+    }
+
+    @Override
+    public Object readNestedProperty(CayennePath path) {
         return null;
     }
 

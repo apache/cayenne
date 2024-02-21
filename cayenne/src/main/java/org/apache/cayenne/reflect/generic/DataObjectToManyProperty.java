@@ -58,7 +58,7 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
     @Override
     public String getComplimentaryReverseDbRelationshipPath() {
         if (reverseDbPath == null) {
-            reverseDbPath = relationship.getReverseDbRelationshipPath();
+            reverseDbPath = relationship.getReverseDbRelationshipPath().value();
         }
 
         return reverseDbPath;

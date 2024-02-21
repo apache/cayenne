@@ -19,6 +19,8 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.exp.path.CayennePath;
+
 /**
  * Defines basic methods for a persistent object in Cayenne.
  */
@@ -81,10 +83,59 @@ public interface DataObject extends Persistent {
      * <br>
      * </li>
      * </ul>
-     * 
+     *
+     * @see #readNestedProperty(CayennePath)
      * @since 1.0.5
      */
     public Object readNestedProperty(String path);
+
+    /**
+     * Returns a value of the property identified by a property path. Supports reading
+     * both mapped and unmapped properties. Unmapped properties are accessed in a manner
+     * consistent with JavaBeans specification.
+     * <p>
+     * Property path (or nested property) is a dot-separated path used to traverse object
+     * relationships until the final object is found. If a null object found while
+     * traversing path, null is returned. If a list is encountered in the middle of the
+     * path, CayenneRuntimeException is thrown.
+     * Unlike {@link #readPropertyDirectly(String)}, this method will resolve an object if it is HOLLOW.
+     * <p>
+     * Examples:
+     * </p>
+     * <ul>
+     * <li>Read this object property:<br>
+     * <code>String name = (String)artist.readNestedProperty("name");</code><br>
+     * <br>
+     * </li>
+     * <li>Read an object related to this object:<br>
+     * <code>Gallery g = (Gallery)paintingInfo.readNestedProperty("toPainting.toGallery");</code>
+     * <br>
+     * <br>
+     * </li>
+     * <li>Read a property of an object related to this object: <br>
+     * <code>String name = (String)painting.readNestedProperty("toArtist.artistName");</code>
+     * <br>
+     * <br>
+     * </li>
+     * <li>Read to-many relationship list:<br>
+     * <code>List exhibits = (List)painting.readNestedProperty("toGallery.exhibitArray");</code>
+     * <br>
+     * <br>
+     * </li>
+     * <li>Read to-many relationship in the middle of the path:<br>
+     * <code>List&lt;String&gt; names = (List&lt;String&gt;)artist.readNestedProperty("paintingArray.paintingName");</code>
+     * <br>
+     * <br>
+     * </li>
+     * </ul>
+     *
+     * @param path a dot-separated path
+     * @return a value of the property identified by a property path
+     *
+     * @see #readNestedProperty(String)
+     * @since 5.0
+     */
+    public Object readNestedProperty(CayennePath path);
 
     /**
      * Returns a value of the property identified by propName. Resolves faults if needed.

@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Base interface for all types of properties
@@ -29,8 +30,16 @@ public interface Property<E> {
 
     /**
      * @return name of this property, can be null
+     * @see #getPath()
      */
     String getName();
+
+    /**
+     * @return path that this property represents, can be empty if this is an expression-based property
+     * @see #getName()
+     * @since 5.0
+     */
+    CayennePath getPath();
 
     /**
      * @return alias of this property, can be null

@@ -30,6 +30,7 @@ import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.map.DbAttribute;
@@ -98,7 +99,7 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         factory.getProcessedArcs().add(arcTarget);
     }
 
-    ObjectId processFlattenedPath(ObjectId id, ObjectId finalTargetId, DbEntity entity, String dbPath, boolean add) {
+    ObjectId processFlattenedPath(ObjectId id, ObjectId finalTargetId, DbEntity entity, CayennePath dbPath, boolean add) {
         Iterator<CayenneMapEntry> dbPathIterator = entity.resolvePathComponents(dbPath);
         StringBuilder path = new StringBuilder();
 

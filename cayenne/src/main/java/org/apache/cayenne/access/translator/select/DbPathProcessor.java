@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -30,13 +31,13 @@ import org.apache.cayenne.map.JoinType;
  */
 class DbPathProcessor extends PathProcessor<DbEntity> {
 
-    private boolean flattenedPath;
+    private final boolean flattenedPath;
 
-    DbPathProcessor(TranslatorContext context, DbEntity entity, String parentPath, boolean flattenedPath) {
+    DbPathProcessor(TranslatorContext context, DbEntity entity, CayennePath parentPath, boolean flattenedPath) {
         super(context, entity);
         this.flattenedPath = flattenedPath;
         if (parentPath != null) {
-            currentDbPath.append(parentPath);
+            currentDbPath = currentDbPath.withMarker(parentPath.marker()).dot(parentPath);
         }
     }
 
@@ -84,7 +85,7 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
     }
 
     private void processAttribute(DbAttribute attribute) {
-        addAttribute(currentDbPath.toString(), attribute);
+        addAttribute(currentDbPath, attribute);
         appendCurrentPath(attribute.getName());
     }
 
@@ -94,13 +95,12 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
             processRelTermination(relationship);
         } else {
             appendCurrentPath(relationship.getName());
-            context.getTableTree().addJoinTable(currentDbPath.toString(), relationship, isOuterJoin()
+            context.getTableTree().addJoinTable(currentDbPath, relationship, isOuterJoin()
                                                                                         ? JoinType.LEFT_OUTER
                                                                                         : JoinType.INNER);
             if (!relationship.isToMany()) {
-                String path = currentDbPath.toString();
                 for (DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
-                    addAttribute(path, attribute);
+                    addAttribute(currentDbPath, attribute);
                 }
             }
         }
@@ -108,27 +108,31 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
 
     protected void processRelTermination(DbRelationship relationship) {
         this.relationship = relationship;
-        String path = currentDbPath.toString();
 
         // Back to obj alias to keep joins optimised.
         if (currentAlias != null && currentAlias.startsWith(DB_PATH_ALIAS_INDICATOR)) {
             currentAlias = currentAlias.substring(DB_PATH_ALIAS_INDICATOR.length());
         }
-        appendCurrentPath(relationship.getName());
 
+        // check if we can use own table FK values for this relationship
         if (relationship.isToMany() || !relationship.isToPK()) {
+            // must use target table
+            // add relationship first
+            appendCurrentPath(relationship.getName());
             // match on target PK
-            context.getTableTree().addJoinTable(currentDbPath.toString(), relationship, isOuterJoin()
+            context.getTableTree().addJoinTable(currentDbPath, relationship, isOuterJoin()
                                                                                         ? JoinType.LEFT_OUTER
                                                                                         : JoinType.INNER);
-            path = currentDbPath.toString();
             for (DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
-                addAttribute(path, attribute);
+                addAttribute(currentDbPath, attribute);
             }
         } else {
+            // can use own values
             for (DbJoin join : relationship.getJoins()) {
-                addAttribute(path, join.getSource());
+                addAttribute(currentDbPath, join.getSource());
             }
+            // add relationship last
+            appendCurrentPath(relationship.getName());
         }
     }
 }

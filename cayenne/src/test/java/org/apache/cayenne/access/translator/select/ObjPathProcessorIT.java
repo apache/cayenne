@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -58,34 +59,34 @@ public class ObjPathProcessorIT extends RuntimeCase {
 
     @Test
     public void testSimpleAttributePathTranslation() {
-        PathTranslationResult result = pathProcessor.process("name");
+        PathTranslationResult result = pathProcessor.process(CayennePath.of("name"));
         assertEquals(1, result.getDbAttributes().size());
         assertEquals(1, result.getAttributePaths().size());
 
-        assertEquals("", result.getLastAttributePath());
+        assertEquals("", result.getLastAttributePath().value());
         assertEquals("NAME", result.getLastAttribute().getName());
     }
 
     @Test
     public void testInheritedRelationshipPathTranslation() {
-        PathTranslationResult result = pathProcessor.process("ivRoot");
+        PathTranslationResult result = pathProcessor.process(CayennePath.of("ivRoot"));
         assertEquals(2, result.getDbAttributes().size());
         assertEquals(2, result.getAttributePaths().size());
 
-        assertEquals("sub3", result.getAttributePaths().get(0));
+        assertEquals("sub3", result.getAttributePaths().get(0).value());
         assertEquals("ID", result.getDbAttributes().get(0).getName());
 
-        assertEquals("sub3", result.getAttributePaths().get(1));
+        assertEquals("sub3", result.getAttributePaths().get(1).value());
         assertEquals("IV_ROOT_ID", result.getDbAttributes().get(1).getName());
     }
 
     @Test
     public void testFlattenedAttributePathTranslation() {
-        PathTranslationResult result = pathProcessor.process("ivRoot.discriminator");
+        PathTranslationResult result = pathProcessor.process(CayennePath.of("ivRoot.discriminator"));
         assertEquals(1, result.getDbAttributes().size());
         assertEquals(1, result.getAttributePaths().size());
 
-        assertEquals("sub3.ivRoot1", result.getAttributePaths().get(0));
+        assertEquals("sub3.ivRoot1", result.getAttributePaths().get(0).value());
         assertEquals("DISCRIMINATOR", result.getDbAttributes().get(0).getName());
     }
 

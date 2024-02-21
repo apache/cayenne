@@ -63,7 +63,7 @@ public class EmbeddedAttribute extends ObjAttribute {
         setName(other.getName());
         setType(other.getType());
         setEntity(other.getEntity());
-        setDbAttributePath(other.getDbAttributePath());
+        setDbAttributePathDirect(other.getDbAttributePath());
         setUsedForLocking(other.isUsedForLocking());
         setLazy(other.isLazy());
         attributeOverrides = other.getAttributeOverrides();

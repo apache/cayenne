@@ -20,7 +20,8 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -30,7 +31,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.StringTokenizer;
 
 /**
  * Defines a node in a prefetch tree.
@@ -55,12 +55,10 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	// transient parent allows cloning parts of the tree via serialization
 	protected transient PrefetchTreeNode parent;
 
-	// Using Collection instead of Map for children storage (even though there
-	// cases of
+	// Using Collection instead of Map for children storage (even though there cases of
 	// lookup by segment) is a reasonable tradeoff considering that
 	// each node has no more than a few children and lookup by name doesn't
-	// happen on
-	// traversal, only during creation.
+	// happen on traversal, only during creation.
 	protected Collection<PrefetchTreeNode> children;
 
 	/**
@@ -71,6 +69,17 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 * @since 4.0
 	 */
 	public static PrefetchTreeNode withPath(String path, int semantics) {
+		return withPath(CayennePath.of(path), semantics);
+	}
+
+	/**
+	 * Creates and returns a prefetch tree spanning a single path. The tree is
+	 * made of phantom nodes, up to the leaf node, which is non-phantom and has
+	 * specified semantics.
+	 *
+	 * @since 5.0
+	 */
+	public static PrefetchTreeNode withPath(CayennePath path, int semantics) {
 		PrefetchTreeNode root = new PrefetchTreeNode();
 		PrefetchTreeNode node = root.addPath(path);
 		node.setPhantom(false);
@@ -112,28 +121,43 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 
 	/**
 	 * Returns full prefetch path, that is a dot separated String of node names
-	 * starting from root and up to and including this node. Note that root
-	 * "name" is considered to be an empty string.
+	 * starting from root and up to and including this node.
+	 * <br>
+	 * <b>Note</b> that root "name" is considered to be an empty string.
+	 *
+	 * @return path from the root
+	 *
+	 * @since 5.0 returns {@link CayennePath} instead of a plain {@code String}
 	 */
-	public String getPath() {
+	public CayennePath getPath() {
 		return getPath(null);
 	}
 
-	public String getPath(PrefetchTreeNode upTillParent) {
+	/**
+	 * Returns full prefetch path, that is a dot separated String of node names
+	 * starting from root and up to and including this node.
+	 * <br>
+	 * <b>Note</b> that root "name" is considered to be an empty string.
+	 *
+	 * @param upTillParent parent we need to stop at, if {@code null} returns path up to the root
+	 * @return path from the specified parent node
+	 *
+	 * @since 5.0 returns {@link CayennePath} instead of a plain {@code String}
+	 */
+	public CayennePath getPath(PrefetchTreeNode upTillParent) {
 		if (parent == null || upTillParent == this) {
-			return "";
+			return CayennePath.EMPTY_PATH;
 		}
 
-		StringBuilder path = new StringBuilder(getName());
+		CayennePath path = CayennePath.of(getName());
 		PrefetchTreeNode node = this.getParent();
-
 		// root node has no path
 		while (node.getParent() != null && node != upTillParent) {
-			path.insert(0, node.getName() + ".");
+			path = CayennePath.of(node.getName()).dot(path);
 			node = node.getParent();
 		}
 
-		return path.toString();
+		return path;
 	}
 
 	/**
@@ -246,21 +270,57 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	}
 
 	/**
-	 * Looks up an existing node in the tree desribed by the dot-separated path.
+	 * Looks up an existing node in the tree described by the path.
 	 * Will return null if no matching child exists.
+	 *
+	 * @param path expression to look up node for
+	 * @return found node or null if non exists
+	 *
+	 * @since 5.0
+	 */
+	public PrefetchTreeNode getNode(CayennePath path) {
+		if (path.isEmpty()) {
+			throw new IllegalArgumentException("Empty path");
+		}
+		PrefetchTreeNode node = this;
+		for(CayennePathSegment segment : path) {
+			node = node.getChild(segment.value());
+			if(node == null) {
+				return null;
+			}
+		}
+		return node;
+	}
+
+	/**
+	 * Looks up an existing node in the tree described by the dot-separated path.
+	 * Will return null if no matching child exists.
+	 *
+	 * @param path expression to look up node for
+	 * @return found node or null if non exists
 	 */
 	public PrefetchTreeNode getNode(String path) {
-		if (Util.isEmptyString(path)) {
-			throw new IllegalArgumentException("Empty path: " + path);
-		}
+		return getNode(CayennePath.of(path));
+	}
 
+	/**
+	 * Adds a "path" with specified semantics to this prefetch node. All yet
+	 * non-existent nodes in the created path will be marked as phantom.
+	 *
+	 * @return the last segment in the created path.
+	 * @since 5.0
+	 */
+	public PrefetchTreeNode addPath(CayennePath path) {
 		PrefetchTreeNode node = this;
-		StringTokenizer toks = new StringTokenizer(path, Entity.PATH_SEPARATOR);
-		while (toks.hasMoreTokens() && node != null) {
-			String segment = toks.nextToken();
-			node = node.getChild(segment);
-		}
+		for(CayennePathSegment segment : path) {
+			PrefetchTreeNode child = node.getChild(segment.value());
+			if (child == null) {
+				child = new PrefetchTreeNode(node, segment.value());
+				node.addChild(child);
+			}
 
+			node = child;
+		}
 		return node;
 	}
 
@@ -271,25 +331,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 	 * @return the last segment in the created path.
 	 */
 	public PrefetchTreeNode addPath(String path) {
-		if (Util.isEmptyString(path)) {
-			throw new IllegalArgumentException("Empty path: " + path);
-		}
-
-		PrefetchTreeNode node = this;
-		StringTokenizer toks = new StringTokenizer(path, Entity.PATH_SEPARATOR);
-		while (toks.hasMoreTokens()) {
-			String segment = toks.nextToken();
-
-			PrefetchTreeNode child = node.getChild(segment);
-			if (child == null) {
-				child = new PrefetchTreeNode(node, segment);
-				node.addChild(child);
-			}
-
-			node = child;
-		}
-
-		return node;
+		return addPath(CayennePath.of(path));
 	}
 
 	/**
@@ -504,7 +546,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 		public boolean startDisjointPrefetch(PrefetchTreeNode node) {
 			encoder.start("prefetch")
 					.attribute("type", "disjoint")
-					.cdata(node.getPath(), true)
+					.cdata(node.getPath().value(), true)
 					.end();
 			return true;
 		}
@@ -512,7 +554,7 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 		public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
 			encoder.start("prefetch")
 					.attribute("type", "disjointById")
-					.cdata(node.getPath(), true)
+					.cdata(node.getPath().value(), true)
 					.end();
 			return true;
 		}
@@ -520,14 +562,14 @@ public class PrefetchTreeNode implements Serializable, XMLSerializable {
 		public boolean startJointPrefetch(PrefetchTreeNode node) {
 			encoder.start("prefetch")
 					.attribute("type", "joint")
-					.cdata(node.getPath(), true)
+					.cdata(node.getPath().value(), true)
 					.end();
 			return true;
 		}
 
 		public boolean startUnknownPrefetch(PrefetchTreeNode node) {
 			encoder.start("prefetch")
-					.cdata(node.getPath(), true)
+					.cdata(node.getPath().value(), true)
 					.end();
 			return true;
 		}

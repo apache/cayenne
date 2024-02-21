@@ -76,7 +76,7 @@ public class EOModelProcessorInheritanceTest {
 
         ObjRelationship fr = (ObjRelationship) e1.getRelationship("singleTables");
         assertNotNull(fr);
-        assertEquals("singleTableJoins.toSingleTable", fr.getDbRelationshipPath());
+        assertEquals("singleTableJoins.toSingleTable", fr.getDbRelationshipPath().value());
         assertEquals("SingleTableConcreteEntityOne", fr.getTargetEntityName());
     }
 }

@@ -26,6 +26,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 
 /**
  * Property that represents to-many relationship mapped on {@link Map}.
@@ -40,16 +42,16 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
     protected Class<V> entityType;
 
     /**
-     * Constructs a new property with the given name and expression
+     * Constructs a new property with the given path and expression
      *
-     * @param name       of the property (will be used as alias for the expression)
+     * @param path       of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param keyType    type of keys of the property
      * @param entityType type of related entities
      * @see PropertyFactory#createMap(String, Expression, Class, Class)
      */
-    protected MapProperty(String name, Expression expression, Class<K> keyType, Class<V> entityType) {
-        super(name, expression, Map.class);
+    protected MapProperty(CayennePath path, Expression expression, Class<K> keyType, Class<V> entityType) {
+        super(path, expression, Map.class);
         this.keyType = keyType;
         this.entityType = entityType;
     }
@@ -205,7 +207,7 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      */
     @Override
     public MapProperty<K, V> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createMap(exp.getPath(), exp, this.getKeyType(), this.getEntityType());
     }
 
@@ -214,9 +216,13 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      */
     @Override
     public MapProperty<K, V> outer() {
-        return getName().endsWith("+")
-                ? this
-                : PropertyFactory.createMap(getName() + "+", getKeyType(), getEntityType());
+        CayennePathSegment last = getPath().last();
+        if (last.isOuterJoin()) {
+            return this;
+        } else {
+            CayennePath outerPath = getPath().parent().dot(last.outer());
+            return PropertyFactory.createMap(outerPath, getKeyType(), getEntityType());
+        }
     }
 
     /**
@@ -237,6 +243,11 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
      * @return property that will be translated relative to parent query
      */
     public MapProperty<K, V> enclosing() {
-        return PropertyFactory.createMap(null, ExpressionFactory.enclosingObjectExp(getExpression()),  getKeyType(), getEntityType());
+        return PropertyFactory.createMap(
+                CayennePath.EMPTY_PATH,
+                ExpressionFactory.enclosingObjectExp(getExpression()),
+                getKeyType(),
+                getEntityType()
+        );
     }
 }

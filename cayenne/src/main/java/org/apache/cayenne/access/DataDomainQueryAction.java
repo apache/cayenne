@@ -30,6 +30,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -92,7 +93,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private DataRowStore cache;
     private QueryResponse response;
     private GenericResponse fullResponse;
-    private Map<String, List<?>> prefetchResultsByPath;
+    private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<QueryEngine, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
 
@@ -710,8 +711,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                         .synchronizedRootResultNodeFromDataRows(normalizedRows);
             } else {
                 HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata);
-                return resolver.synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows,
-                        prefetchResultsByPath);
+                return resolver
+                        .synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
             }
         }
 
@@ -851,8 +852,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 return new ObjectResolver(context, descriptor, metadata.isRefreshingObjects())
                         .synchronizedRootResultNodeFromDataRows(rowsColumn);
             } else {
-                HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata, descriptor,
-                        true);
+                HierarchicalObjectResolver resolver
+                        = new HierarchicalObjectResolver(context, metadata, descriptor, true);
                 return resolver.synchronizedRootResultNodeFromDataRows(prefetchTree, rowsColumn, prefetchResultsByPath);
             }
         }

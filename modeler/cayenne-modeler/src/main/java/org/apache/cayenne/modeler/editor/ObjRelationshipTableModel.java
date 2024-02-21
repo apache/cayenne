@@ -301,7 +301,7 @@ public class ObjRelationshipTableModel extends CayenneTableModel<ObjRelationship
                     return compareColumnsData(DeleteRule.deleteRuleName(o1.getDeleteRule()),
                                     DeleteRule.deleteRuleName(o2.getDeleteRule()));
                 case REL_TARGET_PATH:
-                    return compareColumnsData(o1.getDbRelationshipPath(), o2.getDbRelationshipPath());
+                    return compareColumnsData(o1.getDbRelationshipPath().value(), o2.getDbRelationshipPath().value());
                 default:
                     return compareColumnsData("", "");
             }

@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import java.util.Objects;
 
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Property that represents numeric PK
@@ -43,8 +44,8 @@ public class NumericIdProperty<E extends Number> extends NumericProperty<E> impl
      * @param type       of the property (mandatory)
      * @see PropertyFactory#createNumericId(String, String, String, Class)
      */
-    protected NumericIdProperty(String attribute, String path, String entityName, Class<E> type) {
-        super(null, ExpressionFactory.dbIdPathExp(path == null ? attribute : path + '.' + attribute), type);
+    protected NumericIdProperty(String attribute, CayennePath path, String entityName, Class<E> type) {
+        super(CayennePath.EMPTY_PATH, ExpressionFactory.dbIdPathExp(path.dot(attribute)), type);
         this.entityName = Objects.requireNonNull(entityName);
         this.attributeName = Objects.requireNonNull(attribute);
     }

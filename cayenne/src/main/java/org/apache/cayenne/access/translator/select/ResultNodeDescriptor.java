@@ -25,6 +25,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.NodeType;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SimpleNodeTreeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.parser.ASTAggregateFunctionCall;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbAttribute;
 
@@ -37,11 +38,11 @@ class ResultNodeDescriptor {
     private final Property<?> property;
 
     private boolean isAggregate;
-    private String dataRowKey;
+    private CayennePath dataRowKey;
     private DbAttribute dbAttribute;
     private String javaType;
 
-    ResultNodeDescriptor(Node node, boolean inDataRow, Property<?> property, String dataRowKey) {
+    ResultNodeDescriptor(Node node, boolean inDataRow, Property<?> property, CayennePath dataRowKey) {
         this.node = node;
         this.inDataRow = inDataRow;
         this.property = property;
@@ -72,7 +73,7 @@ class ResultNodeDescriptor {
 
     public String getDataRowKey() {
         if (dataRowKey != null) {
-            return dataRowKey;
+            return dataRowKey.value();
         }
         if (property != null) {
             return property.getAlias();
@@ -83,7 +84,7 @@ class ResultNodeDescriptor {
         return null;
     }
 
-    public void setDataRowKey(String dataRowKey) {
+    public void setDataRowKey(CayennePath dataRowKey) {
         this.dataRowKey = dataRowKey;
     }
 

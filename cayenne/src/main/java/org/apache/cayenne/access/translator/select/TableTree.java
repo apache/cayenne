@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
@@ -42,10 +43,9 @@ class TableTree {
      * - tables from attributes used in expressions (WHERE, HAVING, ORDER BY)
      * - tables from prefetches
      */
-    private final Map<String, TableTreeNode> tableNodes;
+    private final Map<CayennePath, TableTreeNode> tableNodes;
     private final TableTree parentTree;
-
-    private TableTreeNode rootNode;
+    private final TableTreeNode rootNode;
 
     private int tableAliasSequence;
 
@@ -56,7 +56,7 @@ class TableTree {
         this.rootNode = new TableTreeNode(root, nextTableAlias());
     }
 
-    void addJoinTable(String path, DbRelationship relationship, JoinType joinType) {
+    void addJoinTable(CayennePath path, DbRelationship relationship, JoinType joinType) {
         if (tableNodes.get(path) != null) {
             return;
         }
@@ -65,8 +65,8 @@ class TableTree {
         tableNodes.put(path, node);
     }
 
-    String aliasForPath(String attributePath) {
-        if(Util.isEmptyString(attributePath)) {
+    String aliasForPath(CayennePath attributePath) {
+        if(attributePath.isEmpty()) {
             return rootNode.getTableAlias();
         }
         TableTreeNode node = tableNodes.get(attributePath);
@@ -74,15 +74,6 @@ class TableTree {
             throw new CayenneRuntimeException("No table for attribute '%s' found", attributePath);
         }
         return node.getTableAlias();
-    }
-
-    String aliasForAttributePath(String attributePath) {
-        int lastSeparator = attributePath.lastIndexOf('.');
-        if (lastSeparator == -1) {
-            return rootNode.getTableAlias();
-        }
-        String table = attributePath.substring(0, lastSeparator);
-        return aliasForPath(table);
     }
 
     String nextTableAlias() {

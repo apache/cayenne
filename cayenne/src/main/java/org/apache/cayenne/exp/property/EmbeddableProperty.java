@@ -20,6 +20,7 @@
 package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Property that represents object attribute mapped on {@link org.apache.cayenne.map.Embeddable} object.
@@ -30,11 +31,11 @@ public class EmbeddableProperty<E> extends BaseProperty<E> implements PathProper
     /**
      * Constructs a new property with the given name and type
      *
-     * @param name       of the property (will be used as alias for the expression)
+     * @param path       of the property (will be used as alias for the expression)
      * @param type       of the property
      * @see PropertyFactory#createEmbeddable(String, Class)
      */
-    protected EmbeddableProperty(String name, Expression exp, Class<? super E> type) {
-        super(name, exp, type);
+    protected EmbeddableProperty(CayennePath path, Expression exp, Class<? super E> type) {
+        super(path, exp, type);
     }
 }

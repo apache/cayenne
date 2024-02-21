@@ -311,7 +311,7 @@ public class Expression_ParamsTest {
 
 		assertEquals(2, e2.getOperandCount());
 		assertEquals("123", e2.getOperand(1));
-		assertEquals("k4", ((Expression) e2.getOperand(0)).getOperand(0));
+		assertEquals("k4", ((Expression) e2.getOperand(0)).getOperand(0).toString());
 	}
 
 	@Test
@@ -466,6 +466,6 @@ public class Expression_ParamsTest {
 		assertNotNull(e2);
 		assertEquals(2, e2.getOperandCount());
 		assertEquals("123", e2.getOperand(1));
-		assertEquals("k4", ((Expression) e2.getOperand(0)).getOperand(0));
+		assertEquals("k4", ((Expression) e2.getOperand(0)).getOperand(0).toString());
 	}
 }

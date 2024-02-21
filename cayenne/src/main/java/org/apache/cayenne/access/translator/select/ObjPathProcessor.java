@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddedAttribute;
@@ -37,10 +39,10 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
     private ObjAttribute attribute;
     private EmbeddedAttribute embeddedAttribute;
 
-    ObjPathProcessor(TranslatorContext context, ObjEntity entity, String parentPath) {
+    ObjPathProcessor(TranslatorContext context, ObjEntity entity, CayennePath parentPath) {
         super(context, entity);
         if (parentPath != null) {
-            currentDbPath.append(parentPath);
+            currentDbPath = currentDbPath.withMarker(parentPath.marker()).dot(parentPath);
         }
     }
 
@@ -63,7 +65,7 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
         }
 
         throw new IllegalStateException("Unable to resolve path: " + currentDbPath.toString()
-                                        + " (unknown '" + next + "' component)");
+                + " (unknown '" + next + "' component)");
     }
 
     @Override
@@ -73,7 +75,7 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
             throw new IllegalStateException("Non-relationship aliased path part: " + alias);
         }
 
-        pathSplitAliases.put(DB_PATH_ALIAS_INDICATOR + next, relationship.getDbRelationshipPath());
+        pathSplitAliases.put(DB_PATH_ALIAS_INDICATOR + next, relationship.getDbRelationshipPath().value());
         processRelationship(relationship);
     }
 
@@ -92,9 +94,8 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
             embeddedAttribute = (EmbeddedAttribute) attribute;
             if (lastComponent) {
                 embeddedAttribute.getAttributes().forEach(a -> {
-                    int len = currentDbPath.length();
                     processAttribute(a);
-                    currentDbPath.delete(len, currentDbPath.length());
+                    currentDbPath = currentDbPath.parent();
                 });
             }
             return;
@@ -102,13 +103,13 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
 
         PathTranslationResult result = context.getPathTranslator().translatePath(entity.getDbEntity()
                 , attribute.getDbAttributePath()
-                , currentDbPath.toString()
+                , currentDbPath
                 , attribute.isFlattened());
         attributes.addAll(result.getDbAttributes());
         attributePaths.addAll(result.getAttributePaths());
         relationship = result.getDbRelationship().orElse(relationship);
-        currentDbPath.delete(0, currentDbPath.length());
-        currentDbPath.append(result.getFinalPath());
+
+        currentDbPath = result.getFinalPath();
     }
 
     protected void processRelationship(ObjRelationship relationship) {
@@ -123,25 +124,31 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
                 DbRelationship dbRel = relationship.getDbRelationships().get(i);
                 appendCurrentPath(dbRel.getName());
                 boolean leftJoin = isOuterJoin() || count > 1;
-                context.getTableTree().addJoinTable(currentDbPath.toString(), dbRel,
-                                                    leftJoin ? JoinType.LEFT_OUTER : JoinType.INNER);
+                context.getTableTree().addJoinTable(currentDbPath, dbRel,
+                        leftJoin ? JoinType.LEFT_OUTER : JoinType.INNER);
             }
         }
     }
 
     protected void processRelTermination(ObjRelationship relationship) {
-        String path = currentAlias != null ? DB_PATH_ALIAS_INDICATOR + currentAlias
-                                           : relationship.getDbRelationshipPath();
+        CayennePath path = currentAlias != null
+                ? CayennePath.EMPTY_PATH
+                : relationship.getDbRelationshipPath().parent();
+        CayennePathSegment lastSegment = currentAlias != null
+                ? CayennePath.segmentOf(DB_PATH_ALIAS_INDICATOR + currentAlias)
+                : relationship.getDbRelationshipPath().last();
         if (isOuterJoin()) {
-            path += OUTER_JOIN_INDICATOR;
+            lastSegment = lastSegment.outer();
         }
+        path = path.dot(lastSegment);
+
         PathTranslationResult result = context.getPathTranslator()
-                .translatePath(entity.getDbEntity(), path, currentDbPath.toString(), relationship.isFlattened());
+                .translatePath(entity.getDbEntity(), path, currentDbPath, relationship.isFlattened());
         attributes.addAll(result.getDbAttributes());
         attributePaths.addAll(result.getAttributePaths());
         this.relationship = result.getDbRelationship().orElse(this.relationship);
-        currentDbPath.delete(0, currentDbPath.length());
-        currentDbPath.append(result.getFinalPath());
+
+        currentDbPath = result.getFinalPath();
     }
 
     @Override

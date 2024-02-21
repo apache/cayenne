@@ -25,6 +25,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
@@ -83,7 +84,7 @@ class DataRowUtils {
 
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute attr = property.getAttribute();
-                String dbAttrPath = attr.getDbAttributePath();
+                String dbAttrPath = attr.getDbAttributePath().value();
 
                 Object value = snapshot.get(dbAttrPath);
                 property.writePropertyDirectly(object, null, value);
@@ -137,12 +138,11 @@ class DataRowUtils {
         descriptor.visitProperties(new PropertyVisitor() {
 
             public boolean visitAttribute(AttributeProperty property) {
-                String dbAttrPath = property.getAttribute().getDbAttributePath();
+                String dbAttrPath = property.getAttribute().getDbAttributePath().value();
 
                 // supports merging of partial snapshots...
-                // check for null is cheaper than double lookup
-                // for a key... so check for partial snapshot
-                // only if the value is null
+                // check for null is cheaper than double lookup for a key...
+                // so check for partial snapshot only if the value is null
                 Object newValue = snapshot.get(dbAttrPath);
                 if (newValue != null || snapshot.containsKey(dbAttrPath)) {
 

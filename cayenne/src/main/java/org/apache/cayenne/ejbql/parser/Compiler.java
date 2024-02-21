@@ -23,6 +23,7 @@ import org.apache.cayenne.ejbql.EJBQLCompiledExpression;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
 import org.apache.cayenne.ejbql.EJBQLExpressionVisitor;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -246,7 +247,7 @@ class Compiler {
 
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
-                if (visited.add(oa.getDbAttributePath())) {
+                if (visited.add(oa.getDbAttributePath().value())) {
                     compiledResult.addObjectField(oa.getEntity().getName(), "fetch."
                             + prefix
                             + "."
@@ -292,9 +293,10 @@ class Compiler {
         for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
 
             if (visited.add(column.getName())) {
+                String dbAttributePath = column.getDbAttributePath().value();
                 compiledResult.addDbField(
-                        "fetch." + prefix + "." + column.getDbAttributePath(),
-                        prefix + "." + column.getDbAttributePath());
+                        "fetch." + prefix + "." + dbAttributePath,
+                        prefix + "." + dbAttributePath);
             }
         }
 
@@ -322,7 +324,7 @@ class Compiler {
 
             public boolean visitAttribute(AttributeProperty property) {
                 ObjAttribute oa = property.getAttribute();
-                if (visited.add(oa.getDbAttributePath())) {
+                if (visited.add(oa.getDbAttributePath().value())) {
                     entityResult.addObjectField(
                             oa.getEntity().getName(),
                             oa.getName(),
@@ -361,9 +363,8 @@ class Compiler {
 
         // append inheritance discriminator columns...
         for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
-
             if (visited.add(column.getName())) {
-                entityResult.addDbField(column.getDbAttributePath(), prefix + index[0]++);
+                entityResult.addDbField(column.getDbAttributePath().value(), prefix + index[0]++);
             }
         }
 

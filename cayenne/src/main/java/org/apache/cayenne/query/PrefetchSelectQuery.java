@@ -23,6 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.util.Util;
@@ -38,23 +42,21 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
     /**
      * The relationship path from root objects to the objects being prefetched.
      */
-    protected String prefetchPath;
+    protected CayennePath prefetchPath;
 
     /**
      * Stores the last ObjRelationship in the prefetch path.
      */
     protected ObjRelationship lastPrefetchHint;
 
-    // TODO, Andrus 11/17/2005 - i guess we should deprecate
-    // SelectQuery.customDbAttribute, replacing it with "resultPaths" mechanism.
-    protected Collection<String> resultPaths;
+    protected Collection<ASTPath> resultPaths;
 
     /**
      * Creates a new disjoint prefetch select query.
      * 
      * @since 3.1
      */
-    public PrefetchSelectQuery(String prefetchPath, ObjRelationship lastPrefetchHint) {
+    public PrefetchSelectQuery(CayennePath prefetchPath, ObjRelationship lastPrefetchHint) {
         entityName(lastPrefetchHint.getTargetEntityName());
         this.prefetchPath = prefetchPath;
         this.lastPrefetchHint = lastPrefetchHint;
@@ -67,17 +69,29 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
 
     /**
      * Returns the prefetchPath.
+     * @since 5.0 returns {@link CayennePath} instead of a plain {@code String}
      */
-    public String getPrefetchPath() {
+    public CayennePath getPrefetchPath() {
         return prefetchPath;
+    }
+
+    /**
+     * Sets the prefetchPath.
+     *
+     * @param prefetchPath The prefetchPath to set
+     * @see #setPrefetchPath(CayennePath)
+     */
+    public void setPrefetchPath(String prefetchPath) {
+        setPrefetchPath(CayennePath.of(prefetchPath));
     }
 
     /**
      * Sets the prefetchPath.
      * 
      * @param prefetchPath The prefetchPath to set
+     * @since 5.0
      */
-    public void setPrefetchPath(String prefetchPath) {
+    public void setPrefetchPath(CayennePath prefetchPath) {
         this.prefetchPath = prefetchPath;
     }
 
@@ -108,18 +122,31 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
     }
 
     /**
-     * Configures an "extra" path that will resolve to an extra column (or columns) in the
-     * result set.
+     * Configures an "extra" path that will resolve to an extra column (or columns) in the result set.
      * 
      * @param path A valid path expression. E.g. "abc" or "db:ABC" or "abc.xyz".
      * @since 1.2
      */
     public void addResultPath(String path) {
-        if (Util.isEmptyString(path)) {
+        if(path.startsWith("db:")) {
+            addResultPath(ExpressionFactory.dbPathExp(path));
+        } else {
+            addResultPath(ExpressionFactory.pathExp(path));
+        }
+    }
+
+    /**
+     * Configures an "extra" path that will resolve to an extra column (or columns) in the result set.
+     *
+     * @param path a path expression
+     * @since 5.0
+     */
+    public void addResultPath(Expression path) {
+        if (!(path instanceof ASTPath)) {
             throw new IllegalArgumentException("Invalid path: " + path);
         }
 
-        nonNullResultPaths().add(path);
+        nonNullResultPaths().add((ASTPath) path);
     }
 
     /**
@@ -127,8 +154,21 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
      * invariants, as it doesn't have a proper context to do so. E.g. for the purpose of
      * this method "db:ARTIST_NAME" and "obj:artistName" are not the same, though both
      * will resolve to the same column name.
+     *
+     * @see #removeResultPath(CayennePath)
      */
     public void removeResultPath(String path) {
+        removeResultPath(CayennePath.of(path));
+    }
+
+    /**
+     * Removes an extra result path. Note that this method doesn't check for expression
+     * invariants, as it doesn't have a proper context to do so. E.g. for the purpose of
+     * this method "db:ARTIST_NAME" and "obj:artistName" are not the same, though both
+     * will resolve to the same column name.
+     * @since 5.0
+     */
+    public void removeResultPath(CayennePath path) {
         if (resultPaths != null) {
             resultPaths.remove(path);
         }
@@ -138,20 +178,21 @@ public class PrefetchSelectQuery<T> extends ObjectSelect<T> {
      * Returns extra result paths.
      * 
      * @since 1.2
+     * @since 5.0 returns collection of {@link CayennePath}
      */
-    public Collection<String> getResultPaths() {
+    public Collection<ASTPath> getResultPaths() {
         return resultPaths != null
                 ? Collections.unmodifiableCollection(resultPaths)
                 : Collections.emptySet();
     }
 
     /**
-     * Returns a Collection that internally stores extra result paths, creating it on
-     * demand.
+     * Returns a Collection that internally stores extra result paths, creating it on demand.
      * 
      * @since 1.2
+     * @since 5.0 returns collection of {@link CayennePath}
      */
-    Collection<String> nonNullResultPaths() {
+    Collection<ASTPath> nonNullResultPaths() {
         if (resultPaths == null) {
             resultPaths = new HashSet<>();
         }

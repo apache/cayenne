@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.parser;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -35,7 +36,7 @@ public abstract class ASTPath extends SimpleNode {
 
 	private static final long serialVersionUID = -8099822503585617295L;
 	
-	protected String path;
+	protected CayennePath path;
 	protected Map<String, String> pathAliases;
 
 	ASTPath(int i) {
@@ -65,11 +66,21 @@ public abstract class ASTPath extends SimpleNode {
 		setPath(value);
 	}
 
-	protected void setPath(Object path) {
-		this.path = (path != null) ? path.toString() : null;
+	protected void setPath(CayennePath path) {
+		this.path = path;
 	}
 
-	public String getPath() {
+	protected void setPath(Object path) {
+		if(path instanceof CayennePath) {
+			setPath((CayennePath) path);
+		} else {
+			this.path = (path != null)
+					? CayennePath.of(path.toString())
+					: CayennePath.EMPTY_PATH;
+		}
+	}
+
+	public CayennePath getPath() {
 		return path;
 	}
 

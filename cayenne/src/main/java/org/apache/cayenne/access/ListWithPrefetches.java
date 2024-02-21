@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.exp.path.CayennePath;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,20 +43,21 @@ import java.util.Map;
 class ListWithPrefetches implements List<Object>, Serializable {
 
     private final List<Object> list;
-    private final Map<String, List<?>> prefetchResultsByPath;
+    private final Map<CayennePath, List<?>> prefetchResultsByPath;
 
     @SuppressWarnings("unchecked")
-    ListWithPrefetches(List<?> mainList, Map<String, List<?>> prefetchResultsByPath) {
+    ListWithPrefetches(List<?> mainList, Map<CayennePath, List<?>> prefetchResultsByPath) {
         if (mainList == null) {
             throw new IllegalArgumentException("Main list is null");
         }
 
         this.list = (List<Object>)mainList;
-        this.prefetchResultsByPath = prefetchResultsByPath != null ? Collections
-                .unmodifiableMap(prefetchResultsByPath) : null;
+        this.prefetchResultsByPath = prefetchResultsByPath != null
+                ? Collections.unmodifiableMap(prefetchResultsByPath)
+                : null;
     }
 
-    Map<String, List<?>> getPrefetchResultsByPath() {
+    Map<CayennePath, List<?>> getPrefetchResultsByPath() {
         return prefetchResultsByPath;
     }
 

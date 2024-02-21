@@ -68,7 +68,7 @@ public class EntityResult {
                         : getRootEntity(resolver);
 
                 ObjAttribute attribute = entity.getAttribute(field.getAttributeName());
-                dbFields.put(attribute.getDbAttributePath(), field.getColumn());
+                dbFields.put(attribute.getDbAttributePath().value(), field.getColumn());
             }
         }
 

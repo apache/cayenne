@@ -26,6 +26,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.event.EntityEvent;
 import org.apache.cayenne.map.event.ObjEntityListener;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -81,7 +82,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
 
     protected CallbackMap callbacks;
 
-    protected Map<String, String> attributeOverrides;
+    protected Map<String, CayennePath> attributeOverrides;
 
     public ObjEntity() {
         this(null);
@@ -156,10 +157,10 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         encoder.nested(embAttributes, delegate);
         encoder.nested(objAttributes, delegate);
 
-        for (Map.Entry<String, String> override : attributeOverrides.entrySet()) {
+        for (Map.Entry<String, CayennePath> override : attributeOverrides.entrySet()) {
             encoder.start("attribute-override")
                     .attribute("name", override.getKey())
-                    .attribute("db-attribute-path", override.getValue())
+                    .attribute("db-attribute-path", override.getValue().value())
                     .end();
         }
 
@@ -449,7 +450,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
             ObjAttribute decoratedAttribute = new ObjAttribute(superAttribute);
             decoratedAttribute.setEntity(this);
 
-            String pathOverride = attributeOverrides.get(name);
+            CayennePath pathOverride = attributeOverrides.get(name);
             if (pathOverride != null) {
                 decoratedAttribute.setDbAttributePath(pathOverride);
             }
@@ -487,7 +488,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
             superEntity.appendAttributes(attributeMap);
             for (String attributeName : attributeMap.keySet()) {
 
-                String overridedDbPath = attributeOverrides.get(attributeName);
+                CayennePath overridedDbPath = attributeOverrides.get(attributeName);
 
                 ObjAttribute superAttribute = attributeMap.get(attributeName);
                 ObjAttribute attribute;
@@ -517,8 +518,16 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
 
     /**
      * @since 3.0
+     * @see #addAttributeOverride(String, CayennePath)
      */
     public void addAttributeOverride(String attributeName, String dbPath) {
+        addAttributeOverride(attributeName, CayennePath.of(dbPath));
+    }
+
+    /**
+     * @since 5.0
+     */
+    public void addAttributeOverride(String attributeName, CayennePath dbPath) {
         attributeOverrides.put(attributeName, dbPath);
     }
 
@@ -531,8 +540,9 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
 
     /**
      * @since 3.0
+     * @since 5.0 result map uses {@link CayennePath} instead of String as values
      */
-    public Map<String, String> getDeclaredAttributeOverrides() {
+    public Map<String, CayennePath> getDeclaredAttributeOverrides() {
         return Collections.unmodifiableMap(attributeOverrides);
     }
 
@@ -708,7 +718,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         for (ObjAttribute attribute : getAttributeMap().values()) {
             DbAttribute dbAttr = attribute.getDbAttribute();
             if (dbAttr != null) {
-                attribute.setDbAttributePath(null);
+                attribute.setDbAttributePath((String)null);
             }
         }
 
@@ -765,7 +775,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
     @Override
     public Iterable<PathComponent<ObjAttribute, ObjRelationship>> resolvePath(Expression pathExp, Map<String, String> aliasMap) {
         if (pathExp.getType() == Expression.OBJ_PATH) {
-            return () -> new PathComponentIterator<>(ObjEntity.this, (String) pathExp.getOperand(0), aliasMap);
+            return () -> new PathComponentIterator<>(ObjEntity.this, (CayennePath) pathExp.getOperand(0), aliasMap);
         }
         throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  OBJ_PATH is expected.");
     }
@@ -783,7 +793,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         }
 
         if (pathExp.getType() == Expression.OBJ_PATH) {
-            return new PathIterator((String) pathExp.getOperand(0));
+            return new PathIterator((CayennePath) pathExp.getOperand(0));
         }
 
         throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  OBJ_PATH is expected.");
@@ -815,15 +825,30 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
      * rooted in related entity.
      * 
      * @since 1.1
+     * @see #translateToRelatedEntity(Expression, CayennePath)
      */
     @Override
     public Expression translateToRelatedEntity(Expression expression, String relationshipPath) {
+        return translateToRelatedEntity(expression, CayennePath.of(relationshipPath));
+    }
+
+    /**
+     * Transforms an Expression rooted in this entity to an analogous expression rooted in related entity.
+     *
+     * @param expression expression to translate
+     * @param relationshipPath path to the related entity
+     * @return transformed expression
+     *
+     * @since 5.0
+     */
+    @Override
+    public Expression translateToRelatedEntity(Expression expression, CayennePath relationshipPath) {
 
         if (expression == null) {
             return null;
         }
 
-        if (relationshipPath == null) {
+        if (relationshipPath == null || relationshipPath.isEmpty()) {
             return expression;
         }
 
@@ -836,13 +861,13 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
 
         DBPathConverter transformer = new DBPathConverter();
 
-        String dbPath = transformer.toDbPath(createPathIterator(relationshipPath, expression.getPathAliases()));
+        CayennePath dbPath = transformer.toDbPath(createPathIterator(relationshipPath, expression.getPathAliases()));
         Expression dbClone = expression.transform(transformer);
 
         return getDbEntity().translateToRelatedEntity(dbClone, dbPath);
     }
 
-    private PathComponentIterator<ObjEntity, ObjAttribute, ObjRelationship> createPathIterator(String path, Map<String, String> aliasMap) {
+    private PathComponentIterator<ObjEntity, ObjAttribute, ObjRelationship> createPathIterator(CayennePath path, Map<String, String> aliasMap) {
         return new PathComponentIterator<>(this, path, aliasMap);
     }
 
@@ -859,27 +884,23 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
 
     final class DBPathConverter implements Function<Object, Object> {
 
-        // TODO: make it a public method - resolveDBPathComponents or
-        // something...
-        // seems generally useful
-
-        String toDbPath(PathComponentIterator<ObjEntity, ObjAttribute, ObjRelationship> objectPathComponents) {
-            StringBuilder buf = new StringBuilder();
+        CayennePath toDbPath(PathComponentIterator<ObjEntity, ObjAttribute, ObjRelationship> objectPathComponents) {
+            CayennePath path = CayennePath.EMPTY_PATH;
             while (objectPathComponents.hasNext()) {
                 PathComponent<ObjAttribute, ObjRelationship> component = objectPathComponents.next();
 
                 Iterator<? extends CayenneMapEntry> dbSubpath;
                 if(component.getAttribute() != null) {
                     dbSubpath = component.getAttribute().getDbPathIterator();
-                    buildPath(dbSubpath, component, buf);
+                    path = buildPath(dbSubpath, component, path);
                 } else if(component.getRelationship() != null) {
                     dbSubpath = component.getRelationship().getDbRelationships().iterator();
-                    buildPath(dbSubpath, component, buf);
+                    path = buildPath(dbSubpath, component, path);
                 } else if(component.getAliasedPath() != null) {
                     for(PathComponent<ObjAttribute, ObjRelationship> pathComponent : component.getAliasedPath()) {
                        if(pathComponent.getRelationship() != null) {
                            dbSubpath = pathComponent.getRelationship().getDbRelationships().iterator();
-                           buildPath(dbSubpath, pathComponent, buf);
+                           path = buildPath(dbSubpath, pathComponent, path);
                        }
                     }
                 } else {
@@ -887,23 +908,18 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
                 }
             }
 
-            return buf.toString();
+            return path;
         }
 
-        private void buildPath(Iterator<?> dbSubpath, PathComponent<ObjAttribute, ObjRelationship> component, StringBuilder buf) {
+        private CayennePath buildPath(Iterator<? extends CayenneMapEntry> dbSubpath,
+                                      PathComponent<ObjAttribute, ObjRelationship> component,
+                                      CayennePath path) {
             while (dbSubpath.hasNext()) {
-                CayenneMapEntry subComponent = (CayenneMapEntry) dbSubpath.next();
-                if (buf.length() > 0) {
-                    buf.append(Entity.PATH_SEPARATOR);
-                }
-
-                buf.append(subComponent.getName());
-
-                // use OUTER join for all components of the path is Obj path is OUTER
-                if (component.getJoinType() == JoinType.LEFT_OUTER) {
-                    buf.append(OUTER_JOIN_INDICATOR);
-                }
+                String subComponent = dbSubpath.next().getName();
+                boolean outer = component.getJoinType() == JoinType.LEFT_OUTER;
+                path = path.dot(CayennePath.segmentOf(subComponent, outer));
             }
+            return path;
         }
 
         public Object apply(Object input) {
@@ -919,7 +935,8 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
             }
 
             // convert obj_path to db_path
-            String converted = toDbPath(createPathIterator((String) expression.getOperand(0), expression.getPathAliases()));
+            CayennePath converted = toDbPath(
+                    createPathIterator((CayennePath) expression.getOperand(0), expression.getPathAliases()));
             return ExpressionFactory.dbPathExp(converted);
         }
     }

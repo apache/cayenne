@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.configuration.xml;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
@@ -72,8 +73,8 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
                     + objRelationship.getName());
         }
 
-        String path = objRelationship.getDbRelationshipPath();
-        objRelationship.setDbRelationshipPath((path != null) ? path + "." + name : name);
+        CayennePath path = objRelationship.getDbRelationshipPath();
+        objRelationship.setDbRelationshipPath(path.dot(name));
     }
 
     private void addObjRelationship(Attributes attributes) throws SAXException {

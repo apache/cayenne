@@ -24,23 +24,30 @@ import java.util.Map;
 
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 
 /**
  * @since 4.2
  */
 class PropertyUtils {
 
-    static ASTPath createPathExp(String path, String alias, Map<String, String> aliasMap) {
-        int index = path.lastIndexOf(".");
-        String aliasedPath = index != -1 ? path.substring(0, index + 1) + alias : alias;
-        String segmentPath = path.substring(index != -1 ? index + 1 : 0);
+    static ASTPath createPathExp(CayennePath path, String alias, Map<String, String> aliasMap) {
+        CayennePath aliased = path.parent().dot(alias);
+        CayennePathSegment segment = path.last();
 
         Map<String, String> pathAliases = new HashMap<>(aliasMap);
-        pathAliases.put(alias, segmentPath);
-        return buildExp(aliasedPath, pathAliases);
+        pathAliases.put(alias, segment.value());
+        return buildExp(aliased, pathAliases);
     }
 
     static ASTPath buildExp(String path, Map<String, String> pathAliases) {
+        ASTPath pathExp = new ASTObjPath(path);
+        pathExp.setPathAliases(pathAliases);
+        return pathExp;
+    }
+
+    static ASTPath buildExp(CayennePath path, Map<String, String> pathAliases) {
         ASTPath pathExp = new ASTObjPath(path);
         pathExp.setPathAliases(pathAliases);
         return pathExp;

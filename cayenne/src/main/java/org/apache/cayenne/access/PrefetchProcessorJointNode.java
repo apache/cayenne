@@ -26,6 +26,7 @@ import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -196,9 +197,9 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         descriptor.visitAllProperties(new PropertyVisitor() {
 
             public boolean visitAttribute(AttributeProperty property) {
-                String target = property.getAttribute().getDbAttributePath();
+                CayennePath target = property.getAttribute().getDbAttributePath();
                 if(!property.getAttribute().isLazy()) {
-                    appendColumn(targetSource, target, prefix + target);
+                    appendColumn(targetSource, target.value(), prefix + target);
                 }
                 return true;
             }
@@ -229,8 +230,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         // append inheritance discriminator columns...
         for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
-            String target = column.getDbAttributePath();
-            appendColumn(targetSource, target, prefix + target);
+            CayennePath target = column.getDbAttributePath();
+            appendColumn(targetSource, target.value(), prefix + target);
         }
 
         int size = targetSource.size();

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.configuration.xml;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -70,8 +71,8 @@ public class ObjEntityHandlerTest extends BaseHandlerTest {
         assertEquals("org.apache.cayenne.testdo.embeddable.Embeddable1", attribute.getType());
         assertFalse(attribute.isUsedForLocking());
 
-        String override = entity.getDeclaredAttributeOverrides().get("name");
-        assertEquals("parent.child.name", override);
+        CayennePath override = entity.getDeclaredAttributeOverrides().get("name");
+        assertEquals("parent.child.name", override.value());
     }
 
 }

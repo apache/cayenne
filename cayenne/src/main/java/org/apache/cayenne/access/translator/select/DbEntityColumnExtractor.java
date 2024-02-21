@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import java.util.Objects;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 
@@ -37,7 +38,7 @@ class DbEntityColumnExtractor extends BaseColumnExtractor {
     }
 
     @Override
-    public void extract(String prefix) {
+    public void extract(CayennePath prefix) {
         for(DbAttribute attribute : dbEntity.getAttributes()) {
             addDbAttribute(prefix, prefix, attribute);
         }

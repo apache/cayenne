@@ -27,6 +27,7 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -54,9 +55,14 @@ public class ASTObjPath extends ASTPath {
 		super(ExpressionParserTreeConstants.JJTOBJPATH);
 	}
 
-	public ASTObjPath(Object value) {
+	public ASTObjPath(String value) {
 		super(ExpressionParserTreeConstants.JJTOBJPATH);
 		setPath(value);
+	}
+
+	public ASTObjPath(CayennePath path) {
+		super(ExpressionParserTreeConstants.JJTOBJPATH);
+		setPath(path);
 	}
 
 	@Override
@@ -86,7 +92,7 @@ public class ASTObjPath extends ASTPath {
 	public void appendAsEJBQL(List<Object> parameterAccumulator, Appendable out, String rootId) throws IOException {
 		out.append(rootId);
 		out.append('.');
-		out.append(path);
+		out.append(path.value());
 	}
 
 	/**
@@ -94,7 +100,7 @@ public class ASTObjPath extends ASTPath {
 	 */
 	@Override
 	public void appendAsString(Appendable out) throws IOException {
-		out.append(path);
+		out.append(path.value());
 	}
 
 	@Override
@@ -103,13 +109,14 @@ public class ASTObjPath extends ASTPath {
 	}
 
 	void injectValue(Object source, Object value) {
-		if (!getPath().contains(ObjEntity.PATH_SEPARATOR)) {
+		if (getPath().length() == 1) {
 			try {
+				String firstSegment = getPath().first().value();
 				if (source instanceof DataObject) {
 					DataObject dataObject = (DataObject) source;
-					dataObject.writeProperty(getPath(), dynamicCastValue(dataObject, value));
+					dataObject.writeProperty(firstSegment, dynamicCastValue(dataObject, value));
 				} else {
-					PropertyUtils.setProperty(source, getPath(), value);
+					PropertyUtils.setProperty(source, firstSegment, value);
 				}
 			} catch (CayenneRuntimeException ex) {
 				LOGGER.warn("Failed to inject value " + value + " on path " + getPath() + " to " + source, ex);

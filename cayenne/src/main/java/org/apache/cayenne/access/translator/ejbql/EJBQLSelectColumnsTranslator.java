@@ -81,34 +81,31 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 final Map<String, String> fields = xfields;
 
-                DbEntity table = (DbEntity) relationship.getTargetEntity();
+                DbEntity table = relationship.getTargetEntity();
                 Collection<DbAttribute> dbAttr = table.getAttributes();
 
-                Iterator<DbAttribute> it = dbAttr.iterator();
                 if (dbAttr.size() > 0) {
                     resolveJoin();
                 }
 
-                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-                        .getQuotingStrategy().quotedFullyQualifiedName(table));
+                String alias = this.lastAlias != null
+                        ? lastAlias
+                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
 
                 boolean first = true;
-                while (it.hasNext()) {
-
+                for (DbAttribute dbAttribute : dbAttr) {
                     context.append(!first ? ", " : " ");
-
-                    DbAttribute dbAttribute = it.next();
                     appendColumn(TypesMapping.getJavaBySqlType(dbAttribute), alias, dbAttribute,
                             fields != null ? fields.get(dbAttribute.getName()) : "");
-
                     first = false;
                 }
             }
 
             @Override
             protected void processTerminatingAttribute(DbAttribute attribute) {
-                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-                        .getQuotingStrategy().quotedFullyQualifiedName(currentEntity));
+                String alias = this.lastAlias != null
+                        ? lastAlias
+                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(currentEntity));
 
                 appendColumn(TypesMapping.getJavaBySqlType(attribute), alias, attribute,
                         context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
@@ -139,19 +136,19 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
 
                 final Map<String, String> fields = xfields;
 
-                Collection<DbAttribute> dbAttr = ((ObjEntity) relationship.getTargetEntity()).getDbEntity()
-                        .getAttributes();
+                Collection<DbAttribute> dbAttr = relationship.getTargetEntity().getDbEntity().getAttributes();
 
                 DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
-                DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
+                DbEntity table = dbRelationship.getTargetEntity();
 
                 Iterator<DbAttribute> it = dbAttr.iterator();
                 if (dbAttr.size() > 0) {
                     resolveJoin();
                 }
 
-                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-                        .getQuotingStrategy().quotedFullyQualifiedName(table));
+                String alias = this.lastAlias != null
+                        ? lastAlias
+                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
 
                 boolean first = true;
                 while (it.hasNext()) {
@@ -170,24 +167,23 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             @Override
             protected void processTerminatingAttribute(ObjAttribute attribute) {
                 DbEntity table = currentEntity.getDbEntity();
-                String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-                        .getQuotingStrategy().quotedFullyQualifiedName(table));
+                String alias = this.lastAlias != null
+                        ? lastAlias
+                        : context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
                 if (attribute.isFlattened()) {
                     Iterator<?> dbPathIterator = attribute.getDbPathIterator();
                     EJBQLTableId lhsId = new EJBQLTableId(idPath);
 
                     while (dbPathIterator.hasNext()) {
                         Object pathPart = dbPathIterator.next();
-                        // DbRelationships not processed, because they will be
-                        // processed
-                        // later when appending table
+                        // DbRelationships not processed, because they will be processed later when appending table
                         if (pathPart == null) {
                             throw new CayenneRuntimeException("ObjAttribute has no component: %s", attribute.getName());
                         } else if (pathPart instanceof DbAttribute) {
                             DbAttribute dbAttribute = (DbAttribute) pathPart;
                             appendColumn(attribute.getType(),
                                     context.getTableAlias(lhsId.getEntityId(), context.getQuotingStrategy()
-                                            .quotedFullyQualifiedName((DbEntity) dbAttribute.getEntity())),
+                                            .quotedFullyQualifiedName(dbAttribute.getEntity())),
                                     dbAttribute, context.isAppendingResultColumns() ? context.nextColumnAlias() : "");
 
                         }
@@ -227,8 +223,7 @@ public class EJBQLSelectColumnsTranslator extends EJBQLBaseVisitor {
             // String columnAlias = context.nextColumnAlias();
 
             // TODO: andrus 6/27/2007 - the last parameter is an unofficial
-            // "jdbcType"
-            // pending CAY-813 implementation, switch to #column directive
+            //       "jdbcType" pending CAY-813 implementation, switch to #column directive
             context.append("' '").append(javaType).append("' '").append(columnAlias).append("' '").append(columnAlias)
                     .append("' " + dbAttribute.getType()).append(")");
         }

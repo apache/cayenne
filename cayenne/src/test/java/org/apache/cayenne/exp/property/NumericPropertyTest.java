@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import java.util.Arrays;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,8 +39,8 @@ public class NumericPropertyTest {
 
     @Before
     public void createProperty() {
-        property = new NumericProperty<>("path", null, Integer.class);
-        other = new NumericProperty<>("other", null, Integer.class);
+        property = new NumericProperty<>(CayennePath.of("path"), null, Integer.class);
+        other = new NumericProperty<>(CayennePath.of("other"), null, Integer.class);
     }
 
     @Test

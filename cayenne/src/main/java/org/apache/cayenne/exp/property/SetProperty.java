@@ -25,6 +25,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 
 /**
  * Property that represents to-many relationship mapped on {@link Set}.
@@ -35,14 +37,14 @@ import org.apache.cayenne.exp.parser.ASTPath;
 public class SetProperty<V extends Persistent> extends CollectionProperty<V, Set<V>> {
 
     /**
-     * Constructs a new property with the given name and expression
+     * Constructs a new property with the given path and expression
      *
-     * @param name           of the property (will be used as alias for the expression)
-     * @param expression     expression for property
-     * @param entityType     type of related entity
+     * @param path       of the property (will be used as alias for the expression)
+     * @param expression expression for property
+     * @param entityType type of related entity
      */
-    protected SetProperty(String name, Expression expression, Class<V> entityType) {
-        super(name, expression, Set.class, entityType);
+    protected SetProperty(CayennePath path, Expression expression, Class<V> entityType) {
+        super(path, expression, Set.class, entityType);
     }
 
     /**
@@ -50,7 +52,7 @@ public class SetProperty<V extends Persistent> extends CollectionProperty<V, Set
      */
     @Override
     public SetProperty<V> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createSet(exp.getPath(), exp, this.getEntityType());
     }
 
@@ -59,15 +61,23 @@ public class SetProperty<V extends Persistent> extends CollectionProperty<V, Set
      */
     @Override
     public SetProperty<V> outer() {
-        return getName().endsWith("+")
-                ? this
-                : PropertyFactory.createSet(getName() + "+", getEntityType());
+        CayennePathSegment last = getPath().last();
+        if (last.isOuterJoin()) {
+            return this;
+        } else {
+            CayennePath outerPath = getPath().parent().dot(last.outer());
+            return PropertyFactory.createSet(outerPath, getEntityType());
+        }
     }
 
     /**
      * @return property that will be translated relative to parent query
      */
     public SetProperty<V> enclosing() {
-        return PropertyFactory.createSet(null, ExpressionFactory.enclosingObjectExp(getExpression()), getEntityType());
+        return PropertyFactory.createSet(
+                CayennePath.EMPTY_PATH,
+                ExpressionFactory.enclosingObjectExp(getExpression()),
+                getEntityType()
+        );
     }
 }
