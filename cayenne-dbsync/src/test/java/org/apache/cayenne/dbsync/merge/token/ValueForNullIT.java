@@ -23,7 +23,6 @@ import java.sql.Types;
 import java.util.List;
 
 import junit.framework.AssertionFailedError;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.translator.ParameterBinding;
@@ -61,7 +60,7 @@ public class ValueForNullIT extends MergeCase {
         // insert some rows before adding "not null" column
         final int nrows = 10;
         for (int i = 0; i < nrows; i++) {
-            DataObject o = (DataObject) context.newObject("Painting");
+            Persistent o = context.newObject("Painting");
             o.writeProperty("paintingTitle", "ptitle" + i);
         }
         context.commitChanges();
@@ -95,10 +94,8 @@ public class ValueForNullIT extends MergeCase {
 
         // check values for null
         Expression qual = ExpressionFactory.matchExp(objAttr.getName(), DEFAULT_VALUE_STRING);
-        ObjectSelect query = ObjectSelect.query(Painting.class)
-                .where(qual);
-        @SuppressWarnings("unchecked")
-        List<Persistent> rows = context.performQuery(query);
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).where(qual);
+        List<Painting> rows = query.select(context);
         assertEquals(nrows, rows.size());
 
         // clean up

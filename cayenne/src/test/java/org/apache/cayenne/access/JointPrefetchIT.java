@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.ObjAttribute;
@@ -358,7 +358,7 @@ public class JointPrefetchIT extends RuntimeCase {
         context.getObjectStore().objectMap = new HashMap<>();
 
         // sanity check...
-        DataObject g1 = (DataObject) context.getGraphManager().getNode(
+        Persistent g1 = (Persistent) context.getGraphManager().getNode(
                 ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
         assertNull(g1);
 
@@ -380,11 +380,11 @@ public class JointPrefetchIT extends RuntimeCase {
             }
 
             // however both galleries must be in memory...
-            DataObject g11 = (DataObject) context.getGraphManager().getNode(
+            Persistent g11 = (Persistent) context.getGraphManager().getNode(
                     ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001));
             assertNotNull(g11);
             assertEquals(PersistenceState.COMMITTED, g11.getPersistenceState());
-            DataObject g2 = (DataObject) context.getGraphManager().getNode(
+            Persistent g2 = (Persistent) context.getGraphManager().getNode(
                     ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33002));
             assertNotNull(g2);
             assertEquals(PersistenceState.COMMITTED, g2.getPersistenceState());
@@ -433,7 +433,7 @@ public class JointPrefetchIT extends RuntimeCase {
                 .addPrefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
                 .select(context);
         queryInterceptor.runWithQueriesBlocked(() -> {
-            DataObject g1 = (DataObject) context.getGraphManager().getNode(
+            Persistent g1 = (Persistent) context.getGraphManager().getNode(
                     ObjectId.of("Gallery", Gallery.GALLERY_ID_PK_COLUMN, 33001)
             );
             assertNotNull(g1);

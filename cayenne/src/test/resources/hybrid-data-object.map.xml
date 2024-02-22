@@ -4,7 +4,7 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
 	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.hybrid"/>
-	<property name="defaultSuperclass" value="org.apache.cayenne.HybridDataObject"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.HybridPersistentObject"/>
 	<db-entity name="HYBRID_ENTITY_1">
 		<db-attribute name="FLOAT_FIELD" type="DOUBLE"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
@@ -18,11 +18,11 @@
 		<db-attribute name="INT_FIELD" type="INTEGER" isMandatory="true"/>
 		<db-attribute name="STR_FIELD" type="VARCHAR" length="255"/>
 	</db-entity>
-	<obj-entity name="HybridEntity1" className="org.apache.cayenne.testdo.hybrid.HybridEntity1" dbEntityName="HYBRID_ENTITY_1" superClassName="org.apache.cayenne.HybridDataObject">
+	<obj-entity name="HybridEntity1" className="org.apache.cayenne.testdo.hybrid.HybridEntity1" dbEntityName="HYBRID_ENTITY_1" superClassName="org.apache.cayenne.HybridPersistentObject">
 		<obj-attribute name="intField" type="int" db-attribute-path="INT_FIELD"/>
 		<obj-attribute name="strField" type="java.lang.String" db-attribute-path="STR_FIELD"/>
 	</obj-entity>
-	<obj-entity name="HybridEntity2" className="org.apache.cayenne.testdo.hybrid.HybridEntity2" dbEntityName="HYBRID_ENTITY_2" superClassName="org.apache.cayenne.HybridDataObject">
+	<obj-entity name="HybridEntity2" className="org.apache.cayenne.testdo.hybrid.HybridEntity2" dbEntityName="HYBRID_ENTITY_2" superClassName="org.apache.cayenne.HybridPersistentObject">
 		<obj-attribute name="intField" type="int" db-attribute-path="INT_FIELD"/>
 		<obj-attribute name="strField" type="java.lang.String" db-attribute-path="STR_FIELD"/>
 	</obj-entity>

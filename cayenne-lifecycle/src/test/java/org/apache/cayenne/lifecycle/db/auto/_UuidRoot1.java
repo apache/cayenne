@@ -1,6 +1,6 @@
 package org.apache.cayenne.lifecycle.db.auto;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.StringProperty;
 
@@ -10,7 +10,7 @@ import org.apache.cayenne.exp.property.StringProperty;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _UuidRoot1 extends CayenneDataObject {
+public abstract class _UuidRoot1 extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L; 
 

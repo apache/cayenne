@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -166,9 +165,8 @@ public class DataRowStore implements Serializable {
 
                 if (cachedSnapshot != null) {
                     // use old snapshot if no changes occurred
-                    if (object instanceof DataObject
-                            && cachedSnapshot.equals(newSnapshot)) {
-                        ((DataObject) object).setSnapshotVersion(cachedSnapshot.getVersion());
+                    if (cachedSnapshot.equals(newSnapshot)) {
+                        object.setSnapshotVersion(cachedSnapshot.getVersion());
                         continue;
                     } else {
                         newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());

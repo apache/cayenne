@@ -33,7 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DeleteDenyException;
 import org.apache.cayenne.FaultFailureException;
@@ -640,12 +639,13 @@ public class DataContext implements ObjectContext {
      * 
      * @see DataRow
      * @since 3.1
+     * @since 5.0 returns {@link Persistent} instead of the deprecated DataObject
      */
-    public DataObject objectFromDataRow(String entityName, DataRow dataRow) {
+    public Persistent objectFromDataRow(String entityName, DataRow dataRow) {
         ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
         List<?> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
 
-        return (DataObject) list.get(0);
+        return (Persistent) list.get(0);
     }
 
     /**
@@ -678,7 +678,7 @@ public class DataContext implements ObjectContext {
      * all transient persistent objects attached to this object via
      * relationships.
      * <p>
-     * <i>Note that since 3.0 this method takes Object as an argument instead of a {@link DataObject}.</i>
+     * <i>Note that since 3.0 this method takes Object as an argument instead of a {@link Persistent}.</i>
      * 
      * @param object
      *            new object that needs to be made persistent.

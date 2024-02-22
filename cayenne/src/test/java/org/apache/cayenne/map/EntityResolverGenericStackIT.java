@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -55,7 +55,7 @@ public class EntityResolverGenericStackIT extends RuntimeCase {
         assertNull(resolver.getObjEntity(Object.class));
 
         try {
-            resolver.getObjEntity(CayenneDataObject.class);
+            resolver.getObjEntity(GenericPersistentObject.class);
             fail("two entities mapped to the same class... resolver must have thrown.");
         }
         catch (CayenneRuntimeException e) {

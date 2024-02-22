@@ -30,20 +30,22 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Implementation of {@link DataObject} that uses {@link Map} to store object fields.
+ * Implementation of {@link Persistent} that uses {@link Map} to store object fields.
  * <p>
  * This implementation was pre 4.1 default.
  * <p>
- * Since <b>4.1</b> it is recommended to use {@link BaseDataObject} as superclass (and it is actually default now),
+ * Since <b>4.1</b> it is recommended to use {@link PersistentObject} as superclass (and it is actually default now),
  * as it has better performance and lower memory consumption (<b>much</b> lower for small objects).
  * <p>
  * You may need to use this class only if you have some generic attributes created at runtime (also
- * consider {@link HybridDataObject} in this case) or if any compatibility issues arise.
+ * consider {@link HybridPersistentObject} in this case) or if any compatibility issues arise.
  *
- * @see BaseDataObject
- * @see HybridDataObject
+ * @see PersistentObject
+ * @see HybridPersistentObject
+ *
+ * @since 5.0, renamed from CayenneDataObject
  */
-public class CayenneDataObject extends BaseDataObject {
+public class GenericPersistentObject extends PersistentObject {
 
 	private static final long serialVersionUID = -313743913882350400L;
 
@@ -60,7 +62,6 @@ public class CayenneDataObject extends BaseDataObject {
 
 	@Override
 	Object readSimpleProperty(String property) {
-
 		// side effect - resolves HOLLOW object
 		Object object = readProperty(property);
 
@@ -129,6 +130,7 @@ public class CayenneDataObject extends BaseDataObject {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		super.readState(in);

@@ -22,7 +22,7 @@
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/11/modelMap https://cayenne.apache.org/schema/11/modelMap.xsd"
 	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.json"/>
-	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 	<db-entity name="JSON_OTHER">
 		<db-attribute name="DATA" type="OTHER" isMandatory="true"/>
 		<db-attribute name="ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>

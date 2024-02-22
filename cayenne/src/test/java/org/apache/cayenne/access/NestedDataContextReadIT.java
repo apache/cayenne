@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -146,12 +145,12 @@ public class NestedDataContextReadIT extends RuntimeCase {
         Persistent hollow = Cayenne.objectForPK(context, Artist.class, 33001);
         context.invalidateObjects(hollow);
 
-        DataObject committed = Cayenne.objectForPK(context, Artist.class, 33002);
+        Persistent committed = Cayenne.objectForPK(context, Artist.class, 33002);
 
         Artist modified = Cayenne.objectForPK(context, Artist.class, 33003);
         modified.setArtistName("MODDED");
 
-        DataObject deleted = Cayenne.objectForPK(context, Artist.class, 33004);
+        Persistent deleted = Cayenne.objectForPK(context, Artist.class, 33004);
         context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());

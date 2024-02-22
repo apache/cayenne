@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,7 @@ import java.util.List;
  * 
  * @since 3.1
  */
-public class ObjectIdRelationshipBatchFaultingStrategy implements
-        ObjectIdRelationshipFaultingStrategy {
+public class ObjectIdRelationshipBatchFaultingStrategy implements ObjectIdRelationshipFaultingStrategy {
 
     private ThreadLocal<List<ObjectIdBatchSourceItem>> batchSources;
 
@@ -38,7 +37,7 @@ public class ObjectIdRelationshipBatchFaultingStrategy implements
         this.batchSources = new ThreadLocal<>();
     }
 
-    public void afterObjectLoaded(DataObject object) {
+    public void afterObjectLoaded(Persistent object) {
 
         String uuidProperty = objectIdPropertyName(object);
         String uuidRelationship = objectIdRelationshipName(uuidProperty);
@@ -81,7 +80,7 @@ public class ObjectIdRelationshipBatchFaultingStrategy implements
         return "cay:related:" + uuidPropertyName;
     }
 
-    String objectIdPropertyName(DataObject object) {
+    String objectIdPropertyName(Persistent object) {
 
         ObjectIdRelationship annotation = object.getClass().getAnnotation(
                 ObjectIdRelationship.class);

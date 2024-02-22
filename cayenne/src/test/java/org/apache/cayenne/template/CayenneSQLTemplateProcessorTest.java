@@ -25,9 +25,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.jdbc.SQLStatement;
 import org.apache.cayenne.access.translator.ParameterBinding;
 import org.junit.Before;
@@ -155,7 +155,7 @@ public class CayenneSQLTemplateProcessorTest {
     public void testProcessTemplateID() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($helper.cayenneExp($a, 'db:ID_COLUMN'))";
 
-        DataObject dataObject = new CayenneDataObject();
+        Persistent dataObject = new GenericPersistentObject();
         dataObject.setObjectId(ObjectId.of("T", "ID_COLUMN", 5));
 
         Map<String, Object> map = Collections.singletonMap("a", dataObject);
@@ -177,7 +177,7 @@ public class CayenneSQLTemplateProcessorTest {
         idMap.put("ID_COLUMN1", 3);
         idMap.put("ID_COLUMN2", "aaa");
         ObjectId id = ObjectId.of("T", idMap);
-        DataObject dataObject = new CayenneDataObject();
+        Persistent dataObject = new GenericPersistentObject();
         dataObject.setObjectId(id);
 
         Map<String, Object> map = Collections.singletonMap("a", dataObject);

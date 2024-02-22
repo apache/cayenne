@@ -134,7 +134,7 @@ public class CayenneDataObjectSetToManyListIT extends RuntimeCase {
 		Painting paintZ = new Painting();
 		paintZ.setPaintingTitle("paintingZ");
 
-		List<? extends DataObject> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(),
+		List<? extends Persistent> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(),
 				Arrays.asList(paintX, paintY, paintZ), true);
 
 		assertEquals(3, returnList.size());
@@ -159,7 +159,7 @@ public class CayenneDataObjectSetToManyListIT extends RuntimeCase {
 		Painting paint8 = Cayenne.objectForPK(context, Painting.class, 8);
 
 		List<Painting> newPaints = Arrays.asList(paint6, paint7, paint8);
-		List<? extends DataObject> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints,
+		List<? extends Persistent> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints,
 				true);
 
 		assertEquals(0, returnList.size());
@@ -225,7 +225,7 @@ public class CayenneDataObjectSetToManyListIT extends RuntimeCase {
 		newPaints.add(paintX);
 		newPaints.add(paintY);
 
-		List<? extends DataObject> returnList = artist
+		List<? extends Persistent> returnList = artist
 				.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints, true);
 
 		assertEquals(1, returnList.size());

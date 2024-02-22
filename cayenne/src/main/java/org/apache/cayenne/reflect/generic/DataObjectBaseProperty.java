@@ -20,7 +20,7 @@ package org.apache.cayenne.reflect.generic;
 
 import java.io.Serializable;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.PropertyVisitor;
@@ -92,9 +92,9 @@ abstract class DataObjectBaseProperty implements PropertyDescriptor, Serializabl
         }
     }
 
-    protected final DataObject toDataObject(Object object) throws PropertyException {
+    protected final Persistent toDataObject(Object object) throws PropertyException {
         try {
-            return (DataObject) object;
+            return (Persistent) object;
         }
         catch (ClassCastException e) {
             throw new PropertyException("Object is not a DataObject: '"

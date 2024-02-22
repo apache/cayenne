@@ -20,6 +20,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
@@ -60,15 +61,14 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
     public static final int LOCK_TYPE_NONE = 0;
     public static final int LOCK_TYPE_OPTIMISTIC = 1;
 
-    // do not import CayenneDataObject as it introduces unneeded client dependency
-    private static final String CAYENNE_DATA_OBJECT_CLASS = "org.apache.cayenne.CayenneDataObject";
+    private static final String CAYENNE_GENERIC_PERSISTENT_OBJECT_CLASS = GenericPersistentObject.class.getName();
     /**
      * A collection of default "generic" entity classes excluded from class
      * generation.
      * 
      * @since 1.2
      */
-    protected static final Collection<String> DEFAULT_GENERIC_CLASSES = Collections.singletonList(CAYENNE_DATA_OBJECT_CLASS);
+    protected static final Collection<String> DEFAULT_GENERIC_CLASSES = Collections.singleton(CAYENNE_GENERIC_PERSISTENT_OBJECT_CLASS);
 
     protected String superClassName;
     protected String className;
@@ -186,7 +186,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
         }
 
         if (name == null) {
-            name = CAYENNE_DATA_OBJECT_CLASS;
+            name = CAYENNE_GENERIC_PERSISTENT_OBJECT_CLASS;
         }
 
         return name;

@@ -44,7 +44,7 @@ public class CayenneDataObjectIT extends RuntimeCase {
 
 	@Test
 	public void testSetObjectId() throws Exception {
-		CayenneDataObject object = new CayenneDataObject();
+		GenericPersistentObject object = new GenericPersistentObject();
         ObjectId oid = ObjectId.of("T");
 
 		assertNull(object.getObjectId());
@@ -55,7 +55,7 @@ public class CayenneDataObjectIT extends RuntimeCase {
 
 	@Test
 	public void testSetPersistenceState() throws Exception {
-		CayenneDataObject obj = new CayenneDataObject();
+		GenericPersistentObject obj = new GenericPersistentObject();
 		assertEquals(PersistenceState.TRANSIENT, obj.getPersistenceState());
 
 		obj.setPersistenceState(PersistenceState.COMMITTED);
@@ -89,7 +89,7 @@ public class CayenneDataObjectIT extends RuntimeCase {
 
 	@Test
 	public void testReadNestedPropertyNonDataObjectPath() {
-		CayenneDataObject o1 = new CayenneDataObject();
+		GenericPersistentObject o1 = new GenericPersistentObject();
 		TstBean o2 = new TstBean();
 		o2.setInteger(55);
 		o1.writePropertyDirectly("o2", o2);

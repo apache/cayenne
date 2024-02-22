@@ -20,10 +20,10 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.MockDataObject;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -52,19 +52,19 @@ public class ObjectStoreIT extends RuntimeCase {
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
 
-        DataObject o1 = new MockDataObject();
+        Persistent o1 = new MockDataObject();
         o1.setObjectId(ObjectId.of("T", "key1", "v1"));
         context.getObjectStore().registerNode(o1.getObjectId(), o1);
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // test object with same id
-        DataObject o2 = new MockDataObject();
+        Persistent o2 = new MockDataObject();
         o2.setObjectId(ObjectId.of("T", "key1", "v1"));
         context.getObjectStore().registerNode(o2.getObjectId(), o2);
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // test new object
-        DataObject o3 = new MockDataObject();
+        Persistent o3 = new MockDataObject();
         o3.setObjectId(ObjectId.of("T", "key3", "v3"));
         context.getObjectStore().registerNode(o3.getObjectId(), o3);
         assertEquals(2, context.getObjectStore().registeredObjectsCount());
@@ -77,7 +77,7 @@ public class ObjectStoreIT extends RuntimeCase {
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        DataObject object = context.objectFromDataRow(Artist.class, row);
+        Persistent object = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = object.getObjectId();
 
         // insert object into the ObjectStore

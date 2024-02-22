@@ -26,8 +26,9 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.validation.ValidationResult;
 
 /**
+ * TODO: check MockPersistentObject..
  */
-public class MockDataObject implements DataObject {
+public class MockDataObject implements Persistent {
 
     protected ObjectId objectId;
     protected int persistenceState;
@@ -91,20 +92,20 @@ public class MockDataObject implements DataObject {
     public void writeProperty(String propName, Object val) {
     }
 
-    public DataObject readToOneDependentTarget(String relName) {
+    public Persistent readToOneDependentTarget(String relName) {
         return null;
     }
 
-    public void addToManyTarget(String relName, DataObject val, boolean setReverse) {
+    public void addToManyTarget(String relName, Persistent val, boolean setReverse) {
     }
 
-    public void removeToManyTarget(String relName, DataObject val, boolean setReverse) {
+    public void removeToManyTarget(String relName, Persistent val, boolean setReverse) {
     }
 
-    public void setToOneTarget(String relName, DataObject val, boolean setReverse) {
+    public void setToOneTarget(String relName, Persistent val, boolean setReverse) {
     }
 
-    public void setToOneDependentTarget(String relName, DataObject val) {
+    public void setToOneDependentTarget(String relName, Persistent val) {
     }
 
     public Map getCommittedSnapshot() {

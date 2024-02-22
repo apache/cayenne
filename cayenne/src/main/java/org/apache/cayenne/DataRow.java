@@ -37,11 +37,10 @@ import org.apache.cayenne.util.Util;
 public class DataRow extends HashMap<String, Object> {
 
     // make sure the starting value is different from DataObject default version value
-    private static AtomicLong currentVersion = new AtomicLong(
-            DataObject.DEFAULT_VERSION + 1);
+    private static final AtomicLong currentVersion = new AtomicLong(Persistent.DEFAULT_VERSION + 1);
 
     protected long version = currentVersion.getAndIncrement();
-    protected long replacesVersion = DataObject.DEFAULT_VERSION;
+    protected long replacesVersion = Persistent.DEFAULT_VERSION;
 
     /**
      * @since 3.0

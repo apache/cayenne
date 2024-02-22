@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -32,7 +32,7 @@ public class MockEntityResolver extends EntityResolver {
         this.mockObjEntity = mockObjEntity;
     }
 
-    public synchronized ObjEntity lookupObjEntity(DataObject dataObject) {
+    public synchronized ObjEntity lookupObjEntity(Persistent dataObject) {
         return mockObjEntity;
     }
 

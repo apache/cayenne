@@ -21,9 +21,9 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
@@ -178,19 +178,19 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
                 .pageSize(3)
                 .prefetch("toArtist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
-        IncrementalFaultList<?> result = (IncrementalFaultList) context.performQuery(q);
+        IncrementalFaultList<?> result = (IncrementalFaultList<Painting>) context.performQuery(q);
 
         // get an objects from the second page
-        final DataObject p1 = (DataObject) result.get(q.getPageSize());
+        final Persistent p1 = (Persistent) result.get(q.getPageSize());
 
         queryInterceptor.runWithQueriesBlocked(() -> {
             Object toOnePrefetch = p1.readNestedProperty("toArtist");
             assertNotNull(toOnePrefetch);
             assertTrue(
                     "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
-                    toOnePrefetch instanceof DataObject);
+                    toOnePrefetch instanceof Persistent);
 
-            DataObject a1 = (DataObject) toOnePrefetch;
+            Persistent a1 = (Persistent) toOnePrefetch;
             assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
         });
     }

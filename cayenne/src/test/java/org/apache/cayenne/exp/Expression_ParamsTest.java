@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.GenericPersistentObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.parser.ASTList;
 import org.junit.Test;
 
@@ -175,11 +175,11 @@ public class Expression_ParamsTest {
 		TstTraversalHandler.compareExps(e1, transformed);
 
 		// just in case manually check params
-		DataObject o1 = new CayenneDataObject();
+		Persistent o1 = new GenericPersistentObject();
 		o1.writePropertyDirectly("k1", "a");
 		assertTrue(transformed.match(o1));
 
-		DataObject o2 = new CayenneDataObject();
+		Persistent o2 = new GenericPersistentObject();
 		o2.writePropertyDirectly("k1", "x");
 		assertFalse(transformed.match(o2));
 	}
@@ -200,11 +200,11 @@ public class Expression_ParamsTest {
 		assertEquals(e1String, transformed.toString());
 
 		// just in case manually check params
-		DataObject o1 = new CayenneDataObject();
+		Persistent o1 = new GenericPersistentObject();
 		o1.writePropertyDirectly("k1", "a");
 		assertTrue(transformed.match(o1));
 
-		DataObject o2 = new CayenneDataObject();
+		Persistent o2 = new GenericPersistentObject();
 		o2.writePropertyDirectly("k1", "x");
 		assertFalse(transformed.match(o2));
 	}

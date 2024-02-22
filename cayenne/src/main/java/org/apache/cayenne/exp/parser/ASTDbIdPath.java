@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -80,8 +79,8 @@ public class ASTDbIdPath extends ASTDbPath {
 
         if (localPath.length() > 1) {
             // nested entity
-            if(o instanceof DataObject) {
-                o = ((DataObject) o).readNestedProperty(objPath);
+            if(o instanceof Persistent) {
+                o = ((Persistent) o).readNestedProperty(objPath);
                 nextSegment = CayennePath.of(List.of(id));
             } else {
                 nextSegment = localPath;
@@ -90,7 +89,7 @@ public class ASTDbIdPath extends ASTDbPath {
             nextSegment = localPath;
         }
 
-        if (o instanceof DataObject) {
+        if (o instanceof Persistent) {
             return toMap(o).get(id.value());
         } else if(o instanceof Collection) {
             return ((Collection<?>) o).stream()

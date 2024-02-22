@@ -260,7 +260,7 @@ public class CayenneIT extends RuntimeCase {
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
         assertEquals(1, objects.size());
-        DataObject object = objects.get(0);
+        Persistent object = objects.get(0);
 
         assertEquals(33002, Cayenne.intPKForObject(object));
     }
@@ -271,7 +271,7 @@ public class CayenneIT extends RuntimeCase {
 
         List<Artist> objects = ObjectSelect.query(Artist.class).select(context);
         assertEquals(1, objects.size());
-        DataObject object = objects.get(0);
+        Persistent object = objects.get(0);
 
         assertEquals(33002L, Cayenne.pkForObject(object));
     }

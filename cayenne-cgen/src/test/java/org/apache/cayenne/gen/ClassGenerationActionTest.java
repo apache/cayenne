@@ -81,7 +81,7 @@ public class ClassGenerationActionTest extends CgenCase {
 
 		String superclass = generated.get(0);
 		assertTrue(superclass, superclass.contains("package org.example.auto;"));
-		assertTrue(superclass, superclass.contains("import org.apache.cayenne.BaseDataObject;"));
+		assertTrue(superclass, superclass.contains("import org.apache.cayenne.PersistentObject;"));
 
 		String subclass = generated.get(1);
 		assertTrue(subclass, subclass.contains("package org.example;"));

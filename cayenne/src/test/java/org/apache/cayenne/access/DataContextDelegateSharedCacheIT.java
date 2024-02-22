@@ -21,9 +21,9 @@ package org.apache.cayenne.access;
 
 import java.util.Date;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.util.RuntimeCaseSyncModule;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
@@ -74,7 +74,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public boolean shouldMergeChanges(DataObject object, DataRow snapshotInStore) {
+            public boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore) {
                 methodInvoked[0] = true;
                 return true;
             }
@@ -118,7 +118,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public boolean shouldMergeChanges(DataObject object, DataRow snapshotInStore) {
+            public boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore) {
                 return false;
             }
         };
@@ -153,7 +153,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public boolean shouldProcessDelete(DataObject object) {
+            public boolean shouldProcessDelete(Persistent object) {
                 methodInvoked[0] = true;
                 return true;
             }
@@ -197,7 +197,7 @@ public class DataContextDelegateSharedCacheIT extends RuntimeCase {
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public boolean shouldProcessDelete(DataObject object) {
+            public boolean shouldProcessDelete(Persistent object) {
                 methodInvoked[0] = true;
                 return false;
             }

@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -71,7 +70,7 @@ class ObjectResolver {
 		}
 
 		this.primaryKey = dbEntity.getPrimaryKeys();
-		if (primaryKey.size() == 0) {
+		if (primaryKey.isEmpty()) {
 			throw new CayenneRuntimeException("Won't be able to create ObjectId for '%s'. Reason: DbEntity " +
 					"'%s' has no Primary Key defined.", descriptor.getEntity().getName(), dbEntity.getName());
 		}
@@ -108,7 +107,7 @@ class ObjectResolver {
 	 * </p>
 	 */
 	List<Persistent> objectsFromDataRows(List<? extends DataRow> rows) {
-		if (rows == null || rows.size() == 0) {
+		if (rows == null || rows.isEmpty()) {
 			return new ArrayList<>(1);
 		}
 
@@ -157,11 +156,8 @@ class ObjectResolver {
 			// process the above only if refresh is requested...
 			if (refreshObjects) {
 				DataRowUtils.mergeObjectWithSnapshot(context, classDescriptor, object, row);
-
-				if (object instanceof DataObject) {
-					((DataObject) object).setSnapshotVersion(row.getVersion());
-				}
-			}
+                object.setSnapshotVersion(row.getVersion());
+            }
 			break;
 		case PersistenceState.HOLLOW:
 			if (!refreshObjects) {
@@ -171,9 +167,7 @@ class ObjectResolver {
 				}
 			}
 			DataRowUtils.mergeObjectWithSnapshot(context, classDescriptor, object, row);
-			if (object instanceof DataObject) {
-				((DataObject) object).setSnapshotVersion(row.getVersion());
-			}
+			object.setSnapshotVersion(row.getVersion());
 			break;
 		default:
 			break;
@@ -223,7 +217,7 @@ class ObjectResolver {
     }
 
     ObjectId createObjectId(DataRow dataRow, String name, Collection<DbAttribute> pk, String namePrefix, boolean strict) {
-		boolean prefix = namePrefix != null && namePrefix.length() > 0;
+		boolean prefix = namePrefix != null && !namePrefix.isEmpty();
 
 		// ... handle special case - PK.size == 1
 		// use some not-so-significant optimizations...

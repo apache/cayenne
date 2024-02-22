@@ -20,11 +20,11 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
@@ -610,7 +610,7 @@ public class DataContextIT extends RuntimeCase {
 		row.put("ARTIST_ID", 1);
 		row.put("ARTIST_NAME", "ArtistXYZ");
 		row.put("DATE_OF_BIRTH", new Date());
-		DataObject object = context.objectFromDataRow(Artist.class, row);
+		Persistent object = context.objectFromDataRow(Artist.class, row);
 		ObjectId oid = object.getObjectId();
 
 		// insert object into the ObjectStore
@@ -633,7 +633,7 @@ public class DataContextIT extends RuntimeCase {
 		row.put("ARTIST_ID", 1);
 		row.put("ARTIST_NAME", "ArtistXYZ");
 		row.put("DATE_OF_BIRTH", new Date());
-		DataObject object = context.objectFromDataRow(Artist.class, row);
+		Persistent object = context.objectFromDataRow(Artist.class, row);
 		ObjectId oid = object.getObjectId();
 
 		// insert object into the ObjectStore

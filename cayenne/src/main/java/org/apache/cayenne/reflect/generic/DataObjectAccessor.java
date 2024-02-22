@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.reflect.generic;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.PropertyException;
 
@@ -52,7 +52,7 @@ class DataObjectAccessor implements Accessor {
     public Object getValue(Object object) throws PropertyException {
         try {
 
-            DataObject dataObject = (DataObject) object;
+            Persistent dataObject = (Persistent) object;
             return dataObject.readPropertyDirectly(propertyName);
         }
         catch (ClassCastException e) {
@@ -74,7 +74,7 @@ class DataObjectAccessor implements Accessor {
     public void setValue(Object object, Object newValue) throws PropertyException {
 
         try {
-            ((DataObject) object).writePropertyDirectly(propertyName, newValue);
+            ((Persistent) object).writePropertyDirectly(propertyName, newValue);
         }
         catch (ClassCastException e) {
             throw new PropertyException("Object is not a DataObject: '"

@@ -18,14 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 
 /**
- * A ClassDescriptor for "generic" persistent classes implementing {@link DataObject}
+ * A ClassDescriptor for "generic" persistent classes implementing {@link Persistent}
  * interface.
- * 
+ *
+ * TODO: merge with PersistentDescriptor and remove
+ *
  * @since 3.0
  */
 // non-public as the only difference with the superclass is version handling on merge -
@@ -40,9 +42,8 @@ class DataObjectDescriptor extends PersistentDescriptor {
         
         super.shallowMerge(from, to);
 
-        if (from instanceof DataObject && to instanceof DataObject) {
-            ((DataObject) to)
-                    .setSnapshotVersion(((DataObject) from).getSnapshotVersion());
+        if (from instanceof Persistent && to instanceof Persistent) {
+            ((Persistent) to).setSnapshotVersion(((Persistent) from).getSnapshotVersion());
         }
     }
 }

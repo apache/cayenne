@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
@@ -18,7 +18,7 @@ import org.apache.cayenne.testdo.testmap.Award;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Award extends CayenneDataObject {
+public abstract class _Award extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L;
 

@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -232,7 +231,7 @@ public class DataContextExtrasIT extends RuntimeCase {
 
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 100000);
-        DataObject obj = context.objectFromDataRow(Artist.class, row);
+        Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getGraphManager().registeredNodes().contains(obj));
         assertEquals(PersistenceState.HOLLOW, obj.getPersistenceState());
@@ -246,7 +245,7 @@ public class DataContextExtrasIT extends RuntimeCase {
         DataRow row = new DataRow(10);
         row.put("ARTIST_ID", 100001);
         row.put("ARTIST_NAME", "ArtistXYZ");
-        DataObject obj = context.objectFromDataRow(Artist.class, row);
+        Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getGraphManager().registeredNodes().contains(obj));
         assertEquals(PersistenceState.HOLLOW, obj.getPersistenceState());

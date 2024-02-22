@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -32,9 +32,10 @@ import org.apache.cayenne.reflect.PersistentDescriptorFactory;
 import org.apache.cayenne.reflect.PropertyException;
 
 /**
- * A {@link ClassDescriptorFactory} that creates descriptors for classes implementing
- * {@link DataObject}.
- * 
+ * A {@link ClassDescriptorFactory} that creates descriptors for classes implementing {@link Persistent}.
+ *
+ * TODO: rename or deprecate
+ *
  * @since 3.0
  */
 public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
@@ -53,7 +54,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
 
     @Override
     protected ClassDescriptor getDescriptor(ObjEntity entity, Class<?> entityClass) {
-        if (!DataObject.class.isAssignableFrom(entityClass)) {
+        if (!Persistent.class.isAssignableFrom(entityClass)) {
             return null;
         }
 

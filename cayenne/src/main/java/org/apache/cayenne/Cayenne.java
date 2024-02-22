@@ -103,7 +103,7 @@ public class Cayenne {
      * traverse object relationships until the final object is found. If a null
      * object found while traversing path, null is returned. If a list is
      * encountered in the middle of the path, CayenneRuntimeException is thrown.
-     * Unlike {@link DataObject#readPropertyDirectly(String)}, this method will resolve an
+     * Unlike {@link Persistent#readPropertyDirectly(String)}, this method will resolve an
      * object if it is HOLLOW.
      * <p>
      * Examples:
@@ -149,7 +149,7 @@ public class Cayenne {
      * traverse object relationships until the final object is found. If a null
      * object found while traversing path, null is returned. If a list is
      * encountered in the middle of the path, CayenneRuntimeException is thrown.
-     * Unlike {@link DataObject#readPropertyDirectly(String)}, this method will resolve an
+     * Unlike {@link Persistent#readPropertyDirectly(String)}, this method will resolve an
      * object if it is HOLLOW.
      *
      * @since 5.0
@@ -163,8 +163,8 @@ public class Cayenne {
             return null;
         }
 
-        if (o instanceof DataObject) {
-            return ((DataObject) o).readNestedProperty(path);
+        if (o instanceof Persistent) {
+            return ((Persistent) o).readNestedProperty(path);
         }
 
         String firstSegment = path.first().value();
@@ -182,8 +182,8 @@ public class Cayenne {
             // Support for collection property in the middle of the path
             Collection<Object> result = o instanceof List<?> ? new ArrayList<>() : new HashSet<>();
             for (Object item : collection) {
-                if (item instanceof DataObject) {
-                    DataObject cdo = (DataObject) item;
+                if (item instanceof Persistent) {
+                    Persistent cdo = (Persistent) item;
                     Object rest = cdo.readNestedProperty(path);
                     if (rest instanceof Collection<?>) {
                         // We don't want nested collections.
@@ -461,7 +461,7 @@ public class Cayenne {
     public static Object objectForQuery(ObjectContext context, Query query) {
         List<?> objects = context.performQuery(query);
 
-        if (objects.size() == 0) {
+        if (objects.isEmpty()) {
             return null;
         } else if (objects.size() > 1) {
             throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());

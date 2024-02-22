@@ -59,7 +59,7 @@ public class CayenneDataObjectInContextIT extends RuntimeCase {
     @Test
     public void testDoubleRegistration() {
 
-        DataObject object = new Artist();
+        Persistent object = new Artist();
         assertNull(object.getObjectId());
 
         context.registerNewObject(object);
@@ -231,7 +231,7 @@ public class CayenneDataObjectInContextIT extends RuntimeCase {
     public void testSnapshotVersion1() {
 
         Artist artist = context.newObject(Artist.class);
-        assertEquals(DataObject.DEFAULT_VERSION, artist.getSnapshotVersion());
+        assertEquals(Persistent.DEFAULT_VERSION, artist.getSnapshotVersion());
 
         // test versions set on commit
 
@@ -253,7 +253,7 @@ public class CayenneDataObjectInContextIT extends RuntimeCase {
         // test versions assigned on fetch... clean up domain cache
         Artist artist = ObjectSelect.query(Artist.class).selectFirst(context);
 
-        assertNotEquals(DataObject.DEFAULT_VERSION, artist.getSnapshotVersion());
+        assertNotEquals(Persistent.DEFAULT_VERSION, artist.getSnapshotVersion());
         assertEquals(context
                 .getObjectStore()
                 .getCachedSnapshot(artist.getObjectId())

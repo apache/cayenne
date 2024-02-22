@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.DateProperty;
@@ -20,7 +20,7 @@ import org.apache.cayenne.exp.property.StringProperty;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ReturnTypesMap1 extends CayenneDataObject {
+public abstract class _ReturnTypesMap1 extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L; 
 

@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -102,7 +102,7 @@ public class DataContextObjectTrackingIT extends RuntimeCase {
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        DataObject obj = context.objectFromDataRow(Artist.class, row);
+        Persistent obj = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = obj.getObjectId();
 
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
@@ -125,7 +125,7 @@ public class DataContextObjectTrackingIT extends RuntimeCase {
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
-        DataObject obj = context.objectFromDataRow(Artist.class, row);
+        Persistent obj = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = obj.getObjectId();
 
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());

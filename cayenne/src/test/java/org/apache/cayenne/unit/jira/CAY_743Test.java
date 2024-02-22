@@ -35,8 +35,7 @@ public class CAY_743Test {
     @Test
     public void testLoad2MapsWithCrossMapInheritance() throws Exception {
 
-        Injector injector = DIBootstrap.createInjector(new CoreModule(
-                ){
+        Injector injector = DIBootstrap.createInjector(new CoreModule(){
             @Override
             public void configure(Binder binder) {
                 super.configure(binder);

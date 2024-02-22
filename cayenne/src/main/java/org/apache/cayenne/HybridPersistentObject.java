@@ -31,21 +31,22 @@ import org.apache.cayenne.reflect.PropertyUtils;
 
 /**
  *
- * This data object like {@link CayenneDataObject} uses {@link Map} to store generic attributes,
+ * This data object like {@link GenericPersistentObject} uses {@link Map} to store generic attributes,
  * only difference is that this Map will be created lazily at first write, thus reducing memory penalty if possible.
  * <p>
  * This class can be used as superclass for objects that have attributes created at runtime.
- * If generic runtime attributes will be used always it may be a good idea to use {@link CayenneDataObject} instead.
- * If you don't create attributes at runtime it is better to use {@link BaseDataObject} class.
+ * If generic runtime attributes will be used always it may be a good idea to use {@link GenericPersistentObject} instead.
+ * If you don't create attributes at runtime it is better to use {@link PersistentObject} class.
  * <p>
  * Map creation is not thread safe, as DataObject in general not thread safe by it's own.
  *
- * @see BaseDataObject
- * @see CayenneDataObject
+ * @see PersistentObject
+ * @see GenericPersistentObject
  *
  * @since 4.1
+ * @since 5.0, renamed from HybridDataObject
  */
-public class HybridDataObject extends BaseDataObject {
+public class HybridPersistentObject extends PersistentObject {
 
     private static final long serialVersionUID = 1945209973678806566L;
 

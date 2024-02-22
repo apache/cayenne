@@ -5,7 +5,7 @@
 	 project-version="11">
 	<property name="defaultPackage" value="org.apache.cayenne.testdo.testmap"/>
 	<property name="defaultCatalog" value="TEST_CATALOG"/>
-	<property name="defaultSuperclass" value="org.apache.cayenne.CayenneDataObject"/>
+	<property name="defaultSuperclass" value="org.apache.cayenne.GenericPersistentObject"/>
 	<embeddable className="org.apache.cayenne.testdo.Embeddable">
 		<embeddable-attribute name="test" type="int" db-attribute-name="TEST"/>
 	</embeddable>
@@ -116,7 +116,7 @@
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>
 		<obj-attribute name="textReview" type="java.lang.String" db-attribute-path="toPaintingInfo.TEXT_REVIEW"/>
 	</obj-entity>
-	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" dbEntityName="PAINTING" superClassName="org.apache.cayenne.CayenneDataObject">
+	<obj-entity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" dbEntityName="PAINTING" superClassName="org.apache.cayenne.GenericPersistentObject">
 		<obj-attribute name="artistLongName" type="java.lang.String" db-attribute-path="toArtist.ARTIST_NAME"/>
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="galleryLongName" type="java.lang.String" db-attribute-path="toGallery.GALLERY_NAME"/>

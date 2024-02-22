@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -145,7 +145,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
         while (it.hasNext()) {
             Object obj = it.next();
             assertNotNull(obj);
-            assertTrue(obj instanceof DataObject);
+            assertTrue(obj instanceof Persistent);
 
             // iterator must be resolved page by page
             int expectedResolved = list.pageIndex(counter)
@@ -193,7 +193,7 @@ public class SimpleIdIncrementalFaultListIT extends RuntimeCase {
         while (it.hasNext()) {
             Object obj = it.next();
             assertNotNull(obj);
-            assertTrue(obj instanceof DataObject);
+            assertTrue(obj instanceof Persistent);
 
             // iterator must be resolved page by page
             int expectedResolved = list.pageIndex(counter)

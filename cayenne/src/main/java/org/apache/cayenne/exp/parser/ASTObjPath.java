@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
@@ -67,8 +67,8 @@ public class ASTObjPath extends ASTPath {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		return (o instanceof DataObject)
-				? ((DataObject) o).readNestedProperty(path)
+		return (o instanceof Persistent)
+				? ((Persistent) o).readNestedProperty(path)
 				: (o instanceof Entity)
 					? evaluateEntityNode((Entity<?,?,?>) o)
 					: PropertyUtils.getProperty(o, path);
@@ -112,8 +112,8 @@ public class ASTObjPath extends ASTPath {
 		if (getPath().length() == 1) {
 			try {
 				String firstSegment = getPath().first().value();
-				if (source instanceof DataObject) {
-					DataObject dataObject = (DataObject) source;
+				if (source instanceof Persistent) {
+					Persistent dataObject = (Persistent) source;
 					dataObject.writeProperty(firstSegment, dynamicCastValue(dataObject, value));
 				} else {
 					PropertyUtils.setProperty(source, firstSegment, value);
@@ -124,7 +124,7 @@ public class ASTObjPath extends ASTPath {
 		}
 	}
 
-	private Object dynamicCastValue(DataObject source, Object value) {
+	private Object dynamicCastValue(Persistent source, Object value) {
 		Class<?> javaClass = getDataTypeForObject(source);
 		if(javaClass == null) {
 			return value;
@@ -139,7 +139,7 @@ public class ASTObjPath extends ASTPath {
 		return value;
 	}
 
-	private Class<?> getDataTypeForObject(DataObject source) {
+	private Class<?> getDataTypeForObject(Persistent source) {
 		ObjectContext context = source.getObjectContext();
 		ObjectId objectId = source.getObjectId();
 		if(context == null || objectId == null) {

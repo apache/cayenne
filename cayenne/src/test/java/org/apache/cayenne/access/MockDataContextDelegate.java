@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -30,27 +30,33 @@ import org.apache.cayenne.query.Query;
  */
 public class MockDataContextDelegate implements DataContextDelegate {
 
+    @Override
     public Query willPerformGenericQuery(DataContext context, Query query) {
         return query;
     }
 
+    @Override
     public Query willPerformQuery(DataContext context, Query query) {
         return query;
     }
 
-    public boolean shouldMergeChanges(DataObject object, DataRow snapshotInStore) {
+    @Override
+    public boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore) {
         return true;
     }
 
-    public boolean shouldProcessDelete(DataObject object) {
+    @Override
+    public boolean shouldProcessDelete(Persistent object) {
         return true;
     }
 
-    public void finishedMergeChanges(DataObject object) {
+    @Override
+    public void finishedMergeChanges(Persistent object) {
 
     }
 
-    public void finishedProcessDelete(DataObject object) {
+    @Override
+    public void finishedProcessDelete(Persistent object) {
 
     }
 }

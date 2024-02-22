@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
 
 /**
@@ -60,15 +60,15 @@ public interface DataContextDelegate {
      * null. If a delegate returns <code>true</code>, ObjectStore will attempt to merge
      * the changes into an object.
      */
-    boolean shouldMergeChanges(DataObject object, DataRow snapshotInStore);
+    boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore);
 
     /**
      * Called after a successful merging of external changes to an object. If previosly a
      * delegate returned <code>false</code> from
-     * {@link #shouldMergeChanges(DataObject, DataRow)}, this method is not invoked,
+     * {@link #shouldMergeChanges(Persistent, DataRow)}, this method is not invoked,
      * since changes were not merged.
      */
-    void finishedMergeChanges(DataObject object);
+    void finishedMergeChanges(Persistent object);
 
     /**
      * Invoked by ObjectStore whenever it is detected that a database row was deleted for
@@ -80,13 +80,13 @@ public interface DataContextDelegate {
      * @param object DataObject that was deleted externally and is still present in the
      *            ObjectStore associated with the delegate.
      */
-    boolean shouldProcessDelete(DataObject object);
+    boolean shouldProcessDelete(Persistent object);
 
     /**
      * Called after a successful processing of externally deleted object. If previosly a
      * delegate returned <code>false</code> from
-     * {@link #shouldProcessDelete(DataObject)}, this method is not invoked, since no
+     * {@link #shouldProcessDelete(Persistent)}, this method is not invoked, since no
      * processing was done.
      */
-    void finishedProcessDelete(DataObject object);
+    void finishedProcessDelete(Persistent object);
 }

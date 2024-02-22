@@ -18,21 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 
 final class ObjectIdBatchSourceItem {
 
-    private final DataObject object;
+    private final Persistent object;
     private final String id;
     private final String objectIdRelationship;
 
-    ObjectIdBatchSourceItem(DataObject object, String id, String objectIdRelationship) {
+    ObjectIdBatchSourceItem(Persistent object, String id, String objectIdRelationship) {
         this.object = object;
         this.id = id;
         this.objectIdRelationship = objectIdRelationship;
     }
 
-    DataObject getObject() {
+    Persistent getObject() {
         return object;
     }
 

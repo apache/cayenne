@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
@@ -18,7 +18,7 @@ import org.apache.cayenne.testdo.things.Box;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _BoxInfo extends CayenneDataObject {
+public abstract class _BoxInfo extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L; 
 

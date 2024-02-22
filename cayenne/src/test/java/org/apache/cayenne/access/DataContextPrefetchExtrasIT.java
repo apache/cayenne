@@ -21,10 +21,10 @@ package org.apache.cayenne.access;
 
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.ObjectSelect;
@@ -132,15 +132,15 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
 
         List<CompoundFkTestEntity> objects = q.select(context);
         assertEquals(1, objects.size());
-        BaseDataObject fk1 = objects.get(0);
+        PersistentObject fk1 = objects.get(0);
 
         Object toOnePrefetch = fk1.readNestedProperty("toCompoundPk");
         assertNotNull(toOnePrefetch);
         assertTrue(
                 "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
-                toOnePrefetch instanceof DataObject);
+                toOnePrefetch instanceof Persistent);
 
-        DataObject pk1 = (DataObject) toOnePrefetch;
+        Persistent pk1 = (Persistent) toOnePrefetch;
         assertEquals(PersistenceState.COMMITTED, pk1.getPersistenceState());
         assertEquals("CPK2", pk1.readPropertyDirectly("name"));
     }
@@ -158,17 +158,17 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
 
         List<CompoundPkTestEntity> pks = q.select(context);
         assertEquals(1, pks.size());
-        BaseDataObject pk1 = pks.get(0);
+        PersistentObject pk1 = pks.get(0);
 
         List<?> toMany = (List<?>) pk1.readPropertyDirectly("compoundFkArray");
         assertNotNull(toMany);
         assertFalse(((ValueHolder) toMany).isFault());
         assertEquals(2, toMany.size());
 
-        BaseDataObject fk1 = (BaseDataObject) toMany.get(0);
+        PersistentObject fk1 = (PersistentObject) toMany.get(0);
         assertEquals(PersistenceState.COMMITTED, fk1.getPersistenceState());
 
-        BaseDataObject fk2 = (BaseDataObject) toMany.get(1);
+        PersistentObject fk2 = (PersistentObject) toMany.get(1);
         assertEquals(PersistenceState.COMMITTED, fk2.getPersistenceState());
     }
 }

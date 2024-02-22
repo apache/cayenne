@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.lifecycle.id.EntityIdCoder;
@@ -93,7 +93,7 @@ class ObjectIdBatchFault {
 			}
 		}
 
-		Map<String, ObjectSelect<DataObject>> queriesByEntity = new HashMap<>();
+		Map<String, ObjectSelect<Persistent>> queriesByEntity = new HashMap<>();
 		Map<String, EntityIdCoder> codersByEntity = new HashMap<>();
 
 		for (ObjectIdBatchSourceItem source : sources) {
@@ -101,13 +101,13 @@ class ObjectIdBatchFault {
 			String uuid = source.getId();
 			String entityName = EntityIdCoder.getEntityName(uuid);
 			EntityIdCoder coder = codersByEntity.get(entityName);
-			ObjectSelect<DataObject> query;
+			ObjectSelect<Persistent> query;
 
 			if (coder == null) {
 				coder = new EntityIdCoder(resolver.getObjEntity(entityName));
 				codersByEntity.put(entityName, coder);
 
-				query = ObjectSelect.query(DataObject.class, entityName);
+				query = ObjectSelect.query(Persistent.class, entityName);
 				queriesByEntity.put(entityName, query);
 			} else {
 				query = queriesByEntity.get(entityName);
@@ -121,10 +121,10 @@ class ObjectIdBatchFault {
 		int capacity = (int) Math.ceil(sources.size() / 0.75d);
 		Map<String, Object> results = new HashMap<>(capacity);
 
-		for (ObjectSelect<DataObject> query : queriesByEntity.values()) {
+		for (ObjectSelect<Persistent> query : queriesByEntity.values()) {
 			EntityIdCoder coder = codersByEntity.get(query.getEntityName());
-			List<DataObject> objects = query.select(context);
-			for (DataObject object : objects) {
+			List<Persistent> objects = query.select(context);
+			for (Persistent object : objects) {
 				String uuid = coder.toStringId(object.getObjectId());
 				results.put(uuid, object);
 			}

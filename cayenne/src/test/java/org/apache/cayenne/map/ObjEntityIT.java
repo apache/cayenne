@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
@@ -164,7 +164,7 @@ public class ObjEntityIT extends RuntimeCase {
         e1.setClassName("SomeOtherClass");
         assertFalse(e1.isGeneric());
 
-        e1.setClassName(CayenneDataObject.class.getName());
+        e1.setClassName(GenericPersistentObject.class.getName());
         assertTrue(e1.isGeneric());
     }
 

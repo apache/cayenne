@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.HybridDataObject;
+import org.apache.cayenne.HybridPersistentObject;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
@@ -18,7 +18,7 @@ import org.apache.cayenne.testdo.hybrid.HybridEntity1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _HybridEntity2 extends HybridDataObject {
+public abstract class _HybridEntity2 extends HybridPersistentObject {
 
     private static final long serialVersionUID = 1L; 
 

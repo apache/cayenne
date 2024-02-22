@@ -133,13 +133,13 @@ public class DataObjectSerializationIT extends RuntimeCase {
     public void testSerializeModifiedMapBasedObject() throws Exception {
         ObjectId objectId = ObjectId.of("test", "id", 42);
 
-        CayenneDataObject dataObject = new CayenneDataObject();
+        GenericPersistentObject dataObject = new GenericPersistentObject();
         dataObject.setObjectContext(context);
         dataObject.setObjectId(objectId);
         dataObject.writePropertyDirectly("test", 123);
         dataObject.setPersistenceState(PersistenceState.MODIFIED);
 
-        CayenneDataObject cloned = Util.cloneViaSerialization(dataObject);
+        GenericPersistentObject cloned = Util.cloneViaSerialization(dataObject);
         assertEquals(PersistenceState.MODIFIED, cloned.getPersistenceState());
         assertEquals(123, cloned.readProperty("test"));
         assertNull(cloned.getObjectContext());
@@ -150,13 +150,13 @@ public class DataObjectSerializationIT extends RuntimeCase {
     public void testSerializeCommittedMapBasedObject() throws Exception {
         ObjectId objectId = ObjectId.of("test", "id", 42);
 
-        CayenneDataObject dataObject = new CayenneDataObject();
+        GenericPersistentObject dataObject = new GenericPersistentObject();
         dataObject.setObjectContext(context);
         dataObject.setObjectId(objectId);
         dataObject.writePropertyDirectly("test", 123);
         dataObject.setPersistenceState(PersistenceState.COMMITTED);
 
-        CayenneDataObject cloned = Util.cloneViaSerialization(dataObject);
+        GenericPersistentObject cloned = Util.cloneViaSerialization(dataObject);
         assertEquals(PersistenceState.HOLLOW, cloned.getPersistenceState());
         assertNull(cloned.readProperty("test"));
         assertNull(cloned.getObjectContext());

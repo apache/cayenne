@@ -26,9 +26,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
@@ -72,8 +72,8 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
 
         DataRow dataRow = context.currentSnapshot(dbRow.getObject());
 
-        if (dbRow.getObject() instanceof DataObject) {
-            DataObject dataObject = (DataObject) dbRow.getObject();
+        if (dbRow.getObject() != null) {
+            Persistent dataObject = dbRow.getObject();
             dataRow.setReplacesVersion(dataObject.getSnapshotVersion());
             dataObject.setSnapshotVersion(dataRow.getVersion());
         }

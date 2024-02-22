@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -53,7 +52,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -176,27 +174,23 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
                 // TODO: andrus 3/23/2006 snapshot versions are obsolete, but there is no
                 // replacement yet, so we still need to handle them...
-                if (object instanceof DataObject) {
+                DataRow snapshot = getCachedSnapshot((ObjectId) nodeId);
 
-                    DataObject dataObject = (DataObject) object;
-                    DataRow snapshot = getCachedSnapshot((ObjectId) nodeId);
-
-                    if (snapshot != null
-                            && snapshot.getVersion() != dataObject.getSnapshotVersion()) {
-                        DataContextDelegate delegate = context.nonNullDelegate();
-                        if (delegate.shouldMergeChanges(dataObject, snapshot)) {
-                            ClassDescriptor descriptor = context
-                                    .getEntityResolver()
-                                    .getClassDescriptor(
-                                            ((ObjectId) nodeId).getEntityName());
-                            DataRowUtils.forceMergeWithSnapshot(
-                                    context,
-                                    descriptor,
-                                    dataObject,
-                                    snapshot);
-                            dataObject.setSnapshotVersion(snapshot.getVersion());
-                            delegate.finishedMergeChanges(dataObject);
-                        }
+                if (snapshot != null
+                        && snapshot.getVersion() != object.getSnapshotVersion()) {
+                    DataContextDelegate delegate = context.nonNullDelegate();
+                    if (delegate.shouldMergeChanges(object, snapshot)) {
+                        ClassDescriptor descriptor = context
+                                .getEntityResolver()
+                                .getClassDescriptor(
+                                        ((ObjectId) nodeId).getEntityName());
+                        DataRowUtils.forceMergeWithSnapshot(
+                                context,
+                                descriptor,
+                                object,
+                                snapshot);
+                        object.setSnapshotVersion(snapshot.getVersion());
+                        delegate.finishedMergeChanges(object);
                     }
                 }
             }
@@ -622,11 +616,6 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         Persistent object = objectMap.get(nodeId);
 
         if (object != null) {
-
-            DataObject dataObject = (object instanceof DataObject)
-                    ? (DataObject) object
-                    : null;
-
             DataContextDelegate delegate;
 
             switch (object.getPersistenceState()) {
@@ -637,17 +626,14 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
                     // consult delegate
                     delegate = context.nonNullDelegate();
 
-                    if (dataObject == null || delegate.shouldProcessDelete(dataObject)) {
+                    if (delegate.shouldProcessDelete(object)) {
                         objectMap.remove(nodeId);
                         changes.remove(nodeId);
 
                         // setting DataContext to null will also set
                         // state to transient
                         object.setObjectContext(null);
-
-                        if (dataObject != null) {
-                            delegate.finishedProcessDelete(dataObject);
-                        }
+                        delegate.finishedProcessDelete(object);
                     }
 
                     break;
@@ -656,13 +642,13 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
                     // consult delegate
                     delegate = context.nonNullDelegate();
-                    if (dataObject != null && delegate.shouldProcessDelete(dataObject)) {
+                    if (delegate.shouldProcessDelete(object)) {
                         object.setPersistenceState(PersistenceState.NEW);
                         changes.remove(nodeId);
                         registerNode(nodeId, object);
                         nodeCreated(nodeId);
 
-                        delegate.finishedProcessDelete(dataObject);
+                        delegate.finishedProcessDelete(object);
                     }
 
                     break;
@@ -676,7 +662,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     void processInvalidatedIDs(Collection<ObjectId> invalidatedIDs) {
         if (invalidatedIDs != null && !invalidatedIDs.isEmpty()) {
             for (ObjectId oid : invalidatedIDs) {
-                DataObject object = (DataObject) getNode(oid);
+                Persistent object = (Persistent) getNode(oid);
 
                 if (object == null) {
                     continue;
@@ -725,7 +711,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     void processIndirectlyModifiedIDs(Collection<ObjectId> indirectlyModifiedIDs) {
         for (ObjectId oid : indirectlyModifiedIDs) {
             // access object map directly - the method should be called in a synchronized context...
-            final DataObject object = (DataObject) objectMap.get(oid);
+            final Persistent object = objectMap.get(oid);
 
             if (object == null || object.getPersistenceState() != PersistenceState.COMMITTED) {
                 continue;
@@ -779,7 +765,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     void processUpdatedSnapshot(ObjectId nodeId, DataRow diff) {
 
         // access object map directly - the method should be called in a synchronized context...
-        DataObject object = (DataObject) objectMap.get(nodeId);
+        Persistent object = objectMap.get(nodeId);
 
         // no object, or HOLLOW object require no processing
         if (object != null) {
@@ -1039,7 +1025,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
     // an ObjectIdQuery optimized for retrieval of multiple snapshots - it can be reset
     // with the new id
-    final class CachedSnapshotQuery extends ObjectIdQuery {
+    static final class CachedSnapshotQuery extends ObjectIdQuery {
 
         CachedSnapshotQuery(ObjectId oid) {
             super(oid, true, ObjectIdQuery.CACHE_NOREFRESH);
@@ -1051,7 +1037,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         }
     }
 
-    class SnapshotEventDecorator implements GraphDiff {
+    static class SnapshotEventDecorator implements GraphDiff {
 
         SnapshotEvent event;
 

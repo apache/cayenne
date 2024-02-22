@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.lifecycle.relationship;
 
-import org.apache.cayenne.DataObject;
+import org.apache.cayenne.Persistent;
 
 /**
  * An abstract strategy for resolving ObjectId relationships.
@@ -27,7 +27,7 @@ import org.apache.cayenne.DataObject;
  */
 public interface ObjectIdRelationshipFaultingStrategy {
 
-    void afterObjectLoaded(DataObject object);
+    void afterObjectLoaded(Persistent object);
 
     void afterQuery();
 }

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataObject;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Inject;
@@ -192,7 +192,7 @@ public class DataContextQueryCachingIT extends RuntimeCase {
             List<?> resultRows = context.performQuery(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(2, resultRows.size());
-            assertTrue(resultRows.get(0) instanceof DataObject);
+            assertTrue(resultRows.get(0) instanceof Persistent);
             QueryMetadata cacheKey = select.getMetaData(context.getEntityResolver());
             assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
 
@@ -207,7 +207,7 @@ public class DataContextQueryCachingIT extends RuntimeCase {
 
             assertEquals(1, engine.getRunCount());
             assertEquals(4, freshResultRows.size());
-            assertTrue(resultRows.get(0) instanceof DataObject);
+            assertTrue(resultRows.get(0) instanceof Persistent);
             assertNull(context.getParentDataDomain().getQueryCache().get(cacheKey));
             assertEquals(freshResultRows, context.getQueryCache().get(cacheKey));
         }

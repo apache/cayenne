@@ -44,7 +44,7 @@ public class GenericMappingIT extends RuntimeCase {
 
     @Test
     public void testInsertSingle() {
-        DataObject g1 = (DataObject) context.newObject("Generic1");
+        Persistent g1 = context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
         context.commitChanges();
@@ -52,10 +52,10 @@ public class GenericMappingIT extends RuntimeCase {
 
     @Test
     public void testInsertRelated() {
-        DataObject g1 = (DataObject) context.newObject("Generic1");
+        Persistent g1 = context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
-        DataObject g2 = (DataObject) context.newObject("Generic2");
+        Persistent g2 = context.newObject("Generic2");
         g2.writeProperty("name", "G2 Name");
         g2.setToOneTarget("toGeneric1", g1, true);
 
@@ -81,10 +81,10 @@ public class GenericMappingIT extends RuntimeCase {
 
     @Test
     public void testUpdateRelated() {
-        DataObject g1 = (DataObject) context.newObject("Generic1");
+        Persistent g1 = context.newObject("Generic1");
         g1.writeProperty("name", "G1 Name");
 
-        DataObject g2 = (DataObject) context.newObject("Generic2");
+        Persistent g2 = context.newObject("Generic2");
         g2.writeProperty("name", "G2 Name");
         g2.setToOneTarget("toGeneric1", g1, true);
 
@@ -93,7 +93,7 @@ public class GenericMappingIT extends RuntimeCase {
         List<?> r1 = (List<?>) g1.readProperty("generic2s");
         assertTrue(r1.contains(g2));
 
-        DataObject g11 = (DataObject) context.newObject("Generic1");
+        Persistent g11 = context.newObject("Generic1");
         g11.writeProperty("name", "G11 Name");
         g2.setToOneTarget("toGeneric1", g11, true);
 
