@@ -297,7 +297,7 @@ public class ObjAttributeTableModel extends CayenneTableModel<ObjAttributeWrappe
             attributeNew.setDbAttributePath(attribute.getDbAttributePath());
         } else {
             attributeNew = new EmbeddedAttribute();
-            attributeNew.setDbAttributePath(null);
+            attributeNew.setDbAttributePath((String)null);
         }
 
         attributeNew.setName(attribute.getName());

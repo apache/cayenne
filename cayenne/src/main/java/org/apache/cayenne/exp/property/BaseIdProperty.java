@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import java.util.Objects;
 
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Property that represents non-numeric PK
@@ -41,10 +42,10 @@ public class BaseIdProperty<E> extends BaseProperty<E> implements IdProperty<E> 
      * @param path       cayenne path (optional, can be omitted for  ID of the root)
      * @param entityName name of the entity (mandatory)
      * @param type       of the property (mandatory)
-     * @see PropertyFactory#createBaseId(String, String, String, Class)
+     * @see PropertyFactory#createBaseId(String, CayennePath, String, Class)
      */
-    protected BaseIdProperty(String attribute, String path, String entityName, Class<? super E> type) {
-        super(null, ExpressionFactory.dbIdPathExp(path == null ? attribute : path + '.' + attribute), type);
+    protected BaseIdProperty(String attribute, CayennePath path, String entityName, Class<? super E> type) {
+        super(CayennePath.EMPTY_PATH, ExpressionFactory.dbIdPathExp(path.dot(attribute)), type);
         this.entityName = Objects.requireNonNull(entityName);
         this.attributeName = Objects.requireNonNull(attribute);
     }

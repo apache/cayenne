@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.exp.property;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,8 +36,8 @@ public class StringPropertyTest {
 
     @Before
     public void createProperty() {
-        property = new StringProperty<>("path", null, String.class);
-        other = new StringProperty<>("other", null, String.class);
+        property = new StringProperty<>(CayennePath.of("path"), null, String.class);
+        other = new StringProperty<>(CayennePath.of("other"), null, String.class);
     }
 
     @Test

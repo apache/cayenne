@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
@@ -29,7 +30,7 @@ import org.apache.cayenne.map.JoinType;
 class TableTreeNode {
 
     // path that spawned this node
-    private final PathComponents attributePath;
+    private final CayennePath attributePath;
     private final DbEntity entity;
     private final String tableAlias;
     private final JoinType joinType;
@@ -38,22 +39,22 @@ class TableTreeNode {
     private final DbRelationship relationship;
 
     TableTreeNode(DbEntity entity, String tableAlias) {
-        this.attributePath = new PathComponents("");
+        this.attributePath = CayennePath.EMPTY_PATH;
         this.entity = entity;
         this.tableAlias = tableAlias;
         this.relationship = null;
         this.joinType = null;
     }
 
-    TableTreeNode(String path, DbRelationship relationship, String tableAlias, JoinType joinType) {
-        this.attributePath = new PathComponents(path);
+    TableTreeNode(CayennePath path, DbRelationship relationship, String tableAlias, JoinType joinType) {
+        this.attributePath = path;
         this.entity = relationship.getTargetEntity();
         this.tableAlias = tableAlias;
         this.relationship = relationship;
         this.joinType = joinType;
     }
 
-    public PathComponents getAttributePath() {
+    public CayennePath getAttributePath() {
         return attributePath;
     }
 

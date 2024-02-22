@@ -43,7 +43,7 @@ public class ASTDbIdPathTest {
         assertThat(exp, instanceOf(ASTDbIdPath.class));
 
         ASTDbIdPath clone = (ASTDbIdPath)exp;
-        assertEquals("test", clone.getPath());
+        assertEquals("test", clone.getPath().value());
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ASTDbIdPathTest {
         Expression exp = ExpressionFactory.exp("dbid:test");
         assertThat(exp, instanceOf(ASTDbIdPath.class));
         ASTDbIdPath path = (ASTDbIdPath)exp;
-        assertEquals("test", path.getPath());
+        assertEquals("test", path.getPath().value());
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ASTDbIdPathTest {
         Node child0 = equal.jjtGetChild(0);
         assertThat(child0, instanceOf(ASTDbIdPath.class));
         ASTDbIdPath path = (ASTDbIdPath)child0;
-        assertEquals("test", path.getPath());
+        assertEquals("test", path.getPath().value());
     }
 
 }

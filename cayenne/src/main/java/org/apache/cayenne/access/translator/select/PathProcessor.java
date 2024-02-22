@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import java.util.Optional;
 /**
  * @since 4.2
  */
-abstract class PathProcessor<T extends Entity> implements PathTranslationResult {
+abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslationResult {
 
     public static final char OUTER_JOIN_INDICATOR = '+';
     public static final char SPLIT_PATH_INDICATOR = '#';
@@ -41,10 +42,10 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
 
     protected final Map<String, String> pathSplitAliases;
     protected final TranslatorContext context;
-    protected final List<String> attributePaths;
+    protected final List<CayennePath> attributePaths;
     protected final List<DbAttribute> attributes;
-    protected final StringBuilder currentDbPath;
 
+    protected CayennePath currentDbPath;
     protected boolean lastComponent;
     private boolean isOuterJoin;
     protected T entity;
@@ -55,28 +56,26 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
         this.context = Objects.requireNonNull(context);
         this.entity = Objects.requireNonNull(entity);
         this.pathSplitAliases = context.getMetadata().getPathSplitAliases();
-        this.currentDbPath = new StringBuilder();
+        this.currentDbPath = CayennePath.EMPTY_PATH;
         this.attributes = new ArrayList<>(1);
         this.attributePaths = new ArrayList<>(1);
     }
 
-    public PathTranslationResult process(String path) {
-        PathComponents components = new PathComponents(path);
-        String[] rawComponents = components.getAll();
-        for (int i = 0; i < rawComponents.length; i++) {
-            String next = rawComponents[i];
+    public PathTranslationResult process(CayennePath path) {
+        List<CayennePathSegment> segments = path.segments();
+        int size = segments.size();
+        for (int i = 0; i < size; i++) {
+            CayennePathSegment segment = segments.get(i);
+            String next = segment.value();
             isOuterJoin = false;
-            lastComponent = i == rawComponents.length - 1;
+            lastComponent = i == size - 1;
             String alias = pathSplitAliases.get(next);
             if (alias != null) {
                 currentAlias = next;
                 processAliasedAttribute(next, alias);
                 currentAlias = null;
             } else {
-                if (!next.isEmpty() && next.charAt(next.length() - 1) == OUTER_JOIN_INDICATOR) {
-                    isOuterJoin = true;
-                    next = next.substring(0, next.length() - 1);
-                }
+                isOuterJoin = segment.isOuterJoin();
                 processNormalAttribute(next);
             }
         }
@@ -84,7 +83,7 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
         return this;
     }
 
-    protected void addAttribute(String path, DbAttribute attribute) {
+    protected void addAttribute(CayennePath path, DbAttribute attribute) {
         attributePaths.add(path);
         attributes.add(attribute);
     }
@@ -99,7 +98,7 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     }
 
     @Override
-    public List<String> getAttributePaths() {
+    public List<CayennePath> getAttributePaths() {
         return attributePaths;
     }
 
@@ -112,26 +111,15 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     }
 
     @Override
-    public Optional<Embeddable> getEmbeddable() {
-        return Optional.empty();
-    }
-
-    @Override
-    public String getFinalPath() {
-        return currentDbPath.toString();
+    public CayennePath getFinalPath() {
+        return currentDbPath;
     }
 
     protected void appendCurrentPath(String nextSegment) {
-        if (currentDbPath.length() > 0) {
-            currentDbPath.append('.');
-        }
-        currentDbPath.append(nextSegment);
-        if (currentAlias != null) {
-            currentDbPath.append(SPLIT_PATH_INDICATOR).append(currentAlias);
-        }
-        if (isOuterJoin) {
-            currentDbPath.append(OUTER_JOIN_INDICATOR);
-        }
+        CayennePathSegment segment = currentAlias != null
+                ? CayennePath.segmentOf(SPLIT_PATH_INDICATOR + currentAlias)
+                : CayennePath.segmentOf(nextSegment, isOuterJoin);
+        currentDbPath = currentDbPath.dot(segment);
     }
 
     public boolean isOuterJoin() {

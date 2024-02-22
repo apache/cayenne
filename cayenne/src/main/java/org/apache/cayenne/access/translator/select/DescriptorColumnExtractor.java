@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResult;
@@ -42,15 +43,13 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
  */
 class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyVisitor {
 
-    private static final String PREFETCH_PREFIX = "p:";
-
     private final ClassDescriptor descriptor;
     private final PathTranslator pathTranslator;
     private final Set<String> columnTracker = new HashSet<>();
 
     private EntityResult entityResult;
-    private String prefix;
-    private String labelPrefix;
+    private CayennePath prefix;
+    private CayennePath labelPrefix;
 
     DescriptorColumnExtractor(TranslatorContext context, ClassDescriptor descriptor) {
         super(context);
@@ -58,21 +57,20 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         this.pathTranslator = context.getPathTranslator();
     }
 
-    public void extract(String prefix) {
+    public void extract(CayennePath prefix) {
         this.prefix = prefix;
         boolean newEntityResult = false;
-        this.labelPrefix = null;
+        this.labelPrefix = CayennePath.EMPTY_PATH;
         TranslatorContext.DescriptorType type = TranslatorContext.DescriptorType.OTHER;
 
-        if(prefix != null && prefix.startsWith(PREFETCH_PREFIX)) {
+        if(prefix != null && prefix.hasMarker(CayennePath.PREFETCH_MARKER)) {
             type = TranslatorContext.DescriptorType.PREFETCH;
-            labelPrefix = prefix.substring(2);
+            labelPrefix = prefix;
             if(context.getQuery().needsResultSetMapping()) {
                 entityResult = context.getRootEntityResult();
                 if (entityResult == null) {
                     throw new CayenneRuntimeException("Can't process prefetch descriptor without root.");
                 }
-                newEntityResult = false;
             }
         } else {
             if(context.getQuery().needsResultSetMapping()) {
@@ -91,11 +89,11 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
 
         // add remaining needed attrs from DbEntity
         DbEntity table = descriptor.getEntity().getDbEntity();
-        String alias = context.getTableTree().aliasForPath(prefix);
+        String alias = context.getTableTree().aliasForPath(this.prefix);
         for (DbAttribute dba : table.getPrimaryKeys()) {
             String columnUniqueName = alias + '.' + dba.getName();
             if(columnTracker.add(columnUniqueName)) {
-                addDbAttribute(prefix, labelPrefix, dba);
+                addDbAttribute(this.prefix, labelPrefix, dba);
                 addEntityResultField(dba);
             }
         }
@@ -113,7 +111,7 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
             return true;
         }
 
-        PathTranslationResult result = pathTranslator.translatePath(oa.getEntity(), property.getName(), prefix);
+        PathTranslationResult result = pathTranslator.translatePath(oa.getEntity(), CayennePath.of(property.getName()), prefix);
 
         int count = result.getDbAttributes().size();
         for(int i=0; i<count; i++) {
@@ -128,11 +126,7 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
                 }
                 if (count > 1) {
                     // it was a flattened attribute, so need to keep full path info
-                    String attributePath = result.getAttributePaths().get(i);
-                    if (attributePath.startsWith(PREFETCH_PREFIX)) {
-                        attributePath = attributePath.substring(PREFETCH_PREFIX.length());
-                    }
-                    String dataRowKey = attributePath + "." + dbAttribute.getName();
+                    CayennePath dataRowKey = result.getAttributePaths().get(i).dot(dbAttribute.getName());
                     resultNodeDescriptor.setDataRowKey(dataRowKey);
                     addEntityResultField(dataRowKey);
                 } else {
@@ -153,7 +147,7 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
             return true;
         }
 
-        PathTranslationResult result = pathTranslator.translatePath(rel.getSourceEntity(), property.getName(), prefix);
+        PathTranslationResult result = pathTranslator.translatePath(rel.getSourceEntity(), CayennePath.of(property.getName()), prefix);
 
         int count = result.getDbAttributes().size();
         for(int i=0; i<count; i++) {
@@ -165,38 +159,30 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
     }
 
     private ResultNodeDescriptor processTranslationResult(PathTranslationResult result, int i) {
-        String path = result.getAttributePaths().get(i);
+        CayennePath path = result.getAttributePaths().get(i);
         String alias = context.getTableTree().aliasForPath(path);
         DbAttribute attribute = result.getDbAttributes().get(i);
 
         String columnUniqueName = alias + '.' + attribute.getName();
         if(columnTracker.add(columnUniqueName)) {
-            String columnLabelPrefix = path;
-            if(columnLabelPrefix.length() > 2) {
-                if(columnLabelPrefix.startsWith(PREFETCH_PREFIX)) {
-                    columnLabelPrefix = columnLabelPrefix.substring(2);
-                }
-            }
-            String attributeName = columnLabelPrefix.isEmpty()
-                    ? attribute.getName()
-                    : columnLabelPrefix + '.' + attribute.getName();
-
+            CayennePath attributePath = path.dot(attribute.getName());
             Node columnNode = table(alias).column(attribute).build();
-            return context.addResultNode(columnNode, attributeName).setDbAttribute(attribute);
+            return context.addResultNode(columnNode, attributePath).setDbAttribute(attribute);
         }
 
         return null;
     }
 
     private void addEntityResultField(DbAttribute attribute) {
-        String name = labelPrefix == null ? attribute.getName() : labelPrefix + '.' + attribute.getName();
+        String name = labelPrefix.dot(attribute.getName()).value();
         if(context.getQuery().needsResultSetMapping()) {
             entityResult.addDbField(name, name);
         }
     }
 
-    private void addEntityResultField(String nameForFlattenedAttribute) {
+    private void addEntityResultField(CayennePath pathForFlattenedAttribute) {
         if (context.getQuery().needsResultSetMapping()) {
+            String nameForFlattenedAttribute = pathForFlattenedAttribute.value();
             entityResult.addDbField(nameForFlattenedAttribute, nameForFlattenedAttribute);
         }
     }

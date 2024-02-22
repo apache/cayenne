@@ -167,7 +167,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                     DbEntity table = descriptor.getRootDbEntities().iterator().next();
                     ObjEntity objectEntity = descriptor.getEntity();
                     prefetch.setEntityName(objectEntity.getName());
-                    Expression prefetchExp = ExpressionFactory.exp(prefetch.getPath());
+                    Expression prefetchExp = ExpressionFactory.pathExp(prefetch.getPath());
                     Expression dbPrefetch = objectEntity.translateToDbPath(prefetchExp);
 
                     DbRelationship r = null;
@@ -198,7 +198,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
             String javaType) {
         String columnLabel = "";
         if (context.isAppendingResultColumns()) {
-            columnLabel = fields.get(property != null ? property.getDbAttributePath() : column.getName());
+            columnLabel = fields.get(property != null ? property.getDbAttributePath().value() : column.getName());
         }
         appendColumn(identifier, column, columnLabel, columnLabel, javaType);
     }
@@ -228,8 +228,7 @@ class EJBQLIdentifierColumnsTranslator extends EJBQLBaseVisitor {
                 }
 
                 // TODO: andrus 6/27/2007 - the last parameter is an unofficial
-                // "jdbcType"
-                // pending CAY-813 implementation, switch to #column directive
+                //       "jdbcType" pending CAY-813 implementation, switch to #column directive
                 context.append("' '").append(javaType).append("' '").append(columnAlias).append("' '")
                         .append(dataRowKey).append("' " + column.getType()).append(")");
             }

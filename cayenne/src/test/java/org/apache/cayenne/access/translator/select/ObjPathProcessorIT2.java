@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -58,7 +59,7 @@ public class ObjPathProcessorIT2 extends RuntimeCase {
 
     @Test
     public void testSimpleAttributePathTranslation() {
-        PathTranslationResult result = pathProcessor.process("name");
+        PathTranslationResult result = pathProcessor.process(CayennePath.of("name"));
         assertEquals(1, result.getDbAttributes().size());
         assertEquals(1, result.getAttributePaths().size());
 
@@ -68,7 +69,7 @@ public class ObjPathProcessorIT2 extends RuntimeCase {
 
     @Test
     public void testCompoundRelationshipPathTranslation() {
-        PathTranslationResult result = pathProcessor.process("toCompoundPk");
+        PathTranslationResult result = pathProcessor.process(CayennePath.of("toCompoundPk"));
         assertEquals(2, result.getDbAttributes().size());
         assertEquals(2, result.getAttributePaths().size());
 
@@ -81,7 +82,7 @@ public class ObjPathProcessorIT2 extends RuntimeCase {
 
     @Test
     public void testCompoundRelationshipFlattenedPathTranslation() {
-        PathTranslationResult result = pathProcessor.process("toCompoundPk.name");
+        PathTranslationResult result = pathProcessor.process(CayennePath.of("toCompoundPk.name"));
 
         assertEquals(1, result.getDbAttributes().size());
 

@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -44,7 +45,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
         TranslatorContext context = new MockTranslatorContext(wrapper);
 
         DbEntityColumnExtractor extractor = new DbEntityColumnExtractor(context);
-        extractor.extract(null);
+        extractor.extract(CayennePath.EMPTY_PATH);
 
         assertEquals(2, context.getResultNodeList().size());
 
@@ -90,10 +91,11 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
         DbRelationship relationship = new DbRelationship();
         relationship.setSourceEntity(mockDbEntity);
         relationship.setTargetEntityName("mock1");
-        context.getTableTree().addJoinTable("prefix", relationship, JoinType.INNER);
+        CayennePath prefix = CayennePath.of("prefix");
+        context.getTableTree().addJoinTable(prefix, relationship, JoinType.INNER);
 
         DbEntityColumnExtractor extractor = new DbEntityColumnExtractor(context);
-        extractor.extract("prefix");
+        extractor.extract(prefix);
 
         assertEquals(2, context.getResultNodeList().size());
 

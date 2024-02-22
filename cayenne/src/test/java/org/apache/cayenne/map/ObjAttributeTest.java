@@ -42,11 +42,11 @@ public class ObjAttributeTest {
     public void testDbAttributePath() {
         ObjAttribute attribute = new ObjAttribute("a1");
         attribute.setDbAttributePath("a");
-        assertEquals("a", attribute.getDbAttributePath());
+        assertEquals("a", attribute.getDbAttributePath().value());
         assertEquals("a", attribute.getDbAttributeName());
         
         attribute.setDbAttributePath("a.b");
-        assertEquals("a.b", attribute.getDbAttributePath());
+        assertEquals("a.b", attribute.getDbAttributePath().value());
         assertEquals("b", attribute.getDbAttributeName());
     }
 

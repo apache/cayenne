@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
@@ -33,13 +34,13 @@ import org.apache.cayenne.map.Embeddable;
  */
 interface PathTranslationResult {
 
-    String getFinalPath();
+    CayennePath getFinalPath();
 
     Optional<DbRelationship> getDbRelationship();
 
     List<DbAttribute> getDbAttributes();
 
-    List<String> getAttributePaths();
+    List<CayennePath> getAttributePaths();
 
     default Optional<Embeddable> getEmbeddable() {
         return Optional.empty();
@@ -49,7 +50,7 @@ interface PathTranslationResult {
         return getDbAttributes().get(getDbAttributes().size() - 1);
     }
 
-    default String getLastAttributePath() {
+    default CayennePath getLastAttributePath() {
         return getAttributePaths().get(getAttributePaths().size() - 1);
     }
 

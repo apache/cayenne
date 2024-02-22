@@ -23,6 +23,8 @@ import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -65,11 +67,10 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
             return true;
         }
 
-        String prefetchPath = node.getPath();
+        CayennePath prefetchPath = node.getPath();
 
         // find last relationship
-        Iterator<CayenneMapEntry> it = classDescriptor.getEntity().resolvePathComponents(
-                prefetchPath);
+        Iterator<CayenneMapEntry> it = classDescriptor.getEntity().resolvePathComponents(prefetchPath);
 
         ObjRelationship relationship = null;
         while (it.hasNext()) {
@@ -102,9 +103,8 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
                 .translateToRelatedEntity(queryQualifier, prefetchPath));
 
         if (relationship.isSourceIndependentFromTargetChange()) {
-            // setup extra result columns to be able to relate result rows to the parent
-            // result objects.
-            prefetchQuery.addResultPath("db:" + relationship.getReverseDbRelationshipPath());
+            // setup extra result columns to be able to relate result rows to the parent result objects.
+            prefetchQuery.addResultPath(ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath()));
         }
 
         // pass prefetch subtree to enable joint prefetches...

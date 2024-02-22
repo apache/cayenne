@@ -21,6 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.junit.Test;
 
@@ -42,8 +43,8 @@ public class ColumnDescriptorStageTest {
         TranslatorContext context = new MockTranslatorContext(wrapper);
 
         context.addResultNode(new EmptyNode());
-        context.addResultNode(new EmptyNode(), "key");
-        context.addResultNode(new EmptyNode(), false, PropertyFactory.COUNT, "key2");
+        context.addResultNode(new EmptyNode(), CayennePath.of("key"));
+        context.addResultNode(new EmptyNode(), false, PropertyFactory.COUNT, CayennePath.of("key2"));
 
         ColumnDescriptorStage stage = new ColumnDescriptorStage();
         stage.perform(context);

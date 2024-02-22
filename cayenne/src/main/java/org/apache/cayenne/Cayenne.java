@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectIdQuery;
@@ -136,77 +137,71 @@ public class Cayenne {
      * </ul>
      */
     public static Object readNestedProperty(Object o, String path) {
+        return readNestedProperty(o, CayennePath.of(path));
+    }
 
-        if (o == null) {
+    /**
+     * Returns a value of the property identified by a property path. Supports
+     * reading both mapped and unmapped properties. Unmapped properties are
+     * accessed in a manner consistent with JavaBeans specification.
+     * <p>
+     * Property path (or nested property) is a dot-separated path used to
+     * traverse object relationships until the final object is found. If a null
+     * object found while traversing path, null is returned. If a list is
+     * encountered in the middle of the path, CayenneRuntimeException is thrown.
+     * Unlike {@link DataObject#readPropertyDirectly(String)}, this method will resolve an
+     * object if it is HOLLOW.
+     *
+     * @since 5.0
+     */
+    public static Object readNestedProperty(Object o, CayennePath path) {
+        if (path.isEmpty()) {
+            throw new IllegalArgumentException("the path must be supplied in order to lookup a nested property");
+        }
+
+        if(o == null) {
             return null;
-        } else if (o instanceof DataObject) {
-            return ((DataObject) o).readNestedProperty(path);
-        } else if (o instanceof Collection<?>) {
+        }
 
+        if (o instanceof DataObject) {
+            return ((DataObject) o).readNestedProperty(path);
+        }
+
+        String firstSegment = path.first().value();
+
+        if (o instanceof Collection<?>) {
             // This allows people to put @size at the end of a property
             // path and be able to find out the size of a relationship.
 
             Collection<?> collection = (Collection<?>) o;
 
-            if (path.equals(PROPERTY_COLLECTION_SIZE)) {
+            if (path.length() == 1 && PROPERTY_COLLECTION_SIZE.equals(firstSegment)) {
                 return collection.size();
             }
 
             // Support for collection property in the middle of the path
             Collection<Object> result = o instanceof List<?> ? new ArrayList<>() : new HashSet<>();
-
             for (Object item : collection) {
                 if (item instanceof DataObject) {
                     DataObject cdo = (DataObject) item;
                     Object rest = cdo.readNestedProperty(path);
-
                     if (rest instanceof Collection<?>) {
-
-                        // We don't want nested collections. E.g.
-                        // readNestedProperty("paintingArray.paintingTitle")
-                        // should return
-                        // List<String>
+                        // We don't want nested collections.
+                        // E.g. readNestedProperty("paintingArray.paintingTitle") should return List<String>
                         result.addAll((Collection<?>) rest);
                     } else {
                         result.add(rest);
                     }
                 }
             }
-
             return result;
         }
 
-        if ((null == path) || (0 == path.length())) {
-            throw new IllegalArgumentException("the path must be supplied in order to lookup a nested property");
+        Object property = readSimpleProperty(o, firstSegment);
+        if (path.length() == 1) {
+            return property;
         }
-
-        int dotIndex = path.indexOf('.');
-
-        if (0 == dotIndex) {
-            throw new IllegalArgumentException("the path is invalid because it starts with a period character");
-        }
-
-        if (dotIndex == path.length() - 1) {
-            throw new IllegalArgumentException("the path is invalid because it ends with a period character");
-        }
-
-        if (-1 == dotIndex) {
-            return readSimpleProperty(o, path);
-        }
-
-        String path0 = path.substring(0, dotIndex);
-        String pathRemainder = path.substring(dotIndex + 1);
-
-        // this is copied from the old code where the placement of a plus
-        // character at the end of a segment of a property path would
-        // simply strip out the plus. I am not entirely sure why this is
-        // done. See unit test 'testReadNestedPropertyToManyInMiddle1'.
-
-        if ('+' == path0.charAt(path0.length() - 1)) {
-            path0 = path0.substring(0, path0.length() - 1);
-        }
-
-        Object property = readSimpleProperty(o, path0);
+        CayennePath pathRemainder = path.tail(1);
         return readNestedProperty(property, pathRemainder);
     }
 

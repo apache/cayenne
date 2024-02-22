@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
@@ -68,19 +69,19 @@ public class PrefetchTreeNodeTest {
         tree.addPath("abc.def.mnk");
         tree.addPath("xyz");
 
-        assertEquals("", tree.getPath());
+        assertEquals(CayennePath.of(""), tree.getPath());
 
         PrefetchTreeNode n1 = tree.getNode("abc");
-        assertEquals("abc", n1.getPath());
+        assertEquals(CayennePath.of("abc"), n1.getPath());
 
         PrefetchTreeNode n2 = tree.getNode("abc.def");
-        assertEquals("abc.def", n2.getPath());
+        assertEquals(CayennePath.of("abc.def"), n2.getPath());
 
         PrefetchTreeNode n3 = tree.getNode("abc.def.mnk");
-        assertEquals("abc.def.mnk", n3.getPath());
+        assertEquals(CayennePath.of("abc.def.mnk"), n3.getPath());
 
         PrefetchTreeNode n4 = tree.getNode("xyz");
-        assertEquals("xyz", n4.getPath());
+        assertEquals(CayennePath.of("xyz"), n4.getPath());
     }
 
     @Test
@@ -137,12 +138,12 @@ public class PrefetchTreeNodeTest {
 
         PrefetchTreeNode joint1Clone = cloned.getChild("joint1");
         assertNotNull(joint1Clone);
-        assertEquals("joint1", joint1.getPath());
+        assertEquals(CayennePath.of("joint1"), joint1.getPath());
         assertEquals(0, joint1Clone.getChildren().size());
 
         PrefetchTreeNode joint2Clone = cloned.getChild("joint2");
         assertNotNull(joint2Clone);
-        assertEquals("joint2", joint2.getPath());
+        assertEquals(CayennePath.of("joint2"), joint2.getPath());
         assertEquals(0, joint2Clone.getChildren().size());
 
     }

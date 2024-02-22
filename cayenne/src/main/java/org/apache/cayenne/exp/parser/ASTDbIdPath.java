@@ -30,6 +30,8 @@ import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
@@ -51,7 +53,12 @@ public class ASTDbIdPath extends ASTDbPath {
         super(ExpressionParserTreeConstants.JJTDBIDPATH);
     }
 
-    public ASTDbIdPath(Object value) {
+    public ASTDbIdPath(String value) {
+        super(ExpressionParserTreeConstants.JJTDBIDPATH);
+        setPath(value);
+    }
+
+    public ASTDbIdPath(CayennePath value) {
         super(ExpressionParserTreeConstants.JJTDBIDPATH);
         setPath(value);
     }
@@ -66,27 +73,25 @@ public class ASTDbIdPath extends ASTDbPath {
         return copy;
     }
 
-    protected Object evaluateNode(Object o, String localPath) {
-        int lastDot = localPath.lastIndexOf('.');
-        String id;
-        String nextSegment;
-        if (lastDot != -1) {
+    protected Object evaluateNode(Object o, CayennePath localPath) {
+        CayennePath objPath = localPath.parent();
+        CayennePathSegment id = localPath.last();
+        CayennePath nextSegment;
+
+        if (localPath.length() > 1) {
             // nested entity
-            String objPath = localPath.substring(0, lastDot);
-            id = localPath.substring(lastDot + 1);
             if(o instanceof DataObject) {
                 o = ((DataObject) o).readNestedProperty(objPath);
-                nextSegment = id;
+                nextSegment = CayennePath.of(List.of(id));
             } else {
                 nextSegment = localPath;
             }
         } else {
-            id = localPath;
             nextSegment = localPath;
         }
 
         if (o instanceof DataObject) {
-            return toMap(o).get(id);
+            return toMap(o).get(id.value());
         } else if(o instanceof Collection) {
             return ((Collection<?>) o).stream()
                     .map(o1 -> evaluateNode(o1, nextSegment))
@@ -106,13 +111,8 @@ public class ASTDbIdPath extends ASTDbPath {
 
     @Override
     protected CayenneMapEntry evaluateEntityNode(Entity<?,?,?> entity) {
-        int lastDot = path.lastIndexOf('.');
-        String objPath = null;
-        String id = path;
-        if(lastDot > -1) {
-            objPath = path.substring(0, lastDot);
-            id = path.substring(lastDot + 1);
-        }
+        CayennePath objPath = path.parent();
+        String id = path.last().value();
 
         if(!(entity instanceof ObjEntity)) {
             throw new CayenneRuntimeException("Unable to evaluate DBID path for DbEntity");
@@ -159,11 +159,11 @@ public class ASTDbIdPath extends ASTDbPath {
         out.append(DB_PREFIX);
         out.append(rootId);
         out.append('.');
-        out.append(path);
+        out.append(path.value());
     }
 
     @Override
     public void appendAsString(Appendable out) throws IOException {
-        out.append(DBID_PREFIX).append(path);
+        out.append(DBID_PREFIX).append(path.value());
     }
 }

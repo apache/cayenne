@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,8 +40,8 @@ public class MapPropertyTest {
 
     @Before
     public void createProperty() {
-        property = new MapProperty<>("path", null, Integer.class, Artist.class);
-        property1 = new MapProperty<>("path.artist", null, Integer.class, Artist.class);
+        property = new MapProperty<>(CayennePath.of("path"), null, Integer.class, Artist.class);
+        property1 = new MapProperty<>(CayennePath.of("path.artist"), null, Integer.class, Artist.class);
     }
 
     @Test

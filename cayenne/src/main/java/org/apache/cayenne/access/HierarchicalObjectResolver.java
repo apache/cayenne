@@ -24,6 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
@@ -72,7 +73,7 @@ class HierarchicalObjectResolver {
     PrefetchProcessorNode synchronizedRootResultNodeFromDataRows(
             PrefetchTreeNode tree,
             List<DataRow> mainResultRows,
-            Map<String, List<?>> extraResultsByPath) {
+            Map<CayennePath, List<?>> extraResultsByPath) {
 
         PrefetchProcessorNode decoratedTree = decorateTree(tree, mainResultRows, extraResultsByPath);
 
@@ -97,7 +98,7 @@ class HierarchicalObjectResolver {
      */
     private PrefetchProcessorNode decorateTree(PrefetchTreeNode tree,
                                                List<DataRow> mainResultRows,
-                                               Map<String, List<?>> extraResultsByPath) {
+                                               Map<CayennePath, List<?>> extraResultsByPath) {
         return new PrefetchProcessorTreeBuilder(this, mainResultRows, extraResultsByPath)
                 .buildTree(tree);
     }
@@ -180,9 +181,9 @@ class HierarchicalObjectResolver {
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
-            String reversePath = null;
+            Expression reversePath = null;
             if (relationship.isSourceIndependentFromTargetChange()) {
-                reversePath = "db:" + relationship.getReverseDbRelationshipPath();
+                reversePath = ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath());
             }
 
             List<DataRow> dataRows = new ArrayList<>();

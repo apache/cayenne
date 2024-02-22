@@ -22,12 +22,14 @@ package org.apache.cayenne.exp.property;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Orderings;
@@ -45,9 +47,9 @@ import org.apache.cayenne.reflect.PropertyUtils;
 public class BaseProperty<E> implements Property<E> {
 
     /**
-     * Name of the property in the object
+     * Path of this property
      */
-    protected final String name;
+    protected final CayennePath path;
 
     /**
      * Expression provider for the property
@@ -62,25 +64,25 @@ public class BaseProperty<E> implements Property<E> {
     /**
      * Constructs a new property with the given name and expression
      *
-     * @param name of the property (will be used as alias for the expression)
+     * @param path path value of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param type of the property
      *
      * @see PropertyFactory#createBase(String, Expression, Class)
      */
     @SuppressWarnings({"unchecked", "Convert2Lambda", "Anonymous2MethodRef"})
-    protected BaseProperty(String name, Expression expression, Class<? super E> type) {
-        this.name = name;
+    protected BaseProperty(CayennePath path, Expression expression, Class<? super E> type) {
+        this.path = path;
         // can't use lambda here, see CAY-2635
         if(expression == null) {
-            this.expressionSupplier = new Supplier<Expression>() {
+            this.expressionSupplier = new Supplier<>() {
                 @Override
                 public Expression get() {
-                    return ExpressionFactory.pathExp(name);
+                    return ExpressionFactory.pathExp(path);
                 }
             };
         } else {
-            this.expressionSupplier = new Supplier<Expression>() {
+            this.expressionSupplier = new Supplier<>() {
                 @Override
                 public Expression get() {
                     return expression.deepCopy();
@@ -94,21 +96,34 @@ public class BaseProperty<E> implements Property<E> {
      * @return Name of the property in the object.
      */
     public String getName() {
-        return name;
+        if(path.isEmpty()) {
+            // this one to keep compatible with pre 5.0 logic
+            return null;
+        }
+        // TODO: should we use it only for a single-segment path?
+        return path.value();
+    }
+
+    /**
+     * @return path this property represents
+     * @since 5.0
+     */
+    public CayennePath getPath() {
+        return path;
     }
 
     /**
      * @return alias for this property
      */
     public String getAlias() {
-        if(getName() == null) {
+        if(getPath().isEmpty()) {
             return null;
         }
 
         // check if default name for Path expression is overridden
         Expression exp = getExpression();
         if(exp instanceof ASTPath) {
-            if(((ASTPath) exp).getPath().equals(getName())) {
+            if(((ASTPath) exp).getPath().equals(getPath())) {
                 return null;
             }
         }
@@ -126,7 +141,9 @@ public class BaseProperty<E> implements Property<E> {
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : expressionSupplier.get().hashCode();
+        int result = getPath().isEmpty()
+                ? expressionSupplier.get().hashCode()
+                : getPath().hashCode();
         if(type != null) {
             result = 31 * result + type.hashCode();
         }
@@ -143,13 +160,13 @@ public class BaseProperty<E> implements Property<E> {
         }
 
         BaseProperty<?> property = (BaseProperty<?>) o;
-        if (name != null ? !name.equals(property.name) : property.name != null) {
+        if (!path.isEmpty() && !path.equals(property.path)) {
             return false;
         }
-        if (name == null && !expressionSupplier.get().equals(property.expressionSupplier.get())) {
+        if (path.isEmpty() && !expressionSupplier.get().equals(property.expressionSupplier.get())) {
             return false;
         }
-        return (type == null ? property.type == null : type.equals(property.type));
+        return Objects.equals(type, property.type);
     }
 
     /**
@@ -181,14 +198,14 @@ public class BaseProperty<E> implements Property<E> {
 	}
 
     /**
-     * @return Ascending case insensitive sort orderings on this property.
+     * @return Ascending case-insensitive sort orderings on this property.
      */
     public Ordering ascInsensitive() {
         return new Ordering(getExpression(), SortOrder.ASCENDING_INSENSITIVE);
     }
 
     /**
-     * @return Ascending case insensitive sort orderings on this property.
+     * @return Ascending case-insensitive sort orderings on this property.
      */
 	public Orderings ascInsensitives() {
 		return new Orderings(ascInsensitive());
@@ -209,14 +226,14 @@ public class BaseProperty<E> implements Property<E> {
     }
 
     /**
-     * @return Descending case insensitive sort orderings on this property.
+     * @return Descending case-insensitive sort orderings on this property.
      */
     public Ordering descInsensitive() {
         return new Ordering(getExpression(), SortOrder.DESCENDING_INSENSITIVE);
     }
 
     /**
-     * @return Descending case insensitive sort orderings on this property.
+     * @return Descending case-insensitive sort orderings on this property.
      */
     public Orderings descInsensitives() {
         return new Orderings(descInsensitive());

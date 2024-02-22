@@ -43,14 +43,14 @@ public class OrderingTest {
         assertNull(ord.getSortSpec());
 
         ord.setSortSpecString(pathSpec);
-        assertEquals(pathSpec, ord.getSortSpec().getOperand(0));
+        assertEquals(pathSpec, ord.getSortSpec().getOperand(0).toString());
     }
 
     @Test
     public void testPathSpec3() {
         String pathSpec = "a.b.c";
         Ordering ord = new Ordering(pathSpec, SortOrder.DESCENDING);
-        assertEquals(pathSpec, ord.getSortSpec().getOperand(0));
+        assertEquals(pathSpec, ord.getSortSpec().getOperand(0).toString());
     }
 
     @Test

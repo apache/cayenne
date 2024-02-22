@@ -60,7 +60,7 @@ class TableTreeStage implements TranslationStage {
         List<DbJoin> joins = node.getRelationship().getJoins();
 
         ExpressionNodeBuilder expressionNodeBuilder = null;
-        String sourceAlias = context.getTableTree().aliasForPath(node.getAttributePath().getParent());
+        String sourceAlias = context.getTableTree().aliasForPath(node.getAttributePath().parent());
         for (DbJoin dbJoin : joins) {
             DbAttribute src = dbJoin.getSource();
             DbAttribute dst = dbJoin.getTarget();

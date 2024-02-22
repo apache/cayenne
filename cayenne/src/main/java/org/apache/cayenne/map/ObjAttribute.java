@@ -25,6 +25,7 @@ import java.util.Iterator;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -40,7 +41,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * @since 4.2
      */
     protected boolean lazy;
-    protected String dbAttributePath;
+    protected CayennePath dbAttributePath;
 
     public ObjAttribute() {
     }
@@ -64,7 +65,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
         setName(attribute.getName());
         setType(attribute.getType());
         setEntity(attribute.getEntity());
-        setDbAttributePath(attribute.getDbAttributePath());
+        setDbAttributePathDirect(attribute.getDbAttributePath());
         setUsedForLocking(attribute.isUsedForLocking());
         setLazy(attribute.isLazy());
     }
@@ -110,7 +111,9 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
                 .attribute("type", getType())
                 .attribute("lock", isUsedForLocking())
                 .attribute("lazy", isLazy())
-                .attribute("db-attribute-path", getDbAttributePath());
+                .attribute("db-attribute-path", getDbAttributePath() == null
+                                ? null
+                                : getDbAttributePath().value());
 
         delegate.visitObjAttribute(this);
         encoder.end();
@@ -250,9 +253,12 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
             return Collections.emptyIterator();
         }
 
-        int lastPartStart = dbAttributePath.lastIndexOf('.');
-        if (lastPartStart < 0) {
-            DbAttribute attribute = dbEnt.getAttribute(dbAttributePath);
+        if(dbAttributePath.isEmpty()) {
+            return Collections.emptyIterator();
+        }
+
+        if(dbAttributePath.length() == 1) {
+            DbAttribute attribute = dbEnt.getAttribute(dbAttributePath.last().value());
             if (attribute == null) {
                 return Collections.emptyIterator();
             }
@@ -264,28 +270,30 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
 
     /**
      * Returns the name of the mapped DbAttribute. This value is the same as
-     * "dbAttributePath" for regular attributes mapped to columns. It is equal
-     * to the last path component for the flattened attributes.
+     * "dbAttributePath" for regular attributes mapped to columns.
+     * It is equal to the last path component for the flattened attributes.
      */
     public String getDbAttributeName() {
-        if (dbAttributePath == null) {
+        if (dbAttributePath == null || dbAttributePath.isEmpty()) {
             return null;
         }
 
-        int lastDot = dbAttributePath.lastIndexOf('.');
-        if (lastDot < 0) {
-            return dbAttributePath;
-        }
-
-        return dbAttributePath.substring(lastDot + 1);
+        return dbAttributePath.last().value();
     }
 
     public void setDbAttributePath(String dbAttributePath) {
-        this.dbAttributePath = dbAttributePath;
+        setDbAttributePath(CayennePath.of(dbAttributePath));
+    }
 
+    public void setDbAttributePath(CayennePath dbAttributePath) {
+        setDbAttributePathDirect(dbAttributePath);
         if (isInherited()) {
-            ((ObjEntity) entity).addAttributeOverride(getName(), dbAttributePath);
+            getEntity().addAttributeOverride(getName(), dbAttributePath);
         }
+    }
+
+    void setDbAttributePathDirect(CayennePath path) {
+        this.dbAttributePath = path;
     }
 
     /**
@@ -293,7 +301,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * to this attribute's ObjEntity and spans zero or more relationships,
      * always ending in a DbAttribute name.
      */
-    public String getDbAttributePath() {
+    public CayennePath getDbAttributePath() {
         return dbAttributePath;
     }
 
@@ -305,7 +313,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * @since 3.0
      */
     public boolean isFlattened() {
-        return dbAttributePath != null && dbAttributePath.indexOf('.') >= 0;
+        return dbAttributePath != null && dbAttributePath.length() > 1;
     }
 
     /**

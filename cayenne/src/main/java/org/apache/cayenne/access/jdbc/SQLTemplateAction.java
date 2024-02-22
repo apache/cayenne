@@ -41,6 +41,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DefaultScalarResultSegment;
@@ -342,11 +343,11 @@ public class SQLTemplateAction implements SQLAction {
 		if (entity != null && isResultColumnTypesEmpty()) {
 			// TODO: andrus 2008/03/28 support flattened attributes with aliases...
 			for (ObjAttribute attribute : entity.getAttributes()) {
-				String column = attribute.getDbAttributePath();
-				if (column == null || column.indexOf('.') > 0) {
+				CayennePath column = attribute.getDbAttributePath();
+				if (column == null || column.length() > 1) {
 					continue;
 				}
-				builder.overrideColumnType(column, attribute.getType());
+				builder.overrideColumnType(column.value(), attribute.getType());
 			}
 		}
 

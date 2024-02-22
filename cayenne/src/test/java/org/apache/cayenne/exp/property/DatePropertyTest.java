@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import java.time.LocalDate;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +38,7 @@ public class DatePropertyTest {
 
     @Before
     public void createProperty() {
-        property = new DateProperty<>("path", null, LocalDate.class);
+        property = new DateProperty<>(CayennePath.of("path"), null, LocalDate.class);
     }
 
     @Test

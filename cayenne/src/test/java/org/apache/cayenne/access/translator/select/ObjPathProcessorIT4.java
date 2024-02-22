@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
@@ -58,7 +59,7 @@ public class ObjPathProcessorIT4 extends RuntimeCase {
 
     @Test
     public void testSimpleAttributePathTranslation() {
-        PathTranslationResult result = pathProcessor.process("textReview");
+        PathTranslationResult result = pathProcessor.process(CayennePath.of("textReview"));
         assertEquals(2, result.getDbAttributes().size());
         assertEquals(2, result.getAttributePaths().size());
 

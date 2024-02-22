@@ -20,6 +20,7 @@ package org.apache.cayenne.gen.mock;
 
 import org.apache.cayenne.access.types.TimestampType;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.BaseProperty;
 
 /**
@@ -28,10 +29,10 @@ import org.apache.cayenne.exp.property.BaseProperty;
 public class CustomProperty extends BaseProperty<TimestampType> {
 
     public CustomProperty(String name, Class<? super TimestampType> type) {
-        super(name, null, type);
+        super(CayennePath.of(name), null, type);
     }
 
     public CustomProperty(String name, Expression expression, Class<? super TimestampType> type) {
-        super(name, expression, type);
+        super(CayennePath.of(name), expression, type);
     }
 }

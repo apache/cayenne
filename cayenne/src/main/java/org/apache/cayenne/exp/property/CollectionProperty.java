@@ -24,6 +24,7 @@ import java.util.Collection;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Base class for {@link ListProperty} and {@link SetProperty}
@@ -37,14 +38,13 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
     /**
      * Constructs a new property with the given name and expression
      *
-     * @param name       of the property (will be used as alias for the expression)
+     * @param path       of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param collectionType type of the collection
      * @param entityType type of related entity
      */
-    @SuppressWarnings("unchecked")
-    protected CollectionProperty(String name, Expression expression, Class<? super E> collectionType, Class<V> entityType) {
-        super(name, expression, collectionType);
+    protected CollectionProperty(CayennePath path, Expression expression, Class<? super E> collectionType, Class<V> entityType) {
+        super(path, expression, collectionType);
         this.entityType = entityType;
     }
 

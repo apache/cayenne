@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Property that represents attributes mapped on string types
@@ -44,13 +45,13 @@ public class StringProperty<E extends CharSequence> extends BaseProperty<E> impl
     /**
      * Constructs a new property with the given name and expression
      *
-     * @param name       of the property (will be used as alias for the expression)
+     * @param path       of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param type       of the property
      * @see PropertyFactory#createString(String, Expression, Class)
      */
-    protected StringProperty(String name, Expression expression, Class<E> type) {
-        super(name, expression, type);
+    protected StringProperty(CayennePath path, Expression expression, Class<E> type) {
+        super(path, expression, type);
     }
 
     /**

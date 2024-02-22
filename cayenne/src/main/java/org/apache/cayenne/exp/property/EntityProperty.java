@@ -25,6 +25,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Property that represents to-one relationships.
@@ -47,13 +48,13 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
     /**
      * Constructs a new property with the given name and expression
      *
-     * @param name       of the property (will be used as alias for the expression)
+     * @param path       of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param type       of the property
      * @see PropertyFactory#createBase(String, Expression, Class)
      */
-    protected EntityProperty(String name, Expression expression, Class<E> type) {
-        super(name, expression, type);
+    protected EntityProperty(CayennePath path, Expression expression, Class<E> type) {
+        super(path, expression, type);
     }
 
     public Expression eqId(Object id) {
@@ -92,7 +93,7 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
      */
     @Override
     public EntityProperty<E> alias(String alias) {
-        ASTPath exp = PropertyUtils.createPathExp(this.getName(), alias, getExpression().getPathAliases());
+        ASTPath exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createEntity(exp.getPath(), exp, this.getType());
     }
 

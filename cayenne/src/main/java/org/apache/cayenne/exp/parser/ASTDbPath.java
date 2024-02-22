@@ -32,6 +32,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -59,7 +60,12 @@ public class ASTDbPath extends ASTPath {
 		super(ExpressionParserTreeConstants.JJTDBPATH);
 	}
 
-	public ASTDbPath(Object value) {
+	public ASTDbPath(String value) {
+		super(ExpressionParserTreeConstants.JJTDBPATH);
+		setPath(value);
+	}
+
+	public ASTDbPath(CayennePath value) {
 		super(ExpressionParserTreeConstants.JJTDBPATH);
 		setPath(value);
 	}
@@ -72,9 +78,7 @@ public class ASTDbPath extends ASTPath {
 		}
 
 		Map<?, ?> map = toMap(o);
-		int finalDotIndex = path.lastIndexOf('.');
-		String finalPathComponent = finalDotIndex == -1 ? path : path.substring(finalDotIndex + 1);
-
+		String finalPathComponent = path.last().value();
 		return (map != null) ? map.get(finalPathComponent) : null;
 	}
 
@@ -97,12 +101,14 @@ public class ASTDbPath extends ASTPath {
 	}
 
 	private Map<?, ?> toMap_AttachedObject(ObjectContext context, Persistent persistent) {
-		return path.indexOf('.') >= 0 ? toMap_AttchedObject_MultiStepPath(context, persistent)
-				: toMap_AttchedObject_SingleStepPath(context, persistent);
+		return path.length() > 1
+				? toMap_AttachedObject_MultiStepPath(context, persistent)
+				: toMap_AttachedObject_SingleStepPath(context, persistent);
 	}
 
-	private Map<?, ?> toMap_AttchedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
-		Iterator<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent).getDbEntity()
+	private Map<?, ?> toMap_AttachedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
+		Iterator<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent)
+				.getDbEntity()
 				.resolvePathComponents(this);
 		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<>();
 
@@ -134,7 +140,7 @@ public class ASTDbPath extends ASTPath {
 				.where(ExpressionFactory.matchDbExp(reversedPathStr.toString(), persistent)).selectOne(context);
 	}
 
-	private Map<?, ?> toMap_AttchedObject_SingleStepPath(ObjectContext context, Persistent persistent) {
+	private Map<?, ?> toMap_AttachedObject_SingleStepPath(ObjectContext context, Persistent persistent) {
 		ObjectId oid = persistent.getObjectId();
 
 		// TODO: snapshotting API should not be limited to DataContext...
@@ -143,7 +149,6 @@ public class ASTDbPath extends ASTPath {
 		}
 
 		if (oid != null) {
-
 			return SelectById.dataRowQuery(persistent.getObjectId()).selectOne(context);
 		}
 
@@ -152,11 +157,9 @@ public class ASTDbPath extends ASTPath {
 	}
 
 	private Map<?, ?> toMap_DetachedObject(Persistent persistent) {
-
 		ObjectId oid = persistent.getObjectId();
 
-		// returning null here is for backwards compatibility. Should we throw
-		// instead?
+		// returning null here is for backwards compatibility. Should we throw instead?
 		return (oid != null) ? oid.getIdSnapshot() : null;
 	}
 
@@ -180,7 +183,7 @@ public class ASTDbPath extends ASTPath {
 		out.append(DB_PREFIX);
 		out.append(rootId);
 		out.append('.');
-		out.append(path);
+		out.append(path.value());
 	}
 
 	/**
@@ -188,7 +191,7 @@ public class ASTDbPath extends ASTPath {
 	 */
 	@Override
 	public void appendAsString(Appendable out) throws IOException {
-		out.append(DB_PREFIX).append(path);
+		out.append(DB_PREFIX).append(path.value());
 	}
 
 	@Override

@@ -167,7 +167,7 @@ public class ObjAttributeWrapper implements Wrapper<ObjAttribute> {
     }
 
     public String getDbAttributePath() {
-        return objAttribute.getDbAttributePath();
+        return objAttribute.getDbAttributePath().value();
     }
 
 }

@@ -24,6 +24,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.parser.ASTDbPath;
 import org.apache.cayenne.exp.parser.ASTPath;
+import org.apache.cayenne.exp.path.CayennePath;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.exp;
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.node;
@@ -38,13 +39,10 @@ class TableTreeQualifierStage implements TranslationStage {
         context.getTableTree().visit(node -> {
             Expression dbQualifier = node.getEntity().getQualifier();
             if (dbQualifier != null) {
-                String pathToRoot = node.getAttributePath().getPath();
+                CayennePath pathToRoot = node.getAttributePath();
                 dbQualifier = dbQualifier.transform(input -> {
                     if (input instanceof ASTPath) {
-                        String path = ((ASTPath) input).getPath();
-                        if(!pathToRoot.isEmpty()) {
-                            path = pathToRoot + '.' + path;
-                        }
+                        CayennePath path = pathToRoot.dot(((ASTPath) input).getPath());
                         return new ASTDbPath(path);
                     }
                     return input;

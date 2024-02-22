@@ -37,6 +37,7 @@ import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.event.AttributeEvent;
 import org.apache.cayenne.map.event.DbAttributeListener;
 import org.apache.cayenne.map.event.DbEntityListener;
@@ -245,7 +246,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
     public Iterable<PathComponent<DbAttribute, DbRelationship>> resolvePath(Expression pathExp, Map<String, String> aliasMap) {
 
         if (pathExp.getType() == Expression.DB_PATH) {
-            return () -> new PathComponentIterator<>(DbEntity.this, (String) pathExp.getOperand(0), aliasMap);
+            return () -> new PathComponentIterator<>(DbEntity.this, (CayennePath) pathExp.getOperand(0), aliasMap);
         }
 
         throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  DB_PATH is expected.");
@@ -257,7 +258,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
             throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  DB_PATH is expected.");
         }
 
-        return new PathIterator((String) pathExp.getOperand(0));
+        return new PathIterator((CayennePath) pathExp.getOperand(0));
     }
 
     /**
@@ -565,21 +566,20 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
         return objEntities;
     }
 
-
     /**
      * Transforms Expression rooted in this entity to an analogous expression
      * rooted in related entity.
      *
-     * @since 1.1
+     * @since 5.0
      */
     @Override
-    public Expression translateToRelatedEntity(Expression expression, String relationshipPath) {
+    public Expression translateToRelatedEntity(Expression expression, CayennePath relationshipPath) {
 
         if (expression == null) {
             return null;
         }
 
-        if (relationshipPath == null) {
+        if (relationshipPath == null || relationshipPath.isEmpty()) {
             return expression;
         }
 
@@ -588,17 +588,16 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
 
     final class RelationshipPathConverter implements Function<Object, Object> {
 
-        String relationshipPath;
+        CayennePath relationshipPath;
         boolean toMany;
 
-        RelationshipPathConverter(String relationshipPath) {
+        RelationshipPathConverter(CayennePath relationshipPath) {
             this.relationshipPath = relationshipPath;
 
             Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
             while (relationshipIt.hasNext()) {
                 // relationship path components must be DbRelationships
                 DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
-
                 if (nextDBR.isToMany()) {
                     toMany = true;
                     break;
@@ -612,39 +611,34 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
             }
 
             Expression expression = (Expression) input;
-
             if (expression.getType() != Expression.DB_PATH) {
                 return input;
             }
 
-            String path = (String) expression.getOperand(0);
-            String converted = translatePath(path);
-            Expression transformed = ExpressionFactory.expressionOfType(Expression.DB_PATH);
-            transformed.setOperand(0, converted);
-            return transformed;
+            CayennePath path = (CayennePath) expression.getOperand(0);
+            CayennePath converted = translatePath(path);
+            return ExpressionFactory.dbPathExp(converted);
         }
 
-        private PathComponentIterator<DbEntity, DbAttribute, DbRelationship> createPathIterator(String path) {
+        private PathComponentIterator<DbEntity, DbAttribute, DbRelationship> createPathIterator(CayennePath path) {
             return new PathComponentIterator<>(DbEntity.this, path, Collections.emptyMap());
             // TODO: do we need aliases here?
         }
 
-        String translatePath(String path) {
-            LinkedList<String> finalPath = new LinkedList<>();
+        CayennePath translatePath(CayennePath path) {
+            CayennePath finalPath = CayennePath.EMPTY_PATH;
             PathComponentIterator<DbEntity, DbAttribute, DbRelationship> pathIt = createPathIterator(relationshipPath);
             while (pathIt.hasNext()) {
                 // relationship path components must be DbRelationships
                 DbRelationship lastDBR = pathIt.next().getRelationship();
                 if(lastDBR != null) {
-                    prependReversedPath(finalPath, lastDBR);
+                    finalPath = prependReversedPath(finalPath, lastDBR);
                 }
             }
-
-            finalPath.add(path);
-            return Util.join(finalPath, Entity.PATH_SEPARATOR);
+            return finalPath.dot(path);
         }
 
-        private void prependReversedPath(LinkedList<String> finalPath, DbRelationship relationship) {
+        private CayennePath prependReversedPath(CayennePath finalPath, DbRelationship relationship) {
             DbRelationship revNextDBR = relationship.getReverseRelationship();
 
             if (revNextDBR == null) {
@@ -652,7 +646,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
                         , relationship.getSourceEntity().getName(), relationship.getName());
             }
 
-            finalPath.addFirst(revNextDBR.getName());
+            return CayennePath.of(revNextDBR.getName()).dot(finalPath);
         }
     }
 }

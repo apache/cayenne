@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.exp.property;
 
+import org.apache.cayenne.exp.path.CayennePath;
+
 /**
  * Property that represents path segment (relationship or embeddable).
  * Basically it provides {@code dot()} operator.
@@ -33,10 +35,12 @@ public interface PathProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default BaseProperty<Object> dot(String property) {
-        String path = getName() + "." + property;
-        return PropertyFactory.createBase(path,
+        CayennePath path = getPath().dot(property);
+        return PropertyFactory.createBase(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                null);
+                null
+        );
     }
 
     /**
@@ -46,10 +50,12 @@ public interface PathProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T> BaseProperty<T> dot(BaseProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createBase(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createBase(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
+                property.getType()
+        );
     }
 
     /**
@@ -59,10 +65,12 @@ public interface PathProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T extends Number> NumericProperty<T> dot(NumericProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createNumeric(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createNumeric(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
+                property.getType()
+        );
     }
 
     /**
@@ -72,10 +80,12 @@ public interface PathProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T extends CharSequence> StringProperty<T> dot(StringProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createString(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createString(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
+                property.getType()
+        );
     }
 
     /**
@@ -85,10 +95,12 @@ public interface PathProperty<E> extends Property<E> {
      * @return a newly created Property object.
      */
     default <T> DateProperty<T> dot(DateProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createDate(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createDate(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
+                property.getType()
+        );
     }
 
 }

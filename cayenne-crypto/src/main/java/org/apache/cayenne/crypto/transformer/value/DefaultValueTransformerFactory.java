@@ -156,8 +156,11 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
         for(ObjEntity objEntity : dataMap.getMappedEntities(dbEntity)) {
             for (ObjAttribute oa : objEntity.getAttributes()) {
-                // TODO: this won't pick up flattened attributes
-                if (a.getName().equals(oa.getDbAttributePath())) {
+                if(oa.getDbAttributePath().length() > 1) {
+                    // TODO: this won't pick up flattened attributes
+                    continue;
+                }
+                if (a.getName().equals(oa.getDbAttributePath().first().value())) {
                     javaTypes.add(oa.getType());
                 }
             }

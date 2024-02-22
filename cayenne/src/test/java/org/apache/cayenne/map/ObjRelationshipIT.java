@@ -30,6 +30,7 @@ import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.runtime.CayenneRuntime;
 import org.apache.cayenne.testdo.inheritance_vertical.Iv2Sub1;
@@ -121,11 +122,11 @@ public class ObjRelationshipIT extends RuntimeCase {
         // start with "to many"
         ObjRelationship r1 = artistObjEnt.getRelationship("paintingArray");
 
-        assertEquals("toArtist", r1.getReverseDbRelationshipPath());
+        assertEquals("toArtist", r1.getReverseDbRelationshipPath().value());
 
         ObjRelationship r2 = paintingObjEnt.getRelationship("toArtist");
 
-        assertEquals("paintingArray", r2.getReverseDbRelationshipPath());
+        assertEquals("paintingArray", r2.getReverseDbRelationshipPath().value());
     }
 
     @Test
@@ -135,7 +136,7 @@ public class ObjRelationshipIT extends RuntimeCase {
         ObjRelationship r = new ObjRelationship("r");
         r.setSourceEntity(artistObjEnt);
         r.setDbRelationshipPath("paintingArray");
-        assertEquals(r.getDbRelationshipPath(), "paintingArray");
+        assertEquals("paintingArray", r.getDbRelationshipPath().value());
     }
 
     @Test
@@ -159,7 +160,7 @@ public class ObjRelationshipIT extends RuntimeCase {
         // attempt to resolve must fail - relationship is outside of context,
         // plus the path is random
         try {
-            relationship.refreshFromPath("dummy.path", false);
+            relationship.refreshFromPath(CayennePath.of("dummy.path"), false);
             fail("refresh over a dummy path should have failed.");
         } catch (ExpressionException ex) {
             // expected
@@ -182,7 +183,7 @@ public class ObjRelationshipIT extends RuntimeCase {
         dbEntity1.addRelationship(dummyR);
         dbEntity2.addRelationship(pathR);
 
-        relationship.refreshFromPath("dummy.path", false);
+        relationship.refreshFromPath(CayennePath.of("dummy.path"), false);
 
         List<DbRelationship> resolvedPath = relationship.getDbRelationships();
         assertEquals(2, resolvedPath.size());
@@ -272,22 +273,22 @@ public class ObjRelationshipIT extends RuntimeCase {
         assertFalse(relationship.isToMany());
 
         dummyR.setToMany(true);
-        relationship.setDbRelationshipPath(null);
+        relationship.setDbRelationshipPath((String)null);
         relationship.setDbRelationshipPath("dummy");
         assertTrue(relationship.isToMany());
 
         dummyR.setToMany(false);
-        relationship.setDbRelationshipPath(null);
+        relationship.setDbRelationshipPath((String)null);
         relationship.setDbRelationshipPath("dummy");
         assertFalse(relationship.isToMany());
 
         // test chain
-        relationship.setDbRelationshipPath(null);
+        relationship.setDbRelationshipPath((String)null);
         relationship.setDbRelationshipPath("dummy.path");
         assertFalse(relationship.isToMany());
 
         pathR.setToMany(true);
-        relationship.setDbRelationshipPath(null);
+        relationship.setDbRelationshipPath((String)null);
         relationship.setDbRelationshipPath("dummy.path");
         assertTrue(relationship.isToMany());
     }

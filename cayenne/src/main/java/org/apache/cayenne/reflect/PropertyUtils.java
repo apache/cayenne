@@ -25,7 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 
 /**
  * Utility methods to quickly access object properties. This class supports
@@ -37,7 +38,7 @@ import org.apache.cayenne.map.Entity;
  */
 public class PropertyUtils {
 
-	private static final ConcurrentMap<String, Accessor> PATH_ACCESSORS = new ConcurrentHashMap<>();
+	private static final ConcurrentMap<CayennePath, Accessor> PATH_ACCESSORS = new ConcurrentHashMap<>();
 	private static final ConcurrentMap<Class<?>, ConcurrentMap<String, Accessor>> SEGMENT_ACCESSORS = new ConcurrentHashMap<>();
 
     /**
@@ -52,40 +53,41 @@ public class PropertyUtils {
 	 * @since 4.0
 	 */
 	public static Accessor accessor(String nestedPropertyName) {
+		return accessor(CayennePath.of(nestedPropertyName));
+	}
 
-		if (nestedPropertyName == null) {
-			throw new IllegalArgumentException("Null property name.");
+	/**
+	 * Compiles an accessor that can be used for fast access for the nested
+	 * property of the objects of a given class.
+	 *
+	 * @param nestedPropertyPath path value for the property
+	 * @return {@link Accessor} for the property
+	 *
+	 * @since 5.0
+	 */
+	public static Accessor accessor(CayennePath nestedPropertyPath) {
+		if (nestedPropertyPath == null) {
+			throw new IllegalArgumentException("Null property path.");
 		}
 
-		if (nestedPropertyName.length() == 0) {
-			throw new IllegalArgumentException("Empty property name.");
+		if (nestedPropertyPath.isEmpty()) {
+			throw new IllegalArgumentException("Empty property path.");
 		}
 
 		// PathAccessor is simply a chain of path segment wrappers. The actual
 		// accessor is resolved (with caching) during evaluation. Otherwise we
 		// won't be able to handle subclasses of declared property types...
-
-		// TODO: perhaps Java 7 MethodHandles are the answer to truly "compiled"
-		// path accessor?
-
-		return compilePathAccessor(nestedPropertyName);
+		return compilePathAccessor(nestedPropertyPath);
 	}
 
-	static Accessor compilePathAccessor(String path) {
-
+	static Accessor compilePathAccessor(CayennePath path) {
 		Accessor accessor = PATH_ACCESSORS.get(path);
 
 		if (accessor == null) {
-
-			int dot = path.indexOf(Entity.PATH_SEPARATOR);
-			if (dot == 0 || dot == path.length() - 1) {
-				throw new IllegalArgumentException("Invalid path: " + path);
-			}
-
-			String segment = dot < 0 ? path : path.substring(0, dot);
-			Accessor remainingAccessor = dot < 0 ? null : compilePathAccessor(path.substring(dot + 1));
-			Accessor newAccessor = new PathAccessor(segment, remainingAccessor);
-
+			Accessor remainingAccessor = path.length() > 1
+					? compilePathAccessor(path.tail(1))
+					: null;
+			Accessor newAccessor = new PathAccessor(path.first(), remainingAccessor);
 			Accessor existingAccessor = PATH_ACCESSORS.putIfAbsent(path, newAccessor);
 			accessor = existingAccessor != null ? existingAccessor : newAccessor;
 		}
@@ -97,7 +99,7 @@ public class PropertyUtils {
 		ConcurrentMap<String, Accessor> forType = SEGMENT_ACCESSORS.get(objectClass);
 		if (forType == null) {
 
-			ConcurrentMap<String, Accessor> newPropAccessors = new ConcurrentHashMap<String, Accessor>();
+			ConcurrentMap<String, Accessor> newPropAccessors = new ConcurrentHashMap<>();
 			ConcurrentMap<String, Accessor> existingPropAccessors = SEGMENT_ACCESSORS.putIfAbsent(objectClass,
 					newPropAccessors);
 			forType = existingPropAccessors != null ? existingPropAccessors : newPropAccessors;
@@ -127,7 +129,15 @@ public class PropertyUtils {
 	 * addition - a property can be a dot-separated property name path.
 	 */
 	public static Object getProperty(Object object, String nestedPropertyName) throws CayenneRuntimeException {
-		return accessor(nestedPropertyName).getValue(object);
+		return accessor(CayennePath.of(nestedPropertyName)).getValue(object);
+	}
+
+	/**
+	 * Returns object property using JavaBean-compatible introspection with one
+	 * addition - a property can be a dot-separated property name path.
+	 */
+	public static Object getProperty(Object object, CayennePath nestedProperty) throws CayenneRuntimeException {
+		return accessor(nestedProperty).getValue(object);
 	}
 
 	/**
@@ -223,22 +233,17 @@ public class PropertyUtils {
 
 		private static final long serialVersionUID = 2056090443413498626L;
 
-		private final String segmentName;
+		private final CayennePathSegment segment;
 		private final Accessor nextAccessor;
 
-		public PathAccessor(String segmentName, Accessor nextAccessor) {
-			// trim outer join component
-			if(segmentName.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
-				this.segmentName = segmentName.substring(0, segmentName.length() - 1);
-			} else {
-				this.segmentName = segmentName;
-			}
+		public PathAccessor(CayennePathSegment segment, Accessor nextAccessor) {
+			this.segment = segment;
 			this.nextAccessor = nextAccessor;
 		}
 
 		@Override
 		public String getName() {
-			return segmentName;
+			return segment.value();
 		}
 
 		@Override
@@ -247,7 +252,7 @@ public class PropertyUtils {
 				return null;
 			}
 
-			Object value = getOrCreateSegmentAccessor(object.getClass(), segmentName).getValue(object);
+			Object value = getOrCreateSegmentAccessor(object.getClass(), segment.value()).getValue(object);
 			return nextAccessor != null ? nextAccessor.getValue(value) : value;
 		}
 
@@ -257,7 +262,7 @@ public class PropertyUtils {
 				return;
 			}
 
-			Accessor segmentAccessor = getOrCreateSegmentAccessor(object.getClass(), segmentName);
+			Accessor segmentAccessor = getOrCreateSegmentAccessor(object.getClass(), segment.value());
 			if (nextAccessor != null) {
 				nextAccessor.setValue(segmentAccessor.getValue(object), newValue);
 			} else {

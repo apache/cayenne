@@ -176,14 +176,12 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         ObjRelationship relationship = correlatedEntityDescriptor.getEntity().getRelationship(path.getRelativePath());
 
-        if (relationship.getDbRelationshipPath().contains(".")) {
-            // if the DbRelationshipPath contains '.', the relationship is
-            // flattened
+        if (relationship.getDbRelationshipPath().length() > 1) {
+            // if the DbRelationshipPath contains '.', the relationship is flattened
             subqueryRootAlias = processFlattenedRelationShip(subqueryRootAlias, relationship);
         } else {
-            // not using "AS" to separate table name and alias name - OpenBase
-            // doesn't
-            // support "AS", and the rest of the databases do not care
+            // not using "AS" to separate table name and alias name -
+            // OpenBase doesn't support "AS", and the rest of the databases do not care
             context.append(subqueryTableName).append(' ').append(subqueryRootAlias);
 
         }
@@ -257,9 +255,8 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
         ObjRelationship relationship = correlatedEntityDescriptor.getEntity().getRelationship(path.getRelativePath());
 
-        if (relationship.getDbRelationshipPath().contains(".")) {
-            // if the DbRelationshipPath contains '.', the relationship is
-            // flattened
+        if (relationship.getDbRelationshipPath().length() > 1) {
+            // if the DbRelationshipPath contains '.', the relationship is flattened
             subqueryRootAlias = processFlattenedRelationShip(subqueryRootAlias, relationship);
         } else {
             // not using "AS" to separate table name and alias name - OpenBase
@@ -301,8 +298,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
         // relation
         for (int i = dbRelationships.size() - 1; i > 0; i--) {
             DbRelationship dbRelationship = dbRelationships.get(i);
-            String subqueryTargetTableName = quoter.quotedFullyQualifiedName((DbEntity) dbRelationship
-                    .getTargetEntity());
+            String subqueryTargetTableName = quoter.quotedFullyQualifiedName(dbRelationship.getTargetEntity());
             String subqueryTargetAlias;
             if (i == dbRelationships.size() - 1) {
                 subqueryTargetAlias = subqueryRootAlias;
@@ -313,8 +309,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
 
             context.append(" JOIN ");
 
-            String subquerySourceTableName = quoter.quotedFullyQualifiedName((DbEntity) dbRelationship
-                    .getSourceEntity());
+            String subquerySourceTableName = quoter.quotedFullyQualifiedName(dbRelationship.getSourceEntity());
             String subquerySourceAlias = context.getTableAlias(subquerySourceTableName, subquerySourceTableName);
 
             context.append(subquerySourceTableName).append(' ').append(subquerySourceAlias);
@@ -873,7 +868,7 @@ public class EJBQLConditionTranslator extends EJBQLBaseVisitor {
             if (type == null) {
                 type = "VARCHAR";
             }
-            // this is a hack to prevent execptions on DB's like Derby for
+            // this is a hack to prevent exceptions on DB's like Derby for
             // expressions
             // "X = NULL". The 'VARCHAR' parameter is totally bogus, but seems
             // to work on

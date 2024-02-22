@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 
@@ -40,13 +41,13 @@ public class SelfProperty<E extends Persistent> extends EntityProperty<E> {
     /**
      * Constructs a new property with the given name and expression
      *
-     * @param name       of the property (will be used as alias for the expression)
+     * @param path       of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param type       of the property
      * @see PropertyFactory#createBase(String, Expression, Class)
      */
-    protected SelfProperty(String name, Expression expression, Class<E> type) {
-        super(name, expression, type);
+    protected SelfProperty(CayennePath path, Expression expression, Class<E> type) {
+        super(path, expression, type);
     }
 
     public Expression exists(Expression where) {

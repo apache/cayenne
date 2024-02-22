@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -128,7 +129,7 @@ public class PrefetchProcessorTreeBuilderIT extends RuntimeCase {
         ObjEntity e5 = resolver.getObjEntity("ArtistExhibit");
 
         List<DataRow> mainRows = new ArrayList<>();
-        Map<String, List<?>> extraRows = new HashMap<>();
+        Map<CayennePath, List<?>> extraRows = new HashMap<>();
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
         tree.addPath(Artist.PAINTING_ARRAY.getName()).setPhantom(false);

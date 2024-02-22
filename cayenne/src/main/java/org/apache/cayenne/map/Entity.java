@@ -22,6 +22,8 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -292,7 +294,17 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * 
      * @since 1.1
      */
-    public abstract Expression translateToRelatedEntity(Expression expression, String relationshipPath);
+    public Expression translateToRelatedEntity(Expression expression, String relationshipPath) {
+        return translateToRelatedEntity(expression, CayennePath.of(relationshipPath));
+    }
+
+    /**
+     * Transforms Expression rooted in this entity to an analogous expression
+     * rooted in related entity.
+     *
+     * @since 5.0
+     */
+    public abstract Expression translateToRelatedEntity(Expression expression, CayennePath relationshipPath);
 
     /**
      * Convenience method returning the last component in the path iterator. If the last
@@ -362,6 +374,10 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * invalid path component will result in ExpressionException.
      */
     public Iterator<CayenneMapEntry> resolvePathComponents(String path) throws ExpressionException {
+        return new PathIterator(CayennePath.of(path));
+    }
+
+    public Iterator<CayenneMapEntry> resolvePathComponents(CayennePath path) throws ExpressionException {
         return new PathIterator(path);
     }
 
@@ -370,52 +386,45 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * This entity is assumed to be the root of the path.
      */
     final class PathIterator implements Iterator<CayenneMapEntry> {
-
-        private final StringTokenizer tokens;
-        private final String path;
+        private final CayennePath path;
+        private final Iterator<CayennePathSegment> iterator;
         private Entity<E, A, R> currentEntity;
 
-        PathIterator(String path) {
-            currentEntity = Entity.this;
-            tokens = new StringTokenizer(path, PATH_SEPARATOR);
+        PathIterator(CayennePath path) {
+            this.currentEntity = Entity.this;
             this.path = path;
+            this.iterator = path.iterator();
         }
 
+        @Override
         public boolean hasNext() {
-            return tokens.hasMoreTokens();
+            return iterator.hasNext();
         }
 
+        @Override
         public CayenneMapEntry next() {
-            String pathComp = tokens.nextToken();
-            if(pathComp.endsWith(OUTER_JOIN_INDICATOR)) {
-                pathComp = pathComp.substring(0, pathComp.length() - 1);
-            }
-            
+            CayennePathSegment nextSegment = iterator.next();
             // see if this is an attribute
-            A attr = currentEntity.getAttribute(pathComp);
+            A attr = currentEntity.getAttribute(nextSegment.value());
             if (attr != null) {
                 // do a sanity check...
-                if (tokens.hasMoreTokens()) {
+                if (iterator.hasNext()) {
                     throw new ExpressionException("Attribute must be the last component of the path: '%s'.",
-                            path, null, pathComp);
+                            path, null, nextSegment.value());
                 }
                 return attr;
             }
 
-            R rel = currentEntity.getRelationship(pathComp);
+            R rel = currentEntity.getRelationship(nextSegment.value());
             if (rel != null) {
                 currentEntity = rel.getTargetEntity();
-                if (currentEntity != null || !tokens.hasMoreTokens()) { //otherwise an exception will be thrown
+                if (currentEntity != null || !iterator.hasNext()) { //otherwise an exception will be thrown
                     return rel;
                 }
             }
             
             String entityName = (currentEntity != null) ? currentEntity.getName() : "(?)";
-            throw new ExpressionException("Can't resolve path component: [%s.%s].", path, null, entityName, pathComp);
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException("'remove' operation is not supported.");
+            throw new ExpressionException("Can't resolve path component: [%s.%s].", path, null, entityName, nextSegment.value());
         }
     }
 

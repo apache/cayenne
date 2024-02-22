@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -43,7 +44,7 @@ public class MockEntity extends Entity<MockEntity, MockAttribute, MockRelationsh
     @Override
     public Expression translateToRelatedEntity(
             Expression expression,
-            String relationshipPath) {
+            CayennePath relationshipPath) {
         return null;
     }
 

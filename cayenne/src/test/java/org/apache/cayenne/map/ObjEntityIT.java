@@ -76,7 +76,7 @@ public class ObjEntityIT extends RuntimeCase {
         ObjAttribute a1 = subEntity.getAttribute("a1");
         assertNotNull(a1);
         assertSame(subEntity, a1.getEntity());
-        assertEquals("overridden.path", a1.getDbAttributePath());
+        assertEquals("overridden.path", a1.getDbAttributePath().value());
         assertEquals("int", a1.getType());
 
         ObjAttribute a2 = subEntity.getAttribute("a2");
@@ -97,7 +97,7 @@ public class ObjEntityIT extends RuntimeCase {
 
         ObjAttribute pk = pks.iterator().next();
         assertEquals("java.lang.Long", pk.getType());
-        assertEquals("ARTIST_ID", pk.getDbAttributePath());
+        assertEquals("ARTIST_ID", pk.getDbAttributePath().value());
         assertEquals("artistId", pk.getName());
         assertNull(pk.getEntity());
         assertFalse(artistE.getAttributes().contains(pk));

@@ -56,8 +56,8 @@ class PersistentDescriptorResultMetadata implements EntityResultSegment {
 		ObjEntity entity = classDescriptor.getEntity();
 
 		ObjAttribute attribute = entity.getAttribute(attributeName);
-		fields.put(attribute.getDbAttributePath(), column);
-		reverseFields.put(column, attribute.getDbAttributePath());
+		fields.put(attribute.getDbAttributePath().value(), column);
+		reverseFields.put(column, attribute.getDbAttributePath().value());
 	}
 
 	/**
@@ -69,8 +69,8 @@ class PersistentDescriptorResultMetadata implements EntityResultSegment {
 		ObjEntity entity = classDescriptor.getEntity().getDataMap().getObjEntity(entityName);
 
 		ObjAttribute attribute = entity.getAttribute(attributeName);
-		fields.put(attribute.getDbAttributePath(), column);
-		reverseFields.put(column, attribute.getDbAttributePath());
+		fields.put(attribute.getDbAttributePath().value(), column);
+		reverseFields.put(column, attribute.getDbAttributePath().value());
 	}
 
 	/**

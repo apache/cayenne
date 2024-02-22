@@ -145,18 +145,15 @@ public class EJBQLQueryIT extends RuntimeCase {
         query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         final List<Artist> artist1 = context.performQuery(query);
 
-        queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
+        queryInterceptor.runWithQueriesBlocked(() -> {
+            List<Artist> artist2;
+            EJBQLQuery query1 = new EJBQLQuery(ejbql);
+            query1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+            artist2 = context.performQuery(query1);
 
-            public void execute() {
-                List<Artist> artist2;
-                EJBQLQuery query1 = new EJBQLQuery(ejbql);
-                query1.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-                artist2 = context.performQuery(query1);
-
-                assertEquals(artist1.get(0).getArtistName(), artist2
-                        .get(0)
-                        .getArtistName());
-            }
+            assertEquals(artist1.get(0).getArtistName(), artist2
+                    .get(0)
+                    .getArtistName());
         });
 
     }

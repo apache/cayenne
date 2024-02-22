@@ -29,6 +29,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EmbeddedResult;
@@ -51,12 +52,12 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     }
 
     @Override
-    public void extract(String prefix) {
+    public void extract(CayennePath prefix) {
         for (Property<?> property : columns) {
             if (isFullObjectProp(property)) {
                 extractFullObject(prefix, property);
             } else if(isEmbeddedProp(property)) {
-                extractEmbeddedObject(prefix, property);
+                extractEmbeddedObject(property);
             } else {
                 extractSimpleProperty(property);
             }
@@ -65,7 +66,8 @@ class CustomColumnSetExtractor implements ColumnExtractor {
 
     private void extractSimpleProperty(Property<?> property) {
         Node sqlNode = context.getQualifierTranslator().translate(property);
-        context.addResultNode(sqlNode, true, property, property.getAlias());
+        String alias = property.getAlias();
+        context.addResultNode(sqlNode, true, property, alias == null ? null : CayennePath.of(alias));
         String name = property.getName() == null ? property.getExpression().expName() : property.getName();
         context.getSqlResult().addColumnResult(name);
     }
@@ -92,7 +94,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         return EmbeddableObject.class.isAssignableFrom(property.getType());
     }
 
-    private void extractEmbeddedObject(String prefix, Property<?> property) {
+    private void extractEmbeddedObject(Property<?> property) {
         Object o = property.getExpression().evaluate(context.getMetadata().getObjEntity());
         if(!(o instanceof EmbeddedAttribute)) {
             throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
@@ -107,7 +109,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         context.getSqlResult().addEmbeddedResult(result);
     }
 
-    private void extractFullObject(String prefix, Property<?> property) {
+    private void extractFullObject(CayennePath prefix, Property<?> property) {
         prefix = calculatePrefix(prefix, property);
         ensureJoin(prefix);
 
@@ -137,7 +139,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
      * Extracts prefix for this extractor from property.
      * This will be just a db path for this property, if any exists.
      */
-    private String calculatePrefix(String prefix, Property<?> property) {
+    private CayennePath calculatePrefix(CayennePath prefix, Property<?> property) {
         Expression exp = property.getExpression();
         int expressionType = exp.getType();
         if(expressionType == Expression.FULL_OBJECT && exp.getOperandCount() > 0) {
@@ -149,7 +151,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         return dbPathOrDefault(exp, prefix);
     }
 
-    private String dbPathOrDefault(Expression pathExp, String defaultPrefix) {
+    private CayennePath dbPathOrDefault(Expression pathExp, CayennePath defaultPrefix) {
         // normalize to db path first
         if(pathExp.getType() == Expression.OBJ_PATH) {
             pathExp = context.getMetadata().getObjEntity().translateToDbPath(pathExp);
@@ -162,9 +164,9 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         return ((ASTDbPath)pathExp).getPath();
     }
 
-    private void ensureJoin(String prefix) {
+    private void ensureJoin(CayennePath prefix) {
         // ensure all joins for given property
-        if(!Util.isEmptyString(prefix)) {
+        if(!prefix.isEmpty()) {
             PathTranslationResult result = context.getPathTranslator().translatePath(context.getMetadata().getDbEntity(), prefix);
             result.getDbRelationship().ifPresent(relationship
                     -> context.getTableTree().addJoinTable(result.getFinalPath(), relationship, JoinType.LEFT_OUTER));

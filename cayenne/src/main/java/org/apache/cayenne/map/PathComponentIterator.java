@@ -19,6 +19,8 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,35 +36,33 @@ import java.util.StringTokenizer;
 class PathComponentIterator<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
         implements Iterator<PathComponent<A, R>> {
 
-    private final StringTokenizer toks;
-    private final String path;
+    private final CayennePath path;
+
+    private final Iterator<CayennePathSegment> iterator;
     private final Map<String, String> aliasMap;
 
     private EmbeddedAttribute embeddedAttribute;
     private Entity<E, A, R> currentEntity;
 
-    PathComponentIterator(Entity<E, A, R> root, String path, Map<String, String> aliasMap) {
+    PathComponentIterator(Entity<E, A, R> root, CayennePath path, Map<String, String> aliasMap) {
         this.currentEntity = Objects.requireNonNull(root);
         this.path = Objects.requireNonNull(path);
+        this.iterator = path.iterator();
         this.aliasMap = Objects.requireNonNull(aliasMap);
-        this.toks = new StringTokenizer(path, Entity.PATH_SEPARATOR);
         this.embeddedAttribute = null;
     }
 
     public boolean hasNext() {
-        return toks.hasMoreTokens();
+        return iterator.hasNext();
     }
 
     public PathComponent<A, R> next() {
-        String pathComp = toks.nextToken();
+        CayennePathSegment nextSegment = iterator.next();
+        String pathComp = nextSegment.value();
 
-        JoinType relationshipJoinType = JoinType.INNER;
-
-        // we only support LEFT JOINS for now...
-        if (pathComp.endsWith(Entity.OUTER_JOIN_INDICATOR)) {
-            relationshipJoinType = JoinType.LEFT_OUTER;
-            pathComp = pathComp.substring(0, pathComp.length() - Entity.OUTER_JOIN_INDICATOR.length());
-        }
+        JoinType relationshipJoinType = nextSegment.isOuterJoin()
+                ? JoinType.LEFT_OUTER
+                : JoinType.INNER;
 
         // see if this is an attribute
         A attr;
@@ -78,7 +78,7 @@ class PathComponentIterator<E extends Entity<E, A, R>, A extends Attribute<E, A,
             // do a sanity check...
             if(attr instanceof EmbeddedAttribute) {
                 embeddedAttribute = (EmbeddedAttribute)attr;
-            } else if (toks.hasMoreTokens()) {
+            } else if (iterator.hasNext()) {
                 throw new ExpressionException(
                         "Attribute must be the last component of the path: '" + pathComp + "'.", path, null);
             }
@@ -118,7 +118,7 @@ class PathComponentIterator<E extends Entity<E, A, R>, A extends Attribute<E, A,
         // we might as well reuse obtained information in the AliasPathComponent
 
         Iterator<PathComponent<A, R>> subpathIt =
-                new PathComponentIterator<>(currentEntity, aliasedPath, Collections.emptyMap());
+                new PathComponentIterator<>(currentEntity, CayennePath.of(aliasedPath), Collections.emptyMap());
 
         Collection<PathComponent<A, R>> parsedSubpath = new ArrayList<>(4);
 

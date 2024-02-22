@@ -25,6 +25,7 @@ import org.apache.cayenne.exp.parser.ASTExists;
 import org.apache.cayenne.exp.parser.ASTNotExists;
 import org.apache.cayenne.exp.parser.ASTSubquery;
 import org.apache.cayenne.exp.parser.Node;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -41,7 +42,7 @@ public class SelfPropertyTest {
 
     @Before
     public void createProperty() {
-        property = new SelfProperty<>("path", null, Artist.class);
+        property = new SelfProperty<>(CayennePath.of("path"), null, Artist.class);
     }
 
     @Test

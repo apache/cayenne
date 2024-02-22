@@ -22,6 +22,7 @@ package org.apache.cayenne.exp.property;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
@@ -48,7 +49,7 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
         if(!getExpression().getPathAliases().isEmpty()) {
             throw new CayenneRuntimeException("Can't use aliases with prefetch");
         }
-        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+        return PrefetchTreeNode.withPath(getPath(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
     }
 
     /**
@@ -60,7 +61,7 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
         if(!getExpression().getPathAliases().isEmpty()) {
             throw new CayenneRuntimeException("Can't use aliases with prefetch");
         }
-        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
+        return PrefetchTreeNode.withPath(getPath(), PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
     }
 
     /**
@@ -72,7 +73,7 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
         if(!getExpression().getPathAliases().isEmpty()) {
             throw new CayenneRuntimeException("Can't use aliases with prefetch");
         }
-        return PrefetchTreeNode.withPath(getName(), PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        return PrefetchTreeNode.withPath(getPath(), PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
     }
 
     /**
@@ -82,7 +83,12 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
      * @return a newly created Property object.
      */
     default <T> BaseIdProperty<T> dot(BaseIdProperty<T> property) {
-        return PropertyFactory.createBaseId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
+        return PropertyFactory.createBaseId(
+                property.getAttributeName(),
+                getPath(),
+                property.getEntityName(),
+                property.getType()
+        );
     }
 
     /**
@@ -92,7 +98,12 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
      * @return a newly created Property object.
      */
     default <T extends Number> NumericIdProperty<T> dot(NumericIdProperty<T> property) {
-        return PropertyFactory.createNumericId(property.getAttributeName(), getName(), property.getEntityName(), property.getType());
+        return PropertyFactory.createNumericId(
+                property.getAttributeName(),
+                getPath(),
+                property.getEntityName(),
+                property.getType()
+        );
     }
 
     /**
@@ -102,10 +113,12 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
      * @return a newly created Property object.
      */
     default <T extends Persistent> EntityProperty<T> dot(EntityProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createEntity(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createEntity(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
+                property.getType()
+        );
     }
 
     /**
@@ -115,10 +128,12 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
      * @return a newly created Property object.
      */
     default <T extends Persistent> ListProperty<T> dot(ListProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createList(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createList(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getEntityType());
+                property.getEntityType()
+        );
     }
 
     /**
@@ -128,10 +143,12 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
      * @return a newly created Property object.
      */
     default <T extends Persistent> SetProperty<T> dot(SetProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createSet(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createSet(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getEntityType());
+                property.getEntityType()
+        );
     }
 
     /**
@@ -141,11 +158,13 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
      * @return a newly created Property object.
      */
     default <K, V extends Persistent> MapProperty<K, V> dot(MapProperty<K, V> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createMap(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createMap(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
                 property.getKeyType(),
-                property.getEntityType());
+                property.getEntityType()
+        );
     }
 
     /**
@@ -155,9 +174,11 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
      * @return a newly created Property object.
      */
     default <T extends EmbeddableObject> EmbeddableProperty<T> dot(EmbeddableProperty<T> property) {
-        String path = getName() + "." + property.getName();
-        return PropertyFactory.createEmbeddable(path,
+        CayennePath path = getPath().dot(property.getPath());
+        return PropertyFactory.createEmbeddable(
+                path,
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
-                property.getType());
+                property.getType()
+        );
     }
 }

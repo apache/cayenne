@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.cayenne.ejbql.EJBQLBaseVisitor;
 import org.apache.cayenne.ejbql.EJBQLException;
 import org.apache.cayenne.ejbql.EJBQLExpression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -35,7 +36,6 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -46,7 +46,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
-	private EJBQLTranslationContext context;
+	private final EJBQLTranslationContext context;
 	protected ObjEntity currentEntity;
 	protected String lastPathComponent;
 	protected boolean innerJoin;
@@ -96,9 +96,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 	@Override
 	public boolean visitIdentificationVariable(EJBQLExpression expression) {
 
-		// TODO: andrus 6/11/2007 - if the path ends with relationship, the last
-		// join will
-		// get lost...
+		// TODO: andrus 6/11/2007 - if the path ends with relationship, the last join will get lost...
 		if (lastPathComponent != null) {
 			resolveJoin();
 		}
@@ -132,9 +130,9 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 
 		if (oldPath != null) {
 			this.idPath = oldPath;
-			Relationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
+			ObjRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
 			if (lastRelationship != null) {
-				ObjEntity targetEntity = (ObjEntity) lastRelationship.getTargetEntity();
+				ObjEntity targetEntity = lastRelationship.getTargetEntity();
 
 				this.lastAlias = context.getTableAlias(fullPath,
 						context.getQuotingStrategy().quotedFullyQualifiedName(targetEntity.getDbEntity()));
@@ -143,11 +141,11 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 				this.lastAlias = context.getTableAlias(oldPath, tableName);
 			}
 		} else {
-			Relationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
+			ObjRelationship lastRelationship = currentEntity.getRelationship(lastPathComponent);
 
-			ObjEntity targetEntity = null;
+			ObjEntity targetEntity;
 			if (lastRelationship != null) {
-				targetEntity = (ObjEntity) lastRelationship.getTargetEntity();
+				targetEntity = lastRelationship.getTargetEntity();
 			} else {
 				targetEntity = currentEntity;
 			}
@@ -174,7 +172,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 					+ currentEntity.getName() + "'");
 		}
 
-		this.currentEntity = (ObjEntity) relationship.getTargetEntity();
+		this.currentEntity = relationship.getTargetEntity();
 	}
 
 	protected void processLastPathComponent() {
@@ -202,7 +200,7 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 		while (it.hasNext()) {
 			Object pathComponent = it.next();
 			if (pathComponent instanceof DbAttribute) {
-				table = (DbEntity) ((DbAttribute) pathComponent).getEntity();
+				table = ((DbAttribute) pathComponent).getEntity();
 			}
 		}
 
@@ -233,10 +231,11 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 			resolveJoin();
 
 			DbRelationship dbRelationship = chooseDbRelationship(relationship);
-			DbEntity table = (DbEntity) dbRelationship.getTargetEntity();
+			DbEntity table = dbRelationship.getTargetEntity();
 
-			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-					.getQuotingStrategy().quotedFullyQualifiedName(table));
+			String alias = this.lastAlias != null
+					? lastAlias
+					: context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
 
 			Collection<DbAttribute> pks = table.getPrimaryKeys();
 
@@ -255,10 +254,11 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 			// match FK against the target object
 
 			DbRelationship dbRelationship = chooseDbRelationship(relationship);
-			DbEntity table = (DbEntity) dbRelationship.getSourceEntity();
+			DbEntity table = dbRelationship.getSourceEntity();
 
-			String alias = this.lastAlias != null ? lastAlias : context.getTableAlias(idPath, context
-					.getQuotingStrategy().quotedFullyQualifiedName(table));
+			String alias = this.lastAlias != null
+					? lastAlias
+					: context.getTableAlias(idPath, context.getQuotingStrategy().quotedFullyQualifiedName(table));
 
 			List<DbJoin> joins = dbRelationship.getJoins();
 
@@ -296,15 +296,14 @@ public abstract class EJBQLPathTranslator extends EJBQLBaseVisitor {
 	protected DbRelationship chooseDbRelationship(ObjRelationship relationship) {
 
 		List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-		String dbRelationshipPath = relationship.getDbRelationshipPath();
+		CayennePath dbRelationshipPath = relationship.getDbRelationshipPath();
 
-		if (dbRelationshipPath.contains(".")) {
-			String dbRelName = dbRelationshipPath.substring(dbRelationshipPath.lastIndexOf(".") + 1);
+		if (dbRelationshipPath.length() > 1) {
+			String dbRelName = dbRelationshipPath.last().value();
 			for (DbRelationship dbR : dbRelationships) {
 				if (dbR.getName().equals(dbRelName)) {
 					return dbR;
 				}
-
 			}
 		}
 		return relationship.getDbRelationships().get(0);

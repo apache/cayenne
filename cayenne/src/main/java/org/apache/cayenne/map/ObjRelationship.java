@@ -30,6 +30,7 @@ import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.parser.ASTDbPath;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
@@ -60,7 +61,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * Db-relationships path that is set but not yet parsed (turned into
      * List&lt;DbRelationship&gt;) Used during map loading
      */
-    volatile String deferredPath;
+    volatile CayennePath deferredPath;
 
     /**
      * Stores the type of collection mapped by a to-many relationship. Null for
@@ -476,10 +477,13 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
 
     /**
      * Returns a dot-separated path over mapped DbRelationships.
-     * 
+     *
+     * @return path or {@code null} if no db relationships set
+     *
      * @since 1.1
+     * @since 5.0 returns {@link CayennePath} instead of a plain {@code String}
      */
-    public String getDbRelationshipPath() {
+    public CayennePath getDbRelationshipPath() {
         refreshFromDeferredPath();
 
         // build path on the fly
@@ -487,33 +491,28 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
             return null;
         }
 
-        StringBuilder path = new StringBuilder();
-        Iterator<DbRelationship> it = getDbRelationships().iterator();
-        while (it.hasNext()) {
-            DbRelationship next = it.next();
-            path.append(next.getName());
-            if (it.hasNext()) {
-                path.append(Entity.PATH_SEPARATOR);
-            }
+        CayennePath path = CayennePath.EMPTY_PATH;
+        for (DbRelationship next : getDbRelationships()) {
+            path = path.dot(next.getName());
         }
 
-        return path.toString();
+        return path;
     }
 
     /**
      * Returns a reversed dbRelationship path.
      * 
      * @since 1.2
+     * @since 5.0 returns {@link CayennePath} instead of a plain {@code String}
      */
-    public String getReverseDbRelationshipPath() throws ExpressionException {
+    public CayennePath getReverseDbRelationshipPath() throws ExpressionException {
 
         List<DbRelationship> relationships = getDbRelationships();
         if (relationships == null || relationships.isEmpty()) {
             return null;
         }
 
-        StringBuilder buffer = new StringBuilder();
-
+        CayennePath path = CayennePath.EMPTY_PATH;
         // iterate in reverse order
         ListIterator<DbRelationship> it = relationships.listIterator(relationships.size());
         while (it.hasPrevious()) {
@@ -525,34 +524,40 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
             if (reverse == null) {
                 throw new CayenneRuntimeException("No reverse relationship exist for %s", relationship);
             }
-
-            if (buffer.length() > 0) {
-                buffer.append(Entity.PATH_SEPARATOR);
-            }
-
-            buffer.append(reverse.getName());
+            path = path.dot(reverse.getName());
         }
 
-        return buffer.toString();
+        return path;
     }
 
     /**
      * Sets mapped DbRelationships as a dot-separated path.
      */
     public void setDbRelationshipPath(String relationshipPath) {
+        setDbRelationshipPath(CayennePath.of(relationshipPath));
+    }
+
+    /**
+     * Sets mapped DbRelationships as a dot-separated path.
+     * @since 5.0
+     */
+    public void setDbRelationshipPath(CayennePath relationshipPath) {
         if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
             refreshFromPath(relationshipPath, false);
         }
     }
 
     /**
-     * Sets relationship path, but does not trigger its conversion to
-     * List<DbRelationship> For internal purposes, primarily datamap loading
+     * Sets relationship path, but does not trigger its conversion to {@code List<DbRelationship>}.
+     * <br>
+     * <b>NOTE</b>: this method is intended for internal usage, primarily datamap loading.
+     *
      * @since 4.1 this method is public as it is used by new XML loaders
      */
     public void setDeferredDbRelationshipPath(String relationshipPath) {
-        if (!Util.nullSafeEquals(getDbRelationshipPath(), relationshipPath)) {
-            deferredPath = relationshipPath;
+        CayennePath newPath = CayennePath.of(relationshipPath);
+        if (!Util.nullSafeEquals(getDbRelationshipPath(), newPath)) {
+            deferredPath = newPath;
         }
     }
 
@@ -577,7 +582,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * components that have valid DbRelationships.
      */
     String getValidRelationshipPath() {
-        String path = getDbRelationshipPath();
+        CayennePath path = getDbRelationshipPath();
         if (path == null) {
             return null;
         }
@@ -592,54 +597,49 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
             return null;
         }
 
-        StringBuilder validPath = new StringBuilder();
-
+        CayennePath validPath = CayennePath.EMPTY_PATH;
         try {
-            for (PathComponent<DbAttribute, DbRelationship> pathComponent : dbEntity.resolvePath(new ASTDbPath(path),
-                    Collections.emptyMap())) {
-
-                if (validPath.length() > 0) {
-                    validPath.append(Entity.PATH_SEPARATOR);
-                }
-                validPath.append(pathComponent.getName());
+            for (PathComponent<DbAttribute, DbRelationship> pathComponent
+                    : dbEntity.resolvePath(new ASTDbPath(path), Collections.emptyMap())) {
+                validPath = validPath.dot(pathComponent.getName());
             }
         } catch (ExpressionException ignored) {
         }
 
-        return validPath.toString();
+        return validPath.value();
     }
 
     /**
      * Rebuild a list of relationships if String relationshipPath has changed.
      */
-    final void refreshFromPath(String dbRelationshipPath, boolean stripInvalid) {
-            // remove existing relationships
-            dbRelationships.clear();
+    final void refreshFromPath(CayennePath dbRelationshipPath, boolean stripInvalid) {
+        // remove existing relationships
+        dbRelationships.clear();
 
-            if (dbRelationshipPath != null) {
+        if (dbRelationshipPath != null) {
 
-                ObjEntity entity = getSourceEntity();
-                if (entity == null) {
-                    throw new CayenneRuntimeException("Can't resolve DbRelationships, null source ObjEntity");
-                }
-
-                try {
-                    // add new relationships from path
-                    Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(dbRelationshipPath));
-
-                    while (it.hasNext()) {
-                        DbRelationship relationship = (DbRelationship) it.next();
-
-                        dbRelationships.add(relationship);
-                    }
-                } catch (ExpressionException ex) {
-                    if (!stripInvalid) {
-                        throw ex;
-                    }
-                }
+            ObjEntity entity = getSourceEntity();
+            if (entity == null) {
+                throw new CayenneRuntimeException("Can't resolve DbRelationships, null source ObjEntity");
             }
 
-            recalculateToManyValue();
+            try {
+                // add new relationships from path
+                Iterator<CayenneMapEntry> it = entity.resolvePathComponents(new ASTDbPath(dbRelationshipPath));
+
+                while (it.hasNext()) {
+                    DbRelationship relationship = (DbRelationship) it.next();
+
+                    dbRelationships.add(relationship);
+                }
+            } catch (ExpressionException ex) {
+                if (!stripInvalid) {
+                    throw ex;
+                }
+            }
+        }
+
+        recalculateToManyValue();
     }
 
     /**
@@ -710,7 +710,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         return new ToStringBuilder(this).append("name", getName())
                 .append("sourceEntityName", getSourceEntity().getName())
                 .append("targetEntityName", getTargetEntityName())
-                .append("dbRelationshipPath", getDbRelationshipPath()).toString();
+                .append("dbRelationshipPath", getDbRelationshipPath().value()).toString();
     }
 
     /**

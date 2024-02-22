@@ -41,7 +41,7 @@ public class EmbeddedResult {
     }
 
     public void addAttribute(ObjAttribute attr) {
-        fields.put(attr.getDbAttributePath(), getAttributeName(attr));
+        fields.put(attr.getDbAttributePath().value(), getAttributeName(attr));
     }
 
     private static String getAttributeName(ObjAttribute attr) {

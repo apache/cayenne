@@ -27,6 +27,7 @@ import org.apache.cayenne.exp.parser.ASTDivide;
 import org.apache.cayenne.exp.parser.ASTMultiply;
 import org.apache.cayenne.exp.parser.ASTNegate;
 import org.apache.cayenne.exp.parser.ASTSubtract;
+import org.apache.cayenne.exp.path.CayennePath;
 
 /**
  * Property that represents attributes mapped on numeric types
@@ -44,13 +45,13 @@ public class NumericProperty<E extends Number> extends BaseProperty<E> implement
     /**
      * Constructs a new property with the given name and expression
      *
-     * @param name       of the property (will be used as alias for the expression)
+     * @param path       of the property (will be used as alias for the expression)
      * @param expression expression for property
      * @param type       of the property
      * @see PropertyFactory#createNumeric(String, Expression, Class)
      */
-    protected NumericProperty(String name, Expression expression, Class<E> type) {
-        super(name, expression, type);
+    protected NumericProperty(CayennePath path, Expression expression, Class<E> type) {
+        super(path, expression, type);
     }
 
     /**

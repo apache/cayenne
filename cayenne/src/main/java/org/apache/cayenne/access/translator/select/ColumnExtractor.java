@@ -19,15 +19,17 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.exp.path.CayennePath;
+
 /**
  * @since 4.2
  */
 interface ColumnExtractor {
 
-    void extract(String prefix);
+    void extract(CayennePath prefix);
 
     default void extract() {
-        extract(null);
+        extract(CayennePath.EMPTY_PATH);
     }
 
 }

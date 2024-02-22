@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResult;
@@ -45,7 +46,7 @@ class IdColumnExtractor extends BaseColumnExtractor {
     }
 
     @Override
-    public void extract(String prefix) {
+    public void extract(CayennePath prefix) {
         for (DbAttribute dba : dbEntity.getPrimaryKeys()) {
             addDbAttribute(prefix, prefix, dba);
             if(result != null) {
