@@ -33,19 +33,19 @@ import static org.junit.Assert.assertTrue;
 public class ASTAggregateTest {
 
     @Test
-    public void testAvgConstruct() throws Exception {
+    public void testAvgConstruct() {
         ASTAvg avg = new ASTAvg(null);
         assertEquals("AVG", avg.getFunctionName());
     }
 
     @Test(expected = ExpressionException.class)
-    public void testAvgEvaluate() throws Exception {
+    public void testAvgEvaluate() {
         ASTAvg avg = new ASTAvg(null);
         avg.evaluate(new Object());
     }
 
     @Test
-    public void testAvgParse() throws Exception {
+    public void testAvgParse() {
         String expressionString = "avg(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTAvg);
@@ -56,13 +56,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testCountConstruct() throws Exception {
+    public void testCountConstruct() {
         ASTCount count = new ASTCount();
         assertEquals("COUNT", count.getFunctionName());
     }
 
     @Test
-    public void testCountExpParse() throws Exception {
+    public void testCountExpParse() {
         String expressionString = "count(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
@@ -73,7 +73,7 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testCountAsteriskParse() throws Exception {
+    public void testCountAsteriskParse() {
         String expressionString = "count(*)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
@@ -84,7 +84,7 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testCountDistinctParse() throws Exception {
+    public void testCountDistinctParse() {
         String expressionString = "count(distinct(artistName))";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTCount);
@@ -98,13 +98,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testMinConstruct() throws Exception {
+    public void testMinConstruct() {
         ASTMin min = new ASTMin(null);
         assertEquals("MIN", min.getFunctionName());
     }
 
     @Test
-    public void testMinParse() throws Exception {
+    public void testMinParse() {
         String expressionString = "min(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMin);
@@ -115,13 +115,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testMaxConstruct() throws Exception {
+    public void testMaxConstruct() {
         ASTMax max = new ASTMax(null);
         assertEquals("MAX", max.getFunctionName());
     }
 
     @Test
-    public void testMaxParse() throws Exception {
+    public void testMaxParse() {
         String expressionString = "max(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTMax);
@@ -132,13 +132,13 @@ public class ASTAggregateTest {
     }
 
     @Test
-    public void testSumConstruct() throws Exception {
+    public void testSumConstruct() {
         ASTSum sum = new ASTSum(null);
         assertEquals("SUM", sum.getFunctionName());
     }
 
     @Test
-    public void testSumParse() throws Exception {
+    public void testSumParse() {
         String expressionString = "sum(artistName)";
         Expression exp = ExpressionFactory.exp(expressionString);
         assertTrue(exp instanceof ASTSum);
@@ -148,4 +148,21 @@ public class ASTAggregateTest {
         assertEquals(expressionString, exp.toString());
     }
 
+    /**
+     * @since 5.0
+     */
+    @Test
+    public void testCustomConstruct() {
+        AggregateCustom sum = new AggregateCustom();
+        assertEquals(AggregateCustom.FUNCTION_NAME, sum.getFunctionName());
+    }
+
+    private static class AggregateCustom extends ASTCustomAggregate {
+
+        private static final String FUNCTION_NAME = "aggregate_custom";
+
+        private AggregateCustom() {
+            super(FUNCTION_NAME);
+        }
+    }
 }
