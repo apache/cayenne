@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
@@ -28,7 +28,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
  * Example of a comment
  *
  */
-public abstract class _Artist extends BaseDataObject {
+public abstract class _Artist extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 

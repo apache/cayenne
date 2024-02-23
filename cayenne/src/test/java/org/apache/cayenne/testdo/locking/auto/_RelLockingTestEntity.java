@@ -5,14 +5,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.locking.LockingHelper;
+import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 
 /**
@@ -21,11 +22,13 @@ import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _RelLockingTestEntity extends BaseDataObject {
+public abstract class _RelLockingTestEntity extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> REL_LOCKING_TEST_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("REL_LOCKING_TEST_ID"), Integer.class);
+    public static final SelfProperty<RelLockingTestEntity> SELF = PropertyFactory.createSelf(RelLockingTestEntity.class);
+
+    public static final NumericIdProperty<Integer> REL_LOCKING_TEST_ID_PK_PROPERTY = PropertyFactory.createNumericId("REL_LOCKING_TEST_ID", "RelLockingTestEntity", Integer.class);
     public static final String REL_LOCKING_TEST_ID_PK_COLUMN = "REL_LOCKING_TEST_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

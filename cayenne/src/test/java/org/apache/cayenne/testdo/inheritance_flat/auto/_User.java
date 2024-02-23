@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
+import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 
 /**
@@ -19,7 +19,9 @@ import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
  */
 public abstract class _User extends Role {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
+
+    public static final SelfProperty<User> SELF = PropertyFactory.createSelf(User.class);
 
     public static final String ID_PK_COLUMN = "id";
 

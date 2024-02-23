@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.testdo.mt.MtTable2;
 import org.apache.cayenne.testdo.mt.MtTable3;
 
 /**
@@ -19,11 +20,13 @@ import org.apache.cayenne.testdo.mt.MtTable3;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MtTable2 extends BaseDataObject {
+public abstract class _MtTable2 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> TABLE2_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("TABLE2_ID"), Integer.class);
+    public static final SelfProperty<MtTable2> SELF = PropertyFactory.createSelf(MtTable2.class);
+
+    public static final NumericIdProperty<Integer> TABLE2_ID_PK_PROPERTY = PropertyFactory.createNumericId("TABLE2_ID", "MtTable2", Integer.class);
     public static final String TABLE2_ID_PK_COLUMN = "TABLE2_ID";
 
     public static final StringProperty<String> GLOBAL_ATTRIBUTE = PropertyFactory.createString("globalAttribute", String.class);

@@ -6,11 +6,13 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.HybridPersistentObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.hybrid.HybridEntity1;
 import org.apache.cayenne.testdo.hybrid.HybridEntity2;
 
 /**
@@ -21,9 +23,11 @@ import org.apache.cayenne.testdo.hybrid.HybridEntity2;
  */
 public abstract class _HybridEntity1 extends HybridPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
+    public static final SelfProperty<HybridEntity1> SELF = PropertyFactory.createSelf(HybridEntity1.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "HybridEntity1", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final NumericProperty<Integer> INT_FIELD = PropertyFactory.createNumeric("intField", Integer.class);

@@ -5,10 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
@@ -19,10 +21,13 @@ import org.apache.cayenne.testdo.relationships.RelationshipHelper;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ReflexiveAndToOne extends BaseDataObject {
+public abstract class _ReflexiveAndToOne extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<ReflexiveAndToOne> SELF = PropertyFactory.createSelf(ReflexiveAndToOne.class);
+
+    public static final NumericIdProperty<Integer> REFLEXIVE_AND_TO_ONE_ID_PK_PROPERTY = PropertyFactory.createNumericId("REFLEXIVE_AND_TO_ONE_ID", "ReflexiveAndToOne", Integer.class);
     public static final String REFLEXIVE_AND_TO_ONE_ID_PK_COLUMN = "REFLEXIVE_AND_TO_ONE_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

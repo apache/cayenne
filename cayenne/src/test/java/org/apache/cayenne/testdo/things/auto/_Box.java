@@ -6,14 +6,15 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.GenericPersistentObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.things.Bag;
 import org.apache.cayenne.testdo.things.Ball;
+import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.BoxInfo;
 import org.apache.cayenne.testdo.things.Thing;
 
@@ -25,9 +26,11 @@ import org.apache.cayenne.testdo.things.Thing;
  */
 public abstract class _Box extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Long.class);
+    public static final SelfProperty<Box> SELF = PropertyFactory.createSelf(Box.class);
+
+    public static final NumericIdProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Box", Long.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
@@ -80,6 +83,14 @@ public abstract class _Box extends GenericPersistentObject {
 
     public BoxInfo getBoxInfo() {
         return (BoxInfo)readProperty("boxInfo");
+    }
+
+    public void addToThings(Thing obj) {
+        addToManyTarget("things", obj, true);
+    }
+
+    public void removeFromThings(Thing obj) {
+        removeToManyTarget("things", obj, true);
     }
 
     @SuppressWarnings("unchecked")

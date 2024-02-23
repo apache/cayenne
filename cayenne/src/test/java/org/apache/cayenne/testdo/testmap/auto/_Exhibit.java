@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
@@ -23,7 +23,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Exhibit extends BaseDataObject {
+public abstract class _Exhibit extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 

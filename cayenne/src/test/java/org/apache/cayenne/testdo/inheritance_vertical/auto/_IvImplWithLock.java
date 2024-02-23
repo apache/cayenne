@@ -5,7 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBaseWithLock;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImplWithLock;
@@ -21,8 +23,9 @@ public abstract class _IvImplWithLock extends IvBaseWithLock {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<IvImplWithLock> SELF = PropertyFactory.createSelf(IvImplWithLock.class);
+    public static final SelfProperty<IvImplWithLock> SELF = PropertyFactory.createSelf(IvImplWithLock.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "IvImplWithLock", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> ATTR1 = PropertyFactory.createString("attr1", String.class);

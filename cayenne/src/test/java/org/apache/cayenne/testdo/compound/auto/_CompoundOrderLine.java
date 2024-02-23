@@ -6,9 +6,12 @@ import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.testdo.compound.CompoundOrder;
+import org.apache.cayenne.testdo.compound.CompoundOrderLine;
 import org.apache.cayenne.testdo.compound.CompoundOrderLineInfo;
 
 /**
@@ -19,19 +22,22 @@ import org.apache.cayenne.testdo.compound.CompoundOrderLineInfo;
  */
 public abstract class _CompoundOrderLine extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final String ORDER_NUMBER_PK_COLUMN = "order_number";
+    public static final SelfProperty<CompoundOrderLine> SELF = PropertyFactory.createSelf(CompoundOrderLine.class);
+
     public static final String ORDER_LINE_NUMBER_PK_COLUMN = "order_line_number";
+    public static final NumericIdProperty<Integer> ORDER_NUMBER_PK_PROPERTY = PropertyFactory.createNumericId("order_number", "CompoundOrderLine", Integer.class);
+    public static final String ORDER_NUMBER_PK_COLUMN = "order_number";
 
     public static final NumericProperty<Integer> LINE_NUMBER = PropertyFactory.createNumeric("lineNumber", Integer.class);
-    public static final EntityProperty<CompoundOrder> ORDER = PropertyFactory.createEntity("order", CompoundOrder.class);
     public static final EntityProperty<CompoundOrderLineInfo> INFO = PropertyFactory.createEntity("info", CompoundOrderLineInfo.class);
+    public static final EntityProperty<CompoundOrder> ORDER = PropertyFactory.createEntity("order", CompoundOrder.class);
 
     protected int lineNumber;
 
-    protected Object order;
     protected Object info;
+    protected Object order;
 
     public void setLineNumber(int lineNumber) {
         beforePropertyWrite("lineNumber", this.lineNumber, lineNumber);
@@ -43,20 +49,20 @@ public abstract class _CompoundOrderLine extends GenericPersistentObject {
         return this.lineNumber;
     }
 
-    public void setOrder(CompoundOrder order) {
-        setToOneTarget("order", order, true);
-    }
-
-    public CompoundOrder getOrder() {
-        return (CompoundOrder)readProperty("order");
-    }
-
     public void setInfo(CompoundOrderLineInfo info) {
         setToOneTarget("info", info, true);
     }
 
     public CompoundOrderLineInfo getInfo() {
         return (CompoundOrderLineInfo)readProperty("info");
+    }
+
+    public void setOrder(CompoundOrder order) {
+        setToOneTarget("order", order, true);
+    }
+
+    public CompoundOrder getOrder() {
+        return (CompoundOrder)readProperty("order");
     }
 
     @Override
@@ -68,10 +74,10 @@ public abstract class _CompoundOrderLine extends GenericPersistentObject {
         switch(propName) {
             case "lineNumber":
                 return this.lineNumber;
-            case "order":
-                return this.order;
             case "info":
                 return this.info;
+            case "order":
+                return this.order;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -87,11 +93,11 @@ public abstract class _CompoundOrderLine extends GenericPersistentObject {
             case "lineNumber":
                 this.lineNumber = val == null ? 0 : (int)val;
                 break;
-            case "order":
-                this.order = val;
-                break;
             case "info":
                 this.info = val;
+                break;
+            case "order":
+                this.order = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);
@@ -110,16 +116,16 @@ public abstract class _CompoundOrderLine extends GenericPersistentObject {
     protected void writeState(ObjectOutputStream out) throws IOException {
         super.writeState(out);
         out.writeInt(this.lineNumber);
-        out.writeObject(this.order);
         out.writeObject(this.info);
+        out.writeObject(this.order);
     }
 
     @Override
     protected void readState(ObjectInputStream in) throws IOException, ClassNotFoundException {
         super.readState(in);
         this.lineNumber = in.readInt();
-        this.order = in.readObject();
         this.info = in.readObject();
+        this.order = in.readObject();
     }
 
 }

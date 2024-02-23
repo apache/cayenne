@@ -3,12 +3,13 @@ package org.apache.cayenne.testdo.inheritance_vertical.auto;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import java.util.List;
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.property.EntityProperty;
+
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
@@ -19,12 +20,13 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _IvBase extends BaseDataObject {
+public abstract class _IvBase extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<IvBase> SELF = PropertyFactory.createSelf(IvBase.class);
+    public static final SelfProperty<IvBase> SELF = PropertyFactory.createSelf(IvBase.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "IvBase", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

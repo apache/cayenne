@@ -7,7 +7,9 @@ import java.util.Date;
 
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvImpl;
@@ -23,8 +25,9 @@ public abstract class _IvImpl extends IvBase {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<IvImpl> SELF = PropertyFactory.createSelf(IvImpl.class);
+    public static final SelfProperty<IvImpl> SELF = PropertyFactory.createSelf(IvImpl.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "IvImpl", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final DateProperty<Date> ATTR0 = PropertyFactory.createDate("attr0", Date.class);

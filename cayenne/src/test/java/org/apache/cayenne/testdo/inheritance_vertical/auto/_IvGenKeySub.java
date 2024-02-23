@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvGenKeyRoot;
 import org.apache.cayenne.testdo.inheritance_vertical.IvGenKeySub;
 
@@ -19,8 +20,9 @@ public abstract class _IvGenKeySub extends IvGenKeyRoot {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<IvGenKeySub> SELF = PropertyFactory.createSelf(IvGenKeySub.class);
+    public static final SelfProperty<IvGenKeySub> SELF = PropertyFactory.createSelf(IvGenKeySub.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "IvGenKeySub", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
 

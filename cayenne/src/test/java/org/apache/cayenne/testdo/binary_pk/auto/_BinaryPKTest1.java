@@ -5,12 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.BaseProperty;
+import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.exp.property.BaseIdProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 
 /**
@@ -19,11 +20,13 @@ import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _BinaryPKTest1 extends BaseDataObject {
+public abstract class _BinaryPKTest1 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final BaseProperty<byte[]> BIN_ID_PK_PROPERTY = PropertyFactory.createBase(ExpressionFactory.dbPathExp("BIN_ID"), byte[].class);
+    public static final SelfProperty<BinaryPKTest1> SELF = PropertyFactory.createSelf(BinaryPKTest1.class);
+
+    public static final BaseIdProperty<byte[]> BIN_ID_PK_PROPERTY = PropertyFactory.createBaseId("BIN_ID", "BinaryPKTest1", byte[].class);
     public static final String BIN_ID_PK_COLUMN = "BIN_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

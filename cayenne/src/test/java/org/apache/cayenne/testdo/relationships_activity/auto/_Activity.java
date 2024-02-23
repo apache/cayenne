@@ -6,13 +6,14 @@ import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.util.Map;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.exp.property.BaseIdProperty;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.MapProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.relationships_activity.Activity;
 import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
 
 /**
@@ -21,11 +22,13 @@ import org.apache.cayenne.testdo.relationships_activity.ActivityResult;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Activity extends BaseDataObject {
+public abstract class _Activity extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final StringProperty<String> ACTIVITY_ID_PK_PROPERTY = PropertyFactory.createString(ExpressionFactory.dbPathExp("ACTIVITY_ID"), String.class);
+    public static final SelfProperty<Activity> SELF = PropertyFactory.createSelf(Activity.class);
+
+    public static final BaseIdProperty<String> ACTIVITY_ID_PK_PROPERTY = PropertyFactory.createBaseId("ACTIVITY_ID", "Activity", String.class);
     public static final String ACTIVITY_ID_PK_COLUMN = "ACTIVITY_ID";
 
     public static final DateProperty<Date> APPOINTMENT_DATE = PropertyFactory.createDate("appointmentDate", Date.class);

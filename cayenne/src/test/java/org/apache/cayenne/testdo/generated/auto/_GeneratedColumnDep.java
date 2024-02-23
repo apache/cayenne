@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.generated.GeneratedColumnDep;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 
 /**
@@ -16,10 +19,13 @@ import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _GeneratedColumnDep extends BaseDataObject {
+public abstract class _GeneratedColumnDep extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<GeneratedColumnDep> SELF = PropertyFactory.createSelf(GeneratedColumnDep.class);
+
+    public static final NumericIdProperty<Integer> GENERATED_COLUMN_FK_PK_PROPERTY = PropertyFactory.createNumericId("GENERATED_COLUMN_FK", "GeneratedColumnDep", Integer.class);
     public static final String GENERATED_COLUMN_FK_PK_COLUMN = "GENERATED_COLUMN_FK";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

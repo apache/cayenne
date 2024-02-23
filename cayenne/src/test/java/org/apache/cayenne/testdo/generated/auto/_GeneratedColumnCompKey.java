@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.generated.GeneratedColumnCompKey;
 import org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster;
 
 /**
@@ -16,12 +19,17 @@ import org.apache.cayenne.testdo.generated.GeneratedColumnCompMaster;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _GeneratedColumnCompKey extends BaseDataObject {
+public abstract class _GeneratedColumnCompKey extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<GeneratedColumnCompKey> SELF = PropertyFactory.createSelf(GeneratedColumnCompKey.class);
+
+    public static final NumericIdProperty<Integer> AUTO_PK_PK_PROPERTY = PropertyFactory.createNumericId("AUTO_PK", "GeneratedColumnCompKey", Integer.class);
     public static final String AUTO_PK_PK_COLUMN = "AUTO_PK";
+    public static final NumericIdProperty<Integer> GENERATED_COLUMN_PK_PROPERTY = PropertyFactory.createNumericId("GENERATED_COLUMN", "GeneratedColumnCompKey", Integer.class);
     public static final String GENERATED_COLUMN_PK_COLUMN = "GENERATED_COLUMN";
+    public static final NumericIdProperty<Integer> PROPAGATED_PK_PK_PROPERTY = PropertyFactory.createNumericId("PROPAGATED_PK", "GeneratedColumnCompKey", Integer.class);
     public static final String PROPAGATED_PK_PK_COLUMN = "PROPAGATED_PK";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

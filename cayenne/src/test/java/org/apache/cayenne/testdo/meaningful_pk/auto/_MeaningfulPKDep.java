@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKDep;
 import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
 
 /**
@@ -17,9 +19,11 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPKTest1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MeaningfulPKDep extends BaseDataObject {
+public abstract class _MeaningfulPKDep extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
+
+    public static final SelfProperty<MeaningfulPKDep> SELF = PropertyFactory.createSelf(MeaningfulPKDep.class);
 
     public static final String PK_ATTRIBUTE_PK_COLUMN = "PK_ATTRIBUTE";
 

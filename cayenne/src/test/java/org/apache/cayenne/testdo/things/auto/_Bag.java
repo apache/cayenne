@@ -6,11 +6,12 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.apache.cayenne.GenericPersistentObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.things.Bag;
 import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.Thing;
@@ -23,9 +24,11 @@ import org.apache.cayenne.testdo.things.Thing;
  */
 public abstract class _Bag extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Long.class);
+    public static final SelfProperty<Bag> SELF = PropertyFactory.createSelf(Bag.class);
+
+    public static final NumericIdProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Bag", Long.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
@@ -49,6 +52,14 @@ public abstract class _Bag extends GenericPersistentObject {
         return this.name;
     }
 
+    public void addToBalls(Ball obj) {
+        addToManyTarget("balls", obj, true);
+    }
+
+    public void removeFromBalls(Ball obj) {
+        removeToManyTarget("balls", obj, true);
+    }
+
     @SuppressWarnings("unchecked")
     public List<Ball> getBalls() {
         return (List<Ball>)readProperty("balls");
@@ -65,6 +76,14 @@ public abstract class _Bag extends GenericPersistentObject {
     @SuppressWarnings("unchecked")
     public List<Box> getBoxes() {
         return (List<Box>)readProperty("boxes");
+    }
+
+    public void addToThings(Thing obj) {
+        addToManyTarget("things", obj, true);
+    }
+
+    public void removeFromThings(Thing obj) {
+        removeToManyTarget("things", obj, true);
     }
 
     @SuppressWarnings("unchecked")

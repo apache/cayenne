@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.commitlog.db.Auditable3;
+import org.apache.cayenne.commitlog.db.Auditable4;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 
 /**
@@ -16,9 +18,11 @@ import org.apache.cayenne.exp.property.StringProperty;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Auditable4 extends BaseDataObject {
+public abstract class _Auditable4 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
+
+    public static final SelfProperty<Auditable4> SELF = PropertyFactory.createSelf(Auditable4.class);
 
     public static final String ID_PK_COLUMN = "ID";
 

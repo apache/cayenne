@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EmbeddableProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity1;
 import org.apache.cayenne.testdo.embeddable.EmbedEntity2;
@@ -19,12 +21,13 @@ import org.apache.cayenne.testdo.embeddable.Embeddable1;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _EmbedEntity2 extends BaseDataObject {
+public abstract class _EmbedEntity2 extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<EmbedEntity2> SELF = PropertyFactory.createSelf(EmbedEntity2.class);
+    public static final SelfProperty<EmbedEntity2> SELF = PropertyFactory.createSelf(EmbedEntity2.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "EmbedEntity2", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final EmbeddableProperty<Embeddable1> EMBEDDED = PropertyFactory.createEmbeddable("embedded", Embeddable1.class);

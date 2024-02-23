@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
@@ -20,7 +20,7 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _PaintingInfo extends BaseDataObject {
+public abstract class _PaintingInfo extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 

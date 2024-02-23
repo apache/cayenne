@@ -6,7 +6,9 @@ import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.generated.GeneratedReflexive;
 
@@ -20,6 +22,9 @@ public abstract class _GeneratedReflexive extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<GeneratedReflexive> SELF = PropertyFactory.createSelf(GeneratedReflexive.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "GeneratedReflexive", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

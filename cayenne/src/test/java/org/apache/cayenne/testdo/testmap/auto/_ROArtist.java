@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import java.sql.Date;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.DateProperty;
 import org.apache.cayenne.exp.property.ListProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
@@ -22,7 +22,7 @@ import org.apache.cayenne.testdo.testmap.ROArtist;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ROArtist extends BaseDataObject {
+public abstract class _ROArtist extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 

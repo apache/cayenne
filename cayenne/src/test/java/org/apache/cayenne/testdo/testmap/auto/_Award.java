@@ -8,6 +8,7 @@ import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Award;
@@ -22,7 +23,7 @@ public abstract class _Award extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<Award> SELF = PropertyFactory.createSelf(Award.class);
+    public static final SelfProperty<Award> SELF = PropertyFactory.createSelf(Award.class);
 
     public static final NumericIdProperty<Long> AWARD_ID_PK_PROPERTY = PropertyFactory.createNumericId("AWARD_ID", "Award", Long.class);
     public static final String AWARD_ID_PK_COLUMN = "AWARD_ID";

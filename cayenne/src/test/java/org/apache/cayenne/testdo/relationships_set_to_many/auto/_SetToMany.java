@@ -5,11 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Set;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.SetProperty;
+import org.apache.cayenne.testdo.relationships_set_to_many.SetToMany;
 import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
 
 /**
@@ -18,11 +19,13 @@ import org.apache.cayenne.testdo.relationships_set_to_many.SetToManyTarget;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _SetToMany extends BaseDataObject {
+public abstract class _SetToMany extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
+    public static final SelfProperty<SetToMany> SELF = PropertyFactory.createSelf(SetToMany.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "SetToMany", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final SetProperty<SetToManyTarget> TARGETS = PropertyFactory.createSet("targets", SetToManyTarget.class);

@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest1;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
 
 /**
@@ -17,11 +18,13 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleTest2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DeleteRuleTest1 extends BaseDataObject {
+public abstract class _DeleteRuleTest1 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> DEL_RULE_TEST1_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("DEL_RULE_TEST1_ID"), Integer.class);
+    public static final SelfProperty<DeleteRuleTest1> SELF = PropertyFactory.createSelf(DeleteRuleTest1.class);
+
+    public static final NumericIdProperty<Integer> DEL_RULE_TEST1_ID_PK_PROPERTY = PropertyFactory.createNumericId("DEL_RULE_TEST1_ID", "DeleteRuleTest1", Integer.class);
     public static final String DEL_RULE_TEST1_ID_PK_COLUMN = "DEL_RULE_TEST1_ID";
 
     public static final EntityProperty<DeleteRuleTest2> TEST2 = PropertyFactory.createEntity("test2", DeleteRuleTest2.class);

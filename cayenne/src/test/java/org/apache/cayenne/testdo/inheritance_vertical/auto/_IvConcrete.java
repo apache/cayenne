@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvAbstract;
 import org.apache.cayenne.testdo.inheritance_vertical.IvConcrete;
@@ -22,8 +24,9 @@ public abstract class _IvConcrete extends IvAbstract {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<IvConcrete> SELF = PropertyFactory.createSelf(IvConcrete.class);
+    public static final SelfProperty<IvConcrete> SELF = PropertyFactory.createSelf(IvConcrete.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "IvConcrete", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

@@ -5,10 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.apache.cayenne.GenericPersistentObject;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.things.Ball;
 import org.apache.cayenne.testdo.things.Box;
 import org.apache.cayenne.testdo.things.Thing;
 
@@ -20,9 +22,11 @@ import org.apache.cayenne.testdo.things.Thing;
  */
 public abstract class _Ball extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Long.class);
+    public static final SelfProperty<Ball> SELF = PropertyFactory.createSelf(Ball.class);
+
+    public static final NumericIdProperty<Long> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Ball", Long.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final NumericProperty<Integer> THING_VOLUME = PropertyFactory.createNumeric("thingVolume", Integer.class);

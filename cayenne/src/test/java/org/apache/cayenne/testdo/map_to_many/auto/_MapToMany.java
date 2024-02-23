@@ -5,11 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.MapProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.map_to_many.MapToMany;
 import org.apache.cayenne.testdo.map_to_many.MapToManyTarget;
 
 /**
@@ -18,11 +19,13 @@ import org.apache.cayenne.testdo.map_to_many.MapToManyTarget;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MapToMany extends BaseDataObject {
+public abstract class _MapToMany extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
+    public static final SelfProperty<MapToMany> SELF = PropertyFactory.createSelf(MapToMany.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "MapToMany", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final MapProperty<String, MapToManyTarget> TARGETS = PropertyFactory.createMap("targets", String.class, MapToManyTarget.class);

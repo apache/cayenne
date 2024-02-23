@@ -7,7 +7,10 @@ import java.util.List;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.generated.GeneratedF1;
 import org.apache.cayenne.testdo.generated.GeneratedF2;
 
 /**
@@ -20,6 +23,9 @@ public abstract class _GeneratedF1 extends GenericPersistentObject {
 
     private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<GeneratedF1> SELF = PropertyFactory.createSelf(GeneratedF1.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "GeneratedF1", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final ListProperty<GeneratedF2> F2 = PropertyFactory.createList("f2", GeneratedF2.class);

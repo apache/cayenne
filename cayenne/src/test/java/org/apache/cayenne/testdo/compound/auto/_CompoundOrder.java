@@ -7,8 +7,11 @@ import java.util.List;
 
 import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.compound.CompoundOrder;
 import org.apache.cayenne.testdo.compound.CompoundOrderLine;
 
 /**
@@ -19,8 +22,11 @@ import org.apache.cayenne.testdo.compound.CompoundOrderLine;
  */
 public abstract class _CompoundOrder extends GenericPersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<CompoundOrder> SELF = PropertyFactory.createSelf(CompoundOrder.class);
+
+    public static final NumericIdProperty<Integer> ORDER_NUMBER_PK_PROPERTY = PropertyFactory.createNumericId("order_number", "CompoundOrder", Integer.class);
     public static final String ORDER_NUMBER_PK_COLUMN = "order_number";
 
     public static final StringProperty<String> INFO = PropertyFactory.createString("info", String.class);

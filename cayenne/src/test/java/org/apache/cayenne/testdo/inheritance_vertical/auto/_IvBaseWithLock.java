@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.PersistentObject;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBaseWithLock;
 
@@ -16,12 +17,13 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvBaseWithLock;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _IvBaseWithLock extends BaseDataObject {
+public abstract class _IvBaseWithLock extends PersistentObject {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<IvBaseWithLock> SELF = PropertyFactory.createSelf(IvBaseWithLock.class);
+    public static final SelfProperty<IvBaseWithLock> SELF = PropertyFactory.createSelf(IvBaseWithLock.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "IvBaseWithLock", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

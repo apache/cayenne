@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
 
 /**
@@ -16,10 +19,13 @@ import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _CompoundFkTestEntity extends BaseDataObject {
+public abstract class _CompoundFkTestEntity extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<CompoundFkTestEntity> SELF = PropertyFactory.createSelf(CompoundFkTestEntity.class);
+
+    public static final NumericIdProperty<Integer> PKEY_PK_PROPERTY = PropertyFactory.createNumericId("PKEY", "CompoundFkTestEntity", Integer.class);
     public static final String PKEY_PK_COLUMN = "PKEY";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

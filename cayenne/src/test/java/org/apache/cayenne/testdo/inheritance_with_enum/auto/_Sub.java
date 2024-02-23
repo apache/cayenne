@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.BaseProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.testdo.inheritance_with_enum.Root;
+import org.apache.cayenne.testdo.inheritance_with_enum.Sub;
 import org.apache.cayenne.testdo.inheritance_with_enum.Type;
 
 /**
@@ -19,9 +20,11 @@ import org.apache.cayenne.testdo.inheritance_with_enum.Type;
  */
 public abstract class _Sub extends Root {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("id"), Integer.class);
+    public static final SelfProperty<Sub> SELF = PropertyFactory.createSelf(Sub.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("id", "Sub", Integer.class);
     public static final String ID_PK_COLUMN = "id";
 
     public static final BaseProperty<Type> ENUM = PropertyFactory.createBase("enum", Type.class);

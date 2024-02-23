@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.relationships.MeaningfulFK;
 import org.apache.cayenne.testdo.relationships.RelationshipHelper;
 
 /**
@@ -16,10 +19,13 @@ import org.apache.cayenne.testdo.relationships.RelationshipHelper;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MeaningfulFK extends BaseDataObject {
+public abstract class _MeaningfulFK extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<MeaningfulFK> SELF = PropertyFactory.createSelf(MeaningfulFK.class);
+
+    public static final NumericIdProperty<Integer> MEANIGNFUL_FK_ID_PK_PROPERTY = PropertyFactory.createNumericId("MEANIGNFUL_FK_ID", "MeaningfulFK", Integer.class);
     public static final String MEANIGNFUL_FK_ID_PK_COLUMN = "MEANIGNFUL_FK_ID";
 
     public static final NumericProperty<Integer> RELATIONSHIP_HELPER_ID = PropertyFactory.createNumeric("relationshipHelperID", Integer.class);

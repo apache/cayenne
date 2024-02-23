@@ -5,9 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular;
 
 /**
@@ -16,10 +18,13 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedCircular;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _FlattenedCircular extends BaseDataObject {
+public abstract class _FlattenedCircular extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<FlattenedCircular> SELF = PropertyFactory.createSelf(FlattenedCircular.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "FlattenedCircular", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final ListProperty<FlattenedCircular> SIDE1S = PropertyFactory.createList("side1s", FlattenedCircular.class);

@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub1;
@@ -21,8 +22,9 @@ public abstract class _IvSub1 extends IvRoot {
 
     private static final long serialVersionUID = 1L;
 
-    public static final EntityProperty<IvSub1> SELF = PropertyFactory.createSelf(IvSub1.class);
+    public static final SelfProperty<IvSub1> SELF = PropertyFactory.createSelf(IvSub1.class);
 
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "IvSub1", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final NumericProperty<Double> PRICE = PropertyFactory.createNumeric("price", Double.class);

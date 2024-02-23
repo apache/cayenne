@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkDep;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
 
@@ -19,12 +21,14 @@ import org.apache.cayenne.testdo.relationships_to_many_fk.ToManyRoot2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ToManyFkDep extends BaseDataObject {
+public abstract class _ToManyFkDep extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
+
+    public static final SelfProperty<ToManyFkDep> SELF = PropertyFactory.createSelf(ToManyFkDep.class);
 
     public static final String DEP_ID_PK_COLUMN = "DEP_ID";
-    public static final NumericProperty<Integer> OTHER_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("OTHER_ID"), Integer.class);
+    public static final NumericIdProperty<Integer> OTHER_ID_PK_PROPERTY = PropertyFactory.createNumericId("OTHER_ID", "ToManyFkDep", Integer.class);
     public static final String OTHER_ID_PK_COLUMN = "OTHER_ID";
 
     public static final NumericProperty<Integer> DEP_ID = PropertyFactory.createNumeric("depId", Integer.class);

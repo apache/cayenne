@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.relationships_flattened.Entity1;
 import org.apache.cayenne.testdo.relationships_flattened.Entity3;
 
 /**
@@ -15,10 +18,13 @@ import org.apache.cayenne.testdo.relationships_flattened.Entity3;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Entity1 extends BaseDataObject {
+public abstract class _Entity1 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<Entity1> SELF = PropertyFactory.createSelf(Entity1.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Entity1", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final EntityProperty<Entity3> TO_ENTITY3 = PropertyFactory.createEntity("toEntity3", Entity3.class);

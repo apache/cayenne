@@ -5,11 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatA;
 import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatB;
 
 /**
@@ -18,11 +19,13 @@ import org.apache.cayenne.testdo.relationships_delete_rules.DeleteRuleFlatB;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _DeleteRuleFlatA extends BaseDataObject {
+public abstract class _DeleteRuleFlatA extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> FLATA_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("FLATA_ID"), Integer.class);
+    public static final SelfProperty<DeleteRuleFlatA> SELF = PropertyFactory.createSelf(DeleteRuleFlatA.class);
+
+    public static final NumericIdProperty<Integer> FLATA_ID_PK_PROPERTY = PropertyFactory.createNumericId("FLATA_ID", "DeleteRuleFlatA", Integer.class);
     public static final String FLATA_ID_PK_COLUMN = "FLATA_ID";
 
     public static final ListProperty<DeleteRuleFlatB> FLAT_B = PropertyFactory.createList("flatB", DeleteRuleFlatB.class);

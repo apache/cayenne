@@ -5,11 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.mt.MtTable4;
 import org.apache.cayenne.testdo.mt.MtTable5;
 
 /**
@@ -18,11 +19,13 @@ import org.apache.cayenne.testdo.mt.MtTable5;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _MtTable4 extends BaseDataObject {
+public abstract class _MtTable4 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("ID"), Integer.class);
+    public static final SelfProperty<MtTable4> SELF = PropertyFactory.createSelf(MtTable4.class);
+
+    public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "MtTable4", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
     public static final ListProperty<MtTable5> TABLE5S = PropertyFactory.createList("table5s", MtTable5.class);

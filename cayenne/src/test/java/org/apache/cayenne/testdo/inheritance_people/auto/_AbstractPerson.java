@@ -5,12 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.ListProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
+import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
 import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
 
 /**
@@ -19,11 +20,13 @@ import org.apache.cayenne.testdo.inheritance_people.PersonNotes;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _AbstractPerson extends BaseDataObject {
+public abstract class _AbstractPerson extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> PERSON_ID_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("PERSON_ID"), Integer.class);
+    public static final SelfProperty<AbstractPerson> SELF = PropertyFactory.createSelf(AbstractPerson.class);
+
+    public static final NumericIdProperty<Integer> PERSON_ID_PK_PROPERTY = PropertyFactory.createNumericId("PERSON_ID", "AbstractPerson", Integer.class);
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

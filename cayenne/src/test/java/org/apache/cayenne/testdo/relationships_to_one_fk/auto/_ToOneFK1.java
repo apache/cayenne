@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.apache.cayenne.BaseDataObject;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
-import org.apache.cayenne.exp.property.NumericProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1;
 import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
 
 /**
@@ -17,11 +18,13 @@ import org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _ToOneFK1 extends BaseDataObject {
+public abstract class _ToOneFK1 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
-    public static final NumericProperty<Integer> TO_ONE_FK1_PK_PK_PROPERTY = PropertyFactory.createNumeric(ExpressionFactory.dbPathExp("TO_ONE_FK1_PK"), Integer.class);
+    public static final SelfProperty<ToOneFK1> SELF = PropertyFactory.createSelf(ToOneFK1.class);
+
+    public static final NumericIdProperty<Integer> TO_ONE_FK1_PK_PK_PROPERTY = PropertyFactory.createNumericId("TO_ONE_FK1_PK", "ToOneFK1", Integer.class);
     public static final String TO_ONE_FK1_PK_PK_COLUMN = "TO_ONE_FK1_PK";
 
     public static final EntityProperty<ToOneFK2> TO_PK = PropertyFactory.createEntity("toPK", ToOneFK2.class);

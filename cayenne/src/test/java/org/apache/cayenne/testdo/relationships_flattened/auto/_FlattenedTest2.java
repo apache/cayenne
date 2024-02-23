@@ -5,12 +5,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-import org.apache.cayenne.BaseDataObject;
+import org.apache.cayenne.PersistentObject;
 import org.apache.cayenne.exp.property.EntityProperty;
 import org.apache.cayenne.exp.property.ListProperty;
+import org.apache.cayenne.exp.property.NumericIdProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest1;
+import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest2;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 
 /**
@@ -19,10 +22,13 @@ import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _FlattenedTest2 extends BaseDataObject {
+public abstract class _FlattenedTest2 extends PersistentObject {
 
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
 
+    public static final SelfProperty<FlattenedTest2> SELF = PropertyFactory.createSelf(FlattenedTest2.class);
+
+    public static final NumericIdProperty<Integer> FT2_ID_PK_PROPERTY = PropertyFactory.createNumericId("FT2_ID", "FlattenedTest2", Integer.class);
     public static final String FT2_ID_PK_COLUMN = "FT2_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);

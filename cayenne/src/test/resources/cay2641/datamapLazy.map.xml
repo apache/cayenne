@@ -33,17 +33,4 @@
 		<prefetch type="disjoint"><![CDATA[artist]]></prefetch>
 	</query>
 	<query name="simpleSelect" type="SelectQuery" root="obj-entity" root-name="ArtistLazy"/>
-	<cgen xmlns="http://cayenne.apache.org/schema/11/cgen">
-		<excludeEntities>ArtistLazy,PaintingLazy</excludeEntities>
-		<destDir>../../java</destDir>
-		<mode>all</mode>
-		<template>templates/v4_1/subclass.vm</template>
-		<superTemplate>templates/v4_1/superclass.vm</superTemplate>
-		<outputPattern>*.java</outputPattern>
-		<makePairs>true</makePairs>
-		<usePkgPath>true</usePkgPath>
-		<overwrite>false</overwrite>
-		<createPropertyNames>false</createPropertyNames>
-		<createPKProperties>false</createPKProperties>
-	</cgen>
 </data-map>
