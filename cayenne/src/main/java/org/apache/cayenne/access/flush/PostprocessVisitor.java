@@ -73,9 +73,9 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
         DataRow dataRow = context.currentSnapshot(dbRow.getObject());
 
         if (dbRow.getObject() != null) {
-            Persistent dataObject = dbRow.getObject();
-            dataRow.setReplacesVersion(dataObject.getSnapshotVersion());
-            dataObject.setSnapshotVersion(dataRow.getVersion());
+            Persistent persistent = dbRow.getObject();
+            dataRow.setReplacesVersion(persistent.getSnapshotVersion());
+            persistent.setSnapshotVersion(dataRow.getVersion());
         }
 
         if (updatedSnapshots == null) {

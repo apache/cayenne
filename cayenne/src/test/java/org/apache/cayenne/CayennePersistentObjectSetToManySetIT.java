@@ -36,7 +36,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.RELATIONSHIPS_SET_TO_MANY_PROJECT)
-public class CayenneDataObjectSetToManySetIT extends RuntimeCase {
+public class CayennePersistentObjectSetToManySetIT extends RuntimeCase {
 
 	@Inject
 	protected ObjectContext context;

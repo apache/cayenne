@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /**
  * An accessor of a property value. Abstracts the actual property implementation. E.g. it
- * can be a Field, a pair of get/set methods or a map/DataObject.
+ * can be a Field, a pair of get/set methods or a map/Persistent.
  * 
  * @since 3.0
  */

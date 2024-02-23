@@ -222,16 +222,16 @@ As described in the CayenneModeler chapter, Cayenne supports mapping of complete
 
 Generic objects are first-class citizens in Cayenne, and all common persistent operations apply to them as well. There are some peculiarities, however, described below.
 
-When creating a generic object, either cast your ObjectContext to DataContext (that provides `newObject(String)` API), or provide your object with an explicit ObjectId:
+When creating a generic object, either cast your ObjectContext to `DataContext` (that provides `newObject(String)` API), or provide your object with an explicit ObjectId:
 
 [source, java]
 ----
-DataObject generic = (DataObject)context.newObject("GenericEntity");
+Persistent generic = context.newObject("GenericEntity");
 ----
 
 [source, java]
 ----
-DataObject generic = new CayenneDataObject();
+Persistent generic = new GenericPersistentObject();
 generic.setObjectId(ObjectId.of("GenericEntity"));
 context.registerNewObject(generic);
 ----
@@ -240,10 +240,10 @@ ObjectSelect for a generic object should be created by passing the entity name S
 
 [source, java]
 ----
-ObjectSelect<DataObject> query = ObjectSelect.query(DataObject.class, "GenericEntity");
+ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class, "GenericEntity");
 ----
 
-Use DataObject API to access and modify properties of a generic object:
+Use Persistent API to access and modify properties of a generic object:
 
 [source, java]
 ----

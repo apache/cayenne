@@ -29,7 +29,7 @@ import java.util.Map;
  * Batched INSERT query. Allows inserting multiple object snapshots (DataRows)
  * for a given DbEntity in a single query. InsertBatchQuery normally is not used
  * directly. Rather DataContext creates one internally when committing
- * DataObjects.
+ * Persistent objects.
  */
 public class InsertBatchQuery extends BatchQuery {
 

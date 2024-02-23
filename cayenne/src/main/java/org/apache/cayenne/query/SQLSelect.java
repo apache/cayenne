@@ -87,7 +87,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	}
 
 	/**
-	 * Creates a query that selects DataObjects.
+	 * Creates a query that selects Persistent objects.
 	 */
 	public static <T> SQLSelect<T> query(Class<T> type, String sql) {
 		return new SQLSelect<>(type, sql);

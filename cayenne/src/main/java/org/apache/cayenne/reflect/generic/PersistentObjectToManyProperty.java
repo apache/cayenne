@@ -75,17 +75,17 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
 
     public void addTarget(Object source, Object target, boolean setReverse) throws PropertyException {
         try {
-            toDataObject(source).addToManyTarget(getName(), toDataObject(target), setReverse);
+            toPersistent(source).addToManyTarget(getName(), toPersistent(target), setReverse);
         } catch (Throwable th) {
-            throw new PropertyException("Error setting to-many DataObject property: " + getName(), this, source, th);
+            throw new PropertyException("Error setting to-many Persistent property: " + getName(), this, source, th);
         }
     }
 
     public void removeTarget(Object source, Object target, boolean setReverse) throws PropertyException {
         try {
-            toDataObject(source).removeToManyTarget(getName(), toDataObject(target), setReverse);
+            toPersistent(source).removeToManyTarget(getName(), toPersistent(target), setReverse);
         } catch (Throwable th) {
-            throw new PropertyException("Error unsetting to-many DataObject property: " + getName(), this, source, th);
+            throw new PropertyException("Error unsetting to-many Persistent property: " + getName(), this, source, th);
         }
     }
 

@@ -81,13 +81,13 @@ class PersistentObjectToOneProperty extends PersistentObjectBaseProperty impleme
 
     public void setTarget(Object source, Object target, boolean setReverse) {
         try {
-            toDataObject(source).setToOneTarget(
+            toPersistent(source).setToOneTarget(
                     getName(),
-                    toDataObject(target),
+                    toPersistent(target),
                     setReverse);
         }
         catch (Throwable th) {
-            throw new PropertyException("Error setting to-one DataObject property: "
+            throw new PropertyException("Error setting to-one Persistent property: "
                     + getName(), this, source, th);
         }
     }

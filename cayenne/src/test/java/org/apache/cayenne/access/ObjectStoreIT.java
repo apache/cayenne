@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.MockDataObject;
+import org.apache.cayenne.MockPersistentObject;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.di.Inject;
@@ -52,19 +52,19 @@ public class ObjectStoreIT extends RuntimeCase {
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
 
-        Persistent o1 = new MockDataObject();
+        Persistent o1 = new MockPersistentObject();
         o1.setObjectId(ObjectId.of("T", "key1", "v1"));
         context.getObjectStore().registerNode(o1.getObjectId(), o1);
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // test object with same id
-        Persistent o2 = new MockDataObject();
+        Persistent o2 = new MockPersistentObject();
         o2.setObjectId(ObjectId.of("T", "key1", "v1"));
         context.getObjectStore().registerNode(o2.getObjectId(), o2);
         assertEquals(1, context.getObjectStore().registeredObjectsCount());
 
         // test new object
-        Persistent o3 = new MockDataObject();
+        Persistent o3 = new MockPersistentObject();
         o3.setObjectId(ObjectId.of("T", "key3", "v3"));
         context.getObjectStore().registerNode(o3.getObjectId(), o3);
         assertEquals(2, context.getObjectStore().registeredObjectsCount());

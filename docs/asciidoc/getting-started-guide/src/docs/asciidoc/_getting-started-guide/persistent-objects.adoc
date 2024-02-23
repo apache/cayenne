@@ -16,11 +16,11 @@ In this chapter we'll learn about persistent objects, how to customize them and 
 create and save them in DB.
 
 ==== Inspecting and Customizing Persistent Objects
-Persistent classes in Cayenne implement a DataObject interface. If you inspect any of
+Persistent classes in Cayenne implement a `Persistent` interface. If you inspect any of
 the classes generated earlier in this tutorial (e.g.
 `org.example.cayenne.persistent.Artist`), you'll see that it extends a class with the name
 that starts with underscore (`org.example.cayenne.persistent.auto._Artist`), which in turn
-extends from `org.apache.cayenne.CayenneDataObject`. Splitting each persistent class into
+extends from `org.apache.cayenne.PersistentObject`. Splitting each persistent class into
 user-customizable subclass (`Xyz`) and a generated superclass (`_Xyz`) is a useful technique
 to avoid overwriting the custom code when refreshing classes from the mapping
 model.

@@ -35,10 +35,10 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * only difference is that this Map will be created lazily at first write, thus reducing memory penalty if possible.
  * <p>
  * This class can be used as superclass for objects that have attributes created at runtime.
- * If generic runtime attributes will be used always it may be a good idea to use {@link GenericPersistentObject} instead.
+ * If generic runtime attributes will always be used it may be a good idea to use {@link GenericPersistentObject} instead.
  * If you don't create attributes at runtime it is better to use {@link PersistentObject} class.
  * <p>
- * Map creation is not thread safe, as DataObject in general not thread safe by it's own.
+ * Map creation is not thread safe, as PersistentObject in general not thread safe by its own.
  *
  * @see PersistentObject
  * @see GenericPersistentObject

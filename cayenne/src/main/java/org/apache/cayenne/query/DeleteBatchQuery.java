@@ -87,9 +87,9 @@ public class DeleteBatchQuery extends BatchQuery {
         this.usingOptimisticLocking = usingOptimisticLocking;
     }
 
-    public void add(Map<String, Object> dataObjectId) {
+    public void add(Map<String, Object> objectId) {
 
-        rows.add(new BatchQueryRow(null, dataObjectId) {
+        rows.add(new BatchQueryRow(null, objectId) {
             @Override
             public Object getValue(int i) {
                 Object value = qualifier.get(dbAttributes.get(i).getName());

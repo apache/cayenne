@@ -33,7 +33,7 @@ import org.apache.cayenne.query.RelationshipQuery;
 public class ToOneFault extends Fault {
 
     /**
-     * Resolves this fault to a DataObject.
+     * Resolves this fault to a Persistent.
      */
     @Override
     public Object resolveFault(Persistent sourceObject, String relationshipName) {

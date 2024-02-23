@@ -276,7 +276,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     /**
-     * Evicts a collection of DataObjects from the ObjectStore, invalidates the underlying
+     * Evicts a collection of Persistent objects from the ObjectStore, invalidates the underlying
      * cache snapshots. Changes objects state to TRANSIENT. This method can be used for
      * manual cleanup of Cayenne cache.
      */
@@ -534,7 +534,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
     /**
      * SnapshotEventListener implementation that processes snapshot change event, updating
-     * DataObjects that have the changes.
+     * Persistent objects that have the changes.
      * <p>
      * <i>Implementation note: </i> This method should not attempt to alter the underlying
      * DataRowStore, since it is normally invoked *AFTER* the DataRowStore was modified as
@@ -838,7 +838,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     // =========================================
 
     /**
-     * Returns a registered DataObject or null of no object exists for the ObjectId.
+     * Returns a registered Persistent objects or null of no object exists for the ObjectId.
      * 
      * @since 1.2
      */
@@ -853,7 +853,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     /**
-     * Returns all registered DataObjects. List is returned by copy and can be modified by
+     * Returns all registered Persistent objects. List is returned by copy and can be modified by
      * the caller.
      * 
      * @since 1.2

@@ -126,7 +126,7 @@ public abstract class PersistentObject implements Persistent, Validating {
                 .getClassDescriptor(objectId.getEntityName());
 
         if (descriptor == null) {
-            throw new IllegalStateException("DataObject's entity is unmapped, objectId: "
+            throw new IllegalStateException("Persistent's entity is unmapped, objectId: "
                     + objectId);
         }
 
@@ -306,7 +306,7 @@ public abstract class PersistentObject implements Persistent, Validating {
     @Override
     public void addToManyTarget(String relName, Persistent value, boolean setReverse) {
         if (value == null) {
-            throw new NullPointerException("Attempt to add null target DataObject.");
+            throw new NullPointerException("Attempt to add null target Persistent.");
         }
 
         willConnect(relName, value);
@@ -332,7 +332,7 @@ public abstract class PersistentObject implements Persistent, Validating {
     }
 
     /**
-     * Sets the relationships to the specified <code>DataObject</code> objects.
+     * Sets the relationships to the specified <code>Persistent</code> objects.
      *
      * <p>
      * New relationships will be created with
@@ -340,7 +340,7 @@ public abstract class PersistentObject implements Persistent, Validating {
      * already established relationships stay untouched. Missing relationships
      * will be removed with
      * {@link #removeToManyTarget(String, org.apache.cayenne.Persistent, boolean)}
-     * and returnd as List. You may delete them manually.
+     * and returned as List. You may delete them manually.
      * </p>
      *
      * <p>
@@ -350,15 +350,14 @@ public abstract class PersistentObject implements Persistent, Validating {
      * </p>
      *
      * @param relName    name of the relation
-     * @param values     <code>DataObject</code> objects of this
+     * @param values     <code>Persistent</code> objects of this
      *                   <code>Collection</code> are set to the object. No changes will
      *                   be made to the the <code>Collection</code>, a copy is used. It
      *                   is safe to pass a persisted <code>Collection</code> of another
      *                   object.
      * @param setReverse update reverse relationships
-     * @return <code>List&lt;? extends DataObject&gt;</code> of unrelated
-     * DataObjects. If no relationship was removed an empty List is
-     * returned.
+     * @return <code>List&lt;? extends Persistent&gt;</code> of unrelated Persistent objects.
+     * If no relationship was removed an empty List is returned.
      * @throws IllegalArgumentException      if no relationship could be read by relName, or if the passed
      *                                       <code>Collection</code> is null. To clear all relationships
      *                                       use an empty <code>Collection</code>
@@ -498,7 +497,7 @@ public abstract class PersistentObject implements Persistent, Validating {
         ObjEntity entity = resolver.getObjEntity(objectId.getEntityName());
 
         if (entity == null) {
-            throw new IllegalStateException("DataObject's entity is unmapped, objectId: " + objectId);
+            throw new IllegalStateException("Persistent's entity is unmapped, objectId: " + objectId);
         }
 
         ObjRelationship rel = entity.getRelationship(relName);
@@ -538,7 +537,7 @@ public abstract class PersistentObject implements Persistent, Validating {
      * failures to the provided validationResult object. This method is invoked
      * from "validateFor.." before committing a NEW or MODIFIED object to the
      * database. Validation includes checking for null values and value sizes.
-     * CayenneDataObject subclasses may override this method, calling super.
+     * PersistentObject subclasses may override this method, calling super.
      *
      * @since 1.1
      */
@@ -546,7 +545,7 @@ public abstract class PersistentObject implements Persistent, Validating {
 
         ObjEntity objEntity = getObjectContext().getEntityResolver().getObjEntity(this);
         if (objEntity == null) {
-            throw new CayenneRuntimeException("No ObjEntity mapping found for DataObject %s", getClass().getName());
+            throw new CayenneRuntimeException("No ObjEntity mapping found for Persistent %s", getClass().getName());
         }
 
         // validate mandatory attributes
@@ -660,7 +659,7 @@ public abstract class PersistentObject implements Persistent, Validating {
     }
 
     /**
-     * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject
+     * Calls {@link #validateForSave(ValidationResult)}. PersistentObject
      * subclasses may override it providing validation logic that should be
      * executed for the newly created objects before saving them.
      *
@@ -672,7 +671,7 @@ public abstract class PersistentObject implements Persistent, Validating {
     }
 
     /**
-     * Calls {@link #validateForSave(ValidationResult)}. CayenneDataObject
+     * Calls {@link #validateForSave(ValidationResult)}. PersistentObject
      * subclasses may override it providing validation logic that should be
      * executed for the modified objects before saving them.
      *
@@ -684,7 +683,7 @@ public abstract class PersistentObject implements Persistent, Validating {
     }
 
     /**
-     * This implementation does nothing. CayenneDataObject subclasses may
+     * This implementation does nothing. PersistentObject subclasses may
      * override it providing validation logic that should be executed for the
      * deleted objects before committing them.
      *

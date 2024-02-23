@@ -30,13 +30,13 @@ import org.apache.cayenne.util.Util;
 /**
  * DataRow a map that holds values retrieved from the database for a given query row.
  * DataRows are used to cache raw database data and as a reference point for tracking
- * DataObject changes.
+ * PersistentObject changes.
  * 
  * @since 1.1
  */
 public class DataRow extends HashMap<String, Object> {
 
-    // make sure the starting value is different from DataObject default version value
+    // make sure the starting value is different from Persistent default version value
     private static final AtomicLong currentVersion = new AtomicLong(Persistent.DEFAULT_VERSION + 1);
 
     protected long version = currentVersion.getAndIncrement();

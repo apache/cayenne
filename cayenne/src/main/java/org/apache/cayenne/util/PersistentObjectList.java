@@ -352,8 +352,8 @@ public class PersistentObjectList<E> extends RelationshipFault<E> implements Lis
             if (addedToUnresolved != null && !addedToUnresolved.isEmpty()) {
                 for (E next : addedToUnresolved) {
                     if (next instanceof Persistent) {
-                        Persistent dataObject = (Persistent) next;
-                        if (dataObject.getPersistenceState() == PersistenceState.TRANSIENT) {
+                        Persistent persistent = (Persistent) next;
+                        if (persistent.getPersistenceState() == PersistenceState.TRANSIENT) {
                             continue;
                         }
                     }

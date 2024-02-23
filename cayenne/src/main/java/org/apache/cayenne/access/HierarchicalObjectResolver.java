@@ -439,7 +439,7 @@ class HierarchicalObjectResolver {
         }
     }
 
-    // processor that converts temporary associations between DataObjects to Cayenne
+    // processor that converts temporary associations between Persistent objects to Cayenne
     // relationships and also fires snapshot update events
     final class PostProcessor implements PrefetchProcessor {
 

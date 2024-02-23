@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneDataObjectFlattenedRelIT extends RuntimeCase {
+public class CayennePersistentObjectFlattenedRelIT extends RuntimeCase {
 
     @Inject
     private CayenneRuntime runtime;

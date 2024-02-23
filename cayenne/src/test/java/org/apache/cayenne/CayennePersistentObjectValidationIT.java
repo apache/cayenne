@@ -40,7 +40,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneDataObjectValidationIT extends RuntimeCase {
+public class CayennePersistentObjectValidationIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

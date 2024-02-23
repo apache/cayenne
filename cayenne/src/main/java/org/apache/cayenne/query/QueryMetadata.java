@@ -155,7 +155,7 @@ public interface QueryMetadata {
 
     /**
      * Returns <code>true</code> if this query should produce a list of data rows as
-     * opposed to DataObjects, <code>false</code> for DataObjects. This is a hint to
+     * opposed to Persistent objects, <code>false</code> for Persistent objects. This is a hint to
      * QueryEngine executing this query.
      */
     boolean isFetchingDataRows();

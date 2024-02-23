@@ -37,7 +37,7 @@ import org.apache.cayenne.unit.util.TstBean;
 import org.junit.Test;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneDataObjectIT extends RuntimeCase {
+public class CayennePersistentObjectIT extends RuntimeCase {
 
 	@Inject
 	private ObjectContext context;

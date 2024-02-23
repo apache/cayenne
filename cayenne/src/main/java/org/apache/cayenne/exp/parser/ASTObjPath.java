@@ -113,8 +113,8 @@ public class ASTObjPath extends ASTPath {
 			try {
 				String firstSegment = getPath().first().value();
 				if (source instanceof Persistent) {
-					Persistent dataObject = (Persistent) source;
-					dataObject.writeProperty(firstSegment, dynamicCastValue(dataObject, value));
+					Persistent persistent = (Persistent) source;
+					persistent.writeProperty(firstSegment, dynamicCastValue(persistent, value));
 				} else {
 					PropertyUtils.setProperty(source, firstSegment, value);
 				}

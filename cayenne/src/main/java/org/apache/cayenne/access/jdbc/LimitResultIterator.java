@@ -33,7 +33,6 @@ import java.util.NoSuchElementException;
 public class LimitResultIterator<T> implements ResultIterator<T> {
 
     protected ResultIterator<T> delegate;
-    protected Map<String, Object> nextDataObjectIds;
 
     protected int fetchLimit;
     protected int offset;

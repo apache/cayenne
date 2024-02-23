@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Various utils for processing persistent objects and their properties
  * <p>
- * <i>DataObjects and Primary Keys: All methods that allow to extract primary
+ * <i>PersistentObjects and Primary Keys: All methods that allow to extract primary
  * key values or use primary keys to find objects are provided for convenience.
  * Still the author's belief is that integer sequential primary keys are
  * meaningless in the object model and are pure database artifacts. Therefore
@@ -261,11 +261,11 @@ public class Cayenne {
      * single column numeric primary keys. If an object is transient or has an
      * ObjectId that can not be converted to an int PK, an exception is thrown.
      */
-    public static long longPKForObject(Persistent dataObject) {
-        Object value = pkForObject(dataObject);
+    public static long longPKForObject(Persistent object) {
+        Object value = pkForObject(object);
 
         if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: %s", dataObject.getObjectId());
+            throw new CayenneRuntimeException("PK is not a number: %s", object.getObjectId());
         }
 
         return ((Number) value).longValue();
@@ -276,11 +276,11 @@ public class Cayenne {
      * single column numeric primary keys. If an object is transient or has an
      * ObjectId that can not be converted to an int PK, an exception is thrown.
      */
-    public static int intPKForObject(Persistent dataObject) {
-        Object value = pkForObject(dataObject);
+    public static int intPKForObject(Persistent object) {
+        Object value = pkForObject(object);
 
         if (!(value instanceof Number)) {
-            throw new CayenneRuntimeException("PK is not a number: %s", dataObject.getObjectId());
+            throw new CayenneRuntimeException("PK is not a number: %s", object.getObjectId());
         }
 
         return ((Number) value).intValue();
@@ -291,8 +291,8 @@ public class Cayenne {
      * single column primary keys. If an object is transient or has a compound
      * ObjectId, an exception is thrown.
      */
-    public static Object pkForObject(Persistent dataObject) {
-        Map<String, Object> pk = extractObjectId(dataObject);
+    public static Object pkForObject(Persistent object) {
+        Map<String, Object> pk = extractObjectId(object);
 
         if (pk.size() != 1) {
             throw new CayenneRuntimeException("Expected single column PK, got %d columns, ID: %s", pk.size(), pk);
@@ -307,23 +307,23 @@ public class Cayenne {
      * for all possible types of primary keys. If an object is transient, an
      * exception is thrown.
      */
-    public static Map<String, Object> compoundPKForObject(Persistent dataObject) {
-        return Collections.unmodifiableMap(extractObjectId(dataObject));
+    public static Map<String, Object> compoundPKForObject(Persistent object) {
+        return Collections.unmodifiableMap(extractObjectId(object));
     }
 
-    static Map<String, Object> extractObjectId(Persistent dataObject) {
-        if (dataObject == null) {
-            throw new IllegalArgumentException("Null DataObject");
+    static Map<String, Object> extractObjectId(Persistent object) {
+        if (object == null) {
+            throw new IllegalArgumentException("Null Persistent object");
         }
 
-        ObjectId id = dataObject.getObjectId();
+        ObjectId id = object.getObjectId();
         if (!id.isTemporary()) {
             return id.getIdSnapshot();
         }
 
         // replacement ID is more tricky... do some sanity check...
         if (id.isReplacementIdAttached()) {
-            ObjEntity objEntity = dataObject.getObjectContext().getEntityResolver().getObjEntity(dataObject);
+            ObjEntity objEntity = object.getObjectContext().getEntityResolver().getObjEntity(object);
 
             if (objEntity != null) {
                 DbEntity entity = objEntity.getDbEntity();
@@ -348,8 +348,8 @@ public class Cayenne {
      * @see #objectForPK(ObjectContext, ObjectId)
      */
     @SuppressWarnings("unchecked")
-	public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, int pk) {
-        return (T) objectForPK(context, buildId(context, dataObjectClass, pk));
+	public static <T> T objectForPK(ObjectContext context, Class<T> persistentObjectClass, int pk) {
+        return (T) objectForPK(context, buildId(context, persistentObjectClass, pk));
     }
 
     /**
@@ -364,8 +364,8 @@ public class Cayenne {
      * @see #objectForPK(ObjectContext, ObjectId)
      */
     @SuppressWarnings("unchecked")
-	public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Object pk) {
-        return (T) objectForPK(context, buildId(context, dataObjectClass, pk));
+	public static <T> T objectForPK(ObjectContext context, Class<T> persistentObjectClass, Object pk) {
+        return (T) objectForPK(context, buildId(context, persistentObjectClass, pk));
     }
 
     /**
@@ -380,11 +380,11 @@ public class Cayenne {
      * @see #objectForPK(ObjectContext, ObjectId)
      */
     @SuppressWarnings("unchecked")
-	public static <T> T objectForPK(ObjectContext context, Class<T> dataObjectClass, Map<String, ?> pk) {
+	public static <T> T objectForPK(ObjectContext context, Class<T> persistantObjectClass, Map<String, ?> pk) {
 
-        ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(persistantObjectClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("Non-existent ObjEntity for class: %s", dataObjectClass);
+            throw new CayenneRuntimeException("Non-existent ObjEntity for class: %s", persistantObjectClass);
         }
 
         return (T) objectForPK(context, ObjectId.of(entity.getName(), pk));
@@ -493,18 +493,18 @@ public class Cayenne {
         return ObjectId.of(objEntityName, attr, pk);
     }
 
-    static ObjectId buildId(ObjectContext context, Class<?> dataObjectClass, Object pk) {
+    static ObjectId buildId(ObjectContext context, Class<?> persistentClass, Object pk) {
         if (pk == null) {
             throw new IllegalArgumentException("Null PK");
         }
 
-        if (dataObjectClass == null) {
-            throw new IllegalArgumentException("Null DataObject class.");
+        if (persistentClass == null) {
+            throw new IllegalArgumentException("Null Persistent class.");
         }
 
-        ObjEntity entity = context.getEntityResolver().getObjEntity(dataObjectClass);
+        ObjEntity entity = context.getEntityResolver().getObjEntity(persistentClass);
         if (entity == null) {
-            throw new CayenneRuntimeException("Unmapped DataObject Class: %s", dataObjectClass.getName());
+            throw new CayenneRuntimeException("Unmapped Persistent Class: %s", persistentClass.getName());
         }
 
         Collection<String> pkAttributes = entity.getPrimaryKeyNames();

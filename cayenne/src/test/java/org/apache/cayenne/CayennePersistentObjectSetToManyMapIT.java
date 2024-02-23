@@ -35,7 +35,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.MAP_TO_MANY_PROJECT)
-public class CayenneDataObjectSetToManyMapIT extends RuntimeCase {
+public class CayennePersistentObjectSetToManyMapIT extends RuntimeCase {
 
     @Inject
     protected ObjectContext context;

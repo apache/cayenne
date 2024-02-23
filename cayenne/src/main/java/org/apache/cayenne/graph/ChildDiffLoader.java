@@ -95,16 +95,16 @@ public class ChildDiffLoader implements GraphChangeHandler {
 				throw new IllegalArgumentException("Entity not mapped with Cayenne: " + id);
 			}
 
-			Persistent dataObject;
+			Persistent persistent;
 			Class<?> javaClass = context.getEntityResolver().getObjectFactory().getJavaClass(entity.getJavaClassName());
 			try {
-				dataObject = (Persistent) javaClass.getDeclaredConstructor().newInstance();
+				persistent = (Persistent) javaClass.getDeclaredConstructor().newInstance();
 			} catch (Exception ex) {
 				throw new CayenneRuntimeException("Error instantiating object.", ex);
 			}
 
-			dataObject.setObjectId(id);
-			context.registerNewObject(dataObject);
+			persistent.setObjectId(id);
+			context.registerNewObject(persistent);
 		} finally {
 			setExternalChange(Boolean.FALSE);
 		}

@@ -666,7 +666,7 @@ public class DataMap implements Serializable, ConfigurationNode, XMLSerializable
 	}
 
 	/**
-	 * Returns an ObjEntity for a DataObject class name.
+	 * Returns an ObjEntity for a Persistent class name.
 	 * 
 	 * @since 1.1
 	 */

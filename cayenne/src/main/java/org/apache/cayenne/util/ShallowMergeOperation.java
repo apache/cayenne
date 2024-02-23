@@ -57,7 +57,7 @@ public class ShallowMergeOperation {
         GraphManager graphManager = context.getGraphManager();
 
         // have to synchronize almost the entire method to prevent multiple threads from
-        // messing up dataobjects per CAY-845.
+        // messing up Persistent objects per CAY-845.
         synchronized (graphManager) {
             T object = (T) graphManager.getNode(id);
 

@@ -64,7 +64,7 @@ Callback methods on Persistent classes are mapped in CayenneModeler for each Obj
 
 [source, Java]
 ----
-public abstract class _Order extends CayenneDataObject {
+public abstract class _Order extends PersistentObject {
     protected abstract void onNewOrder();
 }
 
@@ -81,7 +81,7 @@ As `onNewOrder()` is already declared in the mapping, it does not need to be reg
 
 As a rule callback methods do not have any knowledge of the outside application, and can only access the state of the object itself and possibly the state of other persistent objects via object's own ObjectContext.
 
-NOTE: Validation and callbacks: There is a clear overlap in functionality between object callbacks and `DataObject.validateForX()` methods. In the future validation may be completely superseded by callbacks. It is a good idea to use "validateForX" strictly for validation (or not use it at all). Updating the state before commit should be done via callbacks.
+NOTE: Validation and callbacks: There is a clear overlap in functionality between object callbacks and `PersistentObject.validateForX()` methods. In the future validation may be completely superseded by callbacks. It is a good idea to use "validateForX" strictly for validation (or not use it at all). Updating the state before commit should be done via callbacks.
 
 ==== Callbacks on Non-Persistent Listeners
 

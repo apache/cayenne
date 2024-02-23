@@ -40,14 +40,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * A synchronized list that serves as a container of DataObjects. It is returned
+ * A synchronized list that serves as a container of Persistent objects. It is returned
  * when a paged query is performed by DataContext. On creation, only the first
  * "page" is fully resolved, for the rest of the objects only their ObjectIds
  * are read. Pages following the first page are resolved on demand only. On
  * access to an element, the list would ensure that this element as well as all
  * its siblings on the same page are fully resolved.
  * <p>
- * The list can hold DataRows or DataObjects. Attempts to add any other object
+ * The list can hold DataRows or Persistent objects. Attempts to add any other object
  * types will result in an exception.
  * </p>
  * <p>
@@ -165,7 +165,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 
 	/**
 	 * Checks that an object is of the same type as the rest of objects
-	 * (DataObject or DataRows depending on the query type).
+	 * (Persistent or DataRows depending on the query type).
 	 */
 	private void validateListObject(Object object) throws IllegalArgumentException {
 		if(elements == null) {
@@ -180,7 +180,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 			}
 		} else {
 			if (!(object instanceof Persistent)) {
-				throw new IllegalArgumentException("Only DataObjects can be stored in this list.");
+				throw new IllegalArgumentException("Only Persistent objects can be stored in this list.");
 			}
 		}
 	}
@@ -380,7 +380,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	}
 
 	/**
-	 * Returns a list iterator for this list. DataObjects are resolved a page
+	 * Returns a list iterator for this list. Persistent objects are resolved a page
 	 * (according to getPageSize()) at a time as necessary - when retrieved with
 	 * next() or previous().
 	 */
@@ -393,7 +393,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	 * sequence), starting at the specified position in this list. The specified
 	 * index indicates the first element that would be returned by an initial
 	 * call to the next method. An initial call to the previous method would
-	 * return the element with the specified index minus one. DataObjects are
+	 * return the element with the specified index minus one. Persistent objects are
 	 * resolved a page at a time (according to getPageSize()) as necessary -
 	 * when retrieved with next() or previous().
 	 */
@@ -406,7 +406,7 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 	}
 
 	/**
-	 * Return an iterator for this list. DataObjects are resolved a page
+	 * Return an iterator for this list. Persistent objects are resolved a page
 	 * (according to getPageSize()) at a time as necessary - when retrieved with
 	 * next().
 	 */
@@ -772,8 +772,8 @@ public class IncrementalFaultList<E> implements List<E>, Serializable {
 				return false;
 			}
 
-			Persistent dataObject = (Persistent) object;
-			return dataObject.getObjectId().getIdSnapshot().equals(objectInTheList);
+			Persistent persistent = (Persistent) object;
+			return persistent.getObjectId().getIdSnapshot().equals(objectInTheList);
 		}
 	}
 

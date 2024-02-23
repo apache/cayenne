@@ -43,7 +43,7 @@ import org.apache.cayenne.query.QueryMetadata;
 
 /**
  * A panel that supports editing the properties a query not based on ObjEntity, but still
- * supporting DataObjects retrieval.
+ * supporting Persistent objects retrieval.
  * 
  */
 public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
@@ -79,7 +79,7 @@ public abstract class RawQueryPropertiesPanel extends SelectPropertiesPanel {
         builder.add(cacheStrategy, cc.xywh(3, 3, 5, 1));
         cacheGroupsLabel = builder.addLabel("Cache Group:", cc.xy(1, 7));
         builder.add(cacheGroups.getComponent(), cc.xywh(3, 7, 5, 1));
-        builder.addLabel("Fetch Data Objects:", cc.xy(1, 9));
+        builder.addLabel("Fetch Persistent Objects:", cc.xy(1, 9));
         builder.add(dataObjects, cc.xy(3, 9));
         builder.add(entities, cc.xywh(5, 9, 3, 1));
         builder.addLabel("Fetch Offset, Rows:", cc.xy(1, 11));

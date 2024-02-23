@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneDataObjectRelationshipsIT extends RuntimeCase {
+public class CayennePersistentObjectRelationshipsIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

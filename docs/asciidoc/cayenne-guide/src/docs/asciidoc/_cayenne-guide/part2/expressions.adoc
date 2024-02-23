@@ -130,7 +130,7 @@ name like 'A%'
 ----
 
 
-Parameters. Expressions can contain named parameters (names that start with "$") that can be substituted with values either by name or by position. Parameterized expressions let you create reusable expression templates. Also, if an expression contains a complex object that doesn’t have a simple String representation (e.g. a Date, a DataObject, an ObjectId), parameterizing the expression is the only way to represent it as String. Here are examples of both positional and named parameter bindings:
+Parameters. Expressions can contain named parameters (names that start with "$") that can be substituted with values either by name or by position. Parameterized expressions let you create reusable expression templates. Also, if an expression contains a complex object that doesn’t have a simple String representation (e.g. a `Date`, a `Persistent`, an `ObjectId`), parameterizing the expression is the only way to represent it as String. Here are examples of both positional and named parameter bindings:
 
 [source, java]
 ----

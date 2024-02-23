@@ -67,9 +67,9 @@ public class ToManyList<E> extends PersistentObjectList<E> implements Serializab
         // No point in adding a new or transient object -- these will never be fetched
         // from the database.
         if (object instanceof Persistent) {
-            Persistent dataObject = (Persistent) object;
-            if ((dataObject.getPersistenceState() == PersistenceState.TRANSIENT)
-                    || (dataObject.getPersistenceState() == PersistenceState.NEW)) {
+            Persistent persistent = (Persistent) object;
+            if ((persistent.getPersistenceState() == PersistenceState.TRANSIENT)
+                    || (persistent.getPersistenceState() == PersistenceState.NEW)) {
                 return false;
             }
         }
@@ -83,26 +83,26 @@ public class ToManyList<E> extends PersistentObjectList<E> implements Serializab
 
     @Override
     protected void postprocessAdd(Collection<? extends E> collection) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void postprocessRemove(Collection<? extends E> collection) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void postprocessAdd(E addedObject) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void postprocessRemove(E removedObject) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void updateReverse(List<E> resolved) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 }

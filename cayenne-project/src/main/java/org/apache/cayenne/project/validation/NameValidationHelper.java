@@ -87,7 +87,7 @@ public class NameValidationHelper {
     }
 
     // a property is considered invalid if there is a getter or a setter for it in
-    // java.lang.Object or CayenneDataObject
+    // java.lang.Object or PersistentObject
     static final Collection<String> INVALID_JAVA_PROPERTIES = Arrays.asList(
             "class",
             "committedSnapshot",
@@ -180,9 +180,9 @@ public class NameValidationHelper {
     }
 
     /**
-     * Returns whether a given String is a valid DataObject property. A property is
+     * Returns whether a given String is a valid Persistent property. A property is
      * considered invalid if there is a getter or a setter for it in java.lang.Object or
-     * CayenneDataObject.
+     * PersistentObject.
      */
     public boolean invalidDataObjectProperty(String dataObjectProperty) {
         return dataObjectProperty == null

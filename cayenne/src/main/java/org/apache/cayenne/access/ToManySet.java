@@ -38,35 +38,35 @@ public class ToManySet<E> extends PersistentObjectSet<E> implements Serializable
         // No point in adding a new or transient object -- these will never be fetched
         // from the database.
         if (object instanceof Persistent) {
-            Persistent dataObject = (Persistent) object;
-            return (dataObject.getPersistenceState() != PersistenceState.TRANSIENT)
-                    && (dataObject.getPersistenceState() != PersistenceState.NEW);
+            Persistent persistent = (Persistent) object;
+            return (persistent.getPersistenceState() != PersistenceState.TRANSIENT)
+                    && (persistent.getPersistenceState() != PersistenceState.NEW);
         }
         return true;
     }
 
     @Override
     protected void postprocessAdd(Collection<? extends E> collection) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void postprocessRemove(Collection<? extends E> collection) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void postprocessAdd(E addedObject) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void postprocessRemove(E removedObject) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 
     @Override
     protected void updateReverse(List<E> resolved) {
-        // no need for this operation for DataObjects...
+        // no need for this operation for Persistent objects...
     }
 }

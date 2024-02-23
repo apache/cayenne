@@ -77,7 +77,7 @@ public interface DataContextDelegate {
      * and all other objects - to TRANSIENT. To block this behavior, delegate should
      * return <code>false</code>, and possibly do its own processing.
      * 
-     * @param object DataObject that was deleted externally and is still present in the
+     * @param object Persistent that was deleted externally and is still present in the
      *            ObjectStore associated with the delegate.
      */
     boolean shouldProcessDelete(Persistent object);

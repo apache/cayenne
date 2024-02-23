@@ -294,8 +294,8 @@ public class PersistentObjectSet<E> extends RelationshipFault<E>
                 for (E next : addedToUnresolved) {
 
                     if (next instanceof Persistent) {
-                        Persistent dataObject = (Persistent) next;
-                        if (dataObject.getPersistenceState() == PersistenceState.TRANSIENT) {
+                        Persistent persistent = (Persistent) next;
+                        if (persistent.getPersistenceState() == PersistenceState.TRANSIENT) {
                             continue;
                         }
                     }

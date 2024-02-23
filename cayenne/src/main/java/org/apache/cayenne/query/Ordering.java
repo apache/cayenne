@@ -43,7 +43,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * Defines object sorting criteria, used either for in-memory sorting of object
  * lists or as a specification for building <em>ORDER BY</em> clause of a
  * SelectQuery query. Note that in case of in-memory sorting, Ordering can be
- * used with any JavaBeans, not just DataObjects.
+ * used with any JavaBeans, not just Persistent objects.
  */
 public class Ordering implements Comparator<Object>, Serializable, XMLSerializable {
 

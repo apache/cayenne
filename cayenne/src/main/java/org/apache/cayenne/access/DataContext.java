@@ -596,7 +596,7 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Converts a list of DataRows to a List of DataObject registered with this
+     * Converts a list of DataRows to a List of Persistent registered with this
      * DataContext.
      * 
      * @since 3.0
@@ -616,7 +616,7 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Creates a DataObject from DataRow.
+     * Creates a Persistent from DataRow.
      * 
      * @see DataRow
      * @since 3.1
@@ -634,7 +634,7 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Creates a DataObject from DataRow. This variety of the
+     * Creates a Persistent from DataRow. This variety of the
      * 'objectFromDataRow' method is normally used for generic classes.
      * 
      * @see DataRow
@@ -689,13 +689,13 @@ public class DataContext implements ObjectContext {
     }
 
     /**
-     * Unregisters a Collection of DataObjects from the DataContext and the underlying ObjectStore.
+     * Unregisters a Collection of Persistent objects from the DataContext and the underlying ObjectStore.
      * This operation also unsets DataContext for each object and changes its state to {@link PersistenceState#TRANSIENT}
      * 
      * @see #invalidateObjects(Collection)
      */
-    public void unregisterObjects(Collection<?> dataObjects) {
-        getObjectStore().objectsUnregistered(dataObjects);
+    public void unregisterObjects(Collection<?> objects) {
+        getObjectStore().objectsUnregistered(objects);
     }
 
     @Override
@@ -1003,13 +1003,13 @@ public class DataContext implements ObjectContext {
      * <li>Query refreshing policy controls whether to refresh existing data
      * objects and ignore any cached values.</li>
      * <li>Query data rows policy defines whether the result should be returned
-     * as DataObjects or DataRows.</li>
+     * as Persistent objects or DataRows.</li>
      * </ul>
      * <p>
      * <i>Since 1.2 takes any Query parameter, not just GenericSelectQuery</i>
      * </p>
      * 
-     * @return A list of DataObjects or a DataRows, depending on the value
+     * @return A list of Persistent objects or a DataRows, depending on the value
      *         returned by {@link QueryMetadata#isFetchingDataRows()}.
      *         Сan also return an iterator if the query is an instance of iteratedQuery.
      */
@@ -1169,9 +1169,9 @@ public class DataContext implements ObjectContext {
             objectStore.setDataRowCache(cache);
         }
 
-        // CayenneDataObjects have a transient DataContext because at deserialize time
+        // PersistentObjects have a transient DataContext because at deserialize time
         // the DataContext may need to be different from the one at serialize time (for programmer defined reasons).
-        // So, when a DataObject is resurrected because it's DataContext was serialized,
+        // So, when a Persistent is resurrected because it's DataContext was serialized,
         // it will then set the objects DataContext to the correct one.
         // If deserialized "otherwise", it will not have a DataContext.
 
@@ -1213,7 +1213,7 @@ public class DataContext implements ObjectContext {
         }
 
         // have to synchronize almost the entire method to prevent multiple threads from
-        // messing up DataObjects per CAY-845. Originally only parts of "else" were synchronized,
+        // messing up Persistent objects per CAY-845. Originally only parts of "else" were synchronized,
         // but we had to expand the lock scope to ensure consistent behavior.
         synchronized (getGraphManager()) {
             Persistent cachedObject = (Persistent) getGraphManager().getNode(id);

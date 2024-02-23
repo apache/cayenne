@@ -65,7 +65,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
             throw new NullPointerException("Attempt to add null object.");
         }
 
-        // TODO, Andrus, 2/9/2006 - CayenneDataObject differences:
+        // TODO, Andrus, 2/9/2006 - GenericPersistentObject differences:
         // * invokes "willConnect"
         // * has a callback to ObjectStore to handle flattened
         // * has a callback to ObjectStore to retain snapshot
@@ -91,7 +91,7 @@ public abstract class BaseToManyProperty extends BaseArcProperty implements
 
     public void removeTarget(Object source, Object target, boolean setReverse) {
 
-        // TODO, Andrus, 2/9/2006 - CayenneDataObject differences:
+        // TODO, Andrus, 2/9/2006 - GenericPersistentObject differences:
         // * has a callback to ObjectStore to handle flattened
         // * changes object state to modified
 

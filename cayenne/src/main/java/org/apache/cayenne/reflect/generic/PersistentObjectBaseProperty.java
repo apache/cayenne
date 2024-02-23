@@ -26,7 +26,7 @@ import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.PropertyVisitor;
 
 /**
- * A superclass of DataObject properties that accesses object via DataObject methods.
+ * A superclass of Persistent properties that accesses object via Persistent methods.
  * 
  * @since 3.0
  */
@@ -40,11 +40,11 @@ abstract class PersistentObjectBaseProperty implements PropertyDescriptor, Seria
 
     public Object readProperty(Object object) throws PropertyException {
         try {
-            return toDataObject(object).readProperty(getName());
+            return toPersistent(object).readProperty(getName());
         }
         catch (Throwable th) {
             throw new PropertyException(
-                    "Error reading DataObject property: " + getName(),
+                    "Error reading Persistent property: " + getName(),
                     this,
                     object,
                     th);
@@ -54,11 +54,11 @@ abstract class PersistentObjectBaseProperty implements PropertyDescriptor, Seria
     public void writeProperty(Object object, Object oldValue, Object newValue)
             throws PropertyException {
         try {
-            toDataObject(object).writeProperty(getName(), newValue);
+            toPersistent(object).writeProperty(getName(), newValue);
         }
         catch (Throwable th) {
             throw new PropertyException(
-                    "Error writing DataObject property: " + getName(),
+                    "Error writing Persistent property: " + getName(),
                     this,
                     object,
                     th);
@@ -67,11 +67,11 @@ abstract class PersistentObjectBaseProperty implements PropertyDescriptor, Seria
 
     public Object readPropertyDirectly(Object object) throws PropertyException {
         try {
-            return toDataObject(object).readPropertyDirectly(getName());
+            return toPersistent(object).readPropertyDirectly(getName());
         }
         catch (Throwable th) {
             throw new PropertyException(
-                    "Error reading DataObject property: " + getName(),
+                    "Error reading Persistent property: " + getName(),
                     this,
                     object,
                     th);
@@ -81,23 +81,23 @@ abstract class PersistentObjectBaseProperty implements PropertyDescriptor, Seria
     public void writePropertyDirectly(Object object, Object oldValue, Object newValue)
             throws PropertyException {
         try {
-            toDataObject(object).writePropertyDirectly(getName(), newValue);
+            toPersistent(object).writePropertyDirectly(getName(), newValue);
         }
         catch (Throwable th) {
             throw new PropertyException(
-                    "Error writing DataObject property: " + getName(),
+                    "Error writing Persistent property: " + getName(),
                     this,
                     object,
                     th);
         }
     }
 
-    protected final Persistent toDataObject(Object object) throws PropertyException {
+    protected final Persistent toPersistent(Object object) throws PropertyException {
         try {
             return (Persistent) object;
         }
         catch (ClassCastException e) {
-            throw new PropertyException("Object is not a DataObject: '"
+            throw new PropertyException("Object is not a Persistent: '"
                     + object.getClass().getName()
                     + "'", this, object, e);
         }

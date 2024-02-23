@@ -100,7 +100,7 @@ public class ImportUtils {
 
 	/**
 	 * Register a fully-qualified data type class name. For example,
-	 * org.apache.cayenne.CayenneDataObject.
+	 * org.apache.cayenne.GenericPersistentObject.
 	 * 
 	 * @param typeName
 	 *            FQ data type class name.

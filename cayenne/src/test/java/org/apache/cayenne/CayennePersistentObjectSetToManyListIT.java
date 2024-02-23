@@ -41,7 +41,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class CayenneDataObjectSetToManyListIT extends RuntimeCase {
+public class CayennePersistentObjectSetToManyListIT extends RuntimeCase {
 
 	@Inject
 	private CayenneRuntime runtime;

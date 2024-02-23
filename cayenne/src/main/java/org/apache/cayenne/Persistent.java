@@ -53,7 +53,7 @@ public interface Persistent extends Serializable {
     void writePropertyDirectly(String propertyName, Object val);
 
     /**
-     * Returns mapped property value as curently stored in the DataObject. Returned value
+     * Returns mapped property value as currently stored in the Persistent object. Returned value
      * maybe a fault or a real value. This method will not attempt to resolve faults, or
      * to read unmapped properties.
      */
@@ -155,7 +155,7 @@ public interface Persistent extends Serializable {
     /**
      * Returns a value of the property identified by propName. Resolves faults if needed.
      * This method can safely be used instead of or in addition to the auto-generated
-     * property accessors in subclasses of CayenneDataObject.
+     * property accessors in subclasses of the Persistent object.
      */
     Object readProperty(String propName);
 

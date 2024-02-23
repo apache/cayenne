@@ -37,7 +37,7 @@ public abstract class BaseToOneProperty extends BaseArcProperty implements ToOne
             return;
         }
 
-        // TODO, Andrus, 2/9/2006 - CayenneDataObject also invokes "willConnect" and has a
+        // TODO, Andrus, 2/9/2006 - GenericPersistentObject also invokes "willConnect" and has a
         // callback to ObjectStore to handle flattened....
 
         if (setReverse) {

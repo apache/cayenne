@@ -24,7 +24,7 @@ import org.apache.cayenne.reflect.Accessor;
 import org.apache.cayenne.reflect.PropertyException;
 
 /**
- * A PropertyAccessor that uses DataObject API to read/write values.
+ * A PropertyAccessor that uses Persistent API to read/write values.
  *
  * @since 3.0
  */
@@ -45,19 +45,19 @@ class PersistentObjectAccessor implements Accessor {
     }
 
     /**
-     * Reads the value without disturbing DataObject state. I.e. no Fault resolving occurs
+     * Reads the value without disturbing Persistent state. I.e. no Fault resolving occurs
      * here.
      */
     public Object getValue(Object object) throws PropertyException {
         try {
-            Persistent dataObject = (Persistent) object;
-            return dataObject.readPropertyDirectly(propertyName);
+            Persistent persistent = (Persistent) object;
+            return persistent.readPropertyDirectly(propertyName);
         } catch (ClassCastException e) {
-            throw new PropertyException("Object is not a DataObject: '"
+            throw new PropertyException("Object is not a Persistent: '"
                     + object.getClass().getName()
                     + "'", this, object, e);
         } catch (Throwable th) {
-            throw new PropertyException("Error reading DataObject property: "
+            throw new PropertyException("Error reading Persistent property: "
                     + propertyName, this, object, th);
         }
 
@@ -71,11 +71,11 @@ class PersistentObjectAccessor implements Accessor {
         try {
             ((Persistent) object).writePropertyDirectly(propertyName, newValue);
         } catch (ClassCastException e) {
-            throw new PropertyException("Object is not a DataObject: '"
+            throw new PropertyException("Object is not a Persistent: '"
                     + object.getClass().getName()
                     + "'", this, object, e);
         } catch (Throwable th) {
-            throw new PropertyException("Error reading DataObject property: "
+            throw new PropertyException("Error reading Persistent property: "
                     + propertyName, this, object, th);
         }
 

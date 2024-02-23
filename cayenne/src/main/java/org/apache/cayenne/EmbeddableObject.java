@@ -34,7 +34,7 @@ public interface EmbeddableObject {
     void writePropertyDirectly(String propertyName, Object val);
 
     /**
-     * Returns mapped property value as currently stored in the DataObject. Returned value
+     * Returns mapped property value as currently stored in the PersistentObject. Returned value
      * maybe a fault or a real value. This method will not attempt to resolve faults, or
      * to read unmapped properties.
      */

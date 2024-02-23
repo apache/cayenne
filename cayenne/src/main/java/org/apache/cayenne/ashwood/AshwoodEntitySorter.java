@@ -52,7 +52,7 @@ import java.util.function.Function;
 
 /**
  * Implements dependency sorting algorithms for ObjEntities, DbEntities and
- * DataObjects. Presently it works for acyclic database schemas with possible
+ * Persistent objects. Presently it works for acyclic database schemas with possible
  * multi-reflexive tables.
  * 
  * @since 3.1

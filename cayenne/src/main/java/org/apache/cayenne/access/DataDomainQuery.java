@@ -129,7 +129,7 @@ class DataDomainQuery implements Query, QueryMetadata {
     }
 
     public boolean isFetchingDataRows() {
-        // must return true, otherwise the stack will attempt DataObject conversion
+        // must return true, otherwise the stack will attempt Persistent conversion
         return true;
     }
 

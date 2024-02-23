@@ -31,7 +31,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 @UseCayenneRuntime(CayenneProjects.REFLEXIVE_PROJECT)
-public class CayenneDataObjectReflexiveIT extends RuntimeCase {
+public class CayennePersistentObjectReflexiveIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;

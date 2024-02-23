@@ -49,7 +49,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 
 /**
- * ObjEntity is a mapping descriptor for a DataObject Java class. It contains
+ * ObjEntity is a mapping descriptor for a Persistent Java class. It contains
  * the information about the Java class itself, as well as its mapping to the
  * DbEntity layer.
  */
@@ -174,7 +174,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
     /**
      * Returns a non-null class name. For generic entities with no class
      * specified explicitly, default DataMap superclass is used, and if it is
-     * not set - CayenneDataObject is used.
+     * not set - GenericPersistentObject is used.
      * 
      * @since 4.0
      */
@@ -242,7 +242,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
      * Returns whether this entity is "generic", meaning it is not mapped to a
      * unique Java class. Criterion for generic entities is that it either has
      * no Java class mapped or its class is the same as DataMap's default
-     * superclass, or it is CayenneDataObject.
+     * superclass, or it is GenericPersistentObject.
      * 
      * @since 1.2
      */
@@ -303,21 +303,21 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
     }
 
     /**
-     * Returns the name of DataObject class described by this entity.
+     * Returns the name of Persistent class described by this entity.
      */
     public String getClassName() {
         return className;
     }
 
     /**
-     * Sets the name of the DataObject class described by this entity.
+     * Sets the name of the Persistent class described by this entity.
      */
     public void setClassName(String className) {
         this.className = className;
     }
 
     /**
-     * Returns a fully-qualified name of the super class of the DataObject
+     * Returns a fully-qualified name of the super class of the Persistent
      * class. This value is used as a hint for class generation. If the entity
      * inherits from another entity, a superclass is the class of that entity.
      */
@@ -327,7 +327,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
     }
 
     /**
-     * Sets a fully-qualified name of the super class of the DataObject class.
+     * Sets a fully-qualified name of the super class of the Persistent class.
      * This value is used as a hint for class generation.
      * <p>
      * <i>An attempt to set superclass on an inherited entity has no effect,
