@@ -30,7 +30,7 @@ public class ObjectIdQueryTest {
     @Test
     public void testConstructorObjectId() {
 
-        ObjectId oid = ObjectId.of("MockDataObject", "a", "b");
+        ObjectId oid = ObjectId.of("MockPersistentObject", "a", "b");
         ObjectIdQuery query = new ObjectIdQuery(oid);
 
         assertSame(oid, query.getObjectId());

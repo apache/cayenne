@@ -39,7 +39,7 @@ public class ASTEqualIT extends RuntimeCase {
 	private ObjectContext context;
 
 	@Test
-	public void testEvaluate_DataObject() {
+	public void testEvaluate_PersistentObject() {
 		Artist a1 = context.newObject(Artist.class);
 		Artist a2 = context.newObject(Artist.class);
 		Painting p1 = context.newObject(Painting.class);

@@ -41,7 +41,7 @@ import static org.junit.Assert.assertNull;
  * @since 4.1
  */
 @UseCayenneRuntime(CayenneProjects.HYBRID_DATA_OBJECT_PROJECT)
-public class HybridDataObjectIT extends RuntimeCase {
+public class HybridPersistentObjectIT extends RuntimeCase {
 
     @Inject
     private DataContext context;

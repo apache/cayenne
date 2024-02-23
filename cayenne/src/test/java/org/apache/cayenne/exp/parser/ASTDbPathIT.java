@@ -44,7 +44,7 @@ public class ASTDbPathIT extends RuntimeCase {
 	private ObjectContext context;
 
 	@Test
-	public void testEvaluate_DataObject() {
+	public void testEvaluate_PersistentObject() {
 
 		Artist a1 = context.newObject(Artist.class);
 		a1.setArtistName("a1");
@@ -72,7 +72,7 @@ public class ASTDbPathIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testEvaluate_Related_DataObject() {
+	public void testEvaluate_Related_PersistentObject() {
 
 		Artist a1 = context.newObject(Artist.class);
 		Artist a2 = context.newObject(Artist.class);

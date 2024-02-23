@@ -32,7 +32,7 @@ public class MockEntityResolver extends EntityResolver {
         this.mockObjEntity = mockObjEntity;
     }
 
-    public synchronized ObjEntity lookupObjEntity(Persistent dataObject) {
+    public synchronized ObjEntity lookupObjEntity(Persistent persistent) {
         return mockObjEntity;
     }
 

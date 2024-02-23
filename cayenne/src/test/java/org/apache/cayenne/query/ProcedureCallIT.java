@@ -211,7 +211,7 @@ public class ProcedureCallIT extends RuntimeCase {
     }
 
     @Test
-    public void testSelectDataObject() throws Exception {
+    public void testSelectPersistentObject() throws Exception {
         if (!accessStackAdapter.supportsStoredProcedures()) {
             return;
         }

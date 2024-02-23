@@ -137,12 +137,12 @@ public class NameValidationHelper {
         return (invalidChars.length() > 0) ? invalidChars : null;
     }
 
-    public boolean invalidDataObjectClass(String dataObjectClassFQN) {
-        if (dataObjectClassFQN == null) {
+    public boolean invalidPersistentObjectClass(String persistentObjectClassFQN) {
+        if (persistentObjectClassFQN == null) {
             return true;
         }
 
-        StringTokenizer toks = new StringTokenizer(dataObjectClassFQN, ".");
+        StringTokenizer toks = new StringTokenizer(persistentObjectClassFQN, ".");
         while (toks.hasMoreTokens()) {
             if (RESERVED_JAVA_KEYWORDS.contains(toks.nextToken())) {
                 return true;
@@ -184,8 +184,8 @@ public class NameValidationHelper {
      * considered invalid if there is a getter or a setter for it in java.lang.Object or
      * PersistentObject.
      */
-    public boolean invalidDataObjectProperty(String dataObjectProperty) {
-        return dataObjectProperty == null
-                || INVALID_JAVA_PROPERTIES.contains(dataObjectProperty);
+    public boolean invalidPersistentObjectProperty(String persistentObjectProperty) {
+        return persistentObjectProperty == null
+                || INVALID_JAVA_PROPERTIES.contains(persistentObjectProperty);
     }
 }

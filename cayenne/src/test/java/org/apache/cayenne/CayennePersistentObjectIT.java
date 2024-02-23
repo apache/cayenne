@@ -88,7 +88,7 @@ public class CayennePersistentObjectIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testReadNestedPropertyNonDataObjectPath() {
+	public void testReadNestedPropertyNonPersistentObjectPath() {
 		GenericPersistentObject o1 = new GenericPersistentObject();
 		TstBean o2 = new TstBean();
 		o2.setInteger(55);

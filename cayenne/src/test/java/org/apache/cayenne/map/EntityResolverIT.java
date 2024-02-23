@@ -68,7 +68,7 @@ public class EntityResolverIT extends RuntimeCase {
     }
 
     @Test
-    public void testLookupObjEntityByDataobject() {
+    public void testLookupObjEntityByPersistentObject() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         Artist artist = (Artist) context.newObject("Artist");
         assertIsArtistObjEntity(resolver.getObjEntity(artist));

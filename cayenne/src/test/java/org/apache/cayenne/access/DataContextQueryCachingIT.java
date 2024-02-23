@@ -178,7 +178,7 @@ public class DataContextQueryCachingIT extends RuntimeCase {
     }
 
     @Test
-    public void testLocalCacheDataObjectsRefresh() throws Exception {
+    public void testLocalCachePersistentObjectsRefresh() throws Exception {
 
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).localCache();
 

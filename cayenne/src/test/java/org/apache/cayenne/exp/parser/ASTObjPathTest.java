@@ -54,7 +54,7 @@ public class ASTObjPathTest {
 	}
 
 	@Test
-	public void testEvaluate_DataObject() {
+	public void testEvaluate_PersistentObject() {
 		ASTObjPath node = new ASTObjPath("artistName");
 
 		Artist a1 = new Artist();
@@ -80,7 +80,7 @@ public class ASTObjPathTest {
 	}
 
 	@Test
-	public void testInjectDataObject() {
+	public void testInjectPersistentObject() {
 		ASTObjPath node = new ASTObjPath("artistName");
 
 		Artist artist = new Artist();

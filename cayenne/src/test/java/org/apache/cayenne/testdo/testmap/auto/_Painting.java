@@ -11,7 +11,7 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.exp.property.StringProperty;
-import org.apache.cayenne.testdo.testmap.ArtDataObject;
+import org.apache.cayenne.testdo.testmap.ArtPersistentObject;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -23,7 +23,7 @@ import org.apache.cayenne.testdo.testmap.PaintingInfo;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Painting extends ArtDataObject {
+public abstract class _Painting extends ArtPersistentObject {
 
     private static final long serialVersionUID = 1L;
 

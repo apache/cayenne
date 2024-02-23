@@ -47,7 +47,7 @@ public class CayenneGeneratorIntegrationTest {
         startTest("single-classes-cust-template");
 
         assertContents("org/apache/cayenne/testdo/testmap/Artist.java", "Artist", "org.apache.cayenne.testdo.testmap",
-                "CayenneDataObject");
+                "PersistentObject");
         assertExists("org/apache/cayenne/testdo/testmap/_Artist.java");
     }
 

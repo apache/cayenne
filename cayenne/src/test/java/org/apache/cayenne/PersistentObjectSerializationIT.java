@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataObjectSerializationIT extends RuntimeCase {
+public class PersistentObjectSerializationIT extends RuntimeCase {
 
     @Inject
     private ObjectContext context;
@@ -133,33 +133,33 @@ public class DataObjectSerializationIT extends RuntimeCase {
     public void testSerializeModifiedMapBasedObject() throws Exception {
         ObjectId objectId = ObjectId.of("test", "id", 42);
 
-        GenericPersistentObject dataObject = new GenericPersistentObject();
-        dataObject.setObjectContext(context);
-        dataObject.setObjectId(objectId);
-        dataObject.writePropertyDirectly("test", 123);
-        dataObject.setPersistenceState(PersistenceState.MODIFIED);
+        GenericPersistentObject persistentObject = new GenericPersistentObject();
+        persistentObject.setObjectContext(context);
+        persistentObject.setObjectId(objectId);
+        persistentObject.writePropertyDirectly("test", 123);
+        persistentObject.setPersistenceState(PersistenceState.MODIFIED);
 
-        GenericPersistentObject cloned = Util.cloneViaSerialization(dataObject);
+        GenericPersistentObject cloned = Util.cloneViaSerialization(persistentObject);
         assertEquals(PersistenceState.MODIFIED, cloned.getPersistenceState());
         assertEquals(123, cloned.readProperty("test"));
         assertNull(cloned.getObjectContext());
-        assertEquals(dataObject.getObjectId(), cloned.getObjectId());
+        assertEquals(persistentObject.getObjectId(), cloned.getObjectId());
     }
 
     @Test
     public void testSerializeCommittedMapBasedObject() throws Exception {
         ObjectId objectId = ObjectId.of("test", "id", 42);
 
-        GenericPersistentObject dataObject = new GenericPersistentObject();
-        dataObject.setObjectContext(context);
-        dataObject.setObjectId(objectId);
-        dataObject.writePropertyDirectly("test", 123);
-        dataObject.setPersistenceState(PersistenceState.COMMITTED);
+        GenericPersistentObject persistentObject = new GenericPersistentObject();
+        persistentObject.setObjectContext(context);
+        persistentObject.setObjectId(objectId);
+        persistentObject.writePropertyDirectly("test", 123);
+        persistentObject.setPersistenceState(PersistenceState.COMMITTED);
 
-        GenericPersistentObject cloned = Util.cloneViaSerialization(dataObject);
+        GenericPersistentObject cloned = Util.cloneViaSerialization(persistentObject);
         assertEquals(PersistenceState.HOLLOW, cloned.getPersistenceState());
         assertNull(cloned.readProperty("test"));
         assertNull(cloned.getObjectContext());
-        assertEquals(dataObject.getObjectId(), cloned.getObjectId());
+        assertEquals(persistentObject.getObjectId(), cloned.getObjectId());
     }
 }

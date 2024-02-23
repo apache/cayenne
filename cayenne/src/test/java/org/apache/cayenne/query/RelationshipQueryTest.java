@@ -32,7 +32,7 @@ public class RelationshipQueryTest {
     @Test
     public void testConstructorObjectId() {
 
-        ObjectId oid = ObjectId.of("MockDataObject", "a", "b");
+        ObjectId oid = ObjectId.of("MockPersistentObject", "a", "b");
         RelationshipQuery query = new RelationshipQuery(oid, "relX");
         assertSame(oid, query.getObjectId());
         assertSame("relX", query.getRelationshipName());

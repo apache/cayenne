@@ -135,7 +135,7 @@
 	<obj-entity name="NullTestEntity" className="org.apache.cayenne.testdo.testmap.NullTestEntity" dbEntityName="NULL_TEST">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="NAME"/>
 	</obj-entity>
-	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtDataObject">
+	<obj-entity name="Painting" className="org.apache.cayenne.testdo.testmap.Painting" dbEntityName="PAINTING" superClassName="org.apache.cayenne.testdo.testmap.ArtPersistentObject">
 		<obj-attribute name="estimatedPrice" type="java.math.BigDecimal" db-attribute-path="ESTIMATED_PRICE"/>
 		<obj-attribute name="paintingDescription" type="java.lang.String" db-attribute-path="PAINTING_DESCRIPTION"/>
 		<obj-attribute name="paintingTitle" type="java.lang.String" db-attribute-path="PAINTING_TITLE"/>

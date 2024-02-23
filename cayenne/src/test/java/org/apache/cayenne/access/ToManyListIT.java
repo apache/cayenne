@@ -79,7 +79,7 @@ public class ToManyListIT extends RuntimeCase {
         ToManyList list = createForExistingArtist();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
-        // bypassing normal CayenneDataObject methods
+        // bypassing normal PersistentObject methods
         list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue("List must be unresolved for an existing object", list.isFault());
@@ -119,7 +119,7 @@ public class ToManyListIT extends RuntimeCase {
         context.commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
-        // bypassing normal CayenneDataObject methods
+        // bypassing normal PersistentObject methods
         list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue("List must be unresolved...", list.isFault());
@@ -157,7 +157,7 @@ public class ToManyListIT extends RuntimeCase {
         context.commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
-        // bypassing normal CayenneDataObject methods
+        // bypassing normal PersistentObject methods
         list.getRelationshipOwner().setPersistenceState(PersistenceState.MODIFIED);
 
         assertTrue("List must be unresolved...", list.isFault());

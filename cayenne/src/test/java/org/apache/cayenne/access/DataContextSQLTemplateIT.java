@@ -132,7 +132,7 @@ public class DataContextSQLTemplateIT extends RuntimeCase {
 		assertEquals(1, array2[1]);
 		assertEquals(0, array3[1]);
 		assertEquals(0, array4[1]);
-		assertTrue("Unexpected DataObject: " + array1[0], array1[0] instanceof Artist);
+		assertTrue("Unexpected Persistent: " + array1[0], array1[0] instanceof Artist);
 	}
 
 	@Test

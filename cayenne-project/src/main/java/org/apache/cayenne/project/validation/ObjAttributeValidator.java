@@ -64,7 +64,7 @@ class ObjAttributeValidator extends ConfigurationNodeValidator {
                     "ObjAttribute name '%s' contains invalid characters: %s",
                     attribute.getName(),
                     invalidChars);
-        } else if (helper.invalidDataObjectProperty(attribute.getName())) {
+        } else if (helper.invalidPersistentObjectProperty(attribute.getName())) {
             addFailure(validationResult, attribute,
                     "ObjAttribute name '%s' is invalid",
                     attribute.getName());

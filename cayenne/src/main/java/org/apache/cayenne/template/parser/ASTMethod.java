@@ -84,9 +84,11 @@ public class ASTMethod extends IdentifierNode {
                     }
 
                     try {
+                        m.setAccessible(true);
                         return m.invoke(parentObject, arguments);
                     } catch (Exception ignored) {
                         // continue
+                        System.out.println("test");
                     }
                 }
             }

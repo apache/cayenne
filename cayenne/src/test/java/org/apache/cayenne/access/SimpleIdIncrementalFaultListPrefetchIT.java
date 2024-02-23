@@ -187,7 +187,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT extends RuntimeCase {
             Object toOnePrefetch = p1.readNestedProperty("toArtist");
             assertNotNull(toOnePrefetch);
             assertTrue(
-                    "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
+                    "Expected Persistent, got: " + toOnePrefetch.getClass().getName(),
                     toOnePrefetch instanceof Persistent);
 
             Persistent a1 = (Persistent) toOnePrefetch;

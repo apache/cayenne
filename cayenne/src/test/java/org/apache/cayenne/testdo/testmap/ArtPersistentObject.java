@@ -24,7 +24,7 @@ import org.apache.cayenne.PersistentObject;
  * This class exists solely to enable testing of arbitrary superclasses for
  * ObjEntities. It has no functionality at this stage (nor is any likely)
  */
-public class ArtDataObject extends PersistentObject {
+public class ArtPersistentObject extends PersistentObject {
 
     private static final long serialVersionUID = -1350981440925237535L;
 

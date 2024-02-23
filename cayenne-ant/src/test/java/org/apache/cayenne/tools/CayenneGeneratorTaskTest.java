@@ -96,7 +96,7 @@ public class CayenneGeneratorTaskTest {
 		// check results
 		File a = new File(mapDir, convertPath("org/apache/cayenne/testdo/testmap/Artist.java"));
 		assertTrue(a.isFile());
-		assertContents(a, "Artist", "org.apache.cayenne.testdo.testmap", "CayenneDataObject");
+		assertContents(a, "Artist", "org.apache.cayenne.testdo.testmap", "PersistentObject");
 
 		File _a = new File(mapDir, convertPath("org/apache/cayenne/testdo/testmap/_Artist.java"));
 		assertFalse(_a.exists());

@@ -137,7 +137,7 @@ public class DataContextPrefetchExtrasIT extends RuntimeCase {
         Object toOnePrefetch = fk1.readNestedProperty("toCompoundPk");
         assertNotNull(toOnePrefetch);
         assertTrue(
-                "Expected DataObject, got: " + toOnePrefetch.getClass().getName(),
+                "Expected Persistent, got: " + toOnePrefetch.getClass().getName(),
                 toOnePrefetch instanceof Persistent);
 
         Persistent pk1 = (Persistent) toOnePrefetch;
