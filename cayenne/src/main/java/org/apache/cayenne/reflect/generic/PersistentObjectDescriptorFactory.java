@@ -34,19 +34,17 @@ import org.apache.cayenne.reflect.PropertyException;
 /**
  * A {@link ClassDescriptorFactory} that creates descriptors for classes implementing {@link Persistent}.
  *
- * TODO: rename or deprecate
- *
  * @since 3.0
  */
-public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
+public class PersistentObjectDescriptorFactory extends PersistentDescriptorFactory {
 
     protected FaultFactory faultFactory;
 
     protected ValueComparisonStrategyFactory valueComparisonStrategyFactory;
 
-    public DataObjectDescriptorFactory(ClassDescriptorMap descriptorMap,
-                                       FaultFactory faultFactory,
-                                       ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
+    public PersistentObjectDescriptorFactory(ClassDescriptorMap descriptorMap,
+                                             FaultFactory faultFactory,
+                                             ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
         super(descriptorMap);
         this.faultFactory = faultFactory;
         this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
@@ -62,16 +60,11 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
     }
 
     @Override
-    protected PersistentDescriptor createDescriptor() {
-        return new DataObjectDescriptor();
-    }
-
-    @Override
     protected void createAttributeProperty(
             PersistentDescriptor descriptor,
             ObjAttribute attribute) {
-        DataObjectAttributeProperty property
-                = new DataObjectAttributeProperty(attribute, valueComparisonStrategyFactory.getStrategy(attribute));
+        PersistentObjectAttributeProperty property
+                = new PersistentObjectAttributeProperty(attribute, valueComparisonStrategyFactory.getStrategy(attribute));
         descriptor.addDeclaredProperty(property);
     }
 
@@ -82,7 +75,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
 
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
-        descriptor.addDeclaredProperty(new DataObjectToManyProperty(
+        descriptor.addDeclaredProperty(new PersistentObjectToManyProperty(
                 relationship,
                 targetDescriptor,
                 faultFactory.getListFault()));
@@ -96,7 +89,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
                 .getTargetEntityName());
 
         Accessor mapKeyAccessor = createMapKeyAccessor(relationship, targetDescriptor);
-        descriptor.addDeclaredProperty(new DataObjectToManyMapProperty(
+        descriptor.addDeclaredProperty(new PersistentObjectToManyMapProperty(
                 relationship,
                 targetDescriptor,
                 faultFactory.getMapFault(mapKeyAccessor),
@@ -109,7 +102,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
             ObjRelationship relationship) {
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
-        descriptor.addDeclaredProperty(new DataObjectToManyProperty(
+        descriptor.addDeclaredProperty(new PersistentObjectToManyProperty(
                 relationship,
                 targetDescriptor,
                 faultFactory.getSetFault()));
@@ -121,7 +114,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
             ObjRelationship relationship) {
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
-        descriptor.addDeclaredProperty(new DataObjectToManyProperty(
+        descriptor.addDeclaredProperty(new PersistentObjectToManyProperty(
                 relationship,
                 targetDescriptor,
                 faultFactory.getCollectionFault()));
@@ -134,7 +127,7 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
 
         ClassDescriptor targetDescriptor = descriptorMap.getDescriptor(relationship
                 .getTargetEntityName());
-        descriptor.addDeclaredProperty(new DataObjectToOneProperty(
+        descriptor.addDeclaredProperty(new PersistentObjectToOneProperty(
                 relationship,
                 targetDescriptor,
                 faultFactory.getToOneFault()));
@@ -145,6 +138,6 @@ public class DataObjectDescriptorFactory extends PersistentDescriptorFactory {
             PersistentDescriptor descriptor,
             String propertyName,
             Class<?> propertyType) throws PropertyException {
-        return new DataObjectAccessor(propertyName);
+        return new PersistentObjectAccessor(propertyName);
     }
 }

@@ -23,7 +23,7 @@ import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.PropertyVisitor;
 
-class DataObjectAttributeProperty extends DataObjectBaseProperty implements
+class PersistentObjectAttributeProperty extends PersistentObjectBaseProperty implements
         AttributeProperty {
 
     protected final ObjAttribute attribute;
@@ -33,7 +33,7 @@ class DataObjectAttributeProperty extends DataObjectBaseProperty implements
      */
     protected final ValueComparisonStrategy<Object> valueComparisonStrategy;
 
-    public DataObjectAttributeProperty(ObjAttribute attribute, ValueComparisonStrategy<Object> valueComparisonStrategy) {
+    public PersistentObjectAttributeProperty(ObjAttribute attribute, ValueComparisonStrategy<Object> valueComparisonStrategy) {
         this.attribute = attribute;
         this.valueComparisonStrategy = valueComparisonStrategy;
     }

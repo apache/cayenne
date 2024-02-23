@@ -40,7 +40,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.TESTMAP_PROJECT)
-public class DataObjectDescriptorFactoryIT extends RuntimeCase {
+public class PersistentObjectDescriptorFactoryIT extends RuntimeCase {
 
     @Inject
     private EntityResolver resolver;
@@ -48,7 +48,7 @@ public class DataObjectDescriptorFactoryIT extends RuntimeCase {
     @Test
     public void testVisitDeclaredProperties_IterationOrder() {
 
-        DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
+        PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 resolver.getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
@@ -87,7 +87,7 @@ public class DataObjectDescriptorFactoryIT extends RuntimeCase {
     @Test
     public void testVisitProperties_IterationOrder() {
 
-        DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
+        PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 resolver.getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));

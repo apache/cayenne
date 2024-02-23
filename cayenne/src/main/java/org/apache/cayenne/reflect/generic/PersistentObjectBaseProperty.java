@@ -30,7 +30,7 @@ import org.apache.cayenne.reflect.PropertyVisitor;
  * 
  * @since 3.0
  */
-abstract class DataObjectBaseProperty implements PropertyDescriptor, Serializable {
+abstract class PersistentObjectBaseProperty implements PropertyDescriptor, Serializable {
 
     public abstract String getName();
 

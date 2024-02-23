@@ -20,6 +20,7 @@ package org.apache.cayenne.reflect;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
@@ -144,7 +145,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 			List<Entry<String, PropertyDescriptor>> entries = new ArrayList<>(properties.entrySet());
 
-			Collections.sort(entries, PropertyComparator.comparator);
+			entries.sort(PropertyComparator.comparator);
 			Map<String, PropertyDescriptor> orderedProperties = new LinkedHashMap<>((int) (entries.size() / 0.75));
 			Map<String, PropertyDescriptor> orderedDeclared = new LinkedHashMap<>((int) (declaredProperties.size() / 0.75));
 
@@ -193,7 +194,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 	 * ClassDescriptor generated from ObjEntity.
 	 */
 	public void removeDeclaredProperty(String propertyName) {
-		Object removed = declaredProperties.remove(propertyName);
+		PropertyDescriptor removed = declaredProperties.remove(propertyName);
 
 		if (removed != null) {
 			if (idProperties != null) {
@@ -365,9 +366,9 @@ public class PersistentDescriptor implements ClassDescriptor {
 	 * each declared property.
 	 */
 	public void shallowMerge(final Object from, final Object to) throws PropertyException {
+		injectValueHolders(to);
 
 		visitProperties(new PropertyVisitor() {
-
 			public boolean visitAttribute(AttributeProperty property) {
 				property.writePropertyDirectly(to, property.readPropertyDirectly(to),
 						property.readPropertyDirectly(from));
@@ -383,6 +384,10 @@ public class PersistentDescriptor implements ClassDescriptor {
 				return true;
 			}
 		});
+
+		if (from instanceof Persistent && to instanceof Persistent) {
+			((Persistent) to).setSnapshotVersion(((Persistent) from).getSnapshotVersion());
+		}
 	}
 
 	/**

@@ -20,19 +20,19 @@
 package org.apache.cayenne.reflect.generic;
 
 import org.apache.cayenne.Fault;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
 import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
+ * An ArcProperty for accessing to-one relationships.
+ * 
  * @since 3.0
  */
-class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyProperty {
+class PersistentObjectToOneProperty extends PersistentObjectBaseProperty implements ToOneProperty {
 
     protected ObjRelationship relationship;
     protected String reverseName;
@@ -40,7 +40,8 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
     protected ClassDescriptor targetDescriptor;
     protected Fault fault;
 
-    DataObjectToManyProperty(ObjRelationship relationship, ClassDescriptor targetDescriptor, Fault fault) {
+    PersistentObjectToOneProperty(ObjRelationship relationship,
+                                  ClassDescriptor targetDescriptor, Fault fault) {
         this.relationship = relationship;
         this.targetDescriptor = targetDescriptor;
         this.reverseName = relationship.getReverseRelationshipName();
@@ -48,13 +49,10 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
     }
 
     public ArcProperty getComplimentaryReverseArc() {
-        return reverseName != null ? (ArcProperty) targetDescriptor.getProperty(reverseName) : null;
+        return reverseName != null ? (ArcProperty) targetDescriptor
+                .getProperty(reverseName) : null;
     }
-
-    public ClassDescriptor getTargetDescriptor() {
-        return targetDescriptor;
-    }
-
+    
     @Override
     public String getComplimentaryReverseDbRelationshipPath() {
         if (reverseDbPath == null) {
@@ -62,6 +60,10 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
         }
 
         return reverseDbPath;
+    }
+
+    public ClassDescriptor getTargetDescriptor() {
+        return targetDescriptor;
     }
 
     @Override
@@ -73,54 +75,33 @@ class DataObjectToManyProperty extends DataObjectBaseProperty implements ToManyP
         return relationship;
     }
 
-    public void addTarget(Object source, Object target, boolean setReverse) throws PropertyException {
-        try {
-            toDataObject(source).addToManyTarget(getName(), toDataObject(target), setReverse);
-        } catch (Throwable th) {
-            throw new PropertyException("Error setting to-many DataObject property: " + getName(), this, source, th);
-        }
-    }
-
-    public void removeTarget(Object source, Object target, boolean setReverse) throws PropertyException {
-        try {
-            toDataObject(source).removeToManyTarget(getName(), toDataObject(target), setReverse);
-        } catch (Throwable th) {
-            throw new PropertyException("Error unsetting to-many DataObject property: " + getName(), this, source, th);
-        }
-    }
-
     @Override
     public void injectValueHolder(Object object) throws PropertyException {
-        if (readPropertyDirectly(object) == null) {
-            writePropertyDirectly(object, null, fault.resolveFault((Persistent) object, getName()));
-        }
     }
 
-    public boolean isFault(Object source) {
-        return readPropertyDirectly(source) instanceof Fault;
+    public void setTarget(Object source, Object target, boolean setReverse) {
+        try {
+            toDataObject(source).setToOneTarget(
+                    getName(),
+                    toDataObject(target),
+                    setReverse);
+        }
+        catch (Throwable th) {
+            throw new PropertyException("Error setting to-one DataObject property: "
+                    + getName(), this, source, th);
+        }
     }
 
     @Override
     public boolean visit(PropertyVisitor visitor) {
-        return visitor.visitToMany(this);
+        return visitor.visitToOne(this);
+    }
+
+    public boolean isFault(Object object) {
+        return readPropertyDirectly(object) instanceof Fault;
     }
 
     public void invalidate(Object object) {
-        Object value = readPropertyDirectly(object);
-        if (value instanceof Fault) {
-            // nothing to do
-        } else if (value instanceof ValueHolder) {
-            ((ValueHolder) value).invalidate();
-        } else {
-            writePropertyDirectly(object, null, fault);
-        }
-    }
-
-    public void addTargetDirectly(Object source, Object target) throws PropertyException {
-        addTarget(source, target, false);
-    }
-
-    public void removeTargetDirectly(Object source, Object target) throws PropertyException {
-        removeTarget(source, target, false);
+        writePropertyDirectly(object, null, fault);
     }
 }

@@ -37,7 +37,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.mock;
 
 @UseCayenneRuntime(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT)
-public class DataObjectDescriptorFactory_InheritanceMapsIT extends RuntimeCase {
+public class PersistentObjectDescriptorFactory_InheritanceMapsIT extends RuntimeCase {
 
     @Inject
     private EntityResolver resolver;
@@ -45,7 +45,7 @@ public class DataObjectDescriptorFactory_InheritanceMapsIT extends RuntimeCase {
     @Test
     public void testVisitProperties_IterationOrder() {
 
-        DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
+        PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 resolver.getClassDescriptorMap(),
                 new SingletonFaultFactory(),
                 new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
@@ -58,21 +58,21 @@ public class DataObjectDescriptorFactory_InheritanceMapsIT extends RuntimeCase {
             PropertyVisitor visitor = new PropertyVisitor() {
 
                 public boolean visitToOne(ToOneProperty property) {
-                    DataObjectDescriptorFactoryIT.assertPropertiesAreInOrder(
+                    PersistentObjectDescriptorFactoryIT.assertPropertiesAreInOrder(
                             lastProcessed[0], property);
                     lastProcessed[0] = property;
                     return true;
                 }
 
                 public boolean visitToMany(ToManyProperty property) {
-                    DataObjectDescriptorFactoryIT.assertPropertiesAreInOrder(
+                    PersistentObjectDescriptorFactoryIT.assertPropertiesAreInOrder(
                             lastProcessed[0], property);
                     lastProcessed[0] = property;
                     return true;
                 }
 
                 public boolean visitAttribute(AttributeProperty property) {
-                    DataObjectDescriptorFactoryIT.assertPropertiesAreInOrder(
+                    PersistentObjectDescriptorFactoryIT.assertPropertiesAreInOrder(
                             lastProcessed[0], property);
                     lastProcessed[0] = property;
                     return true;

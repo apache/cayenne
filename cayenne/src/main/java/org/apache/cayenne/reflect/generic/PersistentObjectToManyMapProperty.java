@@ -18,32 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.reflect.generic;
 
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.reflect.PersistentDescriptor;
+import org.apache.cayenne.Fault;
+import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.reflect.Accessor;
+import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
+import org.apache.cayenne.reflect.ToManyMapProperty;
 
 /**
- * A ClassDescriptor for "generic" persistent classes implementing {@link Persistent}
- * interface.
- *
- * TODO: merge with PersistentDescriptor and remove
- *
  * @since 3.0
  */
-// non-public as the only difference with the superclass is version handling on merge -
-// this is something we need to solved in a more generic fashion (e.g. as via enhancer)
-// for other object types.
-class DataObjectDescriptor extends PersistentDescriptor {
+class PersistentObjectToManyMapProperty extends PersistentObjectToManyProperty implements
+        ToManyMapProperty {
 
-    @Override
-    public void shallowMerge(Object from, Object to) throws PropertyException {
-        
-        injectValueHolders(to);
-        
-        super.shallowMerge(from, to);
+    private Accessor mapKeyAccessor;
 
-        if (from instanceof Persistent && to instanceof Persistent) {
-            ((Persistent) to).setSnapshotVersion(((Persistent) from).getSnapshotVersion());
-        }
+    PersistentObjectToManyMapProperty(ObjRelationship relationship,
+                                      ClassDescriptor targetDescriptor, Fault fault, Accessor mapKeyAccessor) {
+        super(relationship, targetDescriptor, fault);
+        this.mapKeyAccessor = mapKeyAccessor;
+    }
+
+    public Object getMapKey(Object target) throws PropertyException {
+        return mapKeyAccessor.getValue(target);
     }
 }

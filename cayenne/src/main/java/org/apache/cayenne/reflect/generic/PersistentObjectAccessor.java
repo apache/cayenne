@@ -25,15 +25,14 @@ import org.apache.cayenne.reflect.PropertyException;
 
 /**
  * A PropertyAccessor that uses DataObject API to read/write values.
- * 
+ *
  * @since 3.0
  */
-class DataObjectAccessor implements Accessor {
+class PersistentObjectAccessor implements Accessor {
 
     protected String propertyName;
 
-    DataObjectAccessor(String propertyName) {
-
+    PersistentObjectAccessor(String propertyName) {
         if (propertyName == null) {
             throw new IllegalArgumentException("Null propertyName");
         }
@@ -51,16 +50,13 @@ class DataObjectAccessor implements Accessor {
      */
     public Object getValue(Object object) throws PropertyException {
         try {
-
             Persistent dataObject = (Persistent) object;
             return dataObject.readPropertyDirectly(propertyName);
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             throw new PropertyException("Object is not a DataObject: '"
                     + object.getClass().getName()
                     + "'", this, object, e);
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             throw new PropertyException("Error reading DataObject property: "
                     + propertyName, this, object, th);
         }
@@ -72,16 +68,13 @@ class DataObjectAccessor implements Accessor {
      * @since 3.0
      */
     public void setValue(Object object, Object newValue) throws PropertyException {
-
         try {
             ((Persistent) object).writePropertyDirectly(propertyName, newValue);
-        }
-        catch (ClassCastException e) {
+        } catch (ClassCastException e) {
             throw new PropertyException("Object is not a DataObject: '"
                     + object.getClass().getName()
                     + "'", this, object, e);
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             throw new PropertyException("Error reading DataObject property: "
                     + propertyName, this, object, th);
         }
