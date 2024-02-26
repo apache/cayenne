@@ -57,6 +57,9 @@ fix your imports accordingly.
 * Per CAY-2828 `server` prefix removed from the names of runtime properties and named collections defined in `org.apache.cayenne.configuration.Constants`.
 You should change references in code, and in any scripts that could use them as system properties.
 
+* Per CAY-2845 `DataObject` interface and `BaseDataObject` class were deprecated and all logic moved to the `Persistent` interface
+and `PersistentObject` class . You should regenerate model classes via cgen tool in Cayenne Modeler or Maven/Gradle plugins.
+
 UPGRADING TO 4.2.M2
 
 * Per CAY-2659 All batch translators (`InsertBatchTranslator`, `UpdateBatchTranslator`, etc.) are updated to the new SQLBuilder utility.
