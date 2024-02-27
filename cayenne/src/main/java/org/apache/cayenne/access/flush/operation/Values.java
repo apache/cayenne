@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 
 /**
@@ -43,7 +44,7 @@ public class Values {
 
     protected List<DbAttribute> updatedAttributes;
     // generated flattened Ids for this insert
-    protected Map<String, ObjectId> flattenedIds;
+    protected Map<CayennePath, ObjectId> flattenedIds;
 
     public Values(DbRowOp row, boolean includeId) {
         this.row = row;
@@ -116,7 +117,7 @@ public class Values {
         }
     }
 
-    public void addFlattenedId(String path, ObjectId id) {
+    public void addFlattenedId(CayennePath path, ObjectId id) {
         if(flattenedIds == null) {
             flattenedIds = new HashMap<>();
         }
@@ -146,7 +147,7 @@ public class Values {
             return attributeSnapshot;
         }
         // FK should override attribute values
-        fkSnapshot.forEach(attributeSnapshot::put);
+        attributeSnapshot.putAll(fkSnapshot);
         return attributeSnapshot;
     }
 
@@ -157,7 +158,7 @@ public class Values {
         return updatedAttributes;
     }
 
-    public Map<String, ObjectId> getFlattenedIds() {
+    public Map<CayennePath, ObjectId> getFlattenedIds() {
         if(flattenedIds == null) {
             return Collections.emptyMap();
         }

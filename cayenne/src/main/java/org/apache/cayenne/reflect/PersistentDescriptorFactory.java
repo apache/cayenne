@@ -27,6 +27,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.TraversalHandler;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -303,16 +304,13 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 }
 
                 Iterator<CayenneMapEntry> it = property.getAttribute().getDbPathIterator();
-                StringBuilder sb = new StringBuilder();
+                CayennePath path = CayennePath.EMPTY_PATH;
                 while(it.hasNext()) {
                     CayenneMapEntry next = it.next();
                     if(next instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship)next;
-                        if(sb.length() > 0) {
-                            sb.append('.');
-                        }
-                        sb.append(rel.getName());
-                        descriptor.addAdditionalDbEntity(sb.toString(), rel.getTargetEntity());
+                        path = path.dot(rel.getName());
+                        descriptor.addAdditionalDbEntity(path, rel.getTargetEntity());
                     }
                 }
                 return true;
@@ -325,15 +323,12 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 }
 
                 List<DbRelationship> dbRelationships = property.getRelationship().getDbRelationships();
-                StringBuilder sb = new StringBuilder();
+                CayennePath path = CayennePath.EMPTY_PATH;
                 int count = dbRelationships.size();
                 for(int i=0; i<count-1; i++) {
                     DbRelationship rel = dbRelationships.get(i);
-                    if(sb.length() > 0) {
-                        sb.append('.');
-                    }
-                    sb.append(rel.getName());
-                    descriptor.addAdditionalDbEntity(sb.toString(), rel.getTargetEntity());
+                    path = path.dot(rel.getName());
+                    descriptor.addAdditionalDbEntity(path, rel.getTargetEntity());
                 }
                 return true;
             }

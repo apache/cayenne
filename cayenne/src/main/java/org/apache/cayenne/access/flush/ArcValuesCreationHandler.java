@@ -101,26 +101,20 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
 
     ObjectId processFlattenedPath(ObjectId id, ObjectId finalTargetId, DbEntity entity, CayennePath dbPath, boolean add) {
         Iterator<CayenneMapEntry> dbPathIterator = entity.resolvePathComponents(dbPath);
-        StringBuilder path = new StringBuilder();
+        CayennePath flattenedPath = CayennePath.EMPTY_PATH;
 
         ObjectId srcId = id;
         ObjectId targetId = null;
 
         while(dbPathIterator.hasNext()) {
             CayenneMapEntry entry = dbPathIterator.next();
-            if(path.length() > 0) {
-                path.append('.');
-            }
-
-            path.append(entry.getName());
+            flattenedPath = flattenedPath.dot(entry.getName());
             if(entry instanceof DbRelationship) {
                 DbRelationship relationship = (DbRelationship)entry;
                 // intermediate db entity to be inserted
                 DbEntity target = relationship.getTargetEntity();
                 // if ID is present, just use it, otherwise create new
-                String flattenedPath = path.toString();
-
-                // if this is last segment and it's a relationship, use known target id from arc creation
+                // if this is last segment, and it's a relationship, use known target id from arc creation
                 if(!dbPathIterator.hasNext()) {
                     targetId = finalTargetId;
                 } else {

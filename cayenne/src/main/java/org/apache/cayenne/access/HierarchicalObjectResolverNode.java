@@ -22,6 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
             // not using DataRow.createObjectId for performance reasons -
             // ObjectResolver
             // has all needed metadata already cached.
-            ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
+            ObjectId anId = createObjectId(row, classDescriptor.getEntity(), CayennePath.EMPTY_PATH);
 
             Persistent object = objectFromDataRow(row, anId, classDescriptor);
             if (object == null) {

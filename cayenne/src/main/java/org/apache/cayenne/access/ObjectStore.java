@@ -28,6 +28,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.access.event.SnapshotEventListener;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.GraphChangeHandler;
@@ -72,7 +73,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Presence of path in this map is used to separate insert from update case of flattened records.
      * @since 4.1
      */
-    protected Map<Object, Map<String, ObjectId>> trackedFlattenedPaths;
+    protected Map<Object, Map<CayennePath, ObjectId>> trackedFlattenedPaths;
 
     // a sequential id used to tag GraphDiffs so that they can later be sorted in the
     // original creation order
@@ -598,7 +599,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
         }
 
         if(trackedFlattenedPaths != null) {
-            Map<String, ObjectId> paths = trackedFlattenedPaths.remove(nodeId);
+            Map<CayennePath, ObjectId> paths = trackedFlattenedPaths.remove(nodeId);
             if(paths != null) {
                 trackedFlattenedPaths.put(newId, paths);
             }
@@ -989,7 +990,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     /**
      * @since 4.2
      */
-    public ObjectId getFlattenedId(ObjectId objectId, String path) {
+    public ObjectId getFlattenedId(ObjectId objectId, CayennePath path) {
         if(trackedFlattenedPaths == null) {
             return null;
         }
@@ -1014,7 +1015,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Mark that flattened path for object has data row in DB.
      * @since 4.1
      */
-    public void markFlattenedPath(ObjectId objectId, String path, ObjectId id) {
+    public void markFlattenedPath(ObjectId objectId, CayennePath path, ObjectId id) {
         if(trackedFlattenedPaths == null) {
             trackedFlattenedPaths = new ConcurrentHashMap<>();
         }

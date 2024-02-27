@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
@@ -90,7 +91,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     }
 
     @Override
-    public Map<String, DbEntity> getAdditionalDbEntities() {
+    public Map<CayennePath, DbEntity> getAdditionalDbEntities() {
         checkDescriptorInitialized();
         return descriptor.getAdditionalDbEntities();
     }

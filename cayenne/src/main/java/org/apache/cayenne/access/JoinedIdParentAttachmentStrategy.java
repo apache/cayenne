@@ -24,6 +24,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.GraphManager;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -34,7 +35,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
 
-    private final String relatedIdPrefix;
+    private final CayennePath relatedIdPrefix;
     private final Collection<ObjEntity> sourceEntities;
     private final PrefetchProcessorNode node;
     private final GraphManager graphManager;
@@ -47,8 +48,7 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
         relatedIdPrefix = node
                 .getIncoming()
                 .getRelationship()
-                .getReverseDbRelationshipPath()
-                + ".";
+                .getReverseDbRelationshipPath();
 
         sourceEntities = parentDescriptor.getEntityInheritanceTree().allSubEntities();
 

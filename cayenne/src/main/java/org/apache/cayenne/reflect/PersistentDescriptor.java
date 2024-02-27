@@ -22,6 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
@@ -61,7 +62,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 	protected ObjEntity entity;
 	protected Collection<DbEntity> rootDbEntities;
-	protected Map<String, DbEntity> additionalDbEntities;
+	protected Map<CayennePath, DbEntity> additionalDbEntities;
 
 	protected EntityInheritanceTree entityInheritanceTree;
 
@@ -127,7 +128,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 	 * @param path path for entity
 	 * @param targetEntity additional entity
 	 */
-	void addAdditionalDbEntity(String path, DbEntity targetEntity) {
+	void addAdditionalDbEntity(CayennePath path, DbEntity targetEntity) {
 		if(additionalDbEntities == null) {
 			additionalDbEntities = new HashMap<>();
 		}
@@ -231,7 +232,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 	}
 
 	@Override
-	public Map<String, DbEntity> getAdditionalDbEntities() {
+	public Map<CayennePath, DbEntity> getAdditionalDbEntities() {
 		if(additionalDbEntities == null) {
 			return Collections.emptyMap();
 		}

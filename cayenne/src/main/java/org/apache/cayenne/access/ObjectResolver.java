@@ -25,6 +25,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -129,7 +130,7 @@ class ObjectResolver {
 
 		// not using DataRow.createObjectId for performance reasons -
 		// ObjectResolver has all needed metadata already cached.
-		ObjectId anId = createObjectId(row, classDescriptor.getEntity(), null);
+		ObjectId anId = createObjectId(row, classDescriptor.getEntity(), CayennePath.EMPTY_PATH);
 		return objectFromDataRow(row, anId, classDescriptor);
 	}
 
@@ -181,12 +182,11 @@ class ObjectResolver {
 	        return;
         }
 
-	    for(Map.Entry<String, DbEntity> entry : classDescriptor.getAdditionalDbEntities().entrySet()) {
+	    for(Map.Entry<CayennePath, DbEntity> entry : classDescriptor.getAdditionalDbEntities().entrySet()) {
             DbEntity dbEntity = entry.getValue();
-            String path = entry.getKey();
-            int lastDot = path.lastIndexOf('.');
-            String prefix = lastDot == -1 ? path : path.substring(lastDot + 1);
-            ObjectId objectId = createObjectId(row, "db:" + dbEntity.getName(), dbEntity.getPrimaryKeys(), prefix + '.', false);
+            CayennePath path = entry.getKey();
+            CayennePath prefix = path.length() == 1 ? path : path.tail(path.length() - 1);
+            ObjectId objectId = createObjectId(row, "db:" + dbEntity.getName(), dbEntity.getPrimaryKeys(), prefix, false);
             if(objectId != null) {
 				context.getObjectStore().markFlattenedPath(object.getObjectId(), path, objectId);
             }
@@ -209,24 +209,20 @@ class ObjectResolver {
 		return context;
 	}
 
-	ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, String namePrefix) {
+	ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, CayennePath namePrefix) {
         Collection<DbAttribute> pk = objEntity == this.descriptor.getEntity()
                 ? this.primaryKey
                 : objEntity.getDbEntity().getPrimaryKeys();
         return createObjectId(dataRow, objEntity.getName(), pk, namePrefix, true);
     }
 
-    ObjectId createObjectId(DataRow dataRow, String name, Collection<DbAttribute> pk, String namePrefix, boolean strict) {
-		boolean prefix = namePrefix != null && !namePrefix.isEmpty();
-
+    ObjectId createObjectId(DataRow dataRow, String name, Collection<DbAttribute> pk, CayennePath namePrefix, boolean strict) {
 		// ... handle special case - PK.size == 1
 		// use some not-so-significant optimizations...
 
 		if (pk.size() == 1) {
 			DbAttribute attribute = pk.iterator().next();
-
-			String key = (prefix) ? namePrefix + attribute.getName() : attribute.getName();
-
+			String key = namePrefix.dot(attribute.getName()).value();
 			Object val = dataRow.get(key);
 
 			// this is possible when processing left outer joint prefetches
@@ -245,9 +241,7 @@ class ObjectResolver {
 
 		Map<String, Object> idMap = new HashMap<>(pk.size() * 2);
 		for (final DbAttribute attribute : pk) {
-
-			String key = (prefix) ? namePrefix + attribute.getName() : attribute.getName();
-
+			String key = namePrefix.dot(attribute.getName()).value();
 			Object val = dataRow.get(key);
 
 			// this is possible when processing left outer joint prefetches

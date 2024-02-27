@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
@@ -61,7 +62,7 @@ public interface ClassDescriptor {
      * @since 4.1
      * @return information about additional db entities
      */
-    Map<String, DbEntity> getAdditionalDbEntities();
+    Map<CayennePath, DbEntity> getAdditionalDbEntities();
 
     /**
      * @since 3.0
