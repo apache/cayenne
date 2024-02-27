@@ -20,6 +20,7 @@ CAY-2809 Cayenne Expression grammar doesn't allow custom function as an argument
 CAY-2810 Can't use custom operator expression with aggregate functions
 CAY-2813 Regression: Constants.CI_PROPERTY flag is no longer working for MySQL
 CAY-2815 Incorrect translation of aliased expression
+CAY-2838 Vertical Inheritance: Problem setting db attribute to null via flattened path
 CAY-2840 Vertical Inheritance: Missing subclass attributes with joint prefetch
 
 ----------------------------------
