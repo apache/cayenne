@@ -152,8 +152,9 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                     // should update existing DB row
                     factory.getOrCreate(target, targetId, add ? DbRowOpType.UPDATE : defaultType);
                 }
-                processRelationship(relationship, srcId, targetId, add);
-                srcId = targetId; // use target as next source..
+                // should always add data from the intermediate relationship
+                processRelationship(relationship, srcId, targetId, dbPathIterator.hasNext() || add);
+                srcId = targetId; // use target as next source
             }
         }
 

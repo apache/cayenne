@@ -617,6 +617,130 @@ public class VerticalInheritanceIT extends RuntimeCase {
 		context.commitChanges();
 	}
 
+	/**
+     * @link https://issues.apache.org/jira/browse/CAY-2838
+     */
+	@Test
+	public void testNullifyFlattenedAttribute() {
+		IvConcrete concrete = context.newObject(IvConcrete.class);
+		concrete.setName("Concrete");
+		context.commitChanges();
+
+		concrete.setName(null);
+		context.commitChanges();
+
+		assertNull(concrete.getName());
+
+		long id = Cayenne.longPKForObject(concrete);
+		{
+			ObjectContext cleanContext = runtime.newContext();
+			IvConcrete concreteFetched = SelectById.query(IvConcrete.class, id).selectOne(cleanContext);
+			assertNull(concreteFetched.getName());
+		}
+	}
+
+	@Test
+	public void testNullifyFlattenedRelationship() {
+		IvOther other = context.newObject(IvOther.class);
+		other.setName("other");
+
+		IvImpl impl = context.newObject(IvImpl.class);
+		impl.setName("Impl 1");
+		impl.setOther1(other);
+		context.commitChanges();
+
+		impl.setOther1(null);
+		context.commitChanges();
+
+		assertNull(impl.getOther1());
+
+		long id = Cayenne.longPKForObject(impl);
+		{
+			ObjectContext cleanContext = runtime.newContext();
+			IvImpl implFetched = SelectById.query(IvImpl.class, id).selectOne(cleanContext);
+			assertEquals("Impl 1", implFetched.getName());
+			assertNull(implFetched.getOther1());
+		}
+	}
+
+	@Test
+	public void testDeleteFlattenedNoValues() throws SQLException {
+		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
+		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
+				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
+
+		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
+		ivConcreteTable.setColumns("ID", "NAME")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
+
+		ivAbstractTable.insert(1, null, "S");
+
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
+		assertNotNull(concrete);
+		assertNull(concrete.getName());
+
+		context.deleteObject(concrete);
+		context.commitChanges();
+
+		assertEquals(0, ivAbstractTable.getRowCount());
+		assertEquals(0, ivConcreteTable.getRowCount());
+	}
+
+	@Test
+	public void testDeleteFlattenedNullValues() throws SQLException {
+		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
+		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
+				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
+
+		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
+		ivConcreteTable.setColumns("ID", "NAME")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
+
+		ivAbstractTable.insert(1, null, "S");
+		ivConcreteTable.insert(1, null);
+
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
+		assertNotNull(concrete);
+		assertNull(concrete.getName());
+
+		context.deleteObject(concrete);
+		context.commitChanges();
+
+		assertEquals(0, ivAbstractTable.getRowCount());
+		assertEquals(0, ivConcreteTable.getRowCount());
+	}
+
+	@Test
+	public void testDeleteFlattenedNullifyValues() throws SQLException {
+		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
+		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
+				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
+
+		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
+		ivConcreteTable.setColumns("ID", "NAME")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
+
+		ivAbstractTable.insert(1, null, "S");
+		ivConcreteTable.insert(1, "test");
+
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
+		assertNotNull(concrete);
+		assertEquals("test", concrete.getName());
+
+		concrete.setName(null);
+		context.commitChanges();
+        assertNull(concrete.getName());
+
+		assertEquals(1, ivAbstractTable.getRowCount());
+		assertEquals(1, ivConcreteTable.getRowCount());
+
+		context.deleteObject(concrete);
+		context.commitChanges();
+
+		assertEquals(0, ivAbstractTable.getRowCount());
+		assertEquals(0, ivConcreteTable.getRowCount());
+	}
+
 	@Test//(expected = ValidationException.class) // other2 is not mandatory for now
 	public void testInsertWithAttributeAndRelationship() {
 		IvOther other = context.newObject(IvOther.class);
