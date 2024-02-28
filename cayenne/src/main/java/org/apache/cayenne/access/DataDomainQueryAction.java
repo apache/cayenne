@@ -60,6 +60,7 @@ import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -96,6 +97,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     private Map<CayennePath, List<?>> prefetchResultsByPath;
     private Map<QueryEngine, Collection<Query>> queriesByNode;
     private boolean noObjectConversion;
+    private boolean cachedResult;
 
     /*
      * A constructor for the "new" way of performing a query via 'execute' with
@@ -459,6 +461,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // on cache-refresh request, fetch without blocking and fill the cache
             queryCache.put(metadata, factory.createObject());
         }
+        cachedResult = true;
 
         return DONE;
     }
@@ -539,7 +542,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             if (response.isList()) {
                 List<?> mainRows = response.currentList(); // List<DataRow> or List<Object[]>
                 if (mainRows != null && !mainRows.isEmpty()) {
-                    converter.convert((List) mainRows);
+                    List<?> result = converter.convert((List) mainRows);
+                    if(result != mainRows) {
+                        updateResponse(mainRows, result);
+                    }
                 }
             } else if (response.isIterator()) {
                 // iterator should be a part of full response
@@ -697,8 +703,18 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return (query instanceof IteratedQueryDecorator);
     }
 
+    protected <T, R> void updateResponse(List<T> sourceObjects, List<? extends R> targetObjects) {
+        if (response instanceof GenericResponse) {
+            ((GenericResponse) response).replaceResult(sourceObjects, targetObjects);
+        } else if (response instanceof ListResponse) {
+            response = new ListResponse(targetObjects);
+        } else {
+            throw new IllegalStateException("Unknown response object: " + response);
+        }
+    }
+
     abstract class ObjectConversionStrategy<T, R> {
-        abstract void convert(List<T> mainRows);
+        abstract List<? extends R> convert(List<T> mainRows);
 
         abstract R convert(T t);
 
@@ -713,16 +729,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, metadata);
                 return resolver
                         .synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
-            }
-        }
-
-        protected void updateResponse(List<T> sourceObjects, List<? extends R> targetObjects) {
-            if (response instanceof GenericResponse) {
-                ((GenericResponse) response).replaceResult(sourceObjects, targetObjects);
-            } else if (response instanceof ListResponse) {
-                response = new ListResponse(targetObjects);
-            } else {
-                throw new IllegalStateException("Unknown response object: " + response);
             }
         }
 
@@ -741,14 +747,13 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow, Object> {
+    class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow, Persistent> {
 
         @Override
-        public void convert(List<DataRow> mainRows) {
+        public List<Persistent> convert(List<DataRow> mainRows) {
 
             PrefetchProcessorNode node = getPrefetchProcessorNode(mainRows);
             List<Persistent> objects = node.getObjects();
-            updateResponse(mainRows, objects != null ? objects : new ArrayList<>(1));
 
             // apply POST_LOAD callback
             LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
@@ -756,10 +761,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
                 performPostLoadCallbacks(node, callbackRegistry);
             }
+            return objects != null ? objects : new ArrayList<>(1);
         }
 
         @Override
-        Object convert(DataRow dataRow) {
+        Persistent convert(DataRow dataRow) {
             PrefetchProcessorNode node = getPrefetchProcessorNode(Collections.singletonList(dataRow));
             return node.getObjects().get(0);
         }
@@ -784,21 +790,22 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     class SingleScalarConversionStrategy extends ObjectConversionStrategy<Object, Object> {
 
         @Override
-        void convert(List<Object> mainRows) {
+        List<Object> convert(List<Object> mainRows) {
             // noop... scalars require no further processing
+            return mainRows;
         }
 
         @Override
         Object convert(Object o) {
-            return o;
             // noop... scalars require no further processing
+            return o;
         }
     }
 
-    class SingleEmbeddableConversionStrategy extends ObjectConversionStrategy<DataRow, Object> {
+    class SingleEmbeddableConversionStrategy extends ObjectConversionStrategy<DataRow, EmbeddableObject> {
 
         @Override
-        void convert(List<DataRow> mainRows) {
+        List<EmbeddableObject> convert(List<DataRow> mainRows) {
             EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSetMapping().get(0);
             Embeddable embeddable = resultSegment.getEmbeddable();
             Class<?> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
@@ -813,17 +820,78 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 dataRow.forEach(eo::writePropertyDirectly);
                 result.add(eo);
             });
-            updateResponse(mainRows, result);
+            return result;
         }
 
         @Override
-        Object convert(DataRow dataRow) {
-            convert(Collections.singletonList(dataRow));
-            return dataRow;
+        EmbeddableObject convert(DataRow dataRow) {
+            return convert(Collections.singletonList(dataRow)).get(0);
         }
     }
 
     class MixedConversionStrategy extends ObjectConversionStrategy<Object[], Object[]> {
+
+        @Override
+        List<Object[]> convert(List<Object[]> mainRows) {
+            if (mainRows.isEmpty()) {
+                // just a sanity check, should not be a valid case
+                return mainRows;
+            }
+
+            // do we have anything to convert to objects inside mainRows?
+            boolean needConversion = needConversion();
+
+            // create result list
+            List<Object[]> result = createResultList(mainRows, needConversion);
+
+            // no conversions needed for scalar positions;
+            if(needConversion) {
+                // reuse Object[]'s to fill them with resolved objects
+                List<PrefetchProcessorNode> segmentNodes = doInPlaceConversion(result);
+
+                // invoke callbacks now that all objects are resolved...
+                LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
+                if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
+                    for (PrefetchProcessorNode node : segmentNodes) {
+                        performPostLoadCallbacks(node, callbackRegistry);
+                    }
+                }
+            }
+
+            // distinct filtering
+            if (!metadata.isSuppressingDistinct()) {
+                Set<List<?>> seen = new HashSet<>(result.size());
+                result.removeIf(objects -> !seen.add(Arrays.asList(objects)));
+            }
+
+            return result;
+        }
+
+        @Override
+        Object[] convert(Object[] objectsArray) {
+            List<Object[]> objects = new ArrayList<>(1);
+            objects.add(objectsArray);
+            return convert(objects).get(0);
+        }
+
+        private List<Object[]> createResultList(List<Object[]> mainRows, boolean needConversion) {
+            if(!cachedResult) {
+                // fast-path, we can reuse existing rows
+                return mainRows;
+            }
+
+            if(!needConversion) {
+                // no conversion needed, so can clone only top-level list
+                return new ArrayList<>(mainRows);
+            }
+
+            // slowest path, deep copy everything
+            List<Object[]> result = new ArrayList<>(mainRows.size());
+            for(Object[] row : mainRows) {
+                result.add(Arrays.copyOf(row, metadata.getResultSetMapping().size()));
+            }
+            return result;
+        }
 
         protected PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
                                                       List<Object[]> rows, int position) {
@@ -858,40 +926,37 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             }
         }
 
-        @Override
-        void convert(List<Object[]> mainRows) {
-
-            int rowsLen = mainRows.size();
-
-            List<Object> rsMapping = metadata.getResultSetMapping();
-            int width = rsMapping.size();
-
-            // no conversions needed for scalar positions;
-            // reuse Object[]'s to fill them with resolved objects
+        private List<PrefetchProcessorNode> doInPlaceConversion(List<Object[]> result) {
+            List<Object> resultSetMapping = metadata.getResultSetMapping();
+            int width = resultSetMapping.size();
+            int height  = result.size();
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
-                Object mapping = rsMapping.get(i);
+                Object mapping = resultSetMapping.get(i);
                 if (mapping instanceof EntityResultSegment) {
                     EntityResultSegment entitySegment = (EntityResultSegment) mapping;
                     PrefetchProcessorNode nextResult = toResultsTree(entitySegment.getClassDescriptor(),
-                            metadata.getPrefetchTree(), mainRows, i);
+                            metadata.getPrefetchTree(), result, i);
 
                     segmentNodes.add(nextResult);
 
                     List<Persistent> objects = nextResult.getObjects();
-
-                    for (int j = 0; j < rowsLen; j++) {
-                        Object[] row = mainRows.get(j);
+                    for (int j = 0; j < height; j++) {
+                        Object[] row = result.get(j);
                         row[i] = objects.get(j);
                     }
                 } else if (mapping instanceof EmbeddableResultSegment) {
                     EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) mapping;
                     Embeddable embeddable = resultSegment.getEmbeddable();
-                    Class<?> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
+                    @SuppressWarnings("unchecked")
+                    Class<? extends EmbeddableObject> embeddableClass = (Class<? extends EmbeddableObject>) objectFactory
+                            .getJavaClass(embeddable.getClassName());
                     try {
-                        for (Object[] row : mainRows) {
+                        Constructor<? extends EmbeddableObject> declaredConstructor = embeddableClass
+                                .getDeclaredConstructor();
+                        for (Object[] row : result) {
                             DataRow dataRow = (DataRow) row[i];
-                            EmbeddableObject eo = (EmbeddableObject) embeddableClass.getDeclaredConstructor().newInstance();
+                            EmbeddableObject eo = declaredConstructor.newInstance();
                             dataRow.forEach(eo::writePropertyDirectly);
                             row[i] = eo;
                         }
@@ -900,35 +965,25 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     }
                 }
             }
-
-            if (!metadata.isSuppressingDistinct()) {
-                Set<List<?>> seen = new HashSet<>(mainRows.size());
-                mainRows.removeIf(objects -> !seen.add(Arrays.asList(objects)));
-            }
-
-            // invoke callbacks now that all objects are resolved...
-            LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
-
-            if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                for (PrefetchProcessorNode node : segmentNodes) {
-                    performPostLoadCallbacks(node, callbackRegistry);
-                }
-            }
+            return segmentNodes;
         }
 
-        @Override
-        Object[] convert(Object[] objectsArray) {
-            List<Object[]> objects = new ArrayList<>();
-            objects.add(objectsArray);
-            convert(objects);
-            return objectsArray;
+        private boolean needConversion() {
+            for (Object mapping : metadata.getResultSetMapping()) {
+                if (mapping instanceof EntityResultSegment
+                        || mapping instanceof EmbeddableResultSegment) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
     private class IdentityConversionStrategy extends ObjectConversionStrategy<Object, Object> {
         @Override
-        void convert(List<Object> mainRows) {
+        List<Object> convert(List<Object> mainRows) {
             //noop
+            return mainRows;
         }
 
         @Override
@@ -952,9 +1007,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         @Override
-        void convert(List<Object> mainRows) {
+        List<Object> convert(List<Object> mainRows) {
             parentStrategy.convert(mainRows);
             mainRows.replaceAll(mapper::apply);
+            return mainRows;
         }
 
         @Override
