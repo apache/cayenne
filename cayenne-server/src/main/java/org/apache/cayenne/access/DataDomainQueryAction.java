@@ -54,6 +54,7 @@ import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
 import org.apache.cayenne.util.Util;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -89,6 +90,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     Map<QueryEngine, Collection<Query>> queriesByNode;
     Map<Query, Query> queriesByExecutedQueries;
     boolean noObjectConversion;
+    boolean cachedResult;
 
     /*
      * A constructor for the "new" way of performing a query via 'execute' with
@@ -412,6 +414,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // cache
             queryCache.put(metadata, factory.createObject());
         }
+        cachedResult = true;
 
         return DONE;
     }
@@ -772,38 +775,71 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         @Override
         void convert(List<Object[]> mainRows) {
+            if (mainRows.isEmpty()) {
+                // just a sanity check, should not be a valid case
+                return;
+            }
 
-            int rowsLen = mainRows.size();
+            // do we have anything to convert to objects inside mainRows?
+            boolean needConversion = needConversion();
 
-            List<Object> rsMapping = metadata.getResultSetMapping();
-            int width = rsMapping.size();
+            // create result list
+            List<Object[]> result = createResultList(mainRows, needConversion);
 
             // no conversions needed for scalar positions;
-            // reuse Object[]'s to fill them with resolved objects
+            if(needConversion) {
+                // reuse Object[]'s to fill them with resolved objects
+                List<PrefetchProcessorNode> segmentNodes = doInPlaceConversion(result);
+
+                // invoke callbacks now that all objects are resolved...
+                LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
+                if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
+                    for (PrefetchProcessorNode node : segmentNodes) {
+                        performPostLoadCallbacks(node, callbackRegistry);
+                    }
+                }
+            }
+
+            // distinct filtering
+            if (!metadata.isSuppressingDistinct()) {
+                Set<List<?>> seen = new HashSet<>(result.size());
+                result.removeIf(objects -> !seen.add(Arrays.asList(objects)));
+            }
+
+            updateResponse(mainRows, result);
+        }
+
+        private List<PrefetchProcessorNode> doInPlaceConversion(List<Object[]> result) {
+            List<Object> resultSetMapping = metadata.getResultSetMapping();
+            int width = resultSetMapping.size();
+            int height  = result.size();
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
             for (int i = 0; i < width; i++) {
-                Object mapping = rsMapping.get(i);
+                Object mapping = resultSetMapping.get(i);
                 if (mapping instanceof EntityResultSegment) {
                     EntityResultSegment entitySegment = (EntityResultSegment) mapping;
                     PrefetchProcessorNode nextResult = toResultsTree(entitySegment.getClassDescriptor(),
-                            metadata.getPrefetchTree(), mainRows, i);
+                            metadata.getPrefetchTree(), result, i);
 
                     segmentNodes.add(nextResult);
 
                     List<Persistent> objects = nextResult.getObjects();
-
-                    for (int j = 0; j < rowsLen; j++) {
-                        Object[] row = mainRows.get(j);
+                    for (int j = 0; j < height; j++) {
+                        Object[] row = result.get(j);
                         row[i] = objects.get(j);
                     }
                 } else if (mapping instanceof EmbeddableResultSegment) {
-                    EmbeddableResultSegment resultSegment = (EmbeddableResultSegment)mapping;
+                    EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) mapping;
                     Embeddable embeddable = resultSegment.getEmbeddable();
-                    Class<?> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
+                    @SuppressWarnings("unchecked")
+                    Class<? extends EmbeddableObject> embeddableClass = (Class<? extends EmbeddableObject>) objectFactory
+                            .getJavaClass(embeddable.getClassName());
                     try {
-                        for(Object[] row : mainRows) {
-                            DataRow dataRow = (DataRow)row[i];
-                            EmbeddableObject eo = (EmbeddableObject)embeddableClass.newInstance();
+                        Constructor<? extends EmbeddableObject> declaredConstructor = embeddableClass
+                                .getDeclaredConstructor();
+                        for (Object[] row : result) {
+                            DataRow dataRow = (DataRow) row[i];
+                            EmbeddableObject eo = declaredConstructor.newInstance();
                             dataRow.forEach(eo::writePropertyDirectly);
                             row[i] = eo;
                         }
@@ -812,20 +848,36 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                     }
                 }
             }
+            return segmentNodes;
+        }
 
-            if(!metadata.isSuppressingDistinct()) {
-                Set<List<?>> seen = new HashSet<>(mainRows.size());
-                mainRows.removeIf(objects -> !seen.add(Arrays.asList(objects)));
+        private List<Object[]> createResultList(List<Object[]> mainRows, boolean needConversion) {
+            if(!cachedResult) {
+                // fast-path, we can reuse existing rows
+                return mainRows;
             }
 
-            // invoke callbacks now that all objects are resolved...
-            LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
+            if(!needConversion) {
+                // no conversion needed, so can clone only top-level list
+                return new ArrayList<>(mainRows);
+            }
 
-            if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                for (PrefetchProcessorNode node : segmentNodes) {
-                    performPostLoadCallbacks(node, callbackRegistry);
+            // slowest path, deep copy everything
+            List<Object[]> result = new ArrayList<>(mainRows.size());
+            for(Object[] row : mainRows) {
+                result.add(Arrays.copyOf(row, metadata.getResultSetMapping().size()));
+            }
+            return result;
+        }
+
+        private boolean needConversion() {
+            for (Object mapping : metadata.getResultSetMapping()) {
+                if (mapping instanceof EntityResultSegment
+                        || mapping instanceof EmbeddableResultSegment) {
+                    return true;
                 }
             }
+            return false;
         }
     }
 

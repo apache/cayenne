@@ -22,6 +22,7 @@ CAY-2813 Regression: Constants.CI_PROPERTY flag is no longer working for MySQL
 CAY-2815 Incorrect translation of aliased expression
 CAY-2838 Vertical Inheritance: Problem setting db attribute to null via flattened path
 CAY-2840 Vertical Inheritance: Missing subclass attributes with joint prefetch
+CAY-2841 Multi column ColumnSelect with SHARED_CACHE fails after 1st select
 
 ----------------------------------
 Release: 4.2
