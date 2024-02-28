@@ -98,3 +98,4 @@ CAY-2815 Incorrect translation of aliased expression
 CAY-2827 Saved data-source XML data doesn't correspond to the XSD schema
 CAY-2838 Vertical Inheritance: Problem setting db attribute to null via flattened path
 CAY-2840 Vertical Inheritance: Missing subclass attributes with joint prefetch
+CAY-2841 Multi column ColumnSelect with SHARED_CACHE fails after 1st select

@@ -1139,7 +1139,24 @@ public class ColumnSelectIT extends RuntimeCase {
         assertEquals("artist1", testPojo0.pojo.name);
         assertNotNull(testPojo0.pojo.date);
         assertEquals(7, testPojo0.pojo.length);
+    }
 
+    @Test
+    public void testSharedCache() {
+        ColumnSelect<Object[]> query = ObjectSelect.query(Artist.class)
+                .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.SELF)
+                .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
+                .cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+
+        List<Object[]> result = query.select(context);
+        assertEquals(20, result.size());
+        assertThat("Should be an instance of Artist",
+                instanceOf(Artist.class).matches(result.get(0)[2]));
+
+        List<Object[]> result2 = query.select(context);
+        assertEquals(20, result2.size());
+        assertThat("Should be an instance of Artist",
+                instanceOf(Artist.class).matches(result.get(0)[2]));
     }
 
     static class TestPojo {
