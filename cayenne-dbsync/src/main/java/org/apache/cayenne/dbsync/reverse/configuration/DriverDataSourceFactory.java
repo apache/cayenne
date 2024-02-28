@@ -47,7 +47,7 @@ public class DriverDataSourceFactory implements DataSourceFactory {
 			throw new IllegalArgumentException("'nodeDescriptor' contains no datasource descriptor");
 		}
 
-		Driver driver = (Driver)objectFactory.getJavaClass(dataSourceDescriptor.getJdbcDriver()).getDeclaredConstructor().newInstance();
+		Driver driver = objectFactory.<Driver>getJavaClass(dataSourceDescriptor.getJdbcDriver()).getDeclaredConstructor().newInstance();
 		return new DriverDataSource(driver, dataSourceDescriptor.getDataSourceUrl(), dataSourceDescriptor.getUserName(),
 				dataSourceDescriptor.getPassword());
 	}

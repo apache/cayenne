@@ -65,7 +65,7 @@ public class XMLPoolingDataSourceFactory implements DataSourceFactory {
 		long maxQueueWaitTime = properties
 				.getLong(Constants.JDBC_MAX_QUEUE_WAIT_TIME, UnmanagedPoolingDataSource.MAX_QUEUE_WAIT_DEFAULT);
 
-		Driver driver = (Driver)objectFactory.getJavaClass(descriptor.getJdbcDriver())
+		Driver driver = objectFactory.<Driver>getJavaClass(descriptor.getJdbcDriver())
 				.getDeclaredConstructor().newInstance();
 
 		return DataSourceBuilder.url(descriptor.getDataSourceUrl())

@@ -96,9 +96,10 @@ public class ChildDiffLoader implements GraphChangeHandler {
 			}
 
 			Persistent persistent;
-			Class<?> javaClass = context.getEntityResolver().getObjectFactory().getJavaClass(entity.getJavaClassName());
+			Class<? extends Persistent> javaClass = context.getEntityResolver().getObjectFactory()
+					.getJavaClass(entity.getJavaClassName());
 			try {
-				persistent = (Persistent) javaClass.getDeclaredConstructor().newInstance();
+				persistent = javaClass.getDeclaredConstructor().newInstance();
 			} catch (Exception ex) {
 				throw new CayenneRuntimeException("Error instantiating object.", ex);
 			}

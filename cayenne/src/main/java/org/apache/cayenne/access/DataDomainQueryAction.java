@@ -808,14 +808,15 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         List<EmbeddableObject> convert(List<DataRow> mainRows) {
             EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSetMapping().get(0);
             Embeddable embeddable = resultSegment.getEmbeddable();
-            Class<?> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
+            Class<? extends EmbeddableObject> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
             List<EmbeddableObject> result = new ArrayList<>(mainRows.size());
             mainRows.forEach(dataRow -> {
                 EmbeddableObject eo;
                 try {
-                    eo = (EmbeddableObject) embeddableClass.getDeclaredConstructor().newInstance();
+                    eo = embeddableClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    throw new CayenneRuntimeException("Unable to materialize embeddable '%s'", e, embeddable.getClassName());
+                    throw new CayenneRuntimeException("Unable to materialize embeddable '%s'", e,
+                            embeddable.getClassName());
                 }
                 dataRow.forEach(eo::writePropertyDirectly);
                 result.add(eo);
@@ -948,8 +949,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 } else if (mapping instanceof EmbeddableResultSegment) {
                     EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) mapping;
                     Embeddable embeddable = resultSegment.getEmbeddable();
-                    @SuppressWarnings("unchecked")
-                    Class<? extends EmbeddableObject> embeddableClass = (Class<? extends EmbeddableObject>) objectFactory
+                    Class<? extends EmbeddableObject> embeddableClass = objectFactory
                             .getJavaClass(embeddable.getClassName());
                     try {
                         Constructor<? extends EmbeddableObject> declaredConstructor = embeddableClass

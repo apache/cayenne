@@ -65,8 +65,8 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
 
         T instance;
         try {
-            Provider<T> provider0 = new ConstructorInjectingProvider<T>(type, (DefaultInjector) injector);
-            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, (DefaultInjector) injector);
+            Provider<T> provider0 = new ConstructorInjectingProvider<>(type, (DefaultInjector) injector);
+            Provider<T> provider1 = new FieldInjectingProvider<>(provider0, (DefaultInjector) injector);
             instance = provider1.get();
         } catch (Exception e) {
             throw new DIRuntimeException("Error creating instance of class %s of type %s", e, className,
@@ -76,53 +76,53 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
         return instance;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<?> getJavaClass(String className) {
-
         // is there a better way to get array class from string name?
-
         if (className == null) {
             throw new NullPointerException("Null class name");
         }
 
         ClassLoader classLoader = classLoaderManager.getClassLoader(className.replace('.', '/'));
 
-        // use custom logic on failure only, assuming primitives and arrays are
-        // not that common
+        // use custom logic on failure only, assuming primitives and arrays are not that common
         try {
             return Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
             if (!className.endsWith("[]")) {
-                if ("byte".equals(className)) {
-                    return Byte.TYPE;
-                } else if ("int".equals(className)) {
-                    return Integer.TYPE;
-                } else if ("short".equals(className)) {
-                    return Short.TYPE;
-                } else if ("char".equals(className)) {
-                    return Character.TYPE;
-                } else if ("double".equals(className)) {
-                    return Double.TYPE;
-                } else if ("long".equals(className)) {
-                    return Long.TYPE;
-                } else if ("float".equals(className)) {
-                    return Float.TYPE;
-                } else if ("boolean".equals(className)) {
-                    return Boolean.TYPE;
-                } else if ("void".equals(className)) {
-                    return Void.TYPE;
-                }
-                // try inner class often specified with "." instead of $
-                else {
-                    int dot = className.lastIndexOf('.');
-                    if (dot > 0 && dot + 1 < className.length()) {
-                        className = className.substring(0, dot) + "$" + className.substring(dot + 1);
-                        try {
-                            return Class.forName(className, true, classLoader);
-                        } catch (ClassNotFoundException nestedE) {
-                            // ignore, throw the original exception...
+                switch (className) {
+                    case "byte":
+                        return Byte.TYPE;
+                    case "int":
+                        return Integer.TYPE;
+                    case "short":
+                        return Short.TYPE;
+                    case "char":
+                        return Character.TYPE;
+                    case "double":
+                        return Double.TYPE;
+                    case "long":
+                        return Long.TYPE;
+                    case "float":
+                        return Float.TYPE;
+                    case "boolean":
+                        return Boolean.TYPE;
+                    case "void":
+                        return Void.TYPE;
+
+                    // try inner class often specified with "." instead of $
+                    default:
+                        int dot = className.lastIndexOf('.');
+                        if (dot > 0 && dot + 1 < className.length()) {
+                            className = className.substring(0, dot) + "$" + className.substring(dot + 1);
+                            try {
+                                return Class.forName(className, true, classLoader);
+                            } catch (ClassNotFoundException nestedE) {
+                                // ignore, throw the original exception...
+                            }
                         }
-                    }
+                        break;
                 }
 
                 throw new DIRuntimeException("Invalid class: '%s'", e, className);
@@ -135,22 +135,23 @@ public class DefaultAdhocObjectFactory implements AdhocObjectFactory {
             // TODO: support for multi-dim arrays
             className = className.substring(0, className.length() - 2);
 
-            if ("byte".equals(className)) {
-                return byte[].class;
-            } else if ("int".equals(className)) {
-                return int[].class;
-            } else if ("long".equals(className)) {
-                return long[].class;
-            } else if ("short".equals(className)) {
-                return short[].class;
-            } else if ("char".equals(className)) {
-                return char[].class;
-            } else if ("double".equals(className)) {
-                return double[].class;
-            } else if ("float".equals(className)) {
-                return float[].class;
-            } else if ("boolean".equals(className)) {
-                return boolean[].class;
+            switch (className) {
+                case "byte":
+                    return byte[].class;
+                case "int":
+                    return int[].class;
+                case "long":
+                    return long[].class;
+                case "short":
+                    return short[].class;
+                case "char":
+                    return char[].class;
+                case "double":
+                    return double[].class;
+                case "float":
+                    return float[].class;
+                case "boolean":
+                    return boolean[].class;
             }
 
             try {
