@@ -770,6 +770,10 @@ public class VerticalInheritanceIT extends ServerCase {
 			assertEquals("Two", concreteFetched.getName());
 			assertNull(concreteFetched.getRelatedAbstract());
 		}
+
+		// must clean these tables manually
+		ivConcreteTable.deleteAll();
+		ivAbstractTable.deleteAll();
 	}
 
 	@Test//(expected = ValidationException.class) // other2 is not mandatory for now
