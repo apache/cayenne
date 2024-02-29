@@ -33,6 +33,7 @@ import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -56,6 +57,20 @@ public class VerticalInheritanceIT extends ServerCase {
 
 	@Inject
 	protected ServerRuntime runtime;
+
+	TableHelper ivAbstractTable;
+
+	TableHelper ivConcreteTable;
+
+	@Before
+	public void setup() {
+		ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
+		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
+				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
+		ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
+		ivConcreteTable.setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+	}
 
     @Test
 	public void testInsert_Root() throws Exception {
@@ -595,7 +610,7 @@ public class VerticalInheritanceIT extends ServerCase {
 	}
 
 	@Test
-	public void testUpdateWithRelationship() {
+	public void testUpdateWithRelationship() throws SQLException {
 		IvConcrete parent1 = context.newObject(IvConcrete.class);
 		parent1.setName("Parent1");
 		context.commitChanges();
@@ -615,15 +630,15 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(parent2, child.getParent());
 
 		// Manually delete child to prevent a foreign key constraint failure while cleaning MySQL db
-		context.deleteObject(child);
-		context.commitChanges();
+		ivConcreteTable.deleteAll();
+		ivAbstractTable.deleteAll();
 	}
 
 	/**
      * @link https://issues.apache.org/jira/browse/CAY-2838
      */
 	@Test
-	public void testNullifyFlattenedAttribute() {
+	public void testNullifyFlattenedAttribute() throws SQLException {
 		IvConcrete concrete = context.newObject(IvConcrete.class);
 		concrete.setName("Concrete");
 		context.commitChanges();
@@ -639,6 +654,9 @@ public class VerticalInheritanceIT extends ServerCase {
 			IvConcrete concreteFetched = SelectById.query(IvConcrete.class, id).selectOne(cleanContext);
 			assertNull(concreteFetched.getName());
 		}
+
+		ivConcreteTable.deleteAll();
+		ivAbstractTable.deleteAll();
 	}
 
 	@Test
@@ -667,14 +685,6 @@ public class VerticalInheritanceIT extends ServerCase {
 
 	@Test
 	public void testDeleteFlattenedNoValues() throws SQLException {
-		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
-				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-
-		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
-
 		ivAbstractTable.insert(1, null, "S");
 
 		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
@@ -690,16 +700,8 @@ public class VerticalInheritanceIT extends ServerCase {
 
 	@Test
 	public void testDeleteFlattenedNullValues() throws SQLException {
-		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
-				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-
-		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
-
 		ivAbstractTable.insert(1, null, "S");
-		ivConcreteTable.insert(1, null);
+		ivConcreteTable.insert(1, null, null);
 
 		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
 		assertNotNull(concrete);
@@ -714,16 +716,8 @@ public class VerticalInheritanceIT extends ServerCase {
 
 	@Test
 	public void testDeleteFlattenedNullifyValues() throws SQLException {
-		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
-				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-
-		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
-
 		ivAbstractTable.insert(1, null, "S");
-		ivConcreteTable.insert(1, "test");
+		ivConcreteTable.insert(1, "test", null);
 
 		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
 		assertNotNull(concrete);
