@@ -33,6 +33,7 @@ import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.server.CayenneProjects;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,6 +71,15 @@ public class VerticalInheritanceIT extends ServerCase {
 		ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
 		ivConcreteTable.setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
 				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+	}
+
+	@After
+	public void cleanUpConcrete() throws SQLException {
+		ivConcreteTable.deleteAll();
+		ivAbstractTable.deleteAll();
+
+		assertEquals(0, ivAbstractTable.getRowCount());
+		assertEquals(0, ivConcreteTable.getRowCount());
 	}
 
     @Test
@@ -630,8 +640,8 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(parent2, child.getParent());
 
 		// Manually delete child to prevent a foreign key constraint failure while cleaning MySQL db
-		ivConcreteTable.deleteAll();
-		ivAbstractTable.deleteAll();
+		context.deleteObject(child);
+		context.commitChanges();
 	}
 
 	/**
@@ -654,9 +664,6 @@ public class VerticalInheritanceIT extends ServerCase {
 			IvConcrete concreteFetched = SelectById.query(IvConcrete.class, id).selectOne(cleanContext);
 			assertNull(concreteFetched.getName());
 		}
-
-		ivConcreteTable.deleteAll();
-		ivAbstractTable.deleteAll();
 	}
 
 	@Test
@@ -739,14 +746,6 @@ public class VerticalInheritanceIT extends ServerCase {
 
 	@Test
 	public void testNullifyFlattenedRelationshipConcreteToAbstract() throws SQLException {
-		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
-				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-
-		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
-
 		ivAbstractTable.insert(1, null, "S");
 		ivConcreteTable.insert(1, "One", null);
 		ivAbstractTable.insert(2, null, "S");
@@ -764,10 +763,6 @@ public class VerticalInheritanceIT extends ServerCase {
 			assertEquals("Two", concreteFetched.getName());
 			assertNull(concreteFetched.getRelatedAbstract());
 		}
-
-		// must clean these tables manually
-		ivConcreteTable.deleteAll();
-		ivAbstractTable.deleteAll();
 	}
 
 	@Test//(expected = ValidationException.class) // other2 is not mandatory for now

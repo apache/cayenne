@@ -20,8 +20,12 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -31,6 +35,8 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
@@ -114,7 +120,7 @@ public class SQLServerAdapter extends SybaseAdapter {
 	public boolean supportsGeneratedKeysForBatchInserts() {
 		return false;
 	}
-	
+
 	/**
 	 * @since 4.2
 	 */
@@ -157,4 +163,50 @@ public class SQLServerAdapter extends SybaseAdapter {
 	public void setVersion(Integer version) {
 		this.version = version;
 	}
+
+    /**
+     * Generates DDL to create unique index that allows multiple NULL values to comply with ANSI SQL,
+     * that is default behaviour for other RDBMS.
+     * <br>
+     * Example:
+     * <pre>
+     * {@code
+     * CREATE UNIQUE NONCLUSTERED INDEX _idx_entity_attribute
+     * ON entity(attribute)
+     * WHERE attribute IS NOT NULL
+     * }
+     * </pre>
+     *
+     * @param source  entity for the index
+     * @param columns source columns for the index
+     * @return DDL to create unique index
+     *
+     * @since 4.2.1
+     */
+    @Override
+    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+        if (columns == null || columns.isEmpty()) {
+            throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
+        }
+
+        return "CREATE UNIQUE NONCLUSTERED INDEX " + uniqueIndexName(source, columns) + " ON " +
+                quotingStrategy.quotedFullyQualifiedName(source) +
+                "(" +
+                columns.stream().map(quotingStrategy::quotedName).collect(Collectors.joining(", ")) +
+                ") WHERE " +
+                columns.stream().map(quotingStrategy::quotedName)
+                        .map(n -> n + " IS NOT NULL")
+                        .collect(Collectors.joining(" AND "));
+    }
+
+    private String uniqueIndexName(DbEntity source, Collection<DbAttribute> columns) {
+        return "_idx_unique_"
+                + source.getName().replace(' ', '_').toLowerCase()
+                + "_"
+                + columns.stream()
+                .map(DbAttribute::getName)
+                .map(String::toLowerCase)
+                .map(n -> n.replace(' ', '_'))
+                .collect(Collectors.joining("_"));
+    }
 }
