@@ -743,6 +743,35 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(0, ivConcreteTable.getRowCount());
 	}
 
+	@Test
+	public void testNullifyFlattenedRelationshipConcreteToAbstract() throws SQLException {
+		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
+		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
+				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
+
+		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
+		ivConcreteTable.setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+
+		ivAbstractTable.insert(1, null, "S");
+		ivConcreteTable.insert(1, "One", null);
+		ivAbstractTable.insert(2, null, "S");
+		ivConcreteTable.insert(2, "Two", 1);
+
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 2).selectOne(context);
+		concrete.setRelatedAbstract(null);
+
+		context.commitChanges();
+		assertNull(concrete.getRelatedAbstract());
+
+		{
+			ObjectContext cleanContext = runtime.newContext();
+			IvConcrete concreteFetched = SelectById.query(IvConcrete.class, 2).selectOne(cleanContext);
+			assertEquals("Two", concreteFetched.getName());
+			assertNull(concreteFetched.getRelatedAbstract());
+		}
+	}
+
 	@Test//(expected = ValidationException.class) // other2 is not mandatory for now
 	public void testInsertWithAttributeAndRelationship() {
 		IvOther other = context.newObject(IvOther.class);
