@@ -29,6 +29,7 @@ import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
+import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SimpleNodeTreeVisitor;
 import org.apache.cayenne.exp.Expression;
@@ -74,6 +75,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
         @Override
         public boolean onNodeStart(Node node) {
             node.append( this );
+            node.appendChildrenStart(this);
             return true;
         }
 
@@ -82,6 +84,11 @@ abstract class OrderingAbstractStage implements TranslationStage {
             if (hasMore && parent != null) {
                 parent.appendChildrenSeparator(this, index);
             }
+        }
+
+        @Override
+        public void onNodeEnd(Node node) {
+            node.appendChildrenEnd(this);
         }
 
         List<CharSequence> getParts() {
@@ -102,39 +109,51 @@ abstract class OrderingAbstractStage implements TranslationStage {
         @Override
         public boolean onNodeStart(Node node) {
             node.append(this);
-
             if (node instanceof ColumnNode && ((ColumnNode) node).getAlias() != null) {
                 partList.remove(partList.size()-1);
             }
-            if (partList.size() > lastIndex && isEqualSoFar()) {
-                lastIndex = partList.size();
-            }
-            return itemsMatch;
+            node.appendChildrenStart(this);
+            return isEqualSoFar();
         }
 
         @Override
         public void onChildNodeEnd(Node parent, Node child, int index, boolean hasMore) {
             if (hasMore && parent != null) {
                 parent.appendChildrenSeparator(this, index);
-                if (partList.size() > lastIndex && isEqualSoFar()) {
-                    lastIndex = partList.size();
+                isEqualSoFar();
+            }
+        }
+
+        @Override
+        public void onNodeEnd(Node node) {
+            node.appendChildrenEnd(this);
+            if (node instanceof FunctionNode && ((FunctionNode) node).getAlias() != null) {
+                if (partList.get(partList.size()-1).equals(((FunctionNode) node).getAlias())) {
+                    partList.remove(partList.size()-1);
                 }
             }
+            isEqualSoFar();
         }
 
         private boolean isEqualSoFar() {
-            if (orderItemParts.size() < partList.size()) return false;
-            // In reverse to fail fast by hopefully comparing column names first  
-            for (var x = partList.size()-1; x >= lastIndex; x--) {
-                if (!partList.get(x).equals(orderItemParts.get(x))) {
-                    return (itemsMatch = false);
+            var currentSize = partList.size();
+            if (currentSize == lastIndex) return itemsMatch;
+            if (currentSize > orderItemParts.size()) itemsMatch = false;
+            if (itemsMatch) {
+                // In reverse to fail fast by hopefully comparing column names first
+                for (var x = currentSize-1; x >= lastIndex; x--) {
+                    if (!partList.get(x).equals(orderItemParts.get(x))) {
+                        itemsMatch = false;
+                        break;
+                    }
                 }
             }
-            return true;
+            lastIndex = partList.size();
+            return itemsMatch;
         }
 
         boolean matches() {
-            return itemsMatch && partList.size() == orderItemParts.size();
+            return isEqualSoFar();
         }
     }
 
@@ -155,6 +174,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
 
         @Override
         public QuotingAppendable append(char c) {
+            if (c != '.' && c != ' ') partList.add(String.valueOf(c));
             return this;
         }
 
