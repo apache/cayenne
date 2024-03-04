@@ -32,11 +32,13 @@ public abstract class _IvConcrete extends IvAbstract {
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final ListProperty<IvConcrete> CHILDREN = PropertyFactory.createList("children", IvConcrete.class);
     public static final EntityProperty<IvConcrete> PARENT = PropertyFactory.createEntity("parent", IvConcrete.class);
+    public static final EntityProperty<IvAbstract> RELATED_ABSTRACT = PropertyFactory.createEntity("relatedAbstract", IvAbstract.class);
 
     protected String name;
 
     protected Object children;
     protected Object parent;
+    protected Object relatedAbstract;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -69,6 +71,14 @@ public abstract class _IvConcrete extends IvAbstract {
         return (IvConcrete)readProperty("parent");
     }
 
+    public void setRelatedAbstract(IvAbstract relatedAbstract) {
+        setToOneTarget("relatedAbstract", relatedAbstract, true);
+    }
+
+    public IvAbstract getRelatedAbstract() {
+        return (IvAbstract)readProperty("relatedAbstract");
+    }
+
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {
@@ -82,6 +92,8 @@ public abstract class _IvConcrete extends IvAbstract {
                 return this.children;
             case "parent":
                 return this.parent;
+            case "relatedAbstract":
+                return this.relatedAbstract;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -103,6 +115,9 @@ public abstract class _IvConcrete extends IvAbstract {
             case "parent":
                 this.parent = val;
                 break;
+            case "relatedAbstract":
+                this.relatedAbstract = val;
+                break;
             default:
                 super.writePropertyDirectly(propName, val);
         }
@@ -122,6 +137,7 @@ public abstract class _IvConcrete extends IvAbstract {
         out.writeObject(this.name);
         out.writeObject(this.children);
         out.writeObject(this.parent);
+        out.writeObject(this.relatedAbstract);
     }
 
     @Override
@@ -130,6 +146,7 @@ public abstract class _IvConcrete extends IvAbstract {
         this.name = (String)in.readObject();
         this.children = in.readObject();
         this.parent = in.readObject();
+        this.relatedAbstract = in.readObject();
     }
 
 }

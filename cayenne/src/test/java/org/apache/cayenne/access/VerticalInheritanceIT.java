@@ -32,6 +32,8 @@ import org.apache.cayenne.testdo.inheritance_vertical.*;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -55,6 +57,29 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 	@Inject
 	protected CayenneRuntime runtime;
+
+	TableHelper ivAbstractTable;
+
+	TableHelper ivConcreteTable;
+
+	@Before
+	public void setup() {
+		ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
+		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
+				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
+		ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
+		ivConcreteTable.setColumns("ID", "NAME", "RELATED_ABSTRACT_ID")
+				.setColumnTypes(Types.INTEGER, Types.VARCHAR, Types.INTEGER);
+	}
+
+	@After
+	public void cleanUpConcrete() throws SQLException {
+		ivConcreteTable.deleteAll();
+		ivAbstractTable.deleteAll();
+
+		assertEquals(0, ivAbstractTable.getRowCount());
+		assertEquals(0, ivConcreteTable.getRowCount());
+	}
 
     @Test
 	public void testInsert_Root() throws Exception {
@@ -593,7 +618,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
 	}
 
 	@Test
-	public void testUpdateWithRelationship() {
+	public void testUpdateWithRelationship() throws SQLException {
 		IvConcrete parent1 = context.newObject(IvConcrete.class);
 		parent1.setName("Parent1");
 		context.commitChanges();
@@ -621,7 +646,7 @@ public class VerticalInheritanceIT extends RuntimeCase {
      * @link https://issues.apache.org/jira/browse/CAY-2838
      */
 	@Test
-	public void testNullifyFlattenedAttribute() {
+	public void testNullifyFlattenedAttribute() throws SQLException {
 		IvConcrete concrete = context.newObject(IvConcrete.class);
 		concrete.setName("Concrete");
 		context.commitChanges();
@@ -665,14 +690,6 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 	@Test
 	public void testDeleteFlattenedNoValues() throws SQLException {
-		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
-				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-
-		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
-
 		ivAbstractTable.insert(1, null, "S");
 
 		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
@@ -688,16 +705,8 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 	@Test
 	public void testDeleteFlattenedNullValues() throws SQLException {
-		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
-				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-
-		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
-
 		ivAbstractTable.insert(1, null, "S");
-		ivConcreteTable.insert(1, null);
+		ivConcreteTable.insert(1, null, null);
 
 		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
 		assertNotNull(concrete);
@@ -712,16 +721,8 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 	@Test
 	public void testDeleteFlattenedNullifyValues() throws SQLException {
-		TableHelper ivAbstractTable = new TableHelper(dbHelper, "IV_ABSTRACT");
-		ivAbstractTable.setColumns("ID", "PARENT_ID", "TYPE")
-				.setColumnTypes(Types.INTEGER, Types.INTEGER, Types.CHAR);
-
-		TableHelper ivConcreteTable = new TableHelper(dbHelper, "IV_CONCRETE");
-		ivConcreteTable.setColumns("ID", "NAME")
-				.setColumnTypes(Types.INTEGER, Types.VARCHAR);
-
 		ivAbstractTable.insert(1, null, "S");
-		ivConcreteTable.insert(1, "test");
+		ivConcreteTable.insert(1, "test", null);
 
 		IvConcrete concrete = SelectById.query(IvConcrete.class, 1).selectOne(context);
 		assertNotNull(concrete);
@@ -739,6 +740,27 @@ public class VerticalInheritanceIT extends RuntimeCase {
 
 		assertEquals(0, ivAbstractTable.getRowCount());
 		assertEquals(0, ivConcreteTable.getRowCount());
+	}
+
+	@Test
+	public void testNullifyFlattenedRelationshipConcreteToAbstract() throws SQLException {
+		ivAbstractTable.insert(1, null, "S");
+		ivConcreteTable.insert(1, "One", null);
+		ivAbstractTable.insert(2, null, "S");
+		ivConcreteTable.insert(2, "Two", 1);
+
+		IvConcrete concrete = SelectById.query(IvConcrete.class, 2).selectOne(context);
+		concrete.setRelatedAbstract(null);
+
+		context.commitChanges();
+		assertNull(concrete.getRelatedAbstract());
+
+		{
+			ObjectContext cleanContext = runtime.newContext();
+			IvConcrete concreteFetched = SelectById.query(IvConcrete.class, 2).selectOne(cleanContext);
+			assertEquals("Two", concreteFetched.getName());
+			assertNull(concreteFetched.getRelatedAbstract());
+		}
 	}
 
 	@Test//(expected = ValidationException.class) // other2 is not mandatory for now

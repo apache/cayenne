@@ -114,7 +114,7 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                 // intermediate db entity to be inserted
                 DbEntity target = relationship.getTargetEntity();
                 // if ID is present, just use it, otherwise create new
-                // if this is last segment, and it's a relationship, use known target id from arc creation
+                // if this is the last segment, and it's a relationship, use known target id from arc creation
                 if(!dbPathIterator.hasNext()) {
                     targetId = finalTargetId;
                 } else {
@@ -146,13 +146,26 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                     // should update existing DB row
                     factory.getOrCreate(target, targetId, add ? DbRowOpType.UPDATE : defaultType);
                 }
-                // should always add data from the intermediate relationship
-                processRelationship(relationship, srcId, targetId, dbPathIterator.hasNext() || add);
+                processRelationship(relationship, srcId, targetId, shouldProcessAsAddition(relationship, add));
                 srcId = targetId; // use target as next source
             }
         }
 
         return targetId;
+    }
+
+    private boolean shouldProcessAsAddition(DbRelationship relationship, boolean add) {
+        if(add) {
+            return true;
+        }
+
+        // should always add data from one-to-one relationships
+        for(DbJoin join : relationship.getJoins()) {
+            if(!join.getSource().isPrimaryKey() || !join.getTarget().isPrimaryKey()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     protected void processRelationship(DbRelationship dbRelationship, ObjectId srcId, ObjectId targetId, boolean add) {
