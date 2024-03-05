@@ -36,7 +36,6 @@ import java.util.Optional;
  */
 abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslationResult {
 
-    public static final char OUTER_JOIN_INDICATOR = '+';
     public static final char SPLIT_PATH_INDICATOR = '#';
     public static final String DB_PATH_ALIAS_INDICATOR = "db:";
 
@@ -62,6 +61,9 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
     }
 
     public PathTranslationResult process(CayennePath path) {
+        if(path.marker() != CayennePath.NO_MARKER) {
+            currentDbPath = currentDbPath.withMarker(path.marker());
+        }
         List<CayennePathSegment> segments = path.segments();
         int size = segments.size();
         for (int i = 0; i < size; i++) {

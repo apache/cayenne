@@ -129,6 +129,78 @@ public class CDOQualifiedEntitiesIT extends RuntimeCase {
     }
 
     @Test
+    public void testJointPrefetchToMany() throws Exception {
+        if (accessStackAdapter.supportsNullBoolean()) {
+
+            createReadToManyDataSet();
+
+            List<Qualified1> roots = ObjectSelect.query(Qualified1.class)
+                    .prefetch(Qualified1.QUALIFIED2S.joint())
+                    .select(context);
+
+            assertEquals(1, roots.size());
+
+            Qualified1 root = roots.get(0);
+
+            assertEquals("OX1", root.getName());
+
+            List<Qualified2> related = root.getQualified2s();
+            assertEquals(1, related.size());
+
+            Qualified2 r = related.get(0);
+            assertEquals("OY1", r.getName());
+        }
+    }
+
+    @Test
+    public void testDisjointPrefetchToMany() throws Exception {
+        if (accessStackAdapter.supportsNullBoolean()) {
+
+            createReadToManyDataSet();
+
+            List<Qualified1> roots = ObjectSelect.query(Qualified1.class)
+                    .prefetch(Qualified1.QUALIFIED2S.disjoint())
+                    .select(context);
+
+            assertEquals(1, roots.size());
+
+            Qualified1 root = roots.get(0);
+
+            assertEquals("OX1", root.getName());
+
+            List<Qualified2> related = root.getQualified2s();
+            assertEquals(1, related.size());
+
+            Qualified2 r    = related.get(0);
+            assertEquals("OY1", r.getName());
+        }
+    }
+
+    @Test
+    public void testDisjointByIdPrefetchToMany() throws Exception {
+        if (accessStackAdapter.supportsNullBoolean()) {
+
+            createReadToManyDataSet();
+
+            List<Qualified1> roots = ObjectSelect.query(Qualified1.class)
+                    .prefetch(Qualified1.QUALIFIED2S.disjointById())
+                    .select(context);
+
+            assertEquals(1, roots.size());
+
+            Qualified1 root = roots.get(0);
+
+            assertEquals("OX1", root.getName());
+
+            List<Qualified2> related = root.getQualified2s();
+            assertEquals(1, related.size());
+
+            Qualified2 r = related.get(0);
+            assertEquals("OY1", r.getName());
+        }
+    }
+
+    @Test
     public void testReadToOne() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
