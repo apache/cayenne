@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
@@ -44,7 +45,7 @@ class TableTree {
     private final Map<String, TableTreeNode> tableNodes;
     private final TableTree parentTree;
 
-    private TableTreeNode rootNode;
+    private final TableTreeNode rootNode;
 
     private int tableAliasSequence;
 
@@ -56,11 +57,16 @@ class TableTree {
     }
 
     void addJoinTable(String path, DbRelationship relationship, JoinType joinType) {
-        if (tableNodes.get(path) != null) {
+        addJoinTable(path, relationship, joinType, null);
+    }
+
+    void addJoinTable(String path, DbRelationship relationship, JoinType joinType, Expression additionalQualifier) {
+        TableTreeNode treeNode = tableNodes.get(path);
+        if (treeNode != null) {
             return;
         }
 
-        TableTreeNode node = new TableTreeNode(path, relationship, nextTableAlias(), joinType);
+        TableTreeNode node = new TableTreeNode(path, relationship, nextTableAlias(), joinType, additionalQualifier);
         tableNodes.put(path, node);
     }
 

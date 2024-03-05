@@ -39,6 +39,9 @@ import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.QueryMetadata;
 
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.exp;
+import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.node;
+
 /**
  * Context that holds all data necessary for query translation as well as a result of that translation.
  *
@@ -260,6 +263,14 @@ public class TranslatorContext implements SQLGenerationContext {
 
     void setQualifierNode(Node qualifierNode) {
         this.qualifierNode = qualifierNode;
+    }
+
+    void appendQualifierNode(Node qualifierNode) {
+        if(this.qualifierNode == null) {
+            this.qualifierNode = qualifierNode;
+        } else {
+            this.qualifierNode = exp(node(this.qualifierNode)).and(node(qualifierNode)).build();
+        }
     }
 
     Node getQualifierNode() {

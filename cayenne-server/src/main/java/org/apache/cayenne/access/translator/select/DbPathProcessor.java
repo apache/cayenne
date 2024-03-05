@@ -30,7 +30,7 @@ import org.apache.cayenne.map.JoinType;
  */
 class DbPathProcessor extends PathProcessor<DbEntity> {
 
-    private boolean flattenedPath;
+    private final boolean flattenedPath;
 
     DbPathProcessor(TranslatorContext context, DbEntity entity, String parentPath, boolean flattenedPath) {
         super(context, entity);
@@ -47,6 +47,9 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
 
     @Override
     protected void processNormalAttribute(String next) {
+        if(next.startsWith("p:")) {
+            next = next.substring(2);
+        }
         DbAttribute dbAttribute = entity.getAttribute(next);
         if (dbAttribute != null) {
             processAttribute(dbAttribute);

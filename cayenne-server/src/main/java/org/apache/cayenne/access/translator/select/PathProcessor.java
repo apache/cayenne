@@ -21,7 +21,6 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 
 import java.util.ArrayList;
@@ -61,6 +60,9 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     }
 
     public PathTranslationResult process(String path) {
+        if(path.startsWith("p:")) {
+            currentDbPath.insert(0, "p:");
+        }
         PathComponents components = new PathComponents(path);
         String[] rawComponents = components.getAll();
         for (int i = 0; i < rawComponents.length; i++) {
@@ -112,17 +114,12 @@ abstract class PathProcessor<T extends Entity> implements PathTranslationResult 
     }
 
     @Override
-    public Optional<Embeddable> getEmbeddable() {
-        return Optional.empty();
-    }
-
-    @Override
     public String getFinalPath() {
         return currentDbPath.toString();
     }
 
     protected void appendCurrentPath(String nextSegment) {
-        if (currentDbPath.length() > 0) {
+        if (currentDbPath.length() > 0 && currentDbPath.charAt(currentDbPath.length() - 1) != ':') {
             currentDbPath.append('.');
         }
         currentDbPath.append(nextSegment);

@@ -78,9 +78,11 @@ class PrefetchNodeStage implements TranslationStage {
 
         for(PrefetchTreeNode node : prefetch.adjacentJointNodes()) {
             Expression prefetchExp = ExpressionFactory.pathExp(node.getPath());
+            ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(objEntity);
             ASTDbPath dbPrefetch = (ASTDbPath) objEntity.translateToDbPath(prefetchExp);
             final String dbPath = dbPrefetch.getPath();
             DbEntity dbEntity = objEntity.getDbEntity();
+            Expression targetQualifier = context.getResolver().getClassDescriptor(targetRel.getTargetEntityName()).getEntityInheritanceTree().qualifierForEntityAndSubclasses();
 
             PathComponents components = new PathComponents(dbPath);
             StringBuilder fullPath = new StringBuilder();
@@ -92,13 +94,17 @@ class PrefetchNodeStage implements TranslationStage {
                 if(fullPath.length() > 0) {
                     fullPath.append('.');
                 }
-                context.getTableTree().addJoinTable("p:" + fullPath.append(c).toString(), rel, JoinType.LEFT_OUTER);
+                fullPath.append(c);
+                if(targetQualifier != null && c.equals(components.getLast())) {
+                    targetQualifier = translateToPrefetchQualifier(targetRel.getTargetEntity(), targetQualifier);
+                    context.getTableTree().addJoinTable("p:" + fullPath, rel, JoinType.LEFT_OUTER, targetQualifier);
+                } else {
+                    context.getTableTree().addJoinTable("p:" + fullPath, rel, JoinType.LEFT_OUTER);
+                }
                 dbEntity = rel.getTargetEntity();
             }
 
-            ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(objEntity);
             ClassDescriptor prefetchClassDescriptor = context.getResolver().getClassDescriptor(targetRel.getTargetEntityName());
-
             DescriptorColumnExtractor columnExtractor = new DescriptorColumnExtractor(context, prefetchClassDescriptor);
             columnExtractor.extract("p:" + dbPath);
 
@@ -113,6 +119,13 @@ class PrefetchNodeStage implements TranslationStage {
             LOGGER.warn("The query uses both limit/offset and a joint prefetch, this most probably will lead to an incorrect result. " +
                     "Either use disjointById prefetch or get a full result set.");
         }
+    }
+
+    Expression translateToPrefetchQualifier(ObjEntity entity, Expression targetQualifier) {
+        Expression expression = entity.translateToDbPath(targetQualifier);
+        return expression.transform(o -> o instanceof ASTDbPath
+                ? ExpressionFactory.dbPathExp("p:" + ((ASTDbPath) o).getPath())
+                : o);
     }
 
     private void processPrefetchQuery(TranslatorContext context) {
