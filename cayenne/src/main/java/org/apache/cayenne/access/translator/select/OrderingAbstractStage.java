@@ -58,13 +58,13 @@ abstract class OrderingAbstractStage implements TranslationStage {
 
     private boolean orderColumnAbsent(TranslatorContext context, NodeBuilder nodeBuilder) 
     {
-        var orderVisitor = new OrderNodeVisitor();
+        OrderNodeVisitor orderVisitor = new OrderNodeVisitor();
         nodeBuilder.build().visit( orderVisitor );
-        var orderParts = orderVisitor.getParts();
+        List<CharSequence> orderParts = orderVisitor.getParts();
 
         return context.getResultNodeList().stream()
             .noneMatch( result -> {
-                var resultVisitor = new ResultNodeVisitor(orderParts);
+                ResultNodeVisitor resultVisitor = new ResultNodeVisitor(orderParts);
                 result.getNode().visit(resultVisitor);
                 return resultVisitor.matches();
             });
@@ -136,12 +136,12 @@ abstract class OrderingAbstractStage implements TranslationStage {
         }
 
         private boolean isEqualSoFar() {
-            var currentSize = partList.size();
+            int currentSize = partList.size();
             if (currentSize == lastIndex) return itemsMatch;
             if (currentSize > orderItemParts.size()) itemsMatch = false;
             if (itemsMatch) {
                 // In reverse to fail fast by hopefully comparing column names first
-                for (var x = currentSize-1; x >= lastIndex; x--) {
+                for (int x = currentSize-1; x >= lastIndex; x--) {
                     if (!partList.get(x).equals(orderItemParts.get(x))) {
                         itemsMatch = false;
                         break;
