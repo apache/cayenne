@@ -66,6 +66,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
         return context.getResultNodeList().stream()
             .noneMatch( result -> {
                 ResultNodeVisitor resultVisitor = new ResultNodeVisitor(orderParts);
+                // Visitor aborts as soon as there's a mismatch with orderParts
                 result.getNode().visit(resultVisitor);
                 return resultVisitor.matches();
             });
@@ -111,9 +112,10 @@ abstract class OrderingAbstractStage implements TranslationStage {
         public boolean onNodeStart(Node node) {
             node.append(this);
             if (node instanceof ColumnNode && ((ColumnNode) node).getAlias() != null) {
-                partList.remove(partList.size()-1);
+                partList.remove(partList.size()-1); // Remove appended alias
             }
             if (!(node.getParent() instanceof AliasedNode)) {
+                // Prevent appending opening bracket
                 node.appendChildrenStart(this);
             }
             return isEqualSoFar();
@@ -129,11 +131,12 @@ abstract class OrderingAbstractStage implements TranslationStage {
 
         @Override
         public void onNodeEnd(Node node) {
+            // Prevent appending alias or closing bracket
             if (!(node instanceof AliasedNode || node.getParent() instanceof AliasedNode)) {
                 node.appendChildrenEnd(this);
                 if (node instanceof FunctionNode && ((FunctionNode) node).getAlias() != null) {
                     if (partList.get(partList.size()-1).equals(((FunctionNode) node).getAlias())) {
-                        partList.remove(partList.size()-1);
+                        partList.remove(partList.size()-1); // Remove appended alias
                     }
                 }
                 isEqualSoFar();
