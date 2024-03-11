@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.apache.cayenne.access.sqlbuilder.NodeBuilder;
 import org.apache.cayenne.access.sqlbuilder.QuotingAppendable;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
+import org.apache.cayenne.access.sqlbuilder.sqltree.AliasedNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.FunctionNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
@@ -112,7 +113,9 @@ abstract class OrderingAbstractStage implements TranslationStage {
             if (node instanceof ColumnNode && ((ColumnNode) node).getAlias() != null) {
                 partList.remove(partList.size()-1);
             }
-            node.appendChildrenStart(this);
+            if (!(node.getParent() instanceof AliasedNode)) {
+                node.appendChildrenStart(this);
+            }
             return isEqualSoFar();
         }
 
@@ -126,13 +129,15 @@ abstract class OrderingAbstractStage implements TranslationStage {
 
         @Override
         public void onNodeEnd(Node node) {
-            node.appendChildrenEnd(this);
-            if (node instanceof FunctionNode && ((FunctionNode) node).getAlias() != null) {
-                if (partList.get(partList.size()-1).equals(((FunctionNode) node).getAlias())) {
-                    partList.remove(partList.size()-1);
+            if (!(node instanceof AliasedNode || node.getParent() instanceof AliasedNode)) {
+                node.appendChildrenEnd(this);
+                if (node instanceof FunctionNode && ((FunctionNode) node).getAlias() != null) {
+                    if (partList.get(partList.size()-1).equals(((FunctionNode) node).getAlias())) {
+                        partList.remove(partList.size()-1);
+                    }
                 }
+                isEqualSoFar();
             }
-            isEqualSoFar();
         }
 
         private boolean isEqualSoFar() {
