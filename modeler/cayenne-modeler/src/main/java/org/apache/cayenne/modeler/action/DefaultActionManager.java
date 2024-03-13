@@ -31,6 +31,7 @@ import org.apache.cayenne.modeler.action.dbimport.AddIncludeProcedureAction;
 import org.apache.cayenne.modeler.action.dbimport.AddIncludeTableAction;
 import org.apache.cayenne.modeler.action.dbimport.AddSchemaAction;
 import org.apache.cayenne.modeler.action.dbimport.DeleteNodeAction;
+import org.apache.cayenne.modeler.action.dbimport.DragAndDropNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.EditNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveImportNodeAction;
 import org.apache.cayenne.modeler.action.dbimport.MoveInvertNodeAction;
@@ -124,7 +125,9 @@ public class DefaultActionManager implements ActionManager {
         registerAction(new EditNodeAction(application)).setAlwaysOn(true);
         registerAction(new DeleteNodeAction(application)).setAlwaysOn(true);
         registerAction(new MoveImportNodeAction(application)).setAlwaysOn(true);
+        registerAction(new DragAndDropNodeAction(application)).setAlwaysOn(true);
         registerAction(new LoadDbSchemaAction(application)).setAlwaysOn(true);
+        registerAction(new SortNodesAction(application)).setAlwaysOn(true);
         registerAction(new MoveInvertNodeAction(application)).setAlwaysOn(true);
         registerAction(new AboutAction(application)).setAlwaysOn(true);
         registerAction(new DocumentationAction(application)).setAlwaysOn(true);
