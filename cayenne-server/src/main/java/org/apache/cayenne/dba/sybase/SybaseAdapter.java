@@ -45,7 +45,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
+ * DbAdapter implementation for <a href="https://www.sybase.com">Sybase RDBMS</a>.
  */
 public class SybaseAdapter extends JdbcAdapter {
 

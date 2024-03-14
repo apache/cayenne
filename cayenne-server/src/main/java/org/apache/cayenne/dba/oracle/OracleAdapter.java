@@ -56,7 +56,7 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
+ * DbAdapter implementation for <a href="https://www.oracle.com">Oracle RDBMS
  * </a>. Sample connection settings to use with Oracle are shown below:
  *
  * <pre>

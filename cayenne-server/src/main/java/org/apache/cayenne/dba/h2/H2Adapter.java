@@ -38,7 +38,7 @@ import org.apache.cayenne.resource.ResourceLocator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for <a href="http://www.h2database.com/">H2
+ * DbAdapter implementation for <a href="https://www.h2database.com/">H2
  * RDBMS </a>. Sample connection settings to use with H2 are shown
  * below:
  * 

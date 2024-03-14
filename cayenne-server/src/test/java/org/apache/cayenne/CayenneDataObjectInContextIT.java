@@ -283,7 +283,7 @@ public class CayenneDataObjectInContextIT extends ServerCase {
     /**
      * Tests a condition when user substitutes object id of a new object instead of
      * setting replacement. This is demonstrated here -
-     * http://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0210.html
+     * https://objectstyle.org/cayenne/lists/cayenne-user/2005/01/0210.html
      */
     @Test
     public void testObjectsCommittedManualOID() {

@@ -52,7 +52,7 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL
+ * DbAdapter implementation for <a href="https://www.postgresql.org">PostgreSQL
  * RDBMS </a>. Sample connection settings to use with PostgreSQL are shown
  * below:
  *

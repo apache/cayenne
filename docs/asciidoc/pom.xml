@@ -90,7 +90,7 @@
                     <doctype>book</doctype>
                     <!-- Attributes common to all output formats -->
                     <attributes>
-                        <endpoint-url>http://cayenne.apache.org</endpoint-url>
+                        <endpoint-url>https://cayenne.apache.org</endpoint-url>
 
                         <basedir>${project.basedir}</basedir>
                         <sourcedir>${project.build.sourceDirectory}</sourcedir>

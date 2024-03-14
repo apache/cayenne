@@ -44,7 +44,7 @@ import java.util.HashSet;
  * </p>
  * <p>
  * This class is an example of <a
- * href="http://en.wikipedia.org/wiki/Bridge_pattern">"bridge" design pattern</a>, hence
+ * href="https://en.wikipedia.org/wiki/Bridge_pattern">"bridge" design pattern</a>, hence
  * the name.
  * </p>
  * 

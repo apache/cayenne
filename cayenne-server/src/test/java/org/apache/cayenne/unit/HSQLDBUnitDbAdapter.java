@@ -59,7 +59,7 @@ public class HSQLDBUnitDbAdapter extends UnitDbAdapter {
 
     /**
      * In HyperSQL, REAL, FLOAT, DOUBLE are equivalent and all mapped to double in Java
-     * @see <a href="http://hsqldb.org/doc/guide/sqlgeneral-chapt.html#sgc_numeric_types">HSQLDB data types documentation</a>
+     * @see <a href="https://hsqldb.org/doc/guide/sqlgeneral-chapt.html#sgc_numeric_types">HSQLDB data types documentation</a>
      */
     @Override
     public boolean realAsDouble() {

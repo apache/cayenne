@@ -47,7 +47,7 @@ Let's add `resin-hessian.jar` (and the caucho repo declaration) and `cayenne-rop
         <repository>
             <id>caucho</id>
             <name>Caucho Repository</name>
-            <url>http://caucho.com/m2</url>
+            <url>https://caucho.com/m2</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>

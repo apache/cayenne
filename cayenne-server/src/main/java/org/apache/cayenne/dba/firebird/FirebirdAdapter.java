@@ -41,7 +41,7 @@ import org.apache.cayenne.resource.ResourceLocator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for <a href="http://www.firebirdsql.org">FirebirdSQL
+ * DbAdapter implementation for <a href="https://www.firebirdsql.org">FirebirdSQL
  * RDBMS </a>. Sample connection settings to use with Firebird are shown
  * below:
  * 

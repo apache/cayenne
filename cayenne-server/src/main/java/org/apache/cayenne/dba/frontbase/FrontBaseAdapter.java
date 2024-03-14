@@ -46,7 +46,7 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.frontbase.com/">FrontBase
+ * DbAdapter implementation for <a href="https://www.frontbase.com/">FrontBase
  * RDBMS</a>. Sample connection settings to use with FrontBase are shown below:
  * 
  * <pre>
