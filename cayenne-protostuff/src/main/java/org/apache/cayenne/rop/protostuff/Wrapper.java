@@ -24,8 +24,8 @@ import java.io.Serializable;
 /**
  * As Protostuff has limitation that nested messages should not contain references to the root message, so we provide
  * a simple wrapper for the root message.
- *
- * <a href="http://www.protostuff.io/documentation/object-graphs/">
+ * <p>
+ * See <a href="https://protostuff.github.io/documentation/object-graphs/">official docs</a>
  *
  * @since 4.0
  */

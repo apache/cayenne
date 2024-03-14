@@ -75,7 +75,7 @@ Now go back to Eclipse, right click on "tutorial-rop-client" project and select 
         <repository>
             <id>caucho</id>
             <name>Caucho Repository</name>
-            <url>http://caucho.com/m2</url>
+            <url>https://caucho.com/m2</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>

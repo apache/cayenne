@@ -59,7 +59,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS
+ * DbAdapter implementation for <a href="https://www.oracle.com">Oracle RDBMS
  * </a>. Sample connection settings to use with Oracle are shown below:
  *
  * <pre>

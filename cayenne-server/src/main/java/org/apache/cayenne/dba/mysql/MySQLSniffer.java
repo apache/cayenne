@@ -54,7 +54,7 @@ public class MySQLSniffer implements DbAdapterDetector {
 		String adapterStorageEngine = MySQLAdapter.DEFAULT_STORAGE_ENGINE;
 
 		try (Statement statement = md.getConnection().createStatement();) {
-			// http://dev.mysql.com/doc/refman/5.0/en/storage-engines.html
+			// https://dev.mysql.com/doc/refman/5.0/en/storage-engines.html
 			// per link above "table type" concept is deprecated in favor of
 			// "storage
 			// engine". Not sure if we should check "storage_engine" variable

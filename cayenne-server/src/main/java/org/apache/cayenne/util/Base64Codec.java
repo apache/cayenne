@@ -25,7 +25,7 @@ package org.apache.cayenne.util;
  * <i>This codec is based on Apache commons.codec implementation, copyright The Apache
  * Software Foundation.</i>
  * </p>
- * 
+ *
  * @since 1.2
  */
 public class Base64Codec {
@@ -36,15 +36,15 @@ public class Base64Codec {
      * The {@value} character limit does not count the trailing CRLF, but counts all other
      * characters, including any equal signs.
      * </p>
-     * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045 section 6.8</a>
+     *
+     * @see <a href="https://www.ietf.org/rfc/rfc2045.txt">RFC 2045 section 6.8</a>
      */
     static final int CHUNK_SIZE = 76;
 
     /**
      * Chunk separator per RFC 2045 section 2.1.
-     * 
-     * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045 section 2.1</a>
+     *
+     * @see <a href="https://www.ietf.org/rfc/rfc2045.txt">RFC 2045 section 2.1</a>
      */
     static final byte[] CHUNK_SEPARATOR = "\r\n".getBytes();
 
@@ -142,7 +142,7 @@ public class Base64Codec {
     /**
      * Tests a given byte array to see if it contains only valid characters within the
      * Base64 alphabet.
-     * 
+     *
      * @param arrayOctect byte array to test
      * @return true if all bytes are valid characters in the Base64 alphabet or if the
      *         byte array is empty; false, otherwise
@@ -167,7 +167,7 @@ public class Base64Codec {
 
     /**
      * Encodes binary data using the base64 algorithm but does not chunk the output.
-     * 
+     *
      * @param binaryData binary data to encode
      * @return Base64 characters
      */
@@ -178,7 +178,7 @@ public class Base64Codec {
     /**
      * Encodes binary data using the base64 algorithm and chunks the encoded output into
      * 76 character blocks
-     * 
+     *
      * @param binaryData binary data to encode
      * @return Base64 characters chunked in 76 character blocks
      */
@@ -189,7 +189,7 @@ public class Base64Codec {
     /**
      * Encodes binary data using the base64 algorithm, optionally chunking the output into
      * 76 character blocks.
-     * 
+     *
      * @param binaryData Array containing binary data to encode.
      * @param isChunked if isChunked is true this encoder will chunk the base64 output
      *            into 76 character blocks
@@ -319,7 +319,7 @@ public class Base64Codec {
 
     /**
      * Decodes Base64 data into octects
-     * 
+     *
      * @param base64Data Byte array containing Base64 data
      * @return Array containing decoded data.
      */
@@ -387,7 +387,7 @@ public class Base64Codec {
 
     /**
      * Discards any whitespace from a base-64 encoded block.
-     * 
+     *
      * @param data The base-64 encoded data to discard the whitespace from.
      * @return The data, less whitespace (see RFC 2045).
      */
@@ -418,7 +418,7 @@ public class Base64Codec {
      * Discards any characters outside of the base64 alphabet, per the requirements on
      * page 25 of RFC 2045 - "Any characters outside of the base64 alphabet are to be
      * ignored in base64 encoded data."
-     * 
+     *
      * @param data The base-64 encoded data to groom
      * @return The data, less non-base64 characters (see RFC 2045).
      */

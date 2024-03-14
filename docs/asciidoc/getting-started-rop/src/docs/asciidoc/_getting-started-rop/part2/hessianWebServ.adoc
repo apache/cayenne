@@ -40,7 +40,7 @@ Now lets get back to the "tutorial" project that contains a web application and 
         <repository>
             <id>caucho</id>
             <name>Caucho Repository</name>
-            <url>http://caucho.com/m2</url>
+            <url>https://caucho.com/m2</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>

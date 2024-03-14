@@ -25,8 +25,8 @@ import org.apache.cayenne.rop.protostuff.ProtostuffROPSerializationService;
 
 /**
  * A DI module that uses Protostuff Object Graph Serialization as Cayenne {@link ROPSerializationService}.
- * <a href="http://www.protostuff.io/">
- *
+ * See <a href="https://protostuff.github.io/">official docs</a>
+ * <p>
  * To use this module you should add the following system properties:
  *      -Dprotostuff.runtime.collection_schema_on_repeated_fields=true
  *      -Dprotostuff.runtime.morph_collection_interfaces=true
