@@ -54,7 +54,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/">
+ * DbAdapter implementation for the <a href="https://hsqldb.sourceforge.net/">
  * HSQLDB RDBMS </a>. Sample connection settings to use with HSQLDB are shown
  * below:
  * 

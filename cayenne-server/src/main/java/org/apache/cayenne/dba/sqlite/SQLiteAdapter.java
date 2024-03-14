@@ -44,8 +44,8 @@ import java.util.List;
 
 /**
  * A SQLite database adapter that works with Zentus JDBC driver. See
- * http://www.zentus.com/sqlitejdbc/ for the driver information. Also look at
- * http://www.xerial.org/trac/Xerial/wiki/SQLiteJDBC for another adaptor option.
+ * https://www.zentus.com/sqlitejdbc/ for the driver information. Also look at
+ * https://github.com/xerial/sqlite-jdbc for another adapter option.
  * 
  * <pre>
  *      sqlite.jdbc.url = jdbc:sqlite:sqlitetest.db

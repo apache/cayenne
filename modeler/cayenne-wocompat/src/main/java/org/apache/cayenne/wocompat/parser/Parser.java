@@ -29,7 +29,7 @@ import org.apache.cayenne.wocompat.PlistDataStructureFactory;
  * NeXT/Apple Property List format parser. 
  *
  * <p>Contributed by Jeff Martin <reportmill@yahoo.com> and Josh from Report Mill -
- * <a href="http://www.reportmill.com/">http://www.reportmill.com/</a></p>
+ * <a href="https://www.reportmill.com/">https://www.reportmill.com/</a></p>
  */
 public class Parser implements ParserConstants {
 

@@ -50,7 +50,7 @@ import java.util.List;
 
 /**
  * DbAdapter implementation for <a
- * href="http://opensource.ca.com/projects/ingres/">Ingres</a>. Sample
+ * href="https://opensource.ca.com/projects/ingres/">Ingres</a>. Sample
  * connection settings to use with Ingres are shown below:
  *
  * <pre>

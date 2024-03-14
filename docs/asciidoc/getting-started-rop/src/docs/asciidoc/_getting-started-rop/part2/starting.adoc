@@ -88,7 +88,7 @@ We also need to add Caucho M2 repository to pull Hessian jar files. The resultin
         <repository>
             <id>caucho</id>
             <name>Caucho Repository</name>
-            <url>http://caucho.com/m2</url>
+            <url>https://caucho.com/m2</url>
             <layout>default</layout>
             <snapshots>
                 <enabled>false</enabled>

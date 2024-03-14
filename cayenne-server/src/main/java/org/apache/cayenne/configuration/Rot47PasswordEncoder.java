@@ -23,7 +23,7 @@ package org.apache.cayenne.configuration;
  * The ROT-47 password encoder passes the text of the database password through a simple
  * Caesar cipher to obscure the password text. The ROT-47 cipher is similar to the ROT-13
  * cipher, but processes numbers and symbols as well. See the Wikipedia entry on <a
- * href="http://en.wikipedia.org/wiki/Rot-13">ROT13</a> for more information on this
+ * href="https://en.wikipedia.org/wiki/Rot-13">ROT13</a> for more information on this
  * topic.
  * 
  * @since 3.0
@@ -41,7 +41,7 @@ public class Rot47PasswordEncoder implements PasswordEncoding {
     /**
      * Applies a ROT-47 Caesar cipher to the supplied value. Each letter in the supplied
      * value is substituted with a new value rotated by 47 places. See <a
-     * href="http://en.wikipedia.org/wiki/ROT13">ROT13</a> for more information (there is
+     * href="https://en.wikipedia.org/wiki/ROT13">ROT13</a> for more information (there is
      * a subsection for ROT-47).
      * <p>
      * A Unix command to perform a ROT-47 cipher is:

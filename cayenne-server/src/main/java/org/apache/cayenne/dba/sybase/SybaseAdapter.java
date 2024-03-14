@@ -50,7 +50,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.sybase.com">Sybase
+ * DbAdapter implementation for <a href="https://www.sybase.com">Sybase
  * RDBMS</a>.
  */
 public class SybaseAdapter extends JdbcAdapter {

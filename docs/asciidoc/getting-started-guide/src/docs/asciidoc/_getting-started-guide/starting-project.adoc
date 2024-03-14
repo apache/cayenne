@@ -39,7 +39,7 @@ get access to the CayenneModeler tool.
 NOTE: If you are really into Maven, you can start CayenneModeler from Maven too.
       We'll do it in a more traditional way here.
 
-Download the http://cayenne.apache.org/download.html[latest release]. Unpack the distribution
+Download the https://cayenne.apache.org/download.html[latest release]. Unpack the distribution
 somewhere in the file system and start CayenneModeler, following platform-specific instructions.
 On most platforms it is done simply by doubleclicking the Modeler icon.
 The welcome screen of the Modeler looks like this:

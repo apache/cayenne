@@ -22,7 +22,7 @@ import org.apache.cayenne.map.DataMap;
 
 /**
  * Factory for test data see pattern definition:
- * http://martinfowler.com/bliki/ObjectMother.html
+ * https://martinfowler.com/bliki/ObjectMother.html
  *
  * @since 4.0.
  */

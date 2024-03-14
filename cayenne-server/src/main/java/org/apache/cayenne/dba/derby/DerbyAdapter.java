@@ -47,7 +47,7 @@ import java.sql.Types;
 import java.util.List;
 
 /**
- * DbAdapter implementation for the <a href="http://db.apache.org/derby/"> Derby RDBMS
+ * DbAdapter implementation for the <a href="https://db.apache.org/derby/"> Derby RDBMS
  * </a>. Sample connection settings to use with Derby are shown below. <h3>Embedded</h3>
  * <p>
  * <pre>

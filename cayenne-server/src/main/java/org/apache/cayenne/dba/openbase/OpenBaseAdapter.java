@@ -51,7 +51,7 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.resource.ResourceLocator;
 
 /**
- * DbAdapter implementation for <a href="http://www.openbase.com">OpenBase</a>.
+ * DbAdapter implementation for <a href="https://www.openbase.com">OpenBase</a>.
  * Sample connection settings to use with OpenBase are shown below:
  * <p>
  * <pre>

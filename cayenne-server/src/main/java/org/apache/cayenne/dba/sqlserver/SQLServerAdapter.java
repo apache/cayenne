@@ -42,7 +42,7 @@ import org.apache.cayenne.resource.ResourceLocator;
 /**
  * <p>
  * Cayenne DbAdapter implementation for <a
- * href="http://www.microsoft.com/sql/">Microsoft SQL Server </a> engine.
+ * href="https://www.microsoft.com/sql/">Microsoft SQL Server </a> engine.
  * </p>
  * <h3>Microsoft Driver Settings</h3>
  * <p>
@@ -63,7 +63,7 @@ import org.apache.cayenne.resource.ResourceLocator;
  * <h3>jTDS Driver Settings</h3>
  * <p>
  * jTDS is an open source driver that can be downloaded from <a href=
- * "http://jtds.sourceforge.net">http://jtds.sourceforge.net </a>. It supports
+ * "https://jtds.sourceforge.net">https://jtds.sourceforge.net </a>. It supports
  * both SQLServer and Sybase. Sample SQLServer settings are the following:
  * </p>
  *

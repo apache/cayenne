@@ -65,7 +65,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>.
+ * DbAdapter implementation for <a href="https://www.mysql.com">MySQL RDBMS</a>.
  * <h3>
  * Foreign Key Constraint Handling</h3>
  * <p>
@@ -208,7 +208,7 @@ public class MySQLAdapter extends JdbcAdapter {
 		// types like "int unsigned" map to Long
 		else if (typeName != null && typeName.endsWith(" unsigned")) {
 			// per
-			// http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-type-conversions.html
+			// https://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-type-conversions.html
 			if ("int unsigned".equals(typeName) || "integer unsigned".equals(typeName)
 					|| "mediumint unsigned".equals(typeName)) {
 				type = Types.BIGINT;
@@ -365,7 +365,7 @@ public class MySQLAdapter extends JdbcAdapter {
 	public boolean typeSupportsLength(int type) {
 		// As of MySQL 5.6.4 the "TIMESTAMP" and "TIME" types support length,
 		// which is the number of decimal places for fractional seconds
-		// http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html
+		// https://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html
 		switch (type) {
 		case Types.TIMESTAMP:
 		case Types.TIME:
