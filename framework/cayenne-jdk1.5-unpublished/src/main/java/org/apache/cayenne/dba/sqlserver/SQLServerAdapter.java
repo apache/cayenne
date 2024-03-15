@@ -36,7 +36,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * Cayenne DbAdapter implementation for <a href="http://www.microsoft.com/sql/"Microsoft
+ * Cayenne DbAdapter implementation for <a href="https://www.microsoft.com/sql/"Microsoft
  * SQL Server </a> engine. </p> <h3>Microsoft Driver Settings</h3>
  * <p>
  * Sample connection settings to use with MS SQL Server are shown below:

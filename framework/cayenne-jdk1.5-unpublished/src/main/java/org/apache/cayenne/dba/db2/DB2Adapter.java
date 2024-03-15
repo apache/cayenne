@@ -49,7 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for the <a href="http://www.ibm.com/db2/"> DB2 RDBMS </a>.
+ * DbAdapter implementation for the <a href="https://www.ibm.com/db2/"> DB2 RDBMS </a>.
  * Sample connection settings to use with DB2 are shown below:
  * 
  * <pre>

@@ -43,7 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for <a href="http://www.frontbase.com/">FrontBase RDBMS</a>.
+ * DbAdapter implementation for <a href="https://www.frontbase.com/">FrontBase RDBMS</a>.
  * Sample connection settings to use with FrontBase are shown below:
  * 
  * <pre>

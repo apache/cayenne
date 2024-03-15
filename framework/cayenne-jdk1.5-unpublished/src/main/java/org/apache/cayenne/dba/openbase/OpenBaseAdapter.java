@@ -51,7 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for <a href="http://www.openbase.com">OpenBase</a>. Sample
+ * DbAdapter implementation for <a href="https://www.openbase.com">OpenBase</a>. Sample
  * connection settings to use with OpenBase are shown below:
  * 
  * <pre>

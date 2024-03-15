@@ -42,7 +42,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * DbAdapter implementation for the <a href="http://hsqldb.sourceforge.net/"> HSQLDB RDBMS
+ * DbAdapter implementation for the <a href="https://hsqldb.sourceforge.net/"> HSQLDB RDBMS
  * </a>. Sample connection settings to use with HSQLDB are shown below:
  * 
  * <pre>

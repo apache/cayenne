@@ -25,7 +25,7 @@ package org.apache.cayenne.configuration;
  * numbers and symbols are left untouched. ROT-13 is also a symmetrical cipher and
  * therefore provides no real encryption since applying the cipher to the encrypted text
  * produces the original source text. See the Wikipedia entry on <a
- * href="http://en.wikipedia.org/wiki/Rot-13">ROT13</a> for more information on this
+ * href="https://en.wikipedia.org/wiki/Rot-13">ROT13</a> for more information on this
  * topic.
  * 
  * @since 3.0
@@ -43,7 +43,7 @@ public class Rot13PasswordEncoder implements PasswordEncoding {
     /**
      * Applies a ROT-13 Caesar cipher to the supplied value. Each letter in the supplied
      * value is substituted with a new value rotated by 13 places in the alphabet. See <a
-     * href="http://en.wikipedia.org/wiki/ROT13">ROT13</a> for more information.
+     * href="https://en.wikipedia.org/wiki/ROT13">ROT13</a> for more information.
      * <p>
      * A Unix command to perform a ROT-13 cipher is:
      * 

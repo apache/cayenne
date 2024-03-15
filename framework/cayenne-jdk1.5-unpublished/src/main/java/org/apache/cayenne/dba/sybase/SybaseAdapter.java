@@ -40,7 +40,7 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.merge.MergerFactory;
 
 /**
- * DbAdapter implementation for <a href="http://www.sybase.com">Sybase RDBMS</a>.
+ * DbAdapter implementation for <a href="https://www.sybase.com">Sybase RDBMS</a>.
  */
 public class SybaseAdapter extends JdbcAdapter {
 

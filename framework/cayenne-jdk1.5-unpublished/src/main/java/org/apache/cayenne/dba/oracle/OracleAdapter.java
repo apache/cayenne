@@ -55,7 +55,7 @@ import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 /**
- * DbAdapter implementation for <a href="http://www.oracle.com">Oracle RDBMS </a>. Sample
+ * DbAdapter implementation for <a href="https://www.oracle.com">Oracle RDBMS </a>. Sample
  * connection settings to use with Oracle are shown below:
  * 
  * <pre>

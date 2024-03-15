@@ -55,7 +55,7 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
 /**
- * DbAdapter implementation for <a href="http://www.mysql.com">MySQL RDBMS</a>. <h3>
+ * DbAdapter implementation for <a href="https://www.mysql.com">MySQL RDBMS</a>. <h3>
  * Foreign Key Constraint Handling</h3>
  * <p>
  * Foreign key constraints are supported by InnoDB engine and NOT supported by MyISAM

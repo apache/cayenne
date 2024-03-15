@@ -42,7 +42,7 @@ import java.util.Set;
  * A common set of {@link Weigher} implementations.
  * 
  * @author ben.manes@gmail.com (Ben Manes)
- * @see <a href="http://code.google.com/p/concurrentlinkedhashmap/">
+ * @see <a href="https://code.google.com/p/concurrentlinkedhashmap/">
  *      http://code.google.com/p/concurrentlinkedhashmap/</a>
  */
 final class Weighers {

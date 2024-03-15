@@ -37,7 +37,7 @@ import com.caucho.hessian.io.SerializerFactory;
  * An ClientConnection that passes messages to a remotely deployed HessianService. It
  * supports HTTP BASIC authentication. HessianConnection serializes messages using Hessian
  * binary web service protocol over HTTP. For more info on Hessian see Caucho site at <a
- * href="http://www.caucho.com/resin-3.0/protocols/hessian.xtp">http://www.caucho.com/resin-3.0/protocols/hessian.xtp</a>.
+ * href="https://www.caucho.com/resin-3.0/protocols/hessian.xtp">https://www.caucho.com/resin-3.0/protocols/hessian.xtp</a>.
  * HessianConnection supports logging of message traffic via Jakarta commons-logging API.
  * 
  * @since 1.2

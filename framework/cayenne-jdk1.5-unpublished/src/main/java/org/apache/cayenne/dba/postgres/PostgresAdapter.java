@@ -47,7 +47,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * DbAdapter implementation for <a href="http://www.postgresql.org">PostgreSQL RDBMS </a>.
+ * DbAdapter implementation for <a href="https://www.postgresql.org">PostgreSQL RDBMS </a>.
  * Sample connection settings to use with PostgreSQL are shown below:
  * 
  * <pre>

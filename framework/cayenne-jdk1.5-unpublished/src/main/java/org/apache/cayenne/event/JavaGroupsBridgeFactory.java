@@ -31,7 +31,7 @@ import org.apache.cayenne.reflect.PropertyUtils;
  * Factory to create JavaGroupsBridge instances. If JavaGroups library is not installed
  * this factory will return a noop EventBridge as a failover mechanism.
  *
- * For further information about JavaGroups consult the <a href="http://www.jgroups.org/">documentation</a>.
+ * For further information about JavaGroups consult the <a href="https://www.jgroups.org/">documentation</a>.
  * 
  * @since 1.1
  */

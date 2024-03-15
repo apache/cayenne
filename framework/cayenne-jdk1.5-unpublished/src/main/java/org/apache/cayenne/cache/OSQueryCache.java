@@ -36,7 +36,7 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 /**
  * A {@link QueryCache} implementation based on OpenSymphony OSCache. Query cache
  * parameters are initialized from "/oscache.properties" file per <a
- * href="http://www.opensymphony.com/oscache/wiki/Configuration.html">OSCache</a>
+ * href="https://www.opensymphony.com/oscache/wiki/Configuration.html">OSCache</a>
  * documentation. In addition to the standard OSCache parameters, Cayenne provider allows
  * to setup global cache expiration parameters, and parameters matching the main query
  * cache group (i.e. the cache groups specified first). A sample oscache.properties may
