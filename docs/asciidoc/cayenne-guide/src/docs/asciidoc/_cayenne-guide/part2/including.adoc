@@ -29,11 +29,11 @@ Cayenne distribution contains the following core runtime jars in the distributio
 
 When using `cayenne-server-x.x.jar` you'll need a few third party jars (all included in `lib/third-party` directory of the distribution):
 
-- http://velocity.apache.org[Apache Velocity Template Engine], version 1.6.x (and all its dependencies bundled with velocity-dep)
+- https://velocity.apache.org[Apache Velocity Template Engine], version 1.6.x (and all its dependencies bundled with velocity-dep)
 
-- http://commons.apache.org/proper/commons-collections/[Apache Commons Collections], version 3.2.1
+- https://commons.apache.org/proper/commons-collections/[Apache Commons Collections], version 3.2.1
 
-- http://commons.apache.org/proper/commons-logging/[Apache Commons Logging], version 1.1
+- https://commons.apache.org/proper/commons-logging/[Apache Commons Logging], version 1.1
 
 Cayenne integrates with various caching, clustering and other frameworks. These optional integrations will require other third-party jars that the users will need to obtain on their own.
 
