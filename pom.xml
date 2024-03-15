@@ -48,7 +48,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-	<url>http://cayenne.apache.org/</url>
+	<url>https://cayenne.apache.org/</url>
 	<modules>
 		<module>build-tools</module>
 		<module>cayenne-ant</module>
@@ -84,31 +84,20 @@
 			<post>user@cayenne.apache.org</post>
 			<subscribe>user-subscribe@cayenne.apache.org</subscribe>
 			<unsubscribe>user-unsubscribe@cayenne.apache.org</unsubscribe>
-			<archive>http://mail-archives.apache.org/mod_mbox/cayenne-user</archive>
-			<otherArchives>
-				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.user</otherArchive>
-				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.user</otherArchive>
-			</otherArchives>
+			<archive>https://lists.apache.org/list.html?user@cayenne.apache.org</archive>
 		</mailingList>
 		<mailingList>
 			<name>Cayenne Developer List</name>
 			<post>dev@cayenne.apache.org</post>
 			<subscribe>dev-subscribe@cayenne.apache.org</subscribe>
 			<unsubscribe>dev-unsubscribe@cayenne.apache.org</unsubscribe>
-			<archive>http://mail-archives.apache.org/mod_mbox/cayenne-dev</archive>
-			<otherArchives>
-				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.dev</otherArchive>
-				<otherArchive>http://dir.gmane.org/gmane.comp.java.cayenne.devel</otherArchive>
-			</otherArchives>
+			<archive>https://lists.apache.org/list.html?dev@cayenne.apache.org</archive>
 		</mailingList>
 		<mailingList>
 			<name>Cayenne Commits</name>
 			<subscribe>commits-subscribe@cayenne.apache.org</subscribe>
 			<unsubscribe>commits-unsubscribe@cayenne.apache.org</unsubscribe>
-			<archive>http://mail-archives.apache.org/mod_mbox/cayenne-commits</archive>
-			<otherArchives>
-				<otherArchive>http://cayenne.markmail.org/search/+list:org.apache.cayenne.commits</otherArchive>
-			</otherArchives>
+			<archive>https://lists.apache.org/list.html?commits@cayenne.apache.org</archive>
 		</mailingList>
 	</mailingLists>
 	<developers>
@@ -255,7 +244,7 @@
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -267,7 +256,7 @@
 	</scm>
 	<organization>
 		<name>Apache Cayenne</name>
-		<url>http://cayenne.apache.org/</url>
+		<url>https://cayenne.apache.org/</url>
 	</organization>
 	<dependencyManagement>
 		<dependencies>
