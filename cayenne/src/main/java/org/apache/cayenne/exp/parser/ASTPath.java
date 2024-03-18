@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -123,6 +125,24 @@ public abstract class ASTPath extends SimpleNode {
 	protected String getExpressionOperator(int index) {
 		throw new UnsupportedOperationException("No operator for '" + ExpressionParserTreeConstants.jjtNodeName[id]
 				+ "'");
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression exists() {
+		return ExpressionFactory.exists(this);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @since 5.0
+	 */
+	@Override
+	public Expression notExists() {
+		return ExpressionFactory.notExists(this);
 	}
 
 	@Override
