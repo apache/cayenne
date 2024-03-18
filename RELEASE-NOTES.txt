@@ -62,6 +62,7 @@ CAY-2829 Merge `BaseContext` with `DataContext` and deprecate it
 CAY-2830 Cleanup `DataContext` code
 CAY-2831 Upgrade Gradle to 8.5
 CAY-2834 v11 upgrade handler should update XMLPoolingDataSourceFactory package
+CAY-2835 Custom aggregate functions
 CAY-2837 Deprecate TraversalHelper and move no-op implementations to TraversalHandler
 CAY-2843 Use an IN clause for single field disjoint by ID prefetches
 CAY-2845 Deprecate DataObject in favour of Persistent
