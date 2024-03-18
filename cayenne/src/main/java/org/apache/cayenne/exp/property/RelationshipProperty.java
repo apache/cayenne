@@ -22,6 +22,8 @@ package org.apache.cayenne.exp.property;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
@@ -180,5 +182,13 @@ public interface RelationshipProperty<E> extends PathProperty<E> {
                 PropertyUtils.buildExp(path, getExpression().getPathAliases()),
                 property.getType()
         );
+    }
+
+    default Expression exists() {
+        return ExpressionFactory.exists(getExpression());
+    }
+
+    default Expression notExists() {
+        return ExpressionFactory.notExists(getExpression());
     }
 }
