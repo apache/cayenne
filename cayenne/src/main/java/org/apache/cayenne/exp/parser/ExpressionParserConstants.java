@@ -99,37 +99,39 @@ public interface ExpressionParserConstants {
   /** RegularExpression Id. */
   int OPERATOR = 66;
   /** RegularExpression Id. */
-  int ASTERISK = 72;
+  int AGGREGATE = 67;
   /** RegularExpression Id. */
-  int PROPERTY_PATH = 73;
+  int ASTERISK = 73;
   /** RegularExpression Id. */
-  int IDENTIFIER = 74;
+  int PROPERTY_PATH = 74;
   /** RegularExpression Id. */
-  int LETTER = 75;
+  int IDENTIFIER = 75;
   /** RegularExpression Id. */
-  int DIGIT = 76;
+  int LETTER = 76;
   /** RegularExpression Id. */
-  int DOLLAR_SIGN = 77;
+  int DIGIT = 77;
   /** RegularExpression Id. */
-  int ESC = 80;
+  int DOLLAR_SIGN = 78;
   /** RegularExpression Id. */
-  int SINGLE_QUOTED_STRING = 82;
+  int ESC = 81;
   /** RegularExpression Id. */
-  int STRING_ESC = 83;
+  int SINGLE_QUOTED_STRING = 83;
   /** RegularExpression Id. */
-  int DOUBLE_QUOTED_STRING = 85;
+  int STRING_ESC = 84;
   /** RegularExpression Id. */
-  int INT_LITERAL = 86;
+  int DOUBLE_QUOTED_STRING = 86;
   /** RegularExpression Id. */
-  int FLOAT_LITERAL = 87;
+  int INT_LITERAL = 87;
   /** RegularExpression Id. */
-  int DEC_FLT = 88;
+  int FLOAT_LITERAL = 88;
   /** RegularExpression Id. */
-  int DEC_DIGITS = 89;
+  int DEC_FLT = 89;
   /** RegularExpression Id. */
-  int EXPONENT = 90;
+  int DEC_DIGITS = 90;
   /** RegularExpression Id. */
-  int FLT_SUFF = 91;
+  int EXPONENT = 91;
+  /** RegularExpression Id. */
+  int FLT_SUFF = 92;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -207,6 +209,7 @@ public interface ExpressionParserConstants {
     "\"second\"",
     "\"fn\"",
     "\"op\"",
+    "\"agg\"",
     "\"$\"",
     "\"obj:\"",
     "\"db:\"",
@@ -221,10 +224,10 @@ public interface ExpressionParserConstants {
     "\"\\\'\"",
     "\"\\\"\"",
     "<ESC>",
-    "<token of kind 81>",
+    "<token of kind 82>",
     "\"\\\'\"",
     "<STRING_ESC>",
-    "<token of kind 84>",
+    "<token of kind 85>",
     "\"\\\"\"",
     "<INT_LITERAL>",
     "<FLOAT_LITERAL>",

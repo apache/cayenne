@@ -296,6 +296,15 @@ public class BaseProperty<E> implements Property<E> {
     }
 
     /**
+     * @see FunctionExpressionFactory#customAggregateExp(String, Expression)
+     *
+     * @since 5.0
+     */
+    public <T> BaseProperty<T> aggregate(String function, Class<T> type) {
+        return PropertyFactory.createBase(FunctionExpressionFactory.customAggregateExp(function, getExpression()), type);
+    }
+
+    /**
      * Creates alias with different name for this property
      */
     public BaseProperty<E> alias(String alias) {

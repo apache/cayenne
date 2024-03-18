@@ -325,7 +325,7 @@ public class ColumnSelectIT extends RuntimeCase {
     }
 
     @Test
-    public void testAgregateOnRelation() {
+    public void testAggregateOnRelation() {
         BigDecimal min = new BigDecimal(3);
         BigDecimal max = new BigDecimal(30);
         BigDecimal avg = new BigDecimal(BigInteger.valueOf(1290L), 2);
@@ -346,6 +346,34 @@ public class ColumnSelectIT extends RuntimeCase {
         assertEquals(0, avg.compareTo((BigDecimal)minMaxAvgPrice[2]));
         assertEquals(0, sum.compareTo((BigDecimal)minMaxAvgPrice[3]));
         assertEquals(20L, minMaxAvgPrice[4]);
+    }
+
+    /**
+     * @since 5.0
+     */
+    @Test
+    public void testAggregateOnRelation_withCustomAggregates() {
+        BigDecimal min = new BigDecimal(3);
+        BigDecimal max = new BigDecimal(30);
+        BigDecimal avg = new BigDecimal(BigInteger.valueOf(1290L), 2);
+        BigDecimal sum = new BigDecimal(258);
+        BigDecimal count = new BigDecimal(20);
+
+        NumericProperty<BigDecimal> estimatedPrice = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE);
+        Object[] minMaxAvgPrice = ObjectSelect.query(Artist.class)
+                .where(estimatedPrice.gte(min))
+                .aggregate(estimatedPrice, "min", BigDecimal.class)
+                .aggregate(estimatedPrice, "max", BigDecimal.class)
+                .aggregate(estimatedPrice, "avg", BigDecimal.class)
+                .aggregate(estimatedPrice, "sum", BigDecimal.class)
+                .aggregate(estimatedPrice, "count", BigDecimal.class)
+                .selectOne(context);
+
+        assertEquals(0, min.compareTo((BigDecimal)minMaxAvgPrice[0]));
+        assertEquals(0, max.compareTo((BigDecimal)minMaxAvgPrice[1]));
+        assertEquals(0, avg.compareTo((BigDecimal)minMaxAvgPrice[2]));
+        assertEquals(0, sum.compareTo((BigDecimal)minMaxAvgPrice[3]));
+        assertEquals(0, count.compareTo((BigDecimal)minMaxAvgPrice[4]));
     }
 
     @Test

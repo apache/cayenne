@@ -200,6 +200,16 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     }
 
     /**
+     * <p>Select result of some function, that aggregates values.</p>
+     * @see ColumnSelect#columns(Property[])
+     *
+     * @since 5.0
+     */
+    public <E> ColumnSelect<Object[]> aggregate(BaseProperty<E> property, String function, Class<E> type) {
+        return columns(property.aggregate(function, type));
+    }
+
+    /**
      * Appends a having qualifier expression of this query. An equivalent to
      * {@link #and(Expression...)} that can be used a syntactic sugar.
      *

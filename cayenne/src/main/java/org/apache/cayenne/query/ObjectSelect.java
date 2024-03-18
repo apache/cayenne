@@ -295,6 +295,16 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> implements
     }
 
     /**
+     * <p>Select result of some function, that aggregates values.</p>
+     * @see ObjectSelect#column(Property)
+     *
+     * @since 5.0
+     */
+    public <E> ColumnSelect<E> aggregate(BaseProperty<E> property, String function, Class<E> type) {
+        return column(property.aggregate(function, type));
+    }
+
+    /**
      * @since 4.2
      * @return this
      */

@@ -155,6 +155,8 @@ void stringParameter() : {}
         customFunction()
     |
         customOperator()
+    |
+        customAggregate()
 }
 
 void stringLiteral() :  {}
@@ -293,6 +295,8 @@ void numericPrimary() : {}
         customFunction()
     |
         customOperator()
+    |
+        customAggregate()
 }
 
 void functionsReturningStrings() : { }
@@ -308,6 +312,11 @@ void customFunction() #CustomFunction : { }
 void customOperator() #CustomOperator : { }
 {
     <OPERATOR> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
+}
+
+void customAggregate() #CustomAggregate : { }
+{
+    <AGGREGATE> "(" stringLiteral() ( "," ( stringExpression() | numericExpression() ) )* ")"
 }
 
 void concat() #Concat : { }
@@ -597,6 +606,8 @@ TOKEN :
     <FUNCTION: "fn" >
 	|
 	<OPERATOR: "op" >
+	|
+	<AGGREGATE: "agg" >
 }
 
 void namedParameter() :{

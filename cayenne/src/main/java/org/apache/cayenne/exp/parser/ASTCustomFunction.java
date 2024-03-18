@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.Expression;
  */
 public class ASTCustomFunction extends ASTFunctionCall {
 
-    private boolean nameSet;
+    private boolean isNameSet;
 
     ASTCustomFunction(int id) {
         super(id, "");
@@ -57,21 +57,21 @@ public class ASTCustomFunction extends ASTFunctionCall {
     protected void setFunctionName(String functionName) {
         super.setFunctionName(functionName);
         if(!functionName.isEmpty()) {
-            nameSet = true;
+            isNameSet = true;
         }
     }
 
     @Override
     public void jjtAddChild(Node n, int i) {
         // First argument should be used as a function name when created by parser
-        if(!nameSet && i == 0) {
+        if(!isNameSet && i == 0) {
             if(!(n instanceof ASTScalar)) {
                 throw new IllegalArgumentException("ASTScalar expected, got " + n);
             }
-            this.functionName = ((ASTScalar) n).getValue().toString();
+            setFunctionName(((ASTScalar) n).getValue().toString());
             return;
         }
-        super.jjtAddChild(n, nameSet ? i : --i);
+        super.jjtAddChild(n, isNameSet ? i : --i);
     }
 
     @Override
