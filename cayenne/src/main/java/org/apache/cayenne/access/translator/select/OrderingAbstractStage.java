@@ -21,8 +21,8 @@ package org.apache.cayenne.access.translator.select;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,7 +113,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
         public boolean onNodeStart(Node node) {
             node.append(this);
             if (node instanceof ColumnNode && ((ColumnNode) node).getAlias() != null) {
-                partList.remove(partList.size()-1); // Remove appended alias
+                partList.removeLast(); // Remove appended alias
             }
             if (!(node.getParent() instanceof AliasedNode)) {
                 // Prevent appending opening bracket
@@ -136,8 +136,8 @@ abstract class OrderingAbstractStage implements TranslationStage {
             if (!(node instanceof AliasedNode || node.getParent() instanceof AliasedNode)) {
                 node.appendChildrenEnd(this);
                 if (node instanceof FunctionNode && ((FunctionNode) node).getAlias() != null) {
-                    if (partList.get(partList.size()-1).equals(((FunctionNode) node).getAlias())) {
-                        partList.remove(partList.size()-1); // Remove appended alias
+                    if (partList.getLast().equals(((FunctionNode) node).getAlias())) {
+                        partList.removeLast(); // Remove appended alias
                     }
                 }
                 isEqualSoFar();
@@ -168,7 +168,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
 
     private class AppendableVisitor extends SimpleNodeTreeVisitor implements QuotingAppendable
     {
-        protected final List<CharSequence> partList = new ArrayList<>();
+        protected final LinkedList<CharSequence> partList = new LinkedList<>();
 
         @Override
         public QuotingAppendable append(CharSequence csq) {
