@@ -22,6 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,7 +95,7 @@ abstract class OrderingAbstractStage implements TranslationStage {
         }
 
         List<CharSequence> getParts() {
-            return partList;
+            return Collections.unmodifiableList(partList);
         }
     }
 
