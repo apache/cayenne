@@ -278,5 +278,5 @@ Full example:
 SELECT #result('ID' 'int'), #result('NAME' 'String'), #result('DATE_OF_BIRTH' 'java.util.Date') FROM ARTIST
 ----
 
-NOTE: For advanced features you may look at the <<Apache Velocity extension>>
+NOTE: For advanced features you may look at the <<ext-velocity,Apache Velocity Extension>>
 
