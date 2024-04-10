@@ -18,7 +18,7 @@
 
 Cayenne runtime is built around a small powerful dependency injection (DI) container. Just like other popular DI technologies, such as Spring or Guice, Cayenne DI container manages sets of interdependent objects and allows users to configure them. These objects are regular Java objects. We are calling them "services" in this document to distinguish from all other objects that are not configured in the container and are not managed. DI container is responsible for service instantiation, injecting correct dependencies, maintaining service instances scope, and dispatching scope events to services.
 
-The services are configured in special Java classes called "modules". Each module defines binding of service interfaces to implementation instances, implementation types or providers of implementation instances. There are no XML configuration files, and all the bindings are type-safe. The container supports injection into instance variables and constructor parameters based on the @Inject annotation. This mechanism is very close to Google Guice.
+The services are configured in special Java classes called "modules". Each module defines binding of service interfaces to implementation instances, implementation types or providers of implementation instances. There are no XML configuration files, and all the bindings are type-safe. The container supports injection into instance variables and constructor parameters based on the `@Inject` annotation. This mechanism is very close to Google Guice.
 
 The discussion later in this chapter demonstrates a standalone DI container. But keep in mind that Cayenne already has a built-in Injector, and a set of default modules. A Cayenne user would normally only use the API below to write custom extension modules that will be loaded in that existing container when creating CayenneRuntime. See "Starting and Stopping CayenneRuntime" chapter for an example of passing an extension module to Cayenne.
 
@@ -250,8 +250,8 @@ public class MyDbAdapterDetector implements DbAdapterDetector {
 
 [source, Java]
 ----
-CoreModule.contributeAdapterDetectors(binder)
-    .add(MyDbAdapterDetector.class);
+CoreModule.extend(binder)
+    .addAdapterDetector(MyDbAdapterDetector.class);
 ----
 
 The names of built-in collections are listed in "Appendix B".
@@ -340,8 +340,8 @@ Last step is to register this new type in `CayenneRuntime`:
 CayenneRuntime runtime = CayenneRuntime.builder()
     .addConfig("cayenne-project.xml")
     .addModule(binder ->
-        CoreModule.contributeValueObjectTypes(binder)
-            .add(MoneyValueObjectType.class))
+        CoreModule.extend(binder)
+            .addValueObjectType(MoneyValueObjectType.class))
     .build();
 ----
 

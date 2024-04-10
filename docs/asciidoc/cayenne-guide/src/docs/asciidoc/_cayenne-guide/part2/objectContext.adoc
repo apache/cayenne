@@ -296,9 +296,9 @@ You can control transaction isolation level and propagation logic using `Transac
 
 [source, java]
 ----
-TransactionDescriptor descriptor = new TransactionDescriptor(
-                Connection.TRANSACTION_SERIALIZABLE,
-                TransactionPropagation.REQUIRES_NEW
-        );
-transactionManager.performInTransaction(transactionalOperation, descriptor);
+TransactionDescriptor descriptor = TransactionDescriptor.builder()
+        .isolation(Connection.TRANSACTION_SERIALIZABLE)
+        .propagation(TransactionPropagation.REQUIRES_NEW)
+        .build();
+runtime.performInTransaction(transactionalOperation, descriptor);
 ----

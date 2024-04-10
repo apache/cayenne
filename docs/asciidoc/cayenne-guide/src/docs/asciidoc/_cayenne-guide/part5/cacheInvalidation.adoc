@@ -75,11 +75,10 @@ Now we'll set up it's usage by `CayenneRuntime`:
 [source, java]
 ----
 CayenneRuntime.builder()
-        .addModule(CacheInvalidationModule.extend()
+        .addModule(binder -> CacheInvalidationModule.extend(binder)
                 // optionally you can disable @CacheGroups annotation processing
                 .noCacheGroupsHandler()
-                .addHandler(CustomInvalidationHandler.class)
-                .module())
+                .addHandler(CustomInvalidationHandler.class))
 ----
 
 NOTE: You can combine as many invalidation handlers as you need.

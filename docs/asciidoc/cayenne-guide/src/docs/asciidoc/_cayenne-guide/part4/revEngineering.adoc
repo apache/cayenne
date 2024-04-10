@@ -15,7 +15,7 @@
 [[re-modeler]]
 === Reverse Engineering in Cayenne Modeler
 
-Alternative approach to using <<cdbimport>> is doing reverse engineering from <<CayenneModeler Application, CayenneModeler>>.
+Alternative approach to using <<re-introduction,build tools>> is doing reverse engineering from <<CayenneModeler Application, CayenneModeler>>.
 
 You can find reverse engineering tool in dataMap view on *DbImport Tab*.
 

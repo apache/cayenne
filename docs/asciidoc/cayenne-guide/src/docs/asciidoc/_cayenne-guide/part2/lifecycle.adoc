@@ -128,14 +128,14 @@ public class Listener2 {
 
 Ignore the annotations for a minute. The important point here is that the listeners are arbitrary classes unmapped and unknown to Cayenne, that contain some callback methods. Now let's register them with runtime:
 
-[source, Java]
+[source,Java]
 ----
 CayenneRuntime runtime = CayenneRuntime.builder()
        // ..
        .addModule(binder ->
-            CoreModule.contributeDomainListeners()
-                .add(Listener1.class)
-                .add(new Listener2())
+            CoreModule.extend(bidner)
+                .addListener(Listener1.class)
+                .addListener(new Listener2())
        )
        // ..
        .build();
@@ -152,7 +152,7 @@ Now let's discuss the annotations. There are eight annotations exactly matching 
 // belonging to MyEntity1, MyEntity2 or their subclasses
 @PostRemove({ MyEntity1.class, MyEntity2.class })
 void postRemove(Persistent object) {
-    ...
+    // ...
 }
 ----
 
@@ -164,7 +164,7 @@ void postRemove(Persistent object) {
 @PostRemove(MyEntity1.class)
 @PostUpdate(MyEntity1.class)
 void postCommit(MyEntity1 object) {
-    ...
+    // ...
 }
 ----
 
@@ -257,8 +257,8 @@ Now since this is both a filter and a listener, it needs to be registered as suc
 CayenneRuntime runtime = CayenneRuntime.builder()
         // ..
         .addModule(b ->
-                CoreModule.contributeDomainSyncFilters(b)
-                        .add(CommittedObjectCounter.class)
+                CoreModule.extend(b)
+                        .addSyncFilter(CommittedObjectCounter.class)
         )
         // ..
         .build();
