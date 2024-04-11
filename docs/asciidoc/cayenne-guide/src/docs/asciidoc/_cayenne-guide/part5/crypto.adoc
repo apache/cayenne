@@ -63,7 +63,7 @@ CayenneRuntime runtime = CayenneRuntime.builder()
 
 Here is an example of how `ObjEntity` with two encrypted and two unencrypted properties can look like:
 
-image::../images/ext-crypto-obj-entity.png[align="left"]
+image::../../images/ext-crypto-obj-entity.png[align="left"]
 
 ===== Setup keystore
 

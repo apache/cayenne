@@ -16,9 +16,13 @@
 // enable section numbering, limiting depth to 2
 :sectnums:
 :sectnumlevels: 2
-// use custom header
-:cayenne-header: _cayenne-guide/header.html
-:cayenne-header-position: body
+
+// header + multipage
+:hugo-header: _cayenne-guide/header.html
+:hugo-multipage: true
+:hugo-multipage-level: 2
+:hugo-multipage-header: _cayenne-guide/multipage-header.html
+:hugo-multipage-ref: /docs/{project-major-version}/
 // customize final layout
 //:linkcss:
 // base path to java code include

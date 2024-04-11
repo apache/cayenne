@@ -17,8 +17,7 @@
 :sectnums:
 :sectnumlevels: 2
 // use custom header
-:cayenne-header: _getting-started-db-first/header.html
-:cayenne-header-position: body
+:hugo-header: _getting-started-db-first/header.html
 // base path to java code include
 :cayenne-root: {basedir}/../../..
 :java-include-dir: {cayenne-root}/tutorials/tutorial/src/main/java/org/apache/cayenne/tutorial

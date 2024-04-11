@@ -18,3 +18,4 @@ Minimum required JDK version is 11 or newer.
 Cayenne 5.0 is fully tested with Java 11, 17 and 21.
 
 == New Features
+
