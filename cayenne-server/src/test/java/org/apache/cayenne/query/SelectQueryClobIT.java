@@ -109,4 +109,15 @@ public class SelectQueryClobIT extends ServerCase {
             assertEquals(1, objects.size());
         }
     }
+
+    @Test
+    public void testSelectNotEqualsEmptyClob() throws Exception {
+        if (accessStackAdapter.supportsLobComparisons()) {
+            createClobDataSet();
+            List<?> objects = ObjectSelect.query(ClobTestEntity.class)
+                    .where(ClobTestEntity.CLOB_COL.ne(""))
+                    .select(context);
+            assertEquals(2, objects.size());
+        }
+    }
 }
