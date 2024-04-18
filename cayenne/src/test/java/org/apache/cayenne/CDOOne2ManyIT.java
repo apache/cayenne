@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
@@ -292,5 +293,49 @@ public class CDOOne2ManyIT extends RuntimeCase {
         // save
         // test "assertion" is that commit succeeds (PK of ae1 was set properly)
         context.commitChanges();
+    }
+
+    @Test
+    public void testReplace() {
+
+        Painting p1 = context.newObject(Painting.class);
+        p1.setPaintingTitle("xa");
+
+        Gallery g1 = context.newObject(Gallery.class);
+        g1.setGalleryName("yTW");
+
+        p1.setToGallery(g1);
+
+        context.commitChanges();
+        ObjectContext context2 = runtime.newContext();
+
+        // test database data
+        Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
+        Gallery g21 = p2.getToGallery();
+        assertNotNull(g21);
+        assertEquals("yTW", g21.getGalleryName());
+        assertEquals(1, g21.getPaintingArray().size());
+        assertSame(p2, g21.getPaintingArray().get(0));
+
+        Gallery g22 = context2.newObject(Gallery.class);
+        g22.setGalleryName("rE");
+        g22.addToPaintingArray(p2);
+
+        // test before save
+        assertEquals(0, g21.getPaintingArray().size());
+        assertEquals(1, g22.getPaintingArray().size());
+        assertSame(p2, g22.getPaintingArray().get(0));
+
+        // do save II
+        context2.commitChanges();
+
+        ObjectContext context3 = runtime.newContext();
+
+        Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
+        Gallery g3 = p3.getToGallery();
+        assertNotNull(g3);
+        assertEquals("rE", g3.getGalleryName());
+        assertEquals(1, g3.getPaintingArray().size());
+        assertSame(p3, g3.getPaintingArray().get(0));
     }
 }
