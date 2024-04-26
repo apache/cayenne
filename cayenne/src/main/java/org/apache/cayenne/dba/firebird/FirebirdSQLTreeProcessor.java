@@ -54,7 +54,7 @@ public class FirebirdSQLTreeProcessor extends BaseSQLTreeProcessor {
             protected void appendStringValue(QuotingAppendable buffer, CharSequence value) {
                 buffer.append("CAST(");
                 super.appendStringValue(buffer, value);
-                buffer.append(" AS VARCHAR(").append(value.length()).append("))");
+                buffer.append(" AS VARCHAR(").append(Math.max(1,value.length())).append("))");
             }
         });
     }
