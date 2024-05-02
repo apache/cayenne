@@ -144,4 +144,57 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         assertEquals(pi2oid, pi3.getObjectId());
 
     }
+
+    @Test
+    public void testReplaceOtherSide() throws Exception {
+        String altPaintingName = "alt painting";
+
+        PaintingInfo pi1 = newPaintingInfo();
+        Painting p1 = newPainting();
+        p1.setPaintingTitle(altPaintingName);
+
+        pi1.setPainting(p1);
+
+        assertTrue(context.hasChanges());
+
+        // do save
+        context.commitChanges();
+        context = context1;
+
+        // test database data
+        PaintingInfo pi2 = fetchPaintingInfo();
+        Painting p21 = pi2.getPainting();
+        assertNotNull(p21);
+        assertEquals(altPaintingName, p21.getPaintingTitle());
+        assertSame(pi2, p21.getToPaintingInfo());
+        ByteArrayTypeTest.assertByteArraysEqual(paintingImage, p21
+                .getToPaintingInfo()
+                .getImageBlob());
+
+        Painting p22 = newPainting();
+
+        // *** TESTING THIS ***
+        p22.setToPaintingInfo(pi2);
+
+        // test before save
+        assertNull(p21.getToPaintingInfo());
+        assertSame(pi2, p22.getToPaintingInfo());
+        assertSame(p22, pi2.getPainting());
+        assertEquals(PersistenceState.MODIFIED, pi2.getPersistenceState());
+
+        // do save II
+        context.commitChanges();
+        ObjectId pi2oid = pi2.getObjectId();
+        context = context1;
+
+        PaintingInfo pi3 = fetchPaintingInfo();
+        Painting p3 = pi3.getPainting();
+        assertNotNull(p3);
+        assertEquals(paintingName, p3.getPaintingTitle());
+        assertSame(pi3, p3.getToPaintingInfo());
+
+        // test that object id was updated.
+        assertEquals(pi2oid, pi3.getObjectId());
+
+    }
 }
