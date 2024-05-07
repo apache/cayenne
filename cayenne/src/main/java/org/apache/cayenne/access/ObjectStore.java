@@ -1012,6 +1012,18 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
     }
 
     /**
+     * @since 5.0
+     */
+    public Map<CayennePath,ObjectId> getFlattenedPathIdMap(ObjectId objectId) {
+        if(trackedFlattenedPaths == null) {
+            return Collections.emptyMap();
+        }
+
+        return trackedFlattenedPaths
+                .getOrDefault(objectId, Collections.emptyMap());
+    }
+
+    /**
      * Mark that flattened path for object has data row in DB.
      * @since 4.1
      */
