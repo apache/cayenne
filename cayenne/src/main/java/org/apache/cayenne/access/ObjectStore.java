@@ -979,7 +979,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Check that flattened path for given object ID has data row in DB.
      * @since 4.1
      */
-    boolean hasFlattenedPath(ObjectId objectId, String path) {
+    boolean hasFlattenedPath(ObjectId objectId, CayennePath path) {
         if(trackedFlattenedPaths == null) {
             return false;
         }

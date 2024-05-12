@@ -31,6 +31,7 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
@@ -309,8 +310,19 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                     CayenneMapEntry next = it.next();
                     if(next instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship)next;
+                        // When deleting an ObjEntity that has flattened attributes we also delete the target
+                        // DbEntity row for the flattened attribute (see RootRowOpProcessor.visitDelete),
+                        // EXCEPT if the target dbEntity has a toMany relationship with the source dbEntity
+                        // (as there may then be other records in the source entity with references to it)
+                        // OR delete rules prevent it (i.e. if there are any ObjRelationships matching the
+                        // flattened attributes DbRelationship that don't have a CASCADE delete rule).
+                        boolean blockCascadeDelete = rel.getReverseRelationship().isToMany()
+                                                  || descriptor.getEntity().getRelationships().stream()
+                                                     .filter(r -> r.getDbRelationships().equals(List.of(rel)))
+                                                     .anyMatch(r -> r.getDeleteRule() != DeleteRule.CASCADE);
+
                         path = path.dot(rel.getName());
-                        descriptor.addAdditionalDbEntity(path, rel.getTargetEntity());
+                        descriptor.addAdditionalDbEntity(path, rel.getTargetEntity(), blockCascadeDelete);
                     }
                 }
                 return true;
@@ -328,7 +340,7 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                 for(int i=0; i<count-1; i++) {
                     DbRelationship rel = dbRelationships.get(i);
                     path = path.dot(rel.getName());
-                    descriptor.addAdditionalDbEntity(path, rel.getTargetEntity());
+                    descriptor.addAdditionalDbEntity(path, rel.getTargetEntity(), false);
                 }
                 return true;
             }

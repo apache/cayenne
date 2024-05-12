@@ -91,7 +91,7 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     }
 
     @Override
-    public Map<CayennePath, DbEntity> getAdditionalDbEntities() {
+    public Map<CayennePath, AdditionalDbEntityDescriptor> getAdditionalDbEntities() {
         checkDescriptorInitialized();
         return descriptor.getAdditionalDbEntities();
     }
