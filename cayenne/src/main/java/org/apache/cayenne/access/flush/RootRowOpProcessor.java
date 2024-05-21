@@ -19,7 +19,8 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -29,7 +30,11 @@ import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 
 /**
@@ -74,14 +79,38 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
 
     @Override
     public Void visitDelete(DeleteDbRowOp dbRow) {
-        if (dbRowOpFactory.getDescriptor().getEntity().isReadOnly()) {
+        ObjEntity entity = dbRowOpFactory.getDescriptor().getEntity();
+        if (entity.isReadOnly()) {
             throw new CayenneRuntimeException("Attempt to modify object(s) mapped to a read-only entity: '%s'. " +
-                    "Can't commit changes.", dbRowOpFactory.getDescriptor().getEntity().getName());
+                    "Can't commit changes.", entity.getName());
         }
         diff.apply(deleteHandler);
-        Collection<ObjectId> flattenedIds = dbRowOpFactory.getStore().getFlattenedIds(dbRow.getChangeId());
-        flattenedIds.forEach(id -> dbRowOpFactory.getOrCreate(dbRowOpFactory.getDbEntity(id), id, DbRowOpType.DELETE));
-        if (dbRowOpFactory.getDescriptor().getEntity().getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
+
+        DbEntity dbSource = entity.getDbEntity();
+        Map<CayennePath,ObjectId> flattenedPathIdMap = dbRowOpFactory.getStore().getFlattenedPathIdMap(dbRow.getChangeId());
+
+        flattenedPathIdMap.entrySet().forEach(entry -> {
+            DbRelationship dbRel = dbSource.getRelationship(entry.getKey().first().toString());
+
+            // Don't delete if the target entity has a toMany relationship with the source entity,
+            // as there may be other records in the source entity with references to it.
+            if (!dbRel.getReverseRelationship().isToMany()) {
+
+                // Get the delete rule for any ObjRelationship matching the flattened
+            	// attributes DbRelationship, defaulting to CASCADE if not found.
+                int deleteRule = entity.getRelationships().stream()
+                        .filter(r -> r.getDbRelationships().equals(List.of(dbRel)))
+                        .map(r -> r.getDeleteRule()).findFirst()
+                        .orElse(DeleteRule.CASCADE);
+
+                if (deleteRule == DeleteRule.CASCADE) {
+                    dbRowOpFactory.getOrCreate(dbRowOpFactory.getDbEntity(entry.getValue()),
+                            entry.getValue(), DbRowOpType.DELETE);
+                }
+            }
+        });
+
+        if (entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
             dbRowOpFactory.getDescriptor().visitAllProperties(new OptimisticLockQualifierBuilder(dbRow, diff));
         }
         return null;

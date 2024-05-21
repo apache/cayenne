@@ -37,6 +37,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.di.runtime.CayenneProjects;
 import org.apache.cayenne.unit.di.runtime.RuntimeCase;
 import org.apache.cayenne.unit.di.runtime.UseCayenneRuntime;
@@ -185,7 +186,7 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
                     "artist2",
                     painting.getArtistName());
             assertEquals(
-                    "CompoundPainting.getArtistName(): " + painting.getGalleryName(),
+                    "CompoundPainting.getGalleryName(): " + painting.getGalleryName(),
                     painting.getToGallery().getGalleryName(),
                     painting.getGalleryName());
         }
@@ -471,14 +472,56 @@ public class DataContextFlattenedAttributesIT extends RuntimeCase {
 
         Number artistCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
                 "select count(a) from Artist a"));
-        assertEquals(1, artistCount.intValue());
+        assertEquals(2, artistCount.intValue());
         Number paintingCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
                 "select count(a) from Painting a"));
         assertEquals(0, paintingCount.intValue());
 
         Number galleryCount = (Number) Cayenne.objectForQuery(context, new EJBQLQuery(
                 "select count(a) from Gallery a"));
-        assertEquals(0, galleryCount.intValue());
+        assertEquals(1, galleryCount.intValue());
+    }
+
+    @Test
+    public void testDelete2() throws Exception {
+        createTestDataSet();
+
+        long infoCount = ObjectSelect.query(PaintingInfo.class).selectCount(context);
+        assertEquals("PaintingInfo", 8, infoCount);
+
+        List<CompoundPainting> objects = ObjectSelect.query(CompoundPainting.class)
+                .where(CompoundPainting.ARTIST_NAME.eq("artist2"))
+                .select(context);
+
+        // Should have two paintings by the same artist
+        assertEquals("Paintings", 2, objects.size());
+
+        CompoundPainting cp0 = objects.get(0);
+        CompoundPainting cp1 = objects.get(1);
+
+        // Both paintings are at the same gallery
+        assertEquals("Gallery", cp0.getGalleryName(), cp1.getGalleryName());
+
+        context.invalidateObjects(cp0);
+        context.deleteObjects(cp1);
+        context.commitChanges();
+
+        // Delete should only have deleted the painting and its info,
+        // the painting's artist and gallery should not be deleted.
+
+        objects = ObjectSelect.query(CompoundPainting.class)
+                .where(CompoundPainting.ARTIST_NAME.eq("artist2"))
+                .select(runtime.newContext());
+        
+        // Should now only have one painting by artist2
+        assertEquals("Painting", 1, objects.size());
+        // and that painting should have a valid gallery
+        assertNotNull("Gallery is null", objects.get(0).getToGallery());
+        assertNotNull("GalleryName is null", objects.get(0).getToGallery().getGalleryName());
+        
+        // There should be one less painting info now
+        infoCount = ObjectSelect.query(PaintingInfo.class).selectCount(context);
+        assertEquals("PaintingInfo", 7, infoCount);
     }
 
     @Test
