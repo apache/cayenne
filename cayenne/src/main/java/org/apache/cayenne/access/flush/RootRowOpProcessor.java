@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -32,10 +31,9 @@ import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.reflect.AdditionalDbEntityDescriptor;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Visitor that runs all required actions based on operation type.
@@ -86,27 +84,12 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
         }
         diff.apply(deleteHandler);
 
-        DbEntity dbSource = entity.getDbEntity();
+        ClassDescriptor descriptor = dbRowOpFactory.getDescriptor();
         Map<CayennePath,ObjectId> flattenedPathIdMap = dbRowOpFactory.getStore().getFlattenedPathIdMap(dbRow.getChangeId());
-
-        flattenedPathIdMap.entrySet().forEach(entry -> {
-            DbRelationship dbRel = dbSource.getRelationship(entry.getKey().first().toString());
-
-            // Don't delete if the target entity has a toMany relationship with the source entity,
-            // as there may be other records in the source entity with references to it.
-            if (!dbRel.getReverseRelationship().isToMany()) {
-
-                // Get the delete rule for any ObjRelationship matching the flattened
-            	// attributes DbRelationship, defaulting to CASCADE if not found.
-                int deleteRule = entity.getRelationships().stream()
-                        .filter(r -> r.getDbRelationships().equals(List.of(dbRel)))
-                        .map(r -> r.getDeleteRule()).findFirst()
-                        .orElse(DeleteRule.CASCADE);
-
-                if (deleteRule == DeleteRule.CASCADE) {
-                    dbRowOpFactory.getOrCreate(dbRowOpFactory.getDbEntity(entry.getValue()),
-                            entry.getValue(), DbRowOpType.DELETE);
-                }
+        flattenedPathIdMap.forEach((path, id) -> {
+            AdditionalDbEntityDescriptor addEntity = descriptor.getAdditionalDbEntities().get(path);
+            if (!addEntity.noDelete()) {// See PersistentDescriptorFactory.indexAdditionalDbEntities
+                dbRowOpFactory.getOrCreate(addEntity.getDbEntity(), id, DbRowOpType.DELETE);
             }
         });
 
