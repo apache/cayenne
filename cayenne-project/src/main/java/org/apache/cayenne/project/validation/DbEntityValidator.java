@@ -23,57 +23,38 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class DbEntityValidator extends ConfigurationNodeValidator {
-
-    void validate(DbEntity entity, ValidationResult validationResult) {
-        validateName(entity, validationResult);
-        validateAttributes(entity, validationResult);
-        validatePK(entity, validationResult);
-    }
+public class DbEntityValidator extends ConfigurationNodeValidator<DbEntity> {
 
     /**
-     * Validates the presence of the primary key. A warning is given only if the parent
-     * map also contains an ObjEntity mapped to this entity, since unmapped primary key is
-     * ok if working with data rows.
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
      */
-    void validatePK(DbEntity entity, ValidationResult validationResult) {
-        if (entity.getAttributes().size() > 0 && entity.getPrimaryKeys().size() == 0) {
-            DataMap map = entity.getDataMap();
-            if (map != null && map.getMappedEntities(entity).size() > 0) {
-
-                addFailure(
-                        validationResult,
-                        entity,
-                        "DbEntity '%s' has no primary key attributes defined",
-                        entity.getName());
-            }
-        }
+    public DbEntityValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
     }
 
-    /**
-     * Tables must have columns.
-     */
-    void validateAttributes(DbEntity entity, ValidationResult validationResult) {
-        if (entity.getAttributes().size() == 0) {
-            addFailure(
-                    validationResult,
-                    entity,
-                    "DbEntity '%s' has no attributes defined",
-                    entity.getName());
-        }
+    @Override
+    public void validate(DbEntity node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.DB_ENTITY_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.DB_ENTITY_NAME_DUPLICATE, this::checkForNameDuplicates)
+                .performIfEnabled(Inspection.DB_ENTITY_NO_ATTRIBUTES, this::checkForAttributes)
+                .performIfEnabled(Inspection.DB_ENTITY_NO_PK, this::checkForPK);
     }
 
-    void validateName(DbEntity entity, ValidationResult validationResult) {
-        String name = entity.getName();
+    private void checkForName(DbEntity entity, ValidationResult validationResult) {
 
         // Must have name
+        String name = entity.getName();
         if (Util.isEmptyString(name)) {
             addFailure(validationResult, entity, "Unnamed DbEntity");
-            return;
         }
+    }
 
+    private void checkForNameDuplicates(DbEntity entity, ValidationResult validationResult) {
+        String name = entity.getName();
         DataMap map = entity.getDataMap();
-        if (map == null) {
+        if (map == null || Util.isEmptyString(name)) {
             return;
         }
 
@@ -88,5 +69,30 @@ class DbEntityValidator extends ConfigurationNodeValidator {
                 break;
             }
         }
+    }
+
+    /**
+     * Tables must have columns.
+     */
+    private void checkForAttributes(DbEntity entity, ValidationResult validationResult) {
+        if (entity.getAttributes().isEmpty()) {
+            addFailure(validationResult, entity, "DbEntity '%s' has no attributes defined", entity.getName());
+        }
+    }
+
+    /**
+     * Validates the presence of the primary key. A warning is given only if the parent
+     * map also contains an ObjEntity mapped to this entity, since unmapped primary key is
+     * ok if working with data rows.
+     */
+    private void checkForPK(DbEntity entity, ValidationResult validationResult) {
+        if (entity.getAttributes().isEmpty() || !entity.getPrimaryKeys().isEmpty()) {
+            return;
+        }
+        DataMap map = entity.getDataMap();
+        if (map == null || map.getMappedEntities(entity).isEmpty()) {
+            return;
+        }
+        addFailure(validationResult, entity, "DbEntity '%s' has no primary key attributes defined", entity.getName());
     }
 }

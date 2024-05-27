@@ -34,9 +34,12 @@ import org.apache.cayenne.modeler.init.platform.GenericPlatformInitializer;
 import org.apache.cayenne.modeler.init.platform.PlatformInitializer;
 import org.apache.cayenne.modeler.util.DefaultWidgetFactory;
 import org.apache.cayenne.modeler.util.WidgetFactory;
+import org.apache.cayenne.modeler.validation.ConfigurableProjectValidator;
+import org.apache.cayenne.modeler.validation.extenstion.ValidationExtension;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.project.extension.info.InfoExtension;
+import org.apache.cayenne.project.validation.ProjectValidator;
 import org.xml.sax.XMLReader;
 
 /**
@@ -55,9 +58,12 @@ public class CayenneModelerModule implements Module {
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
 
         ProjectModule.extend(binder)
+                .addExtension(ValidationExtension.class)
                 .addExtension(InfoExtension.class)
                 .addExtension(GraphExtension.class)
                 .addExtension(DbImportExtension.class)
                 .addExtension(CgenExtension.class);
+
+        binder.bind(ProjectValidator.class).to(ConfigurableProjectValidator.class);
     }
 }

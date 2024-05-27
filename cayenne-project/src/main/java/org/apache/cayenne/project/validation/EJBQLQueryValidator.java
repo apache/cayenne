@@ -22,15 +22,30 @@ import org.apache.cayenne.project.validation.EJBQLStatementValidator.PositionExc
 import org.apache.cayenne.map.EJBQLQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
-class EJBQLQueryValidator extends BaseQueryValidator {
+public class EJBQLQueryValidator extends BaseQueryValidator<EJBQLQueryDescriptor> {
 
-    void validate(EJBQLQueryDescriptor query, ValidationResult validationResult) {
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public EJBQLQueryValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
+    }
+
+    @Override
+    protected ConfigurationNodeValidator<EJBQLQueryDescriptor>.Performer<EJBQLQueryDescriptor> validateQuery(
+            EJBQLQueryDescriptor query, ValidationResult validationResult) {
+        return super.validateQuery(query, validationResult)
+                .performIfEnabled(Inspection.EJBQL_QUERY_INVALID_SYNTAX, this::validateSyntax);
+    }
+
+    private void validateSyntax(EJBQLQueryDescriptor query, ValidationResult validationResult) {
+        if (!validationConfig.isEnabled(Inspection.EJBQL_QUERY_INVALID_SYNTAX)) {
+            return;
+        }
         PositionException message = new EJBQLStatementValidator().validateEJBQL(query);
         if (message != null) {
             addFailure(validationResult, query, "Error in EJBQL query '%s' syntax", query.getName());
         }
-
-        validateName(query, validationResult);
-        validateCacheGroup(query, validationResult);
     }
 }

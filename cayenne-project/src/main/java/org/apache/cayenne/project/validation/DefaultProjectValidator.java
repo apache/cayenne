@@ -40,63 +40,65 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @since 3.1
  */
 public class DefaultProjectValidator implements ProjectValidator {
 
-    private DataChannelValidator dataChannelValidator;
-    private DataNodeValidator nodeValidator;
-    private DataMapValidator mapValidator;
-    private ObjEntityValidator objEntityValidator;
-    private ObjAttributeValidator objAttrValidator;
-    private ObjRelationshipValidator objRelValidator;
-    private DbEntityValidator dbEntityValidator;
-    private DbAttributeValidator dbAttrValidator;
-    private DbRelationshipValidator dbRelValidator;
-    private EmbeddableAttributeValidator embeddableAttributeValidator;
-    private EmbeddableValidator embeddableValidator;
-    private ProcedureValidator procedureValidator;
-    private ProcedureParameterValidator procedureParameterValidator;
-    private SelectQueryValidator selectQueryValidator;
-    private ProcedureQueryValidator procedureQueryValidator;
-    private EJBQLQueryValidator ejbqlQueryValidator;
-    private SQLTemplateValidator sqlTemplateValidator;
+    protected final Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators;
 
-    DefaultProjectValidator() {
-        dataChannelValidator = new DataChannelValidator();
-        nodeValidator = new DataNodeValidator();
-        mapValidator = new DataMapValidator();
-        objEntityValidator = new ObjEntityValidator();
-        objAttrValidator = new ObjAttributeValidator();
-        objRelValidator = new ObjRelationshipValidator();
-        dbEntityValidator = new DbEntityValidator();
-        dbAttrValidator = new DbAttributeValidator();
-        dbRelValidator = new DbRelationshipValidator();
-        embeddableAttributeValidator = new EmbeddableAttributeValidator();
-        embeddableValidator = new EmbeddableValidator();
-        procedureValidator = new ProcedureValidator();
-        procedureParameterValidator = new ProcedureParameterValidator();
-        selectQueryValidator = new SelectQueryValidator();
-        procedureQueryValidator = new ProcedureQueryValidator();
-        ejbqlQueryValidator = new EJBQLQueryValidator();
-        sqlTemplateValidator = new SQLTemplateValidator();
+    protected DefaultProjectValidator(ValidationConfig validationConfig) {
+        validators = prepareValidators(validationConfig);
+    }
+
+    public DefaultProjectValidator() {
+        this(new ValidationConfig());
     }
 
     public ValidationResult validate(ConfigurationNode node) {
         return node.acceptVisitor(new ValidationVisitor());
     }
 
+    private static Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> prepareValidators(ValidationConfig validationConfig) {
+        Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators = new HashMap<>();
+        validators.put(DataChannelDescriptor.class, new DataChannelValidator(validationConfig));
+        validators.put(DataNodeDescriptor.class, new DataNodeValidator(validationConfig));
+        validators.put(DataMap.class, new DataMapValidator(validationConfig));
+        validators.put(ObjEntity.class, new ObjEntityValidator(validationConfig));
+        validators.put(ObjAttribute.class, new ObjAttributeValidator(validationConfig));
+        validators.put(ObjRelationship.class, new ObjRelationshipValidator(validationConfig));
+        validators.put(DbEntity.class, new DbEntityValidator(validationConfig));
+        validators.put(DbAttribute.class, new DbAttributeValidator(validationConfig));
+        validators.put(DbRelationship.class, new DbRelationshipValidator(validationConfig));
+        validators.put(Embeddable.class, new EmbeddableValidator(validationConfig));
+        validators.put(EmbeddableAttribute.class, new EmbeddableAttributeValidator(validationConfig));
+        validators.put(Procedure.class, new ProcedureValidator(validationConfig));
+        validators.put(ProcedureParameter.class, new ProcedureParameterValidator(validationConfig));
+        validators.put(SelectQueryDescriptor.class, new SelectQueryValidator(validationConfig));
+        validators.put(ProcedureQueryDescriptor.class, new ProcedureQueryValidator(validationConfig));
+        validators.put(EJBQLQueryDescriptor.class, new EJBQLQueryValidator(validationConfig));
+        validators.put(SQLTemplateDescriptor.class, new SQLTemplateValidator(validationConfig));
+        return validators;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T extends ConfigurationNode> ConfigurationNodeValidator<T> getValidator(Class<T> node) {
+        return (ConfigurationNodeValidator<T>) validators.get(node);
+    }
+
     class ValidationVisitor implements ConfigurationNodeVisitor<ValidationResult> {
 
-        private ValidationResult validationResult;
+        private final ValidationResult validationResult;
 
         ValidationVisitor() {
             validationResult = new ValidationResult();
         }
 
         public ValidationResult visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
-            dataChannelValidator.validate(channelDescriptor, validationResult);
+            getValidator(DataChannelDescriptor.class).validate(channelDescriptor, validationResult);
 
             for (DataNodeDescriptor node : channelDescriptor.getNodeDescriptors()) {
                 visitDataNodeDescriptor(node);
@@ -110,7 +112,7 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitDataMap(DataMap dataMap) {
-            mapValidator.validate(dataMap, validationResult);
+            getValidator(DataMap.class).validate(dataMap, validationResult);
             for (Embeddable emb : dataMap.getEmbeddables()) {
                 visitEmbeddable(emb);
             }
@@ -135,17 +137,17 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitDataNodeDescriptor(DataNodeDescriptor nodeDescriptor) {
-            nodeValidator.validate(nodeDescriptor, validationResult);
+            getValidator(DataNodeDescriptor.class).validate(nodeDescriptor, validationResult);
             return validationResult;
         }
 
         public ValidationResult visitDbAttribute(DbAttribute attribute) {
-            dbAttrValidator.validate(attribute, validationResult);
+            getValidator(DbAttribute.class).validate(attribute, validationResult);
             return validationResult;
         }
 
         public ValidationResult visitDbEntity(DbEntity entity) {
-            dbEntityValidator.validate(entity, validationResult);
+            getValidator(DbEntity.class).validate(entity, validationResult);
 
             for (DbAttribute attr : entity.getAttributes()) {
                 visitDbAttribute(attr);
@@ -158,12 +160,12 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitDbRelationship(DbRelationship relationship) {
-            dbRelValidator.validate(relationship, validationResult);
+            getValidator(DbRelationship.class).validate(relationship, validationResult);
             return validationResult;
         }
 
         public ValidationResult visitEmbeddable(Embeddable embeddable) {
-            embeddableValidator.validate(embeddable, validationResult);
+            getValidator(Embeddable.class).validate(embeddable, validationResult);
             for (EmbeddableAttribute attr : embeddable.getAttributes()) {
                 visitEmbeddableAttribute(attr);
             }
@@ -171,17 +173,17 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitEmbeddableAttribute(EmbeddableAttribute attribute) {
-            embeddableAttributeValidator.validate(attribute, validationResult);
+            getValidator(EmbeddableAttribute.class).validate(attribute, validationResult);
             return validationResult;
         }
 
         public ValidationResult visitObjAttribute(ObjAttribute attribute) {
-            objAttrValidator.validate(attribute, validationResult);
+            getValidator(ObjAttribute.class).validate(attribute, validationResult);
             return validationResult;
         }
 
         public ValidationResult visitObjEntity(ObjEntity entity) {
-            objEntityValidator.validate(entity, validationResult);
+            getValidator(ObjEntity.class).validate(entity, validationResult);
 
             for (ObjAttribute attr : entity.getAttributes()) {
                 visitObjAttribute(attr);
@@ -194,12 +196,12 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitObjRelationship(ObjRelationship relationship) {
-            objRelValidator.validate(relationship, validationResult);
+            getValidator(ObjRelationship.class).validate(relationship, validationResult);
             return validationResult;
         }
 
         public ValidationResult visitProcedure(Procedure procedure) {
-            procedureValidator.validate(procedure, validationResult);
+            getValidator(Procedure.class).validate(procedure, validationResult);
             ProcedureParameter parameter = procedure.getResultParam();
             if (parameter != null) {
                 visitProcedureParameter(parameter);
@@ -217,23 +219,23 @@ public class DefaultProjectValidator implements ProjectValidator {
         }
 
         public ValidationResult visitProcedureParameter(ProcedureParameter parameter) {
-            procedureParameterValidator.validate(parameter, validationResult);
+            getValidator(ProcedureParameter.class).validate(parameter, validationResult);
             return validationResult;
         }
 
         public ValidationResult visitQuery(QueryDescriptor query) {
             switch (query.getType()) {
                 case QueryDescriptor.SELECT_QUERY:
-                    selectQueryValidator.validate((SelectQueryDescriptor) query, validationResult);
+                    getValidator(SelectQueryDescriptor.class).validate((SelectQueryDescriptor) query, validationResult);
                     break;
                 case QueryDescriptor.SQL_TEMPLATE:
-                    sqlTemplateValidator.validate((SQLTemplateDescriptor) query, validationResult);
+                    getValidator(SQLTemplateDescriptor.class).validate((SQLTemplateDescriptor) query, validationResult);
                     break;
                 case QueryDescriptor.PROCEDURE_QUERY:
-                    procedureQueryValidator.validate((ProcedureQueryDescriptor) query, validationResult);
+                    getValidator(ProcedureQueryDescriptor.class).validate((ProcedureQueryDescriptor) query, validationResult);
                     break;
                 case QueryDescriptor.EJBQL_QUERY:
-                    ejbqlQueryValidator.validate((EJBQLQueryDescriptor) query, validationResult);
+                    getValidator(EJBQLQueryDescriptor.class).validate((EJBQLQueryDescriptor) query, validationResult);
                     break;
             }
 

@@ -22,22 +22,36 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class EmbeddableAttributeValidator extends ConfigurationNodeValidator {
+public class EmbeddableAttributeValidator extends ConfigurationNodeValidator<EmbeddableAttribute> {
 
-    void validate(EmbeddableAttribute attribute, ValidationResult validationResult) {
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public EmbeddableAttributeValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
+    }
+
+    @Override
+    public void validate(EmbeddableAttribute node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.EMBEDDABLE_ATTRIBUTE_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.EMBEDDABLE_ATTRIBUTE_NO_TYPE, this::checkForType);
+    }
+
+    private void checkForName(EmbeddableAttribute attribute, ValidationResult validationResult) {
 
         // Must have name
         if (Util.isEmptyString(attribute.getName())) {
             addFailure(validationResult, attribute, "Unnamed EmbeddableAttribute");
         }
+    }
+
+    private void checkForType(EmbeddableAttribute attribute, ValidationResult validationResult) {
 
         // all attributes must have type
         if (Util.isEmptyString(attribute.getType())) {
-            addFailure(
-                    validationResult,
-                    attribute,
-                    "EmbeddableAttribute '%s' has no type",
-                    attribute.getName());
+            addFailure(validationResult, attribute, "EmbeddableAttribute '%s' has no type", attribute.getName());
         }
     }
 }

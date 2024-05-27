@@ -18,29 +18,101 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
+import org.apache.cayenne.configuration.ConfigurationNode;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+
+import java.util.function.Predicate;
 
 /**
  * A base superclass of various node validators.
  * 
  * @since 3.1
  */
-public abstract class ConfigurationNodeValidator {
+public abstract class ConfigurationNodeValidator<T extends ConfigurationNode> {
 
-    public void addFailure(
-            ValidationResult validationResult,
-            Object source,
-            String messageFormat,
-            Object... messageParameters) {
+    protected final ValidationConfig validationConfig;
 
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public ConfigurationNodeValidator(ValidationConfig validationConfig) {
+        this.validationConfig = validationConfig;
+    }
+
+    /**
+     * @param node the node that needs to be validated.
+     * @param validationResult the appendable validation result.
+     * @since 5.0
+     */
+    public abstract void validate(T node, ValidationResult validationResult);
+
+    public void addFailure(ValidationResult validationResult, T source, String messageFormat,
+                           Object... messageParameters) {
         String message = String.format(messageFormat, messageParameters);
         validationResult.addFailure(new SimpleValidationFailure(source, message));
     }
     
-    public void addFailure(
-    		ValidationResult validationResult,
-    		SimpleValidationFailure failure) {
+    public void addFailure(ValidationResult validationResult, SimpleValidationFailure failure) {
     	validationResult.addFailure(failure);
+    }
+
+    protected Performer<T> on(T node, ValidationResult validationResult) {
+        return new Performer<>(node, validationResult);
+    }
+
+    protected class Performer<N> {
+
+        private final N node;
+        private final ValidationResult validationResult;
+
+        protected Performer(N node, ValidationResult validationResult) {
+            this.node = node;
+            this.validationResult = validationResult;
+        }
+
+        protected Performer<N> performIfEnabled(Inspection inspection, ValidationAction<N> validationAction) {
+            if (validationConfig.isEnabled(inspection)) {
+                validationAction.perform(node, validationResult);
+            }
+            return this;
+        }
+
+        protected Performer<N> performIfEnabled(Inspection inspection, Runnable validationAction) {
+            if (validationConfig.isEnabled(inspection)) {
+                validationAction.run();
+            }
+            return this;
+        }
+
+        protected Performer<N> performIf(Predicate<N> predicate, ValidationAction<N> validationAction) {
+            if (predicate.test(node)) {
+                validationAction.perform(node, validationResult);
+            }
+            return this;
+        }
+
+        protected Performer<N> performIf(Predicate<N> predicate, Runnable validationAction) {
+            if (predicate.test(node)) {
+                validationAction.run();
+            }
+            return this;
+        }
+
+        protected Performer<N> perform(ValidationAction<N> validationAction) {
+            validationAction.perform(node, validationResult);
+            return this;
+        }
+
+        protected Performer<N> perform(Runnable validationAction) {
+            validationAction.run();
+            return this;
+        }
+    }
+
+    protected interface ValidationAction<N> {
+
+        void perform(N node, ValidationResult validationResult);
     }
 }

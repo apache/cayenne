@@ -16,32 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.project.validation;
+package org.apache.cayenne.modeler.validation.extenstion;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.validation.ValidationResult;
+import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
+import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.project.extension.LoaderDelegate;
 
-public class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescriptor> {
+public class ValidationLoaderDelegate implements LoaderDelegate {
 
-    /**
-     * @param validationConfig the config defining the behavior of this validator.
-     * @since 5.0
-     */
-    public DataChannelValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    private final DataChannelMetaData metaData;
+
+    ValidationLoaderDelegate(@Inject DataChannelMetaData metaData) {
+        this.metaData = metaData;
     }
 
     @Override
-    public void validate(DataChannelDescriptor node, ValidationResult validationResult) {
-        on(node, validationResult)
-                .performIfEnabled(Inspection.DATA_CHANNEL_NO_NAME, this::checkForName);
+    public String getTargetNamespace() {
+        return ValidationExtension.NAMESPACE;
     }
 
-    private void checkForName(DataChannelDescriptor domain, ValidationResult validationResult) {
-        String name = domain.getName();
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, domain, "Unnamed DataDomain");
+    @Override
+    public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent, String tag) {
+        if (ValidationConfigHandler.CONFIG_TAG.equals(tag)) {
+            return new ValidationConfigHandler(parent, metaData);
         }
+        return null;
     }
 }

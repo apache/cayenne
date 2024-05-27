@@ -24,40 +24,37 @@ import org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class DataNodeValidator extends ConfigurationNodeValidator {
+public class DataNodeValidator extends ConfigurationNodeValidator<DataNodeDescriptor> {
 
-    void validate(DataNodeDescriptor node, ValidationResult validationResult) {
-        validateName(node, validationResult);
-        validateConnection(node, validationResult);
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public DataNodeValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
     }
 
-    void validateConnection(DataNodeDescriptor node, ValidationResult validationResult) {
-
-        String factory = node.getDataSourceFactoryType();
-
-        // TODO: andrus 03/10/2010 - null factory is allowed, however
-        // 'getDataSourceDescriptor' must ne not null in this case
-
-        if (factory != null
-                && !XMLPoolingDataSourceFactory.class.getName().equals(factory)) {
-            String parameters = node.getParameters();
-            if (Util.isEmptyString(parameters)) {
-                addFailure(
-                        validationResult,
-                        node,
-                        "DataNode has empty 'parameters' string");
-            }
-        }
+    @Override
+    public void validate(DataNodeDescriptor node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.DATA_NODE_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.DATA_NODE_NAME_DUPLICATE, this::checkForNameDuplicates)
+                .performIfEnabled(Inspection.DATA_NODE_CONNECTION_PARAMS, this::validateConnection);
     }
 
-    void validateName(DataNodeDescriptor node, ValidationResult validationResult) {
+    private void checkForName(DataNodeDescriptor node, ValidationResult validationResult) {
         String name = node.getName();
-
         if (Util.isEmptyString(name)) {
             addFailure(validationResult, node, "Unnamed DataNode");
-            return;
         }
 
+    }
+
+    private void checkForNameDuplicates(DataNodeDescriptor node, ValidationResult validationResult) {
+        String name = node.getName();
+        if (Util.isEmptyString(name)) {
+            return;
+        }
         DataChannelDescriptor dataChannelDescriptor = node.getDataChannelDescriptor();
 
         // check for duplicate names in the parent context
@@ -68,8 +65,23 @@ class DataNodeValidator extends ConfigurationNodeValidator {
 
             if (name.equals(otherNode.getName())) {
                 addFailure(validationResult, node, "Duplicate DataNode name: %s", name);
-                break;
+                return;
             }
+        }
+    }
+
+    private void validateConnection(DataNodeDescriptor node, ValidationResult validationResult) {
+        String factory = node.getDataSourceFactoryType();
+
+        // TODO: andrus 03/10/2010 - null factory is allowed, however
+        //  'getDataSourceDescriptor' must ne not null in this case
+
+        if (factory == null || XMLPoolingDataSourceFactory.class.getName().equals(factory)) {
+            return;
+        }
+        String parameters = node.getParameters();
+        if (Util.isEmptyString(parameters)) {
+            addFailure(validationResult, node, "DataNode has empty 'parameters' string");
         }
     }
 }

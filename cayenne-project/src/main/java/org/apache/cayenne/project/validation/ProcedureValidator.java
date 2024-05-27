@@ -26,36 +26,37 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class ProcedureValidator extends ConfigurationNodeValidator {
+public class ProcedureValidator extends ConfigurationNodeValidator<Procedure> {
 
-    void validate(Procedure procedure, ValidationResult validationResult) {
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public ProcedureValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
+    }
 
-        validateName(procedure, validationResult);
+    @Override
+    public void validate(Procedure node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.PROCEDURE_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.PROCEDURE_NAME_DUPLICATE, this::checkForDuplicateName)
+                .performIfEnabled(Inspection.PROCEDURE_NO_PARAMS, this::checkForParams);
+    }
 
-        // check that return value is present
-        if (procedure.isReturningValue()) {
-            List<ProcedureParameter> parameters = procedure.getCallParameters();
-            if (parameters.isEmpty()) {
-                addFailure(
-                        validationResult,
-                        procedure,
-                        "Procedure '%s' returns a value, but has no parameters",
-                        procedure.getName());
-            }
+    private void checkForName(Procedure procedure, ValidationResult validationResult) {
+
+        // Must have name
+        String name = procedure.getName();
+        if (Util.isEmptyString(name)) {
+            addFailure(validationResult, procedure, "Unnamed Procedure");
         }
     }
 
-    void validateName(Procedure procedure, ValidationResult validationResult) {
+    private void checkForDuplicateName(Procedure procedure, ValidationResult validationResult) {
         String name = procedure.getName();
-
-        // Must have name
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, procedure, "Unnamed Procedure");
-            return;
-        }
-
         DataMap map = procedure.getDataMap();
-        if (map == null) {
+        if (map == null || Util.isEmptyString(name)) {
             return;
         }
 
@@ -66,13 +67,21 @@ class ProcedureValidator extends ConfigurationNodeValidator {
             }
 
             if (name.equals(otherProcedure.getName())) {
-                addFailure(
-                        validationResult,
-                        procedure,
-                        "Duplicate Procedure name: %s",
-                        procedure.getName());
-                break;
+                addFailure(validationResult, procedure, "Duplicate Procedure name: %s", procedure.getName());
+                return;
             }
+        }
+    }
+
+    private void checkForParams(Procedure procedure, ValidationResult validationResult) {
+        // check that return value is present
+        if (!procedure.isReturningValue()) {
+            return;
+        }
+        List<ProcedureParameter> parameters = procedure.getCallParameters();
+        if (parameters.isEmpty()) {
+            addFailure(validationResult, procedure, "Procedure '%s' returns a value, but has no parameters",
+                    procedure.getName());
         }
     }
 }

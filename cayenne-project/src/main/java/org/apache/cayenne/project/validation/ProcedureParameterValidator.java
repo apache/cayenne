@@ -25,24 +25,40 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class ProcedureParameterValidator extends ConfigurationNodeValidator {
+public class ProcedureParameterValidator extends ConfigurationNodeValidator<ProcedureParameter> {
 
-    void validate(ProcedureParameter parameter, ValidationResult validationResult) {
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public ProcedureParameterValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
+    }
 
+    @Override
+    public void validate(ProcedureParameter node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_TYPE, this::checkForType)
+                .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_LENGTH, this::checkForLength)
+                .performIfEnabled(Inspection.PROCEDURE_PARAMETER_NO_DIRECTION, this::checkForDirection);
+    }
+
+    private void checkForName(ProcedureParameter parameter, ValidationResult validationResult) {
         // Must have name
         if (Util.isEmptyString(parameter.getName())) {
             addFailure(validationResult, parameter, "Unnamed ProcedureParameter");
         }
+    }
 
+    private void checkForType(ProcedureParameter parameter, ValidationResult validationResult) {
         // all attributes must have type
         if (parameter.getType() == TypesMapping.NOT_DEFINED) {
-            addFailure(
-                    validationResult,
-                    parameter,
-                    "ProcedureParameter '%s' has no type",
-                    parameter.getName());
+            addFailure(validationResult, parameter, "ProcedureParameter '%s' has no type", parameter.getName());
         }
+    }
 
+    private void checkForLength(ProcedureParameter parameter, ValidationResult validationResult) {
         // VARCHAR and CHAR attributes must have max length
         if (parameter.getMaxLength() < 0
                 && (parameter.getType() == Types.VARCHAR
@@ -50,20 +66,15 @@ class ProcedureParameterValidator extends ConfigurationNodeValidator {
                     || parameter.getType() == Types.CHAR
                     || parameter.getType() == Types.NCHAR)) {
 
-            addFailure(
-                    validationResult,
-                    parameter,
-                    "Character ProcedureParameter '%s' doesn't have max length",
+            addFailure(validationResult, parameter, "Character ProcedureParameter '%s' doesn't have max length",
                     parameter.getName());
         }
+    }
 
+    private void checkForDirection(ProcedureParameter parameter, ValidationResult validationResult) {
         // all attributes must have type
         if (parameter.getDirection() <= 0) {
-            addFailure(
-                    validationResult,
-                    parameter,
-                    "ProcedureParameter '%s' has no direction",
-                    parameter.getName());
+            addFailure(validationResult, parameter, "ProcedureParameter '%s' has no direction", parameter.getName());
         }
     }
 }

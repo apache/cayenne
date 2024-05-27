@@ -24,50 +24,57 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.validation.ValidationResult;
 
-class SelectQueryValidator extends BaseQueryValidator {
+public class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
 
-    void validate(SelectQueryDescriptor query, ValidationResult validationResult) {
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public SelectQueryValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
+    }
 
-        validateName(query, validationResult);
+    @Override
+    public void validate(SelectQueryDescriptor node, ValidationResult validationResult) {
+        ConfigurationNodeValidator<SelectQueryDescriptor>.Performer<SelectQueryDescriptor> performer =
+                validateQuery(node, validationResult);
 
-        validateCacheGroup(query, validationResult);
+        performer.performIfEnabled(Inspection.SELECT_QUERY_NO_ROOT, this::checkForRoot);
 
         // Resolve root to Entity for further validation
-        Entity<?,?,?> root = validateRoot(query, validationResult);
+        Entity<?, ?, ?> root = getRootForValidation(node);
 
         // validate path-based parts
-        if (root != null) {
-            validateQualifier(root, query.getQualifier(), validationResult);
-
-            for (final Ordering ordering : query.getOrderings()) {
-                validateOrdering(query, root, ordering, validationResult);
-            }
-
-            if (query.getPrefetchesMap() != null) {
-                for (String prefetchPath : query.getPrefetchesMap().keySet()) {
-                    validatePrefetch(root, prefetchPath, validationResult);
-                }
-            }
-      
+        if (root == null) {
+            return;
+        }
+        performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_QUALIFIER,
+                () -> validateQualifier(root, node.getQualifier(), validationResult));
+        for (final Ordering ordering : node.getOrderings()) {
+            performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_ORDERING_PATH,
+                    () -> validateOrdering(node, root, ordering, validationResult));
+        }
+        if (node.getPrefetchesMap() == null) {
+            return;
+        }
+        for (String prefetchPath : node.getPrefetchesMap().keySet()) {
+            performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_PREFETCH_PATH,
+                    () -> validatePrefetch(root, prefetchPath, validationResult));
         }
     }
 
-    void validatePrefetch(Entity<?,?,?> root, String path, ValidationResult validationResult) {
+    private void validatePrefetch(Entity<?, ?, ?> root, String path, ValidationResult validationResult) {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    void validateOrdering(
-            QueryDescriptor query,
-            Entity<?,?,?> root,
-            Ordering ordering,
-            ValidationResult validationResult) {
-       
+    private void validateOrdering(SelectQueryDescriptor query, Entity<?, ?, ?> root,
+                                  Ordering ordering, ValidationResult validationResult) {
+
         // validate paths in ordering
         String path = ordering.getSortSpecString();
         Iterator<CayenneMapEntry> it = root.resolvePathComponents(path);
@@ -80,17 +87,20 @@ class SelectQueryValidator extends BaseQueryValidator {
         }
     }
 
-    void validateQualifier(
-            Entity<?,?,?> root,
-            Expression qualifier,
-            ValidationResult validationResult) {
+    private void validateQualifier(Entity<?, ?, ?> root, Expression qualifier, ValidationResult validationResult) {
         // TODO: andrus 03/10/2010 - should this be implemented?
     }
 
-    Entity<?,?,?> validateRoot(QueryDescriptor query, ValidationResult validationResult) {
+    private void checkForRoot(SelectQueryDescriptor query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             addFailure(validationResult, query, "Query '%s' has no root", query.getName());
+        }
+    }
+
+    private Entity<?, ?, ?> getRootForValidation(SelectQueryDescriptor query) {
+        DataMap map = query.getDataMap();
+        if (query.getRoot() == null && map != null) {
             return null;
         }
 
@@ -101,11 +111,11 @@ class SelectQueryValidator extends BaseQueryValidator {
 
         if (map == null) {
             // maybe standalone entity, otherwise bail...
-            return (query.getRoot() instanceof Entity) ? (Entity<?,?,?>) query.getRoot() : null;
+            return (query.getRoot() instanceof Entity) ? (Entity<?, ?, ?>) query.getRoot() : null;
         }
 
         if (query.getRoot() instanceof Entity) {
-            return (Entity<?,?,?>) query.getRoot();
+            return (Entity<?, ?, ?>) query.getRoot();
         }
 
         // can't validate Class root - it is likely not accessible from here...
@@ -115,9 +125,7 @@ class SelectQueryValidator extends BaseQueryValidator {
 
         // resolve entity
         if (query.getRoot() instanceof String) {
-
             DataMap parent = query.getDataMap();
-
             if (parent != null) {
                 return parent.getNamespace().getObjEntity((String) query.getRoot());
             }
@@ -125,5 +133,4 @@ class SelectQueryValidator extends BaseQueryValidator {
 
         return null;
     }
-
 }

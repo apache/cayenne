@@ -28,14 +28,14 @@ import java.util.List;
 
 /**
  * Represents a result of a validation execution. Contains a set of
- * {@link ValidationFailure ValidationFailures}that occured in a given context. All
+ * {@link ValidationFailure ValidationFailures} that occurred in a given context. All
  * failures are kept in the same order they were added.
  * 
  * @since 1.1
  */
 public class ValidationResult implements Serializable {
 
-    private List<ValidationFailure> failures;
+    private final List<ValidationFailure> failures;
 
     public ValidationResult() {
         failures = new ArrayList<>();
@@ -110,7 +110,7 @@ public class ValidationResult implements Serializable {
     @Override
     public String toString() {
         StringBuilder ret = new StringBuilder();
-        String separator = System.getProperty("line.separator");
+        String separator = System.lineSeparator();
 
         for (ValidationFailure failure : failures) {
             if (ret.length() > 0) {

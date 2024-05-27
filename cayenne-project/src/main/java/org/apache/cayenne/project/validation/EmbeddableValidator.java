@@ -24,20 +24,36 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
-class EmbeddableValidator extends ConfigurationNodeValidator {
+public class EmbeddableValidator extends ConfigurationNodeValidator<Embeddable> {
 
-    void validate(Embeddable embeddable, ValidationResult validationResult) {
+    /**
+     * @param validationConfig the config defining the behavior of this validator.
+     * @since 5.0
+     */
+    public EmbeddableValidator(ValidationConfig validationConfig) {
+        super(validationConfig);
+    }
 
+    @Override
+    public void validate(Embeddable node, ValidationResult validationResult) {
+        on(node, validationResult)
+                .performIfEnabled(Inspection.EMBEDDABLE_NO_NAME, this::checkForName)
+                .performIfEnabled(Inspection.EMBEDDABLE_NAME_DUPLICATE, this::checkForNameDuplicates);
+    }
+
+    private void checkForName(Embeddable embeddable, ValidationResult validationResult) {
         String name = embeddable.getClassName();
 
         // Must have name
         if (Util.isEmptyString(name)) {
             addFailure(validationResult, embeddable, "Unnamed Embeddable");
-            return;
         }
+    }
 
+    private void checkForNameDuplicates(Embeddable embeddable, ValidationResult validationResult) {
+        String name = embeddable.getClassName();
         DataMap map = embeddable.getDataMap();
-        if (map == null) {
+        if (map == null || Util.isEmptyString(name)) {
             return;
         }
 
@@ -46,37 +62,28 @@ class EmbeddableValidator extends ConfigurationNodeValidator {
             if (otherEmb == embeddable) {
                 continue;
             }
-
             if (name.equals(otherEmb.getClassName())) {
-
-                addFailure(
-                        validationResult,
-                        embeddable,
-                        "Duplicate Embeddable class name: %s",
-                        name);
+                addFailure(validationResult, embeddable, "Duplicate Embeddable class name: %s", name);
                 break;
             }
         }
 
         // check for duplicates in other DataMaps
         DataChannelDescriptor domain = map.getDataChannelDescriptor();
-        if (domain != null) {
-            for (DataMap nextMap : domain.getDataMaps()) {
-                if (nextMap == map) {
-                    continue;
-                }
+        if (domain == null) {
+            return;
+        }
+        for (DataMap nextMap : domain.getDataMaps()) {
+            if (nextMap == map) {
+                continue;
+            }
 
-                // note that lookuo below will return the same embeddable due to the
-                // shared namespace if not conflicts exist
-                Embeddable conflictingEmbeddable = nextMap.getEmbeddable(name);
-                if (conflictingEmbeddable != null && conflictingEmbeddable != embeddable) {
-                    addFailure(
-                            validationResult,
-                            embeddable,
-                            "Duplicate Embeddable name in another DataMap: %s",
-                            name);
-                    break;
-                }
+            // note that lookup below will return the same embeddable due to the
+            // shared namespace if not conflicts exist
+            Embeddable conflictingEmbeddable = nextMap.getEmbeddable(name);
+            if (conflictingEmbeddable != null && conflictingEmbeddable != embeddable) {
+                addFailure(validationResult, embeddable, "Duplicate Embeddable name in another DataMap: %s", name);
+                break;
             }
         }
     }

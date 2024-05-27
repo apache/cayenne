@@ -18,30 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.util.Util;
-import org.apache.cayenne.validation.ValidationResult;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
-public class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescriptor> {
+public class ValidationConfig {
 
-    /**
-     * @param validationConfig the config defining the behavior of this validator.
-     * @since 5.0
-     */
-    public DataChannelValidator(ValidationConfig validationConfig) {
-        super(validationConfig);
+    private final Set<Inspection> enabledInspections;
+
+    public ValidationConfig() {
+        this(Collections.unmodifiableSet(EnumSet.allOf(Inspection.class)));
     }
 
-    @Override
-    public void validate(DataChannelDescriptor node, ValidationResult validationResult) {
-        on(node, validationResult)
-                .performIfEnabled(Inspection.DATA_CHANNEL_NO_NAME, this::checkForName);
+    public ValidationConfig(Set<Inspection> enabledInspections) {
+        this.enabledInspections = enabledInspections;
     }
 
-    private void checkForName(DataChannelDescriptor domain, ValidationResult validationResult) {
-        String name = domain.getName();
-        if (Util.isEmptyString(name)) {
-            addFailure(validationResult, domain, "Unnamed DataDomain");
-        }
+    public Set<Inspection> getEnabledInspections() {
+        return enabledInspections;
+    }
+
+    public boolean isEnabled(Inspection inspection) {
+        return enabledInspections.contains(inspection);
     }
 }
