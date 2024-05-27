@@ -17,8 +17,7 @@
 :sectnums:
 :sectnumlevels: 2
 // use custom header
-:cayenne-header: _upgrade-guide/header.html
-:cayenne-header-position: body
+:hugo-header: _upgrade-guide/header.html
 // base path to java code include
 :cayenne-root: {basedir}/../../..
 
