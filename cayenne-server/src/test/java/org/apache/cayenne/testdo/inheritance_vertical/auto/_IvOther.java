@@ -29,12 +29,14 @@ public abstract class _IvOther extends BaseDataObject {
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final EntityProperty<IvBase> BASE = PropertyFactory.createEntity("base", IvBase.class);
     public static final ListProperty<IvImpl> IMPLS = PropertyFactory.createList("impls", IvImpl.class);
+    public static final ListProperty<IvImpl> IMPLS_WITH_INVERSE = PropertyFactory.createList("implsWithInverse", IvImpl.class);
     public static final ListProperty<IvImplWithLock> IMPLS_WITH_LOCK = PropertyFactory.createList("implsWithLock", IvImplWithLock.class);
 
     protected String name;
 
     protected Object base;
     protected Object impls;
+    protected Object implsWithInverse;
     protected Object implsWithLock;
 
     public void setName(String name) {
@@ -68,6 +70,19 @@ public abstract class _IvOther extends BaseDataObject {
         return (List<IvImpl>)readProperty("impls");
     }
 
+    public void addToImplsWithInverse(IvImpl obj) {
+        addToManyTarget("implsWithInverse", obj, true);
+    }
+
+    public void removeFromImplsWithInverse(IvImpl obj) {
+        removeToManyTarget("implsWithInverse", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<IvImpl> getImplsWithInverse() {
+        return (List<IvImpl>)readProperty("implsWithInverse");
+    }
+
     public void addToImplsWithLock(IvImplWithLock obj) {
         addToManyTarget("implsWithLock", obj, true);
     }
@@ -94,6 +109,8 @@ public abstract class _IvOther extends BaseDataObject {
                 return this.base;
             case "impls":
                 return this.impls;
+            case "implsWithInverse":
+                return this.implsWithInverse;
             case "implsWithLock":
                 return this.implsWithLock;
             default:
@@ -117,6 +134,9 @@ public abstract class _IvOther extends BaseDataObject {
             case "impls":
                 this.impls = val;
                 break;
+            case "implsWithInverse":
+                this.implsWithInverse = val;
+                break;
             case "implsWithLock":
                 this.implsWithLock = val;
                 break;
@@ -139,6 +159,7 @@ public abstract class _IvOther extends BaseDataObject {
         out.writeObject(this.name);
         out.writeObject(this.base);
         out.writeObject(this.impls);
+        out.writeObject(this.implsWithInverse);
         out.writeObject(this.implsWithLock);
     }
 
@@ -148,6 +169,7 @@ public abstract class _IvOther extends BaseDataObject {
         this.name = (String)in.readObject();
         this.base = in.readObject();
         this.impls = in.readObject();
+        this.implsWithInverse = in.readObject();
         this.implsWithLock = in.readObject();
     }
 
