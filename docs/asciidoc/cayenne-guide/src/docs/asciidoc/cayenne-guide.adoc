@@ -17,8 +17,7 @@
 :sectnums:
 :sectnumlevels: 2
 // use custom header
-:cayenne-header: _cayenne-guide/header.html
-:cayenne-header-position: body
+:hugo-header: _cayenne-guide/header.html
 // customize final layout
 //:linkcss:
 // base path to java code include

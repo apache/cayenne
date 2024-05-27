@@ -32,7 +32,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>cayenne-asciidoc-extension</module>
         <module>cayenne-guide</module>
         <module>getting-started-guide</module>
         <module>getting-started-db-first</module>
@@ -42,12 +41,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <asciidoctorj.version>1.6.0-alpha.7</asciidoctorj.version>
-        <asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
-        <asciidoctorj.pdf.version>1.5.0-alpha.16</asciidoctorj.pdf.version>
-        <jruby.version>9.2.0.0</jruby.version>
+        <asciidoctorj.version>2.5.12</asciidoctorj.version>
+        <asciidoctor.maven.plugin.version>2.2.6</asciidoctor.maven.plugin.version>
+        <asciidoctorj.pdf.version>2.1.4</asciidoctorj.pdf.version>
         <cayenne.version>${project.version}</cayenne.version>
         <cayenne.major.version>4.1</cayenne.major.version>
+        <hugo.asciidoctorj.extension.version>1.0-M3</hugo.asciidoctorj.extension.version>
     </properties>
 
     <dependencies>
@@ -104,14 +103,10 @@
                         <sectanchors>true</sectanchors>
                         <idprefix /> <!-- set the idprefix to blank -->
                         <idseparator>-</idseparator>
+                        <source-highlighter>coderay</source-highlighter>
                     </attributes>
                 </configuration>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.jruby</groupId>
-                        <artifactId>jruby-complete</artifactId>
-                        <version>${jruby.version}</version>
-                    </dependency>
                     <dependency>
                         <groupId>org.asciidoctor</groupId>
                         <artifactId>asciidoctorj</artifactId>
@@ -121,6 +116,7 @@
             </plugin>
             <!-- Move images to proper path for site -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>

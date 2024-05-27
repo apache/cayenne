@@ -39,9 +39,9 @@
                 <dependencies>
                     <!-- Using own extension to inject custom headers -->
                     <dependency>
-                        <groupId>org.apache.cayenne.docs</groupId>
-                        <artifactId>cayenne-asciidoc-extension</artifactId>
-                        <version>${project.version}</version>
+                        <groupId>io.bootique.tools</groupId>
+                        <artifactId>hugo-asciidoctorj-extension</artifactId>
+                        <version>${hugo.asciidoctorj.extension.version}</version>
                     </dependency>
                 </dependencies>
 
@@ -60,7 +60,7 @@
                             <!-- this will inject header with "front-matter" markup -->
                             <extensions>
                                 <extension>
-                                    <className>org.apache.cayenne.asciidoc.CayennePostProcessor</className>
+                                    <className>io.bootique.tools.asciidoctorj.HugoExtension</className>
                                 </extension>
                             </extensions>
                             <attributes>
@@ -91,7 +91,6 @@
                                 </goals>
                                 <configuration>
                                     <backend>html5</backend>
-                                    <sourceHighlighter>coderay</sourceHighlighter>
                                     <embedAssets>true</embedAssets>
                                     <attributes>
                                         <toc>left</toc>
@@ -108,7 +107,6 @@
                                 </goals>
                                 <configuration>
                                     <backend>pdf</backend>
-                                    <sourceHighlighter>coderay</sourceHighlighter>
                                     <attributes>
                                         <pagenums />
                                         <toc />

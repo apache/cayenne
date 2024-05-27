@@ -15,6 +15,7 @@ Date:
 Changes/New Features:
 
 CAY-2775 Change Objectstyle maven repository URL
+CAY-2849 Switch documentation to `hugo-asciidoctorj-extension`
 
 Bug Fixes:
 
