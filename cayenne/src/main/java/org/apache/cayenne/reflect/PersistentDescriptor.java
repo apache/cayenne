@@ -62,7 +62,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 	protected ObjEntity entity;
 	protected Collection<DbEntity> rootDbEntities;
-	protected Map<CayennePath, DbEntity> additionalDbEntities;
+	protected Map<CayennePath, AdditionalDbEntityDescriptor> additionalDbEntities;
 
 	protected EntityInheritanceTree entityInheritanceTree;
 
@@ -128,12 +128,12 @@ public class PersistentDescriptor implements ClassDescriptor {
 	 * @param path path for entity
 	 * @param targetEntity additional entity
 	 */
-	void addAdditionalDbEntity(CayennePath path, DbEntity targetEntity) {
+	void addAdditionalDbEntity(CayennePath path, DbEntity targetEntity, boolean noDelete) {
 		if(additionalDbEntities == null) {
 			additionalDbEntities = new HashMap<>();
 		}
 
-		additionalDbEntities.put(path, targetEntity);
+		additionalDbEntities.put(path, new AdditionalDbEntityDescriptor(path, targetEntity, noDelete));
 	}
 
 	void sortProperties() {
@@ -232,7 +232,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 	}
 
 	@Override
-	public Map<CayennePath, DbEntity> getAdditionalDbEntities() {
+	public Map<CayennePath, AdditionalDbEntityDescriptor> getAdditionalDbEntities() {
 		if(additionalDbEntities == null) {
 			return Collections.emptyMap();
 		}

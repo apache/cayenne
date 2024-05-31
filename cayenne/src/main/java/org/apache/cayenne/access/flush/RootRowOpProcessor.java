@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.Collection;
+import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -29,8 +29,11 @@ import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.reflect.AdditionalDbEntityDescriptor;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Visitor that runs all required actions based on operation type.
@@ -74,14 +77,23 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
 
     @Override
     public Void visitDelete(DeleteDbRowOp dbRow) {
-        if (dbRowOpFactory.getDescriptor().getEntity().isReadOnly()) {
+        ObjEntity entity = dbRowOpFactory.getDescriptor().getEntity();
+        if (entity.isReadOnly()) {
             throw new CayenneRuntimeException("Attempt to modify object(s) mapped to a read-only entity: '%s'. " +
-                    "Can't commit changes.", dbRowOpFactory.getDescriptor().getEntity().getName());
+                    "Can't commit changes.", entity.getName());
         }
         diff.apply(deleteHandler);
-        Collection<ObjectId> flattenedIds = dbRowOpFactory.getStore().getFlattenedIds(dbRow.getChangeId());
-        flattenedIds.forEach(id -> dbRowOpFactory.getOrCreate(dbRowOpFactory.getDbEntity(id), id, DbRowOpType.DELETE));
-        if (dbRowOpFactory.getDescriptor().getEntity().getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
+
+        ClassDescriptor descriptor = dbRowOpFactory.getDescriptor();
+        Map<CayennePath,ObjectId> flattenedPathIdMap = dbRowOpFactory.getStore().getFlattenedPathIdMap(dbRow.getChangeId());
+        flattenedPathIdMap.forEach((path, id) -> {
+            AdditionalDbEntityDescriptor addEntity = descriptor.getAdditionalDbEntities().get(path);
+            if (!addEntity.noDelete()) {// See PersistentDescriptorFactory.indexAdditionalDbEntities
+                dbRowOpFactory.getOrCreate(addEntity.getDbEntity(), id, DbRowOpType.DELETE);
+            }
+        });
+
+        if (entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
             dbRowOpFactory.getDescriptor().visitAllProperties(new OptimisticLockQualifierBuilder(dbRow, diff));
         }
         return null;

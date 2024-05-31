@@ -58,11 +58,11 @@ public interface ClassDescriptor {
      * <p>
      * Keys are full paths for corresponding flattened attributes.
      * <p>
-     *
-     * @since 4.1
+     * 
+     * @since 5.0
      * @return information about additional db entities
      */
-    Map<CayennePath, DbEntity> getAdditionalDbEntities();
+    Map<CayennePath, AdditionalDbEntityDescriptor> getAdditionalDbEntities();
 
     /**
      * @since 3.0

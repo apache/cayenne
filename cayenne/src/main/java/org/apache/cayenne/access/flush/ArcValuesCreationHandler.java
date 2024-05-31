@@ -89,23 +89,29 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         }
 
         if(objRelationship.isFlattened()) {
-            processFlattenedPath(arcTarget.getSourceId(), arcTarget.getTargetId(), entity.getDbEntity(),
+            FlattenedPathProcessingResult result = processFlattenedPath(arcTarget.getSourceId(), arcTarget.getTargetId(), entity.getDbEntity(),
                     objRelationship.getDbRelationshipPath(), created);
+            if(result.isProcessed()) {
+                factory.getProcessedArcs().add(arcTarget);
+            }
         } else {
             DbRelationship dbRelationship = objRelationship.getDbRelationships().get(0);
             processRelationship(dbRelationship, arcTarget.getSourceId(), arcTarget.getTargetId(), created);
+            factory.getProcessedArcs().add(arcTarget);
         }
-
-        factory.getProcessedArcs().add(arcTarget);
     }
 
-    ObjectId processFlattenedPath(ObjectId id, ObjectId finalTargetId, DbEntity entity, CayennePath dbPath, boolean add) {
-        Iterator<CayenneMapEntry> dbPathIterator = entity.resolvePathComponents(dbPath);
+    FlattenedPathProcessingResult processFlattenedPath(ObjectId id, ObjectId finalTargetId, DbEntity entity, CayennePath dbPath, boolean add) {
+        if(shouldSkipFlattenedOp(id, finalTargetId)) {
+            return flattenedResultNotProcessed();
+        }
+
         CayennePath flattenedPath = CayennePath.EMPTY_PATH;
 
         ObjectId srcId = id;
         ObjectId targetId = null;
 
+        Iterator<CayenneMapEntry> dbPathIterator = entity.resolvePathComponents(dbPath);
         while(dbPathIterator.hasNext()) {
             CayenneMapEntry entry = dbPathIterator.next();
             flattenedPath = flattenedPath.dot(entry.getName());
@@ -139,8 +145,8 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                     } else {
                         type = add ? DbRowOpType.INSERT : DbRowOpType.UPDATE;
                         factory.<DbRowOpWithValues>getOrCreate(target, targetId, type)
-                            .getValues()
-                            .addFlattenedId(flattenedPath, targetId);
+                                .getValues()
+                                .addFlattenedId(flattenedPath, targetId);
                     }
                 } else if(dbPathIterator.hasNext()) {
                     // should update existing DB row
@@ -151,7 +157,15 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
             }
         }
 
-        return targetId;
+        return flattenedResultId(targetId);
+    }
+
+    private boolean shouldSkipFlattenedOp(ObjectId id, ObjectId finalTargetId) {
+        // as we get two sides of the relationship processed,
+        // check if we got more information for a reverse operation
+        return finalTargetId != null
+                && factory.getStore().getFlattenedIds(id).isEmpty()
+                && !factory.getStore().getFlattenedIds(finalTargetId).isEmpty();
     }
 
     private boolean shouldProcessAsAddition(DbRelationship relationship, boolean add) {
@@ -279,6 +293,32 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                 dbRow.getQualifier().addAdditionalQualifier(attribute, valueToUse);
             }
             return null;
+        }
+    }
+
+    static FlattenedPathProcessingResult flattenedResultId(ObjectId id) {
+        return new FlattenedPathProcessingResult(true, id);
+    }
+
+    static FlattenedPathProcessingResult flattenedResultNotProcessed() {
+        return new FlattenedPathProcessingResult(false, null);
+    }
+
+    final static class FlattenedPathProcessingResult {
+        private final boolean processed;
+        private final ObjectId id;
+
+        private FlattenedPathProcessingResult(boolean processed, ObjectId id) {
+            this.processed = processed;
+            this.id = id;
+        }
+
+        public boolean isProcessed() {
+            return processed;
+        }
+
+        public ObjectId getId() {
+            return id;
         }
     }
 }

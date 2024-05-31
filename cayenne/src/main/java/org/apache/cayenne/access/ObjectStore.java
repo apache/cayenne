@@ -979,7 +979,7 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
      * Check that flattened path for given object ID has data row in DB.
      * @since 4.1
      */
-    boolean hasFlattenedPath(ObjectId objectId, String path) {
+    boolean hasFlattenedPath(ObjectId objectId, CayennePath path) {
         if(trackedFlattenedPaths == null) {
             return false;
         }
@@ -1009,6 +1009,18 @@ public class ObjectStore implements Serializable, SnapshotEventListener, GraphMa
 
         return trackedFlattenedPaths
                 .getOrDefault(objectId, Collections.emptyMap()).values();
+    }
+
+    /**
+     * @since 5.0
+     */
+    public Map<CayennePath,ObjectId> getFlattenedPathIdMap(ObjectId objectId) {
+        if(trackedFlattenedPaths == null) {
+            return Collections.emptyMap();
+        }
+
+        return trackedFlattenedPaths
+                .getOrDefault(objectId, Collections.emptyMap());
     }
 
     /**

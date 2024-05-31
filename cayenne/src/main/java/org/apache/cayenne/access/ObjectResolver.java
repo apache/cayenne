@@ -30,6 +30,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.reflect.AdditionalDbEntityDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,8 +183,8 @@ class ObjectResolver {
 	        return;
         }
 
-	    for(Map.Entry<CayennePath, DbEntity> entry : classDescriptor.getAdditionalDbEntities().entrySet()) {
-            DbEntity dbEntity = entry.getValue();
+	    for(Map.Entry<CayennePath, AdditionalDbEntityDescriptor> entry : classDescriptor.getAdditionalDbEntities().entrySet()) {
+            DbEntity dbEntity = entry.getValue().getDbEntity();
             CayennePath path = entry.getKey();
             CayennePath prefix = path.length() == 1 ? path : path.tail(path.length() - 1);
             ObjectId objectId = createObjectId(row, "db:" + dbEntity.getName(), dbEntity.getPrimaryKeys(), prefix, false);
